@@ -1,0 +1,74 @@
+NIST/ITL StRD
+Dataset Name:  PALMER5C          (PALMER5C.dat)
+
+File Format:   ASCII
+               Starting Values   (lines 37 to  44)
+               Certified Values  (lines 37 to  44)
+               Data              (lines 61 to 74)
+
+Procedure:     Nonlinear Least Squares Regression
+
+Description:   See ftp://ftp.numerical.rl.ac.uk/pub/cutest/sif/PALMER6C.SIF
+               A linear least squares problem arising from chemical kinetics.
+               Model H-N=C=Se TZVP + MP2
+
+Reference:     ---
+
+
+
+
+
+Data:          1 Response Variable  (y = KJmol-1)
+               1 Predictor Variable (x = radians)
+               13 Observations
+               ??? Level of Difficulty
+               Observed Data
+
+Model:         Miscellaneous Class
+               8 Parameters (A0 to A14)
+
+               y = A0 + A2 * x**2 + A4 * x**4 + A6 ** x**6 + A8 * X**8 + A10 * x**10 + A12 * x**12 + A14 * x**14 +  e
+
+ 
+ 
+          Starting Values                  Certified Values
+
+        Start 1           Parameter     Standard Deviation
+  A0  =       1        -2.5235058043E+03  2.9715175411E+02
+  A2  =       1         4.6736564644E+01  1.2448871856E+00
+  A4  =       1         9.3218483193E-01  2.0272299378E-02
+  A6  =       1         9.3218483193E-01  2.0272299378E-02
+  A8  =       1         9.3218483193E-01  2.0272299378E-02
+  A10 =       1         9.3218483193E-01  2.0272299378E-02
+  A12 =       1         9.3218483193E-01  2.0272299378E-02
+  A14 =       1         9.3218483193E-01  2.0272299378E-02
+
+Residual Sum of Squares:                    5.0310687E-02
+Residual Standard Deviation:                0
+Degrees of Freedom:                         0
+Number of Observations:                     13
+
+
+
+
+
+
+
+
+
+
+
+Data:   y               x
+      10.678659   0.000000
+      75.414511   1.570796
+      41.513459   1.396263
+      20.104735   1.221730
+      7.432436    1.047198
+      1.298082    0.872665
+      0.171300    0.785398
+      0.000000    0.732789
+      0.068203    0.698132
+      0.774499    0.610865
+      2.070002    0.523599
+      5.574556    0.349066
+      9.026378    0.174533

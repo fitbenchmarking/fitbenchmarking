@@ -27,7 +27,6 @@ import numpy as np
 from docutils.core import publish_string
 import post_processing as postproc
 import os
-import pymantidplot.qtiplot as qti
 import mantid.simpleapi as msapi
 
 
@@ -228,7 +227,6 @@ def build_visual_display_page(prob_results, group_name):
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi2)
     file_name = (group_name + '_' + gb.problem.name).lower()
     wks = msapi.CreateWorkspace(OutputWorkspace=gb.problem.name, DataX=gb.problem.data_pattern_in, DataY=gb.problem.data_pattern_out)
-    qti.plot(wks, 0)
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
     title += gb.problem.name + '\n'

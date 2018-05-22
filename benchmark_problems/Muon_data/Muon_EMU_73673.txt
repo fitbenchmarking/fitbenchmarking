@@ -1,0 +1,6 @@
+# An example data set for the EMU instrument
+name = 'EMU 73673'
+input_file = 'EMU_116891_long.nxs'
+function ='name=DynamicKuboToyabe,BinWidth=0.050000000000000003,Asym=0.2,Delta=0.2,Field=0,Nu=0;name=StretchExpMuon,A=0.2,Lambda=0.2,Beta=0.2'
+fit_parameters = {'StartX': 0.2, 'EndX': 16}
+description = ''
