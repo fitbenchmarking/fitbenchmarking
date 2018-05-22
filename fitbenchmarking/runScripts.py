@@ -23,7 +23,8 @@ color_scale = [(1.1, 'ranking-top-1'),
                            ]
 
 input_data_dir = os.path.dirname(os.path.realpath(__file__)) #msapi.config['datasearch.directories'].split(';')[0]
-base_problem_files_dir = os.path.join(input_data_dir, 'FittingTestData')
+parent_dir = os.path.dirname(os.path.normpath(input_data_dir))
+base_problem_files_dir = os.path.join(parent_dir, 'FittingTestData')
 
 use_errors = True
               
