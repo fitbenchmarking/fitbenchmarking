@@ -1,0 +1,6 @@
+# An example of fitting of a spline background on a Vanadium run from ENGIN-X
+name = 'ENGINX 236516 vanadium, bank 1, 10 brk'
+input_file = 'ENGINX236516_vanadium_bank1.nxs'
+function = 'name=BSpline, Order=3, NBreak=10'
+fit_parameters = {'StartX': 0, 'EndX': 5.4}
+description = ''
