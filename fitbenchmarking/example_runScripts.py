@@ -1,13 +1,14 @@
+# script for running fit benchmarking and comparising the relative performance of local minimzers on
+# fit problems
+
 import fitting_benchmarking as fitbk
 import results_output as fitout
 
 import os
 
-#import mantid.simpleapi as msapi
-
+# all minimizers in Mantid, minus FABADA which is not a local minimizer
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
                                     'Conjugate gradient (Polak-Ribiere imp.)',
-                                   #'FABADA', # hide FABADA
                                     'Levenberg-Marquardt', 'Levenberg-MarquardtMD',
                                     'Simplex', 'SteepestDescent', 'Trust Region']
 
@@ -22,7 +23,7 @@ color_scale = [(1.1, 'ranking-top-1'),
                             (float('nan'), 'ranking-low-5')
                            ]
 
-input_data_dir = os.path.dirname(os.path.realpath(__file__)) #msapi.config['datasearch.directories'].split(';')[0]
+input_data_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(os.path.normpath(input_data_dir))
 base_problem_files_dir = os.path.join(parent_dir, 'benchmark_problems')
 print parent_dir
@@ -35,20 +36,18 @@ cutest_group_dir = os.path.join(base_problem_files_dir, 'CUTEst')
 neutron_data_group_dirs = [os.path.join(base_problem_files_dir, 'Neutron_data')]
 muon_data_group_dir = [os.path.join(base_problem_files_dir, 'Muon_data')]
 
+# choice the data to run
 run_data = "neutron"
 
 if run_data == "neutron":
-    #neutron data
     problems, results_per_group = fitbk.do_fitting_benchmark(neutron_data_group_dirs=neutron_data_group_dirs,
                                                      minimizers=minimizers, use_errors=use_errors)
-elif run_data == "muon":            
-    #muon data
+elif run_data == "muon":
     group_names = ['MUON']
     group_suffix_names = ['MUON']
     problems, results_per_group = fitbk.do_fitting_benchmark(muon_data_group_dir=muon_data_group_dir,
                                                      minimizers=minimizers, use_errors=use_errors)  
 elif run_data=="nist":
-    #nist data
      problems, results_per_group = fitbk.do_fitting_benchmark(nist_group_dir=nist_group_dir,
                                                       minimizers=minimizers, use_errors=use_errors)            
                                                       
