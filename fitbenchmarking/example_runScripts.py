@@ -1,4 +1,3 @@
-
 # script for running fit benchmarking and comparising the relative performance of local minimzers on
 # fit problems
 
@@ -7,25 +6,22 @@ import results_output as fitout
 
 import os
 
-#import mantid.simpleapi as msapi
+# Import mantid.simpleapi as msapi
 
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
-                                    'Conjugate gradient (Polak-Ribiere imp.)',
-                                   #'FABADA', # hide FABADA
+              'Conjugate gradient (Polak-Ribiere imp.)',
+              'Levenberg-Marquardt', 'Levenberg-MarquardtMD',
+              'Simplex', 'SteepestDescent',
+              'Trust Region', 'Damped GaussNewton']
 
-                                    'Levenberg-Marquardt', 'Levenberg-MarquardtMD',
-                                    'Simplex', 'SteepestDescent', 'Trust Region']
-
-minimizers = ['BFGS', 'Damped GaussNewton']                                    
-
-group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty', 'NIST, "higher" difficulty', "CUTEst", "Neutron data"]
+group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
+               'NIST, "higher" difficulty', "CUTEst", "Neutron data"]
 group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher', 'cutest', 'neutron_data']
 color_scale = [(1.1, 'ranking-top-1'),
-                            (1.33, 'ranking-top-2'),
-                            (1.75, 'ranking-med-3'),
-                            (3, 'ranking-low-4'),
-                            (float('nan'), 'ranking-low-5')
-                           ]
+               (1.33, 'ranking-top-2'),
+               (1.75, 'ranking-med-3'),
+               (3, 'ranking-low-4'),
+               (float('nan'), 'ranking-low-5')]
 
 
 input_data_dir = os.path.dirname(os.path.realpath(__file__))
@@ -45,20 +41,17 @@ run_data = "neutron"
 
 if run_data == "neutron":
     problems, results_per_group = fitbk.do_fitting_benchmark(neutron_data_group_dirs=neutron_data_group_dirs,
-                                                     minimizers=minimizers, use_errors=use_errors)
+                                                             minimizers=minimizers, use_errors=use_errors)
 elif run_data == "muon":
     group_names = ['MUON']
     group_suffix_names = ['MUON']
     problems, results_per_group = fitbk.do_fitting_benchmark(muon_data_group_dir=muon_data_group_dir,
-                                                     minimizers=minimizers, use_errors=use_errors)  
-elif run_data=="nist":
-    #nist data
-     problems, results_per_group = fitbk.do_fitting_benchmark(nist_group_dir=nist_group_dir,
-                                                      minimizers=minimizers, use_errors=use_errors)            
-                                                      
-group_names = ['NIST, "lower" difficulty']
-group_suffix_names = ['nist_lower']
-    
+                                                             minimizers=minimizers, use_errors=use_errors)
+elif run_data == "nist":
+    # NIST data
+    problems, results_per_group = fitbk.do_fitting_benchmark(nist_group_dir=nist_group_dir,
+                                                             minimizers=minimizers, use_errors=use_errors)
+
 for idx, group_results in enumerate(results_per_group):
         print("\n\n")
         print("********************************************************")
@@ -74,5 +67,4 @@ for idx, group_results in enumerate(results_per_group):
 header = '\n\n**************** OVERALL SUMMARY - ALL GROUPS ******** \n\n'
 print(header)
 fitout.print_overall_results_table(minimizers, results_per_group, problems, group_names,
-                                       use_errors=use_errors, save_to_file=True)
-
+                                   use_errors=use_errors, save_to_file=True)
