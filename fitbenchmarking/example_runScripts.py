@@ -1,12 +1,20 @@
 # script for running fit benchmarking and comparising the relative performance of local minimzers on
 # fit problems
 
+import os
+
+# If OS is Ubuntu
+if os.name == 'posix':
+	try:
+		import docutils
+	except:
+		raise ImportError("Please run 'sudo apt-get install python-docutils' in the terminal")
+
 import fitting_benchmarking as fitbk
 import results_output as fitout
 
-import os
 
-# Import mantid.simpleapi as msapi
+
 
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
               'Conjugate gradient (Polak-Ribiere imp.)',
