@@ -123,23 +123,23 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
 
     # Several blocks of problems. Results for each block will be calculated sequentially, and
     # will go into a separate table
-    problem_blocks = []
+    problem_groups = {}
 
     if nist_group_dir:
-        problem_blocks.extend(get_nist_problem_files(nist_group_dir))
+        problem_groups['nist'] = get_nist_problem_files(nist_group_dir)
 
-    if cutest_group_dir:
-        problem_blocks.extend([get_cutest_problem_files(cutest_group_dir)])
+    elif cutest_group_dir:
+        problem_groups['cutest'] = [get_cutest_problem_files(cutest_group_dir)]
 
-    if neutron_data_group_dirs:
-        problem_blocks.extend(get_data_groups(neutron_data_group_dirs))
+    elif neutron_data_group_dirs:
+        problem_groups['neutron'] = get_data_groups(neutron_data_group_dirs)
 
-    if muon_data_group_dir:
-        problem_blocks.extend(get_data_groups(muon_data_group_dir))
+    elif muon_data_group_dir:
+        problem_groups['muon'] = get_data_groups(muon_data_group_dir)
 
-
-    prob_results = [do_fitting_benchmark_group(block, minimizers, use_errors=use_errors) for
-                    block in problem_blocks]
+    for group_name in problem_groups:
+        prob_results = [do_fitting_benchmark_group(group_name, problem_block, minimizers, use_errors=use_errors) for
+                        problem_block in problem_groups[group_name]]
 
     probs, results = list(zip(*prob_results))
 
@@ -149,7 +149,7 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     return probs, results
 
 
-def do_fitting_benchmark_group(problem_files, minimizers, use_errors=True):
+def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors=True):
     """
     Applies minimizers to a group (collection) of test problems. For example the
     collection of all NIST problems
@@ -171,47 +171,31 @@ def do_fitting_benchmark_group(problem_files, minimizers, use_errors=True):
     previous_name="none"
 
     # Note the CUTEst problem are assumed to be expressed in NIST format
-    for prob_file in problem_files:
-        try:
+    if group_name in ['nist', 'cutest']:
+        for prob_file in problem_files:
             prob = iparsing.load_nist_fitting_problem_file(prob_file)
-        except (AttributeError, RuntimeError):
+
+            print("* Testing fitting for problem definition file {0}".format(prob_file))
+            print("* Testing fitting of problem {0}".format(prob.name))
+
+            results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
+            results_per_problem.extend(results_prob)
+
+    elif group_name in ['neutron']:
+        for prob_file in problem_files:
             prob = iparsing.load_neutron_data_fitting_problem_file(prob_file)
 
-        print("* Testing fitting for problem definition file {0}".format(prob_file))
-        print("* Testing fitting of problem {0}".format(prob.name))
+            print("* Testing fitting for problem definition file {0}".format(prob_file))
+            print("* Testing fitting of problem {0}".format(prob.name))
 
-        results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
-        results_per_problem.extend(results_prob)
-
+            results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
+            results_per_problem.extend(results_prob)
+    
+    else:
+        raise NameError("Please assign your problem group to a parser.")
+    
     return problems, results_per_problem
 
-
-def splitByString(name,min_length,loop=0,splitter=0):
-    """
-    A simple function for splitting via characters in a long string
-    @param name :: input string
-    @param min_length :: minimum length of a linestyle
-    @param loop :: number of time cycled through the split options
-    @param splitter :: index of which split pattern to use
-    @returns :: the split string
-    """
-    tmp = name[min_length:]
-    split_at=[";","+",","]
-    if splitter+1 >len(split_at):
-        if loop>3:
-            print ("failed ",name)
-            return "..."
-        else:
-            return splitByString(name,min_length,loop+1)
-    loc=tmp.find(split_at[splitter])+min_length
-    if loc ==-1+min_length or loc > min_length*2:
-        if len(tmp)>min_length:
-            return splitByString(name,min_length,loop,splitter+1)
-        return name
-    else:
-        tmp = splitByString(name[loc+1:],min_length,loop,splitter)
-        title=name[:loc+1]+"\n"+tmp
-        return title
 
 
 def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True,count=0,previous_name="none"):
@@ -400,6 +384,34 @@ def prepare_wks_cost_function(prob, use_errors):
         cost_function = 'Unweighted least squares'
 
     return wks, cost_function
+
+
+def splitByString(name,min_length,loop=0,splitter=0):
+    """
+    A simple function for splitting via characters in a long string
+    @param name :: input string
+    @param min_length :: minimum length of a linestyle
+    @param loop :: number of time cycled through the split options
+    @param splitter :: index of which split pattern to use
+    @returns :: the split string
+    """
+    tmp = name[min_length:]
+    split_at=[";","+",","]
+    if splitter+1 >len(split_at):
+        if loop>3:
+            print ("failed ",name)
+            return "..."
+        else:
+            return splitByString(name,min_length,loop+1)
+    loc=tmp.find(split_at[splitter])+min_length
+    if loc ==-1+min_length or loc > min_length*2:
+        if len(tmp)>min_length:
+            return splitByString(name,min_length,loop,splitter+1)
+        return name
+    else:
+        tmp = splitByString(name[loc+1:],min_length,loop,splitter)
+        title=name[:loc+1]+"\n"+tmp
+        return title
 
 
 def get_function_definitions(prob):
