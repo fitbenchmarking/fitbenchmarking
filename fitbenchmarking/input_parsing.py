@@ -134,9 +134,7 @@ def parse_nist_file_line_by_line(lines):
                 raise RuntimeError('Error parsing data line: {}'.format(line))
 
         else:
-            #
             ignored_lines += 1
-
             # print("unknown line in supposedly NIST test file, ignoring: {0}".format(line))
 
     print("%d lines were ignored in this problem file.\n"
