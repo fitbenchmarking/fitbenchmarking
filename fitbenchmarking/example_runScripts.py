@@ -1,6 +1,7 @@
 # script for running fit benchmarking and comparising the relative performance of local minimzers on
 # fit problems
 
+import os
 import fitting_benchmarking as fitbk
 import results_output as fitout
 
