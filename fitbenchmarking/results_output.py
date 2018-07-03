@@ -23,6 +23,7 @@ formats such as RST and plain text.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 
 from __future__ import (absolute_import, division, print_function)
+
 import numpy as np
 from docutils.core import publish_string
 import post_processing as postproc
