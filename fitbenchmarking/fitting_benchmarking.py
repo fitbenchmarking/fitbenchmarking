@@ -113,9 +113,7 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
     if group_name in ['nist', 'cutest']:
         for prob_file in problem_files:
             prob = iparsing.load_nist_fitting_problem_file(prob_file)
-
-            print(prob)
-            asdf
+            
             print("* Testing fitting for problem definition file {0}".format(prob_file))
             print("* Testing fitting of problem {0}".format(prob.name))
 
