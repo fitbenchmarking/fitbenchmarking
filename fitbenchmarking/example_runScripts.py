@@ -1,12 +1,12 @@
 # script for running fit benchmarking and comparising the relative performance of local minimzers on
 # fit problems
 
+import os
 import fitting_benchmarking as fitbk
 import results_output as fitout
 
-import os
 
-# Import mantid.simpleapi as msapi
+
 
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
               'Conjugate gradient (Polak-Ribiere imp.)',
