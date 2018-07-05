@@ -168,23 +168,25 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
                                                             minimizer=minimizer_name,
                                                             cost_function=cost_function)
             t_end = time.clock()
+
             print("*** with minimizer {0}, Status: {1}, chi2: {2}".format(minimizer_name, status, chi2))
-            print("   params: {0}, errors: {1}".format(params, errors))
-
-            def sum_of_squares(values):
-                return np.sum(np.square(values))
-
-            if fit_wks:
-                sum_err_sq = sum_of_squares(fit_wks.readY(2))
-                # print " output simulated values: {0}".format(fit_wks.readY(1))
-                if sum_err_sq <min_sum_err_sq:
-                    tmp=msapi.ConvertToPointData(fit_wks)
-                    best_fit=data(minimizer_name,tmp.readX(1),tmp.readY(1))
-                    min_sum_err_sq=sum_err_sq
-            else:
-                sum_err_sq = float("nan")
-                print(" WARNING: no output fit workspace")
-            print("sum sq: {0}".format(sum_err_sq))
+            
+            sum_err_sq = -1
+            if not status == 'failed':
+                print("   params: {0}, errors: {1}".format(params, errors))
+                def sum_of_squares(values):
+                    return np.sum(np.square(values))
+                if fit_wks:
+                    sum_err_sq = sum_of_squares(fit_wks.readY(2))
+                    # print " output simulated values: {0}".format(fit_wks.readY(1))
+                    if sum_err_sq <min_sum_err_sq:
+                        tmp=msapi.ConvertToPointData(fit_wks)
+                        best_fit=data(minimizer_name,tmp.readX(1),tmp.readY(1))
+                        min_sum_err_sq=sum_err_sq
+                else:
+                    sum_err_sq = float("nan")
+                    print(" WARNING: no output fit workspace")
+                print("sum sq: {0}".format(sum_err_sq))
 
             result = test_result.FittingTestResult()
             result.problem = prob
@@ -192,9 +194,9 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
             result.fit_chi2 = chi2
             result.params = params
             result.errors = errors
-            result.sum_err_sq = sum_err_sq
-            # If the fit has failed, also set the runtime to NaN
+            result.sum_err_sq = sum_err_sq if not sum_err_sq == -1 else np.nan
             result.runtime = t_end - t_start if not np.isnan(chi2) else np.nan
+
             print("Result object: {0}".format(result))
             results_problem_start.append(result)
 
@@ -222,6 +224,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
         else:
             count =1
             previous_name=prob.name
+        
         #fig.labels['y']="something "
         fig.labels['title']=prob.name[:-4]+" "+str(count)
         fig.title_size=10
@@ -289,22 +292,28 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function=
                                CostFunction=cost_function,
                                IgnoreInvalidData=ignore_invalid,
                                StartX=prob.start_x, EndX=prob.end_x)
-
+        
         calc_chi2 = msapi.CalculateChiSquared(Function=function,
                                               InputWorkspace=wks, IgnoreInvalidData=ignore_invalid)
 
-    except RuntimeError as rerr:
-        print("Warning, Fit probably failed. Going on. Error: {0}".format(str(rerr)))
-        
-    param_tbl = fit_result.OutputParameters
-    if param_tbl:
-        params = param_tbl.column(1)[:-1]
-        errors = param_tbl.column(2)[:-1]
-    else:
-        params = None
-        errors = None
+    except (RuntimeError, ValueError) as err:
+        buff = "Warning, fit probably failed. Going on. Error: " + str(err)
+        print(buff)
 
-    return fit_result.OutputStatus, fit_result.OutputChi2overDoF, fit_result.OutputWorkspace, params, errors
+
+    if fit_result is None:
+        return 'failed', np.nan, np.nan, np.nan, np.nan
+
+    else:        
+        param_tbl = fit_result.OutputParameters
+        if param_tbl:
+            params = param_tbl.column(1)[:-1]
+            errors = param_tbl.column(2)[:-1]
+        else:
+            params = None
+            errors = None
+
+        return fit_result.OutputStatus, fit_result.OutputChi2overDoF, fit_result.OutputWorkspace, params, errors
 
 
 def prepare_wks_cost_function(prob, use_errors):
