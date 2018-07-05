@@ -39,6 +39,7 @@ def calc_accuracy_runtime_tbls(results_per_test, minimizers):
     num_minimizers = len(minimizers)
     accuracy_tbl = np.zeros((num_tests, num_minimizers))
     time_tbl = np.zeros((num_tests, num_minimizers))
+    
     for test_idx in range(0, num_tests):
         for minimiz_idx in range(0, num_minimizers):
             accuracy_tbl[test_idx, minimiz_idx] = results_per_test[test_idx][minimiz_idx].sum_err_sq

@@ -11,7 +11,7 @@ import results_output as fitout
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
               'Conjugate gradient (Polak-Ribiere imp.)',
               'Levenberg-Marquardt', 'Levenberg-MarquardtMD',
-              'Simplex', 'SteepestDescent',
+              'Simplex','SteepestDescent',
               'Trust Region', 'Damped GaussNewton']
 
 group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
@@ -37,7 +37,7 @@ neutron_data_group_dirs = [os.path.join(base_problem_files_dir, 'Neutron_data')]
 muon_data_group_dir = [os.path.join(base_problem_files_dir, 'Muon_data')]
 
 # choice the data to run
-run_data = "nist"
+run_data = "neutron"
 
 if run_data == "neutron":
     problems, results_per_group = fitbk.do_fitting_benchmark(neutron_data_group_dirs=neutron_data_group_dirs,
@@ -61,7 +61,7 @@ for idx, group_results in enumerate(results_per_group):
         fitout.print_group_results_tables(minimizers, group_results, problems[idx],
                                           group_name=group_suffix_names[idx],
                                           use_errors=use_errors,
-                                          simple_text=True, rst=True, save_to_file=True, color_scale=color_scale)
+                                          simple_text=False, rst=True, save_to_file=True, color_scale=color_scale)
                                           
                                           
 header = '\n\n**************** OVERALL SUMMARY - ALL GROUPS ******** \n\n'

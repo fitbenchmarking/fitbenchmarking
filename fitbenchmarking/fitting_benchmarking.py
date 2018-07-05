@@ -182,9 +182,10 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
                     best_fit=data(minimizer_name,tmp.readX(1),tmp.readY(1))
                     min_sum_err_sq=sum_err_sq
             else:
-                sum_err_sq = float("inf")
+                sum_err_sq = float("nan")
                 print(" WARNING: no output fit workspace")
-            print("   sum sq: {0}".format(sum_err_sq))
+            print("sum sq: {0}".format(sum_err_sq))
+
             result = test_result.FittingTestResult()
             result.problem = prob
             result.fit_status = status
@@ -196,7 +197,9 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
             result.runtime = t_end - t_start if not np.isnan(chi2) else np.nan
             print("Result object: {0}".format(result))
             results_problem_start.append(result)
+
         results_fit_problem.append(results_problem_start)
+
         # make plots
         fig=plot()
         best_fit.markers=''
@@ -241,6 +244,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
         start_fig.labels['y']="Arbitrary units"
         title=user_func[27:-1]
         title=splitByString(title,30)
+
         # remove the extension (e.g. .nxs) if there is one
         run_ID = prob.name
         k=-1
@@ -252,6 +256,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
         start_fig.title_size=10
         fig.make_scatter_plot("Fit for "+run_ID+" "+str(count)+".pdf")
         start_fig.make_scatter_plot("start for "+run_ID+" "+str(count)+".pdf")
+
     return results_fit_problem
 
 
@@ -287,10 +292,10 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function=
 
         calc_chi2 = msapi.CalculateChiSquared(Function=function,
                                               InputWorkspace=wks, IgnoreInvalidData=ignore_invalid)
-        print("*** with minimizer {0}, calculated: chi2: {1}".format(minimizer, calc_chi2))
 
     except RuntimeError as rerr:
         print("Warning, Fit probably failed. Going on. Error: {0}".format(str(rerr)))
+        
     param_tbl = fit_result.OutputParameters
     if param_tbl:
         params = param_tbl.column(1)[:-1]
