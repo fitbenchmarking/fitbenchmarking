@@ -223,11 +223,16 @@ def load_neutron_data_fitting_problem_file(fname):
 
         entries = get_neutron_data_problem_entries(probf)
 
-        k = -1
+        # switch is used to find the last separator in the problem file path
+        # and set up the path for the data_files folder
+        # i.e truncates the path to ../Neutron_data
+        # and adds ../Neutron_data/data_files
+
+        sep_idx = -1
         prefix = ""
 
-        k = fname.rfind(os.sep)
-        if k != -1:
+        sep_idx = fname.rfind(os.sep)
+        if sep_idx != -1:
             prefix = os.path.join(fname[:k],"data_files")
 
         prob = test_problem.FittingTestProblem()

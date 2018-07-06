@@ -180,7 +180,6 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
 
             results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
             results_per_problem.extend(results_prob)
-
     elif group_name in ['neutron']:
         for prob_file in problem_files:
             prob = iparsing.load_neutron_data_fitting_problem_file(prob_file)

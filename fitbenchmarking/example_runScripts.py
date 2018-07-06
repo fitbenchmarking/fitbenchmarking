@@ -5,9 +5,6 @@ import os
 import fitting_benchmarking as fitbk
 import results_output as fitout
 
-
-
-
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
               'Conjugate gradient (Polak-Ribiere imp.)',
               'Levenberg-Marquardt', 'Levenberg-MarquardtMD',
