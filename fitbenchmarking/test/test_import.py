@@ -13,34 +13,33 @@ from fitting_benchmarking import get_data_groups
 
 class GetProblemFilesTest(unittest.TestCase):
 
-	def basePath(self):
-		return 'arbitrary_path' + os.sep + 'fitbenchmarking' + os.sep + 'benchmark_problems' + os.sep
+    def basePath(self):
+        return 'arbitrary_path' + os.sep + 'fitbenchmarking' + os.sep + 'benchmark_problems' + os.sep
 
-	def test_get_nist_problem_files(self):
+    def test_get_nist_problem_files(self):
+        base_path_nist = self.basePath()
+        nist_problems = [['Misra1a.dat', 'Chwirut2.dat', 'Chwirut1.dat', 'Lanczos3.dat',
+                          'Gauss1.dat', 'Gauss2.dat', 'DanWood.dat', 'Misra1b.dat'],
+                          ['Kirby2.dat', 'Hahn1.dat','MGH17.dat', 'Lanczos1.dat', 'Lanczos2.dat', 
+                          'Gauss3.dat','Misra1c.dat', 'Misra1d.dat','ENSO.dat'], 
+                          ['MGH09.dat', 'Thurber.dat', 'BoxBOD.dat', 'Rat42.dat',
+                          'MGH10.dat', 'Eckerle4.dat', 'Rat43.dat', 'Bennett5.dat']]
 
-            base_path_nist = self.basePath()
-            nist_problems = [['Misra1a.dat', 'Chwirut2.dat', 'Chwirut1.dat', 'Lanczos3.dat',
-                              'Gauss1.dat', 'Gauss2.dat', 'DanWood.dat', 'Misra1b.dat'],
-                             ['Kirby2.dat', 'Hahn1.dat','MGH17.dat', 'Lanczos1.dat', 'Lanczos2.dat', 
-                              'Gauss3.dat','Misra1c.dat', 'Misra1d.dat','ENSO.dat'], 
-                             ['MGH09.dat', 'Thurber.dat', 'BoxBOD.dat', 'Rat42.dat',
-                              'MGH10.dat', 'Eckerle4.dat', 'Rat43.dat', 'Bennett5.dat']]
-
-            paths_to_nist_problems = []                  
+        paths_to_nist_problems = []                  
         for nist_level_group in nist_problems:
-        	paths_to_level_group = [base_path_nist + nist_prob_name for nist_prob_name in nist_level_group]
-        	paths_to_nist_problems.append(paths_to_level_group)
+            paths_to_level_group = [base_path_nist + nist_prob_name for nist_prob_name in nist_level_group]
+            paths_to_nist_problems.append(paths_to_level_group)
 
         self.assertListEqual(get_nist_problem_files(base_path_nist), paths_to_nist_problems)
 
     def test_get_nist_problem_files_fail_empty_arrays(self):
 
-    	base_path_nist = self.basePath()
-    	self.assertListEqual(get_nist_problem_files(base_path_nist), [[],[],[]])
+        base_path_nist = self.basePath()
+        self.assertListEqual(get_nist_problem_files(base_path_nist), [[],[],[]])
 
     def test_get_data_groups(self):
     	
-    	base_path_neutron = self.basePath()
+    	base_path_neutron = '..' + os.sep + '..' + os.sep + 'benchmark_problems' + os.sep + 'Neutron_data'
     	neutron_problems = [['ENGINX193749_calibration_peak19.txt', 'ENGINX193749_calibration_peak20.txt',
 							 'ENGINX193749_calibration_peak23.txt', 'ENGINX193749_calibration_peak5.txt',
 							 'ENGINX193749_calibration_peak6.txt', 
@@ -53,7 +52,7 @@ class GetProblemFilesTest(unittest.TestCase):
 							 'WISH17701_peak7.txt', 'WISH17701_peak8.txt',
 							 'WISH17701_peak9.txt']]
 
-        paths_to_neutron_problems = []                  
+        paths_to_neutron_problems = []
     	for neutron_level_group in neutron_problems:
     		paths_to_level_group = [base_path_neutron + neutron_prob_name for neutron_prob_name in neutron_level_group]
     		paths_to_neutron_problems.append(paths_to_level_group)
