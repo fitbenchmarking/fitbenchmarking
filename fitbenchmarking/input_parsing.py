@@ -227,7 +227,6 @@ def load_neutron_data_fitting_problem_file(fname):
         # and set up the path for the data_files folder
         # i.e truncates the path to ../Neutron_data
         # and adds ../Neutron_data/data_files
-        # THE WAY THE DATA FILES PATH IS OBTAINED SHOULD CHANGE IN THE NEAR FUTURE
 
         sep_idx = -1
         prefix = ""
