@@ -126,7 +126,6 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     problem_groups = {}
 
     if nist_group_dir:
-<<<<<<< HEAD
         problem_groups['nist'] = get_nist_problem_files(nist_group_dir)
 
     elif cutest_group_dir:
@@ -141,22 +140,6 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     for group_name in problem_groups:
         prob_results = [do_fitting_benchmark_group(group_name, problem_block, minimizers, use_errors=use_errors) for
                         problem_block in problem_groups[group_name]]
-=======
-        problem_blocks.extend(get_nist_problem_files(nist_group_dir))
-
-    if cutest_group_dir:
-        problem_blocks.extend([get_cutest_problem_files(cutest_group_dir)])
-
-    if neutron_data_group_dirs:
-        problem_blocks.extend(get_data_groups(neutron_data_group_dirs))
-
-    if muon_data_group_dir:
-        problem_blocks.extend(get_data_groups(muon_data_group_dir))
-
-
-    prob_results = [do_fitting_benchmark_group(block, minimizers, use_errors=use_errors) for
-                    block in problem_blocks]
->>>>>>> 14_fileBeingCropped
 
     probs, results = list(zip(*prob_results))
 
@@ -188,7 +171,6 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
     previous_name="none"
 
     # Note the CUTEst problem are assumed to be expressed in NIST format
-<<<<<<< HEAD
     if group_name in ['nist', 'cutest']:
         for prob_file in problem_files:
             prob = iparsing.load_nist_fitting_problem_file(prob_file)
