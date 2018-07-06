@@ -126,17 +126,17 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     problem_blocks = []
 
     if nist_group_dir:
-        # get NIST problems grouped into blocks of problems, in blocks of increasing difficulty
         problem_blocks.extend(get_nist_problem_files(nist_group_dir))
 
     if cutest_group_dir:
-        # get CUTEet problems - just treated as one block of problems
         problem_blocks.extend([get_cutest_problem_files(cutest_group_dir)])
 
     if neutron_data_group_dirs:
         problem_blocks.extend(get_data_groups(neutron_data_group_dirs))
+
     if muon_data_group_dir:
         problem_blocks.extend(get_data_groups(muon_data_group_dir))
+
 
     prob_results = [do_fitting_benchmark_group(block, minimizers, use_errors=use_errors) for
                     block in problem_blocks]
@@ -169,9 +169,10 @@ def do_fitting_benchmark_group(problem_files, minimizers, use_errors=True):
     results_per_problem = []
     count =0
     previous_name="none"
+
+    # Note the CUTEst problem are assumed to be expressed in NIST format
     for prob_file in problem_files:
         try:
-            # Note the CUTEst problem are assumed to be expressed in NIST format
             prob = iparsing.load_nist_fitting_problem_file(prob_file)
         except (AttributeError, RuntimeError):
             prob = iparsing.load_neutron_data_fitting_problem_file(prob_file)
@@ -179,7 +180,7 @@ def do_fitting_benchmark_group(problem_files, minimizers, use_errors=True):
         print("* Testing fitting for problem definition file {0}".format(prob_file))
         print("* Testing fitting of problem {0}".format(prob.name))
 
-        results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors,count,previous_name)
+        results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
         results_per_problem.extend(results_prob)
 
     return problems, results_per_problem
@@ -473,7 +474,6 @@ def get_cutest_problem_files(search_dir):
 
 
 def get_data_groups(data_groups_dirs):
-
     problem_groups = []
     for grp_dir in data_groups_dirs:
         problem_groups.append(get_data_group_problem_files(grp_dir))
@@ -488,5 +488,9 @@ def get_data_group_problem_files(grp_dir):
     probs = glob.glob(search_str)
 
     probs.sort()
-    print ("Found test problem files: ", probs)
+
+    print ("Found test problem files:")
+    for problem in probs:
+        print(problem)
+    print("\n")
     return probs
