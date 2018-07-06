@@ -6,7 +6,6 @@ import results_output as fitout
 
 import os
 
-# Import mantid.simpleapi as msapi
 
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
               'Conjugate gradient (Polak-Ribiere imp.)',
