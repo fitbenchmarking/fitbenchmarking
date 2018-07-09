@@ -39,67 +39,6 @@ import test_result
 from plotHelper import *
 
 
-def run_all_with_or_without_errors(base_problem_files_dir, use_errors, minimizers,
-                                   group_names, group_suffix_names, color_scale, save_to_file=False):
-    """
-    Run all benchmark problems available, with/without using weights in the cost
-    function. This is just a convenience function meant to be used by system/unit tests, or other scripts
-
-    ALL means: NIST + CUTEST + any fitting problems against observed Neutron data (+ any other
-    which may be added in the future)
-
-    At this point in time it is assumed that the problem files are in store relative to
-    a base_problem_files_dir as follows:
-
-        CUTEst/
-        NIST_nonlinear_regression/
-        Neutron_data/
-
-    Be warned this function can be verbose.
-
-    @param base_problem_files_dir :: base directory path of all the benchmark problems
-    @param use_errors :: whether to use observational errors as weights in the cost function
-    @param minimizers :: list of minimizers to test
-    @param group_names :: names for display purposes
-    @param group_suffix_names :: group names to use as suffixes, for example in file names
-    @param color_scale :: list with pairs of threshold value - color, to produce color
-    @param save_to_file :: whether to save the table outputs to files following specific naming conventions
-    """
-
-    # Assume the benchmark problems are stores as follows
-    nist_group_dir = os.path.join(base_problem_files_dir, 'NIST_nonlinear_regression')
-    cutest_group_dir = os.path.join(base_problem_files_dir, 'CUTEst')
-    neutron_data_group_dirs = [os.path.join(base_problem_files_dir, 'Neutron_data')]
-
-    problems, results_per_group = do_fitting_benchmark(nist_group_dir=nist_group_dir,
-                                                       cutest_group_dir=cutest_group_dir,
-                                                       neutron_data_group_dirs=neutron_data_group_dirs,
-                                                       minimizers=minimizers, use_errors=use_errors)
-
-    # Results for every test problem in each group
-    for idx, group_results in enumerate(results_per_group):
-        print("\n\n")
-        print("********************************************************")
-        print("**************** RESULTS FOR GROUP {0}, {1} ************".format(idx+1,
-                                                                                group_names[idx]))
-        print("********************************************************")
-        fitout.print_group_results_tables(minimizers, group_results, problems[idx],
-                                          group_name=group_suffix_names[idx],
-                                          use_errors=use_errors,
-                                          simple_text=True, rst=True, save_to_file=save_to_file,
-                                          color_scale=color_scale)
-
-    # Results aggregated (median) by group (NIST, Neutron data, CUTEst, etc.)
-    header = '\n\n**************** OVERALL SUMMARY - ALL GROUPS ******** \n\n'
-    print(header)
-    fitout.print_overall_results_table(minimizers, results_per_group, problems, group_names,
-                                       use_errors=use_errors, save_to_file=save_to_file)
-
-    # Flush to reduce mix-up with system tests/runner output
-    import sys
-    sys.stdout.flush()
-
-
 def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_data_group_dirs=None,
                          muon_data_group_dir=None, minimizers=None, use_errors=True):
     """
@@ -167,14 +106,14 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
 
     problems = []
     results_per_problem = []
-    count =0
+    count = 0
     previous_name="none"
 
     # Note the CUTEst problem are assumed to be expressed in NIST format
     if group_name in ['nist', 'cutest']:
         for prob_file in problem_files:
             prob = iparsing.load_nist_fitting_problem_file(prob_file)
-
+            
             print("* Testing fitting for problem definition file {0}".format(prob_file))
             print("* Testing fitting of problem {0}".format(prob.name))
 
@@ -197,7 +136,7 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
 
 
 
-def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True,count=0,previous_name="none"):
+def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0, previous_name="none"):
     """
     One problem with potentially several starting points, returns a list (start points) of
     lists (minimizers).
