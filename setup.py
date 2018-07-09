@@ -6,4 +6,5 @@ setup(name='fitbenchmarking',
       url='http://github.com/mantidproject/fitbenchmarking',
       license='GPL-3.0',
       packages=find_packages(),
+      install_requires=['docutils'],
       zip_safe=False)
