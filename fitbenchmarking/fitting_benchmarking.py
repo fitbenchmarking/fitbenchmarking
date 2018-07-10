@@ -113,7 +113,7 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
     if group_name in ['nist', 'cutest']:
         for prob_file in problem_files:
             prob = iparsing.load_nist_fitting_problem_file(prob_file)
-            
+
             print("* Testing fitting for problem definition file {0}".format(prob_file))
             print("* Testing fitting of problem {0}".format(prob.name))
 
@@ -129,10 +129,10 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
 
             results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
             results_per_problem.extend(results_prob)
-    
+
     else:
         raise NameError("Please assign your problem group to a parser.")
-    
+
     return problems, results_per_problem
 
 
@@ -170,12 +170,10 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
             t_end = time.clock()
 
             print("*** with minimizer {0}, Status: {1}, chi2: {2}".format(minimizer_name, status, chi2))
-            
+
             sum_err_sq = -1
             if not status == 'failed':
                 print("   params: {0}, errors: {1}".format(params, errors))
-                def sum_of_squares(values):
-                    return np.sum(np.square(values))
                 if fit_wks:
                     sum_err_sq = sum_of_squares(fit_wks.readY(2))
                     # print " output simulated values: {0}".format(fit_wks.readY(1))
@@ -224,7 +222,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
         else:
             count =1
             previous_name=prob.name
-        
+
         #fig.labels['y']="something "
         fig.labels['title']=prob.name[:-4]+" "+str(count)
         fig.title_size=10
@@ -292,7 +290,7 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function=
                                CostFunction=cost_function,
                                IgnoreInvalidData=ignore_invalid,
                                StartX=prob.start_x, EndX=prob.end_x)
-        
+
         calc_chi2 = msapi.CalculateChiSquared(Function=function,
                                               InputWorkspace=wks, IgnoreInvalidData=ignore_invalid)
 
@@ -304,7 +302,7 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function=
     if fit_result is None:
         return 'failed', np.nan, np.nan, np.nan, np.nan
 
-    else:        
+    else:
         param_tbl = fit_result.OutputParameters
         if param_tbl:
             params = param_tbl.column(1)[:-1]
@@ -337,6 +335,10 @@ def prepare_wks_cost_function(prob, use_errors):
         cost_function = 'Unweighted least squares'
 
     return wks, cost_function
+
+
+def sum_of_squares(values):
+    return np.sum(np.square(values))
 
 
 def splitByString(name,min_length,loop=0,splitter=0):
