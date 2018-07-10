@@ -3,7 +3,10 @@ from __future__ import (absolute_import, division, print_function)
 import unittest
 import os
 import mantid.simpleapi as msapi
+<<<<<<< HEAD
 import numpy as np
+=======
+>>>>>>> 8598a1e1e22908a53517a956083fbc3f535d3327
 
 # DELETE RELATIVE PATH WHEN GIT TESTS ARE ENABLED
 import sys
@@ -126,7 +129,9 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         return prob
 
 
+
     def test_do_fitting_benchmark_one_problem_neutron(self):
+
 
 
     def test_run_fit(self):
