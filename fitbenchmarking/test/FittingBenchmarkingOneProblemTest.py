@@ -3,6 +3,7 @@ from __future__ import (absolute_import, division, print_function)
 import unittest
 import os
 import mantid.simpleapi as msapi
+import numpy as np
 
 # DELETE RELATIVE PATH WHEN GIT TESTS ARE ENABLED
 import sys
@@ -125,7 +126,7 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         return prob
 
 
-    def test_do_fitting_benchmarking_one_problem(self):
+    def test_do_fitting_benchmark_one_problem_neutron(self):
 
 
     def test_run_fit(self):
@@ -136,7 +137,7 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         fit_wks_actual_path = os.path.join(mock_problems_dir, 'data_files',
                                            'fitWorkspace_enginxPeak19.nxs')
         status_actual = 'success'
-        chi2_actual = 0.792431386592
+        chi2_actual = 0.7924313865920499
         fit_wks_actual = msapi.Load(fit_wks_actual_path)
         params_actual = [-39.66490989383394, 0.001709322146077212, 620.2994253222543,
                          4.926500627722128, 0.030925377035352437, 24004.503970283724,
@@ -184,6 +185,19 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
                          msg=("Failed at use_errors = True and "
                               "obs_errors is a numpy array"))
 
+        # Test when use_errors is False
+        use_errors = False
+        wks_actual = msapi.CreateWorkspace(DataX=prob.data_pattern_in,
+                                           DataY=prob.data_pattern_out)
+        cost_function_actual = 'Unweighted least squares'
+
+        wks, cost_function = prepare_wks_cost_function(prob, use_errors)
+
+        result, messages = msapi.CompareWorkspaces(wks, wks_actual)
+        self.assertTrue(result, msg="Failed at use_errors = False")
+        self.assertEqual(cost_function, cost_function_actual,
+                         msg="Failed at use_errors = False")
+
         # Test when use_errors is True and obs_errors is not a numpy arrray
         use_errors = True
         prob.data_pattern_obs_errors = 0
@@ -203,46 +217,27 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
                               "obs_errors is not a numpy array"))
 
 
-        # Test when use_errors is False
-        use_errors = False
-        wks_actual = msapi.CreateWorkspace(DataX=prob.data_pattern_in,
-                                           DataY=prob.data_pattern_out)
-        cost_function_actual = 'Unweighted least squares'
-
-        wks, cost_function = prepare_wks_cost_function(prob, use_errors)
-
-        result, messages = msapi.CompareWorkspaces(wks, wks_actual)
-        self.assertTrue(result, msg="Failed at use_errors = False")
-        self.assertEqual(cost_function, cost_function_actual,
-                         msg="Failed at use_errors = False")
-
-
     def test_get_function_definitions(self):
 
         prob = self.NeutronProblemMock()
-        function_defs_actual = prob.equation
+        function_defs_actual = [prob.equation]
 
         function_defs = get_function_definitions(prob)
 
-        self.assertEqual(function_defs, function_defs_actual,
-                          msg="Failed when prob.starting_values is none")
+        self.assertListEqual(function_defs, function_defs_actual,
+                             msg="Failed when prob.starting_values is none")
 
         prob = self.NISTproblem()
-        function_defs_actual = ["name=UserFunction, Formula=b1*(1-exp(-b2*x)),"
+        function_defs_actual = ["name=UserFunction, Formula=b1*(1-exp(-b2*x)), "
                                 "b1=500.0,b2=0.0001,",
-                                "name=UserFunction, Formula=b1*(1-exp(-b2*x)),"
+                                "name=UserFunction, Formula=b1*(1-exp(-b2*x)), "
                                 "b1=250.0,b2=0.0005," ]
 
         function_defs = get_function_definitions(prob)
 
-        self.assertEqual(function_defs, function_defs_actual,
-                          msg="Failed when prob.starting_values is something")
+        self.assertListEqual(function_defs, function_defs_actual,
+                             msg="Failed when prob.starting_values is something")
 
 
-    def test_SplitByString(self):
-
-        #Function is kind of unreadable, come back to it later
-        mock_strings = ["b1*(1-exp(-b2*x)), b1=500.0, b2=0.0001",
-                        "b1*(1-exp(-b2*x)), b1=250.0, b2=0.0005" ]
-
-        splitByString(mock_strings, 30)
+if __name__ == "__main__":
+    unittest.main()
