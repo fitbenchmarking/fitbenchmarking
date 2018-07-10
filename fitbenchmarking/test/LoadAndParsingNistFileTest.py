@@ -99,6 +99,7 @@ class LoadAndParseNistFiles(unittest.TestCase):
     						 msg="Test failed comparing data pattern content")
     	self.assertEqual(residual_sum_sq, residual_sum_sq_actual,
     					 msg="Test failed when comparing residual sums")
+
     	for idx in range(0, len(starting_values_actual)):
     		self.assertEqual(starting_values_actual[idx][0],
     						 starting_values[idx][0],
@@ -125,6 +126,7 @@ class LoadAndParseNistFiles(unittest.TestCase):
     						 msg="Test failed comparing data pattern content")
     	self.assertEqual(residual_sum_sq, residual_sum_sq_actual,
     					 msg="Test failed when comparing residual sums")
+
     	for idx in range(0, len(starting_values_actual)):
     		self.assertEqual(starting_values_actual[idx][0],
     						 starting_values[idx][0],
