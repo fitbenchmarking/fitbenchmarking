@@ -60,10 +60,6 @@ for idx, group_results in enumerate(results_per_group):
                                           use_errors=use_errors,
                                           simple_text=False, rst=True, save_to_file=True, color_scale=color_scale)
 
-
-
-
->>>>>>> Fixed minor issue in input_parsing, fixed formatting in LoadAndParsingNistFileTest and added neutron load and parsing unit tests
 header = '\n\n**************** OVERALL SUMMARY - ALL GROUPS ******** \n\n'
 print(header)
 fitout.print_overall_results_table(minimizers, results_per_group, problems, group_names,
