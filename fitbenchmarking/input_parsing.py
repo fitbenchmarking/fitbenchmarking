@@ -246,7 +246,7 @@ def load_neutron_data_fitting_problem_file(fname):
 
         sep_idx = fname.rfind(os.sep)
         if sep_idx != -1:
-            prefix = os.path.join(fname[:k],"data_files")
+            prefix = os.path.join(fname[:sep_idx],"data_files")
 
         prob = test_problem.FittingTestProblem()
         get_fitting_neutron_data(os.path.join(prefix,entries['input_file']), prob)
