@@ -141,16 +141,12 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
 
     def test_do_fitting_benchmark_one_problem_neutron(self):
 
-        reference_fit_wks_path = self.NeutronProblemReferenceFitWks()
         prob = self.NeutronProblem()
-        minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
-                      'Conjugate gradient (Polak-Ribiere imp.)',
-                      'Levenberg-Marquardt', 'Levenberg-MarquardtMD',
-                      'Simplex','SteepestDescent',
-                      'Trust Region', 'Damped GaussNewton']
+        minimizers = ['Levenberg-Marquardt']
         use_errors = True
         count = 0
         previous_name = "none"
+        reference_fit_wks_path = self.NeutronProblemReferenceFitWks()
         fit_wks_actual = msapi.Load(reference_fit_wks_path)
 
         result_actual = test_result.FittingTestResult()
@@ -167,13 +163,22 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
 
         result = do_fitting_benchmark_one_problem(prob, minimizers, use_errors,
                                                    count, previous_name)
+        result = result[0][0]
+        self.assertEqual(result_actual.problem, result.problem)
+        self.assertEqual(result_actual.fit_status, result.fit_status)
+        self.assertEqual(result_actual.fit_chi2, result.fit_chi2)
+        self.assertEqual(result_actual.sum_err_sq, result.sum_err_sq)
+        self.assertListEqual(result_actual.params, result.params)
+        self.assertListEqual(result_actual.errors, result.errors)
 
-        self.assertEqual(result_actual.problem, result[0].problem)
-        self.assertEqual(result_actual.fit_status, result[0].fit_status)
-        self.assertEqual(result_actual.fit_chi2, result[0].fit_chi2)
-        self.assertEqual(result_actual.sum_err_sq, result[0].sum_err_sq)
-        self.assertListEqual(result_actual.params, result[0].params)
-        self.assertListEqual(result_actual.errors, result[0].errors)
+
+    def test_do_fitting_benchmark_one_problem_nist(self):
+
+        prob = self.NISTproblem()
+        minimizers = ['Levenberg-Marquardt']
+        use_errors = True
+        count = 0
+        previous_name = "none"
 
 
     def test_run_fit(self):
@@ -242,13 +247,14 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
                          msg="Failed at use_errors = False")
 
         # Test when use_errors is True and obs_errors is not a numpy arrray
+        prob = self.NISTproblem()
+
         use_errors = True
-        prob.data_pattern_obs_errors = 0
         data_e = np.sqrt(prob.data_pattern_in)
         wks_actual = msapi.CreateWorkspace(DataX=prob.data_pattern_in,
                                            DataY=prob.data_pattern_out,
                                            DataE=data_e)
-        cost_function_actual = 'Least Squares'
+        cost_function_actual = 'Least squares'
 
         wks, cost_function = prepare_wks_cost_function(prob, use_errors)
 
