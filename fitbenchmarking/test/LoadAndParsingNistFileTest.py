@@ -20,7 +20,7 @@ import test_problem
 
 class LoadAndParseNistFiles(unittest.TestCase):
 
-    def nistPorblemDirPath(self):
+    def nistProblemDirPath(self):
         ''' Helper function that returns the directory path ../NIST_nonlinear_regression/ '''
 
         current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -34,7 +34,7 @@ class LoadAndParseNistFiles(unittest.TestCase):
     def Misra1aLines(self):
         ''' Helper function that returns the lines of problem file Misra1a.dat '''
 
-        nist_problems_path = self.nistPorblemDirPath()
+        nist_problems_path = self.nistProblemDirPath()
         problem_filename = os.path.join(nist_problems_path , 'Misra1a.dat')
         print(problem_filename)
         with open(problem_filename) as spec_file:
@@ -45,7 +45,7 @@ class LoadAndParseNistFiles(unittest.TestCase):
     def Bennett5Lines(self):
         ''' Helper function that returns the lines of problem file Bennett5.dat '''
 
-    	nist_problems_path = self.nistPorblemDirPath()
+    	nist_problems_path = self.nistProblemDirPath()
     	problem_filename = os.path.join(nist_problems_path , 'Bennett5.dat')
         print(problem_filename)
         with open(problem_filename) as spec_file:
@@ -92,20 +92,20 @@ class LoadAndParseNistFiles(unittest.TestCase):
     	 residual_sum_sq_actual, data_pattern_text_actual) = self.ResultsMisra1a()
 
     	self.assertEqual(equation_text, equation_text_actual,
-                         msg = "Test failed when comparing equations")
+                         msg="Test failed when comparing equations")
     	self.assertItemsEqual(data_pattern_text, data_pattern_text_actual,
-    						  msg = "Test failed comparing data pattern length")
+    						  msg="Test failed comparing data pattern length")
     	self.assertListEqual(data_pattern_text, data_pattern_text_actual,
-    						 msg = "Test failed comparing data pattern content")
+    						 msg="Test failed comparing data pattern content")
     	self.assertEqual(residual_sum_sq, residual_sum_sq_actual,
-    					 msg = "Test failed when comparing residual sums")
+    					 msg="Test failed when comparing residual sums")
     	for idx in range(0, len(starting_values_actual)):
     		self.assertEqual(starting_values_actual[idx][0],
     						 starting_values[idx][0],
-    						 msg = "Test failed at starting values")
+    						 msg="Test failed at starting values")
     		self.assertListEqual(starting_values_actual[idx][1],
     			                 starting_values_actual[idx][1],
-    			                 msg = "Test failed at starting values")
+    			                 msg="Test failed at starting values")
 
 
     def test_parse_nist_file_line_by_line_fail_wrong_file(self):
@@ -118,20 +118,20 @@ class LoadAndParseNistFiles(unittest.TestCase):
     	 residual_sum_sq_actual, data_pattern_text_actual) = self.ResultsMisra1a()
 
     	self.assertEqual(equation_text, equation_text_actual,
-    					 msg = "Test failed when comparing equations")
+    					 msg="Test failed when comparing equations")
     	self.assertItemsEqual(data_pattern_text, data_pattern_text_actual,
-    						  msg = "Test failed comparing data pattern length")
+    						  msg="Test failed comparing data pattern length")
     	self.assertListEqual(data_pattern_text, data_pattern_text_actual,
-    						 msg = "Test failed comparing data pattern content")
+    						 msg="Test failed comparing data pattern content")
     	self.assertEqual(residual_sum_sq, residual_sum_sq_actual,
-    					 msg = "Test failed when comparing residual sums")
+    					 msg="Test failed when comparing residual sums")
     	for idx in range(0, len(starting_values_actual)):
     		self.assertEqual(starting_values_actual[idx][0],
     						 starting_values[idx][0],
-    						 msg = "Test failed at starting values")
+    						 msg="Test failed at starting values")
     		self.assertListEqual(starting_values_actual[idx][1],
     			                 starting_values_actual[idx][1],
-    			                 msg = "Test failed at starting values")
+    			                 msg="Test failed at starting values")
 
 
     def test_parse_starting_values(self):
@@ -200,7 +200,7 @@ class LoadAndParseNistFiles(unittest.TestCase):
         parsed_eq_actual = 'b1*(1-exp(-b2*x))'
 
         self.assertEqual(parsed_eq, parsed_eq_actual,
-                         msg = "Test failed at parsing equations normal")
+                         msg="Test failed at parsing equations normal")
 
         self.assertRaises(RuntimeError, parse_equation, 'lol = b1*(1-exp(-b2*x))')
 
@@ -235,29 +235,29 @@ class LoadAndParseNistFiles(unittest.TestCase):
         prob_actual.data_pattern_out = data_pattern_actual[:, 0]
         prob_actual.ref_residual_sum_sq = 1.2455138894E-01
 
-        base_path = self.nistPorblemDirPath()
+        base_path = self.nistProblemDirPath()
         path_to_misra1a = os.path.join(base_path,'Misra1a.dat')
         with open(path_to_misra1a) as spec_file:
             prob = parse_nist_file(spec_file)
 
         self.assertEqual(prob.name, prob_actual.name,
-                         msg = "Fail at name")
+                         msg="Fail at name")
         self.assertEqual(prob.linked_name, prob_actual.linked_name,
-                         msg = "Fail at linked name")
+                         msg="Fail at linked name")
         self.assertEqual(prob.equation, prob_actual.equation,
-                         msg = "Fail at equation")
+                         msg="Fail at equation")
         self.assertEqual(prob.starting_values, prob_actual.starting_values,
-                         msg = "Fail at starting values")
+                         msg="Fail at starting values")
         test_result = np.testing.assert_array_equal(prob_actual.data_pattern_in,
                                                         prob.data_pattern_in)
-        self.assertTrue(test_result is None, msg = "Fail at data pattern in")
+        self.assertTrue(test_result is None, msg="Fail at data pattern in")
 
         test_result = np.testing.assert_array_equal(prob_actual.data_pattern_out,
                                                         prob.data_pattern_out)
-        self.assertTrue(test_result is None, msg = "Fail at data pattern out")
+        self.assertTrue(test_result is None, msg="Fail at data pattern out")
 
         self.assertEqual(prob.ref_residual_sum_sq, prob_actual.ref_residual_sum_sq,
-                         msg = "Fail at ref residual sum sq")
+                         msg="Fail at ref residual sum sq")
 
 
 if __name__ == "__main__":
