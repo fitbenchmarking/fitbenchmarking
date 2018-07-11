@@ -104,7 +104,7 @@ def parse_nist_file_line_by_line(lines):
             while (not re.match(r'\s*y\s*=(.+)', lines[idx])
                    and not re.match(r'\s*log\[y\]\s*=(.+)', lines[idx]))\
                    and idx < len(lines):  # [\s*\+\s*e]
-                
+
                 idx += 1
 
             # Next non-empty lines are assumed to continue the equation
@@ -114,7 +114,7 @@ def parse_nist_file_line_by_line(lines):
                 idx += 1
 
         elif 'Starting values' in line or 'Starting Values' in line:
-            # There is 1 empty line and one heading line 
+            # There is 1 empty line and one heading line
             # before the actual values
             idx += 2
             starting_values = parse_starting_values(lines[idx:])
@@ -246,7 +246,7 @@ def load_neutron_data_fitting_problem_file(fname):
 
         sep_idx = fname.rfind(os.sep)
         if sep_idx != -1:
-            prefix = os.path.join(fname[:k],"data_files")
+            prefix = os.path.join(fname[:sep_idx],"data_files")
 
         prob = test_problem.FittingTestProblem()
         get_fitting_neutron_data(os.path.join(prefix,entries['input_file']), prob)
