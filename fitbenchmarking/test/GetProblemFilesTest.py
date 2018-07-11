@@ -11,7 +11,6 @@ sys.path.insert(0, parent_dir)
 
 from fitting_benchmarking import get_nist_problem_files
 from fitting_benchmarking import get_data_groups
-from fitting_benchmarking import get_data_group_problem_files
 # from fitting_benchmarking import get_muon_problem_files
 # from fitting_benchmarking import get_cutest_problem_files
 
@@ -50,73 +49,37 @@ class GetProblemFilesTest(unittest.TestCase):
         self.assertListEqual(get_nist_problem_files(base_path_nist), [[],[],[]])
 
     def test_get_data_groups(self):
-
         base_path_neutron = [os.path.join(self.basePath(),'Neutron_data')]
 
-      	neutron_problems = [['ENGINX193749_calibration_peak19.txt',
+    	neutron_problems = [['ENGINX193749_calibration_peak19.txt',
                              'ENGINX193749_calibration_peak20.txt',
-  							             'ENGINX193749_calibration_peak23.txt',
+							 'ENGINX193749_calibration_peak23.txt',
                              'ENGINX193749_calibration_peak5.txt',
-  							             'ENGINX193749_calibration_peak6.txt',
-  							             'ENGINX236516_vanadium_bank1_10brk.txt',
+							 'ENGINX193749_calibration_peak6.txt',
+							 'ENGINX236516_vanadium_bank1_10brk.txt',
                              'ENGINX236516_vanadium_bank1_20brk.txt',
-  							             'EVS14188-90_Gaussian_peaks_1.txt',
+							 'EVS14188-90_Gaussian_peaks_1.txt',
                              'EVS14188-90_Gaussian_peaks_2.txt',
-  							             'GEMpeak1.txt',
-  							             'WISH17701_peak1.txt', 'WISH17701_peak2.txt',
-  							             'WISH17701_peak3.txt', 'WISH17701_peak4.txt',
-  							             'WISH17701_peak5.txt', 'WISH17701_peak6.txt',
-  							             'WISH17701_peak7.txt', 'WISH17701_peak8.txt',
-  							             'WISH17701_peak9.txt']]
+							 'GEMpeak1.txt',
+							 'WISH17701_peak1.txt', 'WISH17701_peak2.txt',
+							 'WISH17701_peak3.txt', 'WISH17701_peak4.txt',
+							 'WISH17701_peak5.txt', 'WISH17701_peak6.txt',
+							 'WISH17701_peak7.txt', 'WISH17701_peak8.txt',
+							 'WISH17701_peak9.txt']]
 
         paths_to_neutron_problems = []
-      	for neutron_level_group in neutron_problems:
-            paths_to_level_group = [os.path.join(base_path_neutron[0],neutron_prob_name)
+    	for neutron_level_group in neutron_problems:
+    		paths_to_level_group = [os.path.join(base_path_neutron[0],neutron_prob_name)
                                     for neutron_prob_name in neutron_level_group]
-            paths_to_neutron_problems.append(paths_to_level_group)
+    		paths_to_neutron_problems.append(paths_to_level_group)
 
         self.assertListEqual(get_data_groups(base_path_neutron)[0],
-                             paths_to_neutron_problems[0])
+                                             paths_to_neutron_problems[0])
 
     def test_get_data_groups_fail_empty_arrays(self):
 
         base_path_neutron = [os.path.join(self.basePath(),'Neutron_data')]
-        self.assertListEqual(get_data_groups(base_path_neutron)[0], [])
-
-    def test_get_data_group_problem_files(self):
-
-        base_path_neutron = os.path.join(self.basePath(),'Neutron_data')
-
-        neutron_problems = ['ENGINX193749_calibration_peak19.txt',
-                            'ENGINX193749_calibration_peak20.txt',
-                            'ENGINX193749_calibration_peak23.txt',
-                            'ENGINX193749_calibration_peak5.txt',
-                            'ENGINX193749_calibration_peak6.txt',
-                            'ENGINX236516_vanadium_bank1_10brk.txt',
-                            'ENGINX236516_vanadium_bank1_20brk.txt',
-                            'EVS14188-90_Gaussian_peaks_1.txt',
-                            'EVS14188-90_Gaussian_peaks_2.txt',
-                            'GEMpeak1.txt',
-                            'WISH17701_peak1.txt', 'WISH17701_peak2.txt',
-                            'WISH17701_peak3.txt', 'WISH17701_peak4.txt',
-                            'WISH17701_peak5.txt', 'WISH17701_peak6.txt',
-                            'WISH17701_peak7.txt', 'WISH17701_peak8.txt',
-                            'WISH17701_peak9.txt']
-
-        paths_to_neutron_problems = []
-        for idx, problem in enumerate(neutron_problems):
-            paths_to_neutron_problems.append(os.path.join(base_path_neutron, problem))
-
-        self.assertListEqual(get_data_group_problem_files(base_path_neutron),
-                             paths_to_neutron_problems)
-
-
-    def test_get_data_group_problem_files_fail_empty_arrays(self):
-
-        base_path_neutron = os.path.join(self.basePath(),'Neutron_data')
-
-        self.assertListEqual(get_data_group_problem_files(base_path_neutron),
-                             [])
+    	self.assertListEqual(get_data_groups(base_path_neutron)[0], [])
 
 
 if __name__ == "__main__":
