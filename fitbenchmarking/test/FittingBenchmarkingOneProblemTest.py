@@ -69,6 +69,19 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         return prob
 
 
+    def NeutronProblemReferenceFitWks(self):
+        ''' The fit workspace obtained manually through mantidplot for the
+            neutron problem file ENGINX193749_calibration_peak19.txt with
+            the neutron data file ENGINX193749_calibration_spec651.nxs '''
+
+        # Obtained on mantid v3.12.1
+        mock_problems_dir = self.MockProblemsDir()
+        reference_fit_wks_path = os.path.join(mock_problems_dir, 'data_files',
+                                           'fitWorkspace_enginxPeak19.nxs')
+
+        return reference_fit_wks_path
+
+
     def NeutronProblemMock(self):
         ''' Sets up the problem object for the neutron problem file:
             ENGINX193749_calibration_peak19.txt with mock data entires'''
@@ -126,22 +139,49 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         return prob
 
 
-
-
     def test_do_fitting_benchmark_one_problem_neutron(self):
 
+        reference_fit_wks_path = self.NeutronProblemReferenceFitWks()
+        prob = self.NeutronProblem()
+        minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
+                      'Conjugate gradient (Polak-Ribiere imp.)',
+                      'Levenberg-Marquardt', 'Levenberg-MarquardtMD',
+                      'Simplex','SteepestDescent',
+                      'Trust Region', 'Damped GaussNewton']
+        use_errors = True
+        count = 0
+        previous_name = "none"
+        fit_wks_actual = msapi.Load(reference_fit_wks_path)
+
+        result_actual = test_result.FittingTestResult()
+        result_actual.problem = prob
+        result_actual.fit_status = 'success'
+        result_actual.fit_chi2 = 0.7924313865920499
+        result_actual.params = [-39.66490989383394, 0.001709322146077212, 620.2994253222543,
+                                4.926500627722128, 0.030925377035352437, 24004.503970283724,
+                                13.856560250253684]
+        result_actual.errors = [77.06614570436095, 0.003207694697161955, 109.8358663580242,
+                                204.44335838153586, 0.018928810783550146, 16.39950243454981,
+                                6.285009128709213]
+        result_actual.sum_err_sq = np.sum(np.square(fit_wks_actual.readY(2)))
+
+        result = do_fitting_benchmark_one_problem(prob, minimizers, use_errors,
+                                                   count, previous_name)
+
+        self.assertEqual(result_actual.problem, result[0].problem)
+        self.assertEqual(result_actual.fit_status, result[0].fit_status)
+        self.assertEqual(result_actual.fit_chi2, result[0].fit_chi2)
+        self.assertEqual(result_actual.sum_err_sq, result[0].sum_err_sq)
+        self.assertListEqual(result_actual.params, result[0].params)
+        self.assertListEqual(result_actual.errors, result[0].errors)
 
 
     def test_run_fit(self):
 
-        mock_problems_dir = self.MockProblemsDir()
-
-        # Obtained on mantid v3.12.1
-        fit_wks_actual_path = os.path.join(mock_problems_dir, 'data_files',
-                                           'fitWorkspace_enginxPeak19.nxs')
+        reference_fit_wks_path = self.NeutronProblemReferenceFitWks()
         status_actual = 'success'
         chi2_actual = 0.7924313865920499
-        fit_wks_actual = msapi.Load(fit_wks_actual_path)
+        fit_wks_actual = msapi.Load(reference_fit_wks_path)
         params_actual = [-39.66490989383394, 0.001709322146077212, 620.2994253222543,
                          4.926500627722128, 0.030925377035352437, 24004.503970283724,
                          13.856560250253684]

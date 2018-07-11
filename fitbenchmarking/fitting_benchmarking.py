@@ -173,13 +173,14 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
             sum_err_sq = -1
             if not status == 'failed':
                 print("   params: {0}, errors: {1}".format(params, errors))
+
                 if fit_wks:
                     sum_err_sq = sum_of_squares(fit_wks.readY(2))
                     # print " output simulated values: {0}".format(fit_wks.readY(1))
                     if sum_err_sq <min_sum_err_sq:
-                        tmp=msapi.ConvertToPointData(fit_wks)
-                        best_fit=data(minimizer_name,tmp.readX(1),tmp.readY(1))
-                        min_sum_err_sq=sum_err_sq
+                        tmp = msapi.ConvertToPointData(fit_wks)
+                        best_fit = data(minimizer_name,tmp.readX(1),tmp.readY(1))
+                        min_sum_err_sq = sum_err_sq
                 else:
                     sum_err_sq = float("nan")
                     print(" WARNING: no output fit workspace")
@@ -219,8 +220,8 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
         if prob.name == previous_name:
             count+=1
         else:
-            count =1
-            previous_name=prob.name
+            count = 1
+            previous_name = prob.name
 
         #fig.labels['y']="something "
         fig.labels['title']=prob.name[:-4]+" "+str(count)
