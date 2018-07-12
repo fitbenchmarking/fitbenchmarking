@@ -135,7 +135,6 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
     return problems, results_per_problem
 
 
-
 def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0, previous_name="none"):
     """
     One problem with potentially several starting points, returns a list (start points) of
@@ -170,6 +169,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
 
             print("*** with minimizer {0}, Status: {1}, chi2: {2}".format(minimizer_name, status, chi2))
 
+            best_fit = None
             sum_err_sq = -1
             if not status == 'failed':
                 print("   params: {0}, errors: {1}".format(params, errors))
@@ -199,65 +199,82 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
 
         results_fit_problem.append(results_problem_start)
 
-        # make plots
-        fig=plot()
-        best_fit.markers=''
-        best_fit.linestyle='-'
-        best_fit.colour='green'
-        best_fit.order_data()
-        fig.add_data(best_fit)
-        tmp=msapi.ConvertToPointData(wks)
-        xData = tmp.readX(0)
-        yData = tmp.readY(0)
-        eData = tmp.readE(0)
-        raw=data("Data",xData,yData,eData)
-        raw.showError=True
-        raw.linestyle=''
-        fig.add_data(raw)
-        fig.labels['y']="Arbitrary units"
-        fig.labels['x']="Time ($\mu s$)"
-        if prob.name == previous_name:
-            count+=1
-        else:
-            count =1
-            previous_name=prob.name
+        if best_fit is not None:
+            previous_name, count = make_plots(best_fit, wks, previous_name, count)
 
-        #fig.labels['y']="something "
-        fig.labels['title']=prob.name[:-4]+" "+str(count)
-        fig.title_size=10
-        fit_result= msapi.Fit(user_func, wks, Output='ws_fitting_test',
-                              Minimizer='Levenberg-Marquardt',
-                              CostFunction='Least squares',IgnoreInvalidData=True,
-                              StartX=prob.start_x, EndX=prob.end_x,MaxIterations=0)
-        tmp=msapi.ConvertToPointData(fit_result.OutputWorkspace)
-        xData = tmp.readX(1)
-        yData = tmp.readY(1)
-        startData=data("Start Guess",xData,yData)
-        startData.order_data()
-        startData.colour="blue"
-        startData.markers=''
-        startData.linestyle="-"
-        start_fig=plot()
-        start_fig.add_data(raw)
-        start_fig.add_data(startData)
-        start_fig.labels['x']="Time ($\mu s$)"
-        start_fig.labels['y']="Arbitrary units"
-        title=user_func[27:-1]
-        title=splitByString(title,30)
-
-        # remove the extension (e.g. .nxs) if there is one
-        run_ID = prob.name
-        k=-1
-        k=run_ID.rfind(".")
-        if k != -1:
-            run_ID=run_ID[:k]
-
-        start_fig.labels['title']=run_ID+" "+str(count)+"\n"+title
-        start_fig.title_size=10
-        fig.make_scatter_plot("Fit for "+run_ID+" "+str(count)+".pdf")
-        start_fig.make_scatter_plot("start for "+run_ID+" "+str(count)+".pdf")
 
     return results_fit_problem
+
+
+def make_plots(best_fit, wks, previous_name, count):
+    '''
+    Makes a plot of the best fit considering multiple starting points of a
+    problem.
+
+    @param best_fit :: best fit data
+    @param wks :: workspace with problem data
+    @param previous_name :: name of the previous problem
+    @param count :: number of different starting points for one problem
+    '''
+
+    fig=plot()
+    best_fit.markers=''
+    best_fit.linestyle='-'
+    best_fit.colour='green'
+    best_fit.order_data()
+    fig.add_data(best_fit)
+    tmp=msapi.ConvertToPointData(wks)
+    xData = tmp.readX(0)
+    yData = tmp.readY(0)
+    eData = tmp.readE(0)
+    raw = data("Data",xData,yData,eData)
+    raw.showError = True
+    raw.linestyle = ''
+    fig.add_data(raw)
+    fig.labels['y'] = "Arbitrary units"
+    fig.labels['x'] = "Time ($\mu s$)"
+    if prob.name == previous_name:
+        count+=1
+    else:
+        count =1
+        previous_name = prob.name
+    #fig.labels['y']="something "
+    fig.labels['title'] = prob.name[:-4]+" "+str(count)
+    fig.title_size=10
+
+    fit_result= msapi.Fit(user_func, wks, Output='ws_fitting_test',
+                          Minimizer='Levenberg-Marquardt',
+                          CostFunction='Least squares',IgnoreInvalidData=True,
+                          StartX=prob.start_x, EndX=prob.end_x,MaxIterations=0)
+    tmp=msapi.ConvertToPointData(fit_result.OutputWorkspace)
+    xData = tmp.readX(1)
+    yData = tmp.readY(1)
+    startData = data("Start Guess",xData,yData)
+    startData.order_data()
+    startData.colour = "blue"
+    startData.markers = ''
+    startData.linestyle = "-"
+    start_fig = plot()
+    start_fig.add_data(raw)
+    start_fig.add_data(startData)
+    start_fig.labels['x'] = "Time ($\mu s$)"
+    start_fig.labels['y'] = "Arbitrary units"
+    title = user_func[27:-1]
+    title = splitByString(title,30)
+
+    # remove the extension (e.g. .nxs) if there is one
+    run_ID = prob.name
+    k = -1
+    k = run_ID.rfind(".")
+    if k != -1:
+        run_ID = run_ID[:k]
+
+    start_fig.labels['title'] = run_ID+" "+str(count)+"\n"+title
+    start_fig.title_size = 10
+    fig.make_scatter_plot("Fit for "+run_ID+" "+str(count)+".pdf")
+    start_fig.make_scatter_plot("start for "+run_ID+" "+str(count)+".pdf")
+
+    return previous_name, count
 
 
 def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function='Least squares'):
