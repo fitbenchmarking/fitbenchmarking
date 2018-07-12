@@ -200,21 +200,24 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
         results_fit_problem.append(results_problem_start)
 
         if best_fit is not None:
-            previous_name, count = make_plots(best_fit, wks, previous_name, count)
+            previous_name, count = make_plots(prob, best_fit, wks, previous_name,
+                                              count, user_func)
 
 
     return results_fit_problem
 
 
-def make_plots(best_fit, wks, previous_name, count):
+def make_plots(prob, best_fit, wks, previous_name, count, user_func):
     '''
     Makes a plot of the best fit considering multiple starting points of a
     problem.
 
+    @param prob: fitting problem
     @param best_fit :: best fit data
     @param wks :: workspace with problem data
     @param previous_name :: name of the previous problem
     @param count :: number of different starting points for one problem
+    @param user_func :: fitting function
     '''
 
     fig=plot()
