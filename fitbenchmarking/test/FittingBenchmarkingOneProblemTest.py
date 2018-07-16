@@ -4,7 +4,6 @@ import unittest
 import os
 import mantid.simpleapi as msapi
 import numpy as np
-import decimal
 
 # DELETE RELATIVE PATH WHEN GIT TESTS ARE ENABLED
 import sys
@@ -66,11 +65,11 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
             neutron problem file ENGINX193749_calibration_peak19.txt with
             the neutron data file ENGINX193749_calibration_spec651.nxs '''
 
-        # Obtained on mantid v3.12.1
+        # Obtained in mantid v3.12.1
         current_dir = os.path.dirname(os.path.realpath(__file__))
         mock_problems_dir = os.path.join(current_dir, 'mock_problems')
         reference_fit_wks_path = os.path.join(mock_problems_dir, 'data_files',
-                                           'fitWorkspace_enginxPeak19.nxs')
+                                              'fitWorkspace_enginxPeak19.nxs')
 
         return reference_fit_wks_path
 
@@ -139,16 +138,16 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         result_actual = test_result.FittingTestResult()
         result_actual.problem = prob
         result_actual.fit_status = 'success'
-        result_actual.fit_chi2 = 1.1185877496775354
-        result_actual.params = [0.3377317528909583, 1.6257361279858433e-05,
-                                711.75402584884307, 0.28815570142467106,
-                                0.029335760313929541, 24007.088835795294,
-                                15.053948033489544]
-        result_actual.errors = [66.243911758365797, 0.0027592920773062742,
-                                105.11921297174581, 0.97460177680550775,
-                                0.015044091663499503, 18.567195196484423,
-                                9.8862122300457997]
-        result_actual.sum_err_sq = 387.9602044
+        result_actual.fit_chi2 = 0.79243138659204992
+        result_actual.params = [-39.664909893833943, 0.0017093221460772121,
+                                620.29942532225425, 4.9265006277221284,
+                                0.030925377035352437, 24004.503970283724,
+                                13.856560250253684]
+        result_actual.errors = [77.066145704360949, 0.003207694697161955,
+                                109.83586635802421, 204.44335838153586,
+                                0.018928810783550146, 16.399502434549809,
+                                6.2850091287092127]
+        result_actual.sum_err_sq = 358.49892508988262
 
         minimizers = ['Levenberg-Marquardt']
         use_errors = True
@@ -160,7 +159,7 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         self.assertEqual(result_actual.problem, result.problem)
         self.assertEqual(result_actual.fit_status, result.fit_status)
         self.assertEqual(result_actual.fit_chi2, result.fit_chi2)
-        self.assertEqual(result_actual.sum_err_sq, result.sum_err_sq)
+        self.assertAlmostEqual(result_actual.sum_err_sq, result.sum_err_sq)
         self.assertListEqual(result_actual.params, result.params)
         self.assertListEqual(result_actual.errors, result.errors)
 
@@ -168,7 +167,6 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
     def test_do_fitting_benchmark_one_problem_nist(self):
 
         prob = self.NISTproblem()
-        results_actual = []
 
         result1_actual = test_result.FittingTestResult()
         result1_actual.problem = prob
@@ -246,15 +244,15 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         reference_fit_wks_path = self.NeutronProblemReferenceFitWks()
         fit_wks_actual = msapi.Load(reference_fit_wks_path)
         status_actual = 'success'
-        chi2_actual = 1.1185877496775354
-        params_actual = [0.3377317528909583, 1.6257361279858433e-05,
-                         711.75402584884307, 0.28815570142467106,
-                         0.029335760313929541, 24007.088835795294,
-                         15.053948033489544]
-        errors_actual = [66.243911758365797, 0.0027592920773062742,
-                         105.11921297174581, 0.97460177680550775,
-                         0.015044091663499503, 18.567195196484423,
-                         9.8862122300457997]
+        chi2_actual = 0.79243138659204992
+        params_actual = [-39.664909893833943, 0.0017093221460772121,
+                         620.29942532225425, 4.9265006277221284,
+                         0.030925377035352437, 24004.503970283724,
+                         13.856560250253684]
+        errors_actual = [77.066145704360949, 0.003207694697161955,
+                         109.83586635802421, 204.44335838153586,
+                         0.018928810783550146, 16.399502434549809,
+                         6.2850091287092127]
 
         prob = self.NeutronProblem()
         wks = msapi.CreateWorkspace(DataX=prob.data_pattern_in,
