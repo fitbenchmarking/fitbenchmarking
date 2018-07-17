@@ -119,7 +119,7 @@ class FittingBenchmarkingGroup(unittest.TestCase):
 
 
     def DanWoodProblem(self):
-        ''' Sets up the problem object for the nist problem file Kirby2.dat '''
+        ''' Sets up the problem object for the nist problem file DanWood.dat '''
 
         data_pattern = [ [2.138, 1.309],
                          [3.421, 1.471],
