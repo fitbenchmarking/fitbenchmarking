@@ -16,7 +16,7 @@ import test_result
 import test_problem
 
 
-class FittingBenchmarkingOneProblem(unittest.TestCase):
+class FittingBenchmarkingGroup(unittest.TestCase):
 
     def basePath(self):
         ''' Helper function that returns the path to /fitbenchmarking/benchmark_problems '''
@@ -219,7 +219,7 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         problems, results_per_problem = do_fitting_benchmark_group(group_name, problem_files,
                                                                    minimizers, use_errors)
 
-        self.assertEqual(problems,[])
+        self.assertEqual(problems, [])
 
         result = results_per_problem[0][0]
 
@@ -375,35 +375,100 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         self.assertAlmostEqual(DANresult2_actual.errors[1],result.errors[1])
 
 
+    def EnginxDataPath(self):
+        ''' Helper function that returns the path ../benchmark_problems/ '''
+
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        base_dir = os.path.sep.join(current_dir.split(os.path.sep)[:-2])
+        bench_prob_dir = os.path.join(base_dir, 'benchmark_problems')
+        enginxData_path = os.path.join(bench_prob_dir, 'Neutron_data','data_files',
+                                       'ENGINX193749_calibration_spec651.nxs')
+
+        return enginxData_path
+
+
     def NeutronProblem(self):
-            ''' Sets up the problem object for the neutron problem file:
-                ENGINX193749_calibration_peak19.txt '''
+        ''' Sets up the problem object for the neutron problem file:
+            ENGINX193749_calibration_peak19.txt '''
 
-            enginxData_path = self.EnginxDataPath()
+        enginxData_path = self.EnginxDataPath()
 
-            prob = test_problem.FittingTestProblem()
-            prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
-            prob.equation = ("name=LinearBackground;"
-                             "name=BackToBackExponential,"
-                             "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
-            prob.starting_values = None
-            prob.start_x = 23919.5789114
-            prob.end_x = 24189.3183142
+        prob = test_problem.FittingTestProblem()
+        prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
+        prob.equation = ("name=LinearBackground;"
+                         "name=BackToBackExponential,"
+                         "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
+        prob.starting_values = None
+        prob.start_x = 23919.5789114
+        prob.end_x = 24189.3183142
+
+        wks = msapi.Load(Filename=enginxData_path)
+        prob.data_pattern_in = wks.readX(0)
+        prob.data_pattern_out = wks.readY(0)
+        prob.data_pattern_obs_errors = wks.readE(0)
+        prob.ref_residual_sum_sq = 0
+
+        return prob
 
 
-            wks = msapi.Load(Filename= enginxData_path)
-            prob.data_pattern_in = wks.readX(0)
-            prob.data_pattern_out = wks.readY(0)
-            prob.data_pattern_obs_errors = wks.readE(0)
-            prob.ref_residual_sum_sq = 0
+    def NeutronProblemPath(self):
 
-            return prob
+        base_path_neutron = os.path.join(self.basePath(),'Neutron_data')
+        neutron_problem = 'ENGINX193749_calibration_peak19.txt'
+        path_to_neutron_problem = os.path.join(base_path_neutron, neutron_problem)
+
+        return path_to_neutron_problem
 
 
     def test_do_fitting_benchmark_group_neutron(self):
 
+        prob = self.NeutronProblem()
+        result_actual = test_result.FittingTestResult()
+        result_actual.problem = prob
+        result_actual.fit_status = 'success'
+        result_actual.fit_chi2 = 0.79243138659204992
+        result_actual.params = [-39.664909893833943, 0.0017093221460772121,
+                                620.29942532225425, 4.9265006277221284,
+                                0.030925377035352437, 24004.503970283724,
+                                13.856560250253684]
+        result_actual.errors = [77.066145704360949, 0.003207694697161955,
+                                109.83586635802421, 204.44335838153586,
+                                0.018928810783550146, 16.399502434549809,
+                                6.2850091287092127]
+        result_actual.sum_err_sq = 358.49892508988262
+
+        group_name = 'neutron'
+        problem_files = [self.NeutronProblemPath()]
+        minimizers = ['Levenberg-Marquardt']
+        use_errors = True
+
+        problems, results_per_problem = do_fitting_benchmark_group(group_name, problem_files,
+                                                                   minimizers, use_errors)
+
+        self.assertEqual(problems, [])
+
+        result = results_per_problem[0][0]
+
+        prob = result.problem
+        prob_actual = result_actual.problem
+        self.assertEqual(prob_actual.name, prob.name)
+        self.assertEqual(prob_actual.equation, prob.equation)
+        self.assertEqual(prob_actual.starting_values, prob.starting_values)
+        self.assertEqual(prob_actual.start_x, prob.start_x)
+        self.assertEqual(prob_actual.end_x, prob.end_x)
+
+        self.assertEqual(result_actual.fit_status, result.fit_status)
+        self.assertEqual(result_actual.fit_chi2, result.fit_chi2)
+        self.assertAlmostEqual(result_actual.sum_err_sq, result.sum_err_sq)
+        self.assertListEqual(result_actual.params, result.params)
+        self.assertListEqual(result_actual.errors, result.errors)
 
 
+    def test_do_fitting_benchmark_group_raise_error(self):
+
+        self.assertRaises(NameError, do_fitting_benchmark_group,
+                          'pasta', [self.NeutronProblemPath()],
+                            ['Levenberg-Marquardt'], True)
 
 
 if __name__ == "__main__":
