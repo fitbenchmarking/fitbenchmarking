@@ -119,6 +119,7 @@ class ResultsOutput(unittest.TestCase):
 
         self.assertEqual(rst_link_actual, rst_link)
 
+
     def test_calc_norm_summary_tables(self):
 
         norm_acc_rankings_actual = np.array([[1,2,3,4,5,6,7,8,9,10],
@@ -259,33 +260,39 @@ class ResultsOutput(unittest.TestCase):
         return tbl_header_top, tbl_header_text, tbl_header_bottom
 
 
-    def test_build_rst_table(self):
+    def GenerateRstTable(self):
 
         tbl_header_top, tbl_header_text, tbl_header_bottom = self.PrepareTableHeader()
-        tbl_header_actual = tbl_header_top + '\n' + tbl_header_text + '\n' + tbl_header_bottom + '\n'
-        tbl_footer_actual = tbl_header_top + '\n'
-        tbl_body_actual = ("|`Misra1a 1 <http://www.itl.nist.gov/div898/strd/nls/data/misra1a.shtml>`__  |"
-                           " :ranking-top-1:`1`   | :ranking-low-4:`2`   | :ranking-low-4:`3`   |"
-                           " :ranking-low-5:`4`   | :ranking-low-5:`5`   | :ranking-low-5:`6`   |"
-                           " :ranking-low-5:`7`   | :ranking-low-5:`8`   | :ranking-low-5:`9`   |"
-                           " :ranking-low-5:`10`  |\n" + tbl_footer_actual +
-                           "|`Misra1a 2 <http://www.itl.nist.gov/div898/strd/nls/data/misra1a.shtml>`__  |"
-                           " :ranking-low-5:`5`   | :ranking-low-5:`10`  | :ranking-low-5:`13`  |"
-                           " :ranking-low-5:`16`  | :ranking-low-5:`13`  | :ranking-low-5:`9`   |"
-                           " :ranking-low-5:`6`   | :ranking-top-1:`1`   | :ranking-low-5:`9`   |"
-                           " :ranking-low-5:`180` |\n" + tbl_footer_actual +
-                           "|`Lanczos3 1 <http://www.itl.nist.gov/div898/strd/nls/data/lanczos3.shtml>`__|"
-                           " :ranking-low-5:`7`   | :ranking-low-5:`10`  | :ranking-top-1:`1`   |"
-                           " :ranking-low-5:`12`  | :ranking-low-5:`17`  | :ranking-low-5:`21`  |"
-                           " :ranking-low-5:`24`  | :ranking-low-5:`27`  | :ranking-low-5:`31`  |"
-                           " :ranking-low-5:`37`  |\n" + tbl_footer_actual +
-                           "|`Lanczos3 2 <http://www.itl.nist.gov/div898/strd/nls/data/lanczos3.shtml>`__|"
-                           " :ranking-low-5:`50`  | :ranking-top-1:`1`   | :ranking-low-4:`2`   |"
-                           " :ranking-low-4:`3`   | :ranking-low-5:`4`   | :ranking-low-5:`5`   |"
-                           " :ranking-low-5:`6`   | :ranking-low-5:`7`   | :ranking-low-5:`8`   |"
-                           " :ranking-low-5:`9`   |\n" + tbl_footer_actual)
-        tbl_actual = tbl_header_actual + tbl_body_actual
+        tbl_header = tbl_header_top + '\n' + tbl_header_text + '\n' + tbl_header_bottom + '\n'
+        tbl_footer = tbl_header_top + '\n'
+        tbl_body = ("|`Misra1a 1 <http://www.itl.nist.gov/div898/strd/nls/data/misra1a.shtml>`__  |"
+                    " :ranking-top-1:`1`   | :ranking-low-4:`2`   | :ranking-low-4:`3`   |"
+                    " :ranking-low-5:`4`   | :ranking-low-5:`5`   | :ranking-low-5:`6`   |"
+                    " :ranking-low-5:`7`   | :ranking-low-5:`8`   | :ranking-low-5:`9`   |"
+                    " :ranking-low-5:`10`  |\n" + tbl_footer +
+                    "|`Misra1a 2 <http://www.itl.nist.gov/div898/strd/nls/data/misra1a.shtml>`__  |"
+                    " :ranking-low-5:`5`   | :ranking-low-5:`10`  | :ranking-low-5:`13`  |"
+                    " :ranking-low-5:`16`  | :ranking-low-5:`13`  | :ranking-low-5:`9`   |"
+                    " :ranking-low-5:`6`   | :ranking-top-1:`1`   | :ranking-low-5:`9`   |"
+                    " :ranking-low-5:`180` |\n" + tbl_footer +
+                    "|`Lanczos3 1 <http://www.itl.nist.gov/div898/strd/nls/data/lanczos3.shtml>`__|"
+                    " :ranking-low-5:`7`   | :ranking-low-5:`10`  | :ranking-top-1:`1`   |"
+                    " :ranking-low-5:`12`  | :ranking-low-5:`17`  | :ranking-low-5:`21`  |"
+                    " :ranking-low-5:`24`  | :ranking-low-5:`27`  | :ranking-low-5:`31`  |"
+                    " :ranking-low-5:`37`  |\n" + tbl_footer +
+                    "|`Lanczos3 2 <http://www.itl.nist.gov/div898/strd/nls/data/lanczos3.shtml>`__|"
+                    " :ranking-low-5:`50`  | :ranking-top-1:`1`   | :ranking-low-4:`2`   |"
+                    " :ranking-low-4:`3`   | :ranking-low-5:`4`   | :ranking-low-5:`5`   |"
+                    " :ranking-low-5:`6`   | :ranking-low-5:`7`   | :ranking-low-5:`8`   |"
+                    " :ranking-low-5:`9`   |\n" + tbl_footer)
+        tbl = tbl_header + tbl_body
 
+        return tbl
+
+
+    def test_build_rst_table(self):
+
+        tbl_actual = self.GenerateRstTable()
         minimizers = ['Minimizer1','Minimizer2','Minimizer3','Minimizer4','Minimizer5',
                       'Minimizer6','Minimizer7','Minimizer8','Minimizer9','DTRS']
         linked_problems = ["`Misra1a 1 <http://www.itl.nist.gov/div898/strd/nls/data/misra1a.shtml>`__",
@@ -305,10 +312,6 @@ class ResultsOutput(unittest.TestCase):
         tbl = build_rst_table(minimizers, linked_problems, norm_acc_rankings,
                               comparison_type='accuracy', comparison_dim='',
                               using_errors=use_errors, color_scale=color_scale)
-
-        print("**********")
-        print(len(tbl_actual))
-        print(len(tbl))
 
         self.assertEqual(tbl_actual, tbl)
 
@@ -504,6 +507,29 @@ class ResultsOutput(unittest.TestCase):
         self.assertEqual(tbl_header_top_actual, tbl_header_top)
         self.assertEqual(tbl_header_text_actual, tbl_header_text)
         self.assertEqual(tbl_header_bottom_actual, tbl_header_bottom)
+
+
+    def test_save_table_to_file(self):
+
+        file_name_actual1 = "comparison_weighted_v3.8_acc_nist.txt"
+        file_name_actual2 = "comparison_weighted_v3.8_acc_nist.html"
+        file_name_actual3 = "comparison_weighted_v3.8_runtime_nist.txt"
+        file_name_actual4 = "comparison_weighted_v3.8_runtime_nist.html"
+
+        tbl_acc_indiv = self.GenerateRstTable()
+        save_table_to_file(table_data=tbl_acc_indiv, errors=True, group_name='nist',
+                           metric_type='acc', file_extension='txt')
+        save_table_to_file(table_data=tbl_acc_indiv, errors=True, group_name='nist',
+                           metric_type='acc', file_extension='html')
+        save_table_to_file(table_data=tbl_acc_indiv, errors=True, group_name='nist',
+                           metric_type='runtime', file_extension='txt')
+        save_table_to_file(table_data=tbl_acc_indiv, errors=True, group_name='nist',
+                           metric_type='runtime', file_extension='html')
+
+        self.assertTrue(os.path.isfile(file_name_actual1))
+        self.assertTrue(os.path.isfile(file_name_actual2))
+        self.assertTrue(os.path.isfile(file_name_actual3))
+        self.assertTrue(os.path.isfile(file_name_actual4))
 
 
 if __name__ == "__main__":
