@@ -375,5 +375,48 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
                              msg="Failed when prob.starting_values is something")
 
 
+    def test_splitByString(self):
+
+        string_actual = "..."
+        name = "Irrelevant"
+        min_length = 5
+        loop = 4
+        splitter = 3
+        string = splitByString(name, min_length, loop, splitter)
+        self.assertEqual(string_actual, string)
+
+        string_actual = "..."
+        name = "TestStringRelevant"
+        min_length = 5
+        loop = 2
+        splitter = 3
+        string = splitByString(name, min_length, loop, splitter)
+        self.assertEqual(string_actual, string)
+
+        string_actual = "TestStringRelevant"
+        name = "TestStringRelevant"
+        min_length = 10
+        loop = 2
+        splitter = 3
+        string = splitByString(name, min_length, loop, splitter)
+        self.assertEqual(string_actual, string)
+
+        string_actual = "TestString;\nRelevant"
+        name = "TestString;Relevant"
+        min_length = 5
+        loop = 2
+        splitter = 3
+        string = splitByString(name, min_length, loop, splitter)
+        self.assertEqual(string_actual, string)
+
+        string_actual = "TestString;\nRelevant"
+        name = "TestString;Relevant"
+        min_length = 10
+        loop = 2
+        splitter = 3
+        string = splitByString(name, min_length, loop, splitter)
+        self.assertEqual(string_actual, string)
+
+
 if __name__ == "__main__":
     unittest.main()
