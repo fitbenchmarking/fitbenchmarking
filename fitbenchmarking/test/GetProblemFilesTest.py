@@ -31,6 +31,7 @@ class GetProblemFilesTest(unittest.TestCase):
         bench_prob_dir = os.path.join(base_dir, 'benchmark_problems')
         return bench_prob_dir
 
+
     def test_get_nist_problem_files(self):
 
         base_path_nist = os.path.join(self.basePath(),'NIST_nonlinear_regression')
@@ -56,7 +57,8 @@ class GetProblemFilesTest(unittest.TestCase):
 
         paths_to_nist_problems = get_nist_problem_files(base_path_nist)
 
-        self.assertListEqual(paths_to_nist_problems_expected, paths_to_nist_problems)
+        self.assertListEqual(paths_to_nist_problems_expected,
+                             paths_to_nist_problems)
 
 
     def test_get_data_groups(self):
