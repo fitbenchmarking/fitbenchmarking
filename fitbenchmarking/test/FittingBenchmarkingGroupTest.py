@@ -15,11 +15,6 @@ from fitting_benchmarking import do_fitting_benchmark_group
 import test_result
 import test_problem
 
-# Note for readability: all tests follow the same structure, i.e. :
-# setting up expected results
-# calculating the actual results
-# comparing the two
-# Each of these sections is delimited by an empty new line.
 
 class FittingBenchmarkingGroup(unittest.TestCase):
 
@@ -117,73 +112,84 @@ class FittingBenchmarkingGroup(unittest.TestCase):
         return prob
 
 
-    def test_do_fitting_benchmark_group_nist(self):
+    def ExpectedResultsMisra1aProblem(self):
 
-        # Results Misra1a.dat
         prob = self.Misra1aProblem()
 
-        MSRAresult1_expected = test_result.FittingTestResult()
-        MSRAresult1_expected.problem = prob
-        MSRAresult1_expected.fit_status = 'success'
-        MSRAresult1_expected.fit_chi2 = 3.0142776470113924e-05
-        MSRAresult1_expected.params = [234.06483564181511, 0.0005635749331078056]
-        MSRAresult1_expected.errors = [486.46049489836878, 0.0013377443749239895]
-        MSRAresult1_expected.sum_err_sq = 0.159784541
+        result1 = test_result.FittingTestResult()
+        result1.problem = prob
+        result1.fit_status = 'success'
+        result1.fit_chi2 = 3.0142776470113924e-05
+        result1.params = [234.06483564181511, 0.0005635749331078056]
+        result1.errors = [486.46049489836878, 0.0013377443749239895]
+        result1.sum_err_sq = 0.159784541
 
-        MSRAresult2_expected = test_result.FittingTestResult()
-        MSRAresult2_expected.problem = prob
-        MSRAresult2_expected.fit_status = 'success'
-        MSRAresult2_expected.fit_chi2 = 3.0142776474075721e-05
-        MSRAresult2_expected.params = [234.0648164895841, 0.00056357498391696424]
-        MSRAresult2_expected.errors = [486.46041069760378, 0.0013377443887498521]
-        MSRAresult2_expected.sum_err_sq = 0.159784814
+        result2 = test_result.FittingTestResult()
+        result2.problem = prob
+        result2.fit_status = 'success'
+        result2.fit_chi2 = 3.0142776474075721e-05
+        result2.params = [234.0648164895841, 0.00056357498391696424]
+        result2.errors = [486.46041069760378, 0.0013377443887498521]
+        result2.sum_err_sq = 0.159784814
 
-        # Results Lanczos3.dat
+        return result1, result2
+
+
+    def ExpectedResultsLanczos3Problem(self):
+
         prob = self.Lanczos3Problem()
 
-        LANCresult1_expected = test_result.FittingTestResult()
-        LANCresult1_expected.problem = prob
-        LANCresult1_expected.fit_status = 'success'
-        LANCresult1_expected.fit_chi2 = 1.5738994656320854e-09
-        LANCresult1_expected.params = [0.076292993936269635, 0.89409819265879653,
-                                       0.81196519908356291, 2.8770481720851175,
-                                       1.6250509876256594, 4.959295547895354]
-        LANCresult1_expected.errors = [500.12596415787573, 3219.9196370205027,
-                                       1083.9772587815423, 3128.5320883517034,
-                                       1574.8127529208468, 930.6176134251333]
-        LANCresult1_expected.sum_err_sq = 1.54111E-08
+        result1 = test_result.FittingTestResult()
+        result1.problem = prob
+        result1.fit_status = 'success'
+        result1.fit_chi2 = 1.5738994656320854e-09
+        result1.params = [0.076292993936269635, 0.89409819265879653,
+                          0.81196519908356291, 2.8770481720851175,
+                          1.6250509876256594, 4.959295547895354]
+        result1.errors = [500.12596415787573, 3219.9196370205027,
+                          1083.9772587815423, 3128.5320883517034,
+                          1574.8127529208468, 930.6176134251333]
+        result1.sum_err_sq = 1.54111E-08
 
-        LANCresult2_expected = test_result.FittingTestResult()
-        LANCresult2_expected.problem = prob
-        LANCresult2_expected.fit_status = 'success'
-        LANCresult2_expected.fit_chi2 = 1.5738994640949402e-09
-        LANCresult2_expected.params = [0.076292974403935732, 0.89409808656696643,
-                                       0.81196515450981444, 2.8770480616286354,
-                                       1.6250510517074495, 4.9592955016636253]
-        LANCresult2_expected.errors = [500.12591547373802, 3219.9201499387495,
-                                       1083.9770521377736, 3128.531870980361,
-                                       1574.8124979320155, 930.61746006324927]
-        LANCresult2_expected.sum_err_sq = 1.54111E-08
+        result2 = test_result.FittingTestResult()
+        result2.problem = prob
+        result2.fit_status = 'success'
+        result2.fit_chi2 = 1.5738994640949402e-09
+        result2.params = [0.076292974403935732, 0.89409808656696643,
+                          0.81196515450981444, 2.8770480616286354,
+                          1.6250510517074495, 4.9592955016636253]
+        result2.errors = [500.12591547373802, 3219.9201499387495,
+                          1083.9770521377736, 3128.531870980361,
+                          1574.8124979320155, 930.61746006324927]
+        result2.sum_err_sq = 1.54111E-08
 
-        # Results DanWood.dat
+        return result1, result2
+
+
+    def ExpectedResultsDanWoodProblem(self):
+
         prob = self.DanWoodProblem()
 
-        DANresult1_expected = test_result.FittingTestResult()
-        DANresult1_expected.problem = prob
-        DANresult1_expected.fit_status = 'success'
-        DANresult1_expected.fit_chi2 = 0.00070750054722238179
-        DANresult1_expected.params = [0.7661565792730235, 3.868179190249311]
-        DANresult1_expected.errors = [0.66634945954403446, 1.905287834001421]
-        DANresult1_expected.sum_err_sq = 0.004341888
+        result1 = test_result.FittingTestResult()
+        result1.problem = prob
+        result1.fit_status = 'success'
+        result1.fit_chi2 = 0.00070750054722238179
+        result1.params = [0.7661565792730235, 3.868179190249311]
+        result1.errors = [0.66634945954403446, 1.905287834001421]
+        result1.sum_err_sq = 0.004341888
 
-        DANresult2_expected = test_result.FittingTestResult()
-        DANresult2_expected.problem = prob
-        DANresult2_expected.fit_status = 'success'
-        DANresult2_expected.fit_chi2 = 0.00070750054796743002
-        DANresult2_expected.params = [0.76615671824105447, 3.8681788388808336]
-        DANresult2_expected.errors = [0.66634954507865429, 1.9052877442998983]
-        DANresult2_expected.sum_err_sq = 0.004341886
+        result2 = test_result.FittingTestResult()
+        result2.problem = prob
+        result2.fit_status = 'success'
+        result2.fit_chi2 = 0.00070750054796743002
+        result2.params = [0.76615671824105447, 3.8681788388808336]
+        result2.errors = [0.66634954507865429, 1.9052877442998983]
+        result2.sum_err_sq = 0.004341886
 
+        return result1, result2
+
+
+    def test_doFittingBenchmarkGroup_return_results_for_NIST_problems_Misra1a_Lanczos3_and_DanWood(self):
 
         group_name = 'nist'
         problem_files = self.NISTproblemsPaths()
@@ -192,6 +198,9 @@ class FittingBenchmarkingGroup(unittest.TestCase):
 
         problems, results_per_problem = do_fitting_benchmark_group(group_name, problem_files,
                                                                    minimizers, use_errors)
+        MSRAresult1_expected, MSRAresult2_expected = self.ExpectedResultsMisra1aProblem()
+        LANCresult1_expected, LANCresult2_expected = self.ExpectedResultsLanczos3Problem()
+        DANresult1_expected, DANresult2_expected = self.ExpectedResultsDanWoodProblem()
 
         self.assertEqual(problems, [])
 
@@ -365,22 +374,28 @@ class FittingBenchmarkingGroup(unittest.TestCase):
         return path_to_neutron_problem
 
 
-    def test_do_fitting_benchmark_group_neutron(self):
+    def ExpectedResultsENGINXpeak19(self):
 
         prob = self.NeutronProblem()
-        result_expected = test_result.FittingTestResult()
-        result_expected.problem = prob
-        result_expected.fit_status = 'success'
-        result_expected.fit_chi2 = 0.79243138659204992
-        result_expected.params = [-39.664909893833943, 0.0017093221460772121,
-                                  620.29942532225425, 4.9265006277221284,
-                                  0.030925377035352437, 24004.503970283724,
-                                  13.856560250253684]
-        result_expected.errors = [77.066145704360949, 0.003207694697161955,
-                                  109.83586635802421, 204.44335838153586,
-                                  0.018928810783550146, 16.399502434549809,
-                                  6.2850091287092127]
-        result_expected.sum_err_sq = 358.49892508988262
+
+        result = test_result.FittingTestResult()
+        result.problem = prob
+        result.fit_status = 'success'
+        result.fit_chi2 = 0.79243138659204992
+        result.params = [-39.664909893833943, 0.0017093221460772121,
+                         620.29942532225425, 4.9265006277221284,
+                         0.030925377035352437, 24004.503970283724,
+                         13.856560250253684]
+        result.errors = [77.066145704360949, 0.003207694697161955,
+                         109.83586635802421, 204.44335838153586,
+                         0.018928810783550146, 16.399502434549809,
+                         6.2850091287092127]
+        result.sum_err_sq = 358.49892508988262
+
+        return result
+
+
+    def test_doFittingBenchmarkGroup_neutron_return_results_ENGINXpeak19_problem(self):
 
         group_name = 'neutron'
         problem_files = [self.NeutronProblemPath()]
@@ -389,12 +404,13 @@ class FittingBenchmarkingGroup(unittest.TestCase):
 
         problems, results_per_problem = do_fitting_benchmark_group(group_name, problem_files,
                                                                    minimizers, use_errors)
+        result_expected = self.ExpectedResultsENGINXpeak19()
 
         self.assertEqual(problems, [])
 
         result = results_per_problem[0][0]
         prob = result.problem
-        prob_expected    = result_expected.problem
+        prob_expected = result_expected.problem
         self.assertEqual(prob_expected.name, prob.name)
         self.assertEqual(prob_expected.equation, prob.equation)
         self.assertEqual(prob_expected.starting_values, prob.starting_values)
@@ -408,7 +424,7 @@ class FittingBenchmarkingGroup(unittest.TestCase):
         self.assertListEqual(result_expected.errors, result.errors)
 
 
-    def test_do_fitting_benchmark_group_raise_error(self):
+    def test_doFittingBenchmarkGroup_raise_error_invalid_group_name(self):
 
         self.assertRaises(NameError, do_fitting_benchmark_group, 'pasta',
                           [self.NeutronProblemPath()], ['Levenberg-Marquardt'], True)
