@@ -15,11 +15,6 @@ from fitting_benchmarking import get_data_group_problem_files
 # from fitting_benchmarking import get_muon_problem_files
 # from fitting_benchmarking import get_cutest_problem_files
 
-# Note for readability: all tests follow the same structure, i.e. :
-# setting up expected results
-# calculating the actual results
-# comparing the two
-# Each of these sections is delimited by an empty new line.
 
 class GetProblemFilesTest(unittest.TestCase):
 
@@ -32,10 +27,9 @@ class GetProblemFilesTest(unittest.TestCase):
         return bench_prob_dir
 
 
-    def test_get_nist_problem_files(self):
+    def test_getNISTproblemFiles_return_expected_paths(self):
 
         base_path_nist = os.path.join(self.basePath(),'NIST_nonlinear_regression')
-
         nist_problems = [['Misra1a.dat', 'Chwirut2.dat', 'Chwirut1.dat',
                           'Lanczos3.dat', 'Gauss1.dat', 'Gauss2.dat',
                           'DanWood.dat', 'Misra1b.dat'],
@@ -45,6 +39,7 @@ class GetProblemFilesTest(unittest.TestCase):
                          ['MGH09.dat', 'Thurber.dat', 'BoxBOD.dat', 'Rat42.dat',
                           'MGH10.dat', 'Eckerle4.dat', 'Rat43.dat', 'Bennett5.dat']]
 
+        paths_to_nist_problems = get_nist_problem_files(base_path_nist)
         # This for loop (and similar ones in other tests)
         # attaches the proper path to a problem file name
         # e.g. Misra1a.dat becomes
@@ -55,49 +50,44 @@ class GetProblemFilesTest(unittest.TestCase):
                                     for nist_prob_name in nist_level_group]
             paths_to_nist_problems_expected.append(paths_to_level_group)
 
-        paths_to_nist_problems = get_nist_problem_files(base_path_nist)
-
         self.assertListEqual(paths_to_nist_problems_expected,
                              paths_to_nist_problems)
 
 
-    def test_get_data_groups(self):
+    def test_getDataGroups_return_expected_neutron_paths(self):
 
         base_path_neutron = [os.path.join(self.basePath(),'Neutron_data')]
-
-      	neutron_problems = [['ENGINX193749_calibration_peak19.txt',
+        neutron_problems = [['ENGINX193749_calibration_peak19.txt',
                              'ENGINX193749_calibration_peak20.txt',
-  							 'ENGINX193749_calibration_peak23.txt',
+                             'ENGINX193749_calibration_peak23.txt',
                              'ENGINX193749_calibration_peak5.txt',
-  							 'ENGINX193749_calibration_peak6.txt',
-  							 'ENGINX236516_vanadium_bank1_10brk.txt',
+                             'ENGINX193749_calibration_peak6.txt',
+                             'ENGINX236516_vanadium_bank1_10brk.txt',
                              'ENGINX236516_vanadium_bank1_20brk.txt',
-  							 'EVS14188-90_Gaussian_peaks_1.txt',
+                             'EVS14188-90_Gaussian_peaks_1.txt',
                              'EVS14188-90_Gaussian_peaks_2.txt',
-  							 'GEMpeak1.txt',
-  							 'WISH17701_peak1.txt', 'WISH17701_peak2.txt',
-  							 'WISH17701_peak3.txt', 'WISH17701_peak4.txt',
-  							 'WISH17701_peak5.txt', 'WISH17701_peak6.txt',
-  							 'WISH17701_peak7.txt', 'WISH17701_peak8.txt',
-  							 'WISH17701_peak9.txt']]
+                             'GEMpeak1.txt',
+                             'WISH17701_peak1.txt', 'WISH17701_peak2.txt',
+                             'WISH17701_peak3.txt', 'WISH17701_peak4.txt',
+                             'WISH17701_peak5.txt', 'WISH17701_peak6.txt',
+                             'WISH17701_peak7.txt', 'WISH17701_peak8.txt',
+                             'WISH17701_peak9.txt']]
 
+        paths_to_neutron_problems = get_data_groups(base_path_neutron)[0]
         # Please see the above for loop comments for a description of this one
         paths_to_neutron_problems_expected = []
-      	for neutron_level_group in neutron_problems:
+        for neutron_level_group in neutron_problems:
             paths_to_level_group = [os.path.join(base_path_neutron[0],neutron_prob_name)
                                     for neutron_prob_name in neutron_level_group]
             paths_to_neutron_problems_expected.append(paths_to_level_group)
-
-        paths_to_neutron_problems = get_data_groups(base_path_neutron)[0]
 
         self.assertListEqual(paths_to_neutron_problems_expected[0],
                              paths_to_neutron_problems)
 
 
-    def test_get_data_group_problem_files(self):
+    def test_getDataGroupProblemFiles_return_expected_neutron_paths(self):
 
         base_path_neutron = os.path.join(self.basePath(),'Neutron_data')
-
         neutron_problems = ['ENGINX193749_calibration_peak19.txt',
                             'ENGINX193749_calibration_peak20.txt',
                             'ENGINX193749_calibration_peak23.txt',
@@ -114,11 +104,10 @@ class GetProblemFilesTest(unittest.TestCase):
                             'WISH17701_peak7.txt', 'WISH17701_peak8.txt',
                             'WISH17701_peak9.txt']
 
+        paths_to_neutron_problems = get_data_group_problem_files(base_path_neutron)
         paths_to_neutron_problems_expected = []
         for idx, problem in enumerate(neutron_problems):
             paths_to_neutron_problems_expected.append(os.path.join(base_path_neutron, problem))
-
-        paths_to_neutron_problems = get_data_group_problem_files(base_path_neutron)
 
         self.assertListEqual(paths_to_neutron_problems_expected,
                              paths_to_neutron_problems)

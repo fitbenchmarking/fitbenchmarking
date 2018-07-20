@@ -15,11 +15,6 @@ from input_parsing import get_neutron_data_problem_entries
 from input_parsing import get_fitting_neutron_data
 import test_problem
 
-# Note for readability: all tests follow the same structure, i.e. :
-# setting up expected results
-# calculating the actual results
-# comparing the two
-# Each of these sections is delimited by an empty new line.
 
 class LoadAndParseNeutronFiles(unittest.TestCase):
 
@@ -45,9 +40,11 @@ class LoadAndParseNeutronFiles(unittest.TestCase):
         return enginxPeak19_path
 
 
-    def test_load_neutron_data_fitting_problem_file(self):
+    def test_loadNeutronDataFittingProblemFile_return_ENGINXpeak19_problem_definition_object(self):
 
         enginxPeak19_path = self.ENGINX193749Peak19File()
+
+        prob = load_neutron_data_fitting_problem_file(enginxPeak19_path)
         prob_expected = test_problem.FittingTestProblem()
         prob_expected.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
         prob_expected.equation = ("name=LinearBackground;"
@@ -57,8 +54,6 @@ class LoadAndParseNeutronFiles(unittest.TestCase):
         prob_expected.start_x = 23919.5789114
         prob_expected.end_x = 24189.3183142
 
-        prob = load_neutron_data_fitting_problem_file(enginxPeak19_path)
-
         self.assertEqual(prob_expected.name, prob.name)
         self.assertEqual(prob_expected.equation, prob.equation)
         self.assertEqual(prob_expected.starting_values, prob.starting_values)
@@ -66,9 +61,12 @@ class LoadAndParseNeutronFiles(unittest.TestCase):
         self.assertEqual(prob_expected.end_x, prob.end_x)
 
 
-    def test_get_neutron_data_problem_entries(self):
+    def test_getNeutronDataProblemEntries_return_ENGINXpeak19_problem_entries(self):
 
         enginxPeak19_path = self.ENGINX193749Peak19File()
+
+        with open(enginxPeak19_path) as probf:
+            entries = get_neutron_data_problem_entries(probf)
         entries_expected = {'name' : ("ENGINX 193749 calibration, "
                                     "spectrum 651, peak 19"),
                             'input_file' : 'ENGINX193749_calibration_spec651.nxs',
@@ -79,9 +77,6 @@ class LoadAndParseNeutronFiles(unittest.TestCase):
                             'fit_parameters' : {'StartX': 23919.5789114,
                                                 'EndX': 24189.3183142},
                             'description' : ''}
-
-        with open(enginxPeak19_path) as probf:
-            entries = get_neutron_data_problem_entries(probf)
 
         self.assertEqual(entries_expected['name'], entries['name'])
         self.assertEqual(entries_expected['input_file'], entries['input_file'])
@@ -103,15 +98,15 @@ class LoadAndParseNeutronFiles(unittest.TestCase):
         return prob
 
 
-    def test_get_fitting_neutron_data(self):
-
-        prob_expected = self.MockProblemData()
+    def test_getFittingNeutronData_return_MockProblemData(self):
 
         current_dir = os.path.dirname(os.path.realpath(__file__))
         neutron_mock_data = os.path.join(current_dir, 'mock_problems', 'data_files',
                                          'NeutronMockData.nxs')
+
         prob = test_problem.FittingTestProblem()
         get_fitting_neutron_data(neutron_mock_data, prob)
+        prob_expected = self.MockProblemData()
 
         np.testing.assert_array_equal(prob_expected.data_pattern_in, prob.data_pattern_in)
         np.testing.assert_array_equal(prob_expected.data_pattern_out, prob.data_pattern_out)
