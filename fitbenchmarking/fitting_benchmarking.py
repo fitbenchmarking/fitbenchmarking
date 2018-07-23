@@ -342,7 +342,7 @@ def prepare_wks_cost_function(prob, use_errors):
         data_e = None
         if not isinstance(prob.data_pattern_obs_errors, np.ndarray):
             # Fake observational errors
-            data_e = np.sqrt(prob.data_pattern_in)
+            data_e = np.sqrt(prob.data_pattern_out)
         else:
             data_e = prob.data_pattern_obs_errors
 
