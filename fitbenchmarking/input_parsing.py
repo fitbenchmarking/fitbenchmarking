@@ -123,15 +123,10 @@ def parse_nist_file_line_by_line(lines):
         elif line.startswith('Residual Sum of Squares'):
             residual_sum_sq = float(line.split()[4])
 
-        elif line.startswith('Data:'):
+        elif line.startswith('Data') and ' x ' in line and ' y ' in line:
 
-            if 0 == data_idx:
-                data_idx += 1
-            elif 1 == data_idx:
-                data_pattern_text = lines[idx:]
-                idx = len(lines)
-            else:
-                raise RuntimeError('Error parsing data line: {}'.format(line))
+            data_pattern_text = lines[idx:]
+            idx = len(lines)
 
         else:
             ignored_lines += 1
@@ -175,17 +170,11 @@ def parse_equation(eq_text):
             the Fit algorithm
     """
     start_normal = r'\s*y\s*=(.+)'
-    start_log = r'\s*log\[y\]\s*=(.+)'
 
     # try first the usual syntax
     if re.match(start_normal, eq_text):
         match = re.search(r'y\s*=(.+)\s*\+\s*e', eq_text)
         equation = match.group(1).strip()
-
-    # log-syntax used in NIST/Nelson
-    elif re.match(start_log, eq_text):
-        match = re.search(r'log\[y\]\s*=(.+)\s*\+\s*e', eq_text)
-        equation = "exp(" + match.group(1).strip() + ")"
     else:
         raise RuntimeError("Unrecognized equation syntax when trying to parse a NIST "
                            "equation: " + eq_text)
