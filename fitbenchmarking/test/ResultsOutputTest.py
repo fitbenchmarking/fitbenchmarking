@@ -73,59 +73,6 @@ class ResultsOutputTests(unittest.TestCase):
         return prob_results
 
 
-    def test_buildIndivLinkedProblems_return_NIST_files_Misra1a_Lanczos3_DanWood_linked_problems(self):
-
-        results_per_test = self.SetupNISTResults()
-        group_name = 'nist_lower'
-
-        linked_problems = build_indiv_linked_problems(results_per_test, group_name)
-        linked_problems_expected = ["`Misra1a 1 <http://www.itl.nist.gov/div898/strd/nls/data/misra1a.shtml>`__",
-                                    "`Misra1a 2 <http://www.itl.nist.gov/div898/strd/nls/data/misra1a.shtml>`__",
-                                    "`Lanczos3 1 <http://www.itl.nist.gov/div898/strd/nls/data/lanczos3.shtml>`__",
-                                    "`Lanczos3 2 <http://www.itl.nist.gov/div898/strd/nls/data/lanczos3.shtml>`__",
-                                    "`DanWood 1 <http://www.itl.nist.gov/div898/strd/nls/data/danwood.shtml>`__",
-                                    "`DanWood 2 <http://www.itl.nist.gov/div898/strd/nls/data/danwood.shtml>`__" ]
-
-        self.assertListEqual(linked_problems_expected, linked_problems)
-
-
-    def test_buildIndivLinkedProblems_return_neutron_file_ENGINXpeak19_linked_problem(self):
-
-        result = self.SetupNeutronResults()
-        results_per_test = [result]
-        group_name = 'neutron'
-
-        linked_problems = build_indiv_linked_problems(results_per_test, group_name)
-        linked_problems_expected = ["ENGINX193749_calibration_peak19"
-                                    "<neutron_enginx193749_calibration_peak19.txt.html>`_"]
-
-        self.assertListEqual(linked_problems_expected, linked_problems)
-
-
-    def test_buildGroupLinkedNames_return_NIST_group_linked_names(self):
-
-        group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
-                       'NIST, "higher" difficulty']
-
-        linked_names = build_group_linked_names(group_names)
-        linked_names_expected = ['`NIST, "lower" difficulty <http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`__',
-                                 '`NIST, "average" difficulty <http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`__',
-                                 '`NIST, "higher" difficulty <http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`__' ]
-
-        self.assertListEqual(linked_names_expected, linked_names)
-
-
-    def test_buildVisualDisplayPage_return_ENGINXpeak19_rst_visual_display_page(self):
-
-        prob_results = self.SetupNeutronResults()
-        group_name = 'neutron'
-
-        rst_link = build_visual_display_page(prob_results, group_name)
-        rst_link_expected = '`<neutron_enginx193749_calibration_peak19.txt.html>`_'
-
-        self.assertEqual(rst_link_expected, rst_link)
-
-
     def AccuracyAndRuntimeMockTables(self):
 
         accuracy_tbl = np.array([[1,2,3,4,5,6,7,8,9,10],
@@ -162,24 +109,6 @@ class ResultsOutputTests(unittest.TestCase):
         return norm_acc_rankings, norm_runtimes, summary_cells_acc, summary_cells_runtime
 
 
-    def test_calcNormSummaryTables_return_normalised_tables_given_mock_tables(self):
-
-        accuracy_tbl, time_tbl = self.AccuracyAndRuntimeMockTables()
-
-        (norm_acc_rankings, norm_runtimes,
-         summary_cells_acc, summary_cells_runtime) = calc_norm_summary_tables(accuracy_tbl, time_tbl)
-        (norm_acc_rankings_expected,
-         norm_runtimes_expected,
-         summary_cells_acc_expected,
-         summary_cells_runtime_expected) = self.ExpectedNormalisedMockTables()
-
-
-        np.testing.assert_array_equal(norm_acc_rankings_expected, norm_acc_rankings)
-        np.testing.assert_array_equal(norm_runtimes_expected, norm_runtimes)
-        np.testing.assert_array_equal(summary_cells_acc_expected, summary_cells_acc)
-        np.testing.assert_array_equal(summary_cells_runtime_expected, summary_cells_runtime)
-
-
     def TablesSetup(self):
         ''' Helper function that sets up the group_results
             accuracy and runtime tables tables '''
@@ -212,74 +141,17 @@ class ResultsOutputTests(unittest.TestCase):
         return group_results
 
 
-    def test_calcAccuracyRuntimeTbls_return_accuracy_and_runtime_tables(self):
-
-        results_per_test = self.TablesSetup()[0]
-        minimizers = ['Levenberg-Marquardt', 'Levenberg-MarquardtMD', 'Simplex']
-
-        accuracy_tbl, time_tbl = calc_accuracy_runtime_tbls(results_per_test, minimizers)
-        accuracy_tbl_expected = np.array([[2, 4, 6],
-                                        [4, 6, 8],
-                                        [8, 16, 24]])
-        time_tbl_expected = np.array([[2, 4, 6],
-                                    [4, 6, 8],
-                                    [8, 16, 24]])
-
-        np.testing.assert_array_equal(accuracy_tbl_expected, accuracy_tbl)
-        np.testing.assert_array_equal(time_tbl_expected, time_tbl)
-
-
-    def test_calcSummaryTable_return_mock_summary_tables_using_TablesSetup_input(self):
-
-        group_results = self.TablesSetup()
-        minimizers = ['Levenberg-Marquardt', 'Levenberg-MarquardtMD', 'Simplex']
-
-        groups_norm_acc, groups_norm_runtime = calc_summary_table(minimizers, group_results)
-        groups_norm_acc_expected = np.array([[1,2,3],[1,1.4,1.8],[1,1.25,1.5]])
-        groups_norm_runtime_expected = np.array([[1,2,3],[1,1.4,1.8],[1,1.25,1.5]])
-
-        np.testing.assert_array_equal(groups_norm_acc_expected, groups_norm_acc)
-        np.testing.assert_array_equal(groups_norm_runtime_expected, groups_norm_runtime)
-
-
     def PrepareTableHeader(self):
         ''' Helper function that returns the headers used in making the rst table '''
 
-        tbl_header_top = ("+----------------------------------------------------------------------------+"
-                          "----------------------+"
-                          "----------------------+"
-                          "----------------------+"
-                          "----------------------+"
-                          "----------------------+"
-                          "----------------------+"
-                          "----------------------+"
-                          "----------------------+"
-                          "----------------------+"
-                          "----------------------+")
-
-        tbl_header_text = ("|                                                                            |"
-                           "Minimizer1            |"
-                           "Minimizer2            |"
-                           "Minimizer3            |"
-                           "Minimizer4            |"
-                           "Minimizer5            |"
-                           "Minimizer6            |"
-                           "Minimizer7            |"
-                           "Minimizer8            |"
-                           "Minimizer9            |"
+        tbl_header_top = ("+" + "-"*76 + "+" + ("-"*22 + "+")*10)
+        tbl_header_text = ("|" + " "*76 + "|" + "Minimizer1            |" + \
+                           "Minimizer2            |" + "Minimizer3            |" + \
+                           "Minimizer4            |" + "Minimizer5            |" + \
+                           "Minimizer6            |" + "Minimizer7            |" + \
+                           "Minimizer8            |" + "Minimizer9            |" + \
                            "Trust Region          |")
-
-        tbl_header_bottom = ("+============================================================================+"
-                             "======================+"
-                             "======================+"
-                             "======================+"
-                             "======================+"
-                             "======================+"
-                             "======================+"
-                             "======================+"
-                             "======================+"
-                             "======================+"
-                             "======================+")
+        tbl_header_bottom = ("+" + "="*76 + "+" + ("="*22 + "+")*10)
 
         return tbl_header_top, tbl_header_text, tbl_header_bottom
 
@@ -335,6 +207,125 @@ class ResultsOutputTests(unittest.TestCase):
                        (float('nan'), 'ranking-low-5')]
 
         return minimizers, linked_problems, norm_acc_rankings, use_errors, color_scale
+
+
+    def CalcCellLenRSTTableParameters(self):
+
+        columns_txt = ['Minimizer1','Minimizer2','Minimizer3','Minimizer4','Minimizer5',
+                       'Minimizer6','Minimizer7','Minimizer8','Minimizer9','Trust Region']
+        items_link = 'FittingMinimizersComparisonDetailedWithWeights'
+        cells = np.array([[1,2,3,4,5,6,7,8,9,10],
+                          [5,10,13,16,13,9,6,1,9,180],
+                          [7,10,1,12,17,21,24,27,31,37],
+                          [50,1,2,3,4,5,6,7,8,9]])
+        color_scale = [(1.1, 'ranking-top-1'),
+                       (1.33, 'ranking-top-2'),
+                       (1.75, 'ranking-med-3'),
+                       (3, 'ranking-low-4'),
+                       (float('nan'), 'ranking-low-5')]
+
+        return columns_txt, items_link, cells, color_scale
+
+
+    def test_buildIndivLinkedProblems_return_NIST_files_Misra1a_Lanczos3_DanWood_linked_problems(self):
+
+        results_per_test = self.SetupNISTResults()
+        group_name = 'nist_lower'
+
+        linked_problems = build_indiv_linked_problems(results_per_test, group_name)
+        linked_problems_expected = ["`Misra1a 1 <http://www.itl.nist.gov/div898/strd/nls/data/misra1a.shtml>`__",
+                                    "`Misra1a 2 <http://www.itl.nist.gov/div898/strd/nls/data/misra1a.shtml>`__",
+                                    "`Lanczos3 1 <http://www.itl.nist.gov/div898/strd/nls/data/lanczos3.shtml>`__",
+                                    "`Lanczos3 2 <http://www.itl.nist.gov/div898/strd/nls/data/lanczos3.shtml>`__",
+                                    "`DanWood 1 <http://www.itl.nist.gov/div898/strd/nls/data/danwood.shtml>`__",
+                                    "`DanWood 2 <http://www.itl.nist.gov/div898/strd/nls/data/danwood.shtml>`__" ]
+
+        self.assertListEqual(linked_problems_expected, linked_problems)
+
+
+    def test_buildIndivLinkedProblems_return_neutron_file_ENGINXpeak19_linked_problem(self):
+
+        result = self.SetupNeutronResults()
+        results_per_test = [result]
+        group_name = 'neutron'
+
+        linked_problems = build_indiv_linked_problems(results_per_test, group_name)
+        linked_problems_expected = ["ENGINX193749_calibration_peak19"
+                                    " `<neutron_enginx193749_calibration_peak19.txt.html>`_"]
+
+        self.assertListEqual(linked_problems_expected, linked_problems)
+
+
+    def test_buildGroupLinkedNames_return_NIST_group_linked_names(self):
+
+        group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
+                       'NIST, "higher" difficulty']
+
+        linked_names = build_group_linked_names(group_names)
+        linked_names_expected = ['`NIST, "lower" difficulty <http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`__',
+                                 '`NIST, "average" difficulty <http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`__',
+                                 '`NIST, "higher" difficulty <http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`__' ]
+
+        self.assertListEqual(linked_names_expected, linked_names)
+
+
+    def test_buildVisualDisplayPage_return_ENGINXpeak19_rst_visual_display_page(self):
+
+        prob_results = self.SetupNeutronResults()
+        group_name = 'neutron'
+
+        rst_link = build_visual_display_page(prob_results, group_name)
+        rst_link_expected = '`<neutron_enginx193749_calibration_peak19.txt.html>`_'
+
+        self.assertEqual(rst_link_expected, rst_link)
+
+
+    def test_calcNormSummaryTables_return_normalised_tables_given_mock_tables(self):
+
+        accuracy_tbl, time_tbl = self.AccuracyAndRuntimeMockTables()
+
+        (norm_acc_rankings, norm_runtimes,
+         summary_cells_acc, summary_cells_runtime) = calc_norm_summary_tables(accuracy_tbl, time_tbl)
+        (norm_acc_rankings_expected,
+         norm_runtimes_expected,
+         summary_cells_acc_expected,
+         summary_cells_runtime_expected) = self.ExpectedNormalisedMockTables()
+
+
+        np.testing.assert_array_equal(norm_acc_rankings_expected, norm_acc_rankings)
+        np.testing.assert_array_equal(norm_runtimes_expected, norm_runtimes)
+        np.testing.assert_array_equal(summary_cells_acc_expected, summary_cells_acc)
+        np.testing.assert_array_equal(summary_cells_runtime_expected, summary_cells_runtime)
+
+
+    def test_calcAccuracyRuntimeTbls_return_accuracy_and_runtime_tables(self):
+
+        results_per_test = self.TablesSetup()[0]
+        minimizers = ['Levenberg-Marquardt', 'Levenberg-MarquardtMD', 'Simplex']
+
+        accuracy_tbl, time_tbl = calc_accuracy_runtime_tbls(results_per_test, minimizers)
+        accuracy_tbl_expected = np.array([[2, 4, 6],
+                                          [4, 6, 8],
+                                          [8, 16, 24]])
+        time_tbl_expected = np.array([[2, 4, 6],
+                                      [4, 6, 8],
+                                      [8, 16, 24]])
+
+        np.testing.assert_array_equal(accuracy_tbl_expected, accuracy_tbl)
+        np.testing.assert_array_equal(time_tbl_expected, time_tbl)
+
+
+    def test_calcSummaryTable_return_mock_summary_tables_using_TablesSetup_input(self):
+
+        group_results = self.TablesSetup()
+        minimizers = ['Levenberg-Marquardt', 'Levenberg-MarquardtMD', 'Simplex']
+
+        groups_norm_acc, groups_norm_runtime = calc_summary_table(minimizers, group_results)
+        groups_norm_acc_expected = np.array([[1,2,3],[1,1.4,1.8],[1,1.25,1.5]])
+        groups_norm_runtime_expected = np.array([[1,2,3],[1,1.4,1.8],[1,1.25,1.5]])
+
+        np.testing.assert_array_equal(groups_norm_acc_expected, groups_norm_acc)
+        np.testing.assert_array_equal(groups_norm_runtime_expected, groups_norm_runtime)
 
 
     def test_buildRSTTable_return_rst_table_for_problem_files_Misra1a_Lanczos3_mock_minimizers(self):
@@ -424,23 +415,6 @@ class ResultsOutputTests(unittest.TestCase):
         value = weighted_suffix_string(False)
         self.assertEqual(value, 'unweighted')
 
-
-    def CalcCellLenRSTTableParameters(self):
-
-        columns_txt = ['Minimizer1','Minimizer2','Minimizer3','Minimizer4','Minimizer5',
-                       'Minimizer6','Minimizer7','Minimizer8','Minimizer9','Trust Region']
-        items_link = 'FittingMinimizersComparisonDetailedWithWeights'
-        cells = np.array([[1,2,3,4,5,6,7,8,9,10],
-                          [5,10,13,16,13,9,6,1,9,180],
-                          [7,10,1,12,17,21,24,27,31,37],
-                          [50,1,2,3,4,5,6,7,8,9]])
-        color_scale = [(1.1, 'ranking-top-1'),
-                       (1.33, 'ranking-top-2'),
-                       (1.75, 'ranking-med-3'),
-                       (3, 'ranking-low-4'),
-                       (float('nan'), 'ranking-low-5')]
-
-        return columns_txt, items_link, cells, color_scale
 
     def test_calcCellLenRSTTable_cell_len_smaller_than_max_header_return_cell_len(self):
 
