@@ -7,9 +7,10 @@ import results_output as fitout
 
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
               'Conjugate gradient (Polak-Ribiere imp.)',
+              'Damped GaussNewton',
               'Levenberg-Marquardt', 'Levenberg-MarquardtMD',
               'Simplex','SteepestDescent',
-              'Trust Region', 'Damped GaussNewton']
+              'Trust Region']
 
 group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
                'NIST, "higher" difficulty', "CUTEst", "Neutron data"]
@@ -27,14 +28,14 @@ base_problem_files_dir = os.path.join(parent_dir, 'benchmark_problems')
 
 
 use_errors = True
-              
+
 nist_group_dir = os.path.join(base_problem_files_dir, 'NIST_nonlinear_regression')
 cutest_group_dir = os.path.join(base_problem_files_dir, 'CUTEst')
 neutron_data_group_dirs = [os.path.join(base_problem_files_dir, 'Neutron_data')]
 muon_data_group_dir = [os.path.join(base_problem_files_dir, 'Muon_data')]
 
 # choice the data to run
-run_data = "neutron"
+run_data = "nist"
 
 if run_data == "neutron":
     problems, results_per_group = fitbk.do_fitting_benchmark(neutron_data_group_dirs=neutron_data_group_dirs,
@@ -59,8 +60,8 @@ for idx, group_results in enumerate(results_per_group):
                                           group_name=group_suffix_names[idx],
                                           use_errors=use_errors,
                                           simple_text=False, rst=True, save_to_file=True, color_scale=color_scale)
-                                          
-                                          
+
+
 header = '\n\n**************** OVERALL SUMMARY - ALL GROUPS ******** \n\n'
 print(header)
 fitout.print_overall_results_table(minimizers, results_per_group, problems, group_names,
