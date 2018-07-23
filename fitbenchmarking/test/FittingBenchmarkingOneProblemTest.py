@@ -146,25 +146,6 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         return result
 
 
-    def test_doFittingBenchmarkOneProblem_return_neutron_ENGINXpeak19_problem_result_object(self):
-
-        prob = self.NeutronProblem()
-        minimizers = ['Levenberg-Marquardt']
-
-        result = do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True,
-                                                  count=0, previous_name='none')
-        result_expected = self.ExpectedResultObjectNeutronProblemENGINXpeak19()
-        result_expected.problem = prob
-
-        result = result[0][0]
-        self.assertEqual(result_expected.problem, result.problem)
-        self.assertEqual(result_expected.fit_status, result.fit_status)
-        self.assertEqual(result_expected.fit_chi2, result.fit_chi2)
-        self.assertAlmostEqual(result_expected.sum_err_sq, result.sum_err_sq)
-        self.assertListEqual(result_expected.params, result.params)
-        self.assertListEqual(result_expected.errors, result.errors)
-
-
     def ExpectedResultObjectNISTproblemMisra1a(self):
 
         result1 = test_result.FittingTestResult()
@@ -182,6 +163,55 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         result2.sum_err_sq = 0.159784814
 
         return result1, result2
+
+
+    def ExpectedResultObjectMantidFitFails(self):
+
+        result = test_result.FittingTestResult()
+        result.fit_status = 'failed'
+        result.fit_chi2 = np.nan
+        result.params = np.nan
+        result.errors = np.nan
+        result.sum_err_sq = np.nan
+
+        return result
+
+
+    def ExpectedRunFitOutputENGINXpeak19(self):
+
+        reference_fit_wks_path = self.NeutronProblemReferenceFitWks()
+        fit_wks = msapi.Load(reference_fit_wks_path)
+        status = 'success'
+        chi2 = 0.79243138659204992
+        params = [-39.664909893833943, 0.0017093221460772121,
+                  620.29942532225425, 4.9265006277221284,
+                  0.030925377035352437, 24004.503970283724,
+                  13.856560250253684]
+        errors = [77.066145704360949, 0.003207694697161955,
+                  109.83586635802421, 204.44335838153586,
+                  0.018928810783550146, 16.399502434549809,
+                  6.2850091287092127]
+
+        return status, chi2, fit_wks, params, errors
+
+
+    def test_doFittingBenchmarkOneProblem_return_neutron_ENGINXpeak19_problem_result_object(self):
+
+        prob = self.NeutronProblem()
+        minimizers = ['Levenberg-Marquardt']
+
+        result = do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True,
+                                                  count=0, previous_name='none')
+        result_expected = self.ExpectedResultObjectNeutronProblemENGINXpeak19()
+        result_expected.problem = prob
+
+        result = result[0][0]
+        self.assertEqual(result_expected.problem, result.problem)
+        self.assertEqual(result_expected.fit_status, result.fit_status)
+        self.assertEqual(result_expected.fit_chi2, result.fit_chi2)
+        self.assertAlmostEqual(result_expected.sum_err_sq, result.sum_err_sq)
+        self.assertListEqual(result_expected.params, result.params)
+        self.assertListEqual(result_expected.errors, result.errors)
 
 
     def test_doFittingBenchmarkOneProblem_return_nist_Misra1a_problem_result_object(self):
@@ -216,18 +246,6 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         self.assertAlmostEqual(result2_expected.errors[1],result.errors[1])
 
 
-    def ExpectedResultObjectMantidFitFails(self):
-
-        result = test_result.FittingTestResult()
-        result.fit_status = 'failed'
-        result.fit_chi2 = np.nan
-        result.params = np.nan
-        result.errors = np.nan
-        result.sum_err_sq = np.nan
-
-        return result
-
-
     def test_doFittingBenchmarkOneProblem_mantidFit_fails(self):
 
         prob = self.NeutronProblemMock()
@@ -245,24 +263,6 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         np.testing.assert_equal(result_expected.sum_err_sq, result.sum_err_sq)
         np.testing.assert_equal(result_expected.params, result.params)
         np.testing.assert_equal(result_expected.errors, result.errors)
-
-
-    def ExpectedRunFitOutputENGINXpeak19(self):
-
-        reference_fit_wks_path = self.NeutronProblemReferenceFitWks()
-        fit_wks = msapi.Load(reference_fit_wks_path)
-        status = 'success'
-        chi2 = 0.79243138659204992
-        params = [-39.664909893833943, 0.0017093221460772121,
-                  620.29942532225425, 4.9265006277221284,
-                  0.030925377035352437, 24004.503970283724,
-                  13.856560250253684]
-        errors = [77.066145704360949, 0.003207694697161955,
-                  109.83586635802421, 204.44335838153586,
-                  0.018928810783550146, 16.399502434549809,
-                  6.2850091287092127]
-
-        return status, chi2, fit_wks, params, errors
 
 
     def test_runFit_return_proper_parameters_for_neutron_problem_file_ENGINXpeak19(self):
@@ -410,6 +410,7 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
 
         self.assertEqual(string_expected, string)
 
+
     def test_splitByString_return_string_unmodified(self):
 
         name = "TestStringRelevant"
@@ -422,6 +423,7 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
 
         self.assertEqual(string_expected, string)
 
+
     def test_splitByString_return_string_split_at_semicolon(self):
 
         name = "TestString;Relevant"
@@ -433,6 +435,7 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         string_expected = "TestString;\nRelevant"
 
         self.assertEqual(string_expected, string)
+
 
     def test_splitByString_return_string_split_at_semicolon_without_calling_the_function_twice(self):
 
