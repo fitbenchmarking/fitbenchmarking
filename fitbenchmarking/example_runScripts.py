@@ -8,7 +8,7 @@ import results_output as fitout
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
               'Conjugate gradient (Polak-Ribiere imp.)',
               'Levenberg-Marquardt', 'Levenberg-MarquardtMD',
-              'Simplex', 'SteepestDescent',
+              'Simplex','SteepestDescent',
               'Trust Region', 'Damped GaussNewton']
 
 group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
@@ -58,9 +58,10 @@ for idx, group_results in enumerate(results_per_group):
         fitout.print_group_results_tables(minimizers, group_results, problems[idx],
                                           group_name=group_suffix_names[idx],
                                           use_errors=use_errors,
-                                          simple_text=True, rst=True, save_to_file=True, color_scale=color_scale)
+                                          simple_text=False, rst=True, save_to_file=True, color_scale=color_scale)
 
 
+>>>>>>> master
 header = '\n\n**************** OVERALL SUMMARY - ALL GROUPS ******** \n\n'
 print(header)
 fitout.print_overall_results_table(minimizers, results_per_group, problems, group_names,

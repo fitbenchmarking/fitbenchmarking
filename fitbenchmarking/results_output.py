@@ -99,6 +99,7 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
                                metric_type=FILENAME_SUFFIX_ACCURACY, file_extension=FILENAME_EXT_HTML)
 
         # print out accuracy summary table for this group of fit problems
+        # THIS IS BROKEN
         ext_summary_cols = minimizers
         ext_summary_rows = ['Best ranking', 'Worst ranking', 'Average', 'Median']
         tbl_acc_summary = build_rst_table(ext_summary_cols, ext_summary_rows, summary_cells_acc,
@@ -132,6 +133,33 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
         header = '**************** Statistics/Summary (runtime): ******** \n\n'
         print(header)
         print(tbl_runtime_summary)
+
+
+def print_overall_results_table(minimizers, group_results, problems, group_names, use_errors,
+                                simple_text=True, save_to_file=False):
+
+    groups_norm_acc, groups_norm_runtime = postproc.calc_summary_table(minimizers, group_results)
+
+    grp_linked_names = build_group_linked_names(group_names)
+
+    header = '**************** Accuracy ******** \n\n'
+    print(header)
+    tbl_all_summary_acc = build_rst_table(minimizers, grp_linked_names, groups_norm_acc,
+                                          comparison_type='summary', comparison_dim='accuracy',
+                                          using_errors=use_errors)
+    print(tbl_all_summary_acc)
+
+    if save_to_file:
+        save_table_to_file(tbl_all_summary_acc, use_errors, 'summary', FILENAME_SUFFIX_ACCURACY, FILENAME_EXT_TXT)
+        save_table_to_file(tbl_all_summary_acc, use_errors, 'summary', FILENAME_SUFFIX_ACCURACY, FILENAME_EXT_HTML)
+    header = '**************** Runtime ******** \n\n'
+    print (header)
+    tbl_all_summary_runtime = build_rst_table(minimizers, grp_linked_names, groups_norm_runtime,
+                                              comparison_type='summary', comparison_dim='runtime',
+                                              using_errors=use_errors)
+    if save_to_file:
+        save_table_to_file(tbl_all_summary_runtime, use_errors, 'summary', FILENAME_SUFFIX_RUNTIME, FILENAME_EXT_TXT)
+        save_table_to_file(tbl_all_summary_runtime, use_errors, 'summary', FILENAME_SUFFIX_RUNTIME, FILENAME_EXT_HTML)
 
 
 def build_indiv_linked_problems(results_per_test, group_name):
@@ -170,6 +198,69 @@ def build_indiv_linked_problems(results_per_test, group_name):
             linked_problems.append(name)
 
     return linked_problems
+
+
+def build_group_linked_names(group_names):
+    """
+    Add a link for RST tables if there is a website or similar describing the group.
+
+    @param group_names :: names as plain text
+
+    @returns :: names with RST links if available
+    """
+    linked_names = []
+    for name in group_names:
+        # This should be tidied up. We currently don't have links for groups other than NIST
+        if 'NIST' in name:
+            linked = "`{0} <http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`__".format(name)
+        else:
+            linked = name
+
+        linked_names.append(linked)
+
+    return linked_names
+
+
+def build_visual_display_page(prob_results, group_name):
+    """
+    Builds a page containing details of the best fit for a problem.
+    @param prob_results:: the list of results for a problem
+    @param group_name :: the name of the group, e.g. "nist_lower"
+    """
+    # Get the best result for a group
+    gb = min((result for result in prob_results), key=lambda result: result.fit_chi2)
+    file_name = (group_name + '_' + gb.problem.name).lower()
+    wks = msapi.CreateWorkspace(OutputWorkspace=gb.problem.name, DataX=gb.problem.data_pattern_in, DataY=gb.problem.data_pattern_out)
+
+    # Create various page headings, ensuring the adornment is (at least) the length of the title
+    title = '=' * len(gb.problem.name) + '\n'
+    title += gb.problem.name + '\n'
+    title += '=' * len(gb.problem.name) + '\n\n'
+    data_plot = 'Plot of the data' + '\n'
+    data_plot += ('-' * len(data_plot)) + '\n\n'
+    data_plot += '.. image:: ' + file_name + '.png' + '\n\n'
+    starting_plot = 'Plot of the initial starting guess' + '\n'
+    starting_plot += ('-' * len(starting_plot)) + '\n\n'
+    starting_plot += '.. figure:: ' + '\n\n'
+    solution_plot = 'Plot of the solution found' + '\n'
+    solution_plot += ('-' * len(solution_plot)) + '\n\n'
+    solution_plot += '.. figure:: ' + '\n\n'
+    problem = 'Fit problem' + '\n'
+    problem += ('-' * len(problem)) + '\n'
+    rst_text = title + data_plot + starting_plot + solution_plot + problem
+
+    html = publish_string(rst_text, writer_name='html')
+    with open(file_name + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
+        print(html, file=visual_rst)
+        print('Saved {file_name}.{extension} to {working_directory}'.
+              format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=WORKING_DIR))
+    with open(file_name + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
+        print(html, file=visual_html)
+        print('Saved {file_name}.{extension} to {working_directory}'.
+              format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=WORKING_DIR))
+
+    rst_link = '`<' + file_name + '.' + FILENAME_EXT_HTML + '>`_'  # `<cutest_palmer6c.dat.html>`_
+    return rst_link
 
 
 def print_tables_simple_text(minimizers, results_per_test, accuracy_tbl, time_tbl, norm_acc_rankings):
@@ -289,82 +380,6 @@ def build_rst_table(columns_txt, rows_txt, cells, comparison_type, comparison_di
         tbl_body += tbl_footer
 
     return tbl_header  + tbl_body
-
-
-def save_table_to_file(table_data, errors, group_name, metric_type, file_extension):
-    """
-    Saves a group results table or overall results table to a given file type.
-
-    @param table_data :: the results table
-    @param errors :: whether to use observational errors
-    @param group_name :: name of this group of problems (example 'NIST "lower difficulty"', or
-                         'Neutron data')
-    @param metric_type :: the test type of the table data (e.g. runtime, accuracy)
-    @param file_extension :: the file type extension (e.g. html)
-    """
-    file_name = ('comparison_{weighted}_{version}_{metric_type}_{group_name}.'
-                 .format(weighted=weighted_suffix_string(errors),
-                         version=BENCHMARK_VERSION_STR, metric_type=metric_type, group_name=group_name))
-
-    if file_extension == 'html':
-        rst_content = '.. include:: ' + str(os.path.join(SCRIPT_DIR, 'color_definitions.txt'))
-        rst_content += '\n' + table_data
-        table_data = publish_string(rst_content, writer_name='html')
-
-    with open(file_name + file_extension, 'w') as tbl_file:
-        print(table_data, file=tbl_file)
-    print('Saved {file_name}{extension} to {working_directory}'.
-          format(file_name=file_name, extension=file_extension, working_directory=WORKING_DIR))
-
-
-def weighted_suffix_string(use_errors):
-    """
-    Produces a suffix weighted/unweighted. Used to generate names of
-    output files.
-    """
-    values = {True: 'weighted', False: 'unweighted'}
-    return values[use_errors]
-
-
-def build_visual_display_page(prob_results, group_name):
-    """
-    Builds a page containing details of the best fit for a problem.
-    @param prob_results:: the list of results for a problem
-    @param group_name :: the name of the group, e.g. "nist_lower"
-    """
-    # Get the best result for a group
-    gb = min((result for result in prob_results), key=lambda result: result.fit_chi2)
-    file_name = (group_name + '_' + gb.problem.name).lower()
-    wks = msapi.CreateWorkspace(OutputWorkspace=gb.problem.name, DataX=gb.problem.data_pattern_in, DataY=gb.problem.data_pattern_out)
-    # Create various page headings, ensuring the adornment is (at least) the length of the title
-    title = '=' * len(gb.problem.name) + '\n'
-    title += gb.problem.name + '\n'
-    title += '=' * len(gb.problem.name) + '\n\n'
-    data_plot = 'Plot of the data' + '\n'
-    data_plot += ('-' * len(data_plot)) + '\n\n'
-    data_plot += '.. image:: ' + file_name + '.png' + '\n\n'
-    starting_plot = 'Plot of the initial starting guess' + '\n'
-    starting_plot += ('-' * len(starting_plot)) + '\n\n'
-    starting_plot += '.. figure:: ' + '\n\n'
-    solution_plot = 'Plot of the solution found' + '\n'
-    solution_plot += ('-' * len(solution_plot)) + '\n\n'
-    solution_plot += '.. figure:: ' + '\n\n'
-    problem = 'Fit problem' + '\n'
-    problem += ('-' * len(problem)) + '\n'
-    rst_text = title + data_plot + starting_plot + solution_plot + problem
-
-    html = publish_string(rst_text, writer_name='html')
-    with open(file_name + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
-        print(html, file=visual_rst)
-        print('Saved {file_name}.{extension} to {working_directory}'.
-              format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=WORKING_DIR))
-    with open(file_name + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
-        print(html, file=visual_html)
-        print('Saved {file_name}.{extension} to {working_directory}'.
-              format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=WORKING_DIR))
-
-    rst_link = '`<' + file_name + '.' + FILENAME_EXT_HTML + '>`_'  # `<cutest_palmer6c.dat.html>`_
-    return rst_link
 
 
 def display_name_for_minimizers(names):
@@ -511,49 +526,36 @@ def format_cell_value_rst(value, width=None, color_scale=None, items_link=None):
     return value_text
 
 
-def print_overall_results_table(minimizers, group_results, problems, group_names, use_errors,
-                                simple_text=True, save_to_file=False):
-
-    groups_norm_acc, groups_norm_runtime = postproc.calc_summary_table(minimizers, group_results)
-
-    grp_linked_names = build_group_linked_names(group_names)
-
-    header = '**************** Accuracy ******** \n\n'
-    print(header)
-    tbl_all_summary_acc = build_rst_table(minimizers, grp_linked_names, groups_norm_acc,
-                                          comparison_type='summary', comparison_dim='accuracy',
-                                          using_errors=use_errors)
-    print(tbl_all_summary_acc)
-
-    if save_to_file:
-        save_table_to_file(tbl_all_summary_acc, use_errors, 'summary', FILENAME_SUFFIX_ACCURACY, FILENAME_EXT_TXT)
-        save_table_to_file(tbl_all_summary_acc, use_errors, 'summary', FILENAME_SUFFIX_ACCURACY, FILENAME_EXT_HTML)
-    header = '**************** Runtime ******** \n\n'
-    print (header)
-    tbl_all_summary_runtime = build_rst_table(minimizers, grp_linked_names, groups_norm_runtime,
-                                              comparison_type='summary', comparison_dim='runtime',
-                                              using_errors=use_errors)
-    if save_to_file:
-        save_table_to_file(tbl_all_summary_runtime, use_errors, 'summary', FILENAME_SUFFIX_RUNTIME, FILENAME_EXT_TXT)
-        save_table_to_file(tbl_all_summary_runtime, use_errors, 'summary', FILENAME_SUFFIX_RUNTIME, FILENAME_EXT_HTML)
-
-
-def build_group_linked_names(group_names):
+def save_table_to_file(table_data, errors, group_name, metric_type, file_extension):
     """
-    Add a link for RST tables if there is a website or similar describing the group.
+    Saves a group results table or overall results table to a given file type.
 
-    @param group_names :: names as plain text
-
-    @returns :: names with RST links if available
+    @param table_data :: the results table
+    @param errors :: whether to use observational errors
+    @param group_name :: name of this group of problems (example 'NIST "lower difficulty"', or
+                         'Neutron data')
+    @param metric_type :: the test type of the table data (e.g. runtime, accuracy)
+    @param file_extension :: the file type extension (e.g. html)
     """
-    linked_names = []
-    for name in group_names:
-        # This should be tidied up. We currently don't have links for groups other than NIST
-        if 'NIST' in name:
-            linked = "`{0} <http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`__".format(name)
-        else:
-            linked = name
+    file_name = ('comparison_{weighted}_{version}_{metric_type}_{group_name}.'
+                 .format(weighted=weighted_suffix_string(errors),
+                         version=BENCHMARK_VERSION_STR, metric_type=metric_type, group_name=group_name))
 
-        linked_names.append(linked)
+    if file_extension == 'html':
+        rst_content = '.. include:: ' + str(os.path.join(SCRIPT_DIR, 'color_definitions.txt'))
+        rst_content += '\n' + table_data
+        table_data = publish_string(rst_content, writer_name='html')
 
-    return linked_names
+    with open(file_name + file_extension, 'w') as tbl_file:
+        print(table_data, file=tbl_file)
+    print('Saved {file_name}{extension} to {working_directory}'.
+          format(file_name=file_name, extension=file_extension, working_directory=WORKING_DIR))
+
+
+def weighted_suffix_string(use_errors):
+    """
+    Produces a suffix weighted/unweighted. Used to generate names of
+    output files.
+    """
+    values = {True: 'weighted', False: 'unweighted'}
+    return values[use_errors]

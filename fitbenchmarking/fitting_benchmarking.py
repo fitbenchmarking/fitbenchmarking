@@ -113,7 +113,7 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
     if group_name in ['nist', 'cutest']:
         for prob_file in problem_files:
             prob = iparsing.load_nist_fitting_problem_file(prob_file)
-            
+
             print("* Testing fitting for problem definition file {0}".format(prob_file))
             print("* Testing fitting of problem {0}".format(prob.name))
 
@@ -128,12 +128,11 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
 
             results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
             results_per_problem.extend(results_prob)
-    
+
     else:
         raise NameError("Please assign your problem group to a parser.")
-    
-    return problems, results_per_problem
 
+    return problems, results_per_problem
 
 
 def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0, previous_name="none"):
@@ -167,91 +166,118 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
                                                             minimizer=minimizer_name,
                                                             cost_function=cost_function)
             t_end = time.clock()
+
             print("*** with minimizer {0}, Status: {1}, chi2: {2}".format(minimizer_name, status, chi2))
-            print("   params: {0}, errors: {1}".format(params, errors))
 
-            def sum_of_squares(values):
-                return np.sum(np.square(values))
+            best_fit = None
+            sum_err_sq = -1
+            if not status == 'failed':
+                print("   params: {0}, errors: {1}".format(params, errors))
+                if fit_wks:
+                    sum_err_sq = sum_of_squares(fit_wks.readY(2))
+                    # print " output simulated values: {0}".format(fit_wks.readY(1))
+                    if sum_err_sq <min_sum_err_sq:
+                        tmp=msapi.ConvertToPointData(fit_wks)
+                        best_fit=data(minimizer_name,tmp.readX(1),tmp.readY(1))
+                        min_sum_err_sq=sum_err_sq
+                else:
+                    sum_err_sq = float("nan")
+                    print(" WARNING: no output fit workspace")
+                print("sum sq: {0}".format(sum_err_sq))
 
-            if fit_wks:
-                sum_err_sq = sum_of_squares(fit_wks.readY(2))
-                # print " output simulated values: {0}".format(fit_wks.readY(1))
-                if sum_err_sq <min_sum_err_sq:
-                    tmp=msapi.ConvertToPointData(fit_wks)
-                    best_fit=data(minimizer_name,tmp.readX(1),tmp.readY(1))
-                    min_sum_err_sq=sum_err_sq
-            else:
-                sum_err_sq = float("inf")
-                print(" WARNING: no output fit workspace")
-            print("   sum sq: {0}".format(sum_err_sq))
             result = test_result.FittingTestResult()
             result.problem = prob
             result.fit_status = status
             result.fit_chi2 = chi2
             result.params = params
             result.errors = errors
-            result.sum_err_sq = sum_err_sq
-            # If the fit has failed, also set the runtime to NaN
+            result.sum_err_sq = sum_err_sq if not sum_err_sq == -1 else np.nan
             result.runtime = t_end - t_start if not np.isnan(chi2) else np.nan
+
             print("Result object: {0}".format(result))
             results_problem_start.append(result)
-        results_fit_problem.append(results_problem_start)
-        # make plots
-        fig=plot()
-        best_fit.markers=''
-        best_fit.linestyle='-'
-        best_fit.colour='green'
-        best_fit.order_data()
-        fig.add_data(best_fit)
-        tmp=msapi.ConvertToPointData(wks)
-        xData = tmp.readX(0)
-        yData = tmp.readY(0)
-        eData = tmp.readE(0)
-        raw=data("Data",xData,yData,eData)
-        raw.showError=True
-        raw.linestyle=''
-        fig.add_data(raw)
-        fig.labels['y']="Arbitrary units"
-        fig.labels['x']="Time ($\mu s$)"
-        if prob.name == previous_name:
-            count+=1
-        else:
-            count =1
-            previous_name=prob.name
-        #fig.labels['y']="something "
-        fig.labels['title']=prob.name[:-4]+" "+str(count)
-        fig.title_size=10
-        fit_result= msapi.Fit(user_func, wks, Output='ws_fitting_test',
-                              Minimizer='Levenberg-Marquardt',
-                              CostFunction='Least squares',IgnoreInvalidData=True,
-                              StartX=prob.start_x, EndX=prob.end_x,MaxIterations=0)
-        tmp=msapi.ConvertToPointData(fit_result.OutputWorkspace)
-        xData = tmp.readX(1)
-        yData = tmp.readY(1)
-        startData=data("Start Guess",xData,yData)
-        startData.order_data()
-        startData.colour="blue"
-        startData.markers=''
-        startData.linestyle="-"
-        start_fig=plot()
-        start_fig.add_data(raw)
-        start_fig.add_data(startData)
-        start_fig.labels['x']="Time ($\mu s$)"
-        start_fig.labels['y']="Arbitrary units"
-        title=user_func[27:-1]
-        title=splitByString(title,30)
-        # remove the extension (e.g. .nxs) if there is one
-        run_ID = prob.name
-        k=-1
-        k=run_ID.rfind(".")
-        if k != -1:
-            run_ID=run_ID[:k]
 
-        start_fig.labels['title']=run_ID+" "+str(count)+"\n"+title
-        start_fig.title_size=10
-        fig.make_scatter_plot("Fit for "+run_ID+" "+str(count)+".pdf")
-        start_fig.make_scatter_plot("start for "+run_ID+" "+str(count)+".pdf")
+        results_fit_problem.append(results_problem_start)
+
+        if best_fit is not None:
+            previous_name, count = make_plots(prob, best_fit, wks, previous_name,
+                                              count, user_func)
+
+
     return results_fit_problem
+
+
+def make_plots(prob, best_fit, wks, previous_name, count, user_func):
+    '''
+    Makes a plot of the best fit considering multiple starting points of a
+    problem.
+
+    @param prob: fitting problem
+    @param best_fit :: best fit data
+    @param wks :: workspace with problem data
+    @param previous_name :: name of the previous problem
+    @param count :: number of different starting points for one problem
+    @param user_func :: fitting function
+    '''
+
+    fig=plot()
+    best_fit.markers=''
+    best_fit.linestyle='-'
+    best_fit.colour='green'
+    best_fit.order_data()
+    fig.add_data(best_fit)
+    tmp=msapi.ConvertToPointData(wks)
+    xData = tmp.readX(0)
+    yData = tmp.readY(0)
+    eData = tmp.readE(0)
+    raw = data("Data",xData,yData,eData)
+    raw.showError = True
+    raw.linestyle = ''
+    fig.add_data(raw)
+    fig.labels['y'] = "Arbitrary units"
+    fig.labels['x'] = "Time ($\mu s$)"
+    if prob.name == previous_name:
+        count+=1
+    else:
+        count =1
+        previous_name = prob.name
+    #fig.labels['y']="something "
+    fig.labels['title'] = prob.name[:-4]+" "+str(count)
+    fig.title_size=10
+
+    fit_result= msapi.Fit(user_func, wks, Output='ws_fitting_test',
+                          Minimizer='Levenberg-Marquardt',
+                          CostFunction='Least squares',IgnoreInvalidData=True,
+                          StartX=prob.start_x, EndX=prob.end_x,MaxIterations=0)
+    tmp=msapi.ConvertToPointData(fit_result.OutputWorkspace)
+    xData = tmp.readX(1)
+    yData = tmp.readY(1)
+    startData = data("Start Guess",xData,yData)
+    startData.order_data()
+    startData.colour = "blue"
+    startData.markers = ''
+    startData.linestyle = "-"
+    start_fig = plot()
+    start_fig.add_data(raw)
+    start_fig.add_data(startData)
+    start_fig.labels['x'] = "Time ($\mu s$)"
+    start_fig.labels['y'] = "Arbitrary units"
+    title = user_func[27:-1]
+    title = splitByString(title,30)
+
+    # remove the extension (e.g. .nxs) if there is one
+    run_ID = prob.name
+    k = -1
+    k = run_ID.rfind(".")
+    if k != -1:
+        run_ID = run_ID[:k]
+
+    start_fig.labels['title'] = run_ID+" "+str(count)+"\n"+title
+    start_fig.title_size = 10
+    fig.make_scatter_plot("Fit for "+run_ID+" "+str(count)+".pdf")
+    start_fig.make_scatter_plot("start for "+run_ID+" "+str(count)+".pdf")
+
+    return previous_name, count
 
 
 def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function='Least squares'):
@@ -286,19 +312,25 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function=
 
         calc_chi2 = msapi.CalculateChiSquared(Function=function,
                                               InputWorkspace=wks, IgnoreInvalidData=ignore_invalid)
-        print("*** with minimizer {0}, calculated: chi2: {1}".format(minimizer, calc_chi2))
 
-    except RuntimeError as rerr:
-        print("Warning, Fit probably failed. Going on. Error: {0}".format(str(rerr)))
-    param_tbl = fit_result.OutputParameters
-    if param_tbl:
-        params = param_tbl.column(1)[:-1]
-        errors = param_tbl.column(2)[:-1]
+    except (RuntimeError, ValueError) as err:
+        buff = "Warning, fit probably failed. Going on. Error: " + str(err)
+        print(buff)
+
+
+    if fit_result is None:
+        return 'failed', np.nan, np.nan, np.nan, np.nan
+
     else:
-        params = None
-        errors = None
+        param_tbl = fit_result.OutputParameters
+        if param_tbl:
+            params = param_tbl.column(1)[:-1]
+            errors = param_tbl.column(2)[:-1]
+        else:
+            params = None
+            errors = None
 
-    return fit_result.OutputStatus, fit_result.OutputChi2overDoF, fit_result.OutputWorkspace, params, errors
+        return fit_result.OutputStatus, fit_result.OutputChi2overDoF, fit_result.OutputWorkspace, params, errors
 
 
 def prepare_wks_cost_function(prob, use_errors):
@@ -322,6 +354,10 @@ def prepare_wks_cost_function(prob, use_errors):
         cost_function = 'Unweighted least squares'
 
     return wks, cost_function
+
+
+def sum_of_squares(values):
+    return np.sum(np.square(values))
 
 
 def splitByString(name,min_length,loop=0,splitter=0):
