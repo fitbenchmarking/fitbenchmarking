@@ -27,6 +27,27 @@ class GetProblemFilesTest(unittest.TestCase):
         return bench_prob_dir
 
 
+    def neutronProblems(self):
+
+        neutron_problems = [['ENGINX193749_calibration_peak19.txt',
+                             'ENGINX193749_calibration_peak20.txt',
+                             'ENGINX193749_calibration_peak23.txt',
+                             'ENGINX193749_calibration_peak5.txt',
+                             'ENGINX193749_calibration_peak6.txt',
+                             'ENGINX236516_vanadium_bank1_10brk.txt',
+                             'ENGINX236516_vanadium_bank1_20brk.txt',
+                             'EVS14188-90_Gaussian_peaks_1.txt',
+                             'EVS14188-90_Gaussian_peaks_2.txt',
+                             'GEMpeak1.txt',
+                             'WISH17701_peak1.txt', 'WISH17701_peak2.txt',
+                             'WISH17701_peak3.txt', 'WISH17701_peak4.txt',
+                             'WISH17701_peak5.txt', 'WISH17701_peak6.txt',
+                             'WISH17701_peak7.txt', 'WISH17701_peak8.txt',
+                             'WISH17701_peak9.txt']]
+
+        return neutron_problems
+
+
     def test_getNISTproblemFiles_return_expected_paths(self):
 
         base_path_nist = os.path.join(self.basePath(),'NIST_nonlinear_regression')
@@ -57,21 +78,7 @@ class GetProblemFilesTest(unittest.TestCase):
     def test_getDataGroups_return_expected_neutron_paths(self):
 
         base_path_neutron = [os.path.join(self.basePath(),'Neutron_data')]
-        neutron_problems = [['ENGINX193749_calibration_peak19.txt',
-                             'ENGINX193749_calibration_peak20.txt',
-                             'ENGINX193749_calibration_peak23.txt',
-                             'ENGINX193749_calibration_peak5.txt',
-                             'ENGINX193749_calibration_peak6.txt',
-                             'ENGINX236516_vanadium_bank1_10brk.txt',
-                             'ENGINX236516_vanadium_bank1_20brk.txt',
-                             'EVS14188-90_Gaussian_peaks_1.txt',
-                             'EVS14188-90_Gaussian_peaks_2.txt',
-                             'GEMpeak1.txt',
-                             'WISH17701_peak1.txt', 'WISH17701_peak2.txt',
-                             'WISH17701_peak3.txt', 'WISH17701_peak4.txt',
-                             'WISH17701_peak5.txt', 'WISH17701_peak6.txt',
-                             'WISH17701_peak7.txt', 'WISH17701_peak8.txt',
-                             'WISH17701_peak9.txt']]
+        neutron_problems = self.neutronProblems()
 
         paths_to_neutron_problems = get_data_groups(base_path_neutron)[0]
         # Please see the above for loop comments for a description of this one
@@ -88,21 +95,7 @@ class GetProblemFilesTest(unittest.TestCase):
     def test_getDataGroupProblemFiles_return_expected_neutron_paths(self):
 
         base_path_neutron = os.path.join(self.basePath(),'Neutron_data')
-        neutron_problems = ['ENGINX193749_calibration_peak19.txt',
-                            'ENGINX193749_calibration_peak20.txt',
-                            'ENGINX193749_calibration_peak23.txt',
-                            'ENGINX193749_calibration_peak5.txt',
-                            'ENGINX193749_calibration_peak6.txt',
-                            'ENGINX236516_vanadium_bank1_10brk.txt',
-                            'ENGINX236516_vanadium_bank1_20brk.txt',
-                            'EVS14188-90_Gaussian_peaks_1.txt',
-                            'EVS14188-90_Gaussian_peaks_2.txt',
-                            'GEMpeak1.txt',
-                            'WISH17701_peak1.txt', 'WISH17701_peak2.txt',
-                            'WISH17701_peak3.txt', 'WISH17701_peak4.txt',
-                            'WISH17701_peak5.txt', 'WISH17701_peak6.txt',
-                            'WISH17701_peak7.txt', 'WISH17701_peak8.txt',
-                            'WISH17701_peak9.txt']
+        neutron_problems = self.neutronProblems()
 
         paths_to_neutron_problems = get_data_group_problem_files(base_path_neutron)
         paths_to_neutron_problems_expected = []

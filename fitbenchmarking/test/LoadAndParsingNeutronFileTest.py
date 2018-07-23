@@ -40,19 +40,41 @@ class LoadAndParseNeutronFiles(unittest.TestCase):
         return enginxPeak19_path
 
 
+    def NeutronProblemExpected(self):
+        ''' Helper function that returns the problem definiton object obtained
+            by parsing the ENGINX193749_calibration_peak19.txt file '''
+
+        prob = test_problem.FittingTestProblem()
+        prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
+        prob.equation = ("name=LinearBackground;"
+                         "name=BackToBackExponential,"
+                         "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
+        prob.starting_values = None
+        prob.start_x = 23919.5789114
+        prob.end_x = 24189.3183142
+
+        return prob
+
+
+    def MockProblemData(self):
+        ''' Helper function that provides the data in NeutronMockData.nxs
+            stored in a test_problem object '''
+
+        prob = test_problem.FittingTestProblem()
+
+        prob.data_pattern_in = np.array([1, 2, 3, 4, 5, 6])
+        prob.data_pattern_out = np.array([7, 8, 9, 10, 11, 12])
+        prob.data_pattern_obs_errors = np.sqrt(prob.data_pattern_out)
+
+        return prob
+
+
     def test_loadNeutronDataFittingProblemFile_return_ENGINXpeak19_problem_definition_object(self):
 
         enginxPeak19_path = self.ENGINX193749Peak19File()
 
         prob = load_neutron_data_fitting_problem_file(enginxPeak19_path)
-        prob_expected = test_problem.FittingTestProblem()
-        prob_expected.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
-        prob_expected.equation = ("name=LinearBackground;"
-                                  "name=BackToBackExponential,"
-                                  "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
-        prob_expected.starting_values = None
-        prob_expected.start_x = 23919.5789114
-        prob_expected.end_x = 24189.3183142
+        prob_expected = self.NeutronProblemExpected()
 
         self.assertEqual(prob_expected.name, prob.name)
         self.assertEqual(prob_expected.equation, prob.equation)
@@ -83,19 +105,6 @@ class LoadAndParseNeutronFiles(unittest.TestCase):
         self.assertEqual(entries_expected['function'], entries['function'])
         self.assertEqual(entries_expected['fit_parameters'], entries['fit_parameters'])
         self.assertEqual(entries_expected['description'], entries['description'])
-
-
-    def MockProblemData(self):
-        ''' Helper function that provides the data in NeutronMockData.nxs
-            stored in a test_problem object '''
-
-        prob = test_problem.FittingTestProblem()
-
-        prob.data_pattern_in = np.array([1, 2, 3, 4, 5, 6])
-        prob.data_pattern_out = np.array([7, 8, 9, 10, 11, 12])
-        prob.data_pattern_obs_errors = np.sqrt(prob.data_pattern_out)
-
-        return prob
 
 
     def test_getFittingNeutronData_return_MockProblemData(self):
