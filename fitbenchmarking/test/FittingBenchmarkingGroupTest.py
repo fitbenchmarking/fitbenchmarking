@@ -289,9 +289,9 @@ class FittingBenchmarkingGroup(unittest.TestCase):
         self.assertAlmostEqual(MSRAresult1_expected.fit_chi2, result.fit_chi2)
         self.assertAlmostEqual(MSRAresult1_expected.sum_err_sq, result.sum_err_sq, 5)
         self.assertAlmostEqual(MSRAresult1_expected.params[0],result.params[0], 3)
-        self.assertAlmostEqual(MSRAresult1_expected.params[1],result.params[1])
+        self.assertAlmostEqual(MSRAresult1_expected.params[1],result.params[1], 3)
         self.assertAlmostEqual(MSRAresult1_expected.errors[0],result.errors[0], 3)
-        self.assertAlmostEqual(MSRAresult1_expected.errors[1],result.errors[1])
+        self.assertAlmostEqual(MSRAresult1_expected.errors[1],result.errors[1], 3)
 
 
         result = results_per_problem[1][0]
@@ -309,9 +309,9 @@ class FittingBenchmarkingGroup(unittest.TestCase):
         self.assertAlmostEqual(MSRAresult2_expected.fit_chi2, result.fit_chi2)
         self.assertAlmostEqual(MSRAresult2_expected.sum_err_sq, result.sum_err_sq, 5)
         self.assertAlmostEqual(MSRAresult2_expected.params[0],result.params[0], 3)
-        self.assertAlmostEqual(MSRAresult2_expected.params[1],result.params[1])
+        self.assertAlmostEqual(MSRAresult2_expected.params[1],result.params[1], 3)
         self.assertAlmostEqual(MSRAresult2_expected.errors[0],result.errors[0], 3)
-        self.assertAlmostEqual(MSRAresult2_expected.errors[1],result.errors[1])
+        self.assertAlmostEqual(MSRAresult2_expected.errors[1],result.errors[1], 3)
 
 
         result = results_per_problem[2][0]
@@ -350,9 +350,9 @@ class FittingBenchmarkingGroup(unittest.TestCase):
         self.assertAlmostEqual(LANCresult2_expected.fit_chi2, result.fit_chi2)
         self.assertAlmostEqual(LANCresult2_expected.sum_err_sq, result.sum_err_sq, 5)
         self.assertAlmostEqual(LANCresult2_expected.params[0],result.params[0], 3)
-        self.assertAlmostEqual(LANCresult2_expected.params[1],result.params[1])
+        self.assertAlmostEqual(LANCresult2_expected.params[1],result.params[1], 3)
         self.assertAlmostEqual(LANCresult2_expected.errors[0],result.errors[0], 3)
-        self.assertAlmostEqual(LANCresult2_expected.errors[1],result.errors[1])
+        self.assertAlmostEqual(LANCresult2_expected.errors[1],result.errors[1], 3)
 
 
         result = results_per_problem[4][0]
@@ -390,9 +390,9 @@ class FittingBenchmarkingGroup(unittest.TestCase):
         self.assertAlmostEqual(DANresult2_expected.fit_chi2, result.fit_chi2)
         self.assertAlmostEqual(DANresult2_expected.sum_err_sq, result.sum_err_sq, 5)
         self.assertAlmostEqual(DANresult2_expected.params[0],result.params[0], 3)
-        self.assertAlmostEqual(DANresult2_expected.params[1],result.params[1])
+        self.assertAlmostEqual(DANresult2_expected.params[1],result.params[1], 3)
         self.assertAlmostEqual(DANresult2_expected.errors[0],result.errors[0], 3)
-        self.assertAlmostEqual(DANresult2_expected.errors[1],result.errors[1])
+        self.assertAlmostEqual(DANresult2_expected.errors[1],result.errors[1], 3)
 
 
     def test_doFittingBenchmarkGroup_neutron_return_results_ENGINXpeak19_problem(self):
@@ -418,8 +418,8 @@ class FittingBenchmarkingGroup(unittest.TestCase):
         self.assertEqual(prob_expected.end_x, prob.end_x)
 
         self.assertEqual(result_expected.fit_status, result.fit_status)
-        self.assertEqual(result_expected.fit_chi2, result.fit_chi2)
-        self.assertAlmostEqual(result_expected.sum_err_sq, result.sum_err_sq)
+        self.assertAlmostEqual(result_expected.fit_chi2, result.fit_chi2, 5)
+        self.assertAlmostEqual(result_expected.sum_err_sq, result.sum_err_sq, 5)
         self.assertListEqual(result_expected.params, result.params)
         self.assertListEqual(result_expected.errors, result.errors)
 

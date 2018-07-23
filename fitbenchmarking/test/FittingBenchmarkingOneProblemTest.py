@@ -208,8 +208,8 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         result = result[0][0]
         self.assertEqual(result_expected.problem, result.problem)
         self.assertEqual(result_expected.fit_status, result.fit_status)
-        self.assertEqual(result_expected.fit_chi2, result.fit_chi2)
-        self.assertAlmostEqual(result_expected.sum_err_sq, result.sum_err_sq)
+        self.assertAlmostEqual(result_expected.fit_chi2, result.fit_chi2, 5)
+        self.assertAlmostEqual(result_expected.sum_err_sq, result.sum_err_sq, 5)
         self.assertListEqual(result_expected.params, result.params)
         self.assertListEqual(result_expected.errors, result.errors)
 
@@ -231,9 +231,9 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         self.assertAlmostEqual(result1_expected.fit_chi2, result.fit_chi2)
         self.assertAlmostEqual(result1_expected.sum_err_sq, result.sum_err_sq, 5)
         self.assertAlmostEqual(result1_expected.params[0],result.params[0], 3)
-        self.assertAlmostEqual(result1_expected.params[1],result.params[1])
+        self.assertAlmostEqual(result1_expected.params[1],result.params[1], 3)
         self.assertAlmostEqual(result1_expected.errors[0],result.errors[0], 3)
-        self.assertAlmostEqual(result1_expected.errors[1],result.errors[1])
+        self.assertAlmostEqual(result1_expected.errors[1],result.errors[1], 3)
 
         result = results[1][0]
         self.assertEqual(result2_expected.problem, result.problem)
@@ -241,9 +241,9 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         self.assertAlmostEqual(result2_expected.fit_chi2, result.fit_chi2)
         self.assertAlmostEqual(result2_expected.sum_err_sq, result.sum_err_sq, 5)
         self.assertAlmostEqual(result2_expected.params[0],result.params[0], 3)
-        self.assertAlmostEqual(result2_expected.params[1],result.params[1])
+        self.assertAlmostEqual(result2_expected.params[1],result.params[1], 3)
         self.assertAlmostEqual(result2_expected.errors[0],result.errors[0], 3)
-        self.assertAlmostEqual(result2_expected.errors[1],result.errors[1])
+        self.assertAlmostEqual(result2_expected.errors[1],result.errors[1], 3)
 
 
     def test_doFittingBenchmarkOneProblem_mantidFit_fails(self):
