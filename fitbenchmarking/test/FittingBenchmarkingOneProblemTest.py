@@ -282,8 +282,8 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
 
         self.assertEqual(status_expected, status)
         self.assertAlmostEqual(chi2_expected, chi2, 5)
-        self.assertListEqual(params_expected, params)
-        self.assertListEqual(errors_expected, errors)
+        np.testing.assert_almost_equal(params_expected, params)
+        np.testing.assert_almost_equal(errors_expected, errors)
         result, messages = msapi.CompareWorkspaces(fit_wks_expected, fit_wks)
         self.assertTrue(result)
 
