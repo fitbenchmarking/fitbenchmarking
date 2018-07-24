@@ -236,7 +236,7 @@ def make_plots(prob, group_results_dir, best_fit, wks, previous_name, count, use
     @param user_func :: fitting function
     '''
 
-    figures_dir = os.path.join(group_results_dir, "Best_Fit_Figures")
+    figures_dir = os.path.join(group_results_dir, "Figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
 
