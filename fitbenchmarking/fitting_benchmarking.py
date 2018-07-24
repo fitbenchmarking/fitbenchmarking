@@ -176,6 +176,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
             chi_sq = -1
             if not status == 'failed':
                 print("   params: {0}, errors: {1}".format(params, errors))
+
                 if fit_wks:
                     chi_sq = calculate_chi_sq(fit_wks.readY(2))
                     # print " output simulated values: {0}".format(fit_wks.readY(1))
@@ -204,7 +205,6 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
         if best_fit is not None:
             previous_name, count = make_plots(prob, best_fit, wks, previous_name,
                                               count, user_func)
-
 
     return results_fit_problem
 
