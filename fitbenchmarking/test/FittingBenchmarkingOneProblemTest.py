@@ -179,8 +179,6 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
 
     def ExpectedRunFitOutputENGINXpeak19(self):
 
-        reference_fit_wks_path = self.NeutronProblemReferenceFitWks()
-        fit_wks = msapi.Load(reference_fit_wks_path)
         status = 'success'
         chi2 = 0.79243138659204992
         params = [-39.664909893833943, 0.0017093221460772121,
@@ -192,7 +190,7 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
                   0.018928810783550146, 16.399502434549809,
                   6.2850091287092127]
 
-        return status, chi2, fit_wks, params, errors
+        return status, chi2, params, errors
 
 
     def test_doFittingBenchmarkOneProblem_return_neutron_ENGINXpeak19_problem_result_object(self):
@@ -277,15 +275,13 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
 
         status, chi2, fit_wks, params, errors = run_fit(wks, prob, function,
                                                         minimizer, cost_function)
-        (status_expected, chi2_expected, fit_wks_expected,
+        (status_expected, chi2_expected,
          params_expected, errors_expected) = self.ExpectedRunFitOutputENGINXpeak19()
 
         self.assertEqual(status_expected, status)
         self.assertAlmostEqual(chi2_expected, chi2, 5)
         np.testing.assert_almost_equal(params_expected, params)
         np.testing.assert_almost_equal(errors_expected, errors)
-        result, messages = msapi.CompareWorkspaces(fit_wks_expected, fit_wks)
-        self.assertTrue(result)
 
 
     def test_runFit_mantidFit_fails(self):
