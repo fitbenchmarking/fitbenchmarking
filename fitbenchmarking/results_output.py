@@ -88,14 +88,6 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
             save_table_to_file(table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_ACCURACY, file_extension=FILENAME_EXT_HTML)
 
-        # print out accuracy summary table for this group of fit problems
-        # THIS IS BROKEN
-        ext_summary_cols = minimizers
-        ext_summary_rows = ['Best ranking', 'Worst ranking', 'Average', 'Median']
-        tbl_acc_summary = build_rst_table(ext_summary_cols, ext_summary_rows, summary_cells_acc,
-                                          comparison_type='accuracy', comparison_dim='',
-                                          using_errors=use_errors, color_scale=color_scale)
-
         # print out runtime table for this group of fit problems
         tbl_runtime_indiv = build_rst_table(minimizers, linked_problems, norm_runtimes,
                                             comparison_type='runtime', comparison_dim='',
@@ -107,10 +99,6 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
             save_table_to_file(table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_HTML)
 
-        # print out runtime summary table for this group of fit problems
-        tbl_runtime_summary = build_rst_table(ext_summary_cols, ext_summary_rows, summary_cells_runtime,
-                                              comparison_type='runtime', comparison_dim='',
-                                              using_errors=use_errors, color_scale=color_scale)
 
 
 def build_indiv_linked_problems(results_per_test, group_name):
