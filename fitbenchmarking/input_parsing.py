@@ -123,10 +123,12 @@ def parse_nist_file_line_by_line(lines):
         elif line.startswith('Residual Sum of Squares'):
             residual_sum_sq = float(line.split()[4])
 
-        elif line.startswith('Data') and ' x ' in line and ' y ' in line:
+        elif line.startswith("Data:"):
+            print(line)
+            if line.find(" x") != -1 and line.find(" y ") != -1:
 
-            data_pattern_text = lines[idx:]
-            idx = len(lines)
+                data_pattern_text = lines[idx:]
+                idx = len(lines)
 
         else:
             ignored_lines += 1
