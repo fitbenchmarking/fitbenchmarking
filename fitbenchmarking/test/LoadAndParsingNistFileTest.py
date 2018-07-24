@@ -196,6 +196,7 @@ class LoadAndParseNistFiles(unittest.TestCase):
     def test_parseDataPattern_return_none_as_no_data_text(self):
 
         data_points_expected = None
+        data_text = 0
 
         data_points = parse_data_pattern(data_text)
 
