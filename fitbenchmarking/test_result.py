@@ -28,13 +28,12 @@ class FittingTestResult(object):
     def __init__(self):
         self.problem = None
         self.fit_status = None
-        self.fit_chi2 = None
+        self.fit_chi_sq = None
 
         # Workspace with data to fit
         self.fit_wks = None
         self.params = None
         self.errors = None
-        self.sum_err_sq = None
-        
+
         # Time it took to run the Fit algorithm
         self.runtime = None
