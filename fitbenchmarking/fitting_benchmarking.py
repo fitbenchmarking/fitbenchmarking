@@ -28,6 +28,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import time
+from sys import float_info
 
 import numpy as np
 
@@ -147,6 +148,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
     @param count :: the current count for the number of different start values for a given problem
     """
 
+    max_possible_float = float_info.max
     wks, cost_function = prepare_wks_cost_function(prob, use_errors)
 
     # Each NIST problem generate two results per file - from two different starting points
@@ -158,7 +160,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
     # Loop over the different starting points
     for user_func in function_defs:
         # search for lowest chi2
-        min_chi_sq = 1.e20  # used to store min chi-sq value found. initialised to large value
+        min_chi_sq = max_possible_float  # used to store min chi-sq value found. initialised to large value
         best_fit = None
         results_problem_start = []
         for minimizer_name in minimizers:
