@@ -59,8 +59,9 @@ def parse_nist_file(spec_file):
 
     prob = test_problem.FittingTestProblem()
     prob.name = os.path.basename(spec_file.name)
+    name_without_ext = prob.name.split(".")[0]
     prob.linked_name = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data/{1}.shtml>`__".
-                        format(prob.name, prob.name.lower()))
+                        format(name_without_ext, name_without_ext.lower()))
     prob.equation = parsed_eq
     prob.starting_values = starting_values
     prob.data_pattern_in = data_pattern[:, 1]
