@@ -39,10 +39,10 @@ def calc_accuracy_runtime_tbls(results_per_test, minimizers):
     num_minimizers = len(minimizers)
     accuracy_tbl = np.zeros((num_tests, num_minimizers))
     time_tbl = np.zeros((num_tests, num_minimizers))
-    
+
     for test_idx in range(0, num_tests):
         for minimiz_idx in range(0, num_minimizers):
-            accuracy_tbl[test_idx, minimiz_idx] = results_per_test[test_idx][minimiz_idx].sum_err_sq
+            accuracy_tbl[test_idx, minimiz_idx] = results_per_test[test_idx][minimiz_idx].chi_sq
             time_tbl[test_idx, minimiz_idx] = results_per_test[test_idx][minimiz_idx].runtime
 
     return accuracy_tbl, time_tbl
@@ -59,11 +59,11 @@ def calc_norm_summary_tables(accuracy_tbl, time_tbl):
     the best.
     """
     # Min across all minimizers, i.e. for each fit problem what is the lowest chi-squared and the lowest time
-    min_sum_err_sq = np.nanmin(accuracy_tbl, 1)
+    min_chi_sq = np.nanmin(accuracy_tbl, 1)
     min_runtime = np.nanmin(time_tbl, 1)
 
     # create normalised tables
-    norm_acc_rankings = accuracy_tbl / min_sum_err_sq[:, None]
+    norm_acc_rankings = accuracy_tbl / min_chi_sq[:, None]
     norm_runtimes = time_tbl / min_runtime[:, None]
 
     summary_cells_acc = np.array([np.nanmin(norm_acc_rankings, 0),
@@ -108,14 +108,14 @@ def calc_summary_table(minimizers, group_results):
 
         for test_idx in range(0, num_tests):
             for minimiz_idx in range(0, num_minimizers):
-                accuracy_tbl[test_idx, minimiz_idx] = results_per_test[test_idx][minimiz_idx].sum_err_sq
+                accuracy_tbl[test_idx, minimiz_idx] = results_per_test[test_idx][minimiz_idx].chi_sq
                 time_tbl[test_idx, minimiz_idx] = results_per_test[test_idx][minimiz_idx].runtime
 
         # Min across all alternative runs/minimizers
-        min_sum_err_sq = np.nanmin(accuracy_tbl, 1)
+        min_chi_sq = np.nanmin(accuracy_tbl, 1)
         min_runtime = np.nanmin(time_tbl, 1)
 
-        norm_acc_rankings = accuracy_tbl / min_sum_err_sq[:, None]
+        norm_acc_rankings = accuracy_tbl / min_chi_sq[:, None]
         norm_runtime_rankings = time_tbl / min_runtime[:, None]
 
         groups_norm_acc[group_idx, :] = nanmedian(norm_acc_rankings, 0)

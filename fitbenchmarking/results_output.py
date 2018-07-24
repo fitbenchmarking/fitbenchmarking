@@ -280,7 +280,7 @@ def print_tables_simple_text(minimizers, results_per_test, accuracy_tbl, time_tb
     header += "\n"
     print(header)
 
-    min_sum_err_sq = np.amin(accuracy_tbl, 1)
+    min_chi_sq = np.amin(accuracy_tbl, 1)
     num_tests = len(results_per_test)
     results_text = ''
     for test_idx in range(0, num_tests):
@@ -288,8 +288,8 @@ def print_tables_simple_text(minimizers, results_per_test, accuracy_tbl, time_tb
         for minimiz_idx, minimiz in enumerate(minimizers):
             # 'e' format is easier to read in raw text output than 'g'
             results_text += (" {0:.10g}".
-                             format(results_per_test[test_idx][minimiz_idx].sum_err_sq /
-                                    min_sum_err_sq[test_idx]))
+                             format(results_per_test[test_idx][minimiz_idx].chi_sq /
+                                    min_chi_sq[test_idx]))
         results_text += "\n"
 
     # If some of the fits fail badly, they'll produce 'nan' values =>

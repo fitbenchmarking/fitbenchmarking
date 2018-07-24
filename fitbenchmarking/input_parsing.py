@@ -63,7 +63,7 @@ def parse_nist_file(spec_file):
                         format(prob.name, prob.name.lower()))
     prob.equation = parsed_eq
     prob.starting_values = starting_values
-    prob.data_pattern_in = data_pattern[:, 1:]
+    prob.data_pattern_in = data_pattern[:, 1]
     prob.data_pattern_out = data_pattern[:, 0]
     prob.ref_residual_sum_sq = residual_sum_sq
 

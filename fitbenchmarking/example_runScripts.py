@@ -7,9 +7,10 @@ import results_output as fitout
 
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
               'Conjugate gradient (Polak-Ribiere imp.)',
+              'Damped GaussNewton',
               'Levenberg-Marquardt', 'Levenberg-MarquardtMD',
               'Simplex','SteepestDescent',
-              'Trust Region', 'Damped GaussNewton']
+              'Trust Region']
 
 group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
                'NIST, "higher" difficulty', "CUTEst", "Neutron data"]
@@ -59,7 +60,6 @@ for idx, group_results in enumerate(results_per_group):
                                           group_name=group_suffix_names[idx],
                                           use_errors=use_errors,
                                           simple_text=False, rst=True, save_to_file=True, color_scale=color_scale)
-
 
 header = '\n\n**************** OVERALL SUMMARY - ALL GROUPS ******** \n\n'
 print(header)
