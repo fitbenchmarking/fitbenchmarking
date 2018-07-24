@@ -335,8 +335,10 @@ def prepare_wks_cost_function(prob, use_errors):
     if use_errors:
         data_e = None
         if prob.data_pattern_obs_errors is None:
-            # Fake observational errors
-            data_e = np.sqrt(prob.data_pattern_out)
+            # Fake observational errors - no correct answer (since we do not know
+            # where the y values come from), but we are taking
+            # the errrors to be the square root of the absolute y value
+            data_e = np.sqrt(abs(prob.data_pattern_out))
         else:
             data_e = prob.data_pattern_obs_errors
 
