@@ -124,8 +124,7 @@ def parse_nist_file_line_by_line(lines):
             residual_sum_sq = float(line.split()[4])
 
         elif line.startswith("Data:"):
-            print(line)
-            if line.find(" x") != -1 and line.find(" y ") != -1:
+            if " x" in line and " y " in line:
 
                 data_pattern_text = lines[idx:]
                 idx = len(lines)
