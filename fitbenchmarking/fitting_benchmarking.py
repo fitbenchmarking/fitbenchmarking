@@ -158,7 +158,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
     # Loop over the different starting points
     for user_func in function_defs:
         # search for lowest chi2
-        min_chi_sq = 1.e100  # used to store min chi-sq value found. initialised to large value
+        min_chi_sq = 1.e20  # used to store min chi-sq value found. initialised to large value
         best_fit = None
         results_problem_start = []
         for minimizer_name in minimizers:
