@@ -52,7 +52,8 @@ SCRIPT_DIR = os.path.dirname(__file__)
 
 
 def print_group_results_tables(minimizers, results_per_test, problems_obj, group_name, use_errors,
-                               simple_text=True, rst=False, save_to_file=False, color_scale=None):
+                               simple_text=True, rst=False, save_to_file=False, color_scale=None,
+                               results_dir=None):
     """
     Prints out results for a group of fit problems in accuracy and runtime tables, in a summary
     format and both as simple text, rst format and/or to file depending on input arguments
@@ -71,6 +72,9 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
                           must be consistent with the style sheet used in the documentation pages (5
                           at the moment).
     """
+
+    tables_dir = make_results_directory(results_dir, group_name)
+
     linked_problems = build_indiv_linked_problems(results_per_test, group_name)
     # Calculate summary tables
     accuracy_tbl, runtime_tbl = postproc.calc_accuracy_runtime_tbls(results_per_test, minimizers)
@@ -93,9 +97,9 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
 
         # optionally save the above table to a .txt file and a .html file
         if save_to_file:
-            save_table_to_file(table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
+            save_table_to_file(results_dir=tables_dir, table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_ACCURACY, file_extension=FILENAME_EXT_TXT)
-            save_table_to_file(table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
+            save_table_to_file(results_dir=tables_dir, table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_ACCURACY, file_extension=FILENAME_EXT_HTML)
 
         # print out accuracy summary table for this group of fit problems
@@ -121,9 +125,9 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
 
         # optionally save the above table to a .txt file and a .html file
         if save_to_file:
-            save_table_to_file(table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
+            save_table_to_file(results_dir=tables_dir, table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_TXT)
-            save_table_to_file(table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
+            save_table_to_file(results_dir=tables_dir, table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_HTML)
 
         # print out runtime summary table for this group of fit problems
@@ -526,7 +530,7 @@ def format_cell_value_rst(value, width=None, color_scale=None, items_link=None):
     return value_text
 
 
-def save_table_to_file(table_data, errors, group_name, metric_type, file_extension):
+def save_table_to_file(results_dir, table_data, errors, group_name, metric_type, file_extension):
     """
     Saves a group results table or overall results table to a given file type.
 
@@ -540,6 +544,7 @@ def save_table_to_file(table_data, errors, group_name, metric_type, file_extensi
     file_name = ('comparison_{weighted}_{version}_{metric_type}_{group_name}.'
                  .format(weighted=weighted_suffix_string(errors),
                          version=BENCHMARK_VERSION_STR, metric_type=metric_type, group_name=group_name))
+    file_name = os.path.join(results_dir, file_name)
 
     if file_extension == 'html':
         rst_content = '.. include:: ' + str(os.path.join(SCRIPT_DIR, 'color_definitions.txt'))
@@ -549,7 +554,7 @@ def save_table_to_file(table_data, errors, group_name, metric_type, file_extensi
     with open(file_name + file_extension, 'w') as tbl_file:
         print(table_data, file=tbl_file)
     print('Saved {file_name}{extension} to {working_directory}'.
-          format(file_name=file_name, extension=file_extension, working_directory=WORKING_DIR))
+          format(file_name=file_name, extension=file_extension, working_directory=results_dir))
 
 
 def weighted_suffix_string(use_errors):
@@ -559,3 +564,23 @@ def weighted_suffix_string(use_errors):
     """
     values = {True: 'weighted', False: 'unweighted'}
     return values[use_errors]
+
+
+def make_results_directory(results_dir, group_name):
+
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    if results_dir is None:
+        results_dir = os.path.join(current_dir, "results")
+
+    if 'nist' in group_name:
+        group_results_dir = os.path.join(results_dir, 'nist')
+        tables_dir = os.path.join(group_results_dir, "Tables", group_name)
+
+    elif 'neutron' in group_name:
+        group_results_dir = os.path.join(results_dir, 'neutron')
+        tables_dir = os.path.join(group_results_dir, "Tables")
+
+    if not os.path.exists(tables_dir):
+        os.makedirs(tables_dir)
+
+    return tables_dir
