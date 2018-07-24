@@ -99,7 +99,7 @@ class GetProblemFilesTest(unittest.TestCase):
 
         paths_to_neutron_problems = get_data_group_problem_files(base_path_neutron)
         paths_to_neutron_problems_expected = []
-        for idx, problem in enumerate(neutron_problems):
+        for idx, problem in enumerate(neutron_problems[0]):
             paths_to_neutron_problems_expected.append(os.path.join(base_path_neutron, problem))
 
         self.assertListEqual(paths_to_neutron_problems_expected,
