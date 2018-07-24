@@ -7,9 +7,10 @@ import results_output as fitout
 
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
               'Conjugate gradient (Polak-Ribiere imp.)',
+              'Damped GaussNewton',
               'Levenberg-Marquardt', 'Levenberg-MarquardtMD',
               'Simplex','SteepestDescent',
-              'Trust Region', 'Damped GaussNewton']
+              'Trust Region']
 
 group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
                'NIST, "higher" difficulty', "CUTEst", "Neutron data"]
@@ -34,7 +35,7 @@ neutron_data_group_dirs = [os.path.join(base_problem_files_dir, 'Neutron_data')]
 muon_data_group_dir = [os.path.join(base_problem_files_dir, 'Muon_data')]
 
 # choice the data to run
-run_data = "neutron"
+run_data = "nist"
 
 if run_data == "neutron":
     problems, results_per_group = fitbk.do_fitting_benchmark(neutron_data_group_dirs=neutron_data_group_dirs,
