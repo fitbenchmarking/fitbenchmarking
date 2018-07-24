@@ -281,7 +281,7 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
          params_expected, errors_expected) = self.ExpectedRunFitOutputENGINXpeak19()
 
         self.assertEqual(status_expected, status)
-        self.assertEqual(chi2_expected, chi2)
+        self.assertAlmostEqual(chi2_expected, chi2, 5)
         self.assertListEqual(params_expected, params)
         self.assertListEqual(errors_expected, errors)
         result, messages = msapi.CompareWorkspaces(fit_wks_expected, fit_wks)
