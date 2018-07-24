@@ -343,15 +343,15 @@ def prepare_wks_cost_function(prob, use_errors):
             # Fake observational errors - no correct answer (since we do not know
             # where the y values come from), but we are taking
             # the errrors to be the square root of the absolute y value
-            data_e = np.sqrt(abs(prob.data_pattern_out))
+            data_e = np.sqrt(abs(prob.data_y))
         else:
             data_e = prob.data_pattern_obs_errors
 
-        wks = msapi.CreateWorkspace(DataX=prob.data_pattern_in, DataY=prob.data_pattern_out,
+        wks = msapi.CreateWorkspace(DataX=prob.data_x, DataY=prob.data_y,
                                     DataE=data_e)
         cost_function = 'Least squares'
     else:
-        wks = msapi.CreateWorkspace(DataX=prob.data_pattern_in, DataY=prob.data_pattern_out)
+        wks = msapi.CreateWorkspace(DataX=prob.data_x, DataY=prob.data_y)
         cost_function = 'Unweighted least squares'
 
     return wks, cost_function
@@ -436,13 +436,10 @@ def get_nist_problem_files(search_dir):
     nist_lower = ['Misra1a.dat', 'Chwirut2.dat', 'Chwirut1.dat', 'Lanczos3.dat',
                   'Gauss1.dat', 'Gauss2.dat', 'DanWood.dat', 'Misra1b.dat']
 
-    nist_average = ['Kirby2.dat', 'Hahn1.dat',
-                    # 'Nelson.dat' needs log[y] parsing / DONE, needs x1, x2
-                    'MGH17.dat', 'Lanczos1.dat', 'Lanczos2.dat', 'Gauss3.dat',
-                    'Misra1c.dat', 'Misra1d.dat',
-                    # 'Roszman1.dat' <=== needs handling the  'pi = 3.1415...' / DOME
-                    # And the 'arctan()'/ DONE, but generated lots of NaNs
+    nist_average = ['Kirby2.dat', 'Hahn1.dat', 'MGH17.dat', 'Lanczos1.dat',
+                    'Lanczos2.dat', 'Gauss3.dat', 'Misra1c.dat', 'Misra1d.dat',
                     'ENSO.dat']
+
     nist_higher = ['MGH09.dat', 'Thurber.dat', 'BoxBOD.dat', 'Rat42.dat',
                    'MGH10.dat', 'Eckerle4.dat', 'Rat43.dat', 'Bennett5.dat']
 

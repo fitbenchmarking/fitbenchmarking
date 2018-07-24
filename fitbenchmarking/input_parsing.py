@@ -63,8 +63,8 @@ def parse_nist_file(spec_file):
                         format(prob.name, prob.name.lower()))
     prob.equation = parsed_eq
     prob.starting_values = starting_values
-    prob.data_pattern_in = data_pattern[:, 1]
-    prob.data_pattern_out = data_pattern[:, 0]
+    prob.data_x = data_pattern[:, 1]
+    prob.data_y = data_pattern[:, 0]
     prob.ref_residual_sum_sq = residual_sum_sq
 
     return prob
@@ -294,7 +294,7 @@ def get_fitting_neutron_data(fname, prob):
     import mantid.simpleapi as msapi
 
     wks = msapi.Load(Filename=fname)
-    prob.data_pattern_in = wks.readX(0)
-    prob.data_pattern_out = wks.readY(0)
+    prob.data_x = wks.readX(0)
+    prob.data_y = wks.readY(0)
     prob.data_pattern_obs_errors = wks.readE(0)
     prob.ref_residual_sum_sq = 0
