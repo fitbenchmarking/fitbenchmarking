@@ -28,6 +28,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import time
+from sys import float_info
 
 import numpy as np
 
@@ -147,6 +148,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
     @param count :: the current count for the number of different start values for a given problem
     """
 
+    max_possible_float = float_info.max
     wks, cost_function = prepare_wks_cost_function(prob, use_errors)
 
     # Each NIST problem generate two results per file - from two different starting points
@@ -154,45 +156,45 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
 
     # Get function definitions for the problem - one for each starting point
     function_defs = get_function_definitions(prob)
-    # search for lowest chi2
-    min_sum_err_sq = 1.e20
+
     # Loop over the different starting points
     for user_func in function_defs:
+        # search for lowest chi2
+        min_chi_sq = max_possible_float  # used to store min chi-sq value found. initialised to large value
+        best_fit = None
         results_problem_start = []
         for minimizer_name in minimizers:
             t_start = time.clock()
 
-            status, chi2, fit_wks, params, errors = run_fit(wks, prob, function=user_func,
-                                                            minimizer=minimizer_name,
-                                                            cost_function=cost_function)
+            status, fit_wks, params, errors = run_fit(wks, prob, function=user_func,
+                                                      minimizer=minimizer_name,
+                                                      cost_function=cost_function)
             t_end = time.clock()
 
-            print("*** with minimizer {0}, Status: {1}, chi2: {2}".format(minimizer_name, status, chi2))
+            print("*** with minimizer {0}, Status: {1}".format(minimizer_name, status))
 
-            best_fit = None
-            sum_err_sq = -1
+            chi_sq = -1
             if not status == 'failed':
                 print("   params: {0}, errors: {1}".format(params, errors))
                 if fit_wks:
-                    sum_err_sq = sum_of_squares(fit_wks.readY(2))
+                    chi_sq = calculate_chi_sq(fit_wks.readY(2))
                     # print " output simulated values: {0}".format(fit_wks.readY(1))
-                    if sum_err_sq <min_sum_err_sq:
-                        tmp=msapi.ConvertToPointData(fit_wks)
-                        best_fit=data(minimizer_name,tmp.readX(1),tmp.readY(1))
-                        min_sum_err_sq=sum_err_sq
+                    if chi_sq <min_chi_sq:
+                        tmp = msapi.ConvertToPointData(fit_wks)
+                        best_fit = data(minimizer_name,tmp.readX(1),tmp.readY(1))
+                        min_chi_sq = chi_sq
                 else:
-                    sum_err_sq = float("nan")
+                    chi_sq = float("nan")
                     print(" WARNING: no output fit workspace")
-                print("sum sq: {0}".format(sum_err_sq))
+                print("sum sq: {0}".format(chi_sq))
 
             result = test_result.FittingTestResult()
             result.problem = prob
             result.fit_status = status
-            result.fit_chi2 = chi2
             result.params = params
             result.errors = errors
-            result.sum_err_sq = sum_err_sq if not sum_err_sq == -1 else np.nan
-            result.runtime = t_end - t_start if not np.isnan(chi2) else np.nan
+            result.chi_sq = chi_sq if not chi_sq == -1 else np.nan
+            result.runtime = t_end - t_start if not np.isnan(chi_sq) else np.nan
 
             print("Result object: {0}".format(result))
             results_problem_start.append(result)
@@ -310,16 +312,13 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function=
                                IgnoreInvalidData=ignore_invalid,
                                StartX=prob.start_x, EndX=prob.end_x)
 
-        calc_chi2 = msapi.CalculateChiSquared(Function=function,
-                                              InputWorkspace=wks, IgnoreInvalidData=ignore_invalid)
-
     except (RuntimeError, ValueError) as err:
         buff = "Warning, fit probably failed. Going on. Error: " + str(err)
         print(buff)
 
 
     if fit_result is None:
-        return 'failed', np.nan, np.nan, np.nan, np.nan
+        return 'failed', np.nan, np.nan, np.nan
 
     else:
         param_tbl = fit_result.OutputParameters
@@ -330,7 +329,7 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function=
             params = None
             errors = None
 
-        return fit_result.OutputStatus, fit_result.OutputChi2overDoF, fit_result.OutputWorkspace, params, errors
+        return fit_result.OutputStatus, fit_result.OutputWorkspace, params, errors
 
 
 def prepare_wks_cost_function(prob, use_errors):
@@ -356,7 +355,10 @@ def prepare_wks_cost_function(prob, use_errors):
     return wks, cost_function
 
 
-def sum_of_squares(values):
+def calculate_chi_sq(values):
+    ''' Function that calculates chi squared given a vector of differences
+        between the actual data points and the data points of the fit '''
+
     return np.sum(np.square(values))
 
 
