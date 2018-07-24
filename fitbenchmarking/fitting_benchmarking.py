@@ -31,7 +31,6 @@ import time
 from sys import float_info
 
 import numpy as np
-
 import mantid.simpleapi as msapi
 
 import input_parsing as iparsing
@@ -61,8 +60,6 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     @param use_errors :: whether to use observational errors as weights in the cost function
     """
 
-    # Several blocks of problems. Results for each block will be calculated sequentially, and
-    # will go into a separate table
     problem_groups = {}
 
     if nist_group_dir:
@@ -175,11 +172,9 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
 
             chi_sq = -1
             if not status == 'failed':
-                print("   params: {0}, errors: {1}".format(params, errors))
 
                 if fit_wks:
                     chi_sq = calculate_chi_sq(fit_wks.readY(2))
-                    # print " output simulated values: {0}".format(fit_wks.readY(1))
                     if chi_sq <min_chi_sq:
                         tmp = msapi.ConvertToPointData(fit_wks)
                         best_fit = data(minimizer_name,tmp.readX(1),tmp.readY(1))
@@ -202,9 +197,8 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
 
         results_fit_problem.append(results_problem_start)
 
-        if best_fit is not None:
-            previous_name, count = make_plots(prob, best_fit, wks, previous_name,
-                                              count, user_func)
+        previous_name, count = make_plots(prob, best_fit, wks, previous_name,
+                                          count, user_func)
 
     return results_fit_problem
 
@@ -296,8 +290,10 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function=
 
     @returns the fitted parameter values and error estimates for these
     """
+
     fit_result = None
     param_tbl = None
+
     try:
         # When using 'Least squares' (weighted by errors), ignore nans and zero errors, but don't
         # ignore them when using 'Unweighted least squares' as that would ignore all values!
@@ -313,8 +309,7 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function=
                                StartX=prob.start_x, EndX=prob.end_x)
 
     except (RuntimeError, ValueError) as err:
-        buff = "Warning, fit probably failed. Going on. Error: " + str(err)
-        print(buff)
+        print("Warning, fit probably failed. Going on. Error: " + str(err))
 
 
     if fit_result is None:
@@ -373,13 +368,16 @@ def splitByString(name,min_length,loop=0,splitter=0):
     """
     tmp = name[min_length:]
     split_at=[";","+",","]
+
     if splitter+1 >len(split_at):
         if loop>3:
             print ("failed ",name)
             return "..."
         else:
             return splitByString(name,min_length,loop+1)
+
     loc=tmp.find(split_at[splitter])+min_length
+
     if loc ==-1+min_length or loc > min_length*2:
         if len(tmp)>min_length:
             return splitByString(name,min_length,loop,splitter+1)
@@ -401,14 +399,17 @@ def get_function_definitions(prob):
 
     @returns :: list of function strings ready for Fit()
     """
+
     function_defs = []
+
     if prob.starting_values:
         num_starts = len(prob.starting_values[0][1])
         for start_idx in range(0, num_starts):
 
-            print("=================== starting values,: {0}, with idx: {1} ================".
+            print("="*15 + " starting values,: {0}, with idx: {1} " + 15*"=".
                   format(prob.starting_values, start_idx))
             start_string = ''  # like: 'b1=250, b2=0.0005'
+
             for param in prob.starting_values:
                 start_string += ('{0}={1},'.format(param[0], param[1][start_idx]))
 
@@ -419,6 +420,7 @@ def get_function_definitions(prob):
     else:
         # Equation from a neutron data spec file. Ready to be used
         function_defs.append(prob.equation)
+
     return function_defs
 
 
@@ -430,6 +432,7 @@ def get_nist_problem_files(search_dir):
 
     @returns :: list of list of problem files
     """
+
     # Grouped by "level of difficulty"
     nist_lower = ['Misra1a.dat', 'Chwirut2.dat', 'Chwirut1.dat', 'Lanczos3.dat',
                   'Gauss1.dat', 'Gauss2.dat', 'DanWood.dat', 'Misra1b.dat']

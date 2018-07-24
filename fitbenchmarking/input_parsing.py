@@ -34,40 +34,44 @@ import test_problem
 
 
 def load_nist_fitting_problem_file(problem_filename):
-    with open(problem_filename) as spec_file:
-        return parse_nist_file(spec_file)
-
-
-def parse_nist_file(spec_file):
     """
     Produce a fitting test problem definition object from a NIST text file.
 
     @param spec_file :: input file, as a standard NIST text (.dat) file
     """
 
-    print("\n*** Loading NIST data file %s ***" %os.path.basename(spec_file.name))
+    with open(problem_filename) as spec_file:
 
-    lines = spec_file.readlines()
-    equation_text, data_pattern_text, starting_values, residual_sum_sq = parse_nist_file_line_by_line(lines)
+        print("\n*** Loading NIST data file %s ***" %os.path.basename(spec_file.name))
 
-    if not equation_text or not data_pattern_text:
-        raise RuntimeError('Could not find the equation and data after parsing the lines of this file: {0}'.
-                           format(spec_file.name))
+        lines = spec_file.readlines()
+        (equation_text, data_pattern_text,
+         starting_values, residual_sum_sq) = parse_nist_file_line_by_line(lines)
 
-    data_pattern = parse_data_pattern(data_pattern_text)
-    parsed_eq = parse_equation(equation_text)
+        if not equation_text:
+            raise RuntimeError('Could not find the equation after parsing the lines of this file: {0}'.
+                               format(spec_file.name))
+        elif not data_pattern_text:
+            raise RuntimeError('Could not find the data after parsing the lines of this file: {0}'.
+                               format(spec_file.name))
+        elif not residual_sum_sq:
+            raise RuntimeError('Could not find the residual sum sq after parsing the lines of this file: {0}'.
+                               format(spec_file.name))
 
-    prob = test_problem.FittingTestProblem()
-    prob.name = os.path.basename(spec_file.name)
-    prob.linked_name = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data/{1}.shtml>`__".
-                        format(prob.name, prob.name.lower()))
-    prob.equation = parsed_eq
-    prob.starting_values = starting_values
-    prob.data_pattern_in = data_pattern[:, 1]
-    prob.data_pattern_out = data_pattern[:, 0]
-    prob.ref_residual_sum_sq = residual_sum_sq
+        data_pattern = parse_data_pattern(data_pattern_text)
+        parsed_eq = parse_equation(equation_text)
 
-    return prob
+        prob = test_problem.FittingTestProblem()
+        prob.name = os.path.basename(spec_file.name)
+        prob.linked_name = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data/{1}.shtml>`__".
+                            format(prob.name, prob.name.lower()))
+        prob.equation = parsed_eq
+        prob.starting_values = starting_values
+        prob.data_pattern_in = data_pattern[:, 1]
+        prob.data_pattern_out = data_pattern[:, 0]
+        prob.ref_residual_sum_sq = residual_sum_sq
+
+        return prob
 
 
 def parse_nist_file_line_by_line(lines):
@@ -86,6 +90,7 @@ def parse_nist_file_line_by_line(lines):
     residual_sum_sq = 0
     equation_text = None
     starting_values = None
+
     # The first line should be:
     # NIST/ITL StRD
     while idx < len(lines):
@@ -140,6 +145,7 @@ def parse_nist_file_line_by_line(lines):
     print("%d lines were ignored in this problem file.\n"
           "If any problems occur, please uncomment line above this print"
           "to display the full output." %ignored_lines)
+
     return equation_text, data_pattern_text, starting_values, residual_sum_sq
 
 
