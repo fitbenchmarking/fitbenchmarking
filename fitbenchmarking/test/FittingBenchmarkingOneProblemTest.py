@@ -210,8 +210,8 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         self.assertEqual(result_expected.fit_status, result.fit_status)
         self.assertAlmostEqual(result_expected.fit_chi2, result.fit_chi2, 5)
         self.assertAlmostEqual(result_expected.sum_err_sq, result.sum_err_sq, 5)
-        self.assertListEqual(result_expected.params, result.params)
-        self.assertListEqual(result_expected.errors, result.errors)
+        np.testing.assert_almost_equal(result_expected.params, result.params)
+        np.testing.assert_almost_equal(result_expected.errors, result.errors)
 
 
     def test_doFittingBenchmarkOneProblem_return_nist_Misra1a_problem_result_object(self):
