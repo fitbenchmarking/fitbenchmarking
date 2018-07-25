@@ -54,6 +54,7 @@ SCRIPT_DIR = os.path.dirname(__file__)
 def print_group_results_tables(minimizers, results_per_test, problems_obj, group_name, use_errors,
                                simple_text=True, rst=False, save_to_file=False, color_scale=None,
                                results_dir=None):
+
     """
     Prints out results for a group of fit problems in accuracy and runtime tables, in a summary
     format and both as simple text, rst format and/or to file depending on input arguments
@@ -76,94 +77,33 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
     tables_dir = make_results_directory(results_dir, group_name)
 
     linked_problems = build_indiv_linked_problems(results_per_test, group_name)
-    # Calculate summary tables
     accuracy_tbl, runtime_tbl = postproc.calc_accuracy_runtime_tbls(results_per_test, minimizers)
     norm_acc_rankings, norm_runtimes, summary_cells_acc, summary_cells_runtime = \
         postproc.calc_norm_summary_tables(accuracy_tbl, runtime_tbl)
-
-    if simple_text:
-        print_tables_simple_text(minimizers, results_per_test, accuracy_tbl, runtime_tbl, norm_acc_rankings)
 
     if rst:
         # print out accuracy table for this group of fit problems
         tbl_acc_indiv = build_rst_table(minimizers, linked_problems, norm_acc_rankings,
                                         comparison_type='accuracy', comparison_dim='',
                                         using_errors=use_errors, color_scale=color_scale)
-        header = " ************* Comparison of sum of square errors (RST): *********\n"
-        header += " *****************************************************************\n"
-        header += "\n\n"
-        print(header)
-        print (tbl_acc_indiv)
 
-        # optionally save the above table to a .txt file and a .html file
         if save_to_file:
             save_table_to_file(results_dir=tables_dir, table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_ACCURACY, file_extension=FILENAME_EXT_TXT)
             save_table_to_file(results_dir=tables_dir, table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_ACCURACY, file_extension=FILENAME_EXT_HTML)
 
-        # print out accuracy summary table for this group of fit problems
-        # THIS IS BROKEN
-        ext_summary_cols = minimizers
-        ext_summary_rows = ['Best ranking', 'Worst ranking', 'Average', 'Median']
-        tbl_acc_summary = build_rst_table(ext_summary_cols, ext_summary_rows, summary_cells_acc,
-                                          comparison_type='accuracy', comparison_dim='',
-                                          using_errors=use_errors, color_scale=color_scale)
-        header = '**************** Statistics/Summary (accuracy): ******** \n\n'
-        print(header)
-        print(tbl_acc_summary)
-
         # print out runtime table for this group of fit problems
         tbl_runtime_indiv = build_rst_table(minimizers, linked_problems, norm_runtimes,
                                             comparison_type='runtime', comparison_dim='',
                                             using_errors=use_errors, color_scale=color_scale)
-        header = " ************* Comparison of runtimes (RST): ****************\n"
-        header += " *****************************************************************\n"
-        header += "\n\n"
-        print(header)
-        print (tbl_runtime_indiv)
 
-        # optionally save the above table to a .txt file and a .html file
         if save_to_file:
             save_table_to_file(results_dir=tables_dir, table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_TXT)
             save_table_to_file(results_dir=tables_dir, table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_HTML)
 
-        # print out runtime summary table for this group of fit problems
-        tbl_runtime_summary = build_rst_table(ext_summary_cols, ext_summary_rows, summary_cells_runtime,
-                                              comparison_type='runtime', comparison_dim='',
-                                              using_errors=use_errors, color_scale=color_scale)
-        header = '**************** Statistics/Summary (runtime): ******** \n\n'
-        print(header)
-        print(tbl_runtime_summary)
-
-
-def print_overall_results_table(minimizers, group_results, problems, group_names, use_errors,
-                                simple_text=True, save_to_file=False):
-
-    groups_norm_acc, groups_norm_runtime = postproc.calc_summary_table(minimizers, group_results)
-
-    grp_linked_names = build_group_linked_names(group_names)
-
-    header = '**************** Accuracy ******** \n\n'
-    print(header)
-    tbl_all_summary_acc = build_rst_table(minimizers, grp_linked_names, groups_norm_acc,
-                                          comparison_type='summary', comparison_dim='accuracy',
-                                          using_errors=use_errors)
-    print(tbl_all_summary_acc)
-
-    if save_to_file:
-        save_table_to_file(tbl_all_summary_acc, use_errors, 'summary', FILENAME_SUFFIX_ACCURACY, FILENAME_EXT_TXT)
-        save_table_to_file(tbl_all_summary_acc, use_errors, 'summary', FILENAME_SUFFIX_ACCURACY, FILENAME_EXT_HTML)
-    header = '**************** Runtime ******** \n\n'
-    print (header)
-    tbl_all_summary_runtime = build_rst_table(minimizers, grp_linked_names, groups_norm_runtime,
-                                              comparison_type='summary', comparison_dim='runtime',
-                                              using_errors=use_errors)
-    if save_to_file:
-        save_table_to_file(tbl_all_summary_runtime, use_errors, 'summary', FILENAME_SUFFIX_RUNTIME, FILENAME_EXT_TXT)
-        save_table_to_file(tbl_all_summary_runtime, use_errors, 'summary', FILENAME_SUFFIX_RUNTIME, FILENAME_EXT_HTML)
 
 
 def build_indiv_linked_problems(results_per_test, group_name):
@@ -202,27 +142,6 @@ def build_indiv_linked_problems(results_per_test, group_name):
             linked_problems.append(name)
 
     return linked_problems
-
-
-def build_group_linked_names(group_names):
-    """
-    Add a link for RST tables if there is a website or similar describing the group.
-
-    @param group_names :: names as plain text
-
-    @returns :: names with RST links if available
-    """
-    linked_names = []
-    for name in group_names:
-        # This should be tidied up. We currently don't have links for groups other than NIST
-        if 'NIST' in name:
-            linked = "`{0} <http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`__".format(name)
-        else:
-            linked = name
-
-        linked_names.append(linked)
-
-    return linked_names
 
 
 def build_visual_display_page(prob_results, group_name):
@@ -265,69 +184,6 @@ def build_visual_display_page(prob_results, group_name):
 
     rst_link = '`<' + file_name + '.' + FILENAME_EXT_HTML + '>`_'  # `<cutest_palmer6c.dat.html>`_
     return rst_link
-
-
-def print_tables_simple_text(minimizers, results_per_test, accuracy_tbl, time_tbl, norm_acc_rankings):
-    """
-    Produces tables in plain ascii, without any markup.  This is much
-    easier to read than RST and useful when developing or just
-    checking the output of the runs from the system test logs.
-
-    """
-
-    header = " ============= Comparison of sum of square errors: ===============\n"
-    header += " =================================================================\n"
-    header += "\n\n"
-
-    for minimiz in minimizers:
-        header += " {0} |".format(minimiz)
-    header += "\n"
-    print(header)
-
-    min_chi_sq = np.amin(accuracy_tbl, 1)
-    num_tests = len(results_per_test)
-    results_text = ''
-    for test_idx in range(0, num_tests):
-        results_text += "{0}\t".format(results_per_test[test_idx][0].problem.name)
-        for minimiz_idx, minimiz in enumerate(minimizers):
-            # 'e' format is easier to read in raw text output than 'g'
-            results_text += (" {0:.10g}".
-                             format(results_per_test[test_idx][minimiz_idx].chi_sq /
-                                    min_chi_sq[test_idx]))
-        results_text += "\n"
-
-    # If some of the fits fail badly, they'll produce 'nan' values =>
-    # 'nan' errors. Requires np.nanmedian() and the like nan-safe
-    # functions.
-
-    # summary lines
-    results_text += '---------------- Summary (accuracy): -------- \n'
-    results_text += 'Best ranking: {0}\n'.format(np.nanmin(norm_acc_rankings, 0))
-    results_text += 'Worst ranking: {0}\n'.format(np.nanmax(norm_acc_rankings, 0))
-    results_text += 'Mean: {0}\n'.format(nanmean(norm_acc_rankings, 0))
-    results_text += 'Median: {0}\n'.format(nanmedian(norm_acc_rankings, 0))
-    results_text += '\n'
-
-    print(results_text)
-
-    print(" ======== Time: =======")
-    time_text = ''
-    for test_idx in range(0, num_tests):
-        time_text += "{0}\t".format(results_per_test[test_idx][0].problem.name)
-        for minimiz_idx, minimiz in enumerate(minimizers):
-            time_text += " {0}".format(results_per_test[test_idx][minimiz_idx].runtime)
-        time_text += "\n"
-
-    min_runtime = np.amin(time_tbl, 1)
-    norm_runtimes = time_tbl / min_runtime[:, None]
-    time_text += '---------------- Summary (run time): -------- \n'
-    time_text += 'Best ranking: {0}\n'.format(np.nanmin(norm_runtimes, 0))
-    time_text += 'Worst ranking: {0}\n'.format(np.nanmax(norm_runtimes, 0))
-    time_text += 'Mean: {0}\n'.format(nanmean(norm_runtimes, 0))
-    time_text += 'Median: {0}\n'.format(nanmedian(norm_runtimes, 0))
-    time_text += '\n'
-
-    print(time_text)
 
 
 def build_rst_table(columns_txt, rows_txt, cells, comparison_type, comparison_dim,

@@ -2,8 +2,8 @@
 # fit problems
 
 import os
-import fitting_benchmarking as fitbk
-import results_output as fitout
+from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
+from results_output import print_group_results_tables as printTables
 
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
               'Conjugate gradient (Polak-Ribiere imp.)',
@@ -26,13 +26,13 @@ input_data_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(os.path.normpath(input_data_dir))
 base_problem_files_dir = os.path.join(parent_dir, 'benchmark_problems')
 
-
 use_errors = True
 
 nist_group_dir = os.path.join(base_problem_files_dir, 'NIST_nonlinear_regression')
 cutest_group_dir = os.path.join(base_problem_files_dir, 'CUTEst')
 neutron_data_group_dirs = [os.path.join(base_problem_files_dir, 'Neutron_data')]
 muon_data_group_dir = [os.path.join(base_problem_files_dir, 'Muon_data')]
+
 
 # Modify results_dir to specify where the results of the fit should be saved
 # If left as None, they will be saved in a "results" folder in the working dir
@@ -59,13 +59,9 @@ elif run_data == "nist":
                                                              results_dir=results_dir)
 
 for idx, group_results in enumerate(results_per_group):
-        print("\n\n")
-        print("********************************************************")
-        print("**************** RESULTS FOR GROUP {0}, {1} ************".format(idx+1,
-                                                                                group_names[idx]))
-        print("********************************************************")
-        fitout.print_group_results_tables(minimizers, group_results, problems[idx],
-                                          group_name=group_suffix_names[idx],
-                                          use_errors=use_errors,
-                                          simple_text=False, rst=True, save_to_file=True, color_scale=color_scale,
-                                          results_dir=results_dir)
+    printTables(minimizers, group_results, problems[idx],
+                group_name=group_suffix_names[idx],
+                use_errors=use_errors,
+                rst=True, save_to_file=True, color_scale=color_scale,
+                results_dir=results_dir)
+
