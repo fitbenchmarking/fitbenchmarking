@@ -360,15 +360,15 @@ def prepare_wks_cost_function(prob, use_errors):
             # Fake observational errors - no correct answer (since we do not know
             # where the y values come from), but we are taking
             # the errrors to be the square root of the absolute y value
-            data_e = np.sqrt(abs(prob.data_pattern_out))
+            data_e = np.sqrt(abs(prob.data_y))
         else:
             data_e = prob.data_pattern_obs_errors
 
-        wks = msapi.CreateWorkspace(DataX=prob.data_pattern_in, DataY=prob.data_pattern_out,
+        wks = msapi.CreateWorkspace(DataX=prob.data_x, DataY=prob.data_y,
                                     DataE=data_e)
         cost_function = 'Least squares'
     else:
-        wks = msapi.CreateWorkspace(DataX=prob.data_pattern_in, DataY=prob.data_pattern_out)
+        wks = msapi.CreateWorkspace(DataX=prob.data_x, DataY=prob.data_y)
         cost_function = 'Unweighted least squares'
 
     return wks, cost_function
