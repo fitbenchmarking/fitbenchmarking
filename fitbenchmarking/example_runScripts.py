@@ -33,23 +33,35 @@ cutest_group_dir = os.path.join(base_problem_files_dir, 'CUTEst')
 neutron_data_group_dirs = [os.path.join(base_problem_files_dir, 'Neutron_data')]
 muon_data_group_dir = [os.path.join(base_problem_files_dir, 'Muon_data')]
 
-# choose the data to run
+
+# Modify results_dir to specify where the results of the fit should be saved
+# If left as None, they will be saved in a "results" folder in the working dir
+# When specifying a results_dir, please GIVE THE FULL PATH
+results_dir = None
+
+# choice the data to run
 run_data = "neutron"
 
 if run_data == "neutron":
     problems, results_per_group = fitBenchmarking(neutron_data_group_dirs=neutron_data_group_dirs,
-                                                             minimizers=minimizers, use_errors=use_errors)
+                                                             minimizers=minimizers, use_errors=use_errors,
+                                                             results_dir=results_dir)
 elif run_data == "muon":
     group_names = ['MUON']
     group_suffix_names = ['MUON']
     problems, results_per_group = fitBenchmarking(muon_data_group_dir=muon_data_group_dir,
-                                                             minimizers=minimizers, use_errors=use_errors)
+                                                             minimizers=minimizers, use_errors=use_errors,
+                                                             results_dir=results_dir)
 elif run_data == "nist":
+    # NIST data
     problems, results_per_group = fitBenchmarking(nist_group_dir=nist_group_dir,
-                                                             minimizers=minimizers, use_errors=use_errors)
+                                                             minimizers=minimizers, use_errors=use_errors,
+                                                             results_dir=results_dir)
 
 for idx, group_results in enumerate(results_per_group):
     printTables(minimizers, group_results, problems[idx],
                 group_name=group_suffix_names[idx],
                 use_errors=use_errors,
-                rst=True, save_to_file=True, color_scale=color_scale)
+                rst=True, save_to_file=True, color_scale=color_scale,
+                results_dir=results_dir)
+
