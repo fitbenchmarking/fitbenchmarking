@@ -43,18 +43,18 @@ results_dir = None
 run_data = "neutron"
 
 if run_data == "neutron":
-    problems, results_per_group = fitbk.do_fitting_benchmark(neutron_data_group_dirs=neutron_data_group_dirs,
+    problems, results_per_group = fitBenchmarking(neutron_data_group_dirs=neutron_data_group_dirs,
                                                              minimizers=minimizers, use_errors=use_errors,
                                                              results_dir=results_dir)
 elif run_data == "muon":
     group_names = ['MUON']
     group_suffix_names = ['MUON']
-    problems, results_per_group = fitbk.do_fitting_benchmark(muon_data_group_dir=muon_data_group_dir,
+    problems, results_per_group = fitBenchmarking(muon_data_group_dir=muon_data_group_dir,
                                                              minimizers=minimizers, use_errors=use_errors,
                                                              results_dir=results_dir)
 elif run_data == "nist":
     # NIST data
-    problems, results_per_group = fitbk.do_fitting_benchmark(nist_group_dir=nist_group_dir,
+    problems, results_per_group = fitBenchmarking(nist_group_dir=nist_group_dir,
                                                              minimizers=minimizers, use_errors=use_errors,
                                                              results_dir=results_dir)
 
