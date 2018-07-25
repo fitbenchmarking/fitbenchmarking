@@ -146,9 +146,11 @@ def build_visual_display_page(prob_results, group_name):
     @param group_name :: the name of the group, e.g. "nist_lower"
     """
     # Get the best result for a group
-    gb = min((result for result in prob_results), key=lambda result: result.fit_chi2)
-    file_name = (group_name + '_' + gb.problem.name).lower()
-    wks = msapi.CreateWorkspace(OutputWorkspace=gb.problem.name, DataX=gb.problem.data_pattern_in, DataY=gb.problem.data_pattern_out)
+    gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
+    no_commas_problem_name = gb.problem.name.replace(',', '')
+    problem_name = no_commas_problem_name.replace(' ','_')
+
+    file_name = (group_name + '_' + problem_name).lower()
 
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
@@ -177,7 +179,9 @@ def build_visual_display_page(prob_results, group_name):
         print('Saved {file_name}.{extension} to {working_directory}'.
               format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=WORKING_DIR))
 
+
     rst_link = '`<' + file_name + '.' + FILENAME_EXT_HTML + '>`_'  # `<cutest_palmer6c.dat.html>`_
+
     return rst_link
 
 
