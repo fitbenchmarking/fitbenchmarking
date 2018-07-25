@@ -37,7 +37,7 @@ def load_nist_fitting_problem_file(problem_filename):
     """
     Produce a fitting test problem definition object from a NIST text file.
 
-    @param spec_file :: input file, as a standard NIST text (.dat) file
+    @param problem_filename :: input file, as a standard NIST text (.dat) file
     """
 
     with open(problem_filename) as spec_file:
