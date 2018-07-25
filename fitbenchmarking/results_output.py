@@ -151,7 +151,7 @@ def build_visual_display_page(prob_results, group_name):
     # Get the best result for a group
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi2)
     file_name = (group_name + '_' + gb.problem.name).lower()
-    wks = msapi.CreateWorkspace(OutputWorkspace=gb.problem.name, DataX=gb.problem.data_pattern_in, DataY=gb.problem.data_pattern_out)
+    wks = msapi.CreateWorkspace(OutputWorkspace=gb.problem.name, DataX=gb.problem.data_x, DataY=gb.problem.data_y)
 
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
