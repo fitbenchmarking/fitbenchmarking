@@ -26,7 +26,7 @@ computation time.
 
 from __future__ import (absolute_import, division, print_function)
 
-import os
+import os, shutil
 import time
 from sys import float_info
 
@@ -40,7 +40,7 @@ from plotHelper import *
 
 
 def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_data_group_dirs=None,
-                         muon_data_group_dir=None, minimizers=None, use_errors=True):
+                         muon_data_group_dir=None, minimizers=None, use_errors=True, results_dir=None):
     """
     Run a fit minimizer benchmark against groups of fitting problems.
 
@@ -62,6 +62,16 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
 
     problem_groups = {}
 
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    if results_dir is None:
+        results_dir = os.path.join(current_dir, "results")
+
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
+
+    empty_contents_of_folder(results_dir)
+    print("***** SAVING RESULTS IN DIRECTORY {0} *****".format(results_dir))
+
     if nist_group_dir:
         problem_groups['nist'] = get_nist_problem_files(nist_group_dir)
 
@@ -75,8 +85,11 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
         problem_groups['muon'] = get_data_groups(muon_data_group_dir)
 
     for group_name in problem_groups:
-        prob_results = [do_fitting_benchmark_group(group_name, problem_block, minimizers, use_errors=use_errors) for
-                        problem_block in problem_groups[group_name]]
+        group_results_dir = os.path.join(results_dir, group_name)
+        os.makedirs(group_results_dir)
+        prob_results = [do_fitting_benchmark_group(group_name, group_results_dir, problem_block,
+                                                   minimizers, use_errors=use_errors)
+                        for problem_block in problem_groups[group_name]]
 
     probs, results = list(zip(*prob_results))
 
@@ -86,7 +99,7 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     return probs, results
 
 
-def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors=True):
+def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, minimizers, use_errors=True):
     """
     Applies minimizers to a group (collection) of test problems. For example the
     collection of all NIST problems
@@ -115,8 +128,9 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
             print("* Testing fitting for problem definition file {0}".format(prob_file))
             print("* Testing fitting of problem {0}".format(prob.name))
 
-            results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
+            results_prob = do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors, count, previous_name)
             results_per_problem.extend(results_prob)
+
     elif group_name in ['neutron']:
         for prob_file in problem_files:
             prob = iparsing.load_neutron_data_fitting_problem_file(prob_file)
@@ -124,7 +138,7 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
             print("* Testing fitting for problem definition file {0}".format(prob_file))
             print("* Testing fitting of problem {0}".format(prob.name))
 
-            results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
+            results_prob = do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors, count, previous_name)
             results_per_problem.extend(results_prob)
 
     else:
@@ -133,7 +147,7 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
     return problems, results_per_problem
 
 
-def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0, previous_name="none"):
+def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors=True, count=0, previous_name="none"):
     """
     One problem with potentially several starting points, returns a list (start points) of
     lists (minimizers).
@@ -197,13 +211,13 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
 
         results_fit_problem.append(results_problem_start)
 
-        previous_name, count = make_plots(prob, best_fit, wks, previous_name,
-                                          count, user_func)
+        previous_name, count = make_plots(prob, group_results_dir, best_fit,
+                                          wks, previous_name, count, user_func)
 
     return results_fit_problem
 
 
-def make_plots(prob, best_fit, wks, previous_name, count, user_func):
+def make_plots(prob, group_results_dir, best_fit, wks, previous_name, count, user_func):
     '''
     Makes a plot of the best fit considering multiple starting points of a
     problem.
@@ -215,6 +229,11 @@ def make_plots(prob, best_fit, wks, previous_name, count, user_func):
     @param count :: number of different starting points for one problem
     @param user_func :: fitting function
     '''
+
+    figures_dir = os.path.join(group_results_dir, "Figures")
+    if not os.path.exists(figures_dir):
+        os.makedirs(figures_dir)
+
 
     fig=plot()
     best_fit.markers=''
@@ -270,8 +289,11 @@ def make_plots(prob, best_fit, wks, previous_name, count, user_func):
 
     start_fig.labels['title'] = run_ID+" "+str(count)+"\n"+title
     start_fig.title_size = 10
-    fig.make_scatter_plot("Fit for "+run_ID+" "+str(count)+".pdf")
-    start_fig.make_scatter_plot("start for "+run_ID+" "+str(count)+".pdf")
+
+    fig.make_scatter_plot(figures_dir + os.sep +
+                          "Fit for "+run_ID+" "+str(count)+".pdf")
+    start_fig.make_scatter_plot(figures_dir + os.sep +
+                                "start for " + run_ID + " " + str(count) + ".pdf")
 
     return previous_name, count
 
@@ -484,3 +506,13 @@ def get_data_group_problem_files(grp_dir):
         print(problem)
     print("\n")
     return probs
+
+def empty_contents_of_folder(results_dir):
+
+    for file in os.listdir(results_dir):
+        file_path = os.path.join(results_dir, file)
+
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)
