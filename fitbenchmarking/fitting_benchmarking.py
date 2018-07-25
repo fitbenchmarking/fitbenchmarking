@@ -436,13 +436,10 @@ def get_nist_problem_files(search_dir):
     nist_lower = ['Misra1a.dat', 'Chwirut2.dat', 'Chwirut1.dat', 'Lanczos3.dat',
                   'Gauss1.dat', 'Gauss2.dat', 'DanWood.dat', 'Misra1b.dat']
 
-    nist_average = ['Kirby2.dat', 'Hahn1.dat',
-                    # 'Nelson.dat' needs log[y] parsing / DONE, needs x1, x2
-                    'MGH17.dat', 'Lanczos1.dat', 'Lanczos2.dat', 'Gauss3.dat',
-                    'Misra1c.dat', 'Misra1d.dat',
-                    # 'Roszman1.dat' <=== needs handling the  'pi = 3.1415...' / DOME
-                    # And the 'arctan()'/ DONE, but generated lots of NaNs
+    nist_average = ['Kirby2.dat', 'Hahn1.dat', 'MGH17.dat', 'Lanczos1.dat',
+                    'Lanczos2.dat', 'Gauss3.dat', 'Misra1c.dat', 'Misra1d.dat',
                     'ENSO.dat']
+
     nist_higher = ['MGH09.dat', 'Thurber.dat', 'BoxBOD.dat', 'Rat42.dat',
                    'MGH10.dat', 'Eckerle4.dat', 'Rat43.dat', 'Bennett5.dat']
 
