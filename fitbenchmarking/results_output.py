@@ -24,6 +24,7 @@ formats such as RST and plain text.
 
 from __future__ import (absolute_import, division, print_function)
 
+import logging
 import numpy as np
 from docutils.core import publish_string
 import post_processing as postproc
@@ -168,12 +169,13 @@ def build_visual_display_page(prob_results, group_name):
     html = publish_string(rst_text, writer_name='html')
     with open(file_name + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
         print(html, file=visual_rst)
-        print('Saved {file_name}.{extension} to {working_directory}'.
-              format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=WORKING_DIR))
+        logging.info('Saved {file_name}.{extension} to {working_directory}'.
+                     format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=WORKING_DIR))
+
     with open(file_name + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
-        print('Saved {file_name}.{extension} to {working_directory}'.
-              format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=WORKING_DIR))
+        logging.info('Saved {file_name}.{extension} to {working_directory}'.
+                     format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=WORKING_DIR))
 
     rst_link = '`<' + file_name + '.' + FILENAME_EXT_HTML + '>`_'  # `<cutest_palmer6c.dat.html>`_
     return rst_link
@@ -401,8 +403,8 @@ def save_table_to_file(table_data, errors, group_name, metric_type, file_extensi
 
     with open(file_name + file_extension, 'w') as tbl_file:
         print(table_data, file=tbl_file)
-    print('Saved {file_name}{extension} to {working_directory}'.
-          format(file_name=file_name, extension=file_extension, working_directory=WORKING_DIR))
+    logging.info('Saved {file_name}{extension} to {working_directory}'.
+                 format(file_name=file_name, extension=file_extension, working_directory=WORKING_DIR))
 
 
 def weighted_suffix_string(use_errors):

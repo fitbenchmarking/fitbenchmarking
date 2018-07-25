@@ -1,0 +1,1139 @@
+2018-07-25 17:59:48,669:INFO:root:
+*** Loading NIST data file Misra1a.dat ***
+2018-07-25 17:59:48,669:INFO:root:17 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:48,669:INFO:root:* Testing fitting of problem Misra1a.dat
+2018-07-25 17:59:48,674:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:48,677:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:48,678:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:48,680:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:48,682:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:48,685:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:48,686:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:48,689:INFO:root:*** Using minimizer SteepestDescent,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:48,691:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:48,943:INFO:root:saving to Fit_for_Misra1a_1.pdf
+2018-07-25 17:59:49,058:INFO:root:saving to start_for_Misra1a_1.pdf
+2018-07-25 17:59:49,101:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:49,103:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:49,105:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:49,106:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:49,109:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:49,111:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:49,113:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:49,116:INFO:root:*** Using minimizer SteepestDescent,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:49,117:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:49,194:INFO:root:saving to Fit_for_Misra1a_2.pdf
+2018-07-25 17:59:49,310:INFO:root:saving to start_for_Misra1a_2.pdf
+2018-07-25 17:59:49,352:INFO:root:
+*** Loading NIST data file Chwirut2.dat ***
+2018-07-25 17:59:49,352:INFO:root:17 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:49,352:INFO:root:* Testing fitting of problem Chwirut2.dat
+2018-07-25 17:59:49,356:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:49,377:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:49,390:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:49,392:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:49,394:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:49,397:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:49,398:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:49,407:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:49,422:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:49,501:INFO:root:saving to Fit_for_Chwirut2_1.pdf
+2018-07-25 17:59:49,619:INFO:root:saving to start_for_Chwirut2_1.pdf
+2018-07-25 17:59:49,669:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:49,688:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:49,695:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:49,696:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:49,698:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:49,700:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:49,701:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:49,707:INFO:root:*** Using minimizer SteepestDescent,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:49,708:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:49,791:INFO:root:saving to Fit_for_Chwirut2_2.pdf
+2018-07-25 17:59:49,912:INFO:root:saving to start_for_Chwirut2_2.pdf
+2018-07-25 17:59:49,961:INFO:root:
+*** Loading NIST data file Chwirut1.dat ***
+2018-07-25 17:59:49,961:INFO:root:17 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:49,961:INFO:root:* Testing fitting of problem Chwirut1.dat
+2018-07-25 17:59:49,966:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:50,029:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:50,081:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:50,084:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:50,087:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:50,090:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:50,092:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:50,119:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:50,157:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:50,262:INFO:root:saving to Fit_for_Chwirut1_1.pdf
+2018-07-25 17:59:50,411:INFO:root:saving to start_for_Chwirut1_1.pdf
+2018-07-25 17:59:50,552:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:50,621:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:50,635:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:50,638:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:50,640:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:50,642:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:50,644:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:50,674:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:50,676:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:50,782:INFO:root:saving to Fit_for_Chwirut1_2.pdf
+2018-07-25 17:59:50,929:INFO:root:saving to start_for_Chwirut1_2.pdf
+2018-07-25 17:59:51,004:INFO:root:
+*** Loading NIST data file Lanczos3.dat ***
+2018-07-25 17:59:51,004:INFO:root:19 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:51,004:INFO:root:* Testing fitting of problem Lanczos3.dat
+2018-07-25 17:59:51,008:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:51,022:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 17:59:51,036:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 17:59:51,039:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:51,043:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:51,053:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:51,056:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:51,070:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:51,073:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:51,151:INFO:root:saving to Fit_for_Lanczos3_1.pdf
+2018-07-25 17:59:51,276:INFO:root:saving to start_for_Lanczos3_1.pdf
+2018-07-25 17:59:51,323:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:51,332:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 17:59:51,341:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 17:59:51,344:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:51,346:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:51,349:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:51,352:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:51,367:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:51,368:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:51,447:INFO:root:saving to Fit_for_Lanczos3_2.pdf
+2018-07-25 17:59:51,562:INFO:root:saving to start_for_Lanczos3_2.pdf
+2018-07-25 17:59:51,603:INFO:root:
+*** Loading NIST data file Gauss1.dat ***
+2018-07-25 17:59:51,603:INFO:root:15 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:51,603:INFO:root:* Testing fitting of problem Gauss1.dat
+2018-07-25 17:59:51,610:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:51,803:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:51,858:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:51,863:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:51,868:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:51,873:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:51,894:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:52,063:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:52,260:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:52,364:INFO:root:saving to Fit_for_Gauss1_1.pdf
+2018-07-25 17:59:52,528:INFO:root:saving to start_for_Gauss1_1.pdf
+2018-07-25 17:59:52,616:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:52,687:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:52,707:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:52,711:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:52,717:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:52,721:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:52,743:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:52,913:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:53,109:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:53,217:INFO:root:saving to Fit_for_Gauss1_2.pdf
+2018-07-25 17:59:53,376:INFO:root:saving to start_for_Gauss1_2.pdf
+2018-07-25 17:59:53,459:INFO:root:
+*** Loading NIST data file Gauss2.dat ***
+2018-07-25 17:59:53,460:INFO:root:15 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:53,460:INFO:root:* Testing fitting of problem Gauss2.dat
+2018-07-25 17:59:53,467:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:53,524:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:53,581:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:53,585:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:53,591:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:53,595:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:53,625:INFO:root:*** Using minimizer Simplex,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:53,796:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:53,996:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:54,185:INFO:root:saving to Fit_for_Gauss2_1.pdf
+2018-07-25 17:59:54,345:INFO:root:saving to start_for_Gauss2_1.pdf
+2018-07-25 17:59:54,432:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:54,507:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:54,532:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:54,536:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:54,541:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:54,545:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:54,565:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:54,738:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:54,939:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:55,044:INFO:root:saving to Fit_for_Gauss2_2.pdf
+2018-07-25 17:59:55,199:INFO:root:saving to start_for_Gauss2_2.pdf
+2018-07-25 17:59:55,282:INFO:root:
+*** Loading NIST data file DanWood.dat ***
+2018-07-25 17:59:55,282:INFO:root:22 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:55,282:INFO:root:* Testing fitting of problem DanWood.dat
+2018-07-25 17:59:55,285:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:55,288:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 17:59:55,290:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 17:59:55,292:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:55,295:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:55,296:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:55,298:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:55,301:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:55,302:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:55,382:INFO:root:saving to Fit_for_DanWood_1.pdf
+2018-07-25 17:59:55,498:INFO:root:saving to start_for_DanWood_1.pdf
+2018-07-25 17:59:55,537:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:55,539:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 17:59:55,541:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 17:59:55,543:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:55,545:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:55,547:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:55,549:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:55,552:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:55,554:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:55,633:INFO:root:saving to Fit_for_DanWood_2.pdf
+2018-07-25 17:59:55,760:INFO:root:saving to start_for_DanWood_2.pdf
+2018-07-25 17:59:55,799:INFO:root:
+*** Loading NIST data file Misra1b.dat ***
+2018-07-25 17:59:55,800:INFO:root:17 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:55,800:INFO:root:* Testing fitting of problem Misra1b.dat
+2018-07-25 17:59:55,803:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:55,805:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:55,807:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:55,809:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:55,811:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:55,814:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:55,816:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:55,818:INFO:root:*** Using minimizer SteepestDescent,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:55,820:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:55,898:INFO:root:saving to Fit_for_Misra1b_1.pdf
+2018-07-25 17:59:56,015:INFO:root:saving to start_for_Misra1b_1.pdf
+2018-07-25 17:59:56,059:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:56,061:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:56,063:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:56,064:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:56,066:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:56,068:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:56,071:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:56,074:INFO:root:*** Using minimizer SteepestDescent,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:56,078:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:56,155:INFO:root:saving to Fit_for_Misra1b_2.pdf
+2018-07-25 17:59:56,378:INFO:root:saving to start_for_Misra1b_2.pdf
+2018-07-25 17:59:56,419:INFO:root:
+*** Loading NIST data file Kirby2.dat ***
+2018-07-25 17:59:56,419:INFO:root:15 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:56,419:INFO:root:* Testing fitting of problem Kirby2.dat
+2018-07-25 17:59:56,424:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:56,471:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:56,517:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:56,520:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:56,523:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:56,524:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:56,529:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:56,554:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:56,556:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:56,647:INFO:root:saving to Fit_for_Kirby2_1.pdf
+2018-07-25 17:59:56,791:INFO:root:saving to start_for_Kirby2_1.pdf
+2018-07-25 17:59:56,860:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:56,902:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:56,943:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:56,945:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:56,948:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:56,950:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:56,953:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:56,979:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:57,018:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:57,107:INFO:root:saving to Fit_for_Kirby2_2.pdf
+2018-07-25 17:59:57,254:INFO:root:saving to start_for_Kirby2_2.pdf
+2018-07-25 17:59:57,323:INFO:root:
+*** Loading NIST data file Hahn1.dat ***
+2018-07-25 17:59:57,323:INFO:root:18 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:57,324:INFO:root:* Testing fitting of problem Hahn1.dat
+2018-07-25 17:59:57,332:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:57,345:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 17:59:57,355:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:57,382:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: Function doesn't depend on parameter b1
+2018-07-25 17:59:57,470:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:57,477:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:57,484:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:57,558:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:57,565:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:57,686:INFO:root:saving to Fit_for_Hahn1_1.pdf
+2018-07-25 17:59:57,849:INFO:root:saving to start_for_Hahn1_1.pdf
+2018-07-25 17:59:57,936:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:58,072:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:58,218:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:58,222:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:58,226:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:58,231:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:58,246:INFO:root:*** Using minimizer Simplex,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:58,320:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:58,325:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:58,439:INFO:root:saving to Fit_for_Hahn1_2.pdf
+2018-07-25 17:59:58,606:INFO:root:saving to start_for_Hahn1_2.pdf
+2018-07-25 17:59:58,692:INFO:root:
+*** Loading NIST data file MGH17.dat ***
+2018-07-25 17:59:58,692:INFO:root:22 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:58,692:INFO:root:* Testing fitting of problem MGH17.dat
+2018-07-25 17:59:58,696:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:58,699:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:58,701:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:58,702:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: Encountered an infinite number or NaN.
+2018-07-25 17:59:58,707:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:58,716:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:58,718:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:58,731:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:58,734:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:58,952:INFO:root:saving to Fit_for_MGH17_1.pdf
+2018-07-25 17:59:59,067:INFO:root:saving to start_for_MGH17_1.pdf
+2018-07-25 17:59:59,115:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:59,126:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 17:59:59,137:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 17:59:59,139:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:59,142:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:59,145:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:59,147:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:59,159:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:59,161:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:59,240:INFO:root:saving to Fit_for_MGH17_2.pdf
+2018-07-25 17:59:59,359:INFO:root:saving to start_for_MGH17_2.pdf
+2018-07-25 17:59:59,406:INFO:root:
+*** Loading NIST data file Lanczos1.dat ***
+2018-07-25 17:59:59,406:INFO:root:19 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:59,406:INFO:root:* Testing fitting of problem Lanczos1.dat
+2018-07-25 17:59:59,410:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:59,423:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 17:59:59,435:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 17:59:59,437:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:59,441:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:59,448:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:59,451:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:59,466:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:59,470:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:59,545:INFO:root:saving to Fit_for_Lanczos1_1.pdf
+2018-07-25 17:59:59,665:INFO:root:saving to start_for_Lanczos1_1.pdf
+2018-07-25 17:59:59,713:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 17:59:59,722:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 17:59:59,732:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 17:59:59,733:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 17:59:59,736:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 17:59:59,738:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 17:59:59,743:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 17:59:59,758:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 17:59:59,760:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 17:59:59,836:INFO:root:saving to Fit_for_Lanczos1_2.pdf
+2018-07-25 17:59:59,955:INFO:root:saving to start_for_Lanczos1_2.pdf
+2018-07-25 17:59:59,997:INFO:root:
+*** Loading NIST data file Lanczos2.dat ***
+2018-07-25 17:59:59,997:INFO:root:19 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 17:59:59,998:INFO:root:* Testing fitting of problem Lanczos2.dat
+2018-07-25 18:00:00,001:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:00,015:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 18:00:00,029:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 18:00:00,031:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:00,035:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:00,042:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:00,045:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:00,059:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:00,063:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:00,142:INFO:root:saving to Fit_for_Lanczos2_1.pdf
+2018-07-25 18:00:00,261:INFO:root:saving to start_for_Lanczos2_1.pdf
+2018-07-25 18:00:00,309:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:00,318:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 18:00:00,328:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 18:00:00,330:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:00,332:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:00,334:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:00,337:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:00,352:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:00,353:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:00,434:INFO:root:saving to Fit_for_Lanczos2_2.pdf
+2018-07-25 18:00:00,551:INFO:root:saving to start_for_Lanczos2_2.pdf
+2018-07-25 18:00:00,593:INFO:root:
+*** Loading NIST data file Gauss3.dat ***
+2018-07-25 18:00:00,593:INFO:root:15 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 18:00:00,593:INFO:root:* Testing fitting of problem Gauss3.dat
+2018-07-25 18:00:00,600:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:00,628:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:00,674:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:00,679:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:00,684:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:00,689:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:00,719:INFO:root:*** Using minimizer Simplex,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:00,888:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:01,084:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:01,190:INFO:root:saving to Fit_for_Gauss3_1.pdf
+2018-07-25 18:00:01,348:INFO:root:saving to start_for_Gauss3_1.pdf
+2018-07-25 18:00:01,617:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:01,646:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:01,702:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:01,707:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: Function doesn't depend on parameter b6
+2018-07-25 18:00:01,712:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:01,719:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: Failed to converge, maximum mu reached.
+2018-07-25 18:00:01,748:INFO:root:*** Using minimizer Simplex,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:01,919:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:02,116:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:02,220:INFO:root:saving to Fit_for_Gauss3_2.pdf
+2018-07-25 18:00:02,379:INFO:root:saving to start_for_Gauss3_2.pdf
+2018-07-25 18:00:02,462:INFO:root:
+*** Loading NIST data file Misra1c.dat ***
+2018-07-25 18:00:02,462:INFO:root:17 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 18:00:02,462:INFO:root:* Testing fitting of problem Misra1c.dat
+2018-07-25 18:00:02,466:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:02,468:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:02,470:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:02,472:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: Encountered an infinite number or NaN.
+2018-07-25 18:00:02,474:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:02,477:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:02,479:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:02,481:INFO:root:*** Using minimizer SteepestDescent,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:02,483:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:02,561:INFO:root:saving to Fit_for_Misra1c_1.pdf
+2018-07-25 18:00:02,676:INFO:root:saving to start_for_Misra1c_1.pdf
+2018-07-25 18:00:02,719:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:02,721:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:02,723:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:02,725:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:02,727:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:02,728:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:02,730:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:02,734:INFO:root:*** Using minimizer SteepestDescent,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:02,735:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:02,814:INFO:root:saving to Fit_for_Misra1c_2.pdf
+2018-07-25 18:00:02,932:INFO:root:saving to start_for_Misra1c_2.pdf
+2018-07-25 18:00:02,974:INFO:root:
+*** Loading NIST data file Misra1d.dat ***
+2018-07-25 18:00:02,974:INFO:root:17 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 18:00:02,975:INFO:root:* Testing fitting of problem Misra1d.dat
+2018-07-25 18:00:02,978:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:02,980:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:02,981:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:02,983:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:02,985:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:02,987:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:02,989:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:02,993:INFO:root:*** Using minimizer SteepestDescent,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:02,994:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:03,073:INFO:root:saving to Fit_for_Misra1d_1.pdf
+2018-07-25 18:00:03,190:INFO:root:saving to start_for_Misra1d_1.pdf
+2018-07-25 18:00:03,232:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:03,235:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:03,237:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:03,239:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:03,241:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:03,243:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:03,245:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:03,248:INFO:root:*** Using minimizer SteepestDescent,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:03,250:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:03,327:INFO:root:saving to Fit_for_Misra1d_2.pdf
+2018-07-25 18:00:03,444:INFO:root:saving to start_for_Misra1d_2.pdf
+2018-07-25 18:00:03,486:INFO:root:
+*** Loading NIST data file ENSO.dat ***
+2018-07-25 18:00:03,486:INFO:root:23 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 18:00:03,487:INFO:root:* Testing fitting of problem ENSO.dat
+2018-07-25 18:00:03,495:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:04,017:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:04,337:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:04,340:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: Function doesn't depend on parameter b3
+2018-07-25 18:00:04,638:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:04,641:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: Function doesn't depend on parameter b3
+2018-07-25 18:00:04,683:INFO:root:*** Using minimizer Simplex,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:04,921:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:05,028:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to make progress.
+2018-07-25 18:00:05,121:INFO:root:saving to Fit_for_ENSO_1.pdf
+2018-07-25 18:00:05,272:INFO:root:saving to start_for_ENSO_1.pdf
+2018-07-25 18:00:05,353:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:05,511:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:05,666:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:05,670:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: Function doesn't depend on parameter b3
+2018-07-25 18:00:05,989:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:05,991:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: Function doesn't depend on parameter b3
+2018-07-25 18:00:06,034:INFO:root:*** Using minimizer Simplex,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:06,252:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:06,583:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:06,675:INFO:root:saving to Fit_for_ENSO_2.pdf
+2018-07-25 18:00:06,823:INFO:root:saving to start_for_ENSO_2.pdf
+2018-07-25 18:00:06,895:INFO:root:
+*** Loading NIST data file MGH09.dat ***
+2018-07-25 18:00:06,895:INFO:root:22 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 18:00:06,895:INFO:root:* Testing fitting of problem MGH09.dat
+2018-07-25 18:00:06,899:INFO:root:*** Using minimizer BFGS,
+ Status: success
+2018-07-25 18:00:06,901:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 18:00:06,903:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 18:00:06,904:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: Function doesn't depend on parameter b3
+2018-07-25 18:00:06,907:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:06,911:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:06,913:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:06,917:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:06,920:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:07,218:INFO:root:saving to Fit_for_MGH09_1.pdf
+2018-07-25 18:00:07,331:INFO:root:saving to start_for_MGH09_1.pdf
+2018-07-25 18:00:07,374:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:07,377:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 18:00:07,379:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 18:00:07,384:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:07,386:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:07,389:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:07,390:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:07,394:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:07,396:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:07,477:INFO:root:saving to Fit_for_MGH09_2.pdf
+2018-07-25 18:00:07,593:INFO:root:saving to start_for_MGH09_2.pdf
+2018-07-25 18:00:07,634:INFO:root:
+*** Loading NIST data file Thurber.dat ***
+2018-07-25 18:00:07,634:INFO:root:17 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 18:00:07,634:INFO:root:* Testing fitting of problem Thurber.dat
+2018-07-25 18:00:07,638:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:07,653:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:07,671:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:07,677:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:07,679:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:07,682:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:07,688:INFO:root:*** Using minimizer Simplex,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:07,703:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:07,727:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:07,813:INFO:root:saving to Fit_for_Thurber_1.pdf
+2018-07-25 18:00:07,939:INFO:root:saving to start_for_Thurber_1.pdf
+2018-07-25 18:00:07,990:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:08,009:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:08,042:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:08,045:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:08,047:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:08,050:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:08,053:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:08,068:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:08,092:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:08,173:INFO:root:saving to Fit_for_Thurber_2.pdf
+2018-07-25 18:00:08,295:INFO:root:saving to start_for_Thurber_2.pdf
+2018-07-25 18:00:08,345:INFO:root:
+*** Loading NIST data file BoxBOD.dat ***
+2018-07-25 18:00:08,345:INFO:root:18 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 18:00:08,345:INFO:root:* Testing fitting of problem BoxBOD.dat
+2018-07-25 18:00:08,348:INFO:root:*** Using minimizer BFGS,
+ Status: success
+2018-07-25 18:00:08,351:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 18:00:08,352:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 18:00:08,353:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: Encountered an infinite number or NaN.
+2018-07-25 18:00:08,355:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: Changes in function value are too small
+2018-07-25 18:00:08,357:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:08,359:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:08,362:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:08,364:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:08,449:INFO:root:saving to Fit_for_BoxBOD_1.pdf
+2018-07-25 18:00:08,570:INFO:root:saving to start_for_BoxBOD_1.pdf
+2018-07-25 18:00:08,614:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:08,616:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 18:00:08,618:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 18:00:08,620:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:08,622:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:08,624:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: Failed to converge, maximum mu reached.
+2018-07-25 18:00:08,626:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:08,629:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:08,631:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:08,715:INFO:root:saving to Fit_for_BoxBOD_2.pdf
+2018-07-25 18:00:08,835:INFO:root:saving to start_for_BoxBOD_2.pdf
+2018-07-25 18:00:08,876:INFO:root:
+*** Loading NIST data file Rat42.dat ***
+2018-07-25 18:00:08,876:INFO:root:18 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 18:00:08,876:INFO:root:* Testing fitting of problem Rat42.dat
+2018-07-25 18:00:08,879:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:08,882:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:08,884:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:08,886:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:08,888:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:08,891:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: Failed to converge, maximum mu reached.
+2018-07-25 18:00:08,892:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:08,896:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:08,904:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:08,986:INFO:root:saving to Fit_for_Rat42_1.pdf
+2018-07-25 18:00:09,105:INFO:root:saving to start_for_Rat42_1.pdf
+2018-07-25 18:00:09,147:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:09,152:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:09,159:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:09,161:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:09,164:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:09,166:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:09,167:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:09,171:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:09,181:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:09,262:INFO:root:saving to Fit_for_Rat42_2.pdf
+2018-07-25 18:00:09,384:INFO:root:saving to start_for_Rat42_2.pdf
+2018-07-25 18:00:09,428:INFO:root:
+*** Loading NIST data file MGH10.dat ***
+2018-07-25 18:00:09,429:INFO:root:22 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 18:00:09,429:INFO:root:* Testing fitting of problem MGH10.dat
+2018-07-25 18:00:09,432:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:09,435:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:09,439:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:09,442:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: Encountered an infinite number or NaN.
+2018-07-25 18:00:09,445:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:09,450:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:09,451:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:09,454:INFO:root:*** Using minimizer SteepestDescent,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:09,460:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:09,540:INFO:root:saving to Fit_for_MGH10_1.pdf
+2018-07-25 18:00:09,665:INFO:root:saving to start_for_MGH10_1.pdf
+2018-07-25 18:00:09,714:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:09,717:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:09,720:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:09,723:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:09,727:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:09,731:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:09,733:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:09,738:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:09,741:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:09,821:INFO:root:saving to Fit_for_MGH10_2.pdf
+2018-07-25 18:00:10,211:INFO:root:saving to start_for_MGH10_2.pdf
+2018-07-25 18:00:10,256:INFO:root:
+*** Loading NIST data file Eckerle4.dat ***
+2018-07-25 18:00:10,256:INFO:root:17 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 18:00:10,256:INFO:root:* Testing fitting of problem Eckerle4.dat
+2018-07-25 18:00:10,260:INFO:root:*** Using minimizer BFGS,
+ Status: success
+2018-07-25 18:00:10,262:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 18:00:10,263:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 18:00:10,265:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: Failed to solve system of linear equations.
+Error message returned by the GSL:
+input domain error
+2018-07-25 18:00:10,267:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:10,271:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:10,275:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:10,278:INFO:root:*** Using minimizer SteepestDescent,
+ Status: success
+2018-07-25 18:00:10,280:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:10,358:INFO:root:saving to Fit_for_Eckerle4_1.pdf
+2018-07-25 18:00:10,480:INFO:root:saving to start_for_Eckerle4_1.pdf
+2018-07-25 18:00:10,526:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:10,529:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 18:00:10,532:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 18:00:10,534:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:10,536:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:10,538:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:10,541:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:10,544:INFO:root:*** Using minimizer SteepestDescent,
+ Status: success
+2018-07-25 18:00:10,546:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:10,626:INFO:root:saving to Fit_for_Eckerle4_2.pdf
+2018-07-25 18:00:10,747:INFO:root:saving to start_for_Eckerle4_2.pdf
+2018-07-25 18:00:10,792:INFO:root:
+*** Loading NIST data file Rat43.dat ***
+2018-07-25 18:00:10,792:INFO:root:18 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 18:00:10,792:INFO:root:* Testing fitting of problem Rat43.dat
+2018-07-25 18:00:10,796:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:10,802:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:10,811:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:10,813:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: Encountered an infinite number or NaN.
+2018-07-25 18:00:10,815:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:10,817:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:10,822:INFO:root:*** Using minimizer Simplex,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:10,830:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:10,842:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:10,924:INFO:root:saving to Fit_for_Rat43_1.pdf
+2018-07-25 18:00:11,049:INFO:root:saving to start_for_Rat43_1.pdf
+2018-07-25 18:00:11,095:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:11,099:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:11,103:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:11,105:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:11,107:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:11,109:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: success
+2018-07-25 18:00:11,111:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:11,119:INFO:root:*** Using minimizer SteepestDescent,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:11,132:INFO:root:*** Using minimizer Trust Region,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:11,213:INFO:root:saving to Fit_for_Rat43_2.pdf
+2018-07-25 18:00:11,337:INFO:root:saving to start_for_Rat43_2.pdf
+2018-07-25 18:00:11,382:INFO:root:
+*** Loading NIST data file Bennett5.dat ***
+2018-07-25 18:00:11,382:INFO:root:18 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this printto display the full output.
+2018-07-25 18:00:11,383:INFO:root:* Testing fitting of problem Bennett5.dat
+2018-07-25 18:00:11,387:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:11,447:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:11,454:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 18:00:11,457:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:11,496:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:11,519:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:11,521:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:11,537:INFO:root:*** Using minimizer SteepestDescent,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:11,539:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:11,628:INFO:root:saving to Fit_for_Bennett5_1.pdf
+2018-07-25 18:00:11,772:INFO:root:saving to start_for_Bennett5_1.pdf
+2018-07-25 18:00:11,840:INFO:root:*** Using minimizer BFGS,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:11,872:INFO:root:*** Using minimizer Conjugate gradient (Fletcher-Reeves imp.),
+ Status: success
+2018-07-25 18:00:11,878:INFO:root:*** Using minimizer Conjugate gradient (Polak-Ribiere imp.),
+ Status: success
+2018-07-25 18:00:11,881:INFO:root:*** Using minimizer Damped GaussNewton,
+ Status: success
+2018-07-25 18:00:11,904:INFO:root:*** Using minimizer Levenberg-Marquardt,
+ Status: success
+2018-07-25 18:00:11,923:INFO:root:*** Using minimizer Levenberg-MarquardtMD,
+ Status: Failed to converge after 500 iterations.
+2018-07-25 18:00:11,925:INFO:root:*** Using minimizer Simplex,
+ Status: success
+2018-07-25 18:00:11,944:INFO:root:*** Using minimizer SteepestDescent,
+ Status: iteration is not making progress towards solution
+2018-07-25 18:00:11,947:INFO:root:*** Using minimizer Trust Region,
+ Status: success
+2018-07-25 18:00:12,035:INFO:root:saving to Fit_for_Bennett5_2.pdf
+2018-07-25 18:00:12,181:INFO:root:saving to start_for_Bennett5_2.pdf
+2018-07-25 18:00:12,248:INFO:root:Saved comparison_weighted_v3.8_acc_nist_lower.txt to /home/patrick/fitbenchmarking/fitbenchmarking
+2018-07-25 18:00:12,336:INFO:root:Saved comparison_weighted_v3.8_acc_nist_lower.html to /home/patrick/fitbenchmarking/fitbenchmarking
+2018-07-25 18:00:12,337:INFO:root:Saved comparison_weighted_v3.8_runtime_nist_lower.txt to /home/patrick/fitbenchmarking/fitbenchmarking
+2018-07-25 18:00:12,388:INFO:root:Saved comparison_weighted_v3.8_runtime_nist_lower.html to /home/patrick/fitbenchmarking/fitbenchmarking
+2018-07-25 18:00:12,390:INFO:root:Saved comparison_weighted_v3.8_acc_nist_average.txt to /home/patrick/fitbenchmarking/fitbenchmarking
+2018-07-25 18:00:12,448:INFO:root:Saved comparison_weighted_v3.8_acc_nist_average.html to /home/patrick/fitbenchmarking/fitbenchmarking
+2018-07-25 18:00:12,449:INFO:root:Saved comparison_weighted_v3.8_runtime_nist_average.txt to /home/patrick/fitbenchmarking/fitbenchmarking
+2018-07-25 18:00:12,506:INFO:root:Saved comparison_weighted_v3.8_runtime_nist_average.html to /home/patrick/fitbenchmarking/fitbenchmarking
+2018-07-25 18:00:12,508:INFO:root:Saved comparison_weighted_v3.8_acc_nist_higher.txt to /home/patrick/fitbenchmarking/fitbenchmarking
+2018-07-25 18:00:12,560:INFO:root:Saved comparison_weighted_v3.8_acc_nist_higher.html to /home/patrick/fitbenchmarking/fitbenchmarking
+2018-07-25 18:00:12,560:INFO:root:Saved comparison_weighted_v3.8_runtime_nist_higher.txt to /home/patrick/fitbenchmarking/fitbenchmarking
+2018-07-25 18:00:12,612:INFO:root:Saved comparison_weighted_v3.8_runtime_nist_higher.html to /home/patrick/fitbenchmarking/fitbenchmarking

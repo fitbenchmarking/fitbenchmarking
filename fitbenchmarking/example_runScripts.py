@@ -34,7 +34,7 @@ neutron_data_group_dirs = [os.path.join(base_problem_files_dir, 'Neutron_data')]
 muon_data_group_dir = [os.path.join(base_problem_files_dir, 'Muon_data')]
 
 # choose the data to run
-run_data = "neutron"
+run_data = "nist"
 
 if run_data == "neutron":
     problems, results_per_group = fitBenchmarking(neutron_data_group_dirs=neutron_data_group_dirs,

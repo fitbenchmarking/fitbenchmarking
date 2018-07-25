@@ -28,7 +28,8 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import time
-from sys import float_info
+import sys
+import logging
 
 import numpy as np
 import mantid.simpleapi as msapi
@@ -36,6 +37,7 @@ import mantid.simpleapi as msapi
 import input_parsing as iparsing
 import results_output as fitout
 import test_result
+import logscript
 from plotHelper import *
 
 
@@ -59,6 +61,10 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     @param minimizers :: list of minimizers to test
     @param use_errors :: whether to use observational errors as weights in the cost function
     """
+
+
+    global log_file
+    log_file = logscript.logging_setup('fitting_benchmarking_logs')
 
     problem_groups = {}
 
@@ -112,8 +118,8 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
         for prob_file in problem_files:
             prob = iparsing.load_nist_fitting_problem_file(prob_file)
 
-            print("* Testing fitting for problem definition file {0}".format(prob_file))
             print("* Testing fitting of problem {0}".format(prob.name))
+            logging.info("* Testing fitting of problem {0}".format(prob.name))
 
             results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
             results_per_problem.extend(results_prob)
@@ -121,8 +127,8 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
         for prob_file in problem_files:
             prob = iparsing.load_neutron_data_fitting_problem_file(prob_file)
 
-            print("* Testing fitting for problem definition file {0}".format(prob_file))
             print("* Testing fitting of problem {0}".format(prob.name))
+            logging.info("* Testing fitting of problem {0}".format(prob.name))
 
             results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
             results_per_problem.extend(results_prob)
@@ -145,7 +151,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
     @param count :: the current count for the number of different start values for a given problem
     """
 
-    max_possible_float = float_info.max
+    max_possible_float = sys.float_info.max
     wks, cost_function = prepare_wks_cost_function(prob, use_errors)
 
     # Each NIST problem generate two results per file - from two different starting points
@@ -168,7 +174,8 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
                                                       cost_function=cost_function)
             t_end = time.clock()
 
-            print("*** with minimizer {0}, Status: {1}".format(minimizer_name, status))
+            print("*** Using minimizer {0},\n Status: {1}".format(minimizer_name, status))
+            logging.info("*** Using minimizer {0},\n Status: {1}".format(minimizer_name, status))
 
             chi_sq = -1
             if not status == 'failed':
@@ -181,8 +188,8 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
                         min_chi_sq = chi_sq
                 else:
                     chi_sq = float("nan")
-                    print(" WARNING: no output fit workspace")
-                print("sum sq: {0}".format(chi_sq))
+                    logging.warning(" No output fit workspace")
+                print("Chi_sq: {0}".format(chi_sq))
 
             result = test_result.FittingTestResult()
             result.problem = prob
@@ -191,8 +198,6 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
             result.errors = errors
             result.chi_sq = chi_sq if not chi_sq == -1 else np.nan
             result.runtime = t_end - t_start if not np.isnan(chi_sq) else np.nan
-
-            print("Result object: {0}".format(result))
             results_problem_start.append(result)
 
         results_fit_problem.append(results_problem_start)
@@ -215,6 +220,8 @@ def make_plots(prob, best_fit, wks, previous_name, count, user_func):
     @param count :: number of different starting points for one problem
     @param user_func :: fitting function
     '''
+    global log_file
+
 
     fig=plot()
     best_fit.markers=''
@@ -222,7 +229,7 @@ def make_plots(prob, best_fit, wks, previous_name, count, user_func):
     best_fit.colour='green'
     best_fit.order_data()
     fig.add_data(best_fit)
-    tmp=msapi.ConvertToPointData(wks)
+    tmp = logscript.ConvertToPointData(wks, log_file)
     xData = tmp.readX(0)
     yData = tmp.readY(0)
     eData = tmp.readE(0)
@@ -237,15 +244,14 @@ def make_plots(prob, best_fit, wks, previous_name, count, user_func):
     else:
         count =1
         previous_name = prob.name
-    #fig.labels['y']="something "
+
     fig.labels['title'] = prob.name[:-4]+" "+str(count)
     fig.title_size=10
 
-    fit_result= msapi.Fit(user_func, wks, Output='ws_fitting_test',
-                          Minimizer='Levenberg-Marquardt',
-                          CostFunction='Least squares',IgnoreInvalidData=True,
-                          StartX=prob.start_x, EndX=prob.end_x,MaxIterations=0)
-    tmp=msapi.ConvertToPointData(fit_result.OutputWorkspace)
+    fit_result = logscript.FitSimple(user_func, wks, prob.start_x, prob.end_x,
+                                     log_file=log_file)
+
+    tmp = logscript.ConvertToPointData(fit_result.OutputWorkspace, log_file)
     xData = tmp.readX(1)
     yData = tmp.readY(1)
     startData = data("Start Guess",xData,yData)
@@ -302,11 +308,8 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function=
         if 'WISH17701' in prob.name:
             ignore_invalid = False
 
-        fit_result = msapi.Fit(function, wks, Output='ws_fitting_test',
-                               Minimizer=minimizer,
-                               CostFunction=cost_function,
-                               IgnoreInvalidData=ignore_invalid,
-                               StartX=prob.start_x, EndX=prob.end_x)
+        fit_result = logscript.Fit(function, wks, minimizer, cost_function,
+                                   ignore_invalid, prob.start_x, prob.end_x, log_file)
 
     except (RuntimeError, ValueError) as err:
         print("Warning, fit probably failed. Going on. Error: " + str(err))
@@ -374,6 +377,7 @@ def splitByString(name,min_length,loop=0,splitter=0):
     if splitter+1 >len(split_at):
         if loop>3:
             print ("failed ",name)
+            logging.error("failed in splitByString function", name)
             return "..."
         else:
             return splitByString(name,min_length,loop+1)
@@ -408,8 +412,6 @@ def get_function_definitions(prob):
         num_starts = len(prob.starting_values[0][1])
         for start_idx in range(0, num_starts):
 
-            print("="*15 + " starting values,: {0}, with idx: {1} " + 15*"=".
-                  format(prob.starting_values, start_idx))
             start_string = ''  # like: 'b1=250, b2=0.0005'
 
             for param in prob.starting_values:
@@ -479,8 +481,7 @@ def get_data_group_problem_files(grp_dir):
 
     probs.sort()
 
-    print ("Found test problem files:")
     for problem in probs:
-        print(problem)
-    print("\n")
+        logging.info(problem)
+
     return probs

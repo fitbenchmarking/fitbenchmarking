@@ -27,6 +27,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import re
+import logging
 
 import numpy as np
 
@@ -43,6 +44,7 @@ def load_nist_fitting_problem_file(problem_filename):
     with open(problem_filename) as spec_file:
 
         print("\n*** Loading NIST data file %s ***" %os.path.basename(spec_file.name))
+        logging.info("\n*** Loading NIST data file %s ***" %os.path.basename(spec_file.name))
 
         lines = spec_file.readlines()
         (equation_text, data_pattern_text,
@@ -57,7 +59,7 @@ def load_nist_fitting_problem_file(problem_filename):
         elif not residual_sum_sq:
             raise RuntimeError('Could not find the residual sum sq after parsing the lines of this file: {0}'.
                                format(spec_file.name))
-            
+
         data_pattern = parse_data_pattern(data_pattern_text)
         parsed_eq = parse_equation(equation_text)
 
@@ -142,6 +144,9 @@ def parse_nist_file_line_by_line(lines):
     print("%d lines were ignored in this problem file.\n"
           "If any problems occur, please uncomment line above this print"
           "to display the full output." %ignored_lines)
+    logging.info("%d lines were ignored in this problem file.\n"
+                 "If any problems occur, please uncomment line above this print"
+                 "to display the full output." %ignored_lines)
 
     return equation_text, data_pattern_text, starting_values, residual_sum_sq
 
