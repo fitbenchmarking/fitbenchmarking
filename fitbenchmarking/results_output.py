@@ -116,24 +116,22 @@ def build_indiv_linked_problems(results_per_test, group_name):
     linked_problems = []
 
     for test_idx, prob_results in enumerate(results_per_test):
-        raw_name = results_per_test[test_idx][0].problem.name
-        name = raw_name.split('.')[0]
-
-        if name == prev_name:
-            prob_count += 1
-        else:
-            prob_count = 1
-
-        prev_name = name
-        name_index = name + ' ' + str(prob_count)
-        if 'neutron' in group_name:
-            name += ' ' + build_visual_display_page(prob_results, group_name)
-
-        # TO-DO: move this to the nist loader, not here!
         if 'nist_' in group_name:
-            linked_problems.append("`{0} <http://www.itl.nist.gov/div898/strd/nls/data/{1}.shtml>`__".
-                                   format(name_index, name.lower()))
-        else:
+            linked_problems.append(results_per_test[test_idx][0].problem.linked_name)
+
+        elif 'neutron' in group_name:
+
+            raw_name = results_per_test[test_idx][0].problem.name
+            name = raw_name.split('.')[0]
+
+            if name == prev_name:
+                prob_count += 1
+            else:
+                prob_count = 1
+
+            prev_name = name
+            name_index = name + ' ' + str(prob_count)
+            name += ' ' + build_visual_display_page(prob_results, group_name)
             linked_problems.append(name)
 
     return linked_problems
