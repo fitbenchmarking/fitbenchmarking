@@ -25,6 +25,7 @@ formats such as RST and plain text.
 from __future__ import (absolute_import, division, print_function)
 
 import logging
+import logscript
 import numpy as np
 from docutils.core import publish_string
 import post_processing as postproc
@@ -72,6 +73,8 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
                           must be consistent with the style sheet used in the documentation pages (5
                           at the moment).
     """
+    log_file = logscript.logging_setup('results_output_logs')
+
     linked_problems = build_indiv_linked_problems(results_per_test, group_name)
     accuracy_tbl, runtime_tbl = postproc.calc_accuracy_runtime_tbls(results_per_test, minimizers)
     norm_acc_rankings, norm_runtimes, summary_cells_acc, summary_cells_runtime = \
