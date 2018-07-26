@@ -74,9 +74,10 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
                           at the moment).
     """
 
-    tables_dir = make_results_directory(results_dir, group_name)
+    tables_dir = make_result_tables_directory(results_dir, group_name)
+    VDpages_dir = make_visual_display_pages_dir(results_dir, group_name)
 
-    linked_problems = build_indiv_linked_problems(results_per_test, group_name)
+    linked_problems = build_indiv_linked_problems(results_per_test, group_name, VDpages_dir)
     accuracy_tbl, runtime_tbl = postproc.calc_accuracy_runtime_tbls(results_per_test, minimizers)
     norm_acc_rankings, norm_runtimes, summary_cells_acc, summary_cells_runtime = \
         postproc.calc_norm_summary_tables(accuracy_tbl, runtime_tbl)
@@ -106,7 +107,7 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
 
 
 
-def build_indiv_linked_problems(results_per_test, group_name):
+def build_indiv_linked_problems(results_per_test, group_name, VDpage_results_dir):
     """
     Makes a list of linked problem names which would be used for the
     rows of the first column of the tables of individual results.
@@ -136,26 +137,27 @@ def build_indiv_linked_problems(results_per_test, group_name):
 
             prev_name = name
             name_index = name + ' ' + str(prob_count)
-            name += ' ' + build_visual_display_page(prob_results, group_name)
+            name += ' ' + build_visual_display_page(prob_results, group_name, VDpage_results_dir)
             linked_problems.append(name)
 
     return linked_problems
 
 
-def build_visual_display_page(prob_results, group_name):
+def build_visual_display_page(prob_results, group_name, VDpage_results_dir):
     """
     Builds a page containing details of the best fit for a problem.
     @param prob_results:: the list of results for a problem
     @param group_name :: the name of the group, e.g. "nist_lower"
     """
-    
+
     # Get the best result for a group
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
     no_commas_problem_name = gb.problem.name.replace(',', '')
     problem_name = no_commas_problem_name.replace(' ','_')
 
     file_name = (group_name + '_' + problem_name).lower()
-    
+    file_name = os.path.join(VDpage_results_dir, file_name)
+
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
     title += gb.problem.name + '\n'
@@ -183,8 +185,9 @@ def build_visual_display_page(prob_results, group_name):
         print('Saved {file_name}.{extension} to {working_directory}'.
               format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=WORKING_DIR))
 
+    file_name = file_name.replace("\\", "\\\\")
 
-    rst_link = '`<' + file_name + '.' + FILENAME_EXT_HTML + '>`_'  # `<cutest_palmer6c.dat.html>`_
+    rst_link = "`<" + file_name + "." + FILENAME_EXT_HTML + ">`_"  # `<cutest_palmer6c.dat.html>`_
 
     return rst_link
 
@@ -425,7 +428,7 @@ def weighted_suffix_string(use_errors):
     return values[use_errors]
 
 
-def make_results_directory(results_dir, group_name):
+def make_result_tables_directory(results_dir, group_name):
 
     current_dir = os.path.dirname(os.path.realpath(__file__))
     if results_dir is None:
@@ -433,13 +436,35 @@ def make_results_directory(results_dir, group_name):
 
     if 'nist' in group_name:
         group_results_dir = os.path.join(results_dir, 'nist')
+        if not os.path.exists(group_results_dir):
+            os.makedirs(group_results_dir)
         tables_dir = os.path.join(group_results_dir, "Tables", group_name)
 
     elif 'neutron' in group_name:
         group_results_dir = os.path.join(results_dir, 'neutron')
+        if not os.path.exists(group_results_dir):
+            os.makedirs(group_results_dir)
         tables_dir = os.path.join(group_results_dir, "Tables")
 
     if not os.path.exists(tables_dir):
         os.makedirs(tables_dir)
 
     return tables_dir
+
+def make_visual_display_pages_dir(results_dir, group_name):
+
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    if results_dir is None:
+        results_dir = os.path.join(current_dir, "results")
+
+    if 'neutron' in group_name:
+        group_results_dir = os.path.join(results_dir, 'neutron')
+        if not os.path.exists(group_results_dir):
+            os.makedirs(group_results_dir)
+        VDpages_dir = os.path.join(group_results_dir, "VDPages")
+
+    if not os.path.exists(VDpages_dir):
+        os.makedirs(VDpages_dir)
+
+    return VDpages_dir
+
