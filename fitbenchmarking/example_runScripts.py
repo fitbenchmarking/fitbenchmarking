@@ -2,6 +2,9 @@
 # fit problems
 
 import os
+import sys
+import fitting_benchmarking
+import results_output
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import print_group_results_tables as printTables
 
@@ -38,6 +41,7 @@ muon_data_group_dir = [os.path.join(base_problem_files_dir, 'Muon_data')]
 # When specifying a results_dir, please GIVE THE FULL PATH
 results_dir = None
 
+
 for run_data in ["neutron", "nist"]:
 
     if run_data == "neutron":
@@ -62,3 +66,5 @@ for run_data in ["neutron", "nist"]:
                     rst=True, save_to_file=True, color_scale=color_scale,
                     results_dir=results_dir)
 
+    reload(fitting_benchmarking)
+    reload(results_output)
