@@ -3,8 +3,7 @@
 
 import os
 import sys
-import fitting_benchmarking
-import results_output
+sys.setrecursionlimit(10000)
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import print_group_results_tables as printTables
 
@@ -65,6 +64,3 @@ for run_data in ["neutron", "nist"]:
                     use_errors=use_errors,
                     rst=True, save_to_file=True, color_scale=color_scale,
                     results_dir=results_dir)
-
-    reload(fitting_benchmarking)
-    reload(results_output)
