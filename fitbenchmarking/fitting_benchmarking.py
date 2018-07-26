@@ -29,17 +29,18 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import time
 import sys
-import logging
 
 import numpy as np
 import mantid.simpleapi as msapi
 
 import input_parsing as iparsing
-import results_output as fitout
 import test_result
+
 import logscript
+log = logscript.loggingFunctions()
 from plotHelper import *
 
+log_file = 'fittingbenchmarking_logs'
 
 def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_data_group_dirs=None,
                          muon_data_group_dir=None, minimizers=None, use_errors=True):
@@ -62,9 +63,7 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     @param use_errors :: whether to use observational errors as weights in the cost function
     """
 
-
-    global log_file
-    log_file = logscript.logging_setup('fitting_benchmarking_logs')
+    log.clear_logs_folder()
 
     problem_groups = {}
 
@@ -89,6 +88,8 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     if len(probs) != len(results):
         raise RuntimeError('probs : {0}, prob_results: {1}'.format(len(probs), len(results)))
 
+
+    log.shutdown_logging()
     return probs, results
 
 
@@ -108,6 +109,8 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
     the minimizers requested
     """
 
+    logger = log.setup_logger('do_fitting_benchmark_group', log_file)
+
     problems = []
     results_per_problem = []
     count = 0
@@ -119,7 +122,7 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
             prob = iparsing.load_nist_fitting_problem_file(prob_file)
 
             print("* Testing fitting of problem {0}".format(prob.name))
-            logging.info("* Testing fitting of problem {0}".format(prob.name))
+            logger.info("* Testing fitting of problem {0}".format(prob.name))
 
             results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
             results_per_problem.extend(results_prob)
@@ -128,13 +131,15 @@ def do_fitting_benchmark_group(group_name, problem_files, minimizers, use_errors
             prob = iparsing.load_neutron_data_fitting_problem_file(prob_file)
 
             print("* Testing fitting of problem {0}".format(prob.name))
-            logging.info("* Testing fitting of problem {0}".format(prob.name))
+            logger.info("* Testing fitting of problem {0}".format(prob.name))
 
             results_prob = do_fitting_benchmark_one_problem(prob, minimizers, use_errors, count, previous_name)
             results_per_problem.extend(results_prob)
 
     else:
         raise NameError("Please assign your problem group to a parser.")
+
+    log.close_logger(logger)
 
     return problems, results_per_problem
 
@@ -150,6 +155,8 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
                          cost function)
     @param count :: the current count for the number of different start values for a given problem
     """
+
+    logger = log.setup_logger('do_fitting_benchmark_one_problem', log_file)
 
     max_possible_float = sys.float_info.max
     wks, cost_function = prepare_wks_cost_function(prob, use_errors)
@@ -174,8 +181,8 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
                                                       cost_function=cost_function)
             t_end = time.clock()
 
-            print("*** Using minimizer {0},\n Status: {1}".format(minimizer_name, status))
-            logging.info("*** Using minimizer {0},\n Status: {1}".format(minimizer_name, status))
+            print("*** Using minimizer {0}, Status: {1}".format(minimizer_name, status))
+            logger.info("*** Using minimizer {0}, Status: {1}".format(minimizer_name, status))
 
             chi_sq = -1
             if not status == 'failed':
@@ -188,7 +195,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
                         min_chi_sq = chi_sq
                 else:
                     chi_sq = float("nan")
-                    logging.warning(" No output fit workspace")
+                    logger.warning(" No output fit workspace")
                 print("Chi_sq: {0}".format(chi_sq))
 
             result = test_result.FittingTestResult()
@@ -205,6 +212,7 @@ def do_fitting_benchmark_one_problem(prob, minimizers, use_errors=True, count=0,
         previous_name, count = make_plots(prob, best_fit, wks, previous_name,
                                           count, user_func)
 
+    log.close_logger(logger)
     return results_fit_problem
 
 
@@ -220,7 +228,6 @@ def make_plots(prob, best_fit, wks, previous_name, count, user_func):
     @param count :: number of different starting points for one problem
     @param user_func :: fitting function
     '''
-    global log_file
 
 
     fig=plot()
@@ -229,7 +236,7 @@ def make_plots(prob, best_fit, wks, previous_name, count, user_func):
     best_fit.colour='green'
     best_fit.order_data()
     fig.add_data(best_fit)
-    tmp = logscript.ConvertToPointData(wks, log_file)
+    tmp = msapi.ConvertToPointData(wks)
     xData = tmp.readX(0)
     yData = tmp.readY(0)
     eData = tmp.readE(0)
@@ -248,10 +255,12 @@ def make_plots(prob, best_fit, wks, previous_name, count, user_func):
     fig.labels['title'] = prob.name[:-4]+" "+str(count)
     fig.title_size=10
 
-    fit_result = logscript.FitSimple(user_func, wks, prob.start_x, prob.end_x,
-                                     log_file=log_file)
+    fit_result = msapi.Fit(user_func, wks, Output='ws_fitting_test',
+                           Minimizer='Levenberg-Marquardt',
+                           CostFunction='Least squares',IgnoreInvalidData=True,
+                           StartX=prob.start_x, EndX=prob.end_x,MaxIterations=0)
 
-    tmp = logscript.ConvertToPointData(fit_result.OutputWorkspace, log_file)
+    tmp = msapi.ConvertToPointData(fit_result.OutputWorkspace)
     xData = tmp.readX(1)
     yData = tmp.readY(1)
     startData = data("Start Guess",xData,yData)
@@ -308,8 +317,11 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt', cost_function=
         if 'WISH17701' in prob.name:
             ignore_invalid = False
 
-        fit_result = logscript.Fit(function, wks, minimizer, cost_function,
-                                   ignore_invalid, prob.start_x, prob.end_x, log_file)
+        fit_result = msapi.Fit(function, wks, Output='ws_fitting_test',
+                               Minimizer=minimizer,
+                               CostFunction=cost_function,
+                               IgnoreInvalidData=ignore_invalid,
+                               StartX=prob.start_x, EndX=prob.end_x)
 
     except (RuntimeError, ValueError) as err:
         print("Warning, fit probably failed. Going on. Error: " + str(err))
@@ -371,13 +383,16 @@ def splitByString(name,min_length,loop=0,splitter=0):
     @param splitter :: index of which split pattern to use
     @returns :: the split string
     """
+
+    logger = log.setup_logger('splitByString', log_file)
+
     tmp = name[min_length:]
     split_at=[";","+",","]
 
     if splitter+1 >len(split_at):
         if loop>3:
             print ("failed ",name)
-            logging.error("failed in splitByString function", name)
+            logger.error("failed in splitByString function", name)
             return "..."
         else:
             return splitByString(name,min_length,loop+1)
@@ -392,6 +407,8 @@ def splitByString(name,min_length,loop=0,splitter=0):
         tmp = splitByString(name[loc+1:],min_length,loop,splitter)
         title=name[:loc+1]+"\n"+tmp
         return title
+
+    log.close_logger(logger)
 
 
 def get_function_definitions(prob):
@@ -476,12 +493,14 @@ def get_data_groups(data_groups_dirs):
 def get_data_group_problem_files(grp_dir):
     import glob
 
+    logger = log.setup_logger('get_data_group_problem_files', log_file)
     search_str = os.path.join(grp_dir, "*.txt")
     probs = glob.glob(search_str)
 
     probs.sort()
 
     for problem in probs:
-        logging.info(problem)
+        logger.info(problem)
 
+    log.close_logger(logger)
     return probs

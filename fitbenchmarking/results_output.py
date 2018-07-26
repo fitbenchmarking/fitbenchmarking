@@ -24,8 +24,6 @@ formats such as RST and plain text.
 
 from __future__ import (absolute_import, division, print_function)
 
-import logging
-import logscript
 import numpy as np
 from docutils.core import publish_string
 import post_processing as postproc
@@ -40,6 +38,10 @@ try:
     from numpy import nanmean, nanmedian
 except ImportError:
     from scipy.stats import nanmean, nanmedian
+
+import logscript
+log = logscript.loggingFunctions()
+log_file = 'resultsOutput_logs'
 
 # Some naming conventions for the output files
 BENCHMARK_VERSION_STR = 'v3.8'
@@ -73,7 +75,6 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
                           must be consistent with the style sheet used in the documentation pages (5
                           at the moment).
     """
-    log_file = logscript.logging_setup('results_output_logs')
 
     linked_problems = build_indiv_linked_problems(results_per_test, group_name)
     accuracy_tbl, runtime_tbl = postproc.calc_accuracy_runtime_tbls(results_per_test, minimizers)
@@ -102,6 +103,8 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_TXT)
             save_table_to_file(table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_HTML)
+
+    log.shutdown_logging()
 
 
 
@@ -147,6 +150,9 @@ def build_visual_display_page(prob_results, group_name):
     @param prob_results:: the list of results for a problem
     @param group_name :: the name of the group, e.g. "nist_lower"
     """
+
+    logger = log.setup_logger('build_visual_display_page', log_file)
+
     # Get the best result for a group
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi2)
     file_name = (group_name + '_' + gb.problem.name).lower()
@@ -172,15 +178,17 @@ def build_visual_display_page(prob_results, group_name):
     html = publish_string(rst_text, writer_name='html')
     with open(file_name + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
         print(html, file=visual_rst)
-        logging.info('Saved {file_name}.{extension} to {working_directory}'.
+        logger.info('Saved {file_name}.{extension} to {working_directory}'.
                      format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=WORKING_DIR))
 
     with open(file_name + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
-        logging.info('Saved {file_name}.{extension} to {working_directory}'.
+        logger.info('Saved {file_name}.{extension} to {working_directory}'.
                      format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=WORKING_DIR))
 
     rst_link = '`<' + file_name + '.' + FILENAME_EXT_HTML + '>`_'  # `<cutest_palmer6c.dat.html>`_
+
+    log.close_logger(logger)
     return rst_link
 
 
@@ -395,6 +403,9 @@ def save_table_to_file(table_data, errors, group_name, metric_type, file_extensi
     @param metric_type :: the test type of the table data (e.g. runtime, accuracy)
     @param file_extension :: the file type extension (e.g. html)
     """
+
+    logger = log.setup_logger('save_table_to_file', log_file)
+
     file_name = ('comparison_{weighted}_{version}_{metric_type}_{group_name}.'
                  .format(weighted=weighted_suffix_string(errors),
                          version=BENCHMARK_VERSION_STR, metric_type=metric_type, group_name=group_name))
@@ -406,8 +417,10 @@ def save_table_to_file(table_data, errors, group_name, metric_type, file_extensi
 
     with open(file_name + file_extension, 'w') as tbl_file:
         print(table_data, file=tbl_file)
-    logging.info('Saved {file_name}{extension} to {working_directory}'.
+    logger.info('Saved {file_name}{extension} to {working_directory}'.
                  format(file_name=file_name, extension=file_extension, working_directory=WORKING_DIR))
+
+    log.close_logger(logger)
 
 
 def weighted_suffix_string(use_errors):
