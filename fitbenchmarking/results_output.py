@@ -25,6 +25,7 @@ formats such as RST and plain text.
 from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
+import glob
 from docutils.core import publish_string
 import post_processing as postproc
 import os
@@ -148,27 +149,35 @@ def build_visual_display_page(prob_results, group_name):
     @param prob_results:: the list of results for a problem
     @param group_name :: the name of the group, e.g. "nist_lower"
     """
-    
+
     # Get the best result for a group
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
     no_commas_problem_name = gb.problem.name.replace(',', '')
     problem_name = no_commas_problem_name.replace(' ','_')
 
     file_name = (group_name + '_' + problem_name).lower()
-    
+
+    # Get path to the figures
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    figures_dir = os.path.join(current_dir, 'results', 'neutron', 'Figures')
+    file_name = os.path.join(figures_dir, file_name)
+
+    figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
+    figure_start = os.path.join(figures_dir, "start_for_" + problem_name + "_1" + ".png")
+
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
     title += gb.problem.name + '\n'
     title += '=' * len(gb.problem.name) + '\n\n'
     data_plot = 'Plot of the data' + '\n'
     data_plot += ('-' * len(data_plot)) + '\n\n'
-    data_plot += '.. image:: ' + file_name + '.png' + '\n\n'
+    data_plot += '.. image:: ' + figure_fit + '\n\n'
     starting_plot = 'Plot of the initial starting guess' + '\n'
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
-    starting_plot += '.. figure:: ' + '\n\n'
+    starting_plot += '.. figure:: ' + figure_start  + '\n\n'
     solution_plot = 'Plot of the solution found' + '\n'
     solution_plot += ('-' * len(solution_plot)) + '\n\n'
-    solution_plot += '.. figure:: ' + '\n\n'
+    solution_plot += '.. figure:: ' + figure_fit + '\n\n'
     problem = 'Fit problem' + '\n'
     problem += ('-' * len(problem)) + '\n'
     rst_text = title + data_plot + starting_plot + solution_plot + problem
