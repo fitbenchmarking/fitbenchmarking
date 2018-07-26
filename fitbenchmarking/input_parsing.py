@@ -307,7 +307,7 @@ def get_fitting_neutron_data(fname, prob):
     import mantid.simpleapi as msapi
 
     wks = msapi.Load(Filename=fname)
-    prob.data_pattern_in = wks.readX(0)
-    prob.data_pattern_out = wks.readY(0)
+    prob.data_x = wks.readX(0)
+    prob.data_y = wks.readY(0)
     prob.data_pattern_obs_errors = wks.readE(0)
     prob.ref_residual_sum_sq = 0

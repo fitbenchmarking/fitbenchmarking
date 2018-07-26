@@ -56,7 +56,9 @@ SCRIPT_DIR = os.path.dirname(__file__)
 
 
 def print_group_results_tables(minimizers, results_per_test, problems_obj, group_name, use_errors,
-                               rst=True, save_to_file=True, color_scale=None):
+                               simple_text=True, rst=False, save_to_file=False, color_scale=None,
+                               results_dir=None):
+
     """
     Prints out results for a group of fit problems in accuracy and runtime tables, in a summary
     format and both as simple text, rst format and/or to file depending on input arguments
@@ -76,6 +78,9 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
                           at the moment).
     """
 
+
+    tables_dir = make_results_directory(results_dir, group_name)
+
     linked_problems = build_indiv_linked_problems(results_per_test, group_name)
     accuracy_tbl, runtime_tbl = postproc.calc_accuracy_runtime_tbls(results_per_test, minimizers)
     norm_acc_rankings, norm_runtimes, summary_cells_acc, summary_cells_runtime = \
@@ -88,9 +93,9 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
                                         using_errors=use_errors, color_scale=color_scale)
 
         if save_to_file:
-            save_table_to_file(table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
+            save_table_to_file(results_dir=tables_dir, table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_ACCURACY, file_extension=FILENAME_EXT_TXT)
-            save_table_to_file(table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
+            save_table_to_file(results_dir=tables_dir, table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_ACCURACY, file_extension=FILENAME_EXT_HTML)
 
         # print out runtime table for this group of fit problems
@@ -99,9 +104,9 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
                                             using_errors=use_errors, color_scale=color_scale)
 
         if save_to_file:
-            save_table_to_file(table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
+            save_table_to_file(results_dir=tables_dir, table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_TXT)
-            save_table_to_file(table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
+            save_table_to_file(results_dir=tables_dir, table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_HTML)
 
     log.shutdown_logging()
@@ -152,12 +157,13 @@ def build_visual_display_page(prob_results, group_name):
     """
 
     logger = log.setup_logger('build_visual_display_page', log_file)
-
     # Get the best result for a group
-    gb = min((result for result in prob_results), key=lambda result: result.fit_chi2)
-    file_name = (group_name + '_' + gb.problem.name).lower()
-    wks = msapi.CreateWorkspace(OutputWorkspace=gb.problem.name, DataX=gb.problem.data_pattern_in, DataY=gb.problem.data_pattern_out)
+    gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
+    no_commas_problem_name = gb.problem.name.replace(',', '')
+    problem_name = no_commas_problem_name.replace(' ','_')
 
+    file_name = (group_name + '_' + problem_name).lower()
+    
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
     title += gb.problem.name + '\n'
@@ -186,9 +192,11 @@ def build_visual_display_page(prob_results, group_name):
         logger.info('Saved {file_name}.{extension} to {working_directory}'.
                      format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=WORKING_DIR))
 
+
     rst_link = '`<' + file_name + '.' + FILENAME_EXT_HTML + '>`_'  # `<cutest_palmer6c.dat.html>`_
 
     log.close_logger(logger)
+
     return rst_link
 
 
@@ -392,7 +400,7 @@ def format_cell_value_rst(value, width=None, color_scale=None, items_link=None):
     return value_text
 
 
-def save_table_to_file(table_data, errors, group_name, metric_type, file_extension):
+def save_table_to_file(results_dir, table_data, errors, group_name, metric_type, file_extension):
     """
     Saves a group results table or overall results table to a given file type.
 
@@ -409,6 +417,7 @@ def save_table_to_file(table_data, errors, group_name, metric_type, file_extensi
     file_name = ('comparison_{weighted}_{version}_{metric_type}_{group_name}.'
                  .format(weighted=weighted_suffix_string(errors),
                          version=BENCHMARK_VERSION_STR, metric_type=metric_type, group_name=group_name))
+    file_name = os.path.join(results_dir, file_name)
 
     if file_extension == 'html':
         rst_content = '.. include:: ' + str(os.path.join(SCRIPT_DIR, 'color_definitions.txt'))
@@ -417,10 +426,12 @@ def save_table_to_file(table_data, errors, group_name, metric_type, file_extensi
 
     with open(file_name + file_extension, 'w') as tbl_file:
         print(table_data, file=tbl_file)
+        
     logger.info('Saved {file_name}{extension} to {working_directory}'.
                  format(file_name=file_name, extension=file_extension, working_directory=WORKING_DIR))
 
     log.close_logger(logger)
+
 
 
 def weighted_suffix_string(use_errors):
@@ -430,3 +441,23 @@ def weighted_suffix_string(use_errors):
     """
     values = {True: 'weighted', False: 'unweighted'}
     return values[use_errors]
+
+
+def make_results_directory(results_dir, group_name):
+
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    if results_dir is None:
+        results_dir = os.path.join(current_dir, "results")
+
+    if 'nist' in group_name:
+        group_results_dir = os.path.join(results_dir, 'nist')
+        tables_dir = os.path.join(group_results_dir, "Tables", group_name)
+
+    elif 'neutron' in group_name:
+        group_results_dir = os.path.join(results_dir, 'neutron')
+        tables_dir = os.path.join(group_results_dir, "Tables")
+
+    if not os.path.exists(tables_dir):
+        os.makedirs(tables_dir)
+
+    return tables_dir
