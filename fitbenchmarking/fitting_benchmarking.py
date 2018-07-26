@@ -60,15 +60,9 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     @param use_errors :: whether to use observational errors as weights in the cost function
     """
 
+    results_dir = setup_results_directory(results_dir)
+
     problem_groups = {}
-
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    if results_dir is None:
-        results_dir = os.path.join(current_dir, "results")
-
-    if not os.path.exists(results_dir):
-        os.makedirs(results_dir)
-
 
     print("***** SAVING RESULTS IN DIRECTORY {0} *****".format(results_dir))
 
@@ -513,6 +507,7 @@ def get_data_group_problem_files(grp_dir):
     print("\n")
     return probs
 
+
 def empty_contents_of_folder(results_dir):
 
     for file in os.listdir(results_dir):
@@ -522,3 +517,22 @@ def empty_contents_of_folder(results_dir):
             os.unlink(file_path)
         elif os.path.isdir(file_path):
             shutil.rmtree(file_path)
+
+
+def setup_results_directory(results_dir):
+
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    if results_dir is None:
+        results_dir = os.path.join(current_dir, "results")
+
+    elif not isinstance(results_dir, str):
+        TypeError("results_dir must be a string!")
+
+    elif not os.sep in results_dir:
+        results_dir = os.path.join(current_dir, results_dir)
+
+
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
+
+    return results_dir
