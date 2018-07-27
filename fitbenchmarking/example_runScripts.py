@@ -1,6 +1,8 @@
 # script for running fit benchmarking and comparising the relative performance of local minimzers on
 # fit problems
 
+# sys recursion limit 10000 is needed to avoid reaching the maximum recursion
+# depth when running all the problems (this produces a RuntimeError)
 import os
 import sys
 sys.setrecursionlimit(10000)
