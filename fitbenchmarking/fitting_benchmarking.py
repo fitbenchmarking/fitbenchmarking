@@ -36,11 +36,9 @@ import mantid.simpleapi as msapi
 import input_parsing as iparsing
 import test_result
 
-import logscript
-log = logscript.loggingFunctions()
-from plotHelper import *
+from logging_setup import logger
 
-log_file = 'fittingbenchmarking_logs'
+from plotHelper import *
 
 def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_data_group_dirs=None,
                          muon_data_group_dir=None, minimizers=None, use_errors=True, results_dir=None):
@@ -62,8 +60,6 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     @param minimizers :: list of minimizers to test
     @param use_errors :: whether to use observational errors as weights in the cost function
     """
-
-    log.clear_logs_folder()
 
     problem_groups = {}
 
@@ -108,7 +104,6 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
         raise RuntimeError('probs : {0}, prob_results: {1}'.format(len(probs), len(results)))
 
 
-    log.shutdown_logging()
     return probs, results
 
 
@@ -127,8 +122,6 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, min
     @returns :: problem definitions loaded from the files, and results of running them with
     the minimizers requested
     """
-
-    logger = log.setup_logger('do_fitting_benchmark_group', log_file)
 
     problems = []
     results_per_problem = []
@@ -159,8 +152,6 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, min
     else:
         raise NameError("Please assign your problem group to a parser.")
 
-    log.close_logger(logger)
-
     return problems, results_per_problem
 
 
@@ -175,8 +166,6 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_er
                          cost function)
     @param count :: the current count for the number of different start values for a given problem
     """
-
-    logger = log.setup_logger('do_fitting_benchmark_one_problem', log_file)
 
     max_possible_float = sys.float_info.max
     wks, cost_function = prepare_wks_cost_function(prob, use_errors)
@@ -232,7 +221,6 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_er
         previous_name, count = make_plots(prob, group_results_dir, best_fit,
                                           wks, previous_name, count, user_func)
 
-    log.close_logger(logger)
     return results_fit_problem
 
 
@@ -411,8 +399,6 @@ def splitByString(name,min_length,loop=0,splitter=0):
     @returns :: the split string
     """
 
-    logger = log.setup_logger('splitByString', log_file)
-
     tmp = name[min_length:]
     split_at=[";","+",","]
 
@@ -434,8 +420,6 @@ def splitByString(name,min_length,loop=0,splitter=0):
         tmp = splitByString(name[loc+1:],min_length,loop,splitter)
         title=name[:loc+1]+"\n"+tmp
         return title
-
-    log.close_logger(logger)
 
 
 def get_function_definitions(prob):
@@ -520,7 +504,6 @@ def get_data_groups(data_groups_dirs):
 def get_data_group_problem_files(grp_dir):
     import glob
 
-    logger = log.setup_logger('get_data_group_problem_files', log_file)
     search_str = os.path.join(grp_dir, "*.txt")
     probs = glob.glob(search_str)
 
@@ -529,7 +512,6 @@ def get_data_group_problem_files(grp_dir):
     for problem in probs:
         logger.info(problem)
 
-    log.close_logger(logger)
     return probs
 
 def empty_contents_of_folder(results_dir):

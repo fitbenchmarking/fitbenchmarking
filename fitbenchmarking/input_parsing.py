@@ -31,9 +31,7 @@ import numpy as np
 
 import test_problem
 
-import logscript
-log = logscript.loggingFunctions()
-log_file = 'inputParsing_logs'
+from logging_setup import logger
 
 
 def load_nist_fitting_problem_file(problem_filename):
@@ -43,7 +41,6 @@ def load_nist_fitting_problem_file(problem_filename):
     @param problem_filename :: input file, as a standard NIST text (.dat) file
     """
 
-    logger = log.setup_logger('load_nist_fitting_problem_file', log_file)
     with open(problem_filename) as spec_file:
 
         print("*** Loading NIST data file %s ***" %os.path.basename(spec_file.name))
@@ -77,9 +74,6 @@ def load_nist_fitting_problem_file(problem_filename):
         prob.data_x = data_pattern[:, 0]
         prob.ref_residual_sum_sq = residual_sum_sq
 
-
-    log.close_logger(logger)
-    log.shutdown_logging()
     return prob
 
 
@@ -94,8 +88,6 @@ def parse_nist_file_line_by_line(lines):
     @returns :: the equation string, the data string, the starting values, and the
     certified chi^2, as found in the text lines
     """
-
-    logger = log.setup_logger('parse_nist_file_line_by_line', log_file)
 
     idx, data_idx, ignored_lines = 0, 0, 0
     data_pattern_text = None
@@ -150,14 +142,10 @@ def parse_nist_file_line_by_line(lines):
             ignored_lines += 1
             # print("unknown line in supposedly NIST test file, ignoring: {0}".format(line))
 
-    print("%d lines were ignored in this problem file.\n"
-          "If any problems occur, please uncomment line above this print "
-          "to display the full output." %ignored_lines)
     logger.info("%d lines were ignored in this problem file.\n"
                 "If any problems occur, please uncomment line above this print "
                 "to display the full output." %ignored_lines)
 
-    log.close_logger(logger)
     return equation_text, data_pattern_text, starting_values, residual_sum_sq
 
 
@@ -269,7 +257,6 @@ def load_neutron_data_fitting_problem_file(fname):
             prob.start_x = entries['fit_parameters']['StartX']
             prob.end_x = entries['fit_parameters']['EndX']
 
-    log.shutdown_logging()
     return prob
 
 

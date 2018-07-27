@@ -21,9 +21,7 @@ from __future__ import (absolute_import, division, print_function)
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
-import logscript
-log = logscript.loggingFunctions()
-log_file = 'resultsOutput_logs'
+from logging_setup import logger
 
 class data:
 
@@ -130,7 +128,6 @@ class plot(data,insert):
         @param save:: the name of the file to save to
         the default is not to save
         """
-        logger = log.setup_logger('make_scatter_plot', log_file)
         plt.figure()
         plt.xlabel(self.labels["x"])
         plt.ylabel(self.labels["y"])
@@ -163,8 +160,6 @@ class plot(data,insert):
             logger.info("saving to "+output_file.replace(" ","_"))
             plt.savefig(output_file.replace(" ","_"))
 
-        log.close_logger(logger)
-        log.shutdown_logging()
 
     # safe is used if the y values (strings) all have unique names
     def make_y_bar_plot(self,safe=True,save=""):
