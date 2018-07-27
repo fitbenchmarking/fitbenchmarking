@@ -57,7 +57,7 @@ def load_nist_fitting_problem_file(problem_filename):
         elif not residual_sum_sq:
             raise RuntimeError('Could not find the residual sum sq after parsing the lines of this file: {0}'.
                                format(spec_file.name))
-            
+
         data_pattern = parse_data_pattern(data_pattern_text)
         parsed_eq = parse_equation(equation_text)
 
@@ -68,8 +68,8 @@ def load_nist_fitting_problem_file(problem_filename):
                             format(name_without_ext, name_without_ext.lower()))
         prob.equation = parsed_eq
         prob.starting_values = starting_values
-        prob.data_pattern_in = data_pattern[:, 1]
-        prob.data_pattern_out = data_pattern[:, 0]
+        prob.data_y = data_pattern[:, 1]
+        prob.data_x = data_pattern[:, 0]
         prob.ref_residual_sum_sq = residual_sum_sq
 
         return prob
