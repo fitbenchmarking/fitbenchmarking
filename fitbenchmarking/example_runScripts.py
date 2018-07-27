@@ -1,7 +1,11 @@
 # script for running fit benchmarking and comparising the relative performance of local minimzers on
 # fit problems
 
+# sys recursion limit 10000 is needed to avoid reaching the maximum recursion
+# depth when running all the problems (this produces a RuntimeError)
 import os
+import sys
+sys.setrecursionlimit(10000)
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import print_group_results_tables as printTables
 
@@ -38,36 +42,30 @@ muon_data_group_dir = [os.path.join(base_problem_files_dir, 'Muon_data')]
 # When specifying a results_dir, please GIVE THE FULL PATH
 results_dir = None
 
-# choice the data to run
-run_data = "neutron"
+for run_data in ["neutron", "nist"]:
 
-if run_data == "neutron":
-    group_suffix_names = ['neutron_data']
-    group_names = ["Neutron data"]
-    (problems, results_per_group,
-     results_dir) = fitBenchmarking(neutron_data_group_dirs=neutron_data_group_dirs,
-                                    minimizers=minimizers, use_errors=use_errors,
-                                    results_dir=results_dir)
-elif run_data == "muon":
-    group_names = ['MUON']
-    group_suffix_names = ['MUON']
-    (problems, results_per_group,
-     results_dir) = fitBenchmarking(muon_data_group_dir=muon_data_group_dir,
-                                    minimizers=minimizers, use_errors=use_errors,
-                                    results_dir=results_dir)
-elif run_data == "nist":
-    group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
-                   'NIST, "higher" difficulty']
-    group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher']
-    (problems, results_per_group,
-     results_dir) = fitBenchmarking(nist_group_dir=nist_group_dir,
-                                    minimizers=minimizers, use_errors=use_errors,
-                                    results_dir=results_dir)
+    if run_data == "neutron":
+        group_suffix_names = ['neutron_data']
+        group_names = ["Neutron data"]
+        problems, results_per_group = fitBenchmarking(neutron_data_group_dirs=neutron_data_group_dirs,
+                                                      minimizers=minimizers, use_errors=use_errors,
+                                                      results_dir=results_dir)
 
-for idx, group_results in enumerate(results_per_group):
-    printTables(minimizers, group_results, problems[idx],
-                group_name=group_suffix_names[idx],
-                use_errors=use_errors,
-                rst=True, save_to_file=True, color_scale=color_scale,
-                results_dir=results_dir)
+    elif run_data == "nist":
+        group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
+                       'NIST, "higher" difficulty']
+        group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher']
+        problems, results_per_group = fitBenchmarking(nist_group_dir=nist_group_dir,
+                                                      minimizers=minimizers, use_errors=use_errors,
+                                                      results_dir=results_dir)
 
+    else:
+        raise RuntimeError("Invalid run_data, please check if the array"
+                            "contains the correct names!")
+
+    for idx, group_results in enumerate(results_per_group):
+        printTables(minimizers, group_results, problems[idx],
+                    group_name=group_suffix_names[idx],
+                    use_errors=use_errors,
+                    rst=True, save_to_file=True, color_scale=color_scale,
+                    results_dir=results_dir)
