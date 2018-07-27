@@ -69,7 +69,7 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 
-    empty_contents_of_folder(results_dir)
+
     print("***** SAVING RESULTS IN DIRECTORY {0} *****".format(results_dir))
 
     if nist_group_dir:
@@ -86,7 +86,13 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
 
     for group_name in problem_groups:
         group_results_dir = os.path.join(results_dir, group_name)
-        os.makedirs(group_results_dir)
+
+        if os.path.exists(group_results_dir):
+            empty_contents_of_folder(group_results_dir)
+        else:
+            os.makedirs(group_results_dir)
+
+
         prob_results = [do_fitting_benchmark_group(group_name, group_results_dir, problem_block,
                                                    minimizers, use_errors=use_errors)
                         for problem_block in problem_groups[group_name]]
@@ -96,7 +102,7 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     if len(probs) != len(results):
         raise RuntimeError('probs : {0}, prob_results: {1}'.format(len(probs), len(results)))
 
-    return probs, results
+    return probs, results, results_dir
 
 
 def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, minimizers, use_errors=True):
@@ -217,7 +223,7 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_er
     return results_fit_problem
 
 
-def make_plots(prob, group_results_dir, best_fit, wks, previous_name, count, user_func):
+def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func):
     '''
     Makes a plot of the best fit considering multiple starting points of a
     problem.
@@ -229,8 +235,14 @@ def make_plots(prob, group_results_dir, best_fit, wks, previous_name, count, use
     @param count :: number of different starting points for one problem
     @param user_func :: fitting function
     '''
+    if "neutron" in visuals_dir:
+        VDPage_dir = os.path.join(visuals_dir, "VDPages")
+        if not os.path.exists(VDPage_dir):
+            os.makedirs(VDPage_dir)
 
-    figures_dir = os.path.join(group_results_dir, "Figures")
+        visuals_dir = VDPage_dir
+
+    figures_dir = os.path.join(visuals_dir, "Figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
 
