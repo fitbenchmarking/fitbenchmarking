@@ -186,14 +186,14 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     rst_text = title + data_plot + starting_plot + solution_plot
 
     html = publish_string(rst_text, writer_name='html')
-    with open(file_name + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
+    with open(file_path + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
         print(html, file=visual_rst)
         print('Saved {file_name}.{extension} to {working_directory}'.
-              format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=WORKING_DIR))
-    with open(file_name + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
+              format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=VDPages_dir))
+    with open(file_path + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
         print('Saved {file_name}.{extension} to {working_directory}'.
-              format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=WORKING_DIR))
+              format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=VDPages_dir))
 
     return rst_link
 
