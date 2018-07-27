@@ -39,6 +39,7 @@ try:
 except ImportError:
     from scipy.stats import nanmean, nanmedian
 
+import logging
 from logging_setup import logger
 
 # Some naming conventions for the output files
@@ -106,6 +107,8 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_TXT)
             save_table_to_file(results_dir=tables_dir, table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_HTML)
+
+    logging.shutdown()
 
 
 def build_indiv_linked_problems(results_per_test, group_name):
