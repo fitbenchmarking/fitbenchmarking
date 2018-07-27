@@ -60,6 +60,10 @@ for run_data in ["neutron", "nist"]:
                                                       minimizers=minimizers, use_errors=use_errors,
                                                       results_dir=results_dir)
 
+    else:
+        raise RuntimeError("Invalid run_data, please check if the array"
+                            "contains the correct names!")
+
     for idx, group_results in enumerate(results_per_group):
         printTables(minimizers, group_results, problems[idx],
                     group_name=group_suffix_names[idx],
