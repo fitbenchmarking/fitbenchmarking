@@ -508,10 +508,14 @@ def get_data_group_problem_files(grp_dir):
     return probs
 
 
-def empty_contents_of_folder(results_dir):
+def empty_contents_of_folder(directory):
+    ''' Deletes everything in the directory given by directory.
 
-    for file in os.listdir(results_dir):
-        file_path = os.path.join(results_dir, file)
+    @param directory :: path to the directory that gets wiped
+    '''
+
+    for file in os.listdir(directory):
+        file_path = os.path.join(directory, file)
 
         if os.path.isfile(file_path):
             os.unlink(file_path)
@@ -520,6 +524,11 @@ def empty_contents_of_folder(results_dir):
 
 
 def setup_results_directory(results_dir):
+    '''
+    Creates the results directory with name and path given in results_dir.
+
+    @param results_dir :: name (or path) of the results directory.
+    '''
 
     current_dir = os.path.dirname(os.path.realpath(__file__))
     if results_dir is None:
