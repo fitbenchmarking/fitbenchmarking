@@ -44,22 +44,25 @@ run_data = "neutron"
 if run_data == "neutron":
     group_suffix_names = ['neutron_data']
     group_names = ["Neutron data"]
-    problems, results_per_group = fitBenchmarking(neutron_data_group_dirs=neutron_data_group_dirs,
-                                                  minimizers=minimizers, use_errors=use_errors,
-                                                  results_dir=results_dir)
+    (problems, results_per_group,
+     results_dir) = fitBenchmarking(neutron_data_group_dirs=neutron_data_group_dirs,
+                                    minimizers=minimizers, use_errors=use_errors,
+                                    results_dir=results_dir)
 elif run_data == "muon":
     group_names = ['MUON']
     group_suffix_names = ['MUON']
-    problems, results_per_group = fitBenchmarking(muon_data_group_dir=muon_data_group_dir,
-                                                  minimizers=minimizers, use_errors=use_errors)
-    
+    (problems, results_per_group,
+     results_dir) = fitBenchmarking(muon_data_group_dir=muon_data_group_dir,
+                                    minimizers=minimizers, use_errors=use_errors,
+                                    results_dir=results_dir)
 elif run_data == "nist":
     group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
                    'NIST, "higher" difficulty']
     group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher']
-    problems, results_per_group = fitBenchmarking(nist_group_dir=nist_group_dir,
-                                                  minimizers=minimizers, use_errors=use_errors,
-                                                  results_dir=results_dir)
+    (problems, results_per_group,
+     results_dir) = fitBenchmarking(nist_group_dir=nist_group_dir,
+                                    minimizers=minimizers, use_errors=use_errors,
+                                    results_dir=results_dir)
 
 for idx, group_results in enumerate(results_per_group):
     printTables(minimizers, group_results, problems[idx],
