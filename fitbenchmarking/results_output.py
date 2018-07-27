@@ -162,6 +162,7 @@ def build_visual_display_page(prob_results, group_name):
     figures_dir = os.path.join(current_dir, 'results', 'neutron', 'Figures')
     file_name = os.path.join(figures_dir, file_name)
 
+    figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name + "_1" + ".png")
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
     figure_start = os.path.join(figures_dir, "start_for_" + problem_name + "_1" + ".png")
 
@@ -171,16 +172,14 @@ def build_visual_display_page(prob_results, group_name):
     title += '=' * len(gb.problem.name) + '\n\n'
     data_plot = 'Plot of the data' + '\n'
     data_plot += ('-' * len(data_plot)) + '\n\n'
-    data_plot += '.. image:: ' + figure_fit + '\n\n'
+    data_plot += '.. image:: ' + figure_data + '\n\n'
     starting_plot = 'Plot of the initial starting guess' + '\n'
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
     starting_plot += '.. figure:: ' + figure_start  + '\n\n'
     solution_plot = 'Plot of the solution found' + '\n'
     solution_plot += ('-' * len(solution_plot)) + '\n\n'
     solution_plot += '.. figure:: ' + figure_fit + '\n\n'
-    problem = 'Fit problem' + '\n'
-    problem += ('-' * len(problem)) + '\n'
-    rst_text = title + data_plot + starting_plot + solution_plot + problem
+    rst_text = title + data_plot + starting_plot + solution_plot
 
     html = publish_string(rst_text, writer_name='html')
     with open(file_name + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
