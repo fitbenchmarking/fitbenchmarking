@@ -73,8 +73,8 @@ def load_nist_fitting_problem_file(problem_filename):
                             format(name_without_ext, name_without_ext.lower()))
         prob.equation = parsed_eq
         prob.starting_values = starting_values
-        prob.data_pattern_in = data_pattern[:, 1]
-        prob.data_pattern_out = data_pattern[:, 0]
+        prob.data_y = data_pattern[:, 1]
+        prob.data_x = data_pattern[:, 0]
         prob.ref_residual_sum_sq = residual_sum_sq
 
 
