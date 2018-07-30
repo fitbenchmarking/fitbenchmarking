@@ -143,19 +143,28 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     @param group_name :: the name of the group, e.g. "nist_lower"
     """
 
-    # Directory that holds all the visual display pages
-    VDPages_dir = os.path.join(results_dir, "neutron", "VDPages")
-
     # Get the best result for a group
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
     commaless_problem_name = gb.problem.name.replace(',', '')
     problem_name = commaless_problem_name.replace(' ','_')
+
+    # Group specific paths and other misc stuff
+    if 'nist' in group_name:
+        VDPages_dir = os.path.join(results_dir, "nist", "VDPages")
+        fit_function_details_table = fit_rst_table_nist(gb.function_def)
+        see_also_link = 'See also:\n ' + gb.problem.linked_name + '\n on NIST website\n\n'
+        problem_name = problem_name.split('.')[0]
+    elif 'neutron' in group_name:
+        VDPages_dir = os.path.join(results_dir, "neutron", "VDPages")
+        fit_function_details_table = fit_rst_table_neutron(gb.function_def)
+        see_also_link = ''
 
     file_name = (group_name + '_' + problem_name).lower()
     file_path = os.path.join(VDPages_dir, file_name)
 
     rst_file_path = file_path.replace('\\', '/')
     rst_link = "<file:///" +'' + rst_file_path + "." + FILENAME_EXT_HTML + ">`__"
+
 
     # Get path to the figures
     figures_dir = os.path.join(VDPages_dir, 'Figures')
@@ -168,14 +177,6 @@ def build_visual_display_page(prob_results, group_name, results_dir):
         figure_data = 'file:///' + figure_data
         figure_fit = 'file:///' + figure_fit
         figure_start = 'file:///' + figure_start
-
-    # Get function details table
-    if 'nist' in group_name:
-        fit_function_details_table = fit_rst_table_nist(gb.function_def)
-        see_also_link = 'See also:\n ' + gb.problem.linked_name + '\n on NIST website\n\n'
-    elif 'neutron' in group_name:
-        fit_function_details_table = fit_rst_table_neutron(gb.function_def)
-        see_also_link = ''
 
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
@@ -199,7 +200,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     solution_plot += ('-' * len(solution_plot)) + '\n\n'
     solution_plot += '*Minimizer*: ' + gb.best_minimizer + '\n\n'
     solution_plot += '*Functions*:\n\n'
-    starting_plot += fit_function_details_table
+    solution_plot += fit_function_details_table
     solution_plot += ('.. figure:: ' + figure_fit + '\n' +
                       '   :align: center' + '\n\n')
 
@@ -269,7 +270,7 @@ def fit_rst_table_nist(function):
     first_comma = function.find(',')
     second_comma = function.find(',', first_comma + 1)
     function_name = function[first_comma+10:second_comma]
-    function_parameters = function[second_comma:]
+    function_parameters = function[second_comma+2:]
 
     form_header_dim = len(function_name)
     params_header_dim = len(function_parameters)
@@ -287,7 +288,7 @@ def fit_rst_table_nist(function):
 
     body = ''
     body += ('| ' + function_name + ' '*(form_header_dim-len(function_name)) + ' ' +
-                '| ' + function_parameter + ' '*(params_header_dim-len(function_parameter)) + ' |\n')
+                '| ' + function_parameters + ' '*(params_header_dim-len(function_parameters)) + ' |\n')
     body += '+-' + '-'*form_header_dim + '-+-' + '-'*params_header_dim + '-+\n'
 
     tbl = header + body + '\n'

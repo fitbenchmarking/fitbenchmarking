@@ -235,14 +235,11 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     @param count :: number of different starting points for one problem
     @param user_func :: fitting function
     '''
-    if "neutron" in visuals_dir:
-        VDPage_dir = os.path.join(visuals_dir, "VDPages")
-        if not os.path.exists(VDPage_dir):
+    VDPage_dir = os.path.join(visuals_dir, "VDPages")
+    if not os.path.exists(VDPage_dir):
             os.makedirs(VDPage_dir)
 
-        visuals_dir = VDPage_dir
-
-    figures_dir = os.path.join(visuals_dir, "Figures")
+    figures_dir = os.path.join(VDPage_dir, "Figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
 
