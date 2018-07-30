@@ -64,10 +64,9 @@ def load_nist_fitting_problem_file(problem_filename):
         parsed_eq = parse_equation(equation_text)
 
         prob = test_problem.FittingTestProblem()
-        prob.name = os.path.basename(spec_file.name)
-        name_without_ext = prob.name.split(".")[0]
+        prob.name = os.path.basename(spec_file.name.split('.')[0])
         prob.linked_name = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data/{1}.shtml>`__".
-                            format(name_without_ext, name_without_ext.lower()))
+                            format(prob.name, prob.name.lower()))
         prob.equation = parsed_eq
         prob.starting_values = starting_values
         prob.data_y = data_pattern[:, 1]

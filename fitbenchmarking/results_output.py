@@ -126,15 +126,14 @@ def build_indiv_linked_problems(results_per_test, group_name, results_dir):
 
     for test_idx, prob_results in enumerate(results_per_test):
 
-        raw_name = results_per_test[test_idx][0].problem.name
-        name = raw_name.split('.')[0]
+        name = results_per_test[test_idx][0].problem.name
         if name == prev_name:
             prob_count += 1
         else:
             prob_count = 1
         prev_name = name
         name_index = name + ' ' + str(prob_count)
-        name = '`' + name + ' ' + build_visual_display_page(prob_results, group_name, results_dir)
+        name = '`' + name_index + ' ' + build_visual_display_page(prob_results, group_name, results_dir)
         linked_problems.append(name)
 
     return linked_problems
@@ -276,6 +275,7 @@ def fit_rst_table_nist(function):
     second_comma = function.find(',', first_comma + 1)
     function_name = function[first_comma+10:second_comma]
     function_parameters = function[second_comma+2:]
+    function_parameters = function_parameters.replace(',', ', ')
 
     form_header_dim = len(function_name)
     params_header_dim = len(function_parameters)

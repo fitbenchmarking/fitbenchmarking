@@ -261,7 +261,7 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     else:
         count =1
         previous_name = prob.name
-    data_fig.labels['title'] = prob.name[:-3]+" "+str(count)
+    data_fig.labels['title'] = prob.name + " " + str(count)
     data_fig.title_size=10
     data_fig.make_scatter_plot(figures_dir + os.sep + "Data Plot " + run_ID + " " +
                           str(count)+".png")
@@ -284,7 +284,7 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     fig.add_data(raw)
     fig.labels['y'] = "Arbitrary units"
     fig.labels['x'] = "Time ($\mu s$)"
-    fig.labels['title'] = prob.name[:-3]+" "+str(count)
+    fig.labels['title'] = prob.name + " " + str(count)
     fig.title_size=10
     figure_name = (figures_dir + os.sep + "Fit for " + run_ID + " " +
                             str(count) + ".png")
@@ -309,7 +309,7 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     start_fig.add_data(startData)
     start_fig.labels['x'] = "Time ($\mu s$)"
     start_fig.labels['y'] = "Arbitrary units"
-    start_fig.labels['title'] = prob.name[:-3]+" "+str(count)
+    start_fig.labels['title'] = prob.name + " " + str(count)
     start_fig.title_size = 10
     start_figure_name = (figures_dir + os.sep + "start for " + run_ID +
                          " " + str(count) + ".png")
