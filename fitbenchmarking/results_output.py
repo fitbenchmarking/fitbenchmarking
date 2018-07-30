@@ -39,6 +39,9 @@ try:
 except ImportError:
     from scipy.stats import nanmean, nanmedian
 
+import logging
+from logging_setup import logger
+
 # Some naming conventions for the output files
 BENCHMARK_VERSION_STR = 'v3.8'
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -74,6 +77,7 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
                           at the moment).
     """
 
+
     tables_dir = make_results_directory(results_dir, group_name)
 
     linked_problems = build_indiv_linked_problems(results_per_test, group_name)
@@ -104,6 +108,7 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
             save_table_to_file(results_dir=tables_dir, table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_HTML)
 
+    logging.shutdown()
 
 
 def build_indiv_linked_problems(results_per_test, group_name):
@@ -148,14 +153,14 @@ def build_visual_display_page(prob_results, group_name):
     @param prob_results:: the list of results for a problem
     @param group_name :: the name of the group, e.g. "nist_lower"
     """
-    
+
     # Get the best result for a group
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
     no_commas_problem_name = gb.problem.name.replace(',', '')
     problem_name = no_commas_problem_name.replace(' ','_')
 
     file_name = (group_name + '_' + problem_name).lower()
-    
+
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
     title += gb.problem.name + '\n'
@@ -176,12 +181,13 @@ def build_visual_display_page(prob_results, group_name):
     html = publish_string(rst_text, writer_name='html')
     with open(file_name + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
         print(html, file=visual_rst)
-        print('Saved {file_name}.{extension} to {working_directory}'.
-              format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=WORKING_DIR))
+        logger.info('Saved {file_name}.{extension} to {working_directory}'.
+                     format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=WORKING_DIR))
+
     with open(file_name + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
-        print('Saved {file_name}.{extension} to {working_directory}'.
-              format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=WORKING_DIR))
+        logger.info('Saved {file_name}.{extension} to {working_directory}'.
+                     format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=WORKING_DIR))
 
 
     rst_link = '`<' + file_name + '.' + FILENAME_EXT_HTML + '>`_'  # `<cutest_palmer6c.dat.html>`_
@@ -400,6 +406,8 @@ def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
     @param metric_type :: the test type of the table data (e.g. runtime, accuracy)
     @param file_extension :: the file type extension (e.g. html)
     """
+
+
     file_name = ('comparison_{weighted}_{version}_{metric_type}_{group_name}.'
                  .format(weighted=weighted_suffix_string(errors),
                          version=BENCHMARK_VERSION_STR, metric_type=metric_type, group_name=group_name))
@@ -412,8 +420,10 @@ def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
 
     with open(file_name + file_extension, 'w') as tbl_file:
         print(table_data, file=tbl_file)
-    print('Saved {file_name}{extension} to {working_directory}'.
-          format(file_name=file_name, extension=file_extension, working_directory=results_dir))
+
+    logger.info('Saved {file_name}{extension} to {working_directory}'.
+                 format(file_name=file_name, extension=file_extension, working_directory=WORKING_DIR))
+
 
 
 def weighted_suffix_string(use_errors):
