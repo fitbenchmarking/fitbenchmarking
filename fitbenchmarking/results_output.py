@@ -51,7 +51,7 @@ WORKING_DIR = os.getcwd()
 SCRIPT_DIR = os.path.dirname(__file__)
 
 
-def print_group_results_tables(minimizers, results_per_test, problems_obj, group_name, use_errors,
+def print_group_results_tables(minimizers, results_per_test, group_name, use_errors,
                                simple_text=True, rst=False, save_to_file=False, color_scale=None,
                                results_dir=None):
 
@@ -148,14 +148,14 @@ def build_visual_display_page(prob_results, group_name):
     @param prob_results:: the list of results for a problem
     @param group_name :: the name of the group, e.g. "nist_lower"
     """
-    
+
     # Get the best result for a group
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
     no_commas_problem_name = gb.problem.name.replace(',', '')
     problem_name = no_commas_problem_name.replace(' ','_')
 
     file_name = (group_name + '_' + problem_name).lower()
-    
+
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
     title += gb.problem.name + '\n'

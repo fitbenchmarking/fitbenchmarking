@@ -50,7 +50,7 @@ for run_data in ["neutron", "nist"]:
     if run_data == "neutron":
         group_suffix_names = ['neutron_data']
         group_names = ["Neutron data"]
-        problems, results_per_group = fitBenchmarking(neutron_data_group_dirs=neutron_data_group_dirs,
+        results_per_group = fitBenchmarking(neutron_data_group_dirs=neutron_data_group_dirs,
                                                       minimizers=minimizers, use_errors=use_errors,
                                                       results_dir=results_dir)
 
@@ -58,7 +58,7 @@ for run_data in ["neutron", "nist"]:
         group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
                        'NIST, "higher" difficulty']
         group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher']
-        problems, results_per_group = fitBenchmarking(nist_group_dir=nist_group_dir,
+        results_per_group = fitBenchmarking(nist_group_dir=nist_group_dir,
                                                       minimizers=minimizers, use_errors=use_errors,
                                                       results_dir=results_dir)
 
@@ -67,7 +67,7 @@ for run_data in ["neutron", "nist"]:
                             "contains the correct names!")
 
     for idx, group_results in enumerate(results_per_group):
-        printTables(minimizers, group_results, problems[idx],
+        printTables(minimizers, group_results,
                     group_name=group_suffix_names[idx],
                     use_errors=use_errors,
                     rst=True, save_to_file=True, color_scale=color_scale,
