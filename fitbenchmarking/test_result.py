@@ -37,3 +37,7 @@ class FittingTestResult(object):
 
         # Time it took to run the Fit algorithm
         self.runtime = None
+
+        # Best minimizer for a certain problem and its function definition
+        self.best_minimizer = None
+        self.function_def = None

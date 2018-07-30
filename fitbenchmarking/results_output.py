@@ -121,23 +121,17 @@ def build_indiv_linked_problems(results_per_test, group_name, results_dir):
     linked_problems = []
 
     for test_idx, prob_results in enumerate(results_per_test):
-        if 'nist_' in group_name:
-            linked_problems.append(results_per_test[test_idx][0].problem.linked_name)
 
-        elif 'neutron' in group_name:
-
-            raw_name = results_per_test[test_idx][0].problem.name
-            name = raw_name.split('.')[0]
-
-            if name == prev_name:
-                prob_count += 1
-            else:
-                prob_count = 1
-
-            prev_name = name
-            name_index = name + ' ' + str(prob_count)
-            name = '`' + name + ' ' + build_visual_display_page(prob_results, group_name, results_dir)
-            linked_problems.append(name)
+        raw_name = results_per_test[test_idx][0].problem.name
+        name = raw_name.split('.')[0]
+        if name == prev_name:
+            prob_count += 1
+        else:
+            prob_count = 1
+        prev_name = name
+        name_index = name + ' ' + str(prob_count)
+        name = '`' + name + ' ' + build_visual_display_page(prob_results, group_name, results_dir)
+        linked_problems.append(name)
 
     return linked_problems
 
@@ -170,20 +164,46 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
     figure_start = os.path.join(figures_dir, "start_for_" + problem_name + "_1" + ".png")
 
+    if os.name == 'nt':
+        figure_data = 'file:///' + figure_data
+        figure_fit = 'file:///' + figure_fit
+        figure_start = 'file:///' + figure_start
+
+    # Get function details table
+    if 'nist' in group_name:
+        fit_function_details_table = fit_rst_table_nist(gb.function_def)
+        see_also_link = 'See also:\n ' + gb.problem.linked_name + '\n on NIST website\n\n'
+    elif 'neutron' in group_name:
+        fit_function_details_table = fit_rst_table_neutron(gb.function_def)
+        see_also_link = ''
+
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
     title += gb.problem.name + '\n'
     title += '=' * len(gb.problem.name) + '\n\n'
-    data_plot = 'Plot of the data' + '\n'
+    space = "|\n|\n|\n\n"
+
+    data_plot = 'Data Plot' + '\n'
     data_plot += ('-' * len(data_plot)) + '\n\n'
-    data_plot += '.. image:: ' + figure_data + '\n\n'
+    data_plot += '*Plot of the data considered in the problem*\n\n'
+    data_plot += ('.. image:: ' + figure_data + '\n' +
+                  '   :align: center' + '\n\n')
+
     starting_plot = 'Plot of the initial starting guess' + '\n'
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
-    starting_plot += '.. figure:: ' + figure_start  + '\n\n'
+    starting_plot += '*Minimizer*: Levenberg-Marquardt \n\n'
+    starting_plot += ('.. figure:: ' + figure_start  + '\n' +
+                      '   :align: center' + '\n\n')
+
     solution_plot = 'Plot of the solution found' + '\n'
     solution_plot += ('-' * len(solution_plot)) + '\n\n'
-    solution_plot += '.. figure:: ' + figure_fit + '\n\n'
-    rst_text = title + data_plot + starting_plot + solution_plot
+    solution_plot += '*Minimizer*: ' + gb.best_minimizer + '\n\n'
+    solution_plot += '*Functions*:\n\n'
+    starting_plot += fit_function_details_table
+    solution_plot += ('.. figure:: ' + figure_fit + '\n' +
+                      '   :align: center' + '\n\n')
+
+    rst_text = title + space + data_plot + starting_plot + solution_plot + space + see_also_link
 
     html = publish_string(rst_text, writer_name='html')
     with open(file_path + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
@@ -196,6 +216,83 @@ def build_visual_display_page(prob_results, group_name, results_dir):
               format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=VDPages_dir))
 
     return rst_link
+
+
+def fit_rst_table_neutron(functions):
+
+    functions = functions.split(';')
+    function_names = []
+    function_parameters = []
+
+    for function in functions:
+
+        first_comma = function.find(',')
+        if first_comma != -1:
+            function_names.append(function[5:first_comma])
+            function_parameters.append(function[first_comma+1:])
+        else:
+            function_names.append(function[5:])
+            function_parameters.append('None')
+
+    for idx in range(0, len(function_parameters)):
+        function_parameters[idx] = function_parameters[idx].replace(',', ', ')
+
+    form_header_dim = max(len(name) for name in function_names)
+    params_header_dim = max(len(parameter) for parameter in function_parameters)
+
+    if form_header_dim < 4:
+        form_header_dim = 4
+    if params_header_dim < 10:
+        params_header_dim = 10
+
+    header = ''
+    header += '+-' + '-'*form_header_dim + '-+-' + '-'*params_header_dim + '-+\n'
+    header += ('| ' + 'Form' + ' '*(form_header_dim-4) + ' ' +
+               '| ' + 'Parameters' + ' '*(params_header_dim-10) + ' |\n')
+    header += '+=' + '='*form_header_dim + '=+=' + '='*params_header_dim + '=+\n'
+
+    body = ''
+    for idx in range(0, len(function_names)):
+
+        body += ('| ' + function_names[idx] + ' '*(form_header_dim-len(function_names[idx])) + ' ' +
+                 '| ' + function_parameters[idx] + ' '*(params_header_dim-len(function_parameters[idx])) + ' |\n')
+        body += '+-' + '-'*form_header_dim + '-+-' + '-'*params_header_dim + '-+\n'
+
+    tbl = header + body + '\n'
+
+    return tbl
+
+
+def fit_rst_table_nist(function):
+
+
+    first_comma = function.find(',')
+    second_comma = function.find(',', first_comma + 1)
+    function_name = function[first_comma+10:second_comma]
+    function_parameters = function[second_comma:]
+
+    form_header_dim = len(function_name)
+    params_header_dim = len(function_parameters)
+
+    if form_header_dim < 4:
+        form_header_dim = 4
+    if params_header_dim < 10:
+        params_header_dim = 10
+
+    header = ''
+    header += '+-' + '-'*form_header_dim + '-+-' + '-'*params_header_dim + '-+\n'
+    header += ('| ' + 'Form' + ' '*(form_header_dim-4) + ' ' +
+               '| ' + 'Parameters' + ' '*(params_header_dim-10) + ' |\n')
+    header += '+=' + '='*form_header_dim + '=+=' + '='*params_header_dim + '=+\n'
+
+    body = ''
+    body += ('| ' + function_name + ' '*(form_header_dim-len(function_name)) + ' ' +
+                '| ' + function_parameter + ' '*(params_header_dim-len(function_parameter)) + ' |\n')
+    body += '+-' + '-'*form_header_dim + '-+-' + '-'*params_header_dim + '-+\n'
+
+    tbl = header + body + '\n'
+
+    return tbl
 
 
 def build_rst_table(columns_txt, rows_txt, cells, comparison_type, comparison_dim,
