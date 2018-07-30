@@ -1,11 +1,17 @@
 # script for running fit benchmarking and comparising the relative performance of local minimzers on
 # fit problems
+from __future__ import (absolute_import, division, print_function)
 
 # sys recursion limit 10000 is needed to avoid reaching the maximum recursion
 # depth when running all the problems (this produces a RuntimeError)
 import os
 import sys
 sys.setrecursionlimit(10000)
+current_path = os.path.dirname(os.path.realpath(__file__))
+fitbenchmarking_path = os.path.abspath(os.path.join(current_path, os.pardir))
+scripts_path = os.path.join(fitbenchmarking_path, 'fitbenchmarking')
+sys.path.insert(0, scripts_path)
+
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import print_group_results_tables as printTables
 
@@ -24,11 +30,7 @@ color_scale = [(1.1, 'ranking-top-1'),
                (float('nan'), 'ranking-low-5')]
 
 
-input_data_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(input_data_dir))
-base_problem_files_dir = os.path.join(parent_dir, 'benchmark_problems')
-
-use_errors = True
+base_problem_files_dir = os.path.join(fitbenchmarking_path, 'benchmark_problems')
 
 nist_group_dir = os.path.join(base_problem_files_dir, 'NIST_nonlinear_regression')
 cutest_group_dir = os.path.join(base_problem_files_dir, 'CUTEst')
@@ -42,6 +44,9 @@ muon_data_group_dir = [os.path.join(base_problem_files_dir, 'Muon_data')]
 # If the full path is not given and the results_dir name is valid
 #  ../fitbenchmarking/fitbenchmarking/ is taken as the path
 results_dir = None
+
+# Whether to use errors in the fitting process
+use_errors = True
 
 for run_data in ["neutron", "nist"]:
 
