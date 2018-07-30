@@ -197,7 +197,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
         logger.info('Saved {file_name}.{extension} to {working_directory}'.
                      format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=VDPages_dir))
 
-    with open(file_name + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
+    with open(file_path + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
         logger.info('Saved {file_name}.{extension} to {working_directory}'.
                      format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=VDPages_dir))

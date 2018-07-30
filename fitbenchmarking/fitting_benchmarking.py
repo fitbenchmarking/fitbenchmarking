@@ -93,7 +93,7 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
                                                   use_errors=use_errors)
                        for problem_block in problem_groups[group_name])
 
-    return prob_results
+    return prob_results, results_dir
 
 
 
