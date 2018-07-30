@@ -55,7 +55,7 @@ WORKING_DIR = os.getcwd()
 SCRIPT_DIR = os.path.dirname(__file__)
 
 
-def print_group_results_tables(minimizers, results_per_test, problems_obj, group_name, use_errors,
+def print_group_results_tables(minimizers, results_per_test, group_name, use_errors,
                                simple_text=True, rst=False, save_to_file=False, color_scale=None,
                                results_dir=None):
 
@@ -174,6 +174,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name + "_1" + ".png")
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
     figure_start = os.path.join(figures_dir, "start_for_" + problem_name + "_1" + ".png")
+
 
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
