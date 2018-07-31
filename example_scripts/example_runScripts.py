@@ -58,10 +58,8 @@ color_scale = [(1.1, 'ranking-top-1'),
 
 benchmark_problems_dir = os.path.join(fitbenchmarking_path, 'benchmark_problems')
 
-nist_group_dir = os.path.join(benchmark_problems_dir, 'NIST_nonlinear_regression')
-cutest_group_dir = os.path.join(benchmark_problems_dir, 'CUTEst')
-neutron_data_group_dirs = [os.path.join(benchmark_problems_dir, 'Neutron_data')]
-muon_data_group_dir = [os.path.join(benchmark_problems_dir, 'Muon_data')]
+nist_data_dir = os.path.join(benchmark_problems_dir, 'NIST_nonlinear_regression')
+neutron_data_dir = os.path.join(benchmark_problems_dir, 'Neutron_data')
 
 
 # Modify results_dir to specify where the results of the fit should be saved
@@ -78,15 +76,17 @@ for run_data in ["neutron", "nist"]:
         group_suffix_names = ['neutron_data']
         group_names = ["Neutron data"]
 
-        results_per_group, results_dir = fitBenchmarking(neutron_data_group_dirs=neutron_data_group_dirs,
-                                                         minimizers=minimizers, use_errors=use_errors,
+        results_per_group, results_dir = fitBenchmarking(data_dir=neutron_data_dir,
+                                                         minimizers=minimizers,
+                                                         use_errors=use_errors,
                                                          results_dir=results_dir)
     elif run_data == "nist":
         group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
                        'NIST, "higher" difficulty']
         group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher']
-        results_per_group, results_dir = fitBenchmarking(nist_group_dir=nist_group_dir,
-                                                         minimizers=minimizers, use_errors=use_errors,
+        results_per_group, results_dir = fitBenchmarking(data_dir=nist_data_dir,
+                                                         minimizers=minimizers,
+                                                         use_errors=use_errors,
                                                          results_dir=results_dir)
     else:
         raise RuntimeError("Invalid run_data, please check if the array"

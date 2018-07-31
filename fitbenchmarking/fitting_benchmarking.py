@@ -29,56 +29,38 @@ from __future__ import (absolute_import, division, print_function)
 import os, shutil
 import time
 import sys
-
 import numpy as np
 import mantid.simpleapi as msapi
 
 import input_parsing as iparsing
 import test_result
-
+from plotHelper import *
 from logging_setup import logger
 
-from plotHelper import *
 
-def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_data_group_dirs=None,
-                         muon_data_group_dir=None, minimizers=None, use_errors=True, results_dir=None):
+def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True, results_dir=None):
     """
     Run a fit minimizer benchmark against groups of fitting problems.
 
-    Unless group directories of fitting problems are specified no fitting benchmarking is done.
+    Unless group directories of fitting problems are specified
+    no fitting benchmarking is done. The same is valid for the minimizers.
 
-    NIST and CUTEst refer to the NIST and CUTEst fitting test problem sets, where
-    for example CUTEst is used for fit tests in the mathematical numerical literature.
-
-    The Neutron_data group contain fit tests against real noisy experimental neutron data.
-    This latter group may grow to contain fitting example from multiple directories.
-
-    @param nist_group_dir :: whether to try to load NIST problems
-    @param cutest_group_dir :: whether to try to load CUTEst problems
-    @param neutron_data_group_dirs :: base directory where fitting problems are located including NIST+CUTEst
-    @param muon_data_group_dir :: base directory where muon fitting problems are located
+    @param data_dir :: directory where the data is located
     @param minimizers :: list of minimizers to test
-    @param use_errors :: whether to use observational errors as weights in the cost function
+    @param use_errors :: whether to use observational errors as weights
+                         in the cost function
+    @param results_dir :: where the results directory is located/its name
     """
 
     results_dir = setup_results_directory(results_dir)
 
     problem_groups = {}
+    if 'NIST' in data_dir:
+        problem_groups['nist'] = get_nist_problem_files(data_dir)
+    elif 'Neutron' in data_dir:
+        problem_groups['neutron'] = get_data_groups(data_dir)
 
-    print("***** SAVING RESULTS IN DIRECTORY {0} *****".format(results_dir))
-
-    if nist_group_dir:
-        problem_groups['nist'] = get_nist_problem_files(nist_group_dir)
-
-    elif cutest_group_dir:
-        problem_groups['cutest'] = [get_cutest_problem_files(cutest_group_dir)]
-
-    elif neutron_data_group_dirs:
-        problem_groups['neutron'] = get_data_groups(neutron_data_group_dirs)
-
-    elif muon_data_group_dir:
-        problem_groups['muon'] = get_data_groups(muon_data_group_dir)
-
+    prob_results = None
     for group_name in problem_groups:
         group_results_dir = os.path.join(results_dir, group_name)
 
@@ -87,14 +69,12 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
         else:
             os.makedirs(group_results_dir)
 
-
-        prob_results = (do_fitting_benchmark_group(group_name, group_results_dir,
-                                                  problem_block, minimizers,
-                                                  use_errors=use_errors)
-                       for problem_block in problem_groups[group_name])
+        for problem_block in problem_groups[group_name]:
+            prob_results = do_fitting_benchmark_group(group_name, group_results_dir,
+                                                      problem_block, minimizers,
+                                                      use_errors=use_errors)
 
     return prob_results, results_dir
-
 
 
 def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, minimizers, use_errors=True):
