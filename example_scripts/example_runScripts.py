@@ -37,7 +37,7 @@ scripts_path = os.path.join(fitbenchmarking_path, 'fitbenchmarking')
 sys.path.insert(0, scripts_path)
 
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
-from results_output import print_group_results_tables as printTables
+from results_output import save_results_tables as printTables
 
 
 minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
