@@ -24,23 +24,12 @@ formats such as RST and plain text.
 
 from __future__ import (absolute_import, division, print_function)
 
+import os, logging, glob
 import numpy as np
-import glob
-from docutils.core import publish_string
-import post_processing as postproc
-import os
 import mantid.simpleapi as msapi
+from docutils.core import publish_string
 
-
-# older version of numpy does not support nanmean and nanmedian
-# and nanmean and nanmedian was removed in scipy 0.18 in favor of numpy
-# so try numpy first then scipy.stats
-try:
-    from numpy import nanmean, nanmedian
-except ImportError:
-    from scipy.stats import nanmean, nanmedian
-
-import logging
+import post_processing as postproc
 from logging_setup import logger
 
 # Some naming conventions for the output files
@@ -49,8 +38,7 @@ FILENAME_SUFFIX_ACCURACY = 'acc'
 FILENAME_SUFFIX_RUNTIME = 'runtime'
 FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
-# Directory of where the script is called from (e.g. MantidPlot dir)
-WORKING_DIR = os.getcwd()
+
 # Directory of this script (e.g. in source)
 SCRIPT_DIR = os.path.dirname(__file__)
 
@@ -125,8 +113,6 @@ def build_indiv_linked_problems(results_per_test, group_name, results_dir):
     linked_problems = []
 
     for test_idx, prob_results in enumerate(results_per_test):
-        print("****")
-        print(results_per_test)
         name = results_per_test[test_idx][0].problem.name
         if name == prev_name:
             prob_count += 1
@@ -202,7 +188,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
 
     solution_plot = 'Plot of the solution found' + '\n'
     solution_plot += ('-' * len(solution_plot)) + '\n\n'
-    solution_plot += '*Minimizer*: ' + gb.best_minimizer + '\n\n'
+    solution_plot += '*Minimizer*: ' + gb.minimizer + '\n\n'
     solution_plot += '*Functions*:\n\n'
     solution_plot += fit_function_details_table
     solution_plot += ('.. figure:: ' + figure_fit + '\n' +
@@ -529,7 +515,7 @@ def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
         print(table_data, file=tbl_file)
 
     logger.info('Saved {file_name}{extension} to {working_directory}'.
-                 format(file_name=file_name, extension=file_extension, working_directory=WORKING_DIR))
+                 format(file_name=file_name, extension=file_extension, working_directory=results_dir))
 
 
 

@@ -21,7 +21,7 @@
 from __future__ import (absolute_import, division, print_function)
 import numpy as np
 
-# older version of numpy does not support nanmean and nanmedian
+# Older version of numpy does not support nanmean and nanmedian
 # and nanmean and nanmedian was removed in scipy 0.18 in favor of numpy
 # so try numpy first then scipy.stats
 try:
