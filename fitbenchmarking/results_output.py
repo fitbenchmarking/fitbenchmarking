@@ -43,59 +43,78 @@ FILENAME_EXT_HTML = 'html'
 SCRIPT_DIR = os.path.dirname(__file__)
 
 
-def print_group_results_tables(minimizers, results_per_test, group_name, use_errors,
-                               simple_text=True, rst=False, save_to_file=False, color_scale=None,
-                               results_dir=None):
+def save_results_tables(minimizers, results_per_test, group_name,
+                        use_errors, color_scale=None, results_dir=None):
 
     """
-    Prints out results for a group of fit problems in accuracy and runtime tables, in a summary
-    format and both as simple text, rst format and/or to file depending on input arguments
+    Prints out results for a group of fit problems in accuracy and runtime
+    tables as a text file or html file, in rst format.
 
     @param minimizers :: list of minimizer names
     @param results_per_test :: result objects
     @param problems_obj :: definitions of the test problems
-    @param group_name :: name of this group of problems (example 'NIST "lower difficulty"', or
-                         'Neutron data')
+    @param group_name :: name of this group of problems (example
+                         'NIST "lower difficulty"', or 'Neutron data')
     @param use_errors :: whether to use observational errors
     @param simple_text :: whether to print the tables in a simple text format
-    @param rst :: whether to print the tables in rst format. They are printed to the standard outputs
-                  and to files following specific naming conventions
-    @param save_to_file :: If rst=True, whether to save the tables to files following specific naming conventions
-    @param color_scale :: threshold-color pairs. This is used for RST tables. The number of levels
-                          must be consistent with the style sheet used in the documentation pages (5
-                          at the moment).
+    @param rst :: whether to print the tables in rst format. They are printed
+                  to the standard outputs and to files following specific
+                  naming conventions
+    @param save_to_file :: If rst=True, whether to save the tables to files
+                           following specific naming conventions
+    @param color_scale :: threshold-color pairs. This is used for RST tables.
+                          The number of levels must be consistent with the
+                          style sheet used in the documentation pages
+                          (5 at the moment).
+    @param results_dir :: directory where all the results are stored
     """
+
     tables_dir = make_result_tables_directory(results_dir, group_name)
-    linked_problems = build_indiv_linked_problems(results_per_test, group_name, results_dir)
+    linked_problems = build_indiv_linked_problems(results_per_test, group_name,
+                                                  results_dir)
 
-    accuracy_tbl, runtime_tbl = postproc.calc_accuracy_runtime_tbls(results_per_test, minimizers)
-    norm_acc_rankings, norm_runtimes, summary_cells_acc, summary_cells_runtime = \
-        postproc.calc_norm_summary_tables(accuracy_tbl, runtime_tbl)
+    accuracy_tbl, runtime_tbl = \
+    postproc.calc_accuracy_runtime_tbls(results_per_test, minimizers)
+    norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = \
+    postproc.calc_norm_summary_tables(accuracy_tbl, runtime_tbl)
 
-    if rst:
-        # print out accuracy table for this group of fit problems
-        tbl_acc_indiv = build_rst_table(minimizers, linked_problems, norm_acc_rankings,
-                                        comparison_type='accuracy', comparison_dim='',
-                                        using_errors=use_errors, color_scale=color_scale)
+    # Save accuracy table for this group of fit problems
+    tbl_acc_indiv = build_rst_table(minimizers, linked_problems,
+                                    norm_acc_rankings,
+                                    comparison_type='accuracy',
+                                    comparison_dim='',
+                                    using_errors=use_errors,
+                                    color_scale=color_scale)
+    save_tables(tables_dir, tbl_acc_indiv, use_errors, group_name,
+                FILENAME_SUFFIX_ACCURACY)
 
-        if save_to_file:
-            save_table_to_file(results_dir=tables_dir, table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
-                               metric_type=FILENAME_SUFFIX_ACCURACY, file_extension=FILENAME_EXT_TXT)
-            save_table_to_file(results_dir=tables_dir, table_data=tbl_acc_indiv, errors=use_errors, group_name=group_name,
-                               metric_type=FILENAME_SUFFIX_ACCURACY, file_extension=FILENAME_EXT_HTML)
+    # Save runtime table for this group of fit problems
+    tbl_runtime_indiv = build_rst_table(minimizers, linked_problems,
+                                        norm_runtimes,
+                                        comparison_type='runtime',
+                                        comparison_dim='',
+                                        using_errors=use_errors,
+                                        color_scale=color_scale)
 
-        # print out runtime table for this group of fit problems
-        tbl_runtime_indiv = build_rst_table(minimizers, linked_problems, norm_runtimes,
-                                            comparison_type='runtime', comparison_dim='',
-                                            using_errors=use_errors, color_scale=color_scale)
-
-        if save_to_file:
-            save_table_to_file(results_dir=tables_dir, table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
-                               metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_TXT)
-            save_table_to_file(results_dir=tables_dir, table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
-                               metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_HTML)
+    save_tables(tables_dir, tbl_acc_indiv, use_errors, group_name,
+                FILENAME_SUFFIX_RUNTIME)
 
     logging.shutdown()
+
+
+def save_tables(tables_dir, table_data, use_errors, group_name, metric):
+    """
+    Helper function that saves rst tables in all the formats available
+    """
+
+    save_table_to_file(results_dir=tables_dir, table_data=table_data,
+                       errors=use_errors, group_name=group_name,
+                       metric_type=metric,
+                       file_extension=FILENAME_EXT_TXT)
+    save_table_to_file(results_dir=tables_dir, table_data=table_data,
+                       errors=use_errors, group_name=group_name,
+                       metric_type=metric,
+                       file_extension=FILENAME_EXT_HTML)
 
 
 def build_indiv_linked_problems(results_per_test, group_name, results_dir):
@@ -104,10 +123,12 @@ def build_indiv_linked_problems(results_per_test, group_name, results_dir):
     rows of the first column of the tables of individual results.
 
     @param results_per_test :: results as produces by the fitting tests
-    @param group_name :: name of the group (NIST, Neutron data, etc.) this problem is part of
+    @param group_name :: name of the group (NIST, Neutron data, etc.) this
+                         problem is part of
 
     @returns :: list of problems with their description link tags
     """
+
     prev_name = ''
     prob_count = 1
     linked_problems = []
@@ -120,10 +141,76 @@ def build_indiv_linked_problems(results_per_test, group_name, results_dir):
             prob_count = 1
         prev_name = name
         name_index = name + ' ' + str(prob_count)
-        name = '`' + name_index + ' ' + build_visual_display_page(prob_results, group_name, results_dir)
+        name = '`' + name_index + ' ' + \
+               build_visual_display_page(prob_results, group_name, results_dir)
         linked_problems.append(name)
 
     return linked_problems
+
+
+def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
+    """
+    ADD DESC
+    """
+    VDPages_dir = os.path.join(results_dir, "nist", "VDPages")
+    fit_function_details_table = fit_rst_table_nist(gb.function_def)
+    see_also_link = 'See also:\n ' + gb.problem.linked_name + \
+                    '\n on NIST website\n\n'
+
+    return VDPages_dir, fit_function_details_table, see_also_link
+
+
+def setup_neutron_VDpage_misc(function_def, results_dir):
+    """
+    ADD DESC
+    """
+    VDPages_dir = os.path.join(results_dir, "neutron", "VDPages")
+    fit_function_details_table = fit_rst_table_neutron(gb.function_def)
+    see_also_link = ''
+
+    return VDPages_dir, fit_function_details_table, see_also_link
+
+
+def setup_VDpage_misc(group_name, res_obj, results_dir):
+    """
+    Setup miscellaneous data for visual display page.
+    """
+    # Remove commas and replace space with underscore in problem name
+    problem_name = problem_name.replace(',', '')
+    problem_name = problem_name.replace(' ','_')
+
+    # Group specific path and other misc stuff
+    if 'nist' in group_name:
+        VDPages_dir, fit_function_details_table, see_also_link = \
+        setup_nist_VDpage_misc(res_obj.linked_name, res_obj.function_def,
+                               results_dir)
+    elif 'neutron' in group_name:
+        VDPages_dir, fit_function_details_table, see_also_link = \
+        setup_neutron_VDpage_misc(res_obj.function_def, results_dir)
+
+    file_name = (group_name + '_' + problem_name).lower()
+    file_path = os.path.join(VDPages_dir, file_name)
+
+    return problem_name, file_path, fit_function_details_table, see_also_link
+
+
+def get_figures_path(VDPages_dir, problem_name):
+
+    figures_dir = os.path.join(VDPages_dir, 'Figures')
+    figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name +
+                               "_1" + ".png")
+    figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name +
+                              "_1" + ".png")
+    figure_start = os.path.join(figures_dir, "start_for_" + problem_name +
+                                "_1" + ".png")
+
+    # If OS is Windows, then need to add prefix 'file:///'
+    if os.name == 'nt':
+        figure_data = 'file:///' + figure_data
+        figure_fit = 'file:///' + figure_fit
+        figure_start = 'file:///' + figure_start
+
+    return figure_data, figure_fit, figure_start
 
 
 def build_visual_display_page(prob_results, group_name, results_dir):
@@ -134,41 +221,20 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     """
 
     # Get the best result for a group
-    gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
-    commaless_problem_name = gb.problem.name.replace(',', '')
-    problem_name = commaless_problem_name.replace(' ','_')
+    gb = min((result for result in prob_results),
+             key=lambda result: result.fit_chi_sq)
 
-    # Group specific paths and other misc stuff
-    if 'nist' in group_name:
-        VDPages_dir = os.path.join(results_dir, "nist", "VDPages")
-        fit_function_details_table = fit_rst_table_nist(gb.function_def)
-        see_also_link = 'See also:\n ' + gb.problem.linked_name + '\n on NIST website\n\n'
-        problem_name = problem_name.split('.')[0]
-    elif 'neutron' in group_name:
-        VDPages_dir = os.path.join(results_dir, "neutron", "VDPages")
-        fit_function_details_table = fit_rst_table_neutron(gb.function_def)
-        see_also_link = ''
-
-    file_name = (group_name + '_' + problem_name).lower()
-    file_path = os.path.join(VDPages_dir, file_name)
+    # Set up miscellaneous stuff
+    problem_name, file_path, fit_function_details_table, see_also_link = \
+    setup_VDpage_misc(group_name, gb, results_dir)
 
     rst_file_path = file_path.replace('\\', '/')
-    rst_link = "<file:///" +'' + rst_file_path + "." + FILENAME_EXT_HTML + ">`__"
+    rst_link = "<file:///" +'' + rst_file_path + "." + \
+                FILENAME_EXT_HTML + ">`__"
 
 
-    # Get path to the figures
-    figures_dir = os.path.join(VDPages_dir, 'Figures')
-
-    figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name + "_1" + ".png")
-    figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
-    figure_start = os.path.join(figures_dir, "start_for_" + problem_name + "_1" + ".png")
-
-    if os.name == 'nt':
-        figure_data = 'file:///' + figure_data
-        figure_fit = 'file:///' + figure_fit
-        figure_start = 'file:///' + figure_start
-
-    # Create various page headings, ensuring the adornment is (at least) the length of the title
+    # Create various page headings, ensuring the adornment is (at least)
+    # the length of the title
     title = '=' * len(gb.problem.name) + '\n'
     title += gb.problem.name + '\n'
     title += '=' * len(gb.problem.name) + '\n\n'
@@ -200,12 +266,14 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     with open(file_path + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
         print(html, file=visual_rst)
         logger.info('Saved {file_name}.{extension} to {working_directory}'.
-                     format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=VDPages_dir))
+                     format(file_name=file_name, extension=FILENAME_EXT_TXT,
+                            working_directory=VDPages_dir))
 
     with open(file_path + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
         logger.info('Saved {file_name}.{extension} to {working_directory}'.
-                     format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=VDPages_dir))
+                     format(file_name=file_name, extension=FILENAME_EXT_HTML,
+                            working_directory=VDPages_dir))
 
     return rst_link
 
@@ -463,7 +531,8 @@ def format_cell_value_rst(value, width=None, color_scale=None, items_link=None):
     @param value :: the value of the result
     @param width :: the width of the longest table cell
     @param color_scale :: the colour scale used
-    @param items_link :: the links from rst table cells to other pages/sections of pages
+    @param items_link :: the links from rst table cells to other
+                         pages/sections of pages
     @returns :: the (formatted) contents of a cell
 
     """
