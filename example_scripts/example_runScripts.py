@@ -95,6 +95,5 @@ for run_data in ["neutron", "nist"]:
     for idx, group_results in enumerate(results_per_group):
         printTables(minimizers, group_results,
                     group_name=group_suffix_names[idx],
-                    use_errors=use_errors,
-                    rst=True, save_to_file=True, color_scale=color_scale,
+                    use_errors=use_errors, color_scale=color_scale,
                     results_dir=results_dir)

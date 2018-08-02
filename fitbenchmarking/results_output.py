@@ -150,39 +150,38 @@ def build_indiv_linked_problems(results_per_test, group_name, results_dir):
 
 def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
     """
-    ADD DESC
+    Helper function that sets up the directory, function details table
+    and see also link for the NIST data
     """
     VDPages_dir = os.path.join(results_dir, "nist", "VDPages")
-    fit_function_details_table = fit_rst_table_nist(gb.function_def)
-    see_also_link = 'See also:\n ' + gb.problem.linked_name + \
+    details_table = fit_details_rst_table(function_def)
+    see_also_link = 'See also:\n ' + linked_name + \
                     '\n on NIST website\n\n'
 
-    return VDPages_dir, fit_function_details_table, see_also_link
+    return VDPages_dir, details_table, see_also_link
 
 
 def setup_neutron_VDpage_misc(function_def, results_dir):
     """
-    ADD DESC
+    Helper function that sets up the directory, function details table
+    and see also link for the NEUTRON data
     """
     VDPages_dir = os.path.join(results_dir, "neutron", "VDPages")
-    fit_function_details_table = fit_rst_table_neutron(gb.function_def)
+    details_table = fit_details_rst_table(function_def)
     see_also_link = ''
 
-    return VDPages_dir, fit_function_details_table, see_also_link
+    return VDPages_dir, details_table, see_also_link
 
 
-def setup_VDpage_misc(group_name, res_obj, results_dir):
+def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir):
     """
     Setup miscellaneous data for visual display page.
     """
-    # Remove commas and replace space with underscore in problem name
-    problem_name = problem_name.replace(',', '')
-    problem_name = problem_name.replace(' ','_')
-
     # Group specific path and other misc stuff
     if 'nist' in group_name:
         VDPages_dir, fit_function_details_table, see_also_link = \
-        setup_nist_VDpage_misc(res_obj.linked_name, res_obj.function_def,
+        setup_nist_VDpage_misc(res_obj.problem.linked_name,
+                               res_obj.function_def,
                                results_dir)
     elif 'neutron' in group_name:
         VDPages_dir, fit_function_details_table, see_also_link = \
@@ -191,7 +190,7 @@ def setup_VDpage_misc(group_name, res_obj, results_dir):
     file_name = (group_name + '_' + problem_name).lower()
     file_path = os.path.join(VDPages_dir, file_name)
 
-    return problem_name, file_path, fit_function_details_table, see_also_link
+    return VDPages_dir, file_path, fit_function_details_table, see_also_link
 
 
 def get_figures_path(VDPages_dir, problem_name):
@@ -224,21 +223,49 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     gb = min((result for result in prob_results),
              key=lambda result: result.fit_chi_sq)
 
-    # Set up miscellaneous stuff
-    problem_name, file_path, fit_function_details_table, see_also_link = \
-    setup_VDpage_misc(group_name, gb, results_dir)
+    # Remove commas and replace space with underscore in problem name
+    problem_name = gb.problem.name.replace(',', '')
+    problem_name = problem_name.replace(' ','_')
+
+    # Set up miscellaneous stuff and generate rst_link
+    VDPages_dir, file_path, fit_function_details_table, see_also_link = \
+    setup_VDpage_misc(group_name, problem_name, gb, results_dir)
 
     rst_file_path = file_path.replace('\\', '/')
-    rst_link = "<file:///" +'' + rst_file_path + "." + \
+    rst_link = "<file:///" + '' + rst_file_path + "." + \
                 FILENAME_EXT_HTML + ">`__"
 
+    # Get paths to figures
+    figure_data, figure_fit, figure_start = \
+    get_figures_path(VDPages_dir, problem_name)
 
-    # Create various page headings, ensuring the adornment is (at least)
-    # the length of the title
-    title = '=' * len(gb.problem.name) + '\n'
-    title += gb.problem.name + '\n'
-    title += '=' * len(gb.problem.name) + '\n\n'
-    space = "|\n|\n|\n\n"
+    # Create and save rst page
+    rst_text = create_rst_page(gb.problem.name, figure_data, figure_start,
+                               figure_fit, fit_function_details_table,
+                               gb.minimizer, see_also_link)
+    save_VDpages(rst_text, problem_name, file_path)
+
+    return rst_link
+
+
+def generate_rst_title(problem_name):
+    """
+    Helper function that generates a title for an rst page, containing
+    the name of the problem.
+    """
+
+    title = '=' * len(problem_name) + '\n'
+    title += problem_name + '\n'
+    title += '=' * len(problem_name) + '\n\n'
+
+    return title
+
+
+def generate_rst_data_plot(figure_data):
+    """
+    Helper function that generates an rst figure of the data plot png image
+    contained at path figure_data.
+    """
 
     data_plot = 'Data Plot' + '\n'
     data_plot += ('-' * len(data_plot)) + '\n\n'
@@ -246,118 +273,194 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     data_plot += ('.. image:: ' + figure_data + '\n' +
                   '   :align: center' + '\n\n')
 
+    return data_plot
+
+
+def generate_rst_starting_plot(figure_start):
+    """
+    Helper function that generates an rst figure of the starting guess plot
+    png image contained at path figure_start.
+    """
     starting_plot = 'Plot of the initial starting guess' + '\n'
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
     starting_plot += '*Minimizer*: Levenberg-Marquardt \n\n'
     starting_plot += ('.. figure:: ' + figure_start  + '\n' +
                       '   :align: center' + '\n\n')
 
+    return starting_plot
+
+
+def generate_rst_solution_plot(figure_fit, fit_function_details_table,
+                               minimizer):
+    """
+    Helper function that generates an rst figure of the fitted problem
+    png image contained at path figure_fit.
+    """
+
     solution_plot = 'Plot of the solution found' + '\n'
     solution_plot += ('-' * len(solution_plot)) + '\n\n'
-    solution_plot += '*Minimizer*: ' + gb.minimizer + '\n\n'
+    solution_plot += '*Minimizer*: ' + minimizer + '\n\n'
     solution_plot += '*Functions*:\n\n'
     solution_plot += fit_function_details_table
     solution_plot += ('.. figure:: ' + figure_fit + '\n' +
                       '   :align: center' + '\n\n')
 
-    rst_text = title + space + data_plot + starting_plot + solution_plot + space + see_also_link
+    return solution_plot
+
+
+def create_rst_page(name, figure_data, figure_start, figure_fit, details_table,
+                    minimizer, see_also_link):
+    """
+    Creates an rst page containing a title and 3 figures, with a detailed
+    table about the fit on the last figure.
+    """
+
+    space = "|\n|\n|\n\n"
+    title = generate_rst_title(name)
+    data_plot = generate_rst_data_plot(figure_data)
+    starting_plot = generate_rst_starting_plot(figure_start)
+    solution_plot = generate_rst_solution_plot(figure_fit, details_table,
+                                               minimizer)
+
+    rst_text = title + space + data_plot + starting_plot + solution_plot + \
+               space + see_also_link
+
+    return rst_text
+
+
+def save_VDpages(rst_text, prob_name, file_path):
+    """
+    Helper function that saves the rst page into text and html after
+    converting it to html.
+    """
 
     html = publish_string(rst_text, writer_name='html')
     with open(file_path + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
         print(html, file=visual_rst)
-        logger.info('Saved {file_name}.{extension} to {working_directory}'.
-                     format(file_name=file_name, extension=FILENAME_EXT_TXT,
-                            working_directory=VDPages_dir))
+        logger.info('Saved {prob_name}.{extension} to {working_directory}'.
+                     format(prob_name=prob_name, extension=FILENAME_EXT_TXT,
+                            working_directory=file_path))
 
     with open(file_path + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
-        logger.info('Saved {file_name}.{extension} to {working_directory}'.
-                     format(file_name=file_name, extension=FILENAME_EXT_HTML,
-                            working_directory=VDPages_dir))
-
-    return rst_link
+        logger.info('Saved {prob_name}.{extension} to {working_directory}'.
+                     format(prob_name=prob_name, extension=FILENAME_EXT_HTML,
+                            working_directory=file_path))
 
 
-def fit_rst_table_neutron(functions):
-
-    functions = functions.split(';')
-    function_names = []
-    function_parameters = []
+def fit_details_rst_table(functions_str):
+    """
+    Builds an rst table containing the functional form and the parameters
+    given the function definition string of the problem.
+    """
+    functions = functions_str.split(';')
+    func_names = []
+    func_params = []
 
     for function in functions:
 
-        first_comma = function.find(',')
-        if first_comma != -1:
-            function_names.append(function[5:first_comma])
-            function_parameters.append(function[first_comma+1:])
+        # If string contains UserFunction then it means it is a nist problem
+        # Otherwise it is a neutron problem
+        if 'UserFunction' in function:
+            func_names, func_params = parse_nist_function_def(function)
+
         else:
-            function_names.append(function[5:])
-            function_parameters.append('None')
+            func_names, func_params = \
+            parse_neutron_function_def(function, func_names, func_params)
 
-    for idx in range(0, len(function_parameters)):
-        function_parameters[idx] = function_parameters[idx].replace(',', ', ')
-
-    form_header_dim = max(len(name) for name in function_names)
-    params_header_dim = max(len(parameter) for parameter in function_parameters)
-
-    if form_header_dim < 4:
-        form_header_dim = 4
-    if params_header_dim < 10:
-        params_header_dim = 10
-
-    header = ''
-    header += '+-' + '-'*form_header_dim + '-+-' + '-'*params_header_dim + '-+\n'
-    header += ('| ' + 'Form' + ' '*(form_header_dim-4) + ' ' +
-               '| ' + 'Parameters' + ' '*(params_header_dim-10) + ' |\n')
-    header += '+=' + '='*form_header_dim + '=+=' + '='*params_header_dim + '=+\n'
-
-    body = ''
-    for idx in range(0, len(function_names)):
-
-        body += ('| ' + function_names[idx] + ' '*(form_header_dim-len(function_names[idx])) + ' ' +
-                 '| ' + function_parameters[idx] + ' '*(params_header_dim-len(function_parameters[idx])) + ' |\n')
-        body += '+-' + '-'*form_header_dim + '-+-' + '-'*params_header_dim + '-+\n'
-
+    name_header_dim, params_header_dim = \
+    fit_details_table_hdims(func_names, func_params)
+    header = generate_fit_det_header(name_header_dim, params_header_dim)
+    body = generate_fit_det_body(func_names, func_params,
+                                 name_header_dim, params_header_dim)
     tbl = header + body + '\n'
 
     return tbl
 
 
-def fit_rst_table_nist(function):
-
-
+def parse_nist_function_def(function):
+    """
+    Helper function that parses the function definition of a nist problem
+    and returns the function name and parameters.
+    """
     first_comma = function.find(',')
     second_comma = function.find(',', first_comma + 1)
     function_name = function[first_comma+10:second_comma]
     function_parameters = function[second_comma+2:]
     function_parameters = function_parameters.replace(',', ', ')
 
-    form_header_dim = len(function_name)
-    params_header_dim = len(function_parameters)
+    return [function_name], [function_parameters]
 
-    if form_header_dim < 4:
-        form_header_dim = 4
+
+def parse_neutron_function_def(function, function_names, function_parameters):
+    """
+    Helper function that parses the function definition of a neutron problem
+    and returns the function name and parameters.
+    """
+    first_comma = function.find(',')
+    if first_comma != -1:
+        function_names.append(function[5:first_comma])
+        function_parameters.append(function[first_comma+1:])
+    else:
+        function_names.append(function[5:])
+        function_parameters.append('None')
+
+    for idx in range(0, len(function_parameters)):
+        function_parameters[idx] = function_parameters[idx].replace(',', ', ')
+
+    return function_names, function_parameters
+
+
+def fit_details_table_hdims(function_names, function_parameters):
+    """
+    Helper function that resolves the header dimensions of the fit details
+    table present in the rst visual display page.
+    """
+
+    name_header_dim = max(len(name) for name in function_names)
+    params_header_dim = max(len(parameter) for parameter in function_parameters)
+
+    if name_header_dim < 4:
+        name_header_dim = 4
     if params_header_dim < 10:
         params_header_dim = 10
 
+    return name_header_dim, params_header_dim
+
+
+def generate_fit_det_header(name_dim, params_dim):
+    """
+    Generates header of table containing the fit details.
+    """
+
     header = ''
-    header += '+-' + '-'*form_header_dim + '-+-' + '-'*params_header_dim + '-+\n'
-    header += ('| ' + 'Form' + ' '*(form_header_dim-4) + ' ' +
-               '| ' + 'Parameters' + ' '*(params_header_dim-10) + ' |\n')
-    header += '+=' + '='*form_header_dim + '=+=' + '='*params_header_dim + '=+\n'
+    header += '+-' + '-'*name_dim + '-+-' + '-'*params_dim + '-+\n'
+    header += ('| ' + 'Form' + ' '*(name_dim-4) + ' ' +
+               '| ' + 'Parameters' + ' '*(params_dim-10) + ' |\n')
+    header += '+=' + '='*name_dim + '=+=' + '='*params_dim + '=+\n'
+
+    return header
+
+
+def generate_fit_det_body(func_names, func_params, name_dim, params_dim):
+    """
+    Generates the body of table containing fit details.
+    """
 
     body = ''
-    body += ('| ' + function_name + ' '*(form_header_dim-len(function_name)) + ' ' +
-                '| ' + function_parameters + ' '*(params_header_dim-len(function_parameters)) + ' |\n')
-    body += '+-' + '-'*form_header_dim + '-+-' + '-'*params_header_dim + '-+\n'
+    for idx in range(0, len(func_names)):
 
-    tbl = header + body + '\n'
+        body += ('| ' + func_names[idx] +
+                 ' '*(name_dim-len(func_names[idx])) + ' ' +
+                 '| ' + func_params[idx] +
+                 ' '*(params_dim-len(func_params[idx])) + ' |\n')
+        body += '+-' + '-'*name_dim + '-+-' + '-'*params_dim + '-+\n'
 
-    return tbl
+    return body
 
 
-def build_rst_table(columns_txt, rows_txt, cells, comparison_type, comparison_dim,
-                    using_errors, color_scale=None):
+def build_rst_table(columns_txt, rows_txt, cells, comparison_type,
+                    comparison_dim, using_errors, color_scale=None):
     """"
     Builds an RST table as a string, given the list of column and row headers,
     and a 2D numpy array with values for the cells.
@@ -369,34 +472,50 @@ def build_rst_table(columns_txt, rows_txt, cells, comparison_type, comparison_di
     @param cells :: a 2D numpy array with as many rows as items have been given
     in rows_txt, and as many columns as items have been given in columns_txt
 
-    @param comparison_type :: whether this is a 'summary', or a full 'accuracy', or 'runtime'
-                              table.
+    @param comparison_type :: whether this is a 'summary', or a full 'accuracy',
+                              or 'runtime' table.
     @param comparison_dim :: dimension (accuracy / runtime)
-    @param using_errors :: whether this comparison uses errors in the cost function
-    (weighted or unweighted), required to link the table properly
+    @param using_errors :: whether this comparison uses errors in the cost
+                           function (weighted or unweighted), required to link
+                           the table properly
 
-    @param color_scale :: list with pairs of threshold value - color, to produce color
-    tags for the cells
+    @param color_scale :: list with pairs of threshold value - color,
+                          to produce color tags for the cells
     """
+
     columns_txt = display_name_for_minimizers(columns_txt)
-
-    items_link = build_items_links(comparison_type, comparison_dim, using_errors)
-
-    cell_len = calc_cell_len_rst_table(columns_txt, items_link, cells, color_scale)
+    items_link = build_items_links(comparison_type, comparison_dim,
+                                   using_errors)
+    cell_len = calc_cell_len_rst_table(columns_txt, items_link, cells,
+                                       color_scale)
 
     # The first column tends to be disproportionately long if it has a link
     first_col_len = calc_first_col_len(cell_len, rows_txt)
+    tbl_header_top, tbl_header_text, tbl_header_bottom = \
+    build_rst_table_header_chunks(first_col_len, cell_len, columns_txt)
 
-    tbl_header_top, tbl_header_text, tbl_header_bottom = build_rst_table_header_chunks(first_col_len, cell_len,
-                                                                                       columns_txt)
+    tbl_header = tbl_header_top + '\n' + tbl_header_text + '\n' + \
+                 tbl_header_bottom + '\n'
 
-    tbl_header = tbl_header_top + '\n' + tbl_header_text + '\n' + tbl_header_bottom + '\n'
-    # the footer is in general the delimiter between rows, including the last one
+    # The footer is in general the delimiter between rows,
+    # including the last one
     tbl_footer = tbl_header_top + '\n'
+    tbl_body = create_rst_table_body(cells, items_link, rows_txt, first_col_len,
+                                     cell_len, color_scale, tbl_footer)
+
+    return tbl_header  + tbl_body
+
+
+def create_rst_table_body(cells, items_link, rows_txt, first_col_len, cell_len,
+                          color_scale, tbl_footer):
+    """
+    Creates the body of the rst table that holds all the fitting results.
+    """
 
     tbl_body = ''
     for row in range(0, cells.shape[0]):
         # Pick either individual or group link
+        link = None
         if isinstance(items_link, list):
             link = items_link[row]
         else:
@@ -404,20 +523,20 @@ def build_rst_table(columns_txt, rows_txt, cells, comparison_type, comparison_di
 
         tbl_body += '|' + rows_txt[row].ljust(first_col_len, ' ') + '|'
         for col in range(0, cells.shape[1]):
-            tbl_body += format_cell_value_rst(cells[row, col], cell_len, color_scale, link) + '|'
-
+            tbl_body += format_cell_value_rst(cells[row, col], cell_len,
+                                              color_scale, link) + '|'
         tbl_body += '\n'
         tbl_body += tbl_footer
 
-    return tbl_header  + tbl_body
+    return tbl_body
 
 
 def display_name_for_minimizers(names):
     """
     Converts minimizer names into their "display names". For example
     to rename DTRS to "Trust region" or similar
-
     """
+
     display_names = names
     # Quick fix for DTRS name in version 3.8 - REMOVE
     for idx, minimizer in enumerate(names):
@@ -427,27 +546,28 @@ def display_name_for_minimizers(names):
     return display_names
 
 
-def build_items_links(comparison_type, comparison_dim, using_errors):
+def build_items_links(comparison_type, comp_dim, using_errors):
     """
     Figure out the links from rst table cells to other pages/sections of pages.
 
-    @param comparison_type :: whether this is a 'summary', or a full 'accuracy', or 'runtime' table.
-    @param comparison_dim :: dimension (accuracy / runtime)
+    @param comparison_type :: whether this is a 'summary', or a full 'accuracy',
+                              or 'runtime' table.
+    @param comp_dim :: dimension (accuracy / runtime)
     @param using_errors :: whether using observational errors in cost functions
 
     @returns :: link or links to use from table cells.
     """
     if 'summary' == comparison_type:
         items_link = ['Minimizers_{0}_comparison_in_terms_of_{1}_nist_lower'.
-                      format(weighted_suffix_string(using_errors), comparison_dim),
+                      format(weighted_suffix_string(using_errors), comp_dim),
                       'Minimizers_{0}_comparison_in_terms_of_{1}_nist_average'.
-                      format(weighted_suffix_string(using_errors), comparison_dim),
+                      format(weighted_suffix_string(using_errors), comp_dim),
                       'Minimizers_{0}_comparison_in_terms_of_{1}_nist_higher'.
-                      format(weighted_suffix_string(using_errors), comparison_dim),
+                      format(weighted_suffix_string(using_errors), comp_dim),
                       'Minimizers_{0}_comparison_in_terms_of_{1}_cutest'.
-                      format(weighted_suffix_string(using_errors), comparison_dim),
+                      format(weighted_suffix_string(using_errors), comp_dim),
                       'Minimizers_{0}_comparison_in_terms_of_{1}_neutron_data'.
-                      format(weighted_suffix_string(using_errors), comparison_dim),
+                      format(weighted_suffix_string(using_errors), comp_dim),
                       ]
     elif 'accuracy' == comparison_type or 'runtime' == comparison_type:
         if using_errors:
@@ -462,10 +582,12 @@ def build_items_links(comparison_type, comparison_dim, using_errors):
 
 def calc_cell_len_rst_table(columns_txt, items_link, cells, color_scale=None):
     """
-    Calculate ascii character width needed for an RST table, using the length of the longest table cell.
+    Calculate ascii character width needed for an RST table,
+    using the length of the longest table cell.
 
     @param columns_txt :: list of the contents of the column headers
-    @param items_link :: the links from rst table cells to other pages/sections of pages
+    @param items_link :: the links from rst table cells to other
+                         pages/sections of pages
     @param cells :: the values of the results
     @param color_scale :: whether a color_scale is used or not
     @returns :: the length of the longest cell in a table
@@ -475,15 +597,23 @@ def calc_cell_len_rst_table(columns_txt, items_link, cells, color_scale=None):
     max_header = len(max((col for col in columns_txt), key=len))
     # The value of the longest (once formatted) value in the table
     max_value = max(("%.4g" % cell for cell in np.nditer(cells)), key=len)
-    # The length of the longest link reference (angular bracket content present in summary tables)
-    max_item = max(items_link, key=len) if isinstance(items_link, list) else items_link
-    # One space on each end of a cell
+
+    # The length of the longest link reference
+    # (angular bracket content present in summary tables)
+    max_item = None
+    if isinstance(items_link, list):
+        max_item = max(items_link, key=len)
+    else:
+        items_link
+
+    # Set cell length equal to the length of:
+    # the longest combination of value, test name, and colour (plus padding)
     padding = 2
-    # Set cell length equal to the length of: the longest combination of value, test name, and colour (plus padding)
     cell_len = len(format_cell_value_rst(value=float(max_value),
                                          color_scale=color_scale,
                                          items_link=max_item).strip()) + padding
-    # If the header is longer than any cell's contents, i.e. is a group results table, use that length instead
+    # If the header is longer than any cell's contents,
+    # i.e. is a group results table, use that length instead
     if cell_len < max_header:
         cell_len = max_header
 
@@ -491,6 +621,11 @@ def calc_cell_len_rst_table(columns_txt, items_link, cells, color_scale=None):
 
 
 def calc_first_col_len(cell_len, rows_txt):
+    """
+    Calculate the first column length as it tends to be higher that all
+    other columns.
+    """
+
     first_col_len = cell_len
     for row_name in rows_txt:
         name_len = len(row_name)
@@ -507,6 +642,7 @@ def build_rst_table_header_chunks(first_col_len, cell_len, columns_txt):
     @param first_col_len :: length (in characters) of the first column
     @param cell_len :: length of all other cells
     """
+
     tbl_header_top = '+'
     tbl_header_text = '|'
     tbl_header_bottom = '+'
@@ -557,26 +693,30 @@ def format_cell_value_rst(value, width=None, color_scale=None, items_link=None):
     return value_text
 
 
-def save_table_to_file(results_dir, table_data, errors, group_name, metric_type, file_extension):
+def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
+                       file_extension):
     """
     Saves a group results table or overall results table to a given file type.
 
     @param table_data :: the results table
     @param errors :: whether to use observational errors
-    @param group_name :: name of this group of problems (example 'NIST "lower difficulty"', or
-                         'Neutron data')
-    @param metric_type :: the test type of the table data (e.g. runtime, accuracy)
+    @param group_name :: name of this group of problems
+                         (example 'NIST "lower difficulty"', or 'Neutron data')
+    @param metric_type :: the test type of the table data
+                          (e.g. runtime, accuracy)
     @param file_extension :: the file type extension (e.g. html)
     """
 
 
     file_name = ('comparison_{weighted}_{version}_{metric_type}_{group_name}.'
                  .format(weighted=weighted_suffix_string(errors),
-                         version=BENCHMARK_VERSION_STR, metric_type=metric_type, group_name=group_name))
+                         version=BENCHMARK_VERSION_STR, metric_type=metric_type,
+                         group_name=group_name))
     file_name = os.path.join(results_dir, file_name)
 
     if file_extension == 'html':
-        rst_content = '.. include:: ' + str(os.path.join(SCRIPT_DIR, 'color_definitions.txt'))
+        rst_content = '.. include:: ' + \
+                      str(os.path.join(SCRIPT_DIR, 'color_definitions.txt'))
         rst_content += '\n' + table_data
         table_data = publish_string(rst_content, writer_name='html')
 
@@ -584,7 +724,8 @@ def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
         print(table_data, file=tbl_file)
 
     logger.info('Saved {file_name}{extension} to {working_directory}'.
-                 format(file_name=file_name, extension=file_extension, working_directory=results_dir))
+                 format(file_name=file_name, extension=file_extension,
+                        working_directory=results_dir))
 
 
 
@@ -598,6 +739,10 @@ def weighted_suffix_string(use_errors):
 
 
 def make_result_tables_directory(results_dir, group_name):
+    """
+    Creates the results directory where the tables are located.
+    e.g. fitbenchmarking/results/neutron/Tables/
+    """
 
     if 'nist' in group_name:
         group_results_dir = os.path.join(results_dir, 'nist')

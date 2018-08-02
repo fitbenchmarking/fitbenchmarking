@@ -89,10 +89,11 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
                             difficulty, where the lowest list level list
                             the file names
     @param minimizers :: list of minimizers to test
-    @param use_errors :: whether to use observational errors as weights in the cost function
+    @param use_errors :: whether to use observational errors as weights
+                         in the cost function
 
-    @returns :: problem definitions loaded from the files, and results of running them with
-    the minimizers requested
+    @returns :: problem definitions loaded from the files, and results of
+                running them with the minimizers requested
     """
 
     results_per_problem = []
@@ -234,7 +235,8 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count,
     raw_data = get_data_points(wks)
     make_data_plot(prob.name, raw_data, count, figures_dir)
     make_best_fit_plot(prob.name, raw_data, best_fit, count, figures_dir)
-    make_starting_guess_plot(raw_data, fit_function, wks, prob, count, figures_dir)
+    make_starting_guess_plot(raw_data, fit_function, wks, prob, count,
+                             figures_dir)
 
     return previous_name, count
 
