@@ -45,12 +45,9 @@ muon_data_group_dir = [os.path.join(base_problem_files_dir, 'Muon_data')]
 #  ../fitbenchmarking/fitbenchmarking/ is taken as the path
 results_dir = None
 
-<<<<<<< HEAD:fitbenchmarking/example_runScripts.py
-=======
 # Whether to use errors in the fitting process
 use_errors = True
 
->>>>>>> 61_moveExampleRunScriptsOutside:example_scripts/example_runScripts.py
 for run_data in ["neutron", "nist"]:
 
     if run_data == "neutron":
