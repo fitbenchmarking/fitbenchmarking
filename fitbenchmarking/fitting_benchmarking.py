@@ -77,8 +77,8 @@ def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
 def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
                                minimizers, use_errors=True):
     """
-    Applies minimizers to a group (collection) of test problems. For example the
-    collection of all NIST problems
+    Applies minimizers to a group (collection) of test problems.
+    For example the collection of all NIST problems
 
     @param group_name :: name of the group
     @param group_results_dir :: directory in which the group results

@@ -54,7 +54,8 @@ def load_nist_fitting_problem_file(problem_filename):
         prob = test_problem.FittingTestProblem()
         prob.name = os.path.basename(spec_file.name.split('.')[0])
         prob.linked_name = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data"
-                            "/{1}.shtml>`__".format(prob.name, prob.name.lower())
+                            "/{1}.shtml>`__".format(prob.name,
+                                                    prob.name.lower())
                             )
         prob.equation = parsed_eq
         prob.starting_values = starting_values
@@ -67,13 +68,14 @@ def load_nist_fitting_problem_file(problem_filename):
 
 def parse_nist_file_line_by_line(lines):
     """
-    Get several relevant pieces of information from the lines of a NIST problem file
+    Get several relevant pieces of information from the lines of a
+    NIST problem file.
     This parser is far from great but it does the job.
 
     @param lines :: lines as directly loaded from a file
 
-    @returns :: the equation string, the data string, the starting values, and the
-    certified chi^2, as found in the text lines
+    @returns :: the equation string, the data string, the starting values,
+    and the certified chi^2, as found in the text lines
     """
 
     idx, ignored_lines, residual_sum_sq = 0, 0, 0
@@ -95,7 +97,8 @@ def parse_nist_file_line_by_line(lines):
                 data_pattern_text, idx = get_data_patter_txt(lines, idx)
         else:
             ignored_lines += 1
-            # print("unknown line in supposedly NIST test file, ignoring: {0}".format(line))
+            # print("unknown line in supposedly NIST test file, ignoring: {0}".
+            # format(line))
 
     logger.info("%d lines were ignored in this problem file.\n"
                 "If any problems occur, please uncomment line above this print "
@@ -183,8 +186,9 @@ def parse_equation(eq_text):
     conversion from NIST equation format to muparser format
 
     @param eq_text :: equation formula as given in a NIST problem description
-    @return formula ready to be used in the 'Formula=' of functions 'UserFunction' of
-            the Fit algorithm
+
+    @returns :: formula ready to be used in the 'Formula=' of functions
+                'UserFunction' of the Fit algorithm
     """
     start_normal = r'\s*y\s*=(.+)'
 
@@ -234,8 +238,9 @@ def parse_starting_values(lines):
 
 def load_neutron_data_fitting_problem_file(fname):
     """
-    Builds a FittingTestProblem object from a text file. The file is expected to
-    have a list of variables (input filename, name, equation, etc.)
+    Builds a FittingTestProblem object from a text file. The file is
+    expected to have a list of variables:
+    input filename, name, equation, etc.
 
     Other alternatives could be ConfigParser (ini format, parser not extermely
     good), or JSON.
