@@ -87,18 +87,12 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
         else:
             os.makedirs(group_results_dir)
 
-
-        prob_results = (do_fitting_benchmark_group(group_name, group_results_dir,
+        results = [do_fitting_benchmark_group(group_name, group_results_dir,
                                                   problem_block, minimizers,
                                                   use_errors=use_errors)
-                       for problem_block in problem_groups[group_name])
+                   for problem_block in problem_groups[group_name]]
 
-    probs, results = list(zip(*prob_results))
-
-    if len(probs) != len(results):
-        raise RuntimeError('probs : {0}, prob_results: {1}'.format(len(probs), len(results)))
-
-    return probs, results
+    return results
 
 
 
