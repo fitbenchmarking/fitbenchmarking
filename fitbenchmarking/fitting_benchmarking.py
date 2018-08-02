@@ -28,16 +28,17 @@ from __future__ import (absolute_import, division, print_function)
 
 import os, shutil
 import time
-from sys import float_info
+import sys
 
 import numpy as np
 import mantid.simpleapi as msapi
 
 import input_parsing as iparsing
-import results_output as fitout
 import test_result
-from plotHelper import *
 
+from logging_setup import logger
+
+from plotHelper import *
 
 def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_data_group_dirs=None,
                          muon_data_group_dir=None, minimizers=None, use_errors=True, results_dir=None):
@@ -125,8 +126,8 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, min
         for prob_file in problem_files:
             prob = iparsing.load_nist_fitting_problem_file(prob_file)
 
-            print("* Testing fitting for problem definition file {0}".format(prob_file))
             print("* Testing fitting of problem {0}".format(prob.name))
+            logger.info("* Testing fitting of problem {0}".format(prob.name))
 
             results_prob = do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors, count, previous_name)
             results_per_problem.extend(results_prob)
@@ -135,8 +136,8 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, min
         for prob_file in problem_files:
             prob = iparsing.load_neutron_data_fitting_problem_file(prob_file)
 
-            print("* Testing fitting for problem definition file {0}".format(prob_file))
             print("* Testing fitting of problem {0}".format(prob.name))
+            logger.info("* Testing fitting of problem {0}".format(prob.name))
 
             results_prob = do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors, count, previous_name)
             results_per_problem.extend(results_prob)
@@ -159,7 +160,7 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_er
     @param count :: the current count for the number of different start values for a given problem
     """
 
-    max_possible_float = float_info.max
+    max_possible_float = sys.float_info.max
     wks, cost_function = prepare_wks_cost_function(prob, use_errors)
 
     # Each NIST problem generate two results per file - from two different starting points
@@ -182,7 +183,8 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_er
                                                       cost_function=cost_function)
             t_end = time.clock()
 
-            print("*** with minimizer {0}, Status: {1}".format(minimizer_name, status))
+            print("*** Using minimizer {0}, Status: {1}".format(minimizer_name, status))
+            logger.info("*** Using minimizer {0}, Status: {1}".format(minimizer_name, status))
 
             chi_sq = -1
             best_minimizer = None
@@ -199,8 +201,8 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_er
                         function_def = user_func
                 else:
                     chi_sq = float("nan")
-                    print(" WARNING: no output fit workspace")
-                print("sum sq: {0}".format(chi_sq))
+                    logger.warning(" No output fit workspace")
+                print("Chi_sq: {0}".format(chi_sq))
 
             result = test_result.FittingTestResult()
             result.problem = prob
@@ -213,6 +215,7 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_er
             result.function_def = function_def
 
             print("Result object: {0}".format(result))
+
             results_problem_start.append(result)
 
         results_fit_problem.append(results_problem_start)
@@ -278,7 +281,7 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     best_fit.colour='green'
     best_fit.order_data()
     fig.add_data(best_fit)
-    tmp=msapi.ConvertToPointData(wks)
+    tmp = msapi.ConvertToPointData(wks)
     xData = tmp.readX(0)
     yData = tmp.readY(0)
     eData = tmp.readE(0)
@@ -295,11 +298,12 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     fig.make_scatter_plot(figure_name)
 
 
-    fit_result= msapi.Fit(user_func, wks, Output='ws_fitting_test',
-                          Minimizer='Levenberg-Marquardt',
-                          CostFunction='Least squares',IgnoreInvalidData=True,
-                          StartX=prob.start_x, EndX=prob.end_x,MaxIterations=0)
-    tmp=msapi.ConvertToPointData(fit_result.OutputWorkspace)
+    fit_result = msapi.Fit(user_func, wks, Output='ws_fitting_test',
+                           Minimizer='Levenberg-Marquardt',
+                           CostFunction='Least squares',IgnoreInvalidData=True,
+                           StartX=prob.start_x, EndX=prob.end_x,MaxIterations=0)
+
+    tmp = msapi.ConvertToPointData(fit_result.OutputWorkspace)
     xData = tmp.readX(1)
     yData = tmp.readY(1)
     startData = data("Start Guess",xData,yData)
@@ -423,8 +427,6 @@ def get_function_definitions(prob):
         num_starts = len(prob.starting_values[0][1])
         for start_idx in range(0, num_starts):
 
-            print("="*15 + " starting values,: {0}, with idx: {1} " + 15*"=".
-                  format(prob.starting_values, start_idx))
             start_string = ''  # like: 'b1=250, b2=0.0005'
 
             for param in prob.starting_values:
@@ -494,10 +496,9 @@ def get_data_group_problem_files(grp_dir):
 
     probs.sort()
 
-    print ("Found test problem files:")
     for problem in probs:
-        print(problem)
-    print("\n")
+        logger.info(problem)
+
     return probs
 
 

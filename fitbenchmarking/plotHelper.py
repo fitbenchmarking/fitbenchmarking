@@ -21,7 +21,7 @@ from __future__ import (absolute_import, division, print_function)
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
-
+from logging_setup import logger
 
 class data:
 
@@ -157,8 +157,9 @@ class plot(data,insert):
             plt.show()
         else:
             output_file = save.replace(",","")
-            print ("saving to "+output_file.replace(" ","_"))
+            logger.info("saving to "+output_file.replace(" ","_"))
             plt.savefig(output_file.replace(" ","_"))
+
 
     # safe is used if the y values (strings) all have unique names
     def make_y_bar_plot(self,safe=True,save=""):
