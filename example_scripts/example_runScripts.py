@@ -64,7 +64,6 @@ nist_data_dir = os.path.join(benchmark_problems_dir,
 neutron_data_dir = os.path.join(benchmark_problems_dir,
                                 'Neutron_data')
 
-
 # Modify results_dir to specify where the results of the fit should be saved
 # If left as None, they will be saved in a "results" folder in the working dir
 # When specifying a results_dir, please GIVE THE FULL PATH

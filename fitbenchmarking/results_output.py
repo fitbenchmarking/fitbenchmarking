@@ -32,6 +32,9 @@ from docutils.core import publish_string
 import post_processing as postproc
 from logging_setup import logger
 
+import logging
+from logging_setup import logger
+
 # Some naming conventions for the output files
 BENCHMARK_VERSION_STR = 'v3.8'
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -69,6 +72,7 @@ def save_results_tables(minimizers, results_per_test, group_name,
     @param results_dir :: directory where all the results are stored
     """
 
+
     tables_dir = make_result_tables_directory(results_dir, group_name)
     linked_problems = build_indiv_linked_problems(results_per_test, group_name,
                                                   results_dir)
@@ -87,7 +91,6 @@ def save_results_tables(minimizers, results_per_test, group_name,
                                     color_scale=color_scale)
     save_tables(tables_dir, tbl_acc_indiv, use_errors, group_name,
                 FILENAME_SUFFIX_ACCURACY)
-
     # Save runtime table for this group of fit problems
     tbl_runtime_indiv = build_rst_table(minimizers, linked_problems,
                                         norm_runtimes,
@@ -106,7 +109,7 @@ def save_tables(tables_dir, table_data, use_errors, group_name, metric):
     """
     Helper function that saves rst tables in all the formats available
     """
-
+    
     save_table_to_file(results_dir=tables_dir, table_data=table_data,
                        errors=use_errors, group_name=group_name,
                        metric_type=metric,
@@ -346,7 +349,6 @@ def save_VDpages(rst_text, prob_name, file_path):
         logger.info('Saved {prob_name}.{extension} to {working_directory}'.
                      format(prob_name=prob_name, extension=FILENAME_EXT_HTML,
                             working_directory=file_path))
-
 
 def fit_details_rst_table(functions_str):
     """
@@ -726,6 +728,7 @@ def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
     logger.info('Saved {file_name}{extension} to {working_directory}'.
                  format(file_name=file_name, extension=file_extension,
                         working_directory=results_dir))
+
 
 
 

@@ -26,8 +26,10 @@ computation time.
 
 from __future__ import (absolute_import, division, print_function)
 
+
 import os, sys, shutil
 import time, glob
+
 import numpy as np
 import mantid.simpleapi as msapi
 
@@ -36,6 +38,9 @@ import test_result
 from plotHelper import *
 from logging_setup import logger
 
+from logging_setup import logger
+
+from plotHelper import *
 
 def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
                          results_dir=None):
@@ -73,7 +78,7 @@ def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
 
     return prob_results, results_dir
 
-
+  
 def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
                                minimizers, use_errors=True):
     """
@@ -153,7 +158,7 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
                  best_fit) = calculate_chi_sq(fit_wks, min_chi_sq, best_fit,
                                               minimizer_name)
                 runtime = t_end - t_start
-
+                
             result = test_result.FittingTestResult()
             result.problem = prob
             result.fit_status = status
@@ -163,8 +168,8 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
             result.runtime = runtime
             result.minimizer = minimizer_name
             result.function_def = fit_function
-
             results_problem.append(result)
+           
             logger.info("*** Using minimizer {0}, Status: {1}".
                         format(minimizer_name, status))
 
@@ -288,6 +293,7 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     @param figures_dir :: directory that holds the figures
     """
 
+
     fig=plot()
     fig.add_data(raw_data)
     best_fit.markers=''
@@ -295,6 +301,7 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     best_fit.colour='green'
     best_fit.order_data()
     fig.add_data(best_fit)
+
     fig.labels['y'] = "Arbitrary units"
     fig.labels['x'] = "Time ($\mu s$)"
     fig.labels['title'] = name + " " + str(count)
@@ -425,7 +432,7 @@ def prepare_wks_cost_function(prob, use_errors):
 
     return wks, cost_function
 
-
+  
 def get_function_definitions(prob):
     """
     Produces function definition strings (as a full definition in
@@ -442,7 +449,6 @@ def get_function_definitions(prob):
     if prob.starting_values:
         starting_values = len(prob.starting_values[0][1])
         for start_idx in range(0, starting_values):
-
             starting_value_str = ''
             for param in prob.starting_values:
                 starting_value_str += ('{0}={1},'.
@@ -521,10 +527,10 @@ def parse_problem_file(group_name, prob_file):
 
     print("* Testing fitting of problem {0}".format(prob.name))
     logger.info("* Testing fitting of problem {0}".format(prob.name))
-
+    
     return prob
-
-
+  
+  
 def empty_contents_of_folder(directory):
     """
     Deletes everything in the directory given by directory.

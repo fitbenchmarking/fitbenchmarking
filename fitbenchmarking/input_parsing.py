@@ -31,6 +31,8 @@ import numpy as np
 import test_problem
 from logging_setup import logger
 
+from logging_setup import logger
+
 
 def load_nist_fitting_problem_file(problem_filename):
     """
@@ -40,7 +42,7 @@ def load_nist_fitting_problem_file(problem_filename):
     """
 
     with open(problem_filename) as spec_file:
-
+      
         logger.info("*** Loading NIST data file {0} ***".
                     format(os.path.basename(spec_file.name)))
 
@@ -65,7 +67,7 @@ def load_nist_fitting_problem_file(problem_filename):
 
     return prob
 
-
+  
 def parse_nist_file_line_by_line(lines):
     """
     Get several relevant pieces of information from the lines of a
