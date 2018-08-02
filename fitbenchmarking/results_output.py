@@ -40,6 +40,9 @@ try:
 except ImportError:
     from scipy.stats import nanmean, nanmedian
 
+import logging
+from logging_setup import logger
+
 # Some naming conventions for the output files
 BENCHMARK_VERSION_STR = 'v3.8'
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -75,8 +78,8 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
                           at the moment).
     """
     tables_dir = make_result_tables_directory(results_dir, group_name)
-
     linked_problems = build_indiv_linked_problems(results_per_test, group_name, results_dir)
+
     accuracy_tbl, runtime_tbl = postproc.calc_accuracy_runtime_tbls(results_per_test, minimizers)
     norm_acc_rankings, norm_runtimes, summary_cells_acc, summary_cells_runtime = \
         postproc.calc_norm_summary_tables(accuracy_tbl, runtime_tbl)
@@ -104,6 +107,7 @@ def print_group_results_tables(minimizers, results_per_test, problems_obj, group
             save_table_to_file(results_dir=tables_dir, table_data=tbl_runtime_indiv, errors=use_errors, group_name=group_name,
                                metric_type=FILENAME_SUFFIX_RUNTIME, file_extension=FILENAME_EXT_HTML)
 
+    logging.shutdown()
 
 
 def build_indiv_linked_problems(results_per_test, group_name, results_dir):
@@ -170,6 +174,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
     figure_start = os.path.join(figures_dir, "start_for_" + problem_name + "_1" + ".png")
 
+
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
     title += gb.problem.name + '\n'
@@ -188,12 +193,14 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     html = publish_string(rst_text, writer_name='html')
     with open(file_path + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
         print(html, file=visual_rst)
-        print('Saved {file_name}.{extension} to {working_directory}'.
-              format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=VDPages_dir))
+        logger.info('Saved {file_name}.{extension} to {working_directory}'.
+                     format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=VDPages_dir))
     with open(file_path + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
-        print('Saved {file_name}.{extension} to {working_directory}'.
-              format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=VDPages_dir))
+        logger.info('Saved {file_name}.{extension} to {working_directory}'.
+                     format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=VDPages_dir))
+
+    rst_link = '`<' + file_name + '.' + FILENAME_EXT_HTML + '>`_'
 
     return rst_link
 
@@ -409,6 +416,8 @@ def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
     @param metric_type :: the test type of the table data (e.g. runtime, accuracy)
     @param file_extension :: the file type extension (e.g. html)
     """
+
+
     file_name = ('comparison_{weighted}_{version}_{metric_type}_{group_name}.'
                  .format(weighted=weighted_suffix_string(errors),
                          version=BENCHMARK_VERSION_STR, metric_type=metric_type, group_name=group_name))
@@ -421,8 +430,10 @@ def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
 
     with open(file_name + file_extension, 'w') as tbl_file:
         print(table_data, file=tbl_file)
-    print('Saved {file_name}{extension} to {working_directory}'.
-          format(file_name=file_name, extension=file_extension, working_directory=results_dir))
+
+    logger.info('Saved {file_name}{extension} to {working_directory}'.
+                 format(file_name=file_name, extension=file_extension, working_directory=WORKING_DIR))
+
 
 
 def weighted_suffix_string(use_errors):
