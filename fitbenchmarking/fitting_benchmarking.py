@@ -262,11 +262,6 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     data_fig.add_data(raw)
     data_fig.labels['y'] = "Arbitrary units"
     data_fig.labels['x'] = "Time ($\mu s$)"
-    if prob.name == previous_name:
-        count+=1
-    else:
-        count =1
-        previous_name = prob.name
     data_fig.labels['title'] = prob.name[:-4]+" "+str(count)
     data_fig.title_size=10
     data_fig.make_scatter_plot(figures_dir + os.sep + "Data Plot " + run_ID + " " +

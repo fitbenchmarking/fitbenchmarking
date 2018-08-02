@@ -165,7 +165,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     file_path = os.path.join(VDPages_dir, file_name)
 
     rst_file_path = file_path.replace('\\', '/')
-    rst_link = "<file:///" +'' + rst_file_path + "." + FILENAME_EXT_HTML + ">`__"
+    rst_link = "<file:///" + rst_file_path + "." + FILENAME_EXT_HTML + ">`__"
 
     # Get path to the figures
     figures_dir = os.path.join(VDPages_dir, 'Figures')
@@ -173,7 +173,6 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name + "_1" + ".png")
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
     figure_start = os.path.join(figures_dir, "start_for_" + problem_name + "_1" + ".png")
-
 
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
@@ -199,8 +198,6 @@ def build_visual_display_page(prob_results, group_name, results_dir):
         print(html, file=visual_html)
         logger.info('Saved {file_name}.{extension} to {working_directory}'.
                      format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=VDPages_dir))
-
-    rst_link = '`<' + file_name + '.' + FILENAME_EXT_HTML + '>`_'
 
     return rst_link
 
