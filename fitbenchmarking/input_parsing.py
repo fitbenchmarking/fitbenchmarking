@@ -27,10 +27,11 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import re
-
 import numpy as np
 
 import test_problem
+
+from logging_setup import logger
 
 
 def load_nist_fitting_problem_file(problem_filename):
@@ -42,7 +43,8 @@ def load_nist_fitting_problem_file(problem_filename):
 
     with open(problem_filename) as spec_file:
 
-        print("\n*** Loading NIST data file %s ***" %os.path.basename(spec_file.name))
+        print("*** Loading NIST data file %s ***" %os.path.basename(spec_file.name))
+        logger.info("*** Loading NIST data file %s ***" %os.path.basename(spec_file.name))
 
         lines = spec_file.readlines()
         (equation_text, data_pattern_text,
@@ -72,7 +74,8 @@ def load_nist_fitting_problem_file(problem_filename):
         prob.data_x = data_pattern[:, 0]
         prob.ref_residual_sum_sq = residual_sum_sq
 
-        return prob
+    return prob
+
 
 
 def parse_nist_file_line_by_line(lines):
@@ -139,9 +142,9 @@ def parse_nist_file_line_by_line(lines):
             ignored_lines += 1
             # print("unknown line in supposedly NIST test file, ignoring: {0}".format(line))
 
-    print("%d lines were ignored in this problem file.\n"
-          "If any problems occur, please uncomment line above this print"
-          "to display the full output." %ignored_lines)
+    logger.info("%d lines were ignored in this problem file.\n"
+                "If any problems occur, please uncomment line above this print "
+                "to display the full output." %ignored_lines)
 
     return equation_text, data_pattern_text, starting_values, residual_sum_sq
 
