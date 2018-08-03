@@ -42,7 +42,7 @@ def load_nist_fitting_problem_file(problem_filename):
     """
 
     with open(problem_filename) as spec_file:
-      
+
         logger.info("*** Loading NIST data file {0} ***".
                     format(os.path.basename(spec_file.name)))
 
@@ -61,13 +61,13 @@ def load_nist_fitting_problem_file(problem_filename):
                             )
         prob.equation = parsed_eq
         prob.starting_values = starting_values
-        prob.data_y = data_pattern[:, 1]
-        prob.data_x = data_pattern[:, 0]
+        prob.data_x = data_pattern[:, 1]
+        prob.data_y = data_pattern[:, 0]
         prob.ref_residual_sum_sq = residual_sum_sq
 
     return prob
 
-  
+
 def parse_nist_file_line_by_line(lines):
     """
     Get several relevant pieces of information from the lines of a
