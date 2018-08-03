@@ -31,7 +31,6 @@ import numpy as np
 import test_problem
 from logging_setup import logger
 
-from logging_setup import logger
 
 
 def load_nist_fitting_problem_file(problem_filename):
@@ -42,7 +41,7 @@ def load_nist_fitting_problem_file(problem_filename):
     """
 
     with open(problem_filename) as spec_file:
-      
+
         logger.info("*** Loading NIST data file {0} ***".
                     format(os.path.basename(spec_file.name)))
 
@@ -67,7 +66,7 @@ def load_nist_fitting_problem_file(problem_filename):
 
     return prob
 
-  
+
 def parse_nist_file_line_by_line(lines):
     """
     Get several relevant pieces of information from the lines of a
@@ -96,7 +95,7 @@ def parse_nist_file_line_by_line(lines):
             residual_sum_sq = float(line.split()[4])
         elif line.startswith("Data:"):
             if " x" in line and " y " in line:
-                data_pattern_text, idx = get_data_patter_txt(lines, idx)
+                data_pattern_text, idx = get_data_pattern_txt(lines, idx)
         else:
             ignored_lines += 1
             # print("unknown line in supposedly NIST test file, ignoring: {0}".
@@ -116,17 +115,24 @@ def get_nist_model(lines, idx):
     test problems idx += 3
     """
     equation_text = None
-    while (not re.match(r'\s*y\s*=(.+)', lines[idx])
-           and not re.match(r'\s*log\[y\]\s*=(.+)', lines[idx]))\
-           and idx < len(lines):
+    idxerr = False
+    try:
+        while (not re.match(r'\s*y\s*=(.+)', lines[idx])
+               and not re.match(r'\s*log\[y\]\s*=(.+)', lines[idx]))\
+               and idx < len(lines):
 
-            idx += 1
+                idx += 1
+    except IndexError as err:
+        logger.error("Could not find equation, index went out of bounds!")
+        idxerr = True
+
 
     # Next non-empty lines are assumed to continue the equation
     equation_text = ''
-    while lines[idx].strip():
-        equation_text += lines[idx].strip()
-        idx += 1
+    if idxerr is False:
+        while lines[idx].strip():
+            equation_text += lines[idx].strip()
+            idx += 1
 
     if not equation_text:
         raise RuntimeError("Could not find the equation!")
@@ -147,7 +153,7 @@ def get_nist_starting_values(lines, idx):
     return starting_values, idx
 
 
-def get_data_patter_txt(lines, idx):
+def get_data_pattern_txt(lines, idx):
     """
     Helper function that gets the data in a nist problem file.
     """

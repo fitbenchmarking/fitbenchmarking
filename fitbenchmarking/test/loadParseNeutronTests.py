@@ -10,6 +10,7 @@ test_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(os.path.normpath(test_dir))
 sys.path.insert(0, parent_dir)
 
+from fitting_benchmarking import parse_problem_file
 from input_parsing import load_neutron_data_fitting_problem_file
 from input_parsing import get_neutron_data_problem_entries
 from input_parsing import get_fitting_neutron_data
@@ -62,18 +63,19 @@ class LoadAndParseNeutronFiles(unittest.TestCase):
 
         prob = test_problem.FittingTestProblem()
 
-        prob.data_pattern_in = np.array([1, 2, 3, 4, 5, 6])
-        prob.data_pattern_out = np.array([7, 8, 9, 10, 11, 12])
-        prob.data_pattern_obs_errors = np.sqrt(prob.data_pattern_out)
+        prob.data_x = np.array([1, 2, 3, 4, 5, 6])
+        prob.data_y = np.array([7, 8, 9, 10, 11, 12])
+        prob.data_pattern_obs_errors = np.sqrt(prob.data_y)
 
         return prob
 
 
-    def test_loadNeutronDataFittingProblemFile_return_ENGINXpeak19_problem_definition_object(self):
+    def test_parseProblemFile_return_neutron_prob_object(self):
 
-        enginxPeak19_path = self.ENGINX193749Peak19File()
+        group_name = 'neutron'
+        prob_file = self.ENGINX193749Peak19File()
 
-        prob = load_neutron_data_fitting_problem_file(enginxPeak19_path)
+        prob = parse_problem_file(group_name, prob_file)
         prob_expected = self.NeutronProblemExpected()
 
         self.assertEqual(prob_expected.name, prob.name)
@@ -103,23 +105,27 @@ class LoadAndParseNeutronFiles(unittest.TestCase):
         self.assertEqual(entries_expected['name'], entries['name'])
         self.assertEqual(entries_expected['input_file'], entries['input_file'])
         self.assertEqual(entries_expected['function'], entries['function'])
-        self.assertEqual(entries_expected['fit_parameters'], entries['fit_parameters'])
+        self.assertEqual(entries_expected['fit_parameters'],
+                         entries['fit_parameters'])
         self.assertEqual(entries_expected['description'], entries['description'])
 
 
     def test_getFittingNeutronData_return_MockProblemData(self):
 
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        neutron_mock_data = os.path.join(current_dir, 'mock_problems', 'data_files',
-                                         'NeutronMockData.nxs')
+        neutron_mock_data = os.path.join(current_dir, 'mock_problems',
+                                         'data_files', 'NeutronMockData.nxs')
 
         prob = test_problem.FittingTestProblem()
         get_fitting_neutron_data(neutron_mock_data, prob)
         prob_expected = self.MockProblemData()
 
-        np.testing.assert_array_equal(prob_expected.data_pattern_in, prob.data_pattern_in)
-        np.testing.assert_array_equal(prob_expected.data_pattern_out, prob.data_pattern_out)
-        np.testing.assert_array_equal(prob_expected.data_pattern_obs_errors, prob.data_pattern_obs_errors)
+        np.testing.assert_array_equal(prob_expected.data_x,
+                                      prob.data_x)
+        np.testing.assert_array_equal(prob_expected.data_y,
+                                      prob.data_y)
+        np.testing.assert_array_equal(prob_expected.data_pattern_obs_errors,
+                                      prob.data_pattern_obs_errors)
 
 
 if __name__ == "__main__":

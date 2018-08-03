@@ -37,10 +37,8 @@ import input_parsing as iparsing
 import test_result
 from plotHelper import *
 from logging_setup import logger
-
-from logging_setup import logger
-
 from plotHelper import *
+
 
 def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
                          results_dir=None):
@@ -78,7 +76,7 @@ def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
 
     return prob_results, results_dir
 
-  
+
 def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
                                minimizers, use_errors=True):
     """
@@ -158,7 +156,7 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
                  best_fit) = calculate_chi_sq(fit_wks, min_chi_sq, best_fit,
                                               minimizer_name)
                 runtime = t_end - t_start
-                
+
             result = test_result.FittingTestResult()
             result.problem = prob
             result.fit_status = status
@@ -169,7 +167,7 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
             result.minimizer = minimizer_name
             result.function_def = fit_function
             results_problem.append(result)
-           
+
             logger.info("*** Using minimizer {0}, Status: {1}".
                         format(minimizer_name, status))
 
@@ -432,7 +430,7 @@ def prepare_wks_cost_function(prob, use_errors):
 
     return wks, cost_function
 
-  
+
 def get_function_definitions(prob):
     """
     Produces function definition strings (as a full definition in
@@ -527,10 +525,10 @@ def parse_problem_file(group_name, prob_file):
 
     print("* Testing fitting of problem {0}".format(prob.name))
     logger.info("* Testing fitting of problem {0}".format(prob.name))
-    
+
     return prob
-  
-  
+
+
 def empty_contents_of_folder(directory):
     """
     Deletes everything in the directory given by directory.
