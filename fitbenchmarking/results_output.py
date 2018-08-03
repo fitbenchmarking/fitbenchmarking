@@ -109,7 +109,7 @@ def save_tables(tables_dir, table_data, use_errors, group_name, metric):
     """
     Helper function that saves rst tables in all the formats available
     """
-    
+
     save_table_to_file(results_dir=tables_dir, table_data=table_data,
                        errors=use_errors, group_name=group_name,
                        metric_type=metric,
@@ -224,7 +224,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
 
     # Get the best result for a group
     gb = min((result for result in prob_results),
-             key=lambda result: result.fit_chi_sq)
+             key=lambda result: result.chi_sq)
 
     # Remove commas and replace space with underscore in problem name
     problem_name = gb.problem.name.replace(',', '')

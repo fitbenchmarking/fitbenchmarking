@@ -37,7 +37,6 @@ import input_parsing as iparsing
 import test_result
 from plotHelper import *
 from logging_setup import logger
-from plotHelper import *
 
 
 def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
@@ -172,9 +171,11 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
                         format(minimizer_name, status))
 
         results_fit_problem.append(results_problem)
-        previous_name, count = make_plots(prob, group_results_dir, best_fit,
-                                          wks, previous_name, count,
-                                          fit_function)
+
+        if not best_fit is None:
+            previous_name, count = make_plots(prob, group_results_dir, best_fit,
+                                              wks, previous_name, count,
+                                              fit_function)
 
     return results_fit_problem
 
