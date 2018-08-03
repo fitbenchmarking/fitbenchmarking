@@ -392,7 +392,7 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt',
 
 
     if fit_result is None:
-        return 'failed', np.nan, None, None
+        return 'failed', None, None, None
     else:
         param_tbl = fit_result.OutputParameters
         if param_tbl:

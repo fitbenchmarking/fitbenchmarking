@@ -188,10 +188,9 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
 
         result = test_result.FittingTestResult()
         result.fit_status = 'failed'
-        result.fit_chi2 = np.nan
-        result.params = np.nan
-        result.errors = np.nan
-        result.sum_err_sq = np.nan
+        result.chi_sq = np.nan
+        result.params = None
+        result.errors = None
 
         return result
 
@@ -269,9 +268,9 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         result = result[0][0]
         self.assertEqual(result_expected.problem, result.problem)
         self.assertEqual(result_expected.fit_status, result.fit_status)
+        self.assertEqual(result_expected.params, result.params)
+        self.assertEqual(result_expected.errors, result.errors)
         np.testing.assert_equal(result_expected.chi_sq, result.chi_sq)
-        np.testing.assert_equal(result_expected.params, result.params)
-        np.testing.assert_equal(result_expected.errors, result.errors)
 
 
     def test_calculateChiSquared_return_minChisq_proper(self):
