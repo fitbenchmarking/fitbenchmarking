@@ -28,13 +28,21 @@ import os
 import logging
 
 
-if not os.path.exists('logs'):
-    os.makedirs('logs')
+# All logs go into /fitbenchmarking/fitbenchmarking/logs
+current_path = os.path.dirname(os.path.realpath(__file__))
+fitbenchmarking_path = os.path.abspath(os.path.join(current_path, os.pardir))
+scripts_path = os.path.join(fitbenchmarking_path, 'fitbenchmarking')
+logs_path = os.path.join(scripts_path, 'logs')
 
+if not os.path.exists(logs_path):
+    os.makedirs(logs_path)
+
+# Create logger with name fitbenchmarking (this is the name of the file)
 FORMATTER='%(asctime)s %(name)s %(levelname)s: %(message)s'
 
 formatter = logging.Formatter(FORMATTER, "%H:%M:%S")
-handler = logging.FileHandler('logs' + os.sep + 'fitbenchmarking.log', mode='w')
+handler = logging.FileHandler(logs_path + os.sep + 'fitbenchmarking.log',
+                              mode='w')
 handler.setFormatter(formatter)
 logger = logging.getLogger('fitbenchmarking')
 logger.setLevel(logging.DEBUG)
