@@ -38,7 +38,7 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
 
         current_dir = os.path.dirname(os.path.realpath(__file__))
         mock_fitwks = os.path.join(current_dir, 'mock_problems', 'data_files',
-                                     'fitWorkspace_enginxPeak19')
+                                   'fitWorkspace_enginxPeak19')
 
         return mock_fitwks
 
@@ -49,7 +49,8 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         current_dir = os.path.dirname(os.path.realpath(__file__))
         base_dir = os.path.sep.join(current_dir.split(os.path.sep)[:-2])
         bench_prob_dir = os.path.join(base_dir, 'benchmark_problems')
-        enginxData_path = os.path.join(bench_prob_dir, 'Neutron_data','data_files',
+        enginxData_path = os.path.join(bench_prob_dir, 'Neutron_data',
+                                       'data_files',
                                        'ENGINX193749_calibration_spec651.nxs')
 
         return enginxData_path
@@ -164,18 +165,18 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
 
         result1 = test_result.FittingTestResult()
         result1.fit_status = 'success'
-        result1.chi_sq = 0.153327121141
-        result1.params = [234.534400, 0.0005635749331078056]
-        result1.errors = [486.46049489836878, 0.0013377443749239895]
+        result1.chi_sq = 0.153327121
+        result1.params = [234.53440075754128, 0.00056228017032756289]
+        result1.errors = [166.95843730560517, 0.00045840028643556361]
         result1.minimizer = 'Levenberg-Marquardt'
         result1.function_def = ("name=UserFunction, Formula=b1*(1-exp(-b2*x)), "
                                 "b1=500.0,b2=0.0001,")
 
         result2 = test_result.FittingTestResult()
         result2.fit_status = 'success'
-        result2.chi_sq = 0.153327121141
-        result2.params = [234.0648164895841, 0.00056357498391696424]
-        result2.errors = [486.46041069760378, 0.0013377443887498521]
+        result2.chi_sq = 0.153326918
+        result2.params = [234.53441741161569, 0.00056228012624728884]
+        result2.errors = [166.95846246387609, 0.00045840028235511008]
         result2.minimizer = 'Levenberg-Marquardt'
         result2.function_def = ("name=UserFunction, Formula=b1*(1-exp(-b2*x)), "
                                 "b1=250.0,b2=0.0005,")
@@ -432,9 +433,11 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         prob = self.NISTproblem()
 
         function_defs = get_function_definitions(prob)
-        function_defs_expected = ["name=UserFunction, Formula=b1*(1-exp(-b2*x)), "
+        function_defs_expected = ["name=UserFunction, "
+                                  "Formula=b1*(1-exp(-b2*x)), "
                                   "b1=500.0,b2=0.0001,",
-                                  "name=UserFunction, Formula=b1*(1-exp(-b2*x)), "
+                                  "name=UserFunction, "
+                                  "Formula=b1*(1-exp(-b2*x)), "
                                   "b1=250.0,b2=0.0005," ]
 
         self.assertListEqual(function_defs_expected, function_defs)
