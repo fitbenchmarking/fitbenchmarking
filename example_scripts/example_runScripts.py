@@ -53,17 +53,19 @@ for run_data in ["neutron", "nist"]:
     if run_data == "neutron":
         group_suffix_names = ['neutron_data']
         group_names = ["Neutron data"]
-        results_per_group = fitBenchmarking(neutron_data_group_dirs=neutron_data_group_dirs,
-                                                      minimizers=minimizers, use_errors=use_errors,
-                                                      results_dir=results_dir)
+        results_per_group, results_dir = fitBenchmarking(neutron_data_group_dirs=neutron_data_group_dirs,
+                                                         minimizers=minimizers, use_errors=use_errors,
+                                                         results_dir=results_dir)
+
 
     elif run_data == "nist":
         group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
                        'NIST, "higher" difficulty']
         group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher']
-        results_per_group = fitBenchmarking(nist_group_dir=nist_group_dir,
-                                                      minimizers=minimizers, use_errors=use_errors,
-                                                      results_dir=results_dir)
+        results_per_group, results_dir = fitBenchmarking(nist_group_dir=nist_group_dir,
+                                                         minimizers=minimizers, use_errors=use_errors,
+                                                         results_dir=results_dir)
+
 
     else:
         raise RuntimeError("Invalid run_data, please check if the array"

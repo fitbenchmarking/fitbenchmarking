@@ -40,6 +40,8 @@ from logging_setup import logger
 
 from plotHelper import *
 
+
+
 def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_data_group_dirs=None,
                          muon_data_group_dir=None, minimizers=None, use_errors=True, results_dir=None):
     """
@@ -92,7 +94,8 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
                                                   use_errors=use_errors)
                    for problem_block in problem_groups[group_name]]
 
-    return results
+    return results, results_dir
+
 
 
 
@@ -210,7 +213,7 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_er
     return results_fit_problem
 
 
-def make_plots(prob, group_results_dir, best_fit, wks, previous_name, count, user_func):
+def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func):
     '''
     Makes a plot of the best fit considering multiple starting points of a
     problem.
@@ -222,9 +225,14 @@ def make_plots(prob, group_results_dir, best_fit, wks, previous_name, count, use
     @param count :: number of different starting points for one problem
     @param user_func :: fitting function
     '''
+    if "neutron" in visuals_dir:
+        support_pages_dir = os.path.join(visuals_dir, "tables", "support_pages")
+        if not os.path.exists(support_pages_dir):
+            os.makedirs(support_pages_dir)
+        visuals_dir = support_pages_dir
 
+    figures_dir = os.path.join(visuals_dir, "figures")
 
-    figures_dir = os.path.join(group_results_dir, "Figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
 
