@@ -109,7 +109,7 @@ def save_tables(tables_dir, table_data, use_errors, group_name, metric):
     """
     Helper function that saves rst tables in all the formats available
     """
-    
+
     save_table_to_file(results_dir=tables_dir, table_data=table_data,
                        errors=use_errors, group_name=group_name,
                        metric_type=metric,
@@ -132,20 +132,23 @@ def build_indiv_linked_problems(results_per_test, group_name, results_dir):
     @returns :: list of problems with their description link tags
     """
 
+    # Count keeps track if it is the same problem but different starting point
     prev_name = ''
-    prob_count = 1
+    count = 1
+
     linked_problems = []
 
     for test_idx, prob_results in enumerate(results_per_test):
         name = results_per_test[test_idx][0].problem.name
         if name == prev_name:
-            prob_count += 1
+            count += 1
         else:
-            prob_count = 1
+            count = 1
         prev_name = name
-        name_index = name + ' ' + str(prob_count)
+        name_index = name + ' ' + str(count)
         name = '`' + name_index + ' ' + \
-               build_visual_display_page(prob_results, group_name, results_dir)
+               build_visual_display_page(prob_results, group_name, results_dir,
+                                         count)
         linked_problems.append(name)
 
     return linked_problems
@@ -176,7 +179,7 @@ def setup_neutron_VDpage_misc(function_def, results_dir):
     return VDPages_dir, details_table, see_also_link
 
 
-def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir):
+def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir, count):
     """
     Setup miscellaneous data for visual display page.
     """
@@ -190,21 +193,21 @@ def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir):
         VDPages_dir, fit_function_details_table, see_also_link = \
         setup_neutron_VDpage_misc(res_obj.function_def, results_dir)
 
-    file_name = (group_name + '_' + problem_name).lower()
+    file_name = (group_name + '_' + problem_name + '_' + str(count)).lower()
     file_path = os.path.join(VDPages_dir, file_name)
 
     return VDPages_dir, file_path, fit_function_details_table, see_also_link
 
 
-def get_figures_path(VDPages_dir, problem_name):
+def get_figures_path(VDPages_dir, problem_name, count):
 
     figures_dir = os.path.join(VDPages_dir, 'Figures')
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name +
-                               "_1" + ".png")
+                               "_" + str(count) + ".png")
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name +
-                              "_1" + ".png")
+                              "_" + str(count) + ".png")
     figure_start = os.path.join(figures_dir, "start_for_" + problem_name +
-                                "_1" + ".png")
+                                "_" + str(count) + ".png")
 
     # If OS is Windows, then need to add prefix 'file:///'
     if os.name == 'nt':
@@ -215,7 +218,7 @@ def get_figures_path(VDPages_dir, problem_name):
     return figure_data, figure_fit, figure_start
 
 
-def build_visual_display_page(prob_results, group_name, results_dir):
+def build_visual_display_page(prob_results, group_name, results_dir, count):
     """
     Builds a page containing details of the best fit for a problem.
     @param prob_results:: the list of results for a problem
@@ -232,7 +235,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
 
     # Set up miscellaneous stuff and generate rst_link
     VDPages_dir, file_path, fit_function_details_table, see_also_link = \
-    setup_VDpage_misc(group_name, problem_name, gb, results_dir)
+    setup_VDpage_misc(group_name, problem_name, gb, results_dir, count)
 
     rst_file_path = file_path.replace('\\', '/')
     rst_link = "<file:///" + '' + rst_file_path + "." + \
@@ -240,7 +243,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
 
     # Get paths to figures
     figure_data, figure_fit, figure_start = \
-    get_figures_path(VDPages_dir, problem_name)
+    get_figures_path(VDPages_dir, problem_name, count)
 
     # Create and save rst page
     rst_text = create_rst_page(gb.problem.name, figure_data, figure_start,
@@ -388,7 +391,7 @@ def parse_nist_function_def(function):
     first_comma = function.find(',')
     second_comma = function.find(',', first_comma + 1)
     function_name = function[first_comma+10:second_comma]
-    function_parameters = function[second_comma+2:]
+    function_parameters = function[second_comma+2:-1]
     function_parameters = function_parameters.replace(',', ', ')
 
     return [function_name], [function_parameters]
