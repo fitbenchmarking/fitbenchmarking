@@ -89,17 +89,14 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
         else:
             os.makedirs(group_results_dir)
 
+        results = [do_fitting_benchmark_group(group_name, group_results_dir,
+                                                  problem_block, minimizers,
+                                                  use_errors=use_errors)
+                   for problem_block in problem_groups[group_name]]
 
-        prob_results = [do_fitting_benchmark_group(group_name, group_results_dir, problem_block,
-                                                   minimizers, use_errors=use_errors)
-                        for problem_block in problem_groups[group_name]]
+    return results, results_dir
 
-    probs, results = list(zip(*prob_results))
 
-    if len(probs) != len(results):
-        raise RuntimeError('probs : {0}, prob_results: {1}'.format(len(probs), len(results)))
-
-    return probs, results, results_dir
 
 
 def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, minimizers, use_errors=True):
@@ -118,10 +115,7 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, min
     the minimizers requested
     """
 
-    problems = []
     results_per_problem = []
-    count = 0
-    previous_name="none"
 
     # Note the CUTEst problem are assumed to be expressed in NIST format
     if group_name in ['nist', 'cutest']:
@@ -131,7 +125,7 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, min
             print("* Testing fitting of problem {0}".format(prob.name))
             logger.info("* Testing fitting of problem {0}".format(prob.name))
 
-            results_prob = do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors, count, previous_name)
+            results_prob = do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors)
             results_per_problem.extend(results_prob)
 
     elif group_name in ['neutron']:
@@ -141,13 +135,13 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, min
             print("* Testing fitting of problem {0}".format(prob.name))
             logger.info("* Testing fitting of problem {0}".format(prob.name))
 
-            results_prob = do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors, count, previous_name)
+            results_prob = do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors)
             results_per_problem.extend(results_prob)
 
     else:
         raise NameError("Please assign your problem group to a parser.")
 
-    return problems, results_per_problem
+    return results_per_problem
 
 
 def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors=True, count=0, previous_name="none"):
