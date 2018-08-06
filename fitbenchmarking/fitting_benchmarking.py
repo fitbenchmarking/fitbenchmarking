@@ -226,12 +226,12 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     @param user_func :: fitting function
     '''
     if "neutron" in visuals_dir:
-        VDPage_dir = os.path.join(visuals_dir, "VDPages")
+        VDPage_dir = os.path.join(visuals_dir, "tables", "support_pages")
         if not os.path.exists(VDPage_dir):
             os.makedirs(VDPage_dir)
         visuals_dir = VDPage_dir
 
-    figures_dir = os.path.join(visuals_dir, "Figures")
+    figures_dir = os.path.join(visuals_dir, "figures")
 
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)

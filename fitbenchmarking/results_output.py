@@ -153,7 +153,8 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     """
 
     # Directory that holds all the visual display pages
-    VDPages_dir = os.path.join(results_dir, "neutron", "VDPages")
+    VDPages_dir = os.path.join(results_dir, "neutron", "tables",
+                               "support_pages")
 
     # Get the best result for a group
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
@@ -444,13 +445,13 @@ def make_result_tables_directory(results_dir, group_name):
         group_results_dir = os.path.join(results_dir, 'nist')
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
-        tables_dir = os.path.join(group_results_dir, "Tables", group_name)
+        tables_dir = os.path.join(group_results_dir, "tables", group_name)
 
     elif 'neutron' in group_name:
         group_results_dir = os.path.join(results_dir, 'neutron')
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
-        tables_dir = os.path.join(group_results_dir, "Tables")
+        tables_dir = os.path.join(group_results_dir, "tables")
 
     if not os.path.exists(tables_dir):
         os.makedirs(tables_dir)
