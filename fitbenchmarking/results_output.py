@@ -154,7 +154,8 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     """
 
     # Directory that holds all the visual display pages
-    VDPages_dir = os.path.join(results_dir, "neutron", "VDPages")
+    support_pages_dir = os.path.join(results_dir, "neutron", "tables",
+                                     "support_pages")
 
     # Get the best result for a group
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
@@ -162,13 +163,13 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     problem_name = commaless_problem_name.replace(' ','_')
 
     file_name = (group_name + '_' + problem_name).lower()
-    file_path = os.path.join(VDPages_dir, file_name)
+    file_path = os.path.join(support_pages_dir, file_name)
 
     rst_file_path = file_path.replace('\\', '/')
     rst_link = "<file:///" + rst_file_path + "." + FILENAME_EXT_HTML + ">`__"
 
     # Get path to the figures
-    figures_dir = os.path.join(VDPages_dir, 'Figures')
+    figures_dir = os.path.join(support_pages_dir, 'Figures')
 
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name + "_1" + ".png")
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
@@ -193,11 +194,11 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     with open(file_path + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
         print(html, file=visual_rst)
         logger.info('Saved {file_name}.{extension} to {working_directory}'.
-                     format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=VDPages_dir))
+                     format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=support_pages_dir))
     with open(file_path + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
         logger.info('Saved {file_name}.{extension} to {working_directory}'.
-                     format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=VDPages_dir))
+                     format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=support_pages_dir))
 
     return rst_link
 
@@ -448,13 +449,13 @@ def make_result_tables_directory(results_dir, group_name):
         group_results_dir = os.path.join(results_dir, 'nist')
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
-        tables_dir = os.path.join(group_results_dir, "Tables", group_name)
+        tables_dir = os.path.join(group_results_dir, "tables", group_name)
 
     elif 'neutron' in group_name:
         group_results_dir = os.path.join(results_dir, 'neutron')
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
-        tables_dir = os.path.join(group_results_dir, "Tables")
+        tables_dir = os.path.join(group_results_dir, "tables")
 
     if not os.path.exists(tables_dir):
         os.makedirs(tables_dir)
