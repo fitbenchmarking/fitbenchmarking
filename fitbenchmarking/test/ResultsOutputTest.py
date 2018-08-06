@@ -197,11 +197,13 @@ class ResultsOutputTests(unittest.TestCase):
         tbl_footer = tbl_header_top + '\n'
         tbl_body = ("|`Misra1a 1 <file:///d:/fitbenchmarking/fitbenchmarking/" +
                     "test/dump/nist/VDPages/nist_lower_misra1a.html>`__|" +
-                    " :ranking-top-1:`1`  | :ranking-low-4:`2`  | :ranking-low-4:`3`  |\n"
+                    " :ranking-top-1:`1`  | :ranking-low-4:`2`  | " +
+                    ":ranking-low-4:`3`  |\n"
                     + tbl_footer +
                     "|`Misra1a 2 <file:///d:/fitbenchmarking/fitbenchmarking/" +
                     "test/dump/nist/VDPages/nist_lower_misra1a.html>`__|" +
-                    " :ranking-low-5:`5`  | :ranking-low-5:`10` | :ranking-low-5:`13` |\n"
+                    " :ranking-low-5:`5`  | :ranking-low-5:`10` |" +
+                    " :ranking-low-5:`13` |\n"
                     + tbl_footer)
         tbl = tbl_header + tbl_body
 
@@ -306,7 +308,8 @@ class ResultsOutputTests(unittest.TestCase):
     def test_buildRSTTable_return_rst_table_for_problem_files_Misra1a_Lanczos3_mock_minimizers(self):
 
         (minimizers, linked_problems, norm_acc_rankings,
-         use_errors, color_scale) = self.PrepareBuildRSTTableFunctionParameters()
+         use_errors, color_scale) = \
+        self.PrepareBuildRSTTableFunctionParameters()
 
         tbl = build_rst_table(minimizers, linked_problems, norm_acc_rankings,
                               comparison_type='accuracy', comparison_dim='',
@@ -337,7 +340,8 @@ class ResultsOutputTests(unittest.TestCase):
         comparison_dim = 'accuracy'
         using_errors = True
 
-        items_link = build_items_links(comparison_type, comparison_dim, using_errors)
+        items_link = \
+        build_items_links(comparison_type, comparison_dim, using_errors)
         items_link_expected = ['Minimizers_weighted_comparison_in_terms_of'
                                '_accuracy_nist_lower',
                                'Minimizers_weighted_comparison_in_terms_of'
@@ -358,7 +362,8 @@ class ResultsOutputTests(unittest.TestCase):
         comparison_dim = ''
         using_errors = True
 
-        items_link = build_items_links(comparison_type, comparison_dim, using_errors)
+        items_link = \
+        build_items_links(comparison_type, comparison_dim, using_errors)
         items_link_expected = 'FittingMinimizersComparisonDetailedWithWeights'
 
         self.assertEqual(items_link_expected, items_link)
@@ -370,7 +375,8 @@ class ResultsOutputTests(unittest.TestCase):
         comparison_dim = ''
         using_errors = False
 
-        items_link = build_items_links(comparison_type, comparison_dim, using_errors)
+        items_link = \
+        build_items_links(comparison_type, comparison_dim, using_errors)
         items_link_expected = 'FittingMinimizersComparisonDetailed'
 
         self.assertEqual(items_link_expected, items_link)
@@ -382,7 +388,8 @@ class ResultsOutputTests(unittest.TestCase):
         comparison_dim = ''
         using_errors = False
 
-        items_link = build_items_links(comparison_type, comparison_dim, using_errors)
+        items_link = \
+        build_items_links(comparison_type, comparison_dim, using_errors)
         items_link_expected = ''
 
         self.assertEqual(items_link_expected, items_link)
@@ -405,7 +412,8 @@ class ResultsOutputTests(unittest.TestCase):
         columns_txt, items_link, cells, color_scale = \
         self.CalcCellLenRSTTableParameters()
 
-        cell_len = calc_cell_len_rst_table(columns_txt, items_link, cells, color_scale)
+        cell_len = \
+        calc_cell_len_rst_table(columns_txt, items_link, cells, color_scale)
         cell_len_expected = 21
 
         self.assertEqual(cell_len_expected, cell_len)
