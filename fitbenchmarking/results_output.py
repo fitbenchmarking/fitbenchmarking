@@ -169,7 +169,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     rst_link = "<file:///" + rst_file_path + "." + FILENAME_EXT_HTML + ">`__"
 
     # Get path to the figures
-    figures_dir = os.path.join(support_pages_dir, 'Figures')
+    figures_dir = os.path.join(support_pages_dir, 'figures')
 
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name + "_1" + ".png")
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
