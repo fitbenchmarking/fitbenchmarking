@@ -152,6 +152,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     problem_name = commaless_problem_name.replace(' ','_')
     
     # Group specific paths and other misc stuff
+    support_pages_dir = None
     if 'nist' in group_name:
         suppport_pages_dir = os.path.join(results_dir, "nist", "tables", "support_pages")
         fit_function_details_table = fit_rst_table_nist(gb.function_def)
@@ -166,7 +167,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     file_path = os.path.join(support_pages_dir, file_name)
 
     rst_file_path = file_path.replace('\\', '/')
-    rst_link = "<file:///" +'' + rst_file_path + "." + FILENAME_EXT_HTML + ">`__"
+    rst_link = "<file:///" + rst_file_path + "." + FILENAME_EXT_HTML + ">`__"
 
     figures_dir = os.path.join(support_pages_dir, 'figures')
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name + "_1" + ".png")
@@ -193,7 +194,6 @@ def build_visual_display_page(prob_results, group_name, results_dir):
 
     starting_plot = 'Plot of the initial starting guess' + '\n'
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
-    starting_plot += '*Minimizer*: Levenberg-Marquardt \n\n'
     starting_plot += ('.. figure:: ' + figure_start  + '\n' +
                       '   :align: center' + '\n\n')
 
