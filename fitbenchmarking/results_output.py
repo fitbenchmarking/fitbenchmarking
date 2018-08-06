@@ -153,8 +153,8 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     """
 
     # Directory that holds all the visual display pages
-    VDPages_dir = os.path.join(results_dir, "neutron", "tables",
-                               "support_pages")
+    support_pages_dir = os.path.join(results_dir, "neutron", "tables",
+                                     "support_pages")
 
     # Get the best result for a group
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
@@ -162,7 +162,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     problem_name = commaless_problem_name.replace(' ','_')
 
     file_name = (group_name + '_' + problem_name).lower()
-    file_name = os.path.join(VDPages_dir, file_name)
+    file_name = os.path.join(support_pages_dir, file_name)
 
     rst_file_name = file_name.replace('\\', '/')
     rst_link = "<file:///" +'' + rst_file_name + "." + FILENAME_EXT_HTML + ">`__"
