@@ -28,7 +28,7 @@ class FittingTestResult(object):
     def __init__(self):
         self.problem = None
         self.fit_status = None
-        self.fit_chi_sq = None
+        self.chi_sq = None
 
         # Workspace with data to fit
         self.fit_wks = None
@@ -37,3 +37,7 @@ class FittingTestResult(object):
 
         # Time it took to run the Fit algorithm
         self.runtime = None
+
+        # Best minimizer for a certain problem and its function definition
+        self.minimizer = None
+        self.function_def = None

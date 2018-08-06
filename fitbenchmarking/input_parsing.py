@@ -25,13 +25,12 @@ information into problem objects
 
 from __future__ import (absolute_import, division, print_function)
 
-import os
-import re
+import os, re
 import numpy as np
 
 import test_problem
-
 from logging_setup import logger
+
 
 
 def load_nist_fitting_problem_file(problem_filename):
@@ -43,104 +42,64 @@ def load_nist_fitting_problem_file(problem_filename):
 
     with open(problem_filename) as spec_file:
 
-        print("*** Loading NIST data file %s ***" %os.path.basename(spec_file.name))
-        logger.info("*** Loading NIST data file %s ***" %os.path.basename(spec_file.name))
+        logger.info("*** Loading NIST data file {0} ***".
+                    format(os.path.basename(spec_file.name)))
 
         lines = spec_file.readlines()
         (equation_text, data_pattern_text,
          starting_values, residual_sum_sq) = parse_nist_file_line_by_line(lines)
 
-        if not equation_text:
-            raise RuntimeError('Could not find the equation after parsing the lines of this file: {0}'.
-                               format(spec_file.name))
-        elif not data_pattern_text:
-            raise RuntimeError('Could not find the data after parsing the lines of this file: {0}'.
-                               format(spec_file.name))
-        elif not residual_sum_sq:
-            raise RuntimeError('Could not find the residual sum sq after parsing the lines of this file: {0}'.
-                               format(spec_file.name))
-
         data_pattern = parse_data_pattern(data_pattern_text)
         parsed_eq = parse_equation(equation_text)
 
         prob = test_problem.FittingTestProblem()
-        prob.name = os.path.basename(spec_file.name)
-        name_without_ext = prob.name.split(".")[0]
-        prob.linked_name = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data/{1}.shtml>`__".
-                            format(name_without_ext, name_without_ext.lower()))
+        prob.name = os.path.basename(spec_file.name.split('.')[0])
+        prob.linked_name = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data"
+                            "/{1}.shtml>`__".format(prob.name,
+                                                    prob.name.lower())
+                            )
         prob.equation = parsed_eq
         prob.starting_values = starting_values
-        prob.data_y = data_pattern[:, 1]
-        prob.data_x = data_pattern[:, 0]
+        prob.data_x = data_pattern[:, 1]
+        prob.data_y = data_pattern[:, 0]
         prob.ref_residual_sum_sq = residual_sum_sq
 
     return prob
 
 
-
 def parse_nist_file_line_by_line(lines):
     """
-    Get several relevant pieces of information from the lines of a NIST problem file
+    Get several relevant pieces of information from the lines of a
+    NIST problem file.
     This parser is far from great but it does the job.
 
     @param lines :: lines as directly loaded from a file
 
-    @returns :: the equation string, the data string, the starting values, and the
-    certified chi^2, as found in the text lines
+    @returns :: the equation string, the data string, the starting values,
+    and the certified chi^2, as found in the text lines
     """
 
-    idx, data_idx, ignored_lines = 0, 0, 0
-    data_pattern_text = None
-    residual_sum_sq = 0
-    equation_text = None
-    starting_values = None
+    idx, ignored_lines, residual_sum_sq = 0, 0, 0
 
-    # The first line should be:
-    # NIST/ITL StRD
     while idx < len(lines):
         line = lines[idx].strip()
         idx += 1
-
         if not line:
             continue
 
         if line.startswith('Model:'):
-            # Would skip number of parameters, and empty line, but not
-            # adequate for all test problems
-            # idx += 3
-
-            # Before 'y = ...' there can be lines like 'pi = 3.14159...'
-            while (not re.match(r'\s*y\s*=(.+)', lines[idx])
-                   and not re.match(r'\s*log\[y\]\s*=(.+)', lines[idx]))\
-                   and idx < len(lines):  # [\s*\+\s*e]
-
-                idx += 1
-
-            # Next non-empty lines are assumed to continue the equation
-            equation_text = ''
-            while lines[idx].strip():
-                equation_text += lines[idx].strip()
-                idx += 1
-
+            equation_text, idx = get_nist_model(lines, idx)
         elif 'Starting values' in line or 'Starting Values' in line:
-            # There is 1 empty line and one heading line
-            # before the actual values
-            idx += 2
-            starting_values = parse_starting_values(lines[idx:])
-            idx += len(starting_values)
-
+            starting_values, idx = get_nist_starting_values(lines, idx)
         elif line.startswith('Residual Sum of Squares'):
             residual_sum_sq = float(line.split()[4])
-
         elif line.startswith("Data:"):
             if " x" in line and " y " in line:
-
-                data_pattern_text = lines[idx:]
-                idx = len(lines)
-
+                data_pattern_text, idx = get_data_pattern_txt(lines, idx)
         else:
             ignored_lines += 1
-            # print("unknown line in supposedly NIST test file, ignoring: {0}".format(line))
+            # print("unknown line in supposedly NIST test file, ignoring: {0}".
+            # format(line))
 
     logger.info("%d lines were ignored in this problem file.\n"
                 "If any problems occur, please uncomment line above this print "
@@ -149,11 +108,69 @@ def parse_nist_file_line_by_line(lines):
     return equation_text, data_pattern_text, starting_values, residual_sum_sq
 
 
+def get_nist_model(lines, idx):
+    """
+    Helper function that gets the model function from the nist file.
+    Would skip number of parameters, and empty line, but not adequate for all
+    test problems idx += 3
+    """
+    equation_text = None
+    idxerr = False
+    try:
+        while (not re.match(r'\s*y\s*=(.+)', lines[idx])
+               and not re.match(r'\s*log\[y\]\s*=(.+)', lines[idx]))\
+               and idx < len(lines):
+
+                idx += 1
+    except IndexError as err:
+        logger.error("Could not find equation, index went out of bounds!")
+        idxerr = True
+
+
+    # Next non-empty lines are assumed to continue the equation
+    equation_text = ''
+    if idxerr is False:
+        while lines[idx].strip():
+            equation_text += lines[idx].strip()
+            idx += 1
+
+    if not equation_text:
+        raise RuntimeError("Could not find the equation!")
+
+    return equation_text, idx
+
+
+def get_nist_starting_values(lines, idx):
+    """
+    Helper function that gets the starting values in a nist file.
+    There is 1 empty line and one heading line before the actual values.
+    """
+    starting_values = None
+    idx += 2
+    starting_values = parse_starting_values(lines[idx:])
+    idx += len(starting_values)
+
+    return starting_values, idx
+
+
+def get_data_pattern_txt(lines, idx):
+    """
+    Helper function that gets the data in a nist problem file.
+    """
+    data_pattern_text = None
+    data_pattern_text = lines[idx:]
+    idx = len(lines)
+
+    if not data_pattern_text:
+        raise RuntimeError("Could not find the data!")
+
+    return data_pattern_text, idx
+
+
 def parse_data_pattern(data_text):
     """
-    Parses the data part of a NIST test problem file (the columns of
-    values) and produces a numpy array with the data.
-
+    Parses the data part of a NIST test problem file (the columns of values)
+    and produces a numpy array with the data.
     """
     if not data_text:
         return None
@@ -177,21 +194,21 @@ def parse_equation(eq_text):
     conversion from NIST equation format to muparser format
 
     @param eq_text :: equation formula as given in a NIST problem description
-    @return formula ready to be used in the 'Formula=' of functions 'UserFunction' of
-            the Fit algorithm
+
+    @returns :: formula ready to be used in the 'Formula=' of functions
+                'UserFunction' of the Fit algorithm
     """
     start_normal = r'\s*y\s*=(.+)'
 
-    # try first the usual syntax
+    # Try first the usual syntax
     if re.match(start_normal, eq_text):
         match = re.search(r'y\s*=(.+)\s*\+\s*e', eq_text)
         equation = match.group(1).strip()
     else:
-        raise RuntimeError("Unrecognized equation syntax when trying to parse a NIST "
-                           "equation: " + eq_text)
+        raise RuntimeError("Unrecognized equation syntax when trying to parse "
+                           "a NIST equation: " + eq_text)
 
     # 'NIST equation syntax' => muparser syntax
-    # brackets for muparser
     equation = equation.replace('[', '(')
     equation = equation.replace(']', ')')
     equation = equation.replace('arctan', 'atan')
@@ -200,17 +217,23 @@ def parse_equation(eq_text):
 
 
 def parse_starting_values(lines):
+    """
+    Parses the starting values of a in a nist file.
+    """
     starting_vals = []
     for line in lines:
         if not line.strip() or line.startswith('Residual'):
             break
-
         comps = line.split()
+
+        # There can only be 2 cases when parsing nist files
+        # i.e. line can only have six or 7 strings separated by white space
         if 6 != len(comps) and 5 != len(comps):
             raise RuntimeError("Failed to parse this line as starting "
                                "values information: {0}".format(line))
 
-        # A bit weak/lax parsing, if there is one less column, assume only one start point
+        # A bit weak/lax parsing, if there is one less column,
+        # assume only one start point
         if 6 == len(comps):
             alt_values = [float(comps[2]), float(comps[3])]
         elif 5 == len(comps):
@@ -223,8 +246,9 @@ def parse_starting_values(lines):
 
 def load_neutron_data_fitting_problem_file(fname):
     """
-    Builds a FittingTestProblem object from a text file. The file is expected to
-    have a list of variables (input filename, name, equation, etc.)
+    Builds a FittingTestProblem object from a text file. The file is
+    expected to have a list of variables:
+    input filename, name, equation, etc.
 
     Other alternatives could be ConfigParser (ini format, parser not extermely
     good), or JSON.
@@ -233,23 +257,20 @@ def load_neutron_data_fitting_problem_file(fname):
     """
 
     with open(fname) as probf:
-
-        entries = get_neutron_data_problem_entries(probf)
-
-        # switch is used to find the last separator in the problem file path
+        # sep_idx is used to find the last separator in the problem file path
         # and set up the path for the data_files folder
         # i.e truncates the path to ../Neutron_data
         # and adds ../Neutron_data/data_files
 
-        sep_idx = -1
+        entries = get_neutron_data_problem_entries(probf)
         prefix = ""
-
-        sep_idx = fname.rfind(os.sep)
-        if sep_idx != -1:
+        if os.sep in fname:
+            sep_idx = fname.rfind(os.sep)
             prefix = os.path.join(fname[:sep_idx],"data_files")
 
         prob = test_problem.FittingTestProblem()
-        get_fitting_neutron_data(os.path.join(prefix,entries['input_file']), prob)
+        data_files_dir = os.path.join(prefix,entries['input_file'])
+        get_fitting_neutron_data(data_files_dir, prob)
         prob.name = entries['name']
         prob.equation = entries['function']
         prob.starting_values = None
@@ -268,15 +289,15 @@ def get_neutron_data_problem_entries(problem_file):
 
     entries = {}
     for line in problem_file:
-        # discard comments
+        # Discard comments
         line = line.partition('#')[0]
         line = line.rstrip()
         if not line:
             continue
 
-        # take values (lhs = rhs)
+        # Take values (lhs = rhs)
         lhs, rhs = line.split("=", 1)
-        # assumes it is safe to evaluate the rhs (it's a string for example)
+        # Assumes it is safe to evaluate the rhs (it's a string for example)
         entries[lhs.strip()] = eval(rhs.strip())
 
     return entries
