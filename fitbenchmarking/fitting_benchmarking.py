@@ -65,7 +65,7 @@ def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
         raise NameError("Data directory not recognised!")
 
     prob_results = None
-    for group_name in problem_groups:x
+    for group_name in problem_groups:
         group_results_dir = setup_group_results_dir(results_dir, group_name)
         prob_results = [do_fitting_benchmark_group(group_name,
                                                    group_results_dir,
@@ -570,13 +570,13 @@ def setup_results_dir(results_dir):
     @param results_dir :: name (or path) of the results directory.
     """
 
-    current_dir = os.path.dirname(os.path.realpath(__file__))
+    working_dir = os.getcwd()
     if results_dir is None:
-        results_dir = os.path.join(current_dir, "results")
+        results_dir = os.path.join(working_dir, "results")
     elif not isinstance(results_dir, str):
         TypeError("results_dir must be a string!")
     elif not os.sep in results_dir:
-        results_dir = os.path.join(current_dir, results_dir)
+        results_dir = os.path.join(working_dir, results_dir)
     else:
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
