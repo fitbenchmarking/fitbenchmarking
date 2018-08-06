@@ -55,7 +55,7 @@ WORKING_DIR = os.getcwd()
 SCRIPT_DIR = os.path.dirname(__file__)
 
 
-def print_group_results_tables(minimizers, results_per_test, problems_obj, group_name, use_errors,
+def print_group_results_tables(minimizers, results_per_test, group_name, use_errors,
                                simple_text=True, rst=False, save_to_file=False, color_scale=None,
                                results_dir=None):
 
@@ -125,7 +125,6 @@ def build_indiv_linked_problems(results_per_test, group_name, results_dir):
     linked_problems = []
 
     for test_idx, prob_results in enumerate(results_per_test):
-
         raw_name = results_per_test[test_idx][0].problem.name
         name = raw_name.split('.')[0]
         if name == prev_name:
@@ -151,36 +150,34 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
     commaless_problem_name = gb.problem.name.replace(',', '')
     problem_name = commaless_problem_name.replace(' ','_')
-
+    
     # Group specific paths and other misc stuff
     if 'nist' in group_name:
-        VDPages_dir = os.path.join(results_dir, "nist", "VDPages")
+        suppport_pages_dir = os.path.join(results_dir, "nist", "tables", "support_pages")
         fit_function_details_table = fit_rst_table_nist(gb.function_def)
         see_also_link = 'See also:\n ' + gb.problem.linked_name + '\n on NIST website\n\n'
         problem_name = problem_name.split('.')[0]
     elif 'neutron' in group_name:
-        VDPages_dir = os.path.join(results_dir, "neutron", "VDPages")
+        support_pages_dir = os.path.join(results_dir, "neutron", "tables", "support_pages")
         fit_function_details_table = fit_rst_table_neutron(gb.function_def)
         see_also_link = ''
 
     file_name = (group_name + '_' + problem_name).lower()
-    file_path = os.path.join(VDPages_dir, file_name)
+    file_path = os.path.join(support_pages_dir, file_name)
 
     rst_file_path = file_path.replace('\\', '/')
     rst_link = "<file:///" +'' + rst_file_path + "." + FILENAME_EXT_HTML + ">`__"
 
-
-    # Get path to the figures
-    figures_dir = os.path.join(VDPages_dir, 'Figures')
-
+    figures_dir = os.path.join(support_pages_dir, 'figures')
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name + "_1" + ".png")
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
     figure_start = os.path.join(figures_dir, "start_for_" + problem_name + "_1" + ".png")
-
+    
     if os.name == 'nt':
         figure_data = 'file:///' + figure_data
         figure_fit = 'file:///' + figure_fit
         figure_start = 'file:///' + figure_start
+
 
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
@@ -210,19 +207,20 @@ def build_visual_display_page(prob_results, group_name, results_dir):
 
     rst_text = title + space + data_plot + starting_plot + solution_plot + space + see_also_link
 
+
     html = publish_string(rst_text, writer_name='html')
     with open(file_path + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
         print(html, file=visual_rst)
         logger.info('Saved {file_name}.{extension} to {working_directory}'.
-                     format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=VDPages_dir))
+                     format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=support_pages_dir))
     with open(file_path + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
         logger.info('Saved {file_name}.{extension} to {working_directory}'.
-                     format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=VDPages_dir))
+                     format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=support_pages_dir))
 
     return rst_link
 
-
+  
 def fit_rst_table_neutron(functions):
 
     functions = functions.split(';')
@@ -546,13 +544,15 @@ def make_result_tables_directory(results_dir, group_name):
         group_results_dir = os.path.join(results_dir, 'nist')
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
-        tables_dir = os.path.join(group_results_dir, "Tables", group_name)
+        tables_dir = os.path.join(group_results_dir, "tables", group_name)
+
 
     elif 'neutron' in group_name:
         group_results_dir = os.path.join(results_dir, 'neutron')
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
-        tables_dir = os.path.join(group_results_dir, "Tables")
+        tables_dir = os.path.join(group_results_dir, "tables")
+
 
     if not os.path.exists(tables_dir):
         os.makedirs(tables_dir)

@@ -40,6 +40,8 @@ from logging_setup import logger
 
 from plotHelper import *
 
+
+
 def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_data_group_dirs=None,
                          muon_data_group_dir=None, minimizers=None, use_errors=True, results_dir=None):
     """
@@ -87,17 +89,12 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
         else:
             os.makedirs(group_results_dir)
 
-
-        prob_results = [do_fitting_benchmark_group(group_name, group_results_dir, problem_block,
-                                                   minimizers, use_errors=use_errors)
-                        for problem_block in problem_groups[group_name]]
-
-    probs, results = list(zip(*prob_results))
-
-    if len(probs) != len(results):
-        raise RuntimeError('probs : {0}, prob_results: {1}'.format(len(probs), len(results)))
-
-    return probs, results, results_dir
+        results = [do_fitting_benchmark_group(group_name, group_results_dir,
+                                                  problem_block, minimizers,
+                                                  use_errors=use_errors)
+                   for problem_block in problem_groups[group_name]]
+        
+    return results, results_dir
 
 
 def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, minimizers, use_errors=True):
@@ -116,10 +113,7 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, min
     the minimizers requested
     """
 
-    problems = []
     results_per_problem = []
-    count = 0
-    previous_name="none"
 
     # Note the CUTEst problem are assumed to be expressed in NIST format
     if group_name in ['nist', 'cutest']:
@@ -129,7 +123,7 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, min
             print("* Testing fitting of problem {0}".format(prob.name))
             logger.info("* Testing fitting of problem {0}".format(prob.name))
 
-            results_prob = do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors, count, previous_name)
+            results_prob = do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors)
             results_per_problem.extend(results_prob)
 
     elif group_name in ['neutron']:
@@ -139,13 +133,13 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, min
             print("* Testing fitting of problem {0}".format(prob.name))
             logger.info("* Testing fitting of problem {0}".format(prob.name))
 
-            results_prob = do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors, count, previous_name)
+            results_prob = do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors)
             results_per_problem.extend(results_prob)
 
     else:
         raise NameError("Please assign your problem group to a parser.")
 
-    return problems, results_per_problem
+    return results_per_problem
 
 
 def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_errors=True, count=0, previous_name="none"):
@@ -238,14 +232,20 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     @param count :: number of different starting points for one problem
     @param user_func :: fitting function
     '''
-    VDPage_dir = os.path.join(visuals_dir, "VDPages")
-    if not os.path.exists(VDPage_dir):
-            os.makedirs(VDPage_dir)
-
-    figures_dir = os.path.join(VDPage_dir, "Figures")
+    
+    support_pages_dir = os.path.join(visuals_dir, "tables", "support_pages")
+    if not os.path.exists(support_pages_dir):
+        os.makedirs(support_pages_dir)
+    figures_dir = os.path.join(support_pages_dir, "figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
 
+    if prob.name == previous_name:
+        count += 1
+    else:
+        count = 1
+        previous_name = prob.name
+        
     # remove the extension (e.g. .nxs) if there is one
     run_ID = prob.name
     k = -1
@@ -264,11 +264,6 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     data_fig.add_data(raw)
     data_fig.labels['y'] = "Arbitrary units"
     data_fig.labels['x'] = "Time ($\mu s$)"
-    if prob.name == previous_name:
-        count+=1
-    else:
-        count =1
-        previous_name = prob.name
     data_fig.labels['title'] = prob.name[:-3]+" "+str(count)
     data_fig.title_size=10
     data_fig.make_scatter_plot(figures_dir + os.sep + "Data Plot " + run_ID + " " +
@@ -291,12 +286,12 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     fig.add_data(raw)
     fig.labels['y'] = "Arbitrary units"
     fig.labels['x'] = "Time ($\mu s$)"
+
     fig.labels['title'] = prob.name[:-3]+" "+str(count)
     fig.title_size=10
     figure_name = (figures_dir + os.sep + "Fit for " + run_ID + " " +
-                            str(count) + ".png")
+                   str(count) + ".png")
     fig.make_scatter_plot(figure_name)
-
 
     fit_result = msapi.Fit(user_func, wks, Output='ws_fitting_test',
                            Minimizer='Levenberg-Marquardt',
@@ -321,7 +316,6 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     start_figure_name = (figures_dir + os.sep + "start for " + run_ID +
                          " " + str(count) + ".png")
     start_fig.make_scatter_plot(start_figure_name)
-
 
     return previous_name, count
 
