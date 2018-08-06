@@ -25,6 +25,7 @@ formats such as RST and plain text.
 from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
+import glob
 from docutils.core import publish_string
 import post_processing as postproc
 import os
@@ -162,11 +163,17 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     problem_name = commaless_problem_name.replace(' ','_')
 
     file_name = (group_name + '_' + problem_name).lower()
-    file_name = os.path.join(support_pages_dir, file_name)
+    file_path = os.path.join(support_pages_dir, file_name)
 
-    rst_file_name = file_name.replace('\\', '/')
-    rst_link = "<file:///" +'' + rst_file_name + "." + FILENAME_EXT_HTML + ">`__"
+    rst_file_path = file_path.replace('\\', '/')
+    rst_link = "<file:///" + rst_file_path + "." + FILENAME_EXT_HTML + ">`__"
 
+    # Get path to the figures
+    figures_dir = os.path.join(support_pages_dir, 'figures')
+
+    figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name + "_1" + ".png")
+    figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
+    figure_start = os.path.join(figures_dir, "start_for_" + problem_name + "_1" + ".png")
 
     # Create various page headings, ensuring the adornment is (at least) the length of the title
     title = '=' * len(gb.problem.name) + '\n'
@@ -174,27 +181,24 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     title += '=' * len(gb.problem.name) + '\n\n'
     data_plot = 'Plot of the data' + '\n'
     data_plot += ('-' * len(data_plot)) + '\n\n'
-    data_plot += '.. image:: ' + file_name + '.png' + '\n\n'
+    data_plot += '.. image:: ' + figure_data + '\n\n'
     starting_plot = 'Plot of the initial starting guess' + '\n'
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
-    starting_plot += '.. figure:: ' + '\n\n'
+    starting_plot += '.. figure:: ' + figure_start  + '\n\n'
     solution_plot = 'Plot of the solution found' + '\n'
     solution_plot += ('-' * len(solution_plot)) + '\n\n'
-    solution_plot += '.. figure:: ' + '\n\n'
-    problem = 'Fit problem' + '\n'
-    problem += ('-' * len(problem)) + '\n'
-    rst_text = title + data_plot + starting_plot + solution_plot + problem
+    solution_plot += '.. figure:: ' + figure_fit + '\n\n'
+    rst_text = title + data_plot + starting_plot + solution_plot
 
     html = publish_string(rst_text, writer_name='html')
-    with open(file_name + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
+    with open(file_path + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
         print(html, file=visual_rst)
         logger.info('Saved {file_name}.{extension} to {working_directory}'.
-                     format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=WORKING_DIR))
-
-    with open(file_name + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
+                     format(file_name=file_name, extension=FILENAME_EXT_TXT, working_directory=support_pages_dir))
+    with open(file_path + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
         logger.info('Saved {file_name}.{extension} to {working_directory}'.
-                     format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=WORKING_DIR))
+                     format(file_name=file_name, extension=FILENAME_EXT_HTML, working_directory=support_pages_dir))
 
     return rst_link
 

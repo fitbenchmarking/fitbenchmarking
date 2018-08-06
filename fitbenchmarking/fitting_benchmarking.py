@@ -97,8 +97,6 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
     return results, results_dir
 
 
-
-
 def do_fitting_benchmark_group(group_name, group_results_dir, problem_files, minimizers, use_errors=True):
     """
     Applies minimizers to a group (collection) of test problems. For example the
@@ -232,9 +230,37 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
         visuals_dir = support_pages_dir
 
     figures_dir = os.path.join(visuals_dir, "figures")
-
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
+
+    if prob.name == previous_name:
+        count+=1
+    else:
+        count =1
+        previous_name = prob.name
+    # remove the extension (e.g. .nxs) if there is one
+    run_ID = prob.name
+    k = -1
+    k = run_ID.rfind(".")
+    if k != -1:
+        run_ID = run_ID[:k]
+
+    data_fig=plot()
+    tmp=msapi.ConvertToPointData(wks)
+    xData = tmp.readX(0)
+    yData = tmp.readY(0)
+    eData = tmp.readE(0)
+    raw = data("Data",xData,yData,eData)
+    raw.showError = True
+    raw.linestyle = ''
+    data_fig.add_data(raw)
+    data_fig.labels['y'] = "Arbitrary units"
+    data_fig.labels['x'] = "Time ($\mu s$)"
+    data_fig.labels['title'] = prob.name[:-4]+" "+str(count)
+    data_fig.title_size=10
+    data_fig.make_scatter_plot(figures_dir + os.sep + "Data Plot " + run_ID + " " +
+                          str(count)+".png")
+
 
     fig=plot()
     best_fit.markers=''
@@ -252,14 +278,11 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     fig.add_data(raw)
     fig.labels['y'] = "Arbitrary units"
     fig.labels['x'] = "Time ($\mu s$)"
-    if prob.name == previous_name:
-        count+=1
-    else:
-        count =1
-        previous_name = prob.name
-
     fig.labels['title'] = prob.name[:-4]+" "+str(count)
     fig.title_size=10
+    fig.make_scatter_plot(figures_dir + os.sep + "Fit for " + run_ID + " " +
+                          str(count) + ".png")
+
 
     fit_result = msapi.Fit(user_func, wks, Output='ws_fitting_test',
                            Minimizer='Levenberg-Marquardt',
@@ -281,21 +304,10 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     start_fig.labels['y'] = "Arbitrary units"
     title = user_func[27:-1]
     title = splitByString(title,30)
-
-    # remove the extension (e.g. .nxs) if there is one
-    run_ID = prob.name
-    k = -1
-    k = run_ID.rfind(".")
-    if k != -1:
-        run_ID = run_ID[:k]
-
     start_fig.labels['title'] = run_ID+" "+str(count)+"\n"+title
     start_fig.title_size = 10
-
-    fig.make_scatter_plot(figures_dir + os.sep +
-                          "Fit for "+run_ID+" "+str(count)+".pdf")
-    start_fig.make_scatter_plot(figures_dir + os.sep +
-                                "start for " + run_ID + " " + str(count) + ".pdf")
+    start_fig.make_scatter_plot(figures_dir + os.sep + "start for " + run_ID +
+                                " " + str(count) + ".png")
 
     return previous_name, count
 
