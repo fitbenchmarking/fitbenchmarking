@@ -128,8 +128,8 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
 
         prob = test_problem.FittingTestProblem()
         prob.name = 'Misra1a'
-        prob.linked_name = ("`Misra1a.dat <http://www.itl.nist.gov/"
-                            "div898/strd/nls/data/misra1a.dat.shtml>`__")
+        prob.linked_name = ("`Misra1a <http://www.itl.nist.gov/"
+                            "div898/strd/nls/data/misra1a.shtml>`__")
         prob.equation = 'b1*(1-exp(-b2*x))'
         prob.starting_values = [['b1', [500.0,250.0]],
                                 ['b2', [0.0001,0.0005]]]
