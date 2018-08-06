@@ -54,7 +54,7 @@ WORKING_DIR = os.getcwd()
 SCRIPT_DIR = os.path.dirname(__file__)
 
 
-def print_group_results_tables(minimizers, results_per_test, problems_obj, group_name, use_errors,
+def print_group_results_tables(minimizers, results_per_test, group_name, use_errors,
                                simple_text=True, rst=False, save_to_file=False, color_scale=None,
                                results_dir=None):
 
