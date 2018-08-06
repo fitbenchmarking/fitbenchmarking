@@ -227,8 +227,8 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     '''
     if "neutron" in visuals_dir:
         support_pages_dir = os.path.join(visuals_dir, "tables", "support_pages")
-        if not os.path.exists(VDPage_dir):
-            os.makedirs(VDPage_dir)
+        if not os.path.exists(support_pages_dir):
+            os.makedirs(support_pages_dir)
         visuals_dir = support_pages_dir
 
     figures_dir = os.path.join(visuals_dir, "figures")
