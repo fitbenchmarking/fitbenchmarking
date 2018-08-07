@@ -10,8 +10,7 @@ parent_dir = os.path.dirname(os.path.normpath(test_dir))
 sys.path.insert(0, parent_dir)
 
 from fitting_benchmarking import get_nist_problem_files
-from fitting_benchmarking import get_data_groups
-from fitting_benchmarking import get_data_group_problem_files
+from fitting_benchmarking import get_neutron_problem_files
 # from fitting_benchmarking import get_muon_problem_files
 # from fitting_benchmarking import get_cutest_problem_files
 
@@ -75,34 +74,22 @@ class GetProblemFilesTest(unittest.TestCase):
                              paths_to_nist_problems)
 
 
-    def test_getDataGroups_return_expected_neutron_paths(self):
-
-        base_path_neutron = [os.path.join(self.basePath(),'Neutron_data')]
-        neutron_problems = self.neutronProblems()
-
-        paths_to_neutron_problems = get_data_groups(base_path_neutron)[0]
-        # Please see the above for loop comments for a description of this one
-        paths_to_neutron_problems_expected = []
-        for neutron_level_group in neutron_problems:
-            paths_to_level_group = [os.path.join(base_path_neutron[0],neutron_prob_name)
-                                    for neutron_prob_name in neutron_level_group]
-            paths_to_neutron_problems_expected.append(paths_to_level_group)
-
-        self.assertListEqual(paths_to_neutron_problems_expected[0],
-                             paths_to_neutron_problems)
-
-
-    def test_getDataGroupProblemFiles_return_expected_neutron_paths(self):
+    def test_getNeutronProblemFiles_return_expected_neutron_paths(self):
 
         base_path_neutron = os.path.join(self.basePath(),'Neutron_data')
         neutron_problems = self.neutronProblems()
 
-        paths_to_neutron_problems = get_data_group_problem_files(base_path_neutron)
+        paths_to_neutron_problems = \
+        get_neutron_problem_files(base_path_neutron)[0]
+        # Please see the above for loop comments for a description of this one
         paths_to_neutron_problems_expected = []
-        for idx, problem in enumerate(neutron_problems[0]):
-            paths_to_neutron_problems_expected.append(os.path.join(base_path_neutron, problem))
+        for neutron_level_group in neutron_problems:
+            paths_to_level_group = \
+            [os.path.join(base_path_neutron,neutron_prob_name)
+             for neutron_prob_name in neutron_level_group]
+            paths_to_neutron_problems_expected.append(paths_to_level_group)
 
-        self.assertListEqual(paths_to_neutron_problems_expected,
+        self.assertListEqual(paths_to_neutron_problems_expected[0],
                              paths_to_neutron_problems)
 
 

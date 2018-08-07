@@ -32,9 +32,6 @@ from docutils.core import publish_string
 import post_processing as postproc
 from logging_setup import logger
 
-import logging
-from logging_setup import logger
-
 # Some naming conventions for the output files
 BENCHMARK_VERSION_STR = 'v3.8'
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -226,7 +223,7 @@ def build_visual_display_page(prob_results, group_name, results_dir, count):
 
     # Get the best result for a group
     gb = min((result for result in prob_results),
-             key=lambda result: result.fit_chi_sq)
+             key=lambda result: result.chi_sq)
 
     # Remove commas and replace space with underscore in problem name
     problem_name = gb.problem.name.replace(',', '')
@@ -351,6 +348,7 @@ def save_VDpages(rst_text, prob_name, file_path):
         logger.info('Saved {prob_name}.{extension} to {working_directory}'.
                      format(prob_name=prob_name, extension=FILENAME_EXT_HTML,
                             working_directory=file_path))
+
 
 def fit_details_rst_table(functions_str):
     """
@@ -730,8 +728,6 @@ def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
     logger.info('Saved {file_name}{extension} to {working_directory}'.
                  format(file_name=file_name, extension=file_extension,
                         working_directory=results_dir))
-
-
 
 
 def weighted_suffix_string(use_errors):
