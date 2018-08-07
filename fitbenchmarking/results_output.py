@@ -96,7 +96,7 @@ def save_results_tables(minimizers, results_per_test, group_name,
 
     save_tables(tables_dir, tbl_acc_indiv, use_errors, group_name,
                 FILENAME_SUFFIX_RUNTIME)
-    
+
     logging.shutdown()
 
 
@@ -104,7 +104,7 @@ def save_tables(tables_dir, table_data, use_errors, group_name, metric):
     """
     Helper function that saves rst tables in all the formats available
     """
-    
+
     save_table_to_file(results_dir=tables_dir, table_data=table_data,
                        errors=use_errors, group_name=group_name,
                        metric_type=metric,
@@ -152,24 +152,26 @@ def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
     Helper function that sets up the directory, function details table
     and see also link for the NIST data
     """
-    VDPages_dir = os.path.join(results_dir, "nist", "VDPages")
+    support_pages_dir = os.path.join(results_dir, "nist", "tables",
+                                     "support_pages")
     details_table = fit_details_rst_table(function_def)
     see_also_link = 'See also:\n ' + linked_name + \
                     '\n on NIST website\n\n'
 
-    return VDPages_dir, details_table, see_also_link
-  
+    return support_pages_dir, details_table, see_also_link
+
 
 def setup_neutron_VDpage_misc(function_def, results_dir):
     """
     Helper function that sets up the directory, function details table
     and see also link for the NEUTRON data
     """
-    VDPages_dir = os.path.join(results_dir, "neutron", "VDPages")
+    support_pages_dir = os.path.join(results_dir, "neutron", "tables",
+                                     "support_pages")
     details_table = fit_details_rst_table(function_def)
     see_also_link = ''
 
-    return VDPages_dir, details_table, see_also_link
+    return support_pages_dir, details_table, see_also_link
 
 
 def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir):
@@ -178,23 +180,24 @@ def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir):
     """
     # Group specific path and other misc stuff
     if 'nist' in group_name:
-        VDPages_dir, fit_function_details_table, see_also_link = \
+        support_pages_dir, fit_function_details_table, see_also_link = \
         setup_nist_VDpage_misc(res_obj.problem.linked_name,
                                res_obj.function_def,
                                results_dir)
     elif 'neutron' in group_name:
-        VDPages_dir, fit_function_details_table, see_also_link = \
+        support_pages_dir, fit_function_details_table, see_also_link = \
         setup_neutron_VDpage_misc(res_obj.function_def, results_dir)
 
     file_name = (group_name + '_' + problem_name).lower()
-    file_path = os.path.join(VDPages_dir, file_name)
+    file_path = os.path.join(support_pages_dir, file_name)
 
-    return VDPages_dir, file_path, fit_function_details_table, see_also_link
+    return (support_pages_dir, file_path, fit_function_details_table,
+            see_also_link)
 
 
-def get_figures_path(VDPages_dir, problem_name):
+def get_figures_path(support_pages_dir, problem_name):
 
-    figures_dir = os.path.join(VDPages_dir, 'Figures')
+    figures_dir = os.path.join(support_pages_dir, "figures")
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name +
                                "_1" + ".png")
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name +
@@ -228,7 +231,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     problem_name = problem_name.replace(' ','_')
 
     # Set up miscellaneous stuff and generate rst_link
-    VDPages_dir, file_path, fit_function_details_table, see_also_link = \
+    support_pages_dir, file_path, fit_function_details_table, see_also_link = \
     setup_VDpage_misc(group_name, problem_name, gb, results_dir)
 
     rst_file_path = file_path.replace('\\', '/')
@@ -237,7 +240,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
 
     # Get paths to figures
     figure_data, figure_fit, figure_start = \
-    get_figures_path(VDPages_dir, problem_name)
+    get_figures_path(support_pages_dir, problem_name)
 
     # Create and save rst page
     rst_text = create_rst_page(gb.problem.name, figure_data, figure_start,
@@ -272,7 +275,7 @@ def generate_rst_data_plot(figure_data):
     data_plot += '*Plot of the data considered in the problem*\n\n'
     data_plot += ('.. image:: ' + figure_data + '\n' +
                   '   :align: center' + '\n\n')
-    
+
     return data_plot
 
 
@@ -283,7 +286,6 @@ def generate_rst_starting_plot(figure_start):
     """
     starting_plot = 'Plot of the initial starting guess' + '\n'
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
-    starting_plot += '*Minimizer*: Levenberg-Marquardt \n\n'
     starting_plot += ('.. figure:: ' + figure_start  + '\n' +
                       '   :align: center' + '\n\n')
 
@@ -355,7 +357,7 @@ def fit_details_rst_table(functions_str):
     functions = functions_str.split(';')
     func_names = []
     func_params = []
-    
+
     for function in functions:
 
         # If string contains UserFunction then it means it is a nist problem

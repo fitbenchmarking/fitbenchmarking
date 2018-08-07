@@ -75,7 +75,7 @@ def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
 
     return prob_results, results_dir
 
-  
+
 def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
                                minimizers, use_errors=True):
     """
@@ -155,7 +155,7 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
                  best_fit) = calculate_chi_sq(fit_wks, min_chi_sq, best_fit,
                                               minimizer_name)
                 runtime = t_end - t_start
-                
+
             result = test_result.FittingTestResult()
             result.problem = prob
             result.fit_status = status
@@ -166,7 +166,7 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
             result.minimizer = minimizer_name
             result.function_def = fit_function
             results_problem.append(result)
-           
+
             logger.info("*** Using minimizer {0}, Status: {1}".
                         format(minimizer_name, status))
 
@@ -221,10 +221,10 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count,
     """
 
     # Set up the directories to organise the figures in
-    VDPage_dir = os.path.join(visuals_dir, "VDPages")
-    if not os.path.exists(VDPage_dir):
-            os.makedirs(VDPage_dir)
-    figures_dir = os.path.join(VDPage_dir, "Figures")
+    support_pages_dir = os.path.join(visuals_dir, "tables", "support_pages")
+    if not os.path.exists(support_pages_dir):
+            os.makedirs(support_pages_dir)
+    figures_dir = os.path.join(support_pages_dir, "figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
 
@@ -344,7 +344,7 @@ def make_starting_guess_plot(raw_data, fit_function, wks, prob, count,
                          " " + str(count) + ".png")
     start_fig.make_scatter_plot(start_figure_name)
 
-    
+
 def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt',
             cost_function='Least squares'):
     """
@@ -523,10 +523,10 @@ def parse_problem_file(group_name, prob_file):
 
     print("* Testing fitting of problem {0}".format(prob.name))
     logger.info("* Testing fitting of problem {0}".format(prob.name))
-    
+
     return prob
-  
-  
+
+
 def empty_contents_of_folder(directory):
     """
     Deletes everything in the directory given by directory.
@@ -566,13 +566,13 @@ def setup_results_dir(results_dir):
     @param results_dir :: name (or path) of the results directory.
     """
 
-    current_dir = os.path.dirname(os.path.realpath(__file__))
+    working_dir = os.getcwd()
     if results_dir is None:
-        results_dir = os.path.join(current_dir, "results")
+        results_dir = os.path.join(working_dir, "results")
     elif not isinstance(results_dir, str):
         TypeError("results_dir must be a string!")
     elif not os.sep in results_dir:
-        results_dir = os.path.join(current_dir, results_dir)
+        results_dir = os.path.join(working_dir, results_dir)
     else:
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
