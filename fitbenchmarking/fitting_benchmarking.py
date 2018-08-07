@@ -93,7 +93,7 @@ def do_fitting_benchmark(nist_group_dir=None, cutest_group_dir=None, neutron_dat
                                                   problem_block, minimizers,
                                                   use_errors=use_errors)
                    for problem_block in problem_groups[group_name]]
-
+        
     return results, results_dir
 
 
@@ -181,6 +181,8 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_er
             logger.info("*** Using minimizer {0}, Status: {1}".format(minimizer_name, status))
 
             chi_sq = -1
+            best_minimizer = None
+            function_def = None
             if not status == 'failed':
 
                 if fit_wks:
@@ -189,6 +191,8 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_er
                         tmp = msapi.ConvertToPointData(fit_wks)
                         best_fit = data(minimizer_name,tmp.readX(1),tmp.readY(1))
                         min_chi_sq = chi_sq
+                        best_minimizer = minimizer_name
+                        function_def = user_func
                 else:
                     chi_sq = float("nan")
                     logger.warning(" No output fit workspace")
@@ -201,6 +205,11 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers, use_er
             result.errors = errors
             result.chi_sq = chi_sq if not chi_sq == -1 else np.nan
             result.runtime = t_end - t_start if not np.isnan(chi_sq) else np.nan
+            result.best_minimizer = best_minimizer
+            result.function_def = function_def
+
+            print("Result object: {0}".format(result))
+
             results_problem_start.append(result)
 
         results_fit_problem.append(results_problem_start)
@@ -223,21 +232,20 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     @param count :: number of different starting points for one problem
     @param user_func :: fitting function
     '''
-    if "neutron" in visuals_dir:
-        support_pages_dir = os.path.join(visuals_dir, "tables", "support_pages")
-        if not os.path.exists(support_pages_dir):
-            os.makedirs(support_pages_dir)
-        visuals_dir = support_pages_dir
-
-    figures_dir = os.path.join(visuals_dir, "figures")
+    
+    support_pages_dir = os.path.join(visuals_dir, "tables", "support_pages")
+    if not os.path.exists(support_pages_dir):
+        os.makedirs(support_pages_dir)
+    figures_dir = os.path.join(support_pages_dir, "figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
 
     if prob.name == previous_name:
-        count+=1
+        count += 1
     else:
-        count =1
+        count = 1
         previous_name = prob.name
+        
     # remove the extension (e.g. .nxs) if there is one
     run_ID = prob.name
     k = -1
@@ -256,7 +264,7 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     data_fig.add_data(raw)
     data_fig.labels['y'] = "Arbitrary units"
     data_fig.labels['x'] = "Time ($\mu s$)"
-    data_fig.labels['title'] = prob.name[:-4]+" "+str(count)
+    data_fig.labels['title'] = prob.name[:-3]+" "+str(count)
     data_fig.title_size=10
     data_fig.make_scatter_plot(figures_dir + os.sep + "Data Plot " + run_ID + " " +
                           str(count)+".png")
@@ -278,11 +286,12 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     fig.add_data(raw)
     fig.labels['y'] = "Arbitrary units"
     fig.labels['x'] = "Time ($\mu s$)"
-    fig.labels['title'] = prob.name[:-4]+" "+str(count)
-    fig.title_size=10
-    fig.make_scatter_plot(figures_dir + os.sep + "Fit for " + run_ID + " " +
-                          str(count) + ".png")
 
+    fig.labels['title'] = prob.name[:-3]+" "+str(count)
+    fig.title_size=10
+    figure_name = (figures_dir + os.sep + "Fit for " + run_ID + " " +
+                   str(count) + ".png")
+    fig.make_scatter_plot(figure_name)
 
     fit_result = msapi.Fit(user_func, wks, Output='ws_fitting_test',
                            Minimizer='Levenberg-Marquardt',
@@ -302,12 +311,11 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count, user_func
     start_fig.add_data(startData)
     start_fig.labels['x'] = "Time ($\mu s$)"
     start_fig.labels['y'] = "Arbitrary units"
-    title = user_func[27:-1]
-    title = splitByString(title,30)
-    start_fig.labels['title'] = run_ID+" "+str(count)+"\n"+title
+    start_fig.labels['title'] = prob.name[:-3]+" "+str(count)
     start_fig.title_size = 10
-    start_fig.make_scatter_plot(figures_dir + os.sep + "start for " + run_ID +
-                                " " + str(count) + ".png")
+    start_figure_name = (figures_dir + os.sep + "start for " + run_ID +
+                         " " + str(count) + ".png")
+    start_fig.make_scatter_plot(start_figure_name)
 
     return previous_name, count
 
@@ -393,39 +401,6 @@ def calculate_chi_sq(values):
         between the actual data points and the data points of the fit '''
 
     return np.sum(np.square(values))
-
-
-def splitByString(name,min_length,loop=0,splitter=0):
-    """
-    A simple function for splitting via characters in a long string
-    @param name :: input string
-    @param min_length :: minimum length of a linestyle
-    @param loop :: number of time cycled through the split options
-    @param splitter :: index of which split pattern to use
-    @returns :: the split string
-    """
-
-    tmp = name[min_length:]
-    split_at=[";","+",","]
-
-    if splitter+1 >len(split_at):
-        if loop>3:
-            print ("failed ",name)
-            logger.error("failed in splitByString function", name)
-            return "..."
-        else:
-            return splitByString(name,min_length,loop+1)
-
-    loc=tmp.find(split_at[splitter])+min_length
-
-    if loc ==-1+min_length or loc > min_length*2:
-        if len(tmp)>min_length:
-            return splitByString(name,min_length,loop,splitter+1)
-        return name
-    else:
-        tmp = splitByString(name[loc+1:],min_length,loop,splitter)
-        title=name[:loc+1]+"\n"+tmp
-        return title
 
 
 def get_function_definitions(prob):

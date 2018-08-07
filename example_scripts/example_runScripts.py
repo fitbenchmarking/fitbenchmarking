@@ -57,7 +57,6 @@ for run_data in ["neutron", "nist"]:
                                                          minimizers=minimizers, use_errors=use_errors,
                                                          results_dir=results_dir)
 
-
     elif run_data == "nist":
         group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
                        'NIST, "higher" difficulty']
