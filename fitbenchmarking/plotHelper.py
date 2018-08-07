@@ -73,11 +73,10 @@ class data:
 
 class plot(data):
     """
-    Minimal information for a plot
+    Class that holds all information required for a data plot.
     """
     def __init__(self):
         self.logs= {'x':False,'y':False}
-        #make this a list later
         self.data = []
         self.labels = {'x':"xlabel", 'y':'ylabel', "title":"title"}
         self.xrange = {'start':0.0, 'end':0.0}
