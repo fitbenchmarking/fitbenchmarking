@@ -114,7 +114,6 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
     """
     One problem with potentially several starting points, returns a list
     (start points) of lists (minimizers).
-
     @param prob :: fitting problem
     @param group_results_dir :: directory of results for the teste group
     @param minimizers :: list of minimizers to evaluate/compare
@@ -224,7 +223,7 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count,
     """
 
     # Set up the directories to organise the figures in
-    support_pages_dir = os.path.join(visuals_dir, "support_pages_dir")
+    support_pages_dir = os.path.join(visuals_dir, "tables", "support_pages")
     if not os.path.exists(support_pages_dir):
             os.makedirs(support_pages_dir)
     figures_dir = os.path.join(support_pages_dir, "figures")

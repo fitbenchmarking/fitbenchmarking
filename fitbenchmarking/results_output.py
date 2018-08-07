@@ -155,8 +155,8 @@ def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
     Helper function that sets up the directory, function details table
     and see also link for the NIST data
     """
-    support_pages_dir = os.path.join(results_dir, "nist", "tables"
-                                     "support_pages_dir")
+    support_pages_dir = os.path.join(results_dir, "nist", "tables",
+                                     "support_pages")
     details_table = fit_details_rst_table(function_def)
     see_also_link = 'See also:\n ' + linked_name + \
                     '\n on NIST website\n\n'
@@ -170,7 +170,7 @@ def setup_neutron_VDpage_misc(function_def, results_dir):
     and see also link for the NEUTRON data
     """
     support_pages_dir = os.path.join(results_dir, "neutron", "tables",
-                                     "support_pages_dir")
+                                     "support_pages")
     details_table = fit_details_rst_table(function_def)
     see_also_link = ''
 
