@@ -150,11 +150,11 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     gb = min((result for result in prob_results), key=lambda result: result.fit_chi_sq)
     commaless_problem_name = gb.problem.name.replace(',', '')
     problem_name = commaless_problem_name.replace(' ','_')
-    
+
     # Group specific paths and other misc stuff
     support_pages_dir = None
     if 'nist' in group_name:
-        suppport_pages_dir = os.path.join(results_dir, "nist", "tables", "support_pages")
+        support_pages_dir = os.path.join(results_dir, "nist", "tables", "support_pages")
         fit_function_details_table = fit_rst_table_nist(gb.function_def)
         see_also_link = 'See also:\n ' + gb.problem.linked_name + '\n on NIST website\n\n'
         problem_name = problem_name.split('.')[0]
@@ -173,7 +173,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name + "_1" + ".png")
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
     figure_start = os.path.join(figures_dir, "start_for_" + problem_name + "_1" + ".png")
-    
+
     # Windows requires the prefix 'file:///' to be able to find and open the figures
     if os.name == 'nt':
         figure_data = 'file:///' + figure_data
@@ -221,7 +221,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
 
     return rst_link
 
-  
+
 def fit_rst_table_neutron(functions):
 
     functions = functions.split(';')
