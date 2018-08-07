@@ -255,6 +255,8 @@ class ResultsOutputTests(unittest.TestCase):
         dump_dir = self.DumpDir()
         results_per_test = self.SetupNISTResults()
         group_name = 'nist_lower'
+        aux_dir = os.path.join(dump_dir, "nist", "VDPages")
+        os.makedirs(aux_dir)
 
         linked_problems = \
         build_indiv_linked_problems(results_per_test, group_name, dump_dir)
