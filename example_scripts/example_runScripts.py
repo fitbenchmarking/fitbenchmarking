@@ -77,7 +77,6 @@ for run_data in ["neutron", "nist"]:
     if run_data == "neutron":
         group_suffix_names = ['neutron_data']
         group_names = ["Neutron data"]
-
         results_per_group, results_dir = \
         fitBenchmarking(data_dir=neutron_data_dir,
                         minimizers=minimizers,

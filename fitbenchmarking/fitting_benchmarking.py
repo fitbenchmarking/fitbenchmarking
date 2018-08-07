@@ -78,7 +78,6 @@ def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
 
 def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
                                minimizers, use_errors=True):
-
     """
     Applies minimizers to a group (collection) of test problems.
     For example the collection of all NIST problems
@@ -172,12 +171,12 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
                         format(minimizer_name, status))
 
         results_fit_problem.append(results_problem)
-
+        
         if not best_fit is None:
             previous_name, count = make_plots(prob, group_results_dir, best_fit,
                                               wks, previous_name, count,
                                               fit_function)
-
+            
     return results_fit_problem
 
 
@@ -224,10 +223,11 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count,
     """
 
     # Set up the directories to organise the figures in
-    VDPage_dir = os.path.join(visuals_dir, "VDPages")
-    if not os.path.exists(VDPage_dir):
-            os.makedirs(VDPage_dir)
-    figures_dir = os.path.join(VDPage_dir, "Figures")
+
+    support_pages_dir = os.path.join(visuals_dir, "tables", "support_pages")
+    if not os.path.exists(support_pages_dir):
+            os.makedirs(support_pages_dir)
+    figures_dir = os.path.join(support_pages_dir, "figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
 
@@ -292,8 +292,7 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     @param count :: the starting point number
     @param figures_dir :: directory that holds the figures
     """
-
-
+    
     fig=plot()
     fig.add_data(raw_data)
     best_fit.markers=''
@@ -394,6 +393,7 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt',
 
     if fit_result is None:
         return 'failed', None, None, None
+
     else:
         param_tbl = fit_result.OutputParameters
         if param_tbl:

@@ -41,7 +41,6 @@ def load_nist_fitting_problem_file(problem_filename):
     """
 
     with open(problem_filename) as spec_file:
-
         logger.info("*** Loading NIST data file {0} ***".
                     format(os.path.basename(spec_file.name)))
 
@@ -66,7 +65,7 @@ def load_nist_fitting_problem_file(problem_filename):
 
     return prob
 
-
+  
 def parse_nist_file_line_by_line(lines):
     """
     Get several relevant pieces of information from the lines of a
@@ -126,7 +125,6 @@ def get_nist_model(lines, idx):
         logger.error("Could not find equation, index went out of bounds!")
         idxerr = True
 
-
     # Next non-empty lines are assumed to continue the equation
     equation_text = ''
     if idxerr is False:
@@ -139,7 +137,7 @@ def get_nist_model(lines, idx):
 
     return equation_text, idx
 
-
+  
 def get_nist_starting_values(lines, idx):
     """
     Helper function that gets the starting values in a nist file.
@@ -151,6 +149,7 @@ def get_nist_starting_values(lines, idx):
     idx += len(starting_values)
 
     return starting_values, idx
+
 
 
 def get_data_pattern_txt(lines, idx):
