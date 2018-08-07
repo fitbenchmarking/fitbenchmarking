@@ -224,10 +224,10 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count,
     """
 
     # Set up the directories to organise the figures in
-    VDPage_dir = os.path.join(visuals_dir, "VDPages")
-    if not os.path.exists(VDPage_dir):
-            os.makedirs(VDPage_dir)
-    figures_dir = os.path.join(VDPage_dir, "Figures")
+    support_pages_dir = os.path.join(visuals_dir, "support_pages_dir")
+    if not os.path.exists(support_pages_dir):
+            os.makedirs(support_pages_dir)
+    figures_dir = os.path.join(support_pages_dir, "figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
 

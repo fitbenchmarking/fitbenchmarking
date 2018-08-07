@@ -155,12 +155,13 @@ def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
     Helper function that sets up the directory, function details table
     and see also link for the NIST data
     """
-    VDPages_dir = os.path.join(results_dir, "nist", "VDPages")
+    support_pages_dir = os.path.join(results_dir, "nist", "tables"
+                                     "support_pages_dir")
     details_table = fit_details_rst_table(function_def)
     see_also_link = 'See also:\n ' + linked_name + \
                     '\n on NIST website\n\n'
 
-    return VDPages_dir, details_table, see_also_link
+    return support_pages_dir, details_table, see_also_link
 
 
 def setup_neutron_VDpage_misc(function_def, results_dir):
@@ -168,11 +169,12 @@ def setup_neutron_VDpage_misc(function_def, results_dir):
     Helper function that sets up the directory, function details table
     and see also link for the NEUTRON data
     """
-    VDPages_dir = os.path.join(results_dir, "neutron", "VDPages")
+    support_pages_dir = os.path.join(results_dir, "neutron", "tables",
+                                     "support_pages_dir")
     details_table = fit_details_rst_table(function_def)
     see_also_link = ''
 
-    return VDPages_dir, details_table, see_also_link
+    return support_pages_dir, details_table, see_also_link
 
 
 def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir, count):
@@ -181,23 +183,23 @@ def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir, count):
     """
     # Group specific path and other misc stuff
     if 'nist' in group_name:
-        VDPages_dir, fit_function_details_table, see_also_link = \
+        support_pages_dir, fit_function_details_table, see_also_link = \
         setup_nist_VDpage_misc(res_obj.problem.linked_name,
                                res_obj.function_def,
                                results_dir)
     elif 'neutron' in group_name:
-        VDPages_dir, fit_function_details_table, see_also_link = \
+        support_pages_dir, fit_function_details_table, see_also_link = \
         setup_neutron_VDpage_misc(res_obj.function_def, results_dir)
 
     file_name = (group_name + '_' + problem_name + '_' + str(count)).lower()
-    file_path = os.path.join(VDPages_dir, file_name)
+    file_path = os.path.join(support_pages_dir, file_name)
 
-    return VDPages_dir, file_path, fit_function_details_table, see_also_link
+    return support_pages_dir, file_path, fit_function_details_table, see_also_link
 
 
-def get_figures_path(VDPages_dir, problem_name, count):
+def get_figures_path(support_pages_dir, problem_name, count):
 
-    figures_dir = os.path.join(VDPages_dir, 'Figures')
+    figures_dir = os.path.join(support_pages_dir, "figures")
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name +
                                "_" + str(count) + ".png")
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name +
@@ -230,7 +232,7 @@ def build_visual_display_page(prob_results, group_name, results_dir, count):
     problem_name = problem_name.replace(' ','_')
 
     # Set up miscellaneous stuff and generate rst_link
-    VDPages_dir, file_path, fit_function_details_table, see_also_link = \
+    support_pages_dir, file_path, fit_function_details_table, see_also_link = \
     setup_VDpage_misc(group_name, problem_name, gb, results_dir, count)
 
     rst_file_path = file_path.replace('\\', '/')
@@ -239,7 +241,7 @@ def build_visual_display_page(prob_results, group_name, results_dir, count):
 
     # Get paths to figures
     figure_data, figure_fit, figure_start = \
-    get_figures_path(VDPages_dir, problem_name, count)
+    get_figures_path(support_pages_dir, problem_name, count)
 
     # Create and save rst page
     rst_text = create_rst_page(gb.problem.name, figure_data, figure_start,
