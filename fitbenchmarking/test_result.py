@@ -39,5 +39,5 @@ class FittingTestResult(object):
         self.runtime = None
 
         # Best minimizer for a certain problem and its function definition
-        self.best_minimizer = None
+        self.minimizer = None
         self.function_def = None
