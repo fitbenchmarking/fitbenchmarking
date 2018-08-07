@@ -279,21 +279,22 @@ def generate_rst_data_plot(figure_data):
     return data_plot
 
 
-def generate_rst_starting_plot(figure_start):
+def generate_rst_starting_plot(figure_start, fit_function_details_table):
     """
     Helper function that generates an rst figure of the starting guess plot
     png image contained at path figure_start.
     """
     starting_plot = 'Plot of the initial starting guess' + '\n'
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
+    starting_plot += '*Functions*:\n\n'
+    starting_plot += fit_function_details_table
     starting_plot += ('.. figure:: ' + figure_start  + '\n' +
                       '   :align: center' + '\n\n')
 
     return starting_plot
 
 
-def generate_rst_solution_plot(figure_fit, fit_function_details_table,
-                               minimizer):
+def generate_rst_solution_plot(figure_fit, minimizer):
     """
     Helper function that generates an rst figure of the fitted problem
     png image contained at path figure_fit.
@@ -302,8 +303,6 @@ def generate_rst_solution_plot(figure_fit, fit_function_details_table,
     solution_plot = 'Plot of the solution found' + '\n'
     solution_plot += ('-' * len(solution_plot)) + '\n\n'
     solution_plot += '*Minimizer*: ' + minimizer + '\n\n'
-    solution_plot += '*Functions*:\n\n'
-    solution_plot += fit_function_details_table
     solution_plot += ('.. figure:: ' + figure_fit + '\n' +
                       '   :align: center' + '\n\n')
 
@@ -320,9 +319,8 @@ def create_rst_page(name, figure_data, figure_start, figure_fit, details_table,
     space = "|\n|\n|\n\n"
     title = generate_rst_title(name)
     data_plot = generate_rst_data_plot(figure_data)
-    starting_plot = generate_rst_starting_plot(figure_start)
-    solution_plot = generate_rst_solution_plot(figure_fit, details_table,
-                                               minimizer)
+    starting_plot = generate_rst_starting_plot(figure_start, details_table)
+    solution_plot = generate_rst_solution_plot(figure_fit, minimizer)
 
     rst_text = title + space + data_plot + starting_plot + solution_plot + \
                space + see_also_link
@@ -404,7 +402,7 @@ def parse_neutron_function_def(function, function_names, function_parameters):
         function_parameters.append(function[first_comma+1:])
     else:
         function_names.append(function[5:])
-        function_parameters.append('None')
+        function_parameters.append('Use default parameter values')
 
     for idx in range(0, len(function_parameters)):
         function_parameters[idx] = function_parameters[idx].replace(',', ', ')
