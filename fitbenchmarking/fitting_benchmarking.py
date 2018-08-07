@@ -38,9 +38,6 @@ import test_result
 from plotHelper import *
 from logging_setup import logger
 
-from logging_setup import logger
-
-from plotHelper import *
 
 def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
                          results_dir=None):
@@ -293,7 +290,6 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     @param figures_dir :: directory that holds the figures
     """
 
-
     fig=plot()
     fig.add_data(raw_data)
     best_fit.markers=''
@@ -348,7 +344,7 @@ def make_starting_guess_plot(raw_data, fit_function, wks, prob, count,
                          " " + str(count) + ".png")
     start_fig.make_scatter_plot(start_figure_name)
 
-
+    
 def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt',
             cost_function='Least squares'):
     """
@@ -432,7 +428,7 @@ def prepare_wks_cost_function(prob, use_errors):
 
     return wks, cost_function
 
-  
+
 def get_function_definitions(prob):
     """
     Produces function definition strings (as a full definition in

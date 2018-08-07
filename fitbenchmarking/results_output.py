@@ -32,9 +32,6 @@ from docutils.core import publish_string
 import post_processing as postproc
 from logging_setup import logger
 
-import logging
-from logging_setup import logger
-
 # Some naming conventions for the output files
 BENCHMARK_VERSION_STR = 'v3.8'
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -48,7 +45,6 @@ SCRIPT_DIR = os.path.dirname(__file__)
 
 def save_results_tables(minimizers, results_per_test, group_name,
                         use_errors, color_scale=None, results_dir=None):
-
     """
     Prints out results for a group of fit problems in accuracy and runtime
     tables as a text file or html file, in rst format.
@@ -71,7 +67,6 @@ def save_results_tables(minimizers, results_per_test, group_name,
                           (5 at the moment).
     @param results_dir :: directory where all the results are stored
     """
-
 
     tables_dir = make_result_tables_directory(results_dir, group_name)
     linked_problems = build_indiv_linked_problems(results_per_test, group_name,
@@ -101,7 +96,7 @@ def save_results_tables(minimizers, results_per_test, group_name,
 
     save_tables(tables_dir, tbl_acc_indiv, use_errors, group_name,
                 FILENAME_SUFFIX_RUNTIME)
-
+    
     logging.shutdown()
 
 
@@ -118,6 +113,7 @@ def save_tables(tables_dir, table_data, use_errors, group_name, metric):
                        errors=use_errors, group_name=group_name,
                        metric_type=metric,
                        file_extension=FILENAME_EXT_HTML)
+
 
 
 def build_indiv_linked_problems(results_per_test, group_name, results_dir):
@@ -162,7 +158,7 @@ def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
                     '\n on NIST website\n\n'
 
     return VDPages_dir, details_table, see_also_link
-
+  
 
 def setup_neutron_VDpage_misc(function_def, results_dir):
     """
@@ -213,6 +209,7 @@ def get_figures_path(VDPages_dir, problem_name):
         figure_start = 'file:///' + figure_start
 
     return figure_data, figure_fit, figure_start
+
 
 
 def build_visual_display_page(prob_results, group_name, results_dir):
@@ -275,7 +272,7 @@ def generate_rst_data_plot(figure_data):
     data_plot += '*Plot of the data considered in the problem*\n\n'
     data_plot += ('.. image:: ' + figure_data + '\n' +
                   '   :align: center' + '\n\n')
-
+    
     return data_plot
 
 
@@ -358,7 +355,7 @@ def fit_details_rst_table(functions_str):
     functions = functions_str.split(';')
     func_names = []
     func_params = []
-
+    
     for function in functions:
 
         # If string contains UserFunction then it means it is a nist problem
@@ -742,6 +739,7 @@ def weighted_suffix_string(use_errors):
 
 
 def make_result_tables_directory(results_dir, group_name):
+
     """
     Creates the results directory where the tables are located.
     e.g. fitbenchmarking/results/neutron/Tables/
@@ -751,13 +749,15 @@ def make_result_tables_directory(results_dir, group_name):
         group_results_dir = os.path.join(results_dir, 'nist')
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
-        tables_dir = os.path.join(group_results_dir, "Tables", group_name)
+        tables_dir = os.path.join(group_results_dir, "tables", group_name)
+
 
     elif 'neutron' in group_name:
         group_results_dir = os.path.join(results_dir, 'neutron')
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
-        tables_dir = os.path.join(group_results_dir, "Tables")
+        tables_dir = os.path.join(group_results_dir, "tables")
+
 
     if not os.path.exists(tables_dir):
         os.makedirs(tables_dir)
