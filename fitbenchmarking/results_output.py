@@ -174,6 +174,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name + "_1" + ".png")
     figure_start = os.path.join(figures_dir, "start_for_" + problem_name + "_1" + ".png")
     
+    # Windows requires the prefix 'file:///' to be able to find and open the figures
     if os.name == 'nt':
         figure_data = 'file:///' + figure_data
         figure_fit = 'file:///' + figure_fit
