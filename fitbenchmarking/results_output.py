@@ -346,6 +346,7 @@ def save_VDpages(rst_text, prob_name, file_path):
                      format(prob_name=prob_name, extension=FILENAME_EXT_HTML,
                             working_directory=file_path))
 
+
 def fit_details_rst_table(functions_str):
     """
     Builds an rst table containing the functional form and the parameters

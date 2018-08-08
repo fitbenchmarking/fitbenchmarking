@@ -119,11 +119,13 @@ def get_nist_model(lines, idx):
         while (not re.match(r'\s*y\s*=(.+)', lines[idx])
                and not re.match(r'\s*log\[y\]\s*=(.+)', lines[idx]))\
                and idx < len(lines):
-
-                idx += 1
+               
+            idx += 1
+            
     except IndexError as err:
         logger.error("Could not find equation, index went out of bounds!")
         idxerr = True
+
 
     # Next non-empty lines are assumed to continue the equation
     equation_text = ''
@@ -149,7 +151,6 @@ def get_nist_starting_values(lines, idx):
     idx += len(starting_values)
 
     return starting_values, idx
-
 
 
 def get_data_pattern_txt(lines, idx):

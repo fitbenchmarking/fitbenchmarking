@@ -98,8 +98,8 @@ class LoadAndParseNistFiles(unittest.TestCase):
         prob.equation = 'b1*(1-exp(-b2*x))'
         prob.starting_values = [['b1', [500.0,250.0]],
                                 ['b2', [0.0001,0.0005]]]
-        prob.data_y = data_pattern[:, 1]
-        prob.data_x = data_pattern[:, 0]
+        prob.data_x = data_pattern[:, 1]
+        prob.data_y = data_pattern[:, 0]
         prob.ref_residual_sum_sq = 1.2455138894E-01
 
         return prob
