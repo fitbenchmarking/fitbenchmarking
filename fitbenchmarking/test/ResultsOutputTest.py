@@ -42,6 +42,14 @@ class ResultsOutputTests(unittest.TestCase):
         return dump_dir
 
 
+    def getRSTcurrentDir(self):
+
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        current_dir = current_dir.replace("\\", "/")
+
+        return current_dir
+
+
     def NISTproblem(self):
         """ Sets up the problem object for the nist problem file Misra1a.dat """
 
@@ -172,8 +180,12 @@ class ResultsOutputTests(unittest.TestCase):
     def PrepareTableHeader(self):
         ''' Helper function that returns the headers used in making the rst table '''
 
-        tbl_header_top = ("+" + "-"*105 + "+" + ("-"*21 + "+")*10)
-        tbl_header_text = ("|" + " "*105 + "|" + "Minimizer1" + " "*11 + "|" + \
+        current_dir = self.getRSTcurrentDir()
+        linked_problem = "`Misra1a 1 <file:///" + current_dir + \
+                         "/dump/nist/VDPages/nist_lower_misra1a.html>`__"
+        length_table = len(linked_problem)
+        tbl_header_top = ("+" + "-"*length_table + "+" + ("-"*21 + "+")*10)
+        tbl_header_text = ("|" + " "*length_table + "|" + "Minimizer1" + " "*11 + "|" + \
                            "Minimizer2" + 11*" " + "|" + "Minimizer3" + " "*11 +
                            "|" + \
                            "Minimizer4" + 11*" " + "|" + "Minimizer5" + " "*11 +
@@ -183,7 +195,7 @@ class ResultsOutputTests(unittest.TestCase):
                            "Minimizer8" + 11*" " + "|" + "Minimizer9" + " "*11 +
                            "|" + \
                            "Trust Region" + " "*9 + "|")
-        tbl_header_bottom = ("+" + "="*105 + "+" + ("="*21 + "+")*10)
+        tbl_header_bottom = ("+" + "="*length_table + "+" + ("="*21 + "+")*10)
 
         return tbl_header_top, tbl_header_text, tbl_header_bottom
 
@@ -191,17 +203,20 @@ class ResultsOutputTests(unittest.TestCase):
     def GenerateRstTable(self):
         ''' Helper function that generates the rst tables for comparison '''
 
+        current_dir = self.getRSTcurrentDir()
         tbl_header_top, tbl_header_text, tbl_header_bottom = self.PrepareTableHeader()
         tbl_header = tbl_header_top + '\n' + tbl_header_text + '\n' + \
                      tbl_header_bottom + '\n'
         tbl_footer = tbl_header_top + '\n'
-        tbl_body = ("|`Misra1a 1 <file:///d:/fitbenchmarking/fitbenchmarking/" +
-                    "test/dump/nist/VDPages/nist_lower_misra1a.html>`__|" +
+        linked_problems = ["`Misra1a 1 <file:///" + current_dir + \
+                           "/dump/nist/VDPages/nist_lower_misra1a.html>`__",
+                           "`Misra1a 2 <file:///" + current_dir + \
+                           "/dump/nist/VDPages/nist_lower_misra1a.html>`__"]
+        tbl_body = ("|" + linked_problems[0] + "|" +
                     " :ranking-top-1:`1`  | :ranking-low-4:`2`  | " +
                     ":ranking-low-4:`3`  |\n"
                     + tbl_footer +
-                    "|`Misra1a 2 <file:///d:/fitbenchmarking/fitbenchmarking/" +
-                    "test/dump/nist/VDPages/nist_lower_misra1a.html>`__|" +
+                    "|" + linked_problems[1] + "|" +
                     " :ranking-low-5:`5`  | :ranking-low-5:`10` |" +
                     " :ranking-low-5:`13` |\n"
                     + tbl_footer)
@@ -212,15 +227,14 @@ class ResultsOutputTests(unittest.TestCase):
 
     def PrepareBuildRSTTableFunctionParameters(self):
 
+        current_dir = self.getRSTcurrentDir()
         minimizers = ['Minimizer1','Minimizer2','Minimizer3','Minimizer4',
                       'Minimizer5', 'Minimizer6','Minimizer7','Minimizer8',
                       'Minimizer9','DTRS']
-        linked_problems = ["`Misra1a 1 <file:///d:/fitbenchmarking/"
-                           "fitbenchmarking/test/dump/nist/"
-                           "VDPages/nist_lower_misra1a.html>`__",
-                           "`Misra1a 2 <file:///d:/fitbenchmarking/"
-                           "fitbenchmarking/test/dump/nist/"
-                           "VDPages/nist_lower_misra1a.html>`__"]
+        linked_problems = ["`Misra1a 1 <file:///" + current_dir + \
+                           "/dump/nist/VDPages/nist_lower_misra1a.html>`__",
+                           "`Misra1a 2 <file:///" + current_dir + \
+                           "/dump/nist/VDPages/nist_lower_misra1a.html>`__"]
         norm_acc_rankings = np.array([[1,2,3],
                                       [5,10,13]])
         use_errors = True
@@ -252,20 +266,22 @@ class ResultsOutputTests(unittest.TestCase):
 
     def test_buildIndivLinkedProblems_return_NIST_files_Misra1a_linked_problems(self):
 
+        current_dir = self.getRSTcurrentDir()
         dump_dir = self.DumpDir()
         results_per_test = self.SetupNISTResults()
         group_name = 'nist_lower'
         aux_dir = os.path.join(dump_dir, "nist", "VDPages")
-        os.makedirs(aux_dir)
+        if not os.path.exists(aux_dir):
+            os.makedirs(aux_dir)
 
         linked_problems = \
         build_indiv_linked_problems(results_per_test, group_name, dump_dir)
-        linked_problems_expected = ["`Misra1a 1 <file:///d:/fitbenchmarking/"
-                                    "fitbenchmarking/test/dump/nist/"
-                                    "VDPages/nist_lower_misra1a.html>`__",
-                                    "`Misra1a 2 <file:///d:/fitbenchmarking/"
-                                    "fitbenchmarking/test/dump/nist/"
-                                    "VDPages/nist_lower_misra1a.html>`__"]
+        linked_problems_expected = ["`Misra1a 1 <file:///" + current_dir + \
+                                    "/dump/nist/VDPages/nist_lower_misra1a." + \
+                                    "html>`__",
+                                    "`Misra1a 2 <file:///" + current_dir + \
+                                    "/dump/nist/VDPages/nist_lower_misra1a." + \
+                                    "html>`__"]
 
         self.assertListEqual(linked_problems_expected, linked_problems)
 
@@ -307,7 +323,7 @@ class ResultsOutputTests(unittest.TestCase):
                                       summary_cells_runtime)
 
 
-    def test_buildRSTTable_return_rst_table_for_problem_files_Misra1a_Lanczos3_mock_minimizers(self):
+    def test_buildRSTTable_return_rst_table_for_problem_files_Misra1a_mock_minimizers(self):
 
         (minimizers, linked_problems, norm_acc_rankings,
          use_errors, color_scale) = \
@@ -317,6 +333,7 @@ class ResultsOutputTests(unittest.TestCase):
                               comparison_type='accuracy', comparison_dim='',
                               using_errors=use_errors, color_scale=color_scale)
         tbl_expected = self.GenerateRstTable()
+        self.maxDiff = None
 
         self.assertEqual(tbl_expected, tbl)
 
@@ -489,23 +506,27 @@ class ResultsOutputTests(unittest.TestCase):
 
     def test_calcFirstColLen_for_NIST_problem_Misra1a_and_Lanczos3(self):
 
+        current_dir = self.getRSTcurrentDir()
         cell_len = 21
-        rows_txt = ["`Misra1a 1 <file:///d:/fitbenchmarking/"
-                    "fitbenchmarking/test/dump/nist/"
-                    "VDPages/nist_lower_misra1a.html>`__",
-                    "`Misra1a 2 <file:///d:/fitbenchmarking/"
-                    "fitbenchmarking/test/dump/nist/"
-                    "VDPages/nist_lower_misra1a.html>`__"]
+        rows_txt = ["`Misra1a 1 <file:///" + current_dir + \
+                    "/dump/nist/VDPages/nist_lower_misra1a.html>`__",
+                    "`Misra1a 2 <file:///" + current_dir + \
+                    "/dump/nist/VDPages/nist_lower_misra1a.html>`__"]
 
         first_col_len = calc_first_col_len(cell_len, rows_txt)
-        first_col_len_expected = 105
+        first_col_len_expected = len(rows_txt[0])
 
         self.assertEqual(first_col_len_expected, first_col_len)
 
 
     def test_buildRSTTableHeaderChunks_return_header_chucks_for_Misra1a_problem_results(self):
 
-        first_col_len = 105
+        current_dir = self.getRSTcurrentDir()
+        rows_txt = ["`Misra1a 1 <file:///" + current_dir + \
+                    "/dump/nist/VDPages/nist_lower_misra1a.html>`__",
+                    "`Misra1a 2 <file:///" + current_dir + \
+                    "/dump/nist/VDPages/nist_lower_misra1a.html>`__"]
+        first_col_len = len(rows_txt[0])
         cell_len = 21
         columns_txt = ['Minimizer1', 'Minimizer2', 'Minimizer3', 'Minimizer4',
                        'Minimizer5', 'Minimizer6', 'Minimizer7', 'Minimizer8',
