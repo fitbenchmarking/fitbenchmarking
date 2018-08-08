@@ -38,9 +38,6 @@ import test_result
 from plotHelper import *
 from logging_setup import logger
 
-from logging_setup import logger
-
-from plotHelper import *
 
 def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
                          results_dir=None):
@@ -78,7 +75,7 @@ def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
 
     return prob_results, results_dir
 
-
+  
 def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
                                minimizers, use_errors=True):
     """
@@ -169,14 +166,15 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
             result.minimizer = minimizer_name
             result.function_def = fit_function
             results_problem.append(result)
-
             logger.info("*** Using minimizer {0}, Status: {1}".
                         format(minimizer_name, status))
 
         results_fit_problem.append(results_problem)
-        previous_name, count = make_plots(prob, group_results_dir, best_fit,
-                                          wks, previous_name, count,
-                                          fit_function)
+
+        if not best_fit is None:
+            previous_name, count = make_plots(prob, group_results_dir, best_fit,
+                                              wks, previous_name, count,
+                                              fit_function)
 
     return results_fit_problem
 
@@ -224,10 +222,11 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count,
     """
 
     # Set up the directories to organise the figures in
-    VDPage_dir = os.path.join(visuals_dir, "VDPages")
-    if not os.path.exists(VDPage_dir):
-            os.makedirs(VDPage_dir)
-    figures_dir = os.path.join(VDPage_dir, "Figures")
+    support_pages_dir = os.path.join(visuals_dir, "tables", "support_pages")
+    if not os.path.exists(support_pages_dir):
+            os.makedirs(support_pages_dir)
+    figures_dir = os.path.join(support_pages_dir, "figures")
+
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
 
@@ -292,8 +291,7 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     @param count :: the starting point number
     @param figures_dir :: directory that holds the figures
     """
-
-
+    
     fig=plot()
     fig.add_data(raw_data)
     best_fit.markers=''
@@ -315,7 +313,6 @@ def make_starting_guess_plot(raw_data, fit_function, wks, prob, count,
                              figures_dir):
     """
     Function that makes a plot of the starting guess.
-
     @param raw_data :: array that contains the raw data point information
     @param fit_function :: function that must be fitted
     @param wks :: workspace containing the data points information
@@ -393,7 +390,8 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt',
 
 
     if fit_result is None:
-        return 'failed', np.nan, None, None
+        return 'failed', None, None, None
+
     else:
         param_tbl = fit_result.OutputParameters
         if param_tbl:
@@ -570,13 +568,13 @@ def setup_results_dir(results_dir):
     @param results_dir :: name (or path) of the results directory.
     """
 
-    current_dir = os.path.dirname(os.path.realpath(__file__))
+    working_dir = os.getcwd()
     if results_dir is None:
-        results_dir = os.path.join(current_dir, "results")
+        results_dir = os.path.join(working_dir, "results")
     elif not isinstance(results_dir, str):
         TypeError("results_dir must be a string!")
     elif not os.sep in results_dir:
-        results_dir = os.path.join(current_dir, results_dir)
+        results_dir = os.path.join(working_dir, results_dir)
     else:
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)

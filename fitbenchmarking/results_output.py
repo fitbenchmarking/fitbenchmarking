@@ -32,9 +32,6 @@ from docutils.core import publish_string
 import post_processing as postproc
 from logging_setup import logger
 
-import logging
-from logging_setup import logger
-
 # Some naming conventions for the output files
 BENCHMARK_VERSION_STR = 'v3.8'
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -48,7 +45,6 @@ SCRIPT_DIR = os.path.dirname(__file__)
 
 def save_results_tables(minimizers, results_per_test, group_name,
                         use_errors, color_scale=None, results_dir=None):
-
     """
     Prints out results for a group of fit problems in accuracy and runtime
     tables as a text file or html file, in rst format.
@@ -71,7 +67,6 @@ def save_results_tables(minimizers, results_per_test, group_name,
                           (5 at the moment).
     @param results_dir :: directory where all the results are stored
     """
-
 
     tables_dir = make_result_tables_directory(results_dir, group_name)
     linked_problems = build_indiv_linked_problems(results_per_test, group_name,
@@ -159,13 +154,26 @@ def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
     Helper function that sets up the directory, function details table
     and see also link for the NIST data
     """
-    VDPages_dir = os.path.join(results_dir, "nist", "VDPages")
+    support_pages_dir = os.path.join(results_dir, "nist", "tables",
+                                     "support_pages")
     details_table = fit_details_rst_table(function_def)
     see_also_link = 'See also:\n ' + linked_name + \
                     '\n on NIST website\n\n'
 
-    return VDPages_dir, details_table, see_also_link
+    return support_pages_dir, details_table, see_also_link
 
+
+def setup_neutron_VDpage_misc(function_def, results_dir):
+    """
+    Helper function that sets up the directory, function details table
+    and see also link for the NEUTRON data
+    """
+    support_pages_dir = os.path.join(results_dir, "neutron", "tables",
+                                     "support_pages")
+    details_table = fit_details_rst_table(function_def)
+    see_also_link = ''
+
+    return support_pages_dir, details_table, see_also_link
 
 def setup_neutron_VDpage_misc(function_def, results_dir):
     """
@@ -214,7 +222,7 @@ def get_figures_path(VDPages_dir, problem_name, count):
         figure_data = 'file:///' + figure_data
         figure_fit = 'file:///' + figure_fit
         figure_start = 'file:///' + figure_start
-
+        
     return figure_data, figure_fit, figure_start
 
 
@@ -227,14 +235,14 @@ def build_visual_display_page(prob_results, group_name, results_dir, count):
 
     # Get the best result for a group
     gb = min((result for result in prob_results),
-             key=lambda result: result.fit_chi_sq)
+              key=lambda result: result.chi_sq)
 
     # Remove commas and replace space with underscore in problem name
     problem_name = gb.problem.name.replace(',', '')
     problem_name = problem_name.replace(' ','_')
 
     # Set up miscellaneous stuff and generate rst_link
-    VDPages_dir, file_path, fit_function_details_table, see_also_link = \
+    support_pages_dir, file_path, fit_function_details_table, see_also_link = \
     setup_VDpage_misc(group_name, problem_name, gb, results_dir, count)
 
     rst_file_path = file_path.replace('\\', '/')
@@ -243,7 +251,7 @@ def build_visual_display_page(prob_results, group_name, results_dir, count):
 
     # Get paths to figures
     figure_data, figure_fit, figure_start = \
-    get_figures_path(VDPages_dir, problem_name, count)
+    get_figures_path(support_pages_dir, problem_name, count)
 
     # Create and save rst page
     rst_text = create_rst_page(gb.problem.name, figure_data, figure_start,
@@ -272,7 +280,7 @@ def generate_rst_data_plot(figure_data):
     Helper function that generates an rst figure of the data plot png image
     contained at path figure_data.
     """
-
+    
     data_plot = 'Data Plot' + '\n'
     data_plot += ('-' * len(data_plot)) + '\n\n'
     data_plot += '*Plot of the data considered in the problem*\n\n'
@@ -282,22 +290,24 @@ def generate_rst_data_plot(figure_data):
     return data_plot
 
 
-def generate_rst_starting_plot(figure_start):
+
+def generate_rst_starting_plot(figure_start, fit_function_details_table):
     """
     Helper function that generates an rst figure of the starting guess plot
     png image contained at path figure_start.
     """
     starting_plot = 'Plot of the initial starting guess' + '\n'
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
-    starting_plot += '*Minimizer*: Levenberg-Marquardt \n\n'
+    starting_plot += '*Functions*:\n\n'
+    starting_plot += fit_function_details_table
+
     starting_plot += ('.. figure:: ' + figure_start  + '\n' +
                       '   :align: center' + '\n\n')
 
     return starting_plot
 
 
-def generate_rst_solution_plot(figure_fit, fit_function_details_table,
-                               minimizer):
+def generate_rst_solution_plot(figure_fit, minimizer):
     """
     Helper function that generates an rst figure of the fitted problem
     png image contained at path figure_fit.
@@ -306,8 +316,6 @@ def generate_rst_solution_plot(figure_fit, fit_function_details_table,
     solution_plot = 'Plot of the solution found' + '\n'
     solution_plot += ('-' * len(solution_plot)) + '\n\n'
     solution_plot += '*Minimizer*: ' + minimizer + '\n\n'
-    solution_plot += '*Functions*:\n\n'
-    solution_plot += fit_function_details_table
     solution_plot += ('.. figure:: ' + figure_fit + '\n' +
                       '   :align: center' + '\n\n')
 
@@ -324,9 +332,8 @@ def create_rst_page(name, figure_data, figure_start, figure_fit, details_table,
     space = "|\n|\n|\n\n"
     title = generate_rst_title(name)
     data_plot = generate_rst_data_plot(figure_data)
-    starting_plot = generate_rst_starting_plot(figure_start)
-    solution_plot = generate_rst_solution_plot(figure_fit, details_table,
-                                               minimizer)
+    starting_plot = generate_rst_starting_plot(figure_start, details_table)
+    solution_plot = generate_rst_solution_plot(figure_fit, minimizer)
 
     rst_text = title + space + data_plot + starting_plot + solution_plot + \
                space + see_also_link
@@ -361,9 +368,8 @@ def fit_details_rst_table(functions_str):
     functions = functions_str.split(';')
     func_names = []
     func_params = []
-
     for function in functions:
-
+      
         # If string contains UserFunction then it means it is a nist problem
         # Otherwise it is a neutron problem
         if 'UserFunction' in function:
@@ -408,7 +414,7 @@ def parse_neutron_function_def(function, function_names, function_parameters):
         function_parameters.append(function[first_comma+1:])
     else:
         function_names.append(function[5:])
-        function_parameters.append('None')
+        function_parameters.append('Use default parameter values')
 
     for idx in range(0, len(function_parameters)):
         function_parameters[idx] = function_parameters[idx].replace(',', ', ')
@@ -732,9 +738,7 @@ def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
                  format(file_name=file_name, extension=file_extension,
                         working_directory=results_dir))
 
-
-
-
+    
 def weighted_suffix_string(use_errors):
     """
     Produces a suffix weighted/unweighted. Used to generate names of
@@ -754,13 +758,13 @@ def make_result_tables_directory(results_dir, group_name):
         group_results_dir = os.path.join(results_dir, 'nist')
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
-        tables_dir = os.path.join(group_results_dir, "Tables", group_name)
-
+        tables_dir = os.path.join(group_results_dir, "tables", group_name)
+        
     elif 'neutron' in group_name:
         group_results_dir = os.path.join(results_dir, 'neutron')
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
-        tables_dir = os.path.join(group_results_dir, "Tables")
+        tables_dir = os.path.join(group_results_dir, "tables")
 
     if not os.path.exists(tables_dir):
         os.makedirs(tables_dir)
