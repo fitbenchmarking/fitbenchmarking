@@ -35,7 +35,6 @@ class ResultsOutputTests(unittest.TestCase):
         Path to a directory where file output of various functions
         is dumped.
         """
-
         current_dir = os.path.dirname(os.path.realpath(__file__))
         dump_dir = os.path.join(current_dir, 'dump')
 
@@ -43,7 +42,7 @@ class ResultsOutputTests(unittest.TestCase):
 
 
     def getRSTcurrentDir(self):
-
+      
         current_dir = os.path.dirname(os.path.realpath(__file__))
         current_dir = current_dir.replace("\\", "/")
 
@@ -208,6 +207,7 @@ class ResultsOutputTests(unittest.TestCase):
         tbl_header = tbl_header_top + '\n' + tbl_header_text + '\n' + \
                      tbl_header_bottom + '\n'
         tbl_footer = tbl_header_top + '\n'
+        
         linked_problems = ["`Misra1a 1 <file:///" + current_dir + \
                            "/dump/nist/VDPages/nist_lower_misra1a.html>`__",
                            "`Misra1a 2 <file:///" + current_dir + \

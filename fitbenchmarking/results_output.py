@@ -147,7 +147,7 @@ def build_indiv_linked_problems(results_per_test, group_name, results_dir):
         linked_problems.append(name)
 
     return linked_problems
-
+  
 
 def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
     """
@@ -288,9 +288,8 @@ def generate_rst_data_plot(figure_data):
                   '   :align: center' + '\n\n')
 
     return data_plot
-
-
-
+  
+  
 def generate_rst_starting_plot(figure_start, fit_function_details_table):
     """
     Helper function that generates an rst figure of the starting guess plot
@@ -321,7 +320,7 @@ def generate_rst_solution_plot(figure_fit, minimizer):
 
     return solution_plot
 
-
+  
 def create_rst_page(name, figure_data, figure_start, figure_fit, details_table,
                     minimizer, see_also_link):
     """
@@ -369,12 +368,10 @@ def fit_details_rst_table(functions_str):
     func_names = []
     func_params = []
     for function in functions:
-      
         # If string contains UserFunction then it means it is a nist problem
         # Otherwise it is a neutron problem
         if 'UserFunction' in function:
             func_names, func_params = parse_nist_function_def(function)
-
         else:
             func_names, func_params = \
             parse_neutron_function_def(function, func_names, func_params)
@@ -765,7 +762,7 @@ def make_result_tables_directory(results_dir, group_name):
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
         tables_dir = os.path.join(group_results_dir, "tables")
-
+        
     if not os.path.exists(tables_dir):
         os.makedirs(tables_dir)
 

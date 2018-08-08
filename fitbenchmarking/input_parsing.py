@@ -41,7 +41,6 @@ def load_nist_fitting_problem_file(problem_filename):
     """
 
     with open(problem_filename) as spec_file:
-
         logger.info("*** Loading NIST data file {0} ***".
                     format(os.path.basename(spec_file.name)))
 
@@ -120,8 +119,9 @@ def get_nist_model(lines, idx):
         while (not re.match(r'\s*y\s*=(.+)', lines[idx])
                and not re.match(r'\s*log\[y\]\s*=(.+)', lines[idx]))\
                and idx < len(lines):
-
-                idx += 1
+               
+            idx += 1
+            
     except IndexError as err:
         logger.error("Could not find equation, index went out of bounds!")
         idxerr = True
@@ -139,7 +139,7 @@ def get_nist_model(lines, idx):
 
     return equation_text, idx
 
-
+  
 def get_nist_starting_values(lines, idx):
     """
     Helper function that gets the starting values in a nist file.

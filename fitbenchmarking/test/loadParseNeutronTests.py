@@ -109,6 +109,6 @@ class LoadAndParseNeutronFiles(unittest.TestCase):
                          entries['fit_parameters'])
         self.assertEqual(entries_expected['description'], entries['description'])
 
-
+        
 if __name__ == "__main__":
     unittest.main()

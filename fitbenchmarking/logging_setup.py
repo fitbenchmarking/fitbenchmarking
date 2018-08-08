@@ -28,11 +28,9 @@ import os
 import logging
 
 
-# All logs go into /fitbenchmarking/fitbenchmarking/logs
-current_path = os.path.dirname(os.path.realpath(__file__))
-fitbenchmarking_path = os.path.abspath(os.path.join(current_path, os.pardir))
-scripts_path = os.path.join(fitbenchmarking_path, 'fitbenchmarking')
-logs_path = os.path.join(scripts_path, 'logs')
+
+working_dir = os.getcwd()
+logs_path = os.path.join(working_dir, 'logs')
 
 if not os.path.exists(logs_path):
     os.makedirs(logs_path)
