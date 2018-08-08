@@ -25,6 +25,9 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 from docutils.core import publish_string
+from misc import build_items_links
+from misc import display_name_for_minimizers
+from misc import 
 
 
 # Directory of this script (e.g. in source)
@@ -156,7 +159,7 @@ def format_cell_value(value, width=None, color_scale=None, items_link=None):
     if not color_scale:
         value_text = no_color_scale_cv(items_link)
     else:
-        value_text = color_scale_cv
+        value_text = color_scale_cv(color_scale)
 
     if width is not None:
         value_text = value_text.ljust(width, ' ')

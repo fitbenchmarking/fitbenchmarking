@@ -26,6 +26,10 @@ from __future__ import (absolute_import, division, print_function)
 import os
 from docutils.core import publish_string
 
+# Some naming conventions for the output files
+FILENAME_EXT_TXT = 'txt'
+FILENAME_EXT_HTML = 'html'
+
 
 def create(prob_results, group_name, results_dir, count):
     """
@@ -44,11 +48,9 @@ def create(prob_results, group_name, results_dir, count):
 
     figure_data, figure_fit, figure_start = \
     get_figure_paths(support_pages_dir, problem_name, count)
-    rst_text = \
-    create_rst_page(best_result.problem.name, figure_data, figure_start,
-                    figure_fit, fit_details_tbl, best_result.minimizer,
-                    see_also_link)
-
+    rst_text = create_rst_page(best_result.problem.name, figure_data, 
+                               figure_start, figure_fit, fit_details_tbl, 
+                               best_result.minimizer, see_also_link)
     save_VDpages(rst_text, problem_name, file_path)
 
     return rst_link
