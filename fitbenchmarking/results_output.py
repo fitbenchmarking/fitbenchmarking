@@ -147,7 +147,7 @@ def build_indiv_linked_problems(results_per_test, group_name, results_dir):
         linked_problems.append(name)
 
     return linked_problems
-  
+
 
 def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
     """
@@ -175,17 +175,6 @@ def setup_neutron_VDpage_misc(function_def, results_dir):
 
     return support_pages_dir, details_table, see_also_link
 
-def setup_neutron_VDpage_misc(function_def, results_dir):
-    """
-    Helper function that sets up the directory, function details table
-    and see also link for the NEUTRON data
-    """
-    VDPages_dir = os.path.join(results_dir, "neutron", "VDPages")
-    details_table = fit_details_rst_table(function_def)
-    see_also_link = ''
-
-    return VDPages_dir, details_table, see_also_link
-
 
 def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir, count):
     """
@@ -193,23 +182,22 @@ def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir, count):
     """
     # Group specific path and other misc stuff
     if 'nist' in group_name:
-        VDPages_dir, fit_function_details_table, see_also_link = \
+        support_pages_dir, fit_function_details_table, see_also_link = \
         setup_nist_VDpage_misc(res_obj.problem.linked_name,
-                               res_obj.function_def,
-                               results_dir)
+                               res_obj.function_def, results_dir)
     elif 'neutron' in group_name:
-        VDPages_dir, fit_function_details_table, see_also_link = \
+        support_pages_dir, fit_function_details_table, see_also_link = \
         setup_neutron_VDpage_misc(res_obj.function_def, results_dir)
 
     file_name = (group_name + '_' + problem_name + '_' + str(count)).lower()
-    file_path = os.path.join(VDPages_dir, file_name)
+    file_path = os.path.join(support_pages_dir, file_name)
 
-    return VDPages_dir, file_path, fit_function_details_table, see_also_link
+    return support_pages_dir, file_path, fit_function_details_table, see_also_link
 
 
-def get_figures_path(VDPages_dir, problem_name, count):
+def get_figures_path(support_pages_dir, problem_name, count):
 
-    figures_dir = os.path.join(VDPages_dir, 'Figures')
+    figures_dir = os.path.join(support_pages_dir, 'figures')
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name +
                                "_" + str(count) + ".png")
     figure_fit = os.path.join(figures_dir, "Fit_for_" + problem_name +
@@ -222,7 +210,7 @@ def get_figures_path(VDPages_dir, problem_name, count):
         figure_data = 'file:///' + figure_data
         figure_fit = 'file:///' + figure_fit
         figure_start = 'file:///' + figure_start
-        
+
     return figure_data, figure_fit, figure_start
 
 
@@ -280,7 +268,7 @@ def generate_rst_data_plot(figure_data):
     Helper function that generates an rst figure of the data plot png image
     contained at path figure_data.
     """
-    
+
     data_plot = 'Data Plot' + '\n'
     data_plot += ('-' * len(data_plot)) + '\n\n'
     data_plot += '*Plot of the data considered in the problem*\n\n'
@@ -288,8 +276,8 @@ def generate_rst_data_plot(figure_data):
                   '   :align: center' + '\n\n')
 
     return data_plot
-  
-  
+
+
 def generate_rst_starting_plot(figure_start, fit_function_details_table):
     """
     Helper function that generates an rst figure of the starting guess plot
@@ -320,7 +308,7 @@ def generate_rst_solution_plot(figure_fit, minimizer):
 
     return solution_plot
 
-  
+
 def create_rst_page(name, figure_data, figure_start, figure_fit, details_table,
                     minimizer, see_also_link):
     """
@@ -358,6 +346,7 @@ def save_VDpages(rst_text, prob_name, file_path):
         logger.info('Saved {prob_name}.{extension} to {working_directory}'.
                      format(prob_name=prob_name, extension=FILENAME_EXT_HTML,
                             working_directory=file_path))
+
 
 def fit_details_rst_table(functions_str):
     """
@@ -735,7 +724,7 @@ def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
                  format(file_name=file_name, extension=file_extension,
                         working_directory=results_dir))
 
-    
+
 def weighted_suffix_string(use_errors):
     """
     Produces a suffix weighted/unweighted. Used to generate names of
@@ -756,13 +745,13 @@ def make_result_tables_directory(results_dir, group_name):
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
         tables_dir = os.path.join(group_results_dir, "tables", group_name)
-        
+
     elif 'neutron' in group_name:
         group_results_dir = os.path.join(results_dir, 'neutron')
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
         tables_dir = os.path.join(group_results_dir, "tables")
-        
+
     if not os.path.exists(tables_dir):
         os.makedirs(tables_dir)
 
