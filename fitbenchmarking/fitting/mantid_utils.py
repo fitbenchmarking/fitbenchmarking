@@ -26,10 +26,10 @@ from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
 import mantid.simpleapi as msapi
-from plotHelper import *
+from plotting import plotHelper
 
 
-def mantid_parse_result(fit_result):
+def parse_result(fit_result):
     """
     DESC
     """
@@ -46,18 +46,18 @@ def mantid_parse_result(fit_result):
     return status, fit_wks, params, errors, runtime
 
 
-def mantid_optimal_fit(fit_wks, minimizer_name, best_fit):
+def optimum(fit_wks, minimizer_name, best_fit):
     """
     DESC
     """
 
     tmp = msapi.ConvertToPointData(fit_wks)
-    best_fit = data(minimizer_name, tmp.readX(1), tmp.readY(1))
+    best_fit = plotHelper.data(minimizer_name, tmp.readX(1), tmp.readY(1))
 
     return  best_fit
 
 
-def mantid_wks_cost_function(prob, use_errors):
+def wks_cost_function(prob, use_errors):
     """
     DESC
     """
@@ -74,7 +74,7 @@ def mantid_wks_cost_function(prob, use_errors):
     return wks, cost_function
 
 
-def mantid_function_definitions(prob):
+def function_definitions(prob):
     """
     DESC
     """
@@ -91,7 +91,7 @@ def mantid_function_definitions(prob):
     return function_defs
 
 
-def mantid_set_ignore_invalid(prob, cost_function):
+def ignore_invalid(prob, cost_function):
     """
     DESC
     """

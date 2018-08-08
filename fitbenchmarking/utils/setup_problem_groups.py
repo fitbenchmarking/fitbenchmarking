@@ -24,10 +24,10 @@ Utility functions for setting up the problem groups.
 
 from __future__ import (absolute_import, division, print_function)
 
-from fetch_data import *
+from parsing.fetch_data import *
 
 
-def setup_mantid_problem_groups(data_dir):
+def mantid(data_dir):
     """
     """
 

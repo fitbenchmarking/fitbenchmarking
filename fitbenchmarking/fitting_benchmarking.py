@@ -22,11 +22,10 @@
 
 from __future__ import (absolute_import, division, print_function)
 
-import input_parsing as iparsing
-from logging_setup import logger
-from setup_problem_groups import *
-from utils import *
-from fitbenchmark_one_problem import fitbenchmark_one_problem
+from parsing import parse_nist, parse_neutron
+from utils.logging_setup import logger
+from utils import create_dirs, setup_problem_groups
+from fitbenchmark_one_problem import fitbm_one_problem
 
 
 def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
@@ -34,16 +33,16 @@ def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
     """
     """
 
-    results_dir = setup_results_dir(results_dir)
-    problem_groups = setup_mantid_problem_groups(data_dir)
+    results_dir = create_dirs.results(results_dir)
+    problem_groups = setup_problem_groups.mantid(data_dir)
 
     prob_results = None
     for group_name in problem_groups:
-        group_results_dir = setup_group_results_dir(results_dir, group_name)
+        group_results_dir = create_dirs.group_results(results_dir, group_name)
         prob_results = \
-        [do_fitting_benchmark_group(group_name, group_results_dir,problem_block,
+        [do_fitting_benchmark_group(group_name, group_results_dir, problem_bl,
                                     minimizers, use_errors=use_errors)
-         for problem_block in problem_groups[group_name]]
+         for problem_bl in problem_groups[group_name]]
 
     return prob_results, results_dir
 
@@ -57,8 +56,7 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
     for prob_file in problem_files:
         prob = parse_problem_file(group_name, prob_file)
         results_prob = \
-        do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
-                                         use_errors)
+        fitbm_one_problem(prob, group_results_dir, minimizers, use_errors)
         results_per_problem.extend(results_prob)
 
     return results_per_problem
@@ -69,9 +67,9 @@ def parse_problem_file(group_name, prob_file):
     """
 
     if group_name in ['nist']:
-        prob = iparsing.load_nist_fitting_problem_file(prob_file)
+        prob = parse_nist.load_data(prob_file)
     elif group_name in ['neutron']:
-        prob = iparsing.load_neutron_data_fitting_problem_file(prob_file)
+        prob = parse_neutron.load_data(prob_file)
     else:
         raise NameError("Could not find group name! Please check if it was"
                         "given correctly...")

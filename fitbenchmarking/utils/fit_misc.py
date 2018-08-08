@@ -23,10 +23,10 @@ Utility functions for fit benchmarking a problem.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 
 import numpy as np
-from logging_setup import logger
+from utils.logging_setup import logger
 
 
-def calculate_chi_sq(differences):
+def compute_chisq(differences):
     """
     """
 

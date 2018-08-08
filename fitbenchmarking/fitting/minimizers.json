@@ -1,0 +1,8 @@
+{
+    "mantid" : ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
+                "Conjugate gradient (Polak-Ribiere imp.)",
+                "Damped GaussNewton",
+                "Levenberg-Marquardt", "Levenberg-MarquardtMD",
+                "Simplex","SteepestDescent",
+                "Trust Region"]
+}

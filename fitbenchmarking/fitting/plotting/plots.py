@@ -29,7 +29,7 @@ from plotHelper import *
 
 
 def make_plots(prob, wks, function, best_fit, previous_name, count,
-               group_results_dir):
+              group_results_dir):
     """
     """
 

@@ -22,34 +22,12 @@ General utility functions.
 # <https://github.com/mantidproject/fitbenchmarking>.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 
-import os, sys, shutil
-
-def empty_contents_of_folder(directory):
-    """
-    """
-
-    for file in os.listdir(directory):
-        file_path = os.path.join(directory, file)
-        if os.path.isfile(file_path):
-            os.unlink(file_path)
-        elif os.path.isdir(file_path):
-            shutil.rmtree(file_path)
+import os
+import sys
+import shutil
 
 
-def setup_group_results_dir(results_dir, group_name):
-    """
-    """
-
-    group_results_dir = os.path.join(results_dir, group_name)
-    if os.path.exists(group_results_dir):
-        empty_contents_of_folder(group_results_dir)
-    else:
-        os.makedirs(group_results_dir)
-
-    return group_results_dir
-
-
-def setup_results_dir(results_dir):
+def results(results_dir):
     """
     """
 
@@ -67,7 +45,20 @@ def setup_results_dir(results_dir):
     return results_dir
 
 
-def setup_figures_dirs(group_results_dir):
+def group_results(results_dir, group_name):
+    """
+    """
+
+    group_results_dir = os.path.join(results_dir, group_name)
+    if os.path.exists(group_results_dir):
+        del_contents_of_dir(group_results_dir)
+    else:
+        os.makedirs(group_results_dir)
+
+    return group_results_dir
+
+
+def figures(group_results_dir):
     """
     """
 
@@ -78,3 +69,15 @@ def setup_figures_dirs(group_results_dir):
     figures_dir = os.path.join(support_pages_dir, "figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
+
+
+def del_contents_of_dir(directory):
+    """
+    """
+
+    for file in os.listdir(directory):
+        file_path = os.path.join(directory, file)
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)

@@ -25,7 +25,7 @@ Functions that fetch the problem files.
 from __future__ import (absolute_import, division, print_function)
 
 import os, glob
-from logging_setup import logger
+from utils.logging_setup import logger
 
 
 def get_nist_problem_files(search_dir):

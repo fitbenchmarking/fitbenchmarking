@@ -1,3 +1,6 @@
+"""
+Functions that create numpy tables of the results.
+"""
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
 #
@@ -30,18 +33,13 @@ except ImportError:
     from scipy.stats import nanmean, nanmedian
 
 
-def calc_accuracy_runtime_tbls(results_per_test, minimizers):
+def create_accuracy_runtime_tbls(results_per_test, minimizers):
     """
-    This produces a numpy matrix for convenience, with
-    1 row per problem+start, 1 column per minimizer
     """
-    num_tests = len(results_per_test)
-    num_minimizers = len(minimizers)
-    accuracy_tbl = np.zeros((num_tests, num_minimizers))
-    time_tbl = np.zeros((num_tests, num_minimizers))
 
-    for test_idx in range(0, num_tests):
-        for minimiz_idx in range(0, num_minimizers):
+    accuracy_tlb, time_tbl = init_numpy_tables(results_per_test, minimizers)
+    for test_idx in range(0, len(results_per_test)):
+        for minimiz_idx in range(0, len(minimizers)):
             accuracy_tbl[test_idx, minimiz_idx] = \
             results_per_test[test_idx][minimiz_idx].chi_sq
 
@@ -51,18 +49,10 @@ def calc_accuracy_runtime_tbls(results_per_test, minimizers):
     return accuracy_tbl, time_tbl
 
 
-def calc_norm_summary_tables(accuracy_tbl, time_tbl):
+def create_norm_tables(accuracy_tbl, time_tbl):
     """
-    Calculate normalized performance/ranking summary, as numpy
-    matrices as usual for convenience, and matrices of additional
-    statistics (min, max, percentiles, etc.)
+    """
 
-    Here normalized means relative to the best which gets a 1, all
-    others get the ratio resulting from dividing by the performance of
-    the best.
-    """
-    # Min across all minimizers, i.e. for each fit problem what is the
-    # lowest chi-squared and the lowest time
     min_chi_sq = np.nanmin(accuracy_tbl, 1)
     min_runtime = np.nanmin(time_tbl, 1)
 
@@ -70,18 +60,34 @@ def calc_norm_summary_tables(accuracy_tbl, time_tbl):
     norm_acc_rankings = accuracy_tbl / min_chi_sq[:, None]
     norm_runtimes = time_tbl / min_runtime[:, None]
 
-    # Create the summary numpy tables
+    return norm_acc_rankings, norm_runtimes,
+
+
+def create_summary_tables(norm_acc_rankings, norm_runtimes):
+    """
+    """
+
     summary_cells_acc = np.array([np.nanmin(norm_acc_rankings, 0),
                                   np.nanmax(norm_acc_rankings, 0),
                                   nanmean(norm_acc_rankings, 0),
-                                  nanmedian(norm_acc_rankings, 0)
-                                  ])
+                                  nanmedian(norm_acc_rankings, 0)])
 
     summary_cells_runtime = np.array([np.nanmin(norm_runtimes, 0),
                                       np.nanmax(norm_runtimes, 0),
                                       nanmean(norm_runtimes, 0),
-                                      nanmedian(norm_runtimes, 0)
-                                      ])
+                                      nanmedian(norm_runtimes, 0)])
 
-    return (norm_acc_rankings, norm_runtimes,
-            summary_cells_acc, summary_cells_runtime)
+    return summary_cells_acc, summary_cells_runtime
+
+
+def init_numpy_tables(results_per_test, minimizers):
+    """
+    """
+
+    num_tests = len(results_per_test)
+    num_minimizers = len(minimizers)
+
+    accuracy_tbl = np.zeros((num_tests, num_minimizers))
+    time_tbl = np.zeros((num_tests, num_minimizers))
+
+    return accuracy_tbl, time_tbl

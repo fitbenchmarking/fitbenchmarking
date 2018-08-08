@@ -27,18 +27,18 @@ from __future__ import (absolute_import, division, print_function)
 import time
 import mantid.simpleapi as msapi
 
-from logging_setup import logger
-from utils_mantid_fit import mantid_set_ignore_invalid, mantid_parse_result
+from utils.logging_setup import logger
+import mantid_fit_utils
 
 
-def mantid_fit(prob, wks, function, minimizer='Levenberg-Marquardt',
-               cost_function='Least squares'):
+def mantid(prob, wks, function, minimizer='Levenberg-Marquardt',
+           cost_function='Least squares'):
     """
     """
 
     fit_result = None
     try:
-        ignore_invalid = mantid_set_ignore_invalid(prob, cost_function)
+        ignore_invalid = mantid_fit_utils.ignore_invalid(prob, cost_function)
         t_start = time.clock()
         fit_result = msapi.Fit(function, wks, Output='ws_fitting_test',
                                Minimizer=minimizer, CostFunction=cost_function,
@@ -49,6 +49,6 @@ def mantid_fit(prob, wks, function, minimizer='Levenberg-Marquardt',
         logger.error("Warning, fit failed. Going on. Error: " + str(err))
 
     status, fit_wks, params, errors, runtime = \
-    mantid_parse_result(fit_result, t_end, t_start)
+    mantid_fit_utils.parse_result(fit_result, t_end, t_start)
 
     return status, fit_wks, params, errors, runtime

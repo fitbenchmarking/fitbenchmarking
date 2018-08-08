@@ -28,22 +28,24 @@ from __future__ import (absolute_import, division, print_function)
 import numpy as np
 import mantid.simpleapi as msapi
 
-from make_plots, fitting_algorithms, utils_fit, utils_mantid_fit import *
-from logging_setup import logger
 
-import test_result
+from fitting import fit_algorithms, mantid_utils
+from fitting.plotting import plots
+from utils import fit_misc, test_result
+from utils.logging_setup import logger
+
 MAX_FLOAT = sys.float_info.max
 
 
-def fitbenchmark_one_problem(prob, minimizers, use_errors=True, count=0,
-                             group_results_dir):
+def fitbm_one_problem(prob, minimizers, use_errors=True, count=0,
+                      roup_results_dir):
     """
     """
 
     previous_name = None
     results_fit_problem = []
-    wks, cost_function = mantid_wks_cost_function(prob, use_errors)
-    function_definitions = mantid_function_definitions(prob)
+    wks, cost_function = mantid_utils.wks_cost_function(prob, use_errors)
+    function_definitions = mantid_utils.function_definitions(prob)
 
     for function in function_definitions:
         results_problem, best_fit = \
@@ -51,8 +53,8 @@ def fitbenchmark_one_problem(prob, minimizers, use_errors=True, count=0,
 
         if not best_fit is None:
             previous_name, count = \
-            make_plots(prob, wks, function, best_fit, previous_name, count,
-                       group_results_dir)
+            plots.make_plots(prob, wks, function, best_fit, previous_name,
+                             count, group_results_dir)
 
         results_fit_problem.append(results_problem)
 
@@ -64,24 +66,24 @@ def fit_one_function_def(prob, wks, function, minimizers, cost_function):
     """
     min_chi_sq, best_fit = MAX_FLOAT, None
     results_problem = []
-    for minimizer_name in minimizers:
+    for minimizer in minimizers:
 
         status, params, errors, fit_wks, runtime = \
-        mantid_fit(prob, wks, function, minimizer_name, cost_function)
-        chi_sq = calculate_chi_sq(fit_wks.readY(2))
+        fit_algorithms.mantid(prob, wks, function, minimizer, cost_function)
+        chi_sq = fit_misc.compute_chisq(fit_wks.readY(2))
         if chi_sq < min_chi_sq and not chi_sq == np.nan:
-            best_fit = mantid_optimal_fit(fit_wks, minimizer_name, best_fit)
+            best_fit = mantid_utils.optimum(fit_wks, minimizer, best_fit)
             min_chi_sq = chi_sq
 
         result = store_results(prob, status, params, errors, chi_sq, runtime,
-                               minimizer_name, function)
+                               minimizer, function)
         results_problem.append(result)
 
     return results_problem, best_fit
 
 
 def store_results(prob, status, params, errors, chi_sq, runtime,
-                  minimizer_name, function):
+                  minimizer, function):
     """
     """
     result = test_result.FittingTestResult()
@@ -91,7 +93,7 @@ def store_results(prob, status, params, errors, chi_sq, runtime,
     result.errors = errors
     result.chi_sq = chi_sq
     result.runtime = runtime
-    result.minimizer = minimizer_name
+    result.minimizer = minimizer
     result.function_def = function
 
     return result
