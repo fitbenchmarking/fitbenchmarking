@@ -115,7 +115,6 @@ def save_tables(tables_dir, table_data, use_errors, group_name, metric):
                        file_extension=FILENAME_EXT_HTML)
 
 
-
 def build_indiv_linked_problems(results_per_test, group_name, results_dir):
     """
     Makes a list of linked problem names which would be used for the
@@ -145,7 +144,7 @@ def build_indiv_linked_problems(results_per_test, group_name, results_dir):
         linked_problems.append(name)
 
     return linked_problems
-
+  
 
 def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
     """
@@ -224,7 +223,7 @@ def build_visual_display_page(prob_results, group_name, results_dir):
 
     # Get the best result for a group
     gb = min((result for result in prob_results),
-             key=lambda result: result.chi_sq)
+              key=lambda result: result.chi_sq)
 
     # Remove commas and replace space with underscore in problem name
     problem_name = gb.problem.name.replace(',', '')
@@ -278,7 +277,7 @@ def generate_rst_data_plot(figure_data):
 
     return data_plot
 
-
+  
 def generate_rst_starting_plot(figure_start, fit_function_details_table):
     """
     Helper function that generates an rst figure of the starting guess plot
@@ -308,7 +307,7 @@ def generate_rst_solution_plot(figure_fit, minimizer):
 
     return solution_plot
 
-
+  
 def create_rst_page(name, figure_data, figure_start, figure_fit, details_table,
                     minimizer, see_also_link):
     """
@@ -358,12 +357,10 @@ def fit_details_rst_table(functions_str):
     func_params = []
 
     for function in functions:
-
         # If string contains UserFunction then it means it is a nist problem
         # Otherwise it is a neutron problem
         if 'UserFunction' in function:
             func_names, func_params = parse_nist_function_def(function)
-
         else:
             func_names, func_params = \
             parse_neutron_function_def(function, func_names, func_params)
@@ -738,7 +735,6 @@ def weighted_suffix_string(use_errors):
 
 
 def make_result_tables_directory(results_dir, group_name):
-
     """
     Creates the results directory where the tables are located.
     e.g. fitbenchmarking/results/neutron/Tables/
@@ -756,7 +752,7 @@ def make_result_tables_directory(results_dir, group_name):
         if not os.path.exists(group_results_dir):
             os.makedirs(group_results_dir)
         tables_dir = os.path.join(group_results_dir, "tables")
-
+        
 
     if not os.path.exists(tables_dir):
         os.makedirs(tables_dir)

@@ -171,12 +171,10 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
                         format(minimizer_name, status))
 
         results_fit_problem.append(results_problem)
-
         if not best_fit is None:
             previous_name, count = make_plots(prob, group_results_dir, best_fit,
                                               wks, previous_name, count,
                                               fit_function)
-
     return results_fit_problem
 
 
@@ -223,6 +221,7 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count,
     """
 
     # Set up the directories to organise the figures in
+
     support_pages_dir = os.path.join(visuals_dir, "tables", "support_pages")
     if not os.path.exists(support_pages_dir):
             os.makedirs(support_pages_dir)
@@ -291,7 +290,7 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     @param count :: the starting point number
     @param figures_dir :: directory that holds the figures
     """
-
+    
     fig=plot()
     fig.add_data(raw_data)
     best_fit.markers=''
