@@ -24,7 +24,7 @@ fitting results.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 
 from __future__ import (absolute_import, division, print_function)
-
+import os
 
 def parse_nist_function_def(function):
     """
@@ -117,7 +117,7 @@ def build_items_links(comparison_type, comp_dim, using_errors):
     return items_link
 
 
-def make_result_tables_directory(results_dir, group_name):
+def make_restables_dir(results_dir, group_name):
     """
     Creates the results directory where the tables are located.
     e.g. fitbenchmarking/results/neutron/Tables/

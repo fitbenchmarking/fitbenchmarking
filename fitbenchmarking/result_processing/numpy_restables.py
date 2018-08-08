@@ -49,7 +49,7 @@ def create_accuracy_runtime_tbls(results_per_test, minimizers):
     return accuracy_tbl, time_tbl
 
 
-def create_norm_tables(accuracy_tbl, time_tbl):
+def create_norm_tbls(accuracy_tbl, time_tbl):
     """
     """
 
@@ -63,7 +63,7 @@ def create_norm_tables(accuracy_tbl, time_tbl):
     return norm_acc_rankings, norm_runtimes,
 
 
-def create_summary_tables(norm_acc_rankings, norm_runtimes):
+def create_summary_tbls(norm_acc_rankings, norm_runtimes):
     """
     """
 
@@ -80,7 +80,7 @@ def create_summary_tables(norm_acc_rankings, norm_runtimes):
     return summary_cells_acc, summary_cells_runtime
 
 
-def init_numpy_tables(results_per_test, minimizers):
+def init_numpy(results_per_test, minimizers):
     """
     """
 

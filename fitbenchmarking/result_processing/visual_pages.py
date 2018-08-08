@@ -27,7 +27,7 @@ import os
 from docutils.core import publish_string
 
 
-def build_page(prob_results, group_name, results_dir, count):
+def create(prob_results, group_name, results_dir, count):
     """
     Builds a page containing details of the best fit for a problem.
     @param prob_results:: the list of results for a problem

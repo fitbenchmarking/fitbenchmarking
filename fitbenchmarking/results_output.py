@@ -29,6 +29,10 @@ import mantid.simpleapi as msapi
 
 
 from logging_setup import logger
+from result_processing import numpy_restables
+from result_processing import rst_table
+from result_processing import visual_pages
+from result_processing import misc
 
 # Some naming conventions for the output files
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -43,31 +47,34 @@ def save_results_tables(minimizers, results_per_test, group_name,
     """
     """
 
-    tables_dir = make_result_tables_directory(results_dir, group_name)
-    linked_problems = build_indiv_linked_problems(results_per_test, group_name,
-                                                  results_dir)
+    tables_dir = misc.make_restables_dir(results_dir, group_name)
+    linked_problems = create_linked_probs(results_per_test, group_name,
+                                          results_dir)
 
     accuracy_tbl, runtime_tbl = \
-    postproc.calc_accuracy_runtime_tbls(results_per_test, minimizers)
-    norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = \
-    postproc.calc_norm_summary_tables(accuracy_tbl, runtime_tbl)
+    numpy_restables.create_accuracy_runtime_tbls(results_per_test, minimizers)
+    norm_acc_rankings, norm_runtimes = \
+    numpy_restables.create_norm_tbls(accuracy_tbl, runtime_tbl)
+    sum_cells_acc, sum_cells_runtime = \
+    numpy_restables.create_summary_tbls(norm_acc_rankings, norm_runtimes)
 
     # Save accuracy table for this group of fit problems
-    tbl_acc_indiv = build_rst_table(minimizers, linked_problems,
-                                    norm_acc_rankings,
-                                    comparison_type='accuracy',
-                                    comparison_dim='',
-                                    using_errors=use_errors,
-                                    color_scale=color_scale)
+    tbl_acc_indiv = rst_table.create(minimizers, linked_problems,
+                                     norm_acc_rankings,
+                                     comparison_type='accuracy',
+                                     comparison_dim='',
+                                     using_errors=use_errors,
+                                     color_scale=color_scale)
     save_tables(tables_dir, tbl_acc_indiv, use_errors, group_name,
                 FILENAME_SUFFIX_ACCURACY)
+
     # Save runtime table for this group of fit problems
-    tbl_runtime_indiv = build_rst_table(minimizers, linked_problems,
-                                        norm_runtimes,
-                                        comparison_type='runtime',
-                                        comparison_dim='',
-                                        using_errors=use_errors,
-                                        color_scale=color_scale)
+    tbl_runtime_indiv = rst_table.create(minimizers, linked_problems,
+                                         norm_runtimes,
+                                         comparison_type='runtime',
+                                         comparison_dim='',
+                                         using_errors=use_errors,
+                                         color_scale=color_scale)
 
     save_tables(tables_dir, tbl_acc_indiv, use_errors, group_name,
                 FILENAME_SUFFIX_RUNTIME)
@@ -75,7 +82,7 @@ def save_results_tables(minimizers, results_per_test, group_name,
     logging.shutdown()
 
 
-def build_indiv_linked_problems(results_per_test, group_name, results_dir):
+def create_linked_probs(results_per_test, group_name, results_dir):
     """
     """
     # Count keeps track if it is the same problem but different starting point
@@ -92,7 +99,7 @@ def build_indiv_linked_problems(results_per_test, group_name, results_dir):
         prev_name = name
         name_index = name + ' ' + str(count)
         name = '`' + name_index + ' ' + \
-               build_VDpage(prob_results, group_name, results_dir, count)
+               visual_pages.create(prob_results, group_name, results_dir, count)
         linked_problems.append(name)
 
     return linked_problems
