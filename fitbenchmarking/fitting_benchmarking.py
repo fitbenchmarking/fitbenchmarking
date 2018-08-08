@@ -171,9 +171,11 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
                         format(minimizer_name, status))
 
         results_fit_problem.append(results_problem)
-        previous_name, count = make_plots(prob, group_results_dir, best_fit,
-                                          wks, previous_name, count,
-                                          fit_function)
+
+        if not best_fit is None:
+            previous_name, count = make_plots(prob, group_results_dir, best_fit,
+                                              wks, previous_name, count,
+                                              fit_function)
 
     return results_fit_problem
 
@@ -389,7 +391,7 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt',
 
 
     if fit_result is None:
-        return 'failed', np.nan, None, None
+        return 'failed', None, None, None
     else:
         param_tbl = fit_result.OutputParameters
         if param_tbl:

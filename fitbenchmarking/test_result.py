@@ -28,7 +28,7 @@ class FittingTestResult(object):
     def __init__(self):
         self.problem = None
         self.fit_status = None
-        self.fit_chi_sq = None
+        self.chi_sq = None
 
         # Workspace with data to fit
         self.fit_wks = None
