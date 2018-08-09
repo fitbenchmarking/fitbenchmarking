@@ -24,16 +24,17 @@ Functions for plotting the fits.
 
 from __future__ import (absolute_import, division, print_function)
 
+import os
 import mantid.simpleapi as msapi
 from plotHelper import *
 
 
 def make_plots(prob, wks, function, best_fit, previous_name, count,
-              group_results_dir):
+               group_results_dir):
     """
     """
 
-    setup_dirs(group_results_dir)
+    figures_dir = setup_dirs(group_results_dir)
     previous_name, count = problem_count(prob, previous_name, count)
 
     raw_data = get_data_points(wks)
@@ -138,13 +139,16 @@ def problem_count(prob, previous_name, count):
     return previous_name, count
 
 
-def setup_dirs(visuals_dir):
+def setup_dirs(group_results_dir):
     """
     """
 
-    support_pages_dir = os.path.join(visuals_dir, "tables", "support_pages")
+    support_pages_dir = os.path.join(group_results_dir, "tables",
+                                     "support_pages")
     if not os.path.exists(support_pages_dir):
             os.makedirs(support_pages_dir)
     figures_dir = os.path.join(support_pages_dir, "figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
+
+    return figures_dir

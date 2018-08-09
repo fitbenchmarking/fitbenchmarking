@@ -113,12 +113,12 @@ def get_nist_model(lines, idx):
         logger.error("Could not find equation, index went out of bounds!")
         idxerr = True
 
-    equation_text = get_equation_text(lines)
+    equation_text, idx = get_equation_text(lines, idxerr, idx)
 
     return equation_text, idx
 
 
-def get_equation_text(lines):
+def get_equation_text(lines, idxerr, idx):
     """
     """
     # Next non-empty lines are assumed to continue the equation
@@ -131,7 +131,7 @@ def get_equation_text(lines):
     if not equation_text:
         raise RuntimeError("Could not find the equation!")
 
-    return equation_text
+    return equation_text, idx
 
 
 def get_nist_starting_values(lines, idx):

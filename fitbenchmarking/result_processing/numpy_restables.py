@@ -37,7 +37,7 @@ def create_accuracy_runtime_tbls(results_per_test, minimizers):
     """
     """
 
-    accuracy_tlb, time_tbl = init_numpy_tables(results_per_test, minimizers)
+    accuracy_tbl, time_tbl = init_numpy_tbls(results_per_test, minimizers)
     for test_idx in range(0, len(results_per_test)):
         for minimiz_idx in range(0, len(minimizers)):
             accuracy_tbl[test_idx, minimiz_idx] = \
@@ -80,7 +80,7 @@ def create_summary_tbls(norm_acc_rankings, norm_runtimes):
     return summary_cells_acc, summary_cells_runtime
 
 
-def init_numpy(results_per_test, minimizers):
+def init_numpy_tbls(results_per_test, minimizers):
     """
     """
 

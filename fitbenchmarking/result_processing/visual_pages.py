@@ -26,6 +26,7 @@ from __future__ import (absolute_import, division, print_function)
 import os
 from docutils.core import publish_string
 from result_processing import fitdetails_tbls
+from utils.logging_setup import logger
 
 # Some naming conventions for the output files
 FILENAME_EXT_TXT = 'txt'
@@ -67,9 +68,8 @@ def create_rst_page(name, figure_data, figure_start, figure_fit, details_table,
     space = "|\n|\n|\n\n"
     title = generate_rst_title(name)
     data_plot = generate_rst_data_plot(figure_data)
-    starting_plot = generate_rst_starting_plot(figure_start)
-    solution_plot = generate_rst_solution_plot(figure_fit, details_table,
-                                               minimizer)
+    starting_plot = generate_rst_starting_plot(figure_start,details_table)
+    solution_plot = generate_rst_solution_plot(figure_fit, minimizer)
 
     rst_text = title + space + data_plot + starting_plot + solution_plot + \
                space + see_also_link
@@ -108,7 +108,7 @@ def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
 
     support_pages_dir = os.path.join(results_dir, "nist", "tables",
                                      "support_pages")
-    if not os.exists(support_pages_dir):
+    if not os.path.exists(support_pages_dir):
         os.makedirs(support_pages_dir)
     details_table = fitdetails_tbls.create(function_def)
     see_also_link = 'See also:\n ' + linked_name + \
@@ -124,7 +124,7 @@ def setup_neutron_VDpage_misc(function_def, results_dir):
     """
     support_pages_dir = os.path.join(results_dir, "neutron", "tables",
                                      "support_pages")
-    if not os.exists(support_pages_dir):
+    if not os.path.exists(support_pages_dir):
         os.makedirs(support_pages_dir)
     details_table = fitdetails_tbls.create(function_def)
     see_also_link = ''
@@ -198,22 +198,22 @@ def generate_rst_data_plot(figure_data):
     return data_plot
 
 
-def generate_rst_starting_plot(figure_start):
+def generate_rst_starting_plot(figure_start, fit_details_tbl):
     """
     Helper function that generates an rst figure of the starting guess plot
     png image contained at path figure_start.
     """
     starting_plot = 'Plot of the initial starting guess' + '\n'
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
-    starting_plot += '*Minimizer*: Levenberg-Marquardt \n\n'
+    starting_plot += '*Functions*:\n\n'
+    starting_plot += fit_details_tbl
     starting_plot += ('.. figure:: ' + figure_start  + '\n' +
                       '   :align: center' + '\n\n')
 
     return starting_plot
 
 
-def generate_rst_solution_plot(figure_fit, fit_function_details_table,
-                               minimizer):
+def generate_rst_solution_plot(figure_fit, minimizer):
     """
     Helper function that generates an rst figure of the fitted problem
     png image contained at path figure_fit.
@@ -222,8 +222,6 @@ def generate_rst_solution_plot(figure_fit, fit_function_details_table,
     solution_plot = 'Plot of the solution found' + '\n'
     solution_plot += ('-' * len(solution_plot)) + '\n\n'
     solution_plot += '*Minimizer*: ' + minimizer + '\n\n'
-    solution_plot += '*Functions*:\n\n'
-    solution_plot += fit_function_details_table
     solution_plot += ('.. figure:: ' + figure_fit + '\n' +
                       '   :align: center' + '\n\n')
 

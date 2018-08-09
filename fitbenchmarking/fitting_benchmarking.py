@@ -56,7 +56,7 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
     for prob_file in problem_files:
         prob = parse_problem_file(group_name, prob_file)
         results_prob = \
-        fitbm_one_problem(prob, group_results_dir, minimizers, use_errors)
+        fitbm_one_problem(prob, minimizers, use_errors, group_results_dir)
         results_per_problem.extend(results_prob)
 
     return results_per_problem
@@ -67,9 +67,9 @@ def parse_problem_file(group_name, prob_file):
     """
 
     if group_name in ['nist']:
-        prob = parse_nist.load_data(prob_file)
+        prob = parse_nist.load_file(prob_file)
     elif group_name in ['neutron']:
-        prob = parse_neutron.load_data(prob_file)
+        prob = parse_neutron.load_file(prob_file)
     else:
         raise NameError("Could not find group name! Please check if it was"
                         "given correctly...")

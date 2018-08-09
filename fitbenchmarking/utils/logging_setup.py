@@ -39,7 +39,7 @@ FORMATTER='%(asctime)s %(name)s %(levelname)s: %(message)s'
 
 formatter = logging.Formatter(FORMATTER, "%H:%M:%S")
 handler = logging.FileHandler(logs_path + os.sep + 'fitbenchmarking.log',
-                              mode='w')
+                              mode='a')
 handler.setFormatter(formatter)
 logger = logging.getLogger('fitbenchmarking')
 logger.setLevel(logging.DEBUG)

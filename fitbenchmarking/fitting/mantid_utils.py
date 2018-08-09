@@ -111,11 +111,12 @@ def parse_nist_function_definitions(prob, nb_start_vals):
     function_defs = []
     for start_idx in range(0, nb_start_vals):
         start_val_str = ''
-
-        for param in prob.nb_start_vals:
+        for param in prob.starting_values:
             start_val_str += ('{0}={1},'.format(param[0], param[1][start_idx]))
-            function_defs.append("name=UserFunction, Formula={0}, {1}".
-                                 format(prob.equation, start_val_str))
+
+        function_defs.append("name=UserFunction, Formula={0}, {1}".
+                             format(prob.equation, start_val_str))
+
     return function_defs
 
 

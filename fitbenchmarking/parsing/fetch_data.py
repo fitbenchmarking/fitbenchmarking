@@ -43,7 +43,7 @@ def get_nist_problem_files(search_dir):
     nist_lower = [os.path.join(search_dir, fname) for fname in nist_lower]
     nist_average = [os.path.join(search_dir, fname) for fname in nist_average]
     nist_higher = [os.path.join(search_dir, fname) for fname in nist_higher]
-    problem_files = [nist_lower_files, nist_average_files, nist_higher_files]
+    problem_files = [nist_lower, nist_average, nist_higher]
 
     return problem_files
 

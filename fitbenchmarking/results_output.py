@@ -109,14 +109,14 @@ def save_tables(tables_dir, table_data, use_errors, group_name, metric):
     """
     """
 
-    save_table_to_file(results_dir=tables_dir, table_data=table_data,
-                       errors=use_errors, group_name=group_name,
-                       metric_type=metric,
-                       file_extension=FILENAME_EXT_TXT)
-    save_table_to_file(results_dir=tables_dir, table_data=table_data,
-                       errors=use_errors, group_name=group_name,
-                       metric_type=metric,
-                       file_extension=FILENAME_EXT_HTML)
+    rst_table.save_table_to_file(results_dir=tables_dir, table_data=table_data,
+                                 errors=use_errors, group_name=group_name,
+                                 metric_type=metric,
+                                 file_extension=FILENAME_EXT_TXT)
+    rst_table.save_table_to_file(results_dir=tables_dir, table_data=table_data,
+                                 errors=use_errors, group_name=group_name,
+                                 metric_type=metric,
+                                 file_extension=FILENAME_EXT_HTML)
 
 
 

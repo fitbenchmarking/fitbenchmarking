@@ -38,12 +38,11 @@ from utils.logging_setup import logger
 MAX_FLOAT = sys.float_info.max
 
 
-def fitbm_one_problem(prob, minimizers, use_errors=True, count=0,
-                      group_results_dir=None):
+def fitbm_one_problem(prob, minimizers, use_errors=True, group_results_dir=None):
     """
     """
 
-    previous_name = None
+    previous_name, count = None, 0
     results_fit_problem = []
     wks, cost_function = mantid_utils.wks_cost_function(prob, use_errors)
     function_definitions = mantid_utils.function_definitions(prob)
@@ -70,10 +69,10 @@ def fit_one_function_def(prob, wks, function, minimizers, cost_function):
     results_problem = []
     for minimizer in minimizers:
 
-        status, params, errors, fit_wks, runtime = \
+        status, fit_wks, params, errors, runtime = \
         fit_algorithms.mantid(prob, wks, function, minimizer, cost_function)
         chi_sq, min_chi_sq, best_fit = mantid_chisq(status, fit_wks, min_chi_sq,
-                                                    best_fit)
+                                                    best_fit, minimizer)
         result = store_results(prob, status, params, errors, chi_sq, runtime,
                                minimizer, function)
         results_problem.append(result)
@@ -81,17 +80,17 @@ def fit_one_function_def(prob, wks, function, minimizers, cost_function):
     return results_problem, best_fit
 
 
-def mantid_chisq(status, fit_wks, min_chi_sq, best_fit):
+def mantid_chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
     """
     """
 
-    if status is not 'failed':
+    if status != 'failed':
         chi_sq = fit_misc.compute_chisq(fit_wks.readY(2))
         if chi_sq < min_chi_sq and not chi_sq == np.nan:
             best_fit = mantid_utils.optimum(fit_wks, minimizer, best_fit)
             min_chi_sq = chi_sq
     else:
-        chi_sq = None
+        chi_sq = np.nan
 
     return chi_sq, min_chi_sq, best_fit
 

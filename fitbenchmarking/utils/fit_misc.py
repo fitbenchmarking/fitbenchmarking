@@ -23,18 +23,12 @@ Utility functions for fit benchmarking a problem.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 
 import numpy as np
-from utils.logging_setup import logger
 
 
 def compute_chisq(differences):
     """
     """
-
-    if fit_wks:
-        chi_sq = np.sum(np.square(differences))
-    else:
-        chi_sq = np.nan
-        logger.warning("No output fit workspace")
+    chi_sq = np.sum(np.square(differences))
 
     return chi_sq
 

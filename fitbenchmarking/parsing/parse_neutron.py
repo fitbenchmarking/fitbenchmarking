@@ -32,7 +32,7 @@ from utils import test_problem
 from utils.logging_setup import logger
 
 
-def load_data(fname):
+def load_file(fname):
     """
     """
 

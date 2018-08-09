@@ -24,9 +24,12 @@ Set up and build the visual display pages for various types of problems.
 from __future__ import (absolute_import, division, print_function)
 
 import os
+import numpy as np
 from docutils.core import publish_string
 from result_processing.misc import build_items_links
 from result_processing.misc import display_name_for_minimizers
+from result_processing.misc import weighted_suffix_string
+from utils.logging_setup import logger
 
 
 # Directory of this script (e.g. in source)
@@ -158,7 +161,7 @@ def format_cell_value(value, width=None, color_scale=None, items_link=None):
     if not color_scale:
         value_text = no_color_scale_cv(items_link)
     else:
-        value_text = color_scale_cv(color_scale)
+        value_text = color_scale_cv(color_scale, value)
 
     if width is not None:
         value_text = value_text.ljust(width, ' ')
@@ -178,7 +181,7 @@ def no_color_scale_cv(items_link):
     return value_text
 
 
-def color_scale_cv(color_scale):
+def color_scale_cv(color_scale, value):
     """
     """
 
