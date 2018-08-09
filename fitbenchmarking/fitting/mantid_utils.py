@@ -26,10 +26,10 @@ from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
 import mantid.simpleapi as msapi
-from plotting import plotHelper
+from fitting.plotting import plot_helper
 
 
-def parse_result(fit_result):
+def parse_result(fit_result, t_start, t_end):
     """
     DESC
     """
@@ -52,7 +52,7 @@ def optimum(fit_wks, minimizer_name, best_fit):
     """
 
     tmp = msapi.ConvertToPointData(fit_wks)
-    best_fit = plotHelper.data(minimizer_name, tmp.readX(1), tmp.readY(1))
+    best_fit = plot_helper.data(minimizer_name, tmp.readX(1), tmp.readY(1))
 
     return  best_fit
 

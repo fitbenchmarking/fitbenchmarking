@@ -28,7 +28,7 @@ import logging
 import mantid.simpleapi as msapi
 
 
-from logging_setup import logger
+from utils.logging_setup import logger
 from result_processing import numpy_restables
 from result_processing import rst_table
 from result_processing import visual_pages

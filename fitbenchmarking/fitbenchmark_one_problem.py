@@ -25,6 +25,7 @@ Fit benchmark one problem functions.
 
 from __future__ import (absolute_import, division, print_function)
 
+import sys
 import numpy as np
 import mantid.simpleapi as msapi
 
@@ -38,7 +39,7 @@ MAX_FLOAT = sys.float_info.max
 
 
 def fitbm_one_problem(prob, minimizers, use_errors=True, count=0,
-                      roup_results_dir):
+                      group_results_dir=None):
     """
     """
 
@@ -64,22 +65,35 @@ def fitbm_one_problem(prob, minimizers, use_errors=True, count=0,
 def fit_one_function_def(prob, wks, function, minimizers, cost_function):
     """
     """
+
     min_chi_sq, best_fit = MAX_FLOAT, None
     results_problem = []
     for minimizer in minimizers:
 
         status, params, errors, fit_wks, runtime = \
         fit_algorithms.mantid(prob, wks, function, minimizer, cost_function)
-        chi_sq = fit_misc.compute_chisq(fit_wks.readY(2))
-        if chi_sq < min_chi_sq and not chi_sq == np.nan:
-            best_fit = mantid_utils.optimum(fit_wks, minimizer, best_fit)
-            min_chi_sq = chi_sq
-
+        chi_sq, min_chi_sq, best_fit = mantid_chisq(status, fit_wks, min_chi_sq,
+                                                    best_fit)
         result = store_results(prob, status, params, errors, chi_sq, runtime,
                                minimizer, function)
         results_problem.append(result)
 
     return results_problem, best_fit
+
+
+def mantid_chisq(status, fit_wks, min_chi_sq, best_fit):
+    """
+    """
+
+    if status is not 'failed':
+        chi_sq = fit_misc.compute_chisq(fit_wks.readY(2))
+        if chi_sq < min_chi_sq and not chi_sq == np.nan:
+            best_fit = mantid_utils.optimum(fit_wks, minimizer, best_fit)
+            min_chi_sq = chi_sq
+    else:
+        chi_sq = None
+
+    return chi_sq, min_chi_sq, best_fit
 
 
 def store_results(prob, status, params, errors, chi_sq, runtime,

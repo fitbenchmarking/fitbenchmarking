@@ -28,7 +28,7 @@ from __future__ import (absolute_import, division, print_function)
 import os, re
 import numpy as np
 
-import utils.test_problem
+from utils import test_problem
 from utils.logging_setup import logger
 
 
@@ -41,7 +41,7 @@ def load_data(fname):
         prob = test_problem.FittingTestProblem()
         data_files_dir = get_data_files_dir(fname, entries['input_file'])
         store_main_problem_data(data_files_dir, prob)
-        store_misc_problem_data(prob, entires)
+        store_misc_problem_data(prob, entries)
 
     return prob
 
@@ -95,7 +95,7 @@ def store_main_problem_data(fname, prob):
     prob.ref_residual_sum_sq = 0
 
 
-def store_misc_problem_data(prob, entires):
+def store_misc_problem_data(prob, entries):
     """
     """
 

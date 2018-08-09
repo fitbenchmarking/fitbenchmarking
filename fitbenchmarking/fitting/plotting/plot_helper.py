@@ -142,4 +142,4 @@ class plot(data):
         else:
             output_file = save.replace(",", "")
             logger.info("saving to "+output_file.replace(" ", "_"))
-            plt.savefig(output_file.replace(" ", "_"))
+plt.savefig(output_file.replace(" ", "_"))

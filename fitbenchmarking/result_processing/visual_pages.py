@@ -25,6 +25,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 from docutils.core import publish_string
+from result_processing import fitdetails_tbls
 
 # Some naming conventions for the output files
 FILENAME_EXT_TXT = 'txt'
@@ -42,14 +43,14 @@ def create(prob_results, group_name, results_dir, count):
     best_result = min((result for result in prob_results),
                        key=lambda result: result.chi_sq)
     problem_name = process_problem_name(best_result.problem.name)
-    support_pages_dir, file_path, fit_details_tb, see_also_link = \
+    support_pages_dir, file_path, fit_details_tbl, see_also_link = \
     setup_VDpage_misc(group_name, problem_name, best_result, results_dir, count)
     rst_link = generate_rst_link(file_path)
 
     figure_data, figure_fit, figure_start = \
     get_figure_paths(support_pages_dir, problem_name, count)
-    rst_text = create_rst_page(best_result.problem.name, figure_data, 
-                               figure_start, figure_fit, fit_details_tbl, 
+    rst_text = create_rst_page(best_result.problem.name, figure_data,
+                               figure_start, figure_fit, fit_details_tbl,
                                best_result.minimizer, see_also_link)
     save_VDpages(rst_text, problem_name, file_path)
 
@@ -107,7 +108,9 @@ def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
 
     support_pages_dir = os.path.join(results_dir, "nist", "tables",
                                      "support_pages")
-    details_table = fit_details_rst_table(function_def)
+    if not os.exists(support_pages_dir):
+        os.makedirs(support_pages_dir)
+    details_table = fitdetails_tbls.create(function_def)
     see_also_link = 'See also:\n ' + linked_name + \
                     '\n on NIST website\n\n'
 
@@ -121,7 +124,9 @@ def setup_neutron_VDpage_misc(function_def, results_dir):
     """
     support_pages_dir = os.path.join(results_dir, "neutron", "tables",
                                      "support_pages")
-    details_table = fit_details_rst_table(function_def)
+    if not os.exists(support_pages_dir):
+        os.makedirs(support_pages_dir)
+    details_table = fitdetails_tbls.create(function_def)
     see_also_link = ''
 
     return support_pages_dir, details_table, see_also_link

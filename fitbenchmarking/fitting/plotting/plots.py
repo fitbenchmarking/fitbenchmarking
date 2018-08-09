@@ -33,7 +33,7 @@ def make_plots(prob, wks, function, best_fit, previous_name, count,
     """
     """
 
-    setup_directories(group_results_dir)
+    setup_dirs(group_results_dir)
     previous_name, count = problem_count(prob, previous_name, count)
 
     raw_data = get_data_points(wks)
@@ -41,19 +41,6 @@ def make_plots(prob, wks, function, best_fit, previous_name, count,
     make_best_fit_plot(prob.name, raw_data, best_fit, count, figures_dir)
     make_starting_guess_plot(raw_data, function, wks, prob, count,
                              figures_dir)
-
-    return previous_name, count
-
-
-def problem_count(prob, previous_name, count):
-    """
-    """
-
-    if prob.name == previous_name:
-        count += 1
-    else:
-        count = 1
-        previous_name = prob.name
 
     return previous_name, count
 
@@ -136,3 +123,28 @@ def make_starting_guess_plot(raw_data, function, wks, prob, count,
     start_figure_name = (figures_dir + os.sep + "start for " + prob.name +
                          " " + str(count) + ".png")
     start_fig.make_scatter_plot(start_figure_name)
+
+
+def problem_count(prob, previous_name, count):
+    """
+    """
+
+    if prob.name == previous_name:
+        count += 1
+    else:
+        count = 1
+        previous_name = prob.name
+
+    return previous_name, count
+
+
+def setup_dirs(visuals_dir):
+    """
+    """
+
+    support_pages_dir = os.path.join(visuals_dir, "tables", "support_pages")
+    if not os.path.exists(support_pages_dir):
+            os.makedirs(support_pages_dir)
+    figures_dir = os.path.join(support_pages_dir, "figures")
+    if not os.path.exists(figures_dir):
+        os.makedirs(figures_dir)

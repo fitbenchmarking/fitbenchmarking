@@ -25,9 +25,8 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 from docutils.core import publish_string
-from misc import build_items_links
-from misc import display_name_for_minimizers
-from misc import 
+from result_processing.misc import build_items_links
+from result_processing.misc import display_name_for_minimizers
 
 
 # Directory of this script (e.g. in source)

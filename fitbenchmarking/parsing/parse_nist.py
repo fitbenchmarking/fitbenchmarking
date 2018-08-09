@@ -27,7 +27,7 @@ from __future__ import (absolute_import, division, print_function)
 import os, re
 import numpy as np
 
-import utils.test_problem
+from utils import test_problem
 from utils.logging_setup import logger
 
 
