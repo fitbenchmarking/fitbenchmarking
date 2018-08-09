@@ -75,7 +75,7 @@ def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
 
     return prob_results, results_dir
 
-
+  
 def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
                                minimizers, use_errors=True):
     """
@@ -166,7 +166,6 @@ def do_fitting_benchmark_one_problem(prob, group_results_dir, minimizers,
             result.minimizer = minimizer_name
             result.function_def = fit_function
             results_problem.append(result)
-
             logger.info("*** Using minimizer {0}, Status: {1}".
                         format(minimizer_name, status))
 
@@ -226,6 +225,7 @@ def make_plots(prob, visuals_dir, best_fit, wks, previous_name, count,
     if not os.path.exists(support_pages_dir):
             os.makedirs(support_pages_dir)
     figures_dir = os.path.join(support_pages_dir, "figures")
+
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
 
@@ -312,7 +312,6 @@ def make_starting_guess_plot(raw_data, fit_function, wks, prob, count,
                              figures_dir):
     """
     Function that makes a plot of the starting guess.
-
     @param raw_data :: array that contains the raw data point information
     @param fit_function :: function that must be fitted
     @param wks :: workspace containing the data points information
@@ -391,6 +390,7 @@ def run_fit(wks, prob, function, minimizer='Levenberg-Marquardt',
 
     if fit_result is None:
         return 'failed', None, None, None
+
     else:
         param_tbl = fit_result.OutputParameters
         if param_tbl:
