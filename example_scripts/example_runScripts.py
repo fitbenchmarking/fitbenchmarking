@@ -71,6 +71,7 @@ neutron_data_dir = os.path.join(benchmark_problems_dir,
 #  ../fitbenchmarking/fitbenchmarking/ is taken as the path
 results_dir = None
 
+
 # Whether to use errors in the fitting process
 use_errors = True
 

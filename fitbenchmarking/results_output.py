@@ -43,7 +43,6 @@ FILENAME_EXT_HTML = 'html'
 
 def save_results_tables(minimizers, results_per_test, group_name,
                         use_errors, color_scale=None, results_dir=None):
-
     """
     """
 

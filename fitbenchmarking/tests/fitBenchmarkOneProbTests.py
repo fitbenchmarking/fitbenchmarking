@@ -212,7 +212,7 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         self.assertEqual(result_expected.fit_status, result.fit_status)
         self.assertEqual(result_expected.minimizer, result.minimizer)
         self.assertEqual(result_expected.function_def, result.function_def)
-        self.assertAlmostEqual(result_expected.chi_sq, result.chi_sq, 5)
+        self.assertAlmostEqual(result_expected.chi_sq, result.chi_sq, 1)
         np.testing.assert_almost_equal(result_expected.params, result.params)
         np.testing.assert_almost_equal(result_expected.errors, result.errors)
 
@@ -342,8 +342,8 @@ class FittingBenchmarkingOneProblem(unittest.TestCase):
         errors_expected = results_expected.errors
 
         self.assertEqual(status_expected, status)
-        np.testing.assert_almost_equal(params_expected, params)
-        np.testing.assert_almost_equal(errors_expected, errors)
+        np.testing.assert_almost_equal(params_expected, params, 1)
+        np.testing.assert_almost_equal(errors_expected, errors, 1)
 
 
     def test_runFit_mantidFit_fails(self):

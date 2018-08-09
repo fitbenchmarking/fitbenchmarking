@@ -28,6 +28,7 @@ from utils import create_dirs, setup_problem_groups
 from fitbenchmark_one_problem import fitbm_one_problem
 
 
+
 def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
                          results_dir=None):
     """

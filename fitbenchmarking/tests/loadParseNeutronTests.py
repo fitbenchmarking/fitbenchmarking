@@ -109,24 +109,6 @@ class LoadAndParseNeutronFiles(unittest.TestCase):
                          entries['fit_parameters'])
         self.assertEqual(entries_expected['description'], entries['description'])
 
-
-    def test_getFittingNeutronData_return_MockProblemData(self):
-
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        neutron_mock_data = os.path.join(current_dir, 'mock_problems',
-                                         'data_files', 'NeutronMockData.nxs')
-
-        prob = test_problem.FittingTestProblem()
-        get_fitting_neutron_data(neutron_mock_data, prob)
-        prob_expected = self.MockProblemData()
-
-        np.testing.assert_array_equal(prob_expected.data_x,
-                                      prob.data_x)
-        np.testing.assert_array_equal(prob_expected.data_y,
-                                      prob.data_y)
-        np.testing.assert_array_equal(prob_expected.data_pattern_obs_errors,
-                                      prob.data_pattern_obs_errors)
-
-
+        
 if __name__ == "__main__":
     unittest.main()
