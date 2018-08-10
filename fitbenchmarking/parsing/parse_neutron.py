@@ -34,6 +34,12 @@ from utils.logging_setup import logger
 
 def load_file(fname):
     """
+    Loads a neutron file with all the necessary data.
+
+    @param fname :: path to the neutron problem definition file
+                    that is being loaded
+
+    @returns :: problem object containing all the relevant information
     """
 
     with open(fname) as probf:
@@ -48,10 +54,15 @@ def load_file(fname):
 
 def get_data_files_dir(fname, input_file):
     """
+    Gets the path to the neutron data_files dir.
     sep_idx is used to find the last separator in the problem file path
-    and set up the path for the data_files folder
-    i.e truncates the path to ../Neutron_data
-    and adds ../Neutron_data/data_files
+    and set up the path for the data_files folder i.e truncates the path
+    to ../Neutron_data and adds ../Neutron_data/data_files
+
+    @param fname :: path to the neutron problem definition file
+    @param input_file :: name of the neutron data file
+
+    @returns :: path to the data files directory (str)
     """
 
     prefix = ""
@@ -64,12 +75,17 @@ def get_data_files_dir(fname, input_file):
     return data_files_dir
 
 
-def get_neutron_data_problem_entries(problem_file):
+def get_neutron_data_problem_entries(fname):
     """
+    Get the problem entries from a neutron problem definition file.
+
+    @param fname :: path to the neutron problem definition file
+
+    @returns :: a dictionary with all the entires of the problem file
     """
 
     entries = {}
-    for line in problem_file:
+    for line in fname:
         # Discard comments
         line = line.partition('#')[0]
         line = line.rstrip()
@@ -84,6 +100,11 @@ def get_neutron_data_problem_entries(problem_file):
 
 def store_main_problem_data(fname, prob):
     """
+    Stores the main problem data into the relevant attributes of the
+    problem object.
+
+    @param fname :: path to the neutron problem definition file
+    @param prob :: object holding the problem information
     """
 
     import mantid.simpleapi as msapi
@@ -97,6 +118,11 @@ def store_main_problem_data(fname, prob):
 
 def store_misc_problem_data(prob, entries):
     """
+    Stores the misc data from the problem file into the problem object.
+
+    @param prob :: object holding the problem information
+    @param entires :: dictionary containg the entires from the
+                      problem definition object
     """
 
     prob.name = entries['name']
