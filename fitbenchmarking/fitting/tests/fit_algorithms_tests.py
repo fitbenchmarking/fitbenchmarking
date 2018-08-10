@@ -18,7 +18,7 @@ from utils import test_problem
 
 class FittingAlgorithmsTests(unittest.TestCase):
 
-    def NISTproblem(self):
+    def NIST_problem(self):
         """
         Helper function.
         Sets up the problem object for the nist problem file Misra1a.dat
@@ -53,7 +53,7 @@ class FittingAlgorithmsTests(unittest.TestCase):
         Sets up the parameters needed to run fit_algorithms.mantid
         """
 
-        prob = self.NISTproblem()
+        prob = self.NIST_problem()
         wks = msapi.CreateWorkspace(DataX=prob.data_x,
                                     DataY=prob.data_y,
                                     DataE=np.sqrt(prob.data_y))
@@ -72,7 +72,7 @@ class FittingAlgorithmsTests(unittest.TestCase):
         but fail due to incorrect minimizer name.
         """
 
-        prob = self.NISTproblem()
+        prob = self.NIST_problem()
         wks = msapi.CreateWorkspace(DataX=prob.data_x,
                                     DataY=prob.data_y,
                                     DataE=np.sqrt(prob.data_y))
