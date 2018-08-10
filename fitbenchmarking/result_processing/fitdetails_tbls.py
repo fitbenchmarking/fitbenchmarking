@@ -26,8 +26,13 @@ from __future__ import (absolute_import, division, print_function)
 
 def create(functions_str):
     """
-    Builds an rst table containing the functional form and the parameters
-    given the function definition string of the problem.
+    Creates an rst table of the function definition string used
+    to fit the problem data. The table can be seen in the support
+    pages.
+
+    @param function_str :: mantid-formatted function definition str
+
+    @returns :: rst table of the function string
     """
     functions = functions_str.split(';')
     names, params = [], []
@@ -50,8 +55,13 @@ def create(functions_str):
 
 def parse_nist_function_def(function):
     """
-    Helper function that parses the function definition of a nist problem
+    Helper function that parses the function definition of a NIST problem
     and returns the function name and parameters.
+
+    @param function :: NIST function definition string
+
+    @returns :: formatted function name and the final function
+                parameters (after it has been fitted)
     """
     first_comma = function.find(',')
     second_comma = function.find(',', first_comma + 1)
@@ -66,6 +76,13 @@ def parse_neutron_function_def(function, function_names, function_parameters):
     """
     Helper function that parses the function definition of a neutron problem
     and returns the function name and parameters.
+
+    @param function :: neutron function definition string
+    @param function_names :: array of names of the problem
+    @param function_parameters :: array of the parameters of the problem
+
+    @returns :: new array with appended function name and array
+                with appended corresponding parameters
     """
     first_comma = function.find(',')
     if first_comma != -1:
@@ -85,22 +102,32 @@ def fit_details_table_hdims(function_names, function_parameters):
     """
     Helper function that resolves the header dimensions of the fit details
     table present in the rst visual display page.
+
+    @param function_names :: array of names of the problem
+    @param function_parameters :: array of the parameters of the problem
+
+    @returns :: dimensions of the name and params columns (int)
     """
 
-    name_header_dim = max(len(name) for name in function_names)
-    params_header_dim = max(len(parameter) for parameter in function_parameters)
+    name_hdim = max(len(name) for name in function_names)
+    params_hdim = max(len(parameter) for parameter in function_parameters)
 
-    if name_header_dim < 4:
-        name_header_dim = 4
-    if params_header_dim < 10:
-        params_header_dim = 10
+    if name_hdim < 4:
+        name_hdim = 4
+    if params_hdim < 10:
+        params_hdim = 10
 
-    return name_header_dim, params_header_dim
+    return name_hdim, params_hdim
 
 
 def generate_fit_det_header(name_dim, params_dim):
     """
-    Generates header of table containing the fit details.
+    Generates header of table containing the fit details in rst.
+
+    @param name_dim :: the dimensions of the name column
+    @param params_dim :: the dimensions of the parameters column
+
+    @returns :: the header of the fit details table
     """
 
     header = ''
@@ -114,7 +141,15 @@ def generate_fit_det_header(name_dim, params_dim):
 
 def generate_fit_det_body(names, params, name_dim, params_dim):
     """
-    Generates the body of table containing fit details.
+    Generates the body of table containing fit details in rst.
+
+    @param names :: array of strings containing the function names
+    @param params :: array of strings that contain the parameters
+                     of the functions used in fitting
+    @param name_dim :: the dimensions of the name column
+    @param params_dim :: the dimensions of the parameters column
+
+    @returns :: body of the fit details table
     """
 
     body = ''

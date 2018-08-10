@@ -39,6 +39,19 @@ SCRIPT_DIR = os.path.dirname(__file__)
 def create(columns_txt, rows_txt, cells, comparison_type, comparison_dim,
            using_errors, color_scale=None):
     """
+    Creates a rst table of accuracy and runtime tables obtained
+    through fitting a certain problem set by using various
+    minimizers and a fitting algorithm.
+
+    @param columns_txt :: array of minimizers used in fitting
+    @param rows_txt :: array of the problems that were fitted
+    @param cells :: numpy array of the results (either runtime or accuracy)
+    @param comparison_type :: the comparison type
+    @param comparison_dim :: the comparison dimension, either acc or runtime
+    @param using_errors :: boolean whether to use errors or not
+    @param color_scale :: color scale for coloring the cells
+
+    @returns :: rst table of the results
     """
 
     columns_txt = display_name_for_minimizers(columns_txt)
@@ -56,13 +69,24 @@ def create(columns_txt, rows_txt, cells, comparison_type, comparison_dim,
     tbl_body = create_table_body(cells, items_link, rows_txt, first_col_len,
                                  cell_len, color_scale, tbl_footer)
 
-    return tbl_header  + tbl_body
+    return tbl_header + tbl_body
 
 
 def create_table_body(cells, items_link, rows_txt, first_col_len, cell_len,
                       color_scale, tbl_footer):
     """
     Creates the body of the rst table that holds all the fitting results.
+
+    @param cells :: numpy array of the results (either runtime or accuracy)
+    @param items_link :: link to the items
+    @param rows_txt :: array of the problems that were fitted
+    @param first_col_len :: the length of the first column (contains
+                            the function names)
+    @param cell_len :: the length of the cells in the table
+    @param color_scale :: color scale for coloring the cells
+    @param tbl_footer :: the rst footer of the table
+
+    @returns :: the rst table body
     """
 
     tbl_body = ''
@@ -81,7 +105,11 @@ def create_table_body(cells, items_link, rows_txt, first_col_len, cell_len,
 
 def create_link(items_link):
     """
-    Pick either individual or group link
+    Create either individual or group link.
+
+    @param items_link :: items_link string or array
+
+    @returns :: the correct items_link
     """
 
     link = None
@@ -95,6 +123,14 @@ def create_link(items_link):
 
 def calc_cell_len(columns_txt, items_link, cells, color_scale=None):
     """
+    Calculates the cell length of the rst table.
+
+    @param columns_txt :: array of minimizers used in fitting
+    @param items_link :: link to the items
+    @param cells :: numpy array of the results (either runtime or accuracy)
+    @param color_scale :: color scale for coloring the cells
+
+    @returns :: the cell length of the rest table
     """
 
     max_header = len(max((col for col in columns_txt), key=len))
@@ -111,6 +147,11 @@ def calc_cell_len(columns_txt, items_link, cells, color_scale=None):
 
 def determine_max_item(items_link):
     """
+    Determines the item that has the maximum length.
+
+    @param items_links :: items_link string or array
+
+    @returns :: the maximum items link
     """
 
     max_item = None
@@ -124,6 +165,13 @@ def determine_max_item(items_link):
 
 def calc_first_col_len(cell_len, rows_txt):
     """
+    Calculates the first column length as it tends to be disproportionately
+    long.
+
+    @param cell_len :: the length of the cells in the table
+    @param rows_txt :: array of the problems that were fitted
+
+    @returns :: the length of the first column
     """
 
     first_col_len = cell_len
@@ -137,6 +185,14 @@ def calc_first_col_len(cell_len, rows_txt):
 
 def build_header_chunks(first_col_len, cell_len, columns_txt):
     """
+    Creates the header chunks for the rst table.
+
+    @param first_col_len :: the length of the first column (contains
+                            the function names)
+    @param cell_len :: the length of the cells in the table
+    @param columns_txt :: array of minimizers used in fitting
+
+    @results :: the top, middle and bottom of the rst table header
     """
 
     tbl_header_top = '+'
@@ -157,6 +213,14 @@ def build_header_chunks(first_col_len, cell_len, columns_txt):
 
 def format_cell_value(value, width=None, color_scale=None, items_link=None):
     """
+    Formats the cell values and adds color if a color scale is provided.
+
+    @param value :: the values of the color if it is added
+    @param width :: the width of the cell if it is given
+    @param color_scale :: color scale for coloring the cells
+    @param items_links :: items_link string or array
+
+    @returns :: the correct value text string
     """
     if not color_scale:
         value_text = no_color_scale_cv(items_link)
@@ -171,6 +235,12 @@ def format_cell_value(value, width=None, color_scale=None, items_link=None):
 
 def no_color_scale_cv(items_link):
     """
+    Creates the values text if no color scale is provided.
+
+    @param items_links :: items_link string or array
+
+    @returns :: the no coloring value text string, containing
+                the items_links
     """
 
     if not items_link:
@@ -183,6 +253,12 @@ def no_color_scale_cv(items_link):
 
 def color_scale_cv(color_scale, value):
     """
+    Creates the values text if a color scale is provided.
+
+    @param color_scale :: color scale for coloring the cells
+    @param value :: the values of the color if it is added
+
+    @returns :: the value text with added color values
     """
 
     color = ''
@@ -198,12 +274,23 @@ def color_scale_cv(color_scale, value):
     return value_text
 
 
-def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
+def save_table_to_file(results_dir, table_data, use_errors, group_name, metric_type,
                        file_extension):
     """
+    Saves the rst table to a file, both in text and html formats.
+
+    @param results_dir :: directory where results are located
+    @param table_data :: the data of the table
+    @param use_errors :: boolean with wether or not to use errors
+    @param group_name :: the name of the problem group for
+                         which the table is built
+    @param metric_type :: either accuracy or runitme data
+    @param file_extension :: text or html
+
+    @returns :: html and/or text tables of the results
     """
 
-    file_name = set_file_name(errors, metric_type, group_name, results_dir)
+    file_name = set_file_name(use_errors, metric_type, group_name, results_dir)
 
     if file_extension == 'html':
         table_data = convert_rst_to_html(table_data)
@@ -216,12 +303,19 @@ def save_table_to_file(results_dir, table_data, errors, group_name, metric_type,
                         working_directory=results_dir))
 
 
-def set_file_name(errors, metric_type, group_name, results_dir):
+def set_file_name(use_errors, metric_type, group_name, results_dir):
     """
+    Sets the name of the html/text table file that is saved.
+
+    @param use_errors :: boolean with wether or not to use errors
+    @param metric_type :: either accuracy or runitme data
+    @param group_name :: the name of the problem group for
+                         which the table is built
+    @param results_dir :: directory where results are located
     """
 
     file_name = ('{group_name}_{metric_type}_{weighted}_table.'
-                 .format(weighted=weighted_suffix_string(errors),
+                 .format(weighted=weighted_suffix_string(use_errors),
                          metric_type=metric_type, group_name=group_name))
     file_name = os.path.join(results_dir, file_name)
 
@@ -230,10 +324,15 @@ def set_file_name(errors, metric_type, group_name, results_dir):
 
 def convert_rst_to_html(table_data):
     """
+    Converts the rst tables into html.
+
+    @param table_data :: rst table containing all the data
+
+    @returns :: the rst table in html
     """
 
-    rst_content = '.. include:: ' + str(os.path.join(SCRIPT_DIR,
-                                                     'color_definitions.txt'))
+    rst_content = '.. include:: ' + \
+                  str(os.path.join(SCRIPT_DIR, 'color_definitions.txt'))
     rst_content += '\n' + table_data
     table_data = publish_string(rst_content, writer_name='html')
 

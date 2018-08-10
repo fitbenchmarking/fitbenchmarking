@@ -1,5 +1,7 @@
 """
-Functions that create numpy tables of the results.
+Functions that create numpy arrays of the accuracy and runtime obtained
+through fitting a set of problems by using various minimizers and a
+certain fitting algorithm.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -35,6 +37,12 @@ except ImportError:
 
 def create_accuracy_runtime_tbls(results_per_test, minimizers):
     """
+    Creates numpy tables of the accuracy and the runtime.
+
+    @param results_per_test :: object that holds the results of the fitting
+    @param minimizers :: array of strings containing minimizer names
+
+    @returns :: numpy arrays of the results
     """
 
     accuracy_tbl, time_tbl = init_numpy_tbls(results_per_test, minimizers)
@@ -51,6 +59,12 @@ def create_accuracy_runtime_tbls(results_per_test, minimizers):
 
 def create_norm_tbls(accuracy_tbl, time_tbl):
     """
+    Normalises the results per problem with respect to the lowest one.
+
+    @param accuracy_tbl :: numpy array of the obtained chis
+    @param time_tbl :: numpy array of the obtained runtimes
+
+    @returns :: numpy arrays of normalised accuracy and runtime tables
     """
 
     min_chi_sq = np.nanmin(accuracy_tbl, 1)
@@ -65,6 +79,14 @@ def create_norm_tbls(accuracy_tbl, time_tbl):
 
 def create_summary_tbls(norm_acc_rankings, norm_runtimes):
     """
+    Creates summary tables of the obtained results, i.e. the minimum
+    maximum, mean and median of each column in the normalised numpy
+    arrays.
+
+    @param norm_acc_rankings :: the normalised accuracy results numpy array
+    @param norm_runtimes :: the normalised runtime results numpy array
+
+    @returns :: the summary tables for both runtime and accuracy
     """
 
     summary_cells_acc = np.array([np.nanmin(norm_acc_rankings, 0),
@@ -82,6 +104,12 @@ def create_summary_tbls(norm_acc_rankings, norm_runtimes):
 
 def init_numpy_tbls(results_per_test, minimizers):
     """
+    Helper function that initialises the numpy tables.
+
+    @param results_per_test :: object that holds the results of the fitting
+    @param minimizers :: array of strings containing minimizer names
+
+    @returns :: accuracy and runtime numpy arrays filled with zeros
     """
 
     num_tests = len(results_per_test)

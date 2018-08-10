@@ -30,7 +30,11 @@ import os
 def display_name_for_minimizers(names):
     """
     Converts minimizer names into their "display names". For example
-    to rename DTRS to "Trust region" or similar
+    to rename DTRS to "Trust region" or similar.
+
+    @param names :: array of minimizer names
+
+    @returns :: the converted minimizer name array
     """
 
     display_names = names
@@ -46,6 +50,11 @@ def weighted_suffix_string(use_errors):
     """
     Produces a suffix weighted/unweighted. Used to generate names of
     output files.
+
+    @param use_errors :: boolean showing if the user wants to consider
+                         errors on the data points or not
+
+    @returns :: 'weighted' or 'unweighted' string
     """
     values = {True: 'weighted', False: 'unweighted'}
     return values[use_errors]
@@ -53,12 +62,14 @@ def weighted_suffix_string(use_errors):
 
 def build_items_links(comparison_type, comp_dim, using_errors):
     """
-    Figure out the links from rst table cells to other pages/sections of pages.
+    Figure out the links from rst table cells to other pages/sections
+    of pages.
 
-    @param comparison_type :: whether this is a 'summary', or a full 'accuracy',
-                              or 'runtime' table.
+    @param comparison_type :: whether this is a 'summary', or a full
+                              'accuracy', or 'runtime' table.
     @param comp_dim :: dimension (accuracy / runtime)
-    @param using_errors :: whether using observational errors in cost functions
+    @param using_errors :: whether using observational errors
+                           in cost functions
 
     @returns :: link or links to use from table cells.
     """
@@ -89,6 +100,11 @@ def make_restables_dir(results_dir, group_name):
     """
     Creates the results directory where the tables are located.
     e.g. fitbenchmarking/results/neutron/Tables/
+
+    @param results_dir :: directory that holds all the results
+    @param group_name :: string containing the name of the problem group
+
+    @returns :: path to folder where the tables are stored
     """
 
     if 'nist' in group_name:

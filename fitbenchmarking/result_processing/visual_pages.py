@@ -35,9 +35,16 @@ FILENAME_EXT_HTML = 'html'
 
 def create(prob_results, group_name, results_dir, count):
     """
-    Builds a page containing details of the best fit for a problem.
-    @param prob_results:: the list of results for a problem
-    @param group_name :: the name of the group, e.g. "nist_lower"
+    Creates a visual display page containing figures and other
+    details about the best fit for a problem.
+
+    @param prob_results :: problem results object
+    @param group_name :: name of the group the problem belongs to
+    @param results_dir :: results directory
+    @param count :: number of times a problem with the same name was
+                    passed through this function, consecutively
+
+    @returns :: link to the visual display page (file path)
     """
 
     # Get the best result for a group
@@ -61,8 +68,19 @@ def create(prob_results, group_name, results_dir, count):
 def create_rst_page(name, figure_data, figure_start, figure_fit, details_table,
                     minimizer, see_also_link):
     """
-    Creates an rst page containing a title and 3 figures, with a detailed
-    table about the fit on the last figure.
+    Creates an rst page containing a title and 3 figures, with detailed
+    tables about the fit on the last two figures.
+
+    @param name :: string containing the name of the problem
+    @param figure_data :: path to the raw plot of the data (.png image)
+    @param figure_start :: path to the starting guess plot (.png image)
+    @param figure_fit :: path to the best fit plot (.png image)
+    @param details_table :: the plot details table in rst
+    @param minimizer :: name of the minimizer that was used
+    @param see_also_link :: links to an alternative page
+                            if documentation on the problem exists.
+
+    @returns :: the visual display page written in rst
     """
 
     space = "|\n|\n|\n\n"
@@ -80,6 +98,10 @@ def create_rst_page(name, figure_data, figure_start, figure_fit, details_table,
 def process_problem_name(problem_name):
     """
     Remove commas and replace space with underscore in problem name
+
+    @param problem_name :: name of the problem that is being considered
+
+    @returns :: the processed problem name
     """
 
     problem_name = problem_name.replace(',', '')
@@ -90,6 +112,12 @@ def process_problem_name(problem_name):
 
 def generate_rst_link(file_path):
     """
+    Generate the rst link, dependent on the OS, i.e. windows needs
+    an extra file:/// at the start to link correctly.
+
+    @param file_path :: the path to the visual display page
+
+    @returns :: the proper rst_link
     """
 
     rst_file_path = file_path.replace('\\', '/')
@@ -104,6 +132,16 @@ def generate_rst_link(file_path):
 
 def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
     """
+    Sets up some miscellaneous things for the NIST visual display
+    page like path to the folder they are saved in.
+
+    @param linked_name :: link to the NIST website for the
+                          considered NIST problem
+    @param function_def :: string with function definition
+    @param results_dir :: path to the results directory
+
+    @returns :: the directory in which visual display pages go,
+                a table with the fit details and the see also link
     """
 
     support_pages_dir = os.path.join(results_dir, "nist", "tables",
@@ -119,9 +157,16 @@ def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
 
 def setup_neutron_VDpage_misc(function_def, results_dir):
     """
-    Helper function that sets up the directory, function details table
-    and see also link for the NEUTRON data
+    Sets up some miscellaneous things for the neutron visual display
+    page like path to the folder they are saved in.
+
+    @param function_def :: string with function definition
+    @param results_dir :: path to the results directory
+
+    @returns :: the directory in which visual display pages go,
+                a table with the fit details and the see also link
     """
+
     support_pages_dir = os.path.join(results_dir, "neutron", "tables",
                                      "support_pages")
     if not os.path.exists(support_pages_dir):
@@ -134,8 +179,22 @@ def setup_neutron_VDpage_misc(function_def, results_dir):
 
 def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir, count):
     """
-    Setup miscellaneous data for visual display page.
+    Sets up some miscellaneous things for the visual display pages.
+
+    @param group_name :: name of the group containing the
+                         current problem
+    @param problem_name :: name of the problem
+    @param res_obj :: problem result object
+    @param results_dir :: directory containing the results
+    @param count :: number of times a problem with the same name was
+                    passed through this function, consecutively
+
+    @returns :: the directory in which the visual display pages go
+                the file path to the visual display page that is
+                currently being made
+                the fit details table and the see also link
     """
+
     # Group specific path and other misc stuff
     if 'nist' in group_name:
         support_pages_dir, fit_details_tbl, see_also_link = \
@@ -152,6 +211,17 @@ def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir, count):
 
 
 def get_figure_paths(support_pages_dir, problem_name, count):
+    """
+    Get the paths to the figures used in the visual display page.
+
+    @param support_pages_dir :: directory containing the visual
+                                display pages
+    @param problem_name :: name of the problem
+    @param count :: number of times a problem with the same name was
+                    passed through this function, consecutively
+
+    @returns :: the paths to the required figures
+    """
 
     figures_dir = os.path.join(support_pages_dir, "figures")
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name +
@@ -174,6 +244,10 @@ def generate_rst_title(problem_name):
     """
     Helper function that generates a title for an rst page, containing
     the name of the problem.
+
+    @param problem_name :: name of the problem
+
+    @returns :: the title in rst
     """
 
     title = '=' * len(problem_name) + '\n'
@@ -187,6 +261,10 @@ def generate_rst_data_plot(figure_data):
     """
     Helper function that generates an rst figure of the data plot png image
     contained at path figure_data.
+
+    @param figure_data :: path to the raw data plot
+
+    @returns :: the data plot section in rst
     """
 
     data_plot = 'Data Plot' + '\n'
@@ -202,6 +280,11 @@ def generate_rst_starting_plot(figure_start, fit_details_tbl):
     """
     Helper function that generates an rst figure of the starting guess plot
     png image contained at path figure_start.
+
+    @param figure_start :: path to the starting guess figure
+    @param fit_details_tbl :: table in rst containing the fit details
+
+    @returns :: the starting guess plot section in rst
     """
     starting_plot = 'Plot of the initial starting guess' + '\n'
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
@@ -217,6 +300,11 @@ def generate_rst_solution_plot(figure_fit, minimizer):
     """
     Helper function that generates an rst figure of the fitted problem
     png image contained at path figure_fit.
+
+    @param figure_data :: path to the best fit figure
+    @param minimizer :: name of minimizer used in obtaining the fit
+
+    @returns :: the fit solution section in rst
     """
 
     solution_plot = 'Plot of the solution found' + '\n'
@@ -232,6 +320,12 @@ def save_VDpages(rst_text, prob_name, file_path):
     """
     Helper function that saves the rst page into text and html after
     converting it to html.
+
+    @param rst_text :: page to be converted/saved in rst
+    @param prob_name :: name of the problem
+    @param file_path :: path to where the file is going to be saved
+
+    @returns :: html/txt visual display page saved at file_path
     """
 
     html = publish_string(rst_text, writer_name='html')
