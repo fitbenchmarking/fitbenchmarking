@@ -44,8 +44,8 @@ def make_plots(prob, wks, function, best_fit, previous_name, count,
     @param group_results_dir :: dir where results for the current group
                                 are stored
 
-    @returns :: the previous_name and the count, plots are saved to
-                /group_results_dir/support_pages/figures
+    @returns :: the previous_name (str) and the count (int), plots are
+                saved to /group_results_dir/support_pages/figures
     """
 
     figures_dir = setup_dirs(group_results_dir)
@@ -66,7 +66,7 @@ def get_data_points(wks):
 
     @param wks :: mantid workspace containing problem data
 
-    @returns :: arrays of x,y and error data.
+    @returns :: [arrays] of x,y and error data.
     """
 
     tmp = msapi.ConvertToPointData(wks)
@@ -186,8 +186,8 @@ def problem_count(prob, previous_name, count):
     @param previous_name :: name of the previous problem
     @param count :: number of times same name was passed through
 
-    @returns :: the new/same previous name and the number of times it
-                has seen that name in a row.
+    @returns :: the new/same previous name (str) and the number of
+                times it has seen that name in a row (int).
     """
 
     if prob.name == previous_name:
@@ -206,7 +206,7 @@ def setup_dirs(group_results_dir):
     @param group_results_dir :: dir where results for the current group
                                 are stored
 
-    @returns :: the path to the figures directory, of the form
+    @returns :: the path to the figures directory (str), of the form
                 /group_results_dir/support_pages/figures
     """
 

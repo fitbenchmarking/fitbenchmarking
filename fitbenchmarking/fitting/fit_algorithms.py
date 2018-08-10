@@ -1,5 +1,5 @@
 """
-Fitting algorithms.
+Fitting algorithms that are supported for benchmarking.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -34,6 +34,19 @@ import fitting.mantid_utils as mantid_utils
 def mantid(prob, wks, function, minimizer='Levenberg-Marquardt',
            cost_function='Least squares'):
     """
+    The mantid fit algorithm.
+
+    @param prob :: object holding the problem information
+    @param wks :: workspace holding the problem data
+    @param function :: the fitted function
+    @param minimizer :: the minimizer used in the fitting process
+    @param cost_function :: the type of cost function used in fitting
+
+    @returns :: the status, either success or failure (str), the fit
+                workspace (mantid wks), containing the fitted data,
+                the corresponding points of the fit and the difference
+                between them, the fitted parameters, their errors [arrays]
+                and how much time it took for the fit to finish (float)
     """
 
     fit_result, t_start, t_end = None, None, None

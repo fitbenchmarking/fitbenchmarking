@@ -1,5 +1,5 @@
 """
-Mantid fitting utility functions.
+Utility functions used in the mantid fitting process.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -31,7 +31,15 @@ from fitting.plotting import plot_helper
 
 def parse_result(fit_result, t_start, t_end):
     """
-    DESC
+    Function that takes the raw result from the mantid fitting algorithm
+    and refines it.
+
+    @param fit_result :: result object from the mantid fitting algorithm
+    @param t_start :: time the fitting started
+    @param t_end :: time the fitting completed
+
+    @returns :: the processed status (str), fit workspace (mantid wks),
+                parameters, errors on them [arrays] and runtime (float).
     """
 
     status = 'failed'
@@ -48,7 +56,14 @@ def parse_result(fit_result, t_start, t_end):
 
 def optimum(fit_wks, minimizer_name, best_fit):
     """
-    DESC
+    Function that stores the best fit of the given data into
+    a object ready for plotting.
+
+    @param fit_wks :: mantid workspace holding the fit data
+    @param minimizer_name :: name of the minimizer used in fitting
+    @param best_fit :: the previous best_fit object
+
+    @returns :: the new best_fit object
     """
 
     tmp = msapi.ConvertToPointData(fit_wks)
@@ -57,9 +72,16 @@ def optimum(fit_wks, minimizer_name, best_fit):
     return  best_fit
 
 
-def wks_cost_function(prob, use_errors):
+def wks_cost_function(prob, use_errors=True):
     """
-    DESC
+    Helper function that prepares the data workspace used by mantid
+    for fitting.
+
+    @param prob :: object holding the problem information
+    @param use_errors :: whether to use errors or not
+
+    @returns :: the fitting data in workspace format and the
+                cost function used in fitting
     """
 
     if use_errors:
@@ -76,7 +98,13 @@ def wks_cost_function(prob, use_errors):
 
 def function_definitions(prob):
     """
-    DESC
+    Transforms the prob.equation field into a function that can be
+    understood by the mantid fitting algorithm.
+
+    @param prob :: object holding the problem infomation
+
+    @returns :: a function definitions string with functions that
+                mantid understands
     """
 
     if prob.starting_values:
@@ -93,7 +121,13 @@ def function_definitions(prob):
 
 def ignore_invalid(prob, cost_function):
     """
-    DESC
+    Helper function that sets the whether the mantid fitting algorithm
+    ignores invalid data or not. This depends on the cost function.
+
+    @param prob :: object holding the problem information
+    @param const_function :: cost function used in fitting
+
+    @returns :: boolean depending on whether to ignore invalid data or not
     """
 
     ignore_invalid = cost_function == 'Least squares'
@@ -105,7 +139,14 @@ def ignore_invalid(prob, cost_function):
 
 def parse_nist_function_definitions(prob, nb_start_vals):
     """
-    DESC
+    Helper function that parses the NIST function definitions and
+    transforms them into a mantid-redeable format.
+
+    @param prob :: object holding the problem information
+    @param nb_start_vals :: the number of starting points for a given
+                            function definition
+
+    @returns :: the formatted function definition (str)
     """
 
     function_defs = []
@@ -122,7 +163,14 @@ def parse_nist_function_definitions(prob, nb_start_vals):
 
 def setup_errors(prob):
     """
-    DESC
+    Gets errors on the data points from the problem object if there are
+    any. If not, the errors are approximated by taking the square root
+    of the absolute y-value, since we cannot know how the data was
+    obtained and this is a reasonable approximation.
+
+    @param prob :: object holding the problem information
+
+    @returns :: array of errors of particular problem
     """
 
     data_e = None
