@@ -29,6 +29,13 @@ from parsing.fetch_data import *
 
 def mantid(data_dir):
     """
+    Set the problem groups for the mantid problem sets.
+
+    @param data_dir :: directory containing all the problem files
+                       considered when using the mantid fitting
+                       algorithm
+
+    @returns :: the paths to the problem files
     """
 
     problem_groups = {}

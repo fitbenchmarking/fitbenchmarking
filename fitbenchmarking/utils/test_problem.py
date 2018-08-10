@@ -22,7 +22,8 @@ from __future__ import (absolute_import, division, print_function)
 
 class FittingTestProblem(object):
     """
-    Definition of a fitting test problem, normally loaded from a problem definition file.
+    Definition of a fitting test problem, normally loaded from a problem
+    definition file.
     """
     def __init__(self):
         self.name = None
@@ -31,7 +32,8 @@ class FittingTestProblem(object):
         self.equation = None
         self.start_x = None
         self.end_x = None
-        # can be for example the list of starting values from NIST test problems
+        # can be for example the list of starting values from
+        # NIST test problems
         self.starting_values = None
         # The Mantid X
         self.data_x = None
@@ -39,6 +41,6 @@ class FittingTestProblem(object):
         self.data_y = None
         # The Mantid E
         self.data_pattern_obs_errors = None
-        # The 'certified' or reference sum of squares, if provided (for example
-        # in NIST tests).
+        # The 'certified' or reference sum of squares, if provided
+        # (for example in NIST tests).
         self.ref_residual_sum_sq = None

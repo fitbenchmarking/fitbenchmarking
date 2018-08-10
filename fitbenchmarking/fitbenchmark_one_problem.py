@@ -40,6 +40,17 @@ MAX_FLOAT = sys.float_info.max
 
 def fitbm_one_problem(prob, minimizers, use_errors=True, group_results_dir=None):
     """
+    Call all the functions and perform a fit benchmarking for
+    only one problem.
+
+    @param prob :: problem object containing information used in fitting
+    @param minimizers :: array of minimizers used in fitting
+    @param use_errors :: whether to use errors or not
+    @param group_results_dir :: directory in which the group results
+                                are saved
+
+    @returns :: array of result objects, per function definition
+                containing the fit information
     """
 
     previous_name, count = None, 0
@@ -63,6 +74,16 @@ def fitbm_one_problem(prob, minimizers, use_errors=True, group_results_dir=None)
 
 def fit_one_function_def(prob, wks, function, minimizers, cost_function):
     """
+    Fit a certain function definition.
+
+    @param prob :: problem object containing information used in fitting
+    @param wks :: mantid workspace containing data to be fitted
+    @param function :: analytical function string that is fitted
+    @param minimizers :: array of minimizers used in fitting
+    @param cost_function :: the cost function used for fitting
+
+    @returns :: array of result objects, per minimizer
+                and data object for the best fit
     """
 
     min_chi_sq, best_fit = MAX_FLOAT, None
@@ -82,6 +103,18 @@ def fit_one_function_def(prob, wks, function, minimizers, cost_function):
 
 def mantid_chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
     """
+    Function that calcuates the chisq obtained through the
+    mantid fitting algorithm and find the best fit out of all
+    the attempted minimizers.
+
+    @param status :: the status of the fit, i.e. success or failure
+    @param fit_wks :: the fit workspace
+    @param min_chi_sq :: the minimium chisq (at the moment)
+    @param best_fit :: the best fit (at the moment)
+    @param minimizer :: minimizer with which the fit_wks was obtained
+
+    @returns :: the chi squared, the new/unaltered minimum chi squared
+                and the new/unaltered best fit data object
     """
 
     if status != 'failed':
@@ -98,7 +131,21 @@ def mantid_chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
 def store_results(prob, status, params, errors, chi_sq, runtime,
                   minimizer, function):
     """
+    Helper function that stores all the results after fitting a problem
+    with a certain function and minimzier.
+
+    @param prob :: problem object containing info that was fitted
+    @param status :: status of the fit, i.e. success or failure
+    @param params :: parameters obtained through the fit
+    @param errors :: errors on parameters
+    @param chi_sq :: the chi squared of the fit
+    @param runtime :: the runtime of the fit
+    @param minimizer :: the minimizer used for this particular fit
+    @param function :: the function used for this particular fit
+
+    @returns :: the result object
     """
+
     result = test_result.FittingTestResult()
     result.problem = prob
     result.fit_status = status

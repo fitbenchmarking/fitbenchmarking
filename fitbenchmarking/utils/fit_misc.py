@@ -1,5 +1,5 @@
 """
-Utility functions for fit benchmarking a problem.
+General utility functions for calculating some attributes of the fit.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -27,6 +27,13 @@ import numpy as np
 
 def compute_chisq(differences):
     """
+    Simple function that calculates the sum of the differences squared
+    between the data and the fit.
+
+    @param differences :: differences between the actual data and the
+                          fit points.
+
+    @returns :: the sum of the square of each element in differences
     """
     chi_sq = np.sum(np.square(differences))
 
