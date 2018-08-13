@@ -45,16 +45,16 @@ def load_file(fname):
     with open(fname) as probf:
         entries = get_neutron_data_problem_entries(probf)
         prob = test_problem.FittingTestProblem()
-        data_files_dir = get_data_files_dir(fname, entries['input_file'])
+        data_file = get_data_file(fname, entries['input_file'])
         store_main_problem_data(data_files_dir, prob)
         store_misc_problem_data(prob, entries)
 
     return prob
 
 
-def get_data_files_dir(fname, input_file):
+def get_data_file(fname, input_file):
     """
-    Gets the path to the neutron data_files dir.
+    Gets the path to the neutron data_file used in the problem.
     sep_idx is used to find the last separator in the problem file path
     and set up the path for the data_files folder i.e truncates the path
     to ../Neutron_data and adds ../Neutron_data/data_files
@@ -70,9 +70,9 @@ def get_data_files_dir(fname, input_file):
         sep_idx = fname.rfind(os.sep)
         prefix = os.path.join(fname[:sep_idx],"data_files")
 
-    data_files_dir = os.path.join(prefix, input_file)
+    data_file = os.path.join(prefix, input_file)
 
-    return data_files_dir
+    return data_file
 
 
 def get_neutron_data_problem_entries(fname):
