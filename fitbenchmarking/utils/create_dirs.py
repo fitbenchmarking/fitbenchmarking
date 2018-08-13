@@ -1,5 +1,5 @@
 """
-General utility functions.
+Utility functions for creating/deleting directories.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -29,6 +29,13 @@ import shutil
 
 def results(results_dir):
     """
+    Creates the results folder where the script that is run in the
+    console and eventually calls this is located.
+
+    @param results_dir :: path to the results directory, results dir
+                          name or None
+
+    @returns :: proper path to the results directory
     """
 
     working_dir = os.getcwd()
@@ -47,6 +54,14 @@ def results(results_dir):
 
 def group_results(results_dir, group_name):
     """
+    Creates the group results folder into the main results directory.
+
+    @param results_dir :: path to the results directory, results dir
+                          name or None
+    @group_name :: name of the problem group that is currently
+                   being processed
+
+    @returns :: proper path to the group results directory
     """
 
     group_results_dir = os.path.join(results_dir, group_name)
@@ -60,6 +75,11 @@ def group_results(results_dir, group_name):
 
 def figures(group_results_dir):
     """
+    Creates the figures directory inside the support_pages directory.
+
+    @param group_results_dir :: path to the group results directory
+
+    @returns :: path to the figures directory
     """
 
     support_pages_dir = \
@@ -73,6 +93,9 @@ def figures(group_results_dir):
 
 def del_contents_of_dir(directory):
     """
+    Delete contents of a directory, including other directories.
+
+    @param directory :: the target directory
     """
 
     for file in os.listdir(directory):

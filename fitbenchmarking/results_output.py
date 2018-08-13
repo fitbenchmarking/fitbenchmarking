@@ -44,6 +44,16 @@ FILENAME_EXT_HTML = 'html'
 def save_results_tables(minimizers, results_per_test, group_name,
                         use_errors, color_scale=None, results_dir=None):
     """
+    Saves the results of the fitting to html/rst tables.
+
+    @param minimizers :: array with minimizer names
+    @param results_per_test :: results object
+    @param group_name :: name of the problem group
+    @param use_errors :: bool whether to use errors or not
+    @param color_scale :: color the html table
+    @param results_dir :: directory in which the results are saved
+
+    @returns :: html/rst tables with the fitting results
     """
 
     tables_dir = misc.make_restables_dir(results_dir, group_name)
@@ -83,7 +93,16 @@ def save_results_tables(minimizers, results_per_test, group_name,
 
 def create_linked_probs(results_per_test, group_name, results_dir):
     """
+    Creates the problem names with links to the visual display pages
+    in rst.
+
+    @param results_per_test :: results object
+    @param group_name :: name of the problem group
+    @param results_dir :: directory in which the results are saved
+
+    @returns :: array of the problem names with the links in rst
     """
+
     # Count keeps track if it is the same problem but different starting point
     prev_name = ''
     count = 1
@@ -106,14 +125,23 @@ def create_linked_probs(results_per_test, group_name, results_dir):
 
 def save_tables(tables_dir, table_data, use_errors, group_name, metric):
     """
+    Helper function that saves the rst table both to html and to text.
+
+    @param tables_dir :: the directory in which the tables are saved
+    @param table_data :: the results table, in rst
+    @param use_errors :: bool whether errors were used or not
+    @param group_name :: name of the problem group
+    @param metric :: whether it is an accuracy or runtime table
+
+    @returns :: tables saved to both html and txt.
     """
 
     rst_table.save_table_to_file(results_dir=tables_dir, table_data=table_data,
-                                 errors=use_errors, group_name=group_name,
+                                 use_errors=use_errors, group_name=group_name,
                                  metric_type=metric,
                                  file_extension=FILENAME_EXT_TXT)
     rst_table.save_table_to_file(results_dir=tables_dir, table_data=table_data,
-                                 errors=use_errors, group_name=group_name,
+                                 use_errors=use_errors, group_name=group_name,
                                  metric_type=metric,
                                  file_extension=FILENAME_EXT_HTML)
 

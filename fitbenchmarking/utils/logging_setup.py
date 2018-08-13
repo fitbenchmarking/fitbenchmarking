@@ -1,6 +1,6 @@
 """
 Utility functions to support logging for the fitbenchmarking
-algorithm.
+project.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -26,7 +26,6 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import logging
-
 
 
 working_dir = os.getcwd()

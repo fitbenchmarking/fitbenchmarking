@@ -1,3 +1,7 @@
+"""
+Utility classes and methods used for plotting the figures used in
+the fitbenchmarking tool.
+"""
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
 #
@@ -27,7 +31,7 @@ from utils.logging_setup import logger
 
 class data:
     """
-    Holds the data and relevant information for plotting
+    Holds all the data that is used in the plotting process.
     """
 
     def __init__(self, name=None, x=[], y=[], E=[]):
@@ -55,10 +59,11 @@ class data:
         self.colour="k"
         self.linestyle='--'
 
+
     def order_data(self):
         """
-        Ensures that the data is in assending order in x
-        Prevents line plots looping back on them selves
+        Ensures that the data is in assending order in x.
+        Prevents line plots looping back on themselves.
         """
 
         xData=self.x
@@ -75,70 +80,92 @@ class data:
 
 class plot(data):
     """
-    Class that holds all information required for a data plot.
+    Class holding the information required for a scatter plot
+    of some provided.
     """
+
     def __init__(self):
-        self.logs= {'x':False,'y':False}
         self.data = []
         self.labels = {'x':"xlabel", 'y':'ylabel', "title":"title"}
-        self.xrange = {'start':0.0, 'end':0.0}
-        self.yrange = {'start':0.0, 'end':0.0}
         self.legend = "upper left"
         self.insert = None
         self.title_size=20
 
+
     def add_data(self,inputData):
         """
-        Adds the data to the main plot
+        Adds the data to the main plot.
         @param inputData :: the data to add to the plot
         """
         self.data.append(inputData)
 
-    def add_insert(self,inputInsert):
-        """
-        Adds an insert to the plot
-        @param inputInsert :: the insert to add to the plot
-        """
-        self.insert=inputInsert
 
     def make_scatter_plot(self,save=""):
         """
-        Creates a scatter plot
+        Creates a scatter plot.
         @param save:: the name of the file to save to
-        the default is not to save
+                      the default is not to save
         """
+
         plt.figure()
+        set_plot_misc()
+        for data in self.data:
+            check_and_make_plot(data)
+
+        save_plot()
+
+    def set_plot_misc():
+        """
+        Add the title, x/y lables and legend to the plot.
+        """
         plt.xlabel(self.labels["x"])
         plt.ylabel(self.labels["y"])
         plt.title(self.labels["title"], fontsize=self.title_size)
-        for data in self.data:
-            if len(data.x)==len(data.y):
-                if(data.showError):
-                        #plot with errors
-                        plt.errorbar(data.x, data.y, yerr=data.E,
-                                     label=data.name, marker=data.markers,
-                                     color=data.colour,
-                                     linestyle=data.linestyle, markersize=8)
-                else:
-                        plt.plot(data.x, data.y, label=data.name,
-                                 marker=data.markers, color=data.colour,
-                                 linestyle=data.linestyle, markersize=8)
-            else:
-                log.error("Data " + data.name + " contains data" +
-                          " of unequal lengths ", len(data.x), len(data.y))
         plt.legend(loc=self.legend)
-        if  self.xrange["start"]!=0.0 or self.xrange["end"]!=0.0:
-            plt.xlim([self.xrange["start"],self.xrange["end"]])
-        if  self.yrange["start"]!=0.0 or self.yrange["end"]!=0.0:
-            plt.xlim([self.yrange["start"],self.yrange["end"]])
-        if self.logs['x']:
-            plt.xscale("log")
-        if self.logs['y']:
-            plt.yscale("log")
+
+        # Customize the layout of the plot.
         plt.tight_layout()
+
+    def check_and_make_plot(data):
+        """
+        Check if the data used for plotting is legitimate and
+        do the plotting.
+
+        @param data :: object that holds all the relevant data
+        """
+        if len(data.x)==len(data.y):
+            make_plot(data)
+        else:
+            log.error("Data " + data.name + " contains data" +
+                      " of unequal lengths ", len(data.x), len(data.y))
+
+    def make_plot(data):
+        """
+        Make a plot of the data, with or without errors,
+        as specified.
+
+        @param data :: object that holds all the relevant data
+        """
+
+        if(data.showError):
+            # Plot with errors
+            plt.errorbar(data.x, data.y, yerr=data.E, label=data.name,
+                         marker=data.markers, color=data.colour,
+                         linestyle=data.linestyle, markersize=8)
+        else:
+            # Plot without errors
+            plt.plot(data.x, data.y, label=data.name,
+                     marker=data.markers, color=data.colour,
+                     linestyle=data.linestyle, markersize=8)
+    def save_plot():
+        """
+        Save the plot to a .png file or just display it in the
+        console if that option is available.
+        """
         if save=="":
             plt.show()
         else:
             output_file = save.replace(",", "")
-            logger.info("saving to "+output_file.replace(" ", "_"))
+            logger.info("saving to " + output_file.replace(" ", "_"))
         plt.savefig(output_file.replace(" ", "_"))
+

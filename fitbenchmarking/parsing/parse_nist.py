@@ -31,11 +31,17 @@ from utils import test_problem
 from utils.logging_setup import logger
 
 
-def load_file(problem_filename):
+def load_file(fname):
     """
+    Loads a nist file with all the necessary data.
+
+    @param fname :: path to the nist problem definition file
+                    that is being loaded
+
+    @returns :: problem object containing all the relevant information
     """
 
-    with open(problem_filename) as spec_file:
+    with open(fname) as spec_file:
         logger.info("*** Loading NIST data file {0} ***".
                     format(os.path.basename(spec_file.name)))
         lines = spec_file.readlines()
@@ -52,6 +58,19 @@ def load_file(problem_filename):
 
 def store_prob_details(spec_file, parsed_eq, starting_values, data_pattern,
                        residual_sum_sq):
+    """
+    Helper function that stores all the parsed nist problem definiton
+    information into a problem object.
+
+    @param spec_file :: path to the nist problem definition file
+                        that is being loaded
+    @param parsed_eq :: the equation used in fitting the problem
+    @param starting_values :: the starting values from where the
+                              fitting will commence
+    @param data_pattern :: numpy array containing the raw data
+    @param residual_sum_sq :: a reference sum of all the residuals squared
+                              of the fit
+    """
 
     prob = test_problem.FittingTestProblem()
     prob.name = os.path.basename(spec_file.name.split('.')[0])
@@ -68,6 +87,13 @@ def store_prob_details(spec_file, parsed_eq, starting_values, data_pattern,
 
 def parse_line_by_line(lines):
     """
+    Parses the NIST file one line at the time. Very unstable parser
+    but gets the job done.
+
+    @param lines :: array of all the lines in the imported nist file
+
+    @returns :: strings of the equation, data pattern, array of starting
+                values and the reference residual sum from the file
     """
 
     idx, ignored_lines, residual_sum_sq = 0, 0, 0
@@ -101,6 +127,14 @@ def parse_line_by_line(lines):
 
 def get_nist_model(lines, idx):
     """
+    Gets the model equation used in the fitting process from the
+    NIST file.
+
+    @param lines :: array of all the lines in the imported nist file
+    @param idx :: the line at which the parser is at
+
+    @returns :: string of the equation from the NIST file and the
+                new index
     """
     equation_text, idxerr = None, False
     try:
@@ -120,6 +154,15 @@ def get_nist_model(lines, idx):
 
 def get_equation_text(lines, idxerr, idx):
     """
+    Gets the equation text from the NIST file.
+
+    @param lines :: array of all the lines in the imported nist file
+    @param idxerr :: boolean that points out if there were any problems
+                     in finding the equation in the file
+    @param idx :: the line at which the parser is at
+
+    @returns :: string of the equation from the NIST file and the
+                new index
     """
     # Next non-empty lines are assumed to continue the equation
     equation_text = ''
@@ -136,6 +179,12 @@ def get_equation_text(lines, idxerr, idx):
 
 def get_nist_starting_values(lines, idx):
     """
+    Gets the function starting values from the NIST problem file.
+
+    @param lines :: array of all the lines in the imported nist file
+    @param idx :: the line at which the parser is at
+
+    @returns :: an array of the starting values and the new index
     """
     starting_values = None
     idx += 2
@@ -147,6 +196,12 @@ def get_nist_starting_values(lines, idx):
 
 def get_data_pattern_txt(lines, idx):
     """
+    Gets the data pattern from the NIST problem file.
+
+    @param lines :: array of all the lines in the imported nist file
+    @param idx :: the line at which the parser is at
+
+    @returns :: string of the data pattern and the new index
     """
     data_pattern_text = None
     data_pattern_text = lines[idx:]
@@ -158,18 +213,25 @@ def get_data_pattern_txt(lines, idx):
     return data_pattern_text, idx
 
 
-def parse_data_pattern(data_text):
+def parse_data_pattern(data_pattern_text):
     """
+    Parses the data pattern string and returns a numpy array of the
+    data points of the problem.
+
+    @param data_pattern_text :: string of the data pattern from the
+                                NIST problem file
+
+    @returns :: numpy array of the data points of the problem
     """
 
-    if not data_text:
+    if not data_pattern_text:
         return None
 
-    first = data_text[0].strip()
+    first = data_pattern_text[0].strip()
     dim = len(first.split())
-    data_points = np.zeros((len(data_text), dim))
+    data_points = np.zeros((len(data_pattern_text), dim))
 
-    for idx, line in enumerate(data_text):
+    for idx, line in enumerate(data_pattern_text):
         line = line.strip()
         point_text = line.split()
         point = [float(val) for val in point_text]
@@ -180,6 +242,11 @@ def parse_data_pattern(data_text):
 
 def parse_equation(eq_text):
     """
+    Parses the equation and converts it to the right format.
+
+    @param eq_text :: string of the equation
+
+    @returns :: formatted equation string
     """
     start_normal = r'\s*y\s*=(.+)'
     if re.match(start_normal, eq_text):
@@ -194,7 +261,13 @@ def parse_equation(eq_text):
 
 
 def convert_nist_to_muparser(equation):
+    """
+    Converts the raw equation from the NIST file into muparser format.
 
+    @param equation :: string of the raw equation
+
+    @returns :: formatted muparser equation
+    """
     # 'NIST equation syntax' => muparser syntax
     equation = equation.replace('[', '(')
     equation = equation.replace(']', ')')
@@ -205,7 +278,12 @@ def convert_nist_to_muparser(equation):
 
 def parse_starting_values(lines):
     """
-    Parses the starting values of a in a nist file.
+    Parses the starting values of a NIST file and converts them into an
+    array.
+
+    @param lines :: array of all the lines in the imported nist file
+
+    @returns :: array of the starting values used in NIST problem
     """
     starting_vals = []
     for line in lines:
@@ -222,8 +300,11 @@ def parse_starting_values(lines):
 
 def check_startval_validity(startval_str):
     """
+    Checks the validity of the starting value raw string.
     There can only be 2 cases when parsing nist files
-    i.e. line can only have six or 7 strings separated by white space
+    i.e. line can only have six or 7 strings separated by white space.
+
+    @param startval_str :: raw string of the starting values
     """
 
     if 6 != len(startval_str) and 5 != len(startval_str):
@@ -232,7 +313,13 @@ def check_startval_validity(startval_str):
 
 
 def get_startvals_floats(startval_str):
+    """
+    Converts the starting values into floats.
 
+    @param startval_str :: string of raw starting values
+
+    @returns :: starting values array of floats
+    """
     # A bit weak/lax parsing, if there is one less column,
     # assume only one start point
     if 6 == len(startval_str):

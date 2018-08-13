@@ -28,8 +28,14 @@ import os, glob
 from utils.logging_setup import logger
 
 
-def get_nist_problem_files(search_dir):
+def get_nist_problem_files(nist_dir):
     """
+    Gets all the problems present in the arrays from the nist problem
+    directory and groups them according to "difficulty".
+
+    @param nist_dir :: directory that holds all the nist problems
+
+    @returns :: paths to all the nist problems, grouped by difficutly
     """
 
     nist_lower = ['Misra1a.dat', 'Chwirut2.dat', 'Chwirut1.dat', 'Lanczos3.dat',
@@ -40,19 +46,25 @@ def get_nist_problem_files(search_dir):
     nist_higher = ['MGH09.dat', 'Thurber.dat', 'BoxBOD.dat', 'Rat42.dat',
                    'MGH10.dat', 'Eckerle4.dat', 'Rat43.dat', 'Bennett5.dat']
 
-    nist_lower = [os.path.join(search_dir, fname) for fname in nist_lower]
-    nist_average = [os.path.join(search_dir, fname) for fname in nist_average]
-    nist_higher = [os.path.join(search_dir, fname) for fname in nist_higher]
+    nist_lower = [os.path.join(nist_dir, fname) for fname in nist_lower]
+    nist_average = [os.path.join(nist_dir, fname) for fname in nist_average]
+    nist_higher = [os.path.join(nist_dir, fname) for fname in nist_higher]
     problem_files = [nist_lower, nist_average, nist_higher]
 
     return problem_files
 
 
-def get_neutron_problem_files(search_dir):
+def get_neutron_problem_files(neutron_dir):
     """
+    Gets all the problem definition files from the neutron directory.
+
+    @param neutron_dir :: dir that holds all the neutron problem
+                          definition files
+
+    @returns :: array containing paths to all the neutron problems
     """
 
-    search_str = os.path.join(search_dir, "*.txt")
+    search_str = os.path.join(neutron_dir, "*.txt")
     probs = glob.glob(search_str)
     probs.sort()
 
