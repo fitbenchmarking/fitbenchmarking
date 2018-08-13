@@ -2,6 +2,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import unittest
 import os
+import numpy as np
 
 # Delete four lines below when automated tests ar enabled
 import sys
