@@ -40,8 +40,10 @@ MAX_FLOAT = sys.float_info.max
 
 def fitbm_one_problem(prob, minimizers, use_errors=True, group_results_dir=None):
     """
-    Call all the functions and perform a fit benchmarking for
-    only one problem.
+    Sets up the workspace, cost function and function definitons for
+    a particular problem and fits the models provided in the problem
+    object. The best fit, along with the data and a starting guess
+    is then plotted on a visual display page.
 
     @param prob :: problem object containing information used in fitting
     @param minimizers :: array of minimizers used in fitting
@@ -49,7 +51,7 @@ def fitbm_one_problem(prob, minimizers, use_errors=True, group_results_dir=None)
     @param group_results_dir :: directory in which the group results
                                 are saved
 
-    @returns :: array of result objects, per function definition
+    @returns :: nested array of result objects, per function definition
                 containing the fit information
     """
 
@@ -74,7 +76,7 @@ def fitbm_one_problem(prob, minimizers, use_errors=True, group_results_dir=None)
 
 def fit_one_function_def(prob, wks, function, minimizers, cost_function):
     """
-    Fit a certain function definition.
+    Fits a given function definition (model) to the data in the workspace.
 
     @param prob :: problem object containing information used in fitting
     @param wks :: mantid workspace containing data to be fitted
@@ -82,7 +84,7 @@ def fit_one_function_def(prob, wks, function, minimizers, cost_function):
     @param minimizers :: array of minimizers used in fitting
     @param cost_function :: the cost function used for fitting
 
-    @returns :: array of result objects, per minimizer
+    @returns :: nested array of result objects, per minimizer
                 and data object for the best fit
     """
 
