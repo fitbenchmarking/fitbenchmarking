@@ -45,7 +45,7 @@ def fitbm_one_problem(prob, minimizers, use_errors=True, group_results_dir=None)
     object. The best fit, along with the data and a starting guess
     is then plotted on a visual display page.
 
-    @param prob :: A problem object containing information used in fitting
+    @param prob :: a problem object containing information used in fitting
     @param minimizers :: array of minimizers used in fitting
     @param use_errors :: whether to use errors or not
     @param group_results_dir :: directory in which the group results
@@ -78,7 +78,7 @@ def fit_one_function_def(prob, wks, function, minimizers, cost_function):
     """
     Fits a given function definition (model) to the data in the workspace.
 
-    @param prob :: A problem object containing information used in fitting
+    @param prob :: a problem object containing information used in fitting
     @param wks :: mantid workspace containing data to be fitted
     @param function :: analytical function string that is fitted
     @param minimizers :: array of minimizers used in fitting
@@ -133,7 +133,7 @@ def mantid_chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
 def create_result_entry(prob, status, params, errors, chi_sq, runtime,
                   minimizer, function):
     """
-    Helper function that creates an result object after fitting a problem
+    Helper function that creates a result object after fitting a problem
     with a certain function and minimzier.
 
     @param prob :: problem object containing info that was fitted
@@ -150,8 +150,8 @@ def create_result_entry(prob, status, params, errors, chi_sq, runtime,
 
     # Create empty fitting result object
     result = test_result.FittingTestResult()
-    
-    # populate result object
+
+    # Populate result object
     result.problem = prob
     result.fit_status = status
     result.params = params
