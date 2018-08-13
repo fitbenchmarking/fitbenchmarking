@@ -92,8 +92,7 @@ def parse_neutron_function_def(function, function_names, function_parameters):
         function_names.append(function[5:])
         function_parameters.append('None')
 
-    for idx in range(0, len(function_parameters)):
-        function_parameters[idx] = function_parameters[idx].replace(',', ', ')
+    function_parameters[-1] = function_parameters[-1].replace(',', ', ')
 
     return function_names, function_parameters
 
