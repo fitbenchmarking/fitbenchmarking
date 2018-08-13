@@ -157,10 +157,3 @@ def store_results(prob, status, params, errors, chi_sq, runtime,
     result.function_def = function
 
     return result
-
-
-
-
-
-
-
