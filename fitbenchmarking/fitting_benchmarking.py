@@ -33,7 +33,7 @@ def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
                          results_dir=None):
     """
     High level function that does the fitting benchmarking for a
-    specific problem group.
+    specified group of problems.
 
     @param data_dir :: directory that holds the problem group data
     @param minimizers :: array of minimizers used in fitting
@@ -84,7 +84,9 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
 
 def parse_problem_file(group_name, prob_file):
     """
-    Helper function that does the parsing of a specific problem file.
+    Helper function that does the parsing of a specified problem file.
+    This method needs group_name to inform how the prob_file should be
+    passed.
 
     @param group_name :: name of the group of problems
     @param prob_file :: path to the problem file
