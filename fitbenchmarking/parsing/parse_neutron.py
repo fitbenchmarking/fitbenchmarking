@@ -46,7 +46,7 @@ def load_file(fname):
         entries = get_neutron_data_problem_entries(probf)
         prob = test_problem.FittingTestProblem()
         data_file = get_data_file(fname, entries['input_file'])
-        store_main_problem_data(data_files_dir, prob)
+        store_main_problem_data(data_file, prob)
         store_misc_problem_data(prob, entries)
 
     return prob
