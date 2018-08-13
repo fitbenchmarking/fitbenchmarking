@@ -1,6 +1,5 @@
 """
-Utility functions to support logging for the fitbenchmarking
-algorithm.
+Utility functions for fit benchmarking a problem.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -19,29 +18,17 @@ algorithm.
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# File change history is stored at: <https://github.com/mantidproject/mantid>.
+# File change history is stored at:
+# <https://github.com/mantidproject/fitbenchmarking>.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 
-from __future__ import (absolute_import, division, print_function)
-
-import os
-import logging
+import numpy as np
 
 
+def compute_chisq(differences):
+    """
+    """
+    chi_sq = np.sum(np.square(differences))
 
-working_dir = os.getcwd()
-logs_path = os.path.join(working_dir, 'logs')
+    return chi_sq
 
-if not os.path.exists(logs_path):
-    os.makedirs(logs_path)
-
-# Create logger with name fitbenchmarking (this is the name of the file)
-FORMATTER='%(asctime)s %(name)s %(levelname)s: %(message)s'
-
-formatter = logging.Formatter(FORMATTER, "%H:%M:%S")
-handler = logging.FileHandler(logs_path + os.sep + 'fitbenchmarking.log',
-                              mode='w')
-handler.setFormatter(formatter)
-logger = logging.getLogger('fitbenchmarking')
-logger.setLevel(logging.DEBUG)
-logger.addHandler(handler)

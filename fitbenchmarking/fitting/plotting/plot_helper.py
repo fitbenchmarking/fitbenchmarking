@@ -18,10 +18,12 @@
 # File change history is stored at: <https://github.com/mantidproject/mantid>.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 from __future__ import (absolute_import, division, print_function)
+
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
-from logging_setup import logger
+from utils.logging_setup import logger
+
 
 class data:
     """
@@ -139,4 +141,4 @@ class plot(data):
         else:
             output_file = save.replace(",", "")
             logger.info("saving to "+output_file.replace(" ", "_"))
-            plt.savefig(output_file.replace(" ", "_"))
+        plt.savefig(output_file.replace(" ", "_"))

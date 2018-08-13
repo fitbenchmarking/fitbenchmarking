@@ -70,6 +70,9 @@ neutron_data_dir = os.path.join(benchmark_problems_dir,
 # If the full path is not given and the results_dir name is valid
 #  ../fitbenchmarking/fitbenchmarking/ is taken as the path
 results_dir = None
+
+
+# Whether to use errors in the fitting process
 use_errors = True
 
 for run_data in ["neutron", "nist"]:
