@@ -6,6 +6,7 @@ python:
 install:
   - python setup.py install
   - ./build/mantid.sh
+
 script:
   # ================ Fitting Tests =============== #
   - python fitbenchmarking/fitting/tests/fit_algorithms_tests.py
