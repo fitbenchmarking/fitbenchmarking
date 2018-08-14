@@ -43,15 +43,14 @@ def parse_result(fit_result, t_start, t_end):
     """
 
     status = 'failed'
-    fit_wks, params, errors, runtime = None, None, None, np.nan
+    fit_wks, fin_function_def, runtime = None, None, np.nan
     if not fit_result is None:
         status = fit_result.OutputStatus
         fit_wks = fit_result.OutputWorkspace
-        params = fit_result.OutputParameters.column(1)[:-1]
-        errors = fit_result.OutputParameters.column(2)[:-1]
+        fin_function_def = str(fit_result.Function)
         runtime = t_end - t_start
 
-    return status, fit_wks, params, errors, runtime
+    return status, fit_wks, fin_function_def, runtime
 
 
 def optimum(fit_wks, minimizer_name, best_fit):
@@ -154,8 +153,9 @@ def parse_nist_function_definitions(prob, nb_start_vals):
         start_val_str = ''
         for param in prob.starting_values:
             start_val_str += ('{0}={1},'.format(param[0], param[1][start_idx]))
-
-        function_defs.append("name=UserFunction, Formula={0}, {1}".
+        # Eliminate trailing comma
+        start_val_str = start_val_str[:-1]
+        function_defs.append("name=UserFunction,Formula={0},{1}".
                              format(prob.equation, start_val_str))
 
     return function_defs

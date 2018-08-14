@@ -92,12 +92,12 @@ def fit_one_function_def(prob, wks, function, minimizers, cost_function):
     results_problem = []
     for minimizer in minimizers:
 
-        status, fit_wks, params, errors, runtime = \
+        status, fit_wks, fin_function_def, runtime = \
         fit_algorithms.mantid(prob, wks, function, minimizer, cost_function)
-        chi_sq, min_chi_sq, best_fit = mantid_chisq(status, fit_wks, min_chi_sq,
-                                                    best_fit, minimizer)
-        result = create_result_entry(prob, status, params, errors, chi_sq,
-                                     runtime, minimizer, function)
+        chi_sq, min_chi_sq, best_fit = \
+        mantid_chisq(status, fit_wks, min_chi_sq, best_fit, minimizer)
+        result = create_result_entry(prob, status, chi_sq, runtime, minimizer,
+                                     function, fin_function_def)
         results_problem.append(result)
 
     return results_problem, best_fit
@@ -130,16 +130,14 @@ def mantid_chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
     return chi_sq, min_chi_sq, best_fit
 
 
-def create_result_entry(prob, status, params, errors, chi_sq, runtime,
-                  minimizer, function):
+def create_result_entry(prob, status, chi_sq, runtime, minimizer,
+                        ini_function_def, fin_function_def):
     """
     Helper function that creates a result object after fitting a problem
     with a certain function and minimzier.
 
     @param prob :: problem object containing info that was fitted
     @param status :: status of the fit, i.e. success or failure
-    @param params :: parameters obtained through the fit
-    @param errors :: errors on parameters
     @param chi_sq :: the chi squared of the fit
     @param runtime :: the runtime of the fit
     @param minimizer :: the minimizer used for this particular fit
@@ -154,11 +152,10 @@ def create_result_entry(prob, status, params, errors, chi_sq, runtime,
     # Populate result object
     result.problem = prob
     result.fit_status = status
-    result.params = params
-    result.errors = errors
     result.chi_sq = chi_sq
     result.runtime = runtime
     result.minimizer = minimizer
-    result.function_def = function
+    result.ini_function_def = ini_function_def
+    result.fin_function_def = fin_function_def
 
     return result
