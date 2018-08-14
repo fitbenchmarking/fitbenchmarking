@@ -59,10 +59,8 @@ color_scale = [(1.1, 'ranking-top-1'),
 benchmark_problems_dir = os.path.join(fitbenchmarking_path,
                                       'benchmark_problems')
 
-nist_data_dir = os.path.join(benchmark_problems_dir,
-                             'NIST_nonlinear_regression')
-neutron_data_dir = os.path.join(benchmark_problems_dir,
-                                'Neutron_data')
+nist_data_dir = os.path.join(benchmark_problems_dir,'NIST_nonlinear_regression')
+neutron_data_dir = os.path.join(benchmark_problems_dir, 'Neutron_data')
 
 # Modify results_dir to specify where the results of the fit should be saved
 # If left as None, they will be saved in a "results" folder in the working dir
@@ -81,19 +79,15 @@ for run_data in ["neutron", "nist"]:
         group_suffix_names = ['neutron_data']
         group_names = ["Neutron data"]
         results_per_group, results_dir = \
-        fitBenchmarking(data_dir=neutron_data_dir,
-                        minimizers=minimizers,
-                        use_errors=use_errors,
-                        results_dir=results_dir)
+        fitBenchmarking(data_dir=neutron_data_dir, minimizers=minimizers,
+                        use_errors=use_errors, results_dir=results_dir)
     elif run_data == "nist":
         group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
                        'NIST, "higher" difficulty']
         group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher']
         results_per_group, results_dir = \
-        fitBenchmarking(data_dir=nist_data_dir,
-                        minimizers=minimizers,
-                        use_errors=use_errors,
-                        results_dir=results_dir)
+        fitBenchmarking(data_dir=nist_data_dir, minimizers=minimizers,
+                        use_errors=use_errors, results_dir=results_dir)
     else:
         raise RuntimeError("Invalid run_data, please check if the array"
                            "contains the correct names!")

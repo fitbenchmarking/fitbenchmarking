@@ -24,6 +24,7 @@ Set up and build the visual display pages for various types of problems.
 from __future__ import (absolute_import, division, print_function)
 
 import os
+import re
 from docutils.core import publish_string
 from result_processing import fitdetails_tbls
 from utils.logging_setup import logger
@@ -38,7 +39,8 @@ def create(prob_results, group_name, results_dir, count):
     Creates a visual display page containing figures and other
     details about the best fit for a problem.
 
-    @param prob_results :: problem results object
+    @param prob_results :: problem results objects containing results for
+                           each minimizer and a certain fitting function
     @param group_name :: name of the group the problem belongs to
     @param results_dir :: results directory
     @param count :: number of times a problem with the same name was
@@ -51,22 +53,27 @@ def create(prob_results, group_name, results_dir, count):
     best_result = min((result for result in prob_results),
                        key=lambda result: result.chi_sq)
     problem_name = process_problem_name(best_result.problem.name)
-    support_pages_dir, file_path, fit_details_tbl, see_also_link = \
-    setup_VDpage_misc(group_name, problem_name, best_result, results_dir, count)
+    support_pages_dir, file_path, see_also_link = \
+    setup_page_misc(group_name, problem_name, best_result, results_dir, count)
     rst_link = generate_rst_link(file_path)
 
-    figure_data, figure_fit, figure_start = \
+    ini_details_tbl, fin_details_tbl = \
+    setup_detail_page_tbls(best_result.ini_function_def,
+                           best_result.fin_function_def)
+
+    fig_data, fig_fit, fig_start = \
     get_figure_paths(support_pages_dir, problem_name, count)
-    rst_text = create_rst_page(best_result.problem.name, figure_data,
-                               figure_start, figure_fit, fit_details_tbl,
-                               best_result.minimizer, see_also_link)
-    save_VDpages(rst_text, problem_name, file_path)
+    rst_text = \
+    create_rst_page(best_result.problem.name, fig_data, fig_start, fig_fit,
+                    best_result.minimizer, see_also_link, ini_details_tbl,
+                    fin_details_tbl)
+    save_page(rst_text, problem_name, file_path)
 
     return rst_link
 
 
-def create_rst_page(name, figure_data, figure_start, figure_fit, details_table,
-                    minimizer, see_also_link):
+def create_rst_page(name, fig_data, fig_start, fig_fit, minimizer,
+                    see_also_link, ini_det_tbl, fin_det_tbl):
     """
     Creates an rst page containing a title and 3 figures, with detailed
     tables about the fit on the last two figures.
@@ -85,9 +92,9 @@ def create_rst_page(name, figure_data, figure_start, figure_fit, details_table,
 
     space = "|\n|\n|\n\n"
     title = generate_rst_title(name)
-    data_plot = generate_rst_data_plot(figure_data)
-    starting_plot = generate_rst_starting_plot(figure_start,details_table)
-    solution_plot = generate_rst_solution_plot(figure_fit, minimizer)
+    data_plot = generate_rst_data_plot(fig_data)
+    starting_plot = generate_rst_starting_plot(fig_start, ini_det_tbl)
+    solution_plot = generate_rst_solution_plot(fig_fit, minimizer, fin_det_tbl)
 
     rst_text = title + space + data_plot + starting_plot + solution_plot + \
                space + see_also_link
@@ -130,14 +137,24 @@ def generate_rst_link(file_path):
     return rst_link
 
 
-def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
+def setup_detail_page_tbls(initial_fdef, final_fdef):
+
+    initial_details_tbl = fitdetails_tbls.create(initial_fdef)
+    if not final_fdef is None:
+        final_details_tbl = fitdetails_tbls.create(final_fdef)
+    else:
+        final_details_tbl = "None - fit failed"
+
+    return initial_details_tbl, final_details_tbl
+
+
+def setup_nist_page_misc(linked_name, results_dir):
     """
     Sets up some miscellaneous things for the NIST visual display
     page like path to the folder they are saved in.
 
     @param linked_name :: link to the NIST website for the
                           considered NIST problem
-    @param function_def :: string with function definition
     @param results_dir :: path to the results directory
 
     @returns :: the directory in which visual display pages go,
@@ -148,19 +165,17 @@ def setup_nist_VDpage_misc(linked_name, function_def, results_dir):
                                      "support_pages")
     if not os.path.exists(support_pages_dir):
         os.makedirs(support_pages_dir)
-    details_table = fitdetails_tbls.create(function_def)
     see_also_link = 'See also:\n ' + linked_name + \
                     '\n on NIST website\n\n'
 
-    return support_pages_dir, details_table, see_also_link
+    return support_pages_dir, see_also_link
 
 
-def setup_neutron_VDpage_misc(function_def, results_dir):
+def setup_neutron_page_misc(results_dir):
     """
     Sets up some miscellaneous things for the neutron visual display
     page like path to the folder they are saved in.
 
-    @param function_def :: string with function definition
     @param results_dir :: path to the results directory
 
     @returns :: the directory in which visual display pages go,
@@ -171,13 +186,12 @@ def setup_neutron_VDpage_misc(function_def, results_dir):
                                      "support_pages")
     if not os.path.exists(support_pages_dir):
         os.makedirs(support_pages_dir)
-    details_table = fitdetails_tbls.create(function_def)
     see_also_link = ''
 
-    return support_pages_dir, details_table, see_also_link
+    return support_pages_dir, see_also_link
 
 
-def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir, count):
+def setup_page_misc(group_name, problem_name, res_obj, results_dir, count):
     """
     Sets up some miscellaneous things for the visual display pages.
 
@@ -197,17 +211,16 @@ def setup_VDpage_misc(group_name, problem_name, res_obj, results_dir, count):
 
     # Group specific path and other misc stuff
     if 'nist' in group_name:
-        support_pages_dir, fit_details_tbl, see_also_link = \
-        setup_nist_VDpage_misc(res_obj.problem.linked_name,
-                               res_obj.function_def, results_dir)
+        support_pages_dir, see_also_link = \
+        setup_nist_page_misc(res_obj.problem.linked_name, results_dir)
     elif 'neutron' in group_name:
-        support_pages_dir, fit_details_tbl, see_also_link = \
-        setup_neutron_VDpage_misc(res_obj.function_def, results_dir)
+        support_pages_dir, see_also_link = \
+        setup_neutron_page_misc(results_dir)
 
     file_name = (group_name + '_' + problem_name + '_' + str(count)).lower()
     file_path = os.path.join(support_pages_dir, file_name)
 
-    return support_pages_dir, file_path, fit_details_tbl, see_also_link
+    return support_pages_dir, file_path, see_also_link
 
 
 def get_figure_paths(support_pages_dir, problem_name, count):
@@ -276,27 +289,28 @@ def generate_rst_data_plot(figure_data):
     return data_plot
 
 
-def generate_rst_starting_plot(figure_start, fit_details_tbl):
+def generate_rst_starting_plot(figure_start, initial_details_tbl):
     """
     Helper function that generates an rst figure of the starting guess plot
     png image contained at path figure_start.
 
     @param figure_start :: path to the starting guess figure
-    @param fit_details_tbl :: table in rst containing the fit details
+    @param initial_details_tbl :: table in rst containing the initial guess
+                                  details
 
     @returns :: the starting guess plot section in rst
     """
     starting_plot = 'Plot of the initial starting guess' + '\n'
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
     starting_plot += '*Functions*:\n\n'
-    starting_plot += fit_details_tbl
+    starting_plot += initial_details_tbl
     starting_plot += ('.. figure:: ' + figure_start  + '\n' +
                       '   :align: center' + '\n\n')
 
     return starting_plot
 
 
-def generate_rst_solution_plot(figure_fit, minimizer):
+def generate_rst_solution_plot(figure_fit, minimizer, final_details_tbl):
     """
     Helper function that generates an rst figure of the fitted problem
     png image contained at path figure_fit.
@@ -310,13 +324,15 @@ def generate_rst_solution_plot(figure_fit, minimizer):
     solution_plot = 'Plot of the solution found' + '\n'
     solution_plot += ('-' * len(solution_plot)) + '\n\n'
     solution_plot += '*Minimizer*: ' + minimizer + '\n\n'
+    solution_plot += '*Functions*:\n\n'
+    solution_plot += final_details_tbl
     solution_plot += ('.. figure:: ' + figure_fit + '\n' +
                       '   :align: center' + '\n\n')
 
     return solution_plot
 
 
-def save_VDpages(rst_text, prob_name, file_path):
+def save_page(rst_text, prob_name, file_path):
     """
     Helper function that saves the rst page into text and html after
     converting it to html.

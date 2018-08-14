@@ -65,8 +65,8 @@ def parse_nist_function_def(function):
     """
     first_comma = function.find(',')
     second_comma = function.find(',', first_comma + 1)
-    function_name = function[first_comma+10:second_comma]
-    function_parameters = function[second_comma+2:-1]
+    function_name = function[first_comma+9:second_comma]
+    function_parameters = function[second_comma+1:]
     function_parameters = function_parameters.replace(',', ', ')
 
     return [function_name], [function_parameters]
@@ -92,8 +92,7 @@ def parse_neutron_function_def(function, function_names, function_parameters):
         function_names.append(function[5:])
         function_parameters.append('None')
 
-    for idx in range(0, len(function_parameters)):
-        function_parameters[idx] = function_parameters[idx].replace(',', ', ')
+    function_parameters[-1] = function_parameters[-1].replace(',', ', ')
 
     return function_names, function_parameters
 

@@ -136,6 +136,7 @@ def get_nist_model(lines, idx):
     @returns :: string of the equation from the NIST file and the
                 new index
     """
+
     equation_text, idxerr = None, False
     try:
         while (not re.match(r'\s*y\s*=(.+)', lines[idx])
@@ -164,6 +165,7 @@ def get_equation_text(lines, idxerr, idx):
     @returns :: string of the equation from the NIST file and the
                 new index
     """
+
     # Next non-empty lines are assumed to continue the equation
     equation_text = ''
     if idxerr is False:
@@ -177,23 +179,6 @@ def get_equation_text(lines, idxerr, idx):
     return equation_text, idx
 
 
-def get_nist_starting_values(lines, idx):
-    """
-    Gets the function starting values from the NIST problem file.
-
-    @param lines :: array of all the lines in the imported nist file
-    @param idx :: the line at which the parser is at
-
-    @returns :: an array of the starting values and the new index
-    """
-    starting_values = None
-    idx += 2
-    starting_values = parse_starting_values(lines[idx:])
-    idx += len(starting_values)
-
-    return starting_values, idx
-
-
 def get_data_pattern_txt(lines, idx):
     """
     Gets the data pattern from the NIST problem file.
@@ -203,6 +188,7 @@ def get_data_pattern_txt(lines, idx):
 
     @returns :: string of the data pattern and the new index
     """
+
     data_pattern_text = None
     data_pattern_text = lines[idx:]
     idx = len(lines)
@@ -248,6 +234,7 @@ def parse_equation(eq_text):
 
     @returns :: formatted equation string
     """
+
     start_normal = r'\s*y\s*=(.+)'
     if re.match(start_normal, eq_text):
         match = re.search(r'y\s*=(.+)\s*\+\s*e', eq_text)
@@ -268,12 +255,31 @@ def convert_nist_to_muparser(equation):
 
     @returns :: formatted muparser equation
     """
+
     # 'NIST equation syntax' => muparser syntax
     equation = equation.replace('[', '(')
     equation = equation.replace(']', ')')
     equation = equation.replace('arctan', 'atan')
     equation = equation.replace('**', '^')
     return equation
+
+
+def get_nist_starting_values(lines, idx):
+    """
+    Gets the function starting values from the NIST problem file.
+
+    @param lines :: array of all the lines in the imported nist file
+    @param idx :: the line at which the parser is at
+
+    @returns :: an array of the starting values and the new index
+    """
+
+    starting_values = None
+    idx += 2
+    starting_values = parse_starting_values(lines[idx:])
+    idx += len(starting_values)
+
+    return starting_values, idx
 
 
 def parse_starting_values(lines):
@@ -291,14 +297,14 @@ def parse_starting_values(lines):
             break
 
         startval_str = line.split()
-        check_startval_validity(startval_str)
+        check_startval_validity(startval_str, line)
         alt_values = get_startvals_floats(startval_str)
         starting_vals.append([startval_str[0], alt_values])
 
     return starting_vals
 
 
-def check_startval_validity(startval_str):
+def check_startval_validity(startval_str, line):
     """
     Checks the validity of the starting value raw string.
     There can only be 2 cases when parsing nist files
@@ -320,6 +326,7 @@ def get_startvals_floats(startval_str):
 
     @returns :: starting values array of floats
     """
+
     # A bit weak/lax parsing, if there is one less column,
     # assume only one start point
     if 6 == len(startval_str):
