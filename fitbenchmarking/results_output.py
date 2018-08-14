@@ -85,7 +85,7 @@ def save_results_tables(minimizers, results_per_test, group_name,
                                          using_errors=use_errors,
                                          color_scale=color_scale)
 
-    save_tables(tables_dir, tbl_acc_indiv, use_errors, group_name,
+    save_tables(tables_dir, tbl_runtime_indiv, use_errors, group_name,
                 FILENAME_SUFFIX_RUNTIME)
 
     logging.shutdown()
