@@ -1,0 +1,23 @@
+sudo: required
+language: python
+python:
+  - "2.7"
+
+install:
+  - python setup.py install
+
+script:
+  # ================ Fitting Tests =============== #
+  - python fitbenchmarking/fitbenchmarking/fitting/tests/fit_algorithms_tests.py
+  - python fitbenchmarking/fitbenchmarking/fitting/tests/mantid_utils_tests.py
+  # ================ Parsing Tests =============== #
+  - python fitbenchmarking/fitbenchmarking/parsing/tests/fetch_data_tests.py
+  - python fitbenchmarking/fitbenchmarking/parsing/tests/parse_neutron_tests.py
+  - python fitbenchmarking/fitbenchmarking/parsing/tests/parse_nist_tests.py
+  # ================ Result Processing Tests =============== #
+  - python fitbenchmarking/fitbenchmarking/results_processing/tests/fitdetails_tbls_tests.py
+  - python fitbenchmarking/fitbenchmarking/results_processing/tests/misc_tests.py
+  - python fitbenchmarking/fitbenchmarking/results_processing/tests/numpy_restables_tests.py
+  - python fitbenchmarking/fitbenchmarking/results_processing/tests/rst_table_tests.py
+  # ================ Utils Tests =============== #
+  - python fitbenchmarking/fitbenchmarking/results_processing/tests/fit_misc_tests.py
