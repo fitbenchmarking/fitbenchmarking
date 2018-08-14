@@ -223,7 +223,7 @@ def format_cell_value(value, width=None, color_scale=None, items_link=None):
     @returns :: the correct value text string
     """
     if not color_scale:
-        value_text = no_color_scale_cv(items_link)
+        value_text = no_color_scale_cv(items_link, value)
     else:
         value_text = color_scale_cv(color_scale, value)
 
@@ -233,7 +233,7 @@ def format_cell_value(value, width=None, color_scale=None, items_link=None):
     return value_text
 
 
-def no_color_scale_cv(items_link):
+def no_color_scale_cv(items_link, value):
     """
     Creates the values text if no color scale is provided.
 

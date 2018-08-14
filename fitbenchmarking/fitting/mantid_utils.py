@@ -175,8 +175,10 @@ def setup_errors(prob):
 
     data_e = None
     if prob.data_pattern_obs_errors is None:
+        # Fake errors
         data_e = np.sqrt(abs(prob.data_y))
     else:
+        # True errors
         data_e = prob.data_pattern_obs_errors
 
     return data_e

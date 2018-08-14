@@ -59,10 +59,8 @@ color_scale = [(1.1, 'ranking-top-1'),
 benchmark_problems_dir = os.path.join(fitbenchmarking_path,
                                       'benchmark_problems')
 
-nist_data_dir = os.path.join(benchmark_problems_dir,
-                             'NIST_nonlinear_regression')
-neutron_data_dir = os.path.join(benchmark_problems_dir,
-                                'Neutron_data')
+nist_data_dir = os.path.join(benchmark_problems_dir,'NIST_nonlinear_regression')
+neutron_data_dir = os.path.join(benchmark_problems_dir, 'Neutron_data')
 
 # Modify results_dir to specify where the results of the fit should be saved
 # If left as None, they will be saved in a "results" folder in the working dir
