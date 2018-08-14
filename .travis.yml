@@ -5,7 +5,7 @@ python:
 
 install:
   - python setup.py install
-
+  - ./build/mantid.sh
 script:
   # ================ Fitting Tests =============== #
   - python fitbenchmarking/fitting/tests/fit_algorithms_tests.py
@@ -15,9 +15,9 @@ script:
   - python fitbenchmarking/parsing/tests/parse_neutron_tests.py
   - python fitbenchmarking/parsing/tests/parse_nist_tests.py
   # ======= Processing Tests =============== #
-  - python fitbenchmarking/results_processing/tests/fitdetails_tbls_tests.py
-  - python fitbenchmarking/results_processing/tests/misc_tests.py
-  - python fitbenchmarking/results_processing/tests/numpy_restables_tests.py
-  - python fitbenchmarking/results_processing/tests/rst_table_tests.py
+  - python fitbenchmarking/result_processing/tests/fitdetails_tbls_tests.py
+  - python fitbenchmarking/result_processing/tests/misc_tests.py
+  - python fitbenchmarking/result_processing/tests/numpy_restables_tests.py
+  - python fitbenchmarking/result_processing/tests/rst_table_tests.py
   # =======Tests =============== #
-  - python fitbenchmarking/results_processing/tests/fit_misc_tests.py
+  - python fitbenchmarking/utils/tests/fit_misc_tests.py
