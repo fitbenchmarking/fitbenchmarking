@@ -7,6 +7,7 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import logging
 from build.utils.common import BUILD_LOGGER
+from build.utils.validate_installs import validate_installs
 
 def check_imports():
     """
@@ -50,13 +51,12 @@ def validate_services(list_of_services, quiet=True):
     @returns :: dictionary of {"service_name": validity(True/False)}
     """
 
-    from build.utils.validate_installs import validate_installs
     print("=======================")
     service_validity = validate_installs(list_of_services)
     if quiet is False:
         for service in service_validity:
             if service_validity[service] is False:
-                BUILD_LOGGER.print_and_log("%s: False" % service, logging.ERROR)
+                BUILD_LOGGER.print_and_log("%s: False" % service, logging.INFO)
             else:
                 if service == 'mantid' and os.name == 'nt':
                     # not required on windows

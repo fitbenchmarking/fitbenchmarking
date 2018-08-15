@@ -69,15 +69,6 @@ class InstallExternals(Command):
         logging.shutdown()
 
 
-    def _install_7zip(self, services_to_install):
-        if '7zip' in services_to_install:
-            BUILD_LOGGER.print_and_log("Installing 7zip")
-            if install_service('7zip', BUILD_LOGGER) is False:
-                print("Unable to install 7zip. Check build logs for more info")
-                return
-            del self.services['7zip']
-            services_to_install.remove('7zip')
-
     def _get_valid_services_to_install(self):
         self.services = checks.validate_services(self.services.keys(),
                                                  quiet=False)
@@ -86,6 +77,15 @@ class InstallExternals(Command):
                                if self.services[serv_name] is False]
 
         return services_to_install
+
+    def _install_7zip(self, services_to_install):
+        if '7zip' in services_to_install:
+            BUILD_LOGGER.print_and_log("Installing 7zip")
+            if install_service('7zip', BUILD_LOGGER) is False:
+                print("Unable to install 7zip. Check build logs for more info")
+                return
+            del self.services['7zip']
+            services_to_install.remove('7zip')
 
     def _perform_preliminary_checks(self):
         if not checks.check_imports():
