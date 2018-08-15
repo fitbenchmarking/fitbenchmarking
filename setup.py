@@ -1,6 +1,9 @@
 from setuptools import setup, find_packages
 
-from build.commands.install import InstallExternals
+from build.commands.installs import InstallExternals
+from build.commands.help import Help
+
+
 setup(name='FitBenchmarking',
       version='1.0',
       description='Fit benchmarking software',
@@ -12,5 +15,6 @@ setup(name='FitBenchmarking',
       zip_safe=False,
       cmdclass={
           'externals': InstallExternals,
+          'help': Help,
       },
      )
