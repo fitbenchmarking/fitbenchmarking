@@ -10,9 +10,9 @@ before_install:
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
   - conda update --yes conda
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose dateutil pandas statsmodels h5py
   - sudo apt-get install python-yaml
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose dateutil pandas statsmodels h5py
   - python setup.py install
   - python setup.py externals
 
