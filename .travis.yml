@@ -7,13 +7,16 @@ install:
   - python setup.py install
   - python setup.py externals
   - ls /opt/Mantid/bin
+
+sudo: false
+before_script:
   - export PYTHONPATH=$PYTHONPATH:{/opt/Mantid/bin}
 
 script:
-  # ================ Fitting Tests =============== #
+  # ======= Fitting Tests =============== #
   - python fitbenchmarking/fitting/tests/fit_algorithms_tests.py
   - python fitbenchmarking/fitting/tests/mantid_utils_tests.py
-  # =======g Parsing Tests =============== #
+  # ======= Parsing Tests =============== #
   - python fitbenchmarking/parsing/tests/fetch_data_tests.py
   - python fitbenchmarking/parsing/tests/parse_neutron_tests.py
   - python fitbenchmarking/parsing/tests/parse_nist_tests.py
