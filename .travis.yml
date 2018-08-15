@@ -1,10 +1,11 @@
+sudo: required
 language: python
 python:
   - "2.7"
 
 install:
-  - sudo python setup.py install
-  - sudo python setup.py externals
+  - python setup.py install
+  - python setup.py externals
   - export PYTHONPATH=$PYTHONPATH:{/opt/Mantid/bin}
 
 script:
