@@ -5,7 +5,7 @@ python:
 
 install:
   - python setup.py install
-  - ./build/mantid.sh
+  - python setup.py externals
 
 script:
   # ================ Fitting Tests =============== #
