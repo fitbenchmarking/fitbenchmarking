@@ -12,6 +12,7 @@ before_install:
   - conda update --yes conda
   - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose dateutil pandas statsmodels h5py
   - sudo apt-get install python-yaml
+  - echo $PYTHONPATH
 install:
   - python setup.py install
   - python setup.py externals
