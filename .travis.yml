@@ -8,11 +8,12 @@ install:
   - python setup.py externals
   - ls /opt/Mantid/bin
 
-sudo: false
 before_script:
+  sudo: false
   - export PYTHONPATH=$PYTHONPATH:{/opt/Mantid/bin}
 
 script:
+  sudo: false
   # ======= Fitting Tests =============== #
   - python fitbenchmarking/fitting/tests/fit_algorithms_tests.py
   - python fitbenchmarking/fitting/tests/mantid_utils_tests.py
