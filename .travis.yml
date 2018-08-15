@@ -5,9 +5,7 @@ python:
 install:
   - sudo python setup.py install
   - sudo python setup.py externals
-
-before_script:
-  - export PYTHONPATH=$PYTHONPATH:/opt/Mantid/bin
+  - export PYTHONPATH=$PYTHONPATH:{/opt/Mantid/bin}
 
 script:
   # ================ Fitting Tests =============== #
