@@ -1,19 +1,14 @@
 sudo: required
 language: python
 python:
-  - "2.7"
+  - "2.7.12"
 
 dist: trusty
 
-env:
-  global:
-    - PYTHONPATH=$PYTHONPATH:/opt/Mantid/bin
+
 install:
   - python setup.py install
   - python setup.py externals
-
-before_script:
-  - echo $PYTHONPATH
 
 script:
   # ======= Fitting Tests =============== #
