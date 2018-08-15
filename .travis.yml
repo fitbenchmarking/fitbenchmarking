@@ -5,9 +5,9 @@ python:
 
 dist: trusty
 
-
+before_install:
+  - sudo apt-get install -r requirements.txt
 install:
-  - pip install -r requirements.txt
   - python setup.py install
   - python setup.py externals
 
