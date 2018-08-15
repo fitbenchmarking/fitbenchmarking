@@ -5,7 +5,7 @@ python:
 
 install:
   - python setup.py install
-  - python setup.py externals
+  - sudo python setup.py externals
 
 script:
   # ================ Fitting Tests =============== #
