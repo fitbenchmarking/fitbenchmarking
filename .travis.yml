@@ -6,7 +6,7 @@ python:
 dist: trusty
 
 before_install:
-  - sudo apt-get install libopenblas-dev liblapack-dev cython
+  - sudo apt-get install gcc gfortran python-dev libopenblas-dev liblapack-dev cython
 install:
   - python setup.py install
   - python setup.py externals
