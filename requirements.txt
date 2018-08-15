@@ -1,0 +1,3 @@
+libopenblas-dev 
+liblapack-dev 
+cython
