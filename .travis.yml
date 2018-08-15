@@ -6,6 +6,7 @@ python:
 install:
   - python setup.py install
   - python setup.py externals
+  - cat build.log
   - export PYTHONPATH=$PYTHONPATH:{/opt/Mantid/bin}
 
 script:
