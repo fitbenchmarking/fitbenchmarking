@@ -9,7 +9,6 @@ install:
   - ls /opt/Mantid/bin
 
 before_script:
-  sudo: false
   - export PYTHONPATH=$PYTHONPATH:{/opt/Mantid/bin}
 
 script:
