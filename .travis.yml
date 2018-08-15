@@ -8,7 +8,7 @@ install:
   - python setup.py externals
 
 after_install:
-  - export PYTHONPATH=$PYTONPATH:{/opt/Mantid/bin/}
+  - export PYTHONPATH=$PYTHONPATH:{/opt/Mantid/bin/}
 
 script:
   # ================ Fitting Tests =============== #
