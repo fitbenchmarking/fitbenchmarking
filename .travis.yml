@@ -12,18 +12,15 @@ before_install:
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
   - conda update --yes conda
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose dateutil pandas statsmodels h5py
-  - sudo apt-get install python-yaml
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib h5py yaml
 install:
   - python setup.py install
   - python setup.py externals
 
-before_script:
-  - ls /opt/Mantid/plugins
 script:
   # ======= Fitting Tests =============== #
-  - python fitbenchmarking/fitting/tests/fit_algorithms_tests.py
-  - python fitbenchmarking/fitting/tests/mantid_utils_tests.py
+  - mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py
+  - mantidpython fitbenchmarking/fitting/tests/mantid_utils_tests.py
   # ======= Parsing Tests =============== #
   - python fitbenchmarking/parsing/tests/fetch_data_tests.py
   - python fitbenchmarking/parsing/tests/parse_neutron_tests.py
