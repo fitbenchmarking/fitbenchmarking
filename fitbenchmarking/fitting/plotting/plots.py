@@ -27,7 +27,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import mantid.simpleapi as msapi
-from plotHelper import *
+from fitting.plotting.plot_helper import *
 
 
 def make_plots(prob, wks, function, best_fit, previous_name, count,
