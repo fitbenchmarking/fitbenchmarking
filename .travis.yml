@@ -16,7 +16,7 @@ before_install:
 install:
   - python setup.py install
   - python setup.py externals
-  - echo build/build.log
+  - cat build/build.log
 
 script:
   # ======= Fitting Tests =============== #
