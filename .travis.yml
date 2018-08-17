@@ -34,6 +34,3 @@ script:
   - python fitbenchmarking/result_processing/tests/rst_table_tests.py
   # ======= Utils Tests =============== #
   - python fitbenchmarking/utils/tests/fit_misc_tests.py
-  if: TRAVIS_EVENT_TYPE = cron
-    - mantidpython system_tests/generate_current_results.py
-    - python system_tests/system_test.py
