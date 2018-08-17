@@ -17,7 +17,7 @@ install:
   - python setup.py install
   - python setup.py externals
 
-before_install:
+before_script:
   - mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py || true
   - mantidpython fitbenchmarking/fitting/tests/mantid_utils_tests.py || true
 script:
