@@ -19,11 +19,8 @@ install:
   - python setup.py externals
 
 script:
-  - python import faulthandler
-  - python faulthandler.enable()
   # ======= Fitting Tests =============== #
   - mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py
-  - python faulthandler.disable()
   - mantidpython fitbenchmarking/fitting/tests/mantid_utils_tests.py
   # ======= Parsing Tests =============== #
   - python fitbenchmarking/parsing/tests/fetch_data_tests.py
