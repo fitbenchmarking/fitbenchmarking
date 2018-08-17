@@ -19,6 +19,7 @@ install:
 
 before_install:
   - mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py || true
+  - mantidpython fitbenchmarking/fitting/tests/mantid_utils_tests.py || true
 script:
   # ======= Fitting Tests =============== #
   - mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py
