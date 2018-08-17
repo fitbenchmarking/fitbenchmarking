@@ -18,9 +18,7 @@ install:
   - python setup.py externals
 
 before_script:
-  - mantidpython
-  - import mantid.simpleapi
-  - exit
+  - mantidpython --import-mantid.simpleapi --exit
 script:
   # ======= Fitting Tests =============== #
   - mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py
