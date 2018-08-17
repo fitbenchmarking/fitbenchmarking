@@ -13,7 +13,6 @@ before_install:
   - ./miniconda.sh -b
   - conda update --yes conda
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib h5py yaml ipython
-  - pip install faulthandler
 install:
   - python setup.py install
   - python setup.py externals
