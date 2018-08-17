@@ -20,7 +20,6 @@ install:
 before_script:
   allow_failures:
     - ./mantidpython
-    - exit
 script:
   # ======= Fitting Tests =============== #
   - mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py
