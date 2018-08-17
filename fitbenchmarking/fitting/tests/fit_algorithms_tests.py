@@ -1,12 +1,9 @@
 from __future__ import (absolute_import, division, print_function)
 
 import unittest
-import sys
 import os
 import numpy as np
 import mantid.simpleapi as msapi
-# Avoid reaching the maximum recursion depth by setting recursion limit
-sys.setrecursionlimit(10000)
 
 # Delete four lines below when automated tests ar enabled
 import sys
