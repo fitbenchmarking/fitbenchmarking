@@ -13,14 +13,17 @@ before_install:
   - ./miniconda.sh -b
   - conda update --yes conda
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib h5py yaml ipython
+  - pip install faulthandler
 install:
   - python setup.py install
   - python setup.py externals
-  - cat build/build.log
 
 script:
+  - python import faulthandler
+  - python faulthandler.enable()
   # ======= Fitting Tests =============== #
   - mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py
+  - python faulthandler.disable()
   - mantidpython fitbenchmarking/fitting/tests/mantid_utils_tests.py
   # ======= Parsing Tests =============== #
   - python fitbenchmarking/parsing/tests/fetch_data_tests.py
