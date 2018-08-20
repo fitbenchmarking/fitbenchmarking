@@ -10,7 +10,7 @@ virtualenv:
 stages:
   - name: Tests
   - name: SysTests
-    if: $TRAVIS_EVENT_TYPE = "cron"
+    if: type = cron
 
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
@@ -25,9 +25,7 @@ install:
 jobs:
   include:
     - stage: Tests
-      before_script:
-        - mantidpython -m mantid.simpleapi || true
-
+      before_script: mantidpython -m mantid.simpleapi || true
       # ======= Fitting Tests =============== #
       script: mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py
       script: mantidpython fitbenchmarking/fitting/tests/mantid_utils_tests.py
