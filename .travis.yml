@@ -24,6 +24,8 @@ install:
 jobs:
   include:
     - stage: Tests
+      before_script:
+        - mantidpython -m mantid.simpleapi || True
       script:
         # ======= Fitting Tests =============== #
         - mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py
