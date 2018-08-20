@@ -109,7 +109,7 @@ class plot(data):
                       the default is not to save
         """
 
-        plot = plt.figure()
+        plt.figure()
         self.set_plot_misc()
         for data in self.data:
             self.check_and_make_plot(data)
