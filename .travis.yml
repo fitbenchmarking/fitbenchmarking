@@ -25,10 +25,11 @@ install:
 jobs:
   include:
     - stage: Tests
-      before_script: mantidpython -m mantid.simpleapi || true
-      # ======= Fitting Tests =============== #
+    # ======= Fitting Tests =============== #
+    - before_script: mantidpython -m mantid.simpleapi || true
       script: mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py
-    - script: mantidpython fitbenchmarking/fitting/tests/mantid_utils_tests.py
+    - before_script: mantidpython -m mantid.simpleapi || true
+      script: mantidpython fitbenchmarking/fitting/tests/mantid_utils_tests.py
     # ======= Parsing Tests =============== #
     - script: python fitbenchmarking/parsing/tests/fetch_data_tests.py
     - script: python fitbenchmarking/parsing/tests/parse_neutron_tests.py
