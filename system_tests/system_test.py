@@ -21,7 +21,10 @@ Compares the current results with a set of expected results.
 # File change history is stored at: <https://github.com/mantidproject/mantid>.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 # ==============================================================================
-
+import unittest
+import os
+import re
+import numpy as np
 
 class SystemTest(unittest.TestCase):
 
@@ -42,11 +45,11 @@ class SystemTest(unittest.TestCase):
     def get_expected_results_paths_nist(self):
 
         expected_results_dir = self.path_to_expected_results_dir()
-        nist_low_path = os.path.join(expected_results_dir, "nist_low")
-        nist_average_path = os.path.join(expected_results_dir, "nist_average")
-        nist_high_path = os.path.join(expected_results_dir, "nist_high")
+        nist_low_path = os.path.join(expected_results_dir, "nist_low_acc.txt")
+        nist_avg_path = os.path.join(expected_results_dir, "nist_avg_acc.txt")
+        nist_high_path = os.path.join(expected_results_dir, "nist_high_acc.txt")
 
-        return nist_low_path, nist_average_path, nist_high_path
+        return nist_low_path, nist_avg_path, nist_high_path
 
     def read_expected_results_nist(self):
 
@@ -65,7 +68,7 @@ class SystemTest(unittest.TestCase):
     def get_expected_results_paths_neutron(self):
 
         expected_results_dir = self.path_to_expected_results_dir()
-        neutron_path = os.path.join(expected_results_dir, "neutron")
+        neutron_path = os.path.join(expected_results_dir, "neutron_acc.txt")
 
         return neutron_path
 
@@ -92,7 +95,7 @@ class SystemTest(unittest.TestCase):
         nist_average_path = \
         os.path.join(nist_average_dir, "nist_average_acc_weighted_table.txt")
         nist_high_path = \
-        os.path.join(nist_high_dir, "nist_high_acc_weighted_table.txt")
+        os.path.join(nist_high_dir, "nist_higher_acc_weighted_table.txt")
 
         return nist_low_path, nist_average_path, nist_high_path
 
@@ -117,7 +120,7 @@ class SystemTest(unittest.TestCase):
         neutron_path = \
         os.path.join(neutron_tables_dir, "neutron_data_acc_weighted_table.txt")
 
-        return neutron
+        return neutron_path
 
     def read_results_neutron(self):
 
@@ -128,22 +131,62 @@ class SystemTest(unittest.TestCase):
 
         return neutron
 
+    def string_to_np_table(self, string_tbl):
+
+        strings = re.findall("(?<=\\`)(?:[0-9]*[.])?[0-9]+(?=\\`)", string_tbl)
+        np_table = np.array(strings)
+        np_table = np_table.astype(np.float)
+
+        return np_table
+
+    def nist_expected_results_np_tables(self):
+
+        expected_results = self.read_expected_results_nist()
+        nist_low = self.string_to_np_table(expected_results[0])
+        nist_avg = self.string_to_np_table(expected_results[1])
+        nist_high = self.string_to_np_table(expected_results[2])
+
+        return nist_low, nist_avg, nist_high
+
+    def nist_results_np_tables(self):
+
+        results = self.read_results_nist()
+        nist_low = self.string_to_np_table(results[0])
+        nist_avg = self.string_to_np_table(results[1])
+        nist_high = self.string_to_np_table(results[2])
+
+        return nist_low, nist_avg, nist_high
+
+    def neutron_expected_results_np_tables(self):
+
+        expected_results = self.read_expected_results_neutron()
+        neutron = self.string_to_np_table(expected_results)
+
+        return neutron
+
+    def neutron_results_np_tables(self):
+
+        results = self.read_results_neutron()
+        neutron = self.string_to_np_table(results)
+
+        return neutron
+
 
     def test_nist(self):
 
-        expected_results = [self.read_expected_results_nist()]
-        results = [self.read_results_nist()]
+        expected_results = self.nist_expected_results_np_tables()
+        results = self.nist_results_np_tables()
 
-        self.assertEqual(expected_results[0], results[0])
-        self.assertEqual(expected_results[1], results[1])
-        self.assertEqual(expected_results[2], results[2])
+        np.testing.assert_array_almost_equal(expected_results[0], results[0], 2)
+        np.testing.assert_array_almost_equal(expected_results[1], results[1], 2)
+        np.testing.assert_array_almost_equal(expected_results[2], results[2], 2)
 
     def test_neutron(self):
 
-        expected_results = [self.read_expected_results_neutron()]
-        results = [self.read_results_neutron()]
+        expected_results = self.neutron_expected_results_np_tables()
+        results = self.neutron_results_np_tables()
 
-        self.assertEqual(expected_results[0], results[0])
+        np.testing.assert_array_almost_equal(expected_results, results, 2)
 
 
 if __name__ == "__main__":
