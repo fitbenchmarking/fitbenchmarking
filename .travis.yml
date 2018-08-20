@@ -10,10 +10,9 @@ virtualenv:
 stages:
   - name: Tests
   - name: SysTests
-    if: TRAVIS_EVENT_TYPE = cron
+    if: $TRAVIS_EVENT_TYPE = "cron"
 
 before_install:
-  - echo $TRAVIS_EVENT_TYPE
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
