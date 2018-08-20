@@ -45,6 +45,6 @@ jobs:
     - stage: SysTests
       script:
         # ======= System Test =============== #
-        - mantidpython system_tests/generate_current_resuts.py
+        - mantidpython system_tests/generate_current_results.py
         - mantidpython system_tests/system_test.py
 
