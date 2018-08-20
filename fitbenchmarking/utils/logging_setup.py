@@ -36,7 +36,7 @@ if not os.path.exists(logs_path):
     os.makedirs(logs_path)
 
 # Create logger with name fitbenchmarking (this is the name of the file)
-FORMATTER='%(asctime)s %(name)s %(levelname)s: %(message)s'
+FORMATTER='[%(asctime)s]  %(levelname)s: %(message)s'
 
 formatter = logging.Formatter(FORMATTER, "%H:%M:%S")
 handler = logging.FileHandler(logs_path + os.sep + 'fitbenchmarking.log',
