@@ -26,6 +26,8 @@ from __future__ import (absolute_import, division, print_function)
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
+import matplotlib
+matplotlib.use('Agg')
 from utils.logging_setup import logger
 
 
