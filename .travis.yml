@@ -43,9 +43,11 @@ jobs:
         - python fitbenchmarking/utils/tests/fit_misc_tests.py
 
     - stage: SysTests
-      before_script: mantidpython -m mantid.simpleapi || true
+      before_script:
+        - mantidpython -m mantid.simpleapi || true
+        - cd system_tests
       script:
         # ======= System Test =============== #
-        - mantidpython system_tests/generate_current_results.py
-        - mantidpython system_tests/system_test.py
+        - mantidpython generate_current_results.py
+        - mantidpython system_test.py
 
