@@ -24,10 +24,10 @@ the fitbenchmarking tool.
 from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
-import matplotlib.pyplot as plt
-import copy
 import matplotlib
 matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import copy
 from utils.logging_setup import logger
 
 
@@ -109,7 +109,7 @@ class plot(data):
                       the default is not to save
         """
 
-        plt.figure()
+        plot = plt.figure()
         self.set_plot_misc()
         for data in self.data:
             self.check_and_make_plot(data)
