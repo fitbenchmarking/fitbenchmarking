@@ -163,7 +163,7 @@ class plot(data):
             plt.plot(data.x, data.y, label=data.name,
                      marker=data.markers, color=data.colour,
                      linestyle=data.linestyle, markersize=8, zorder=data.zorder,
-                     data.linewidth)
+                     linewidth=data.linewidth)
 
     @staticmethod
     def save_plot(save):

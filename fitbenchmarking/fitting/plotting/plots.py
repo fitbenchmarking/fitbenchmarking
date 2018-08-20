@@ -121,9 +121,9 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     fig.add_data(raw_data)
     best_fit.markers = ''
     best_fit.linestyle = '-'
-    best_fit.colour = 'green'
+    best_fit.colour = 'lime'
     best_fit.zorder = 2
-    best_fit.linewidth =
+    best_fit.linewidth = 1.5
     best_fit.order_data()
     fig.add_data(best_fit)
     fig.labels['y'] = "Arbitrary units"
@@ -167,6 +167,7 @@ def make_starting_guess_plot(raw_data, function, wks, prob, count,
     startData.colour = "red"
     startData.markers = ''
     startData.linestyle = "-"
+    startData.linewidth = 1.5
     start_fig = plot()
     start_fig.add_data(raw_data)
     start_fig.add_data(startData)
