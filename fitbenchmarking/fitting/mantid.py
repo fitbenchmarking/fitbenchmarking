@@ -30,7 +30,7 @@ import mantid.simpleapi as msapi
 
 from utils.logging_setup import logger
 from fitting.plotting import plot_helper
-from utils import fit_misc
+from fitting.utils import misc
 
 
 def fit(prob, wks, function, minimizer='Levenberg-Marquardt',
@@ -220,7 +220,7 @@ def chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
     """
 
     if status != 'failed':
-        chi_sq = fit_misc.compute_chisq(fit_wks.readY(2))
+        chi_sq = misc.compute_chisq(fit_wks.readY(2))
         if chi_sq < min_chi_sq and not chi_sq == np.nan:
             best_fit = optimum(fit_wks, minimizer, best_fit)
             min_chi_sq = chi_sq
