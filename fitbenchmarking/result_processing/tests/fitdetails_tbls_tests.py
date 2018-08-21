@@ -19,8 +19,8 @@ class FitDetailsTblsTests(unittest.TestCase):
 
     def test_parseNistFunctionDef_return_proper_parsed_string(self):
 
-        function = ("name=UserFunction, Formula=b1*(1-exp(-b2*x)), "
-                    "b1=500.0,b2=0.0001,")
+        function = ("name=UserFunction,Formula=b1*(1-exp(-b2*x)),"
+                    "b1=500.0,b2=0.0001")
 
         function_name, function_parameters = parse_nist_function_def(function)
         function_name_expected = "b1*(1-exp(-b2*x))"
@@ -75,7 +75,6 @@ class FitDetailsTblsTests(unittest.TestCase):
 
         self.assertEqual(name_hdim_expected, name_hdim)
         self.assertEqual(params_hdim_expected, params_hdim)
-
 
 
 if __name__ == "__main__":

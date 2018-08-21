@@ -65,8 +65,8 @@ def parse_nist_function_def(function):
     """
     first_comma = function.find(',')
     second_comma = function.find(',', first_comma + 1)
-    function_name = function[first_comma+10:second_comma]
-    function_parameters = function[second_comma+2:-1]
+    function_name = function[first_comma+9:second_comma]
+    function_parameters = function[second_comma+1:]
     function_parameters = function_parameters.replace(',', ', ')
 
     return [function_name], [function_parameters]
