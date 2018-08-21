@@ -30,13 +30,14 @@ import mantid.simpleapi as msapi
 from fitting.plotting.plot_helper import *
 
 
-def make_plots(prob, wks, function, best_fit, previous_name, count,
-               group_results_dir):
+def make_plots(algorithm, problem, data_struct, function, best_fit,
+               previous_name, count, group_results_dir):
     """
     Makes plots of the raw data, best fit and starting guess.
 
     @param prob :: object holding the problem information
-    @param wks :: workspace holding the problem data
+    @param data_struct :: a structre in which the data to be fitted is
+                          stored, can be e.g. mantid workspace, np array etc.
     @param function :: the fitted function
     @param best_fit :: data of the best fit (defined by lowest chisq)
     @param previous_name :: name of the previous problem
@@ -49,30 +50,29 @@ def make_plots(prob, wks, function, best_fit, previous_name, count,
     """
 
     figures_dir = setup_dirs(group_results_dir)
-    previous_name, count = problem_count(prob, previous_name, count)
+    previous_name, count = problem_count(problem, previous_name, count)
 
-    raw_data = get_data_points(wks)
-    make_data_plot(prob.name, raw_data, count, figures_dir)
-    make_best_fit_plot(prob.name, raw_data, best_fit, count, figures_dir)
-    make_starting_guess_plot(raw_data, function, wks, prob, count,
-                             figures_dir)
+    raw_data = get_data_points(problem)
+    make_data_plot(problem.name, raw_data, count, figures_dir)
+    make_best_fit_plot(problem.name, raw_data, best_fit, count, figures_dir)
+    make_starting_guess_plot(algorithm, raw_data, function, data_struct,
+                             problem, count, figures_dir)
 
     return previous_name, count
 
 
-def get_data_points(wks):
+def get_data_points(problem):
     """
     Reads a mantid workspace and creates arrays of the x,y and error data.
 
-    @param wks :: mantid workspace containing problem data
+    @param problem :: object holding the problem information
 
-    @returns :: [arrays] of x,y and error data.
+    @returns :: data object for plotting
     """
 
-    tmp = msapi.ConvertToPointData(wks)
-    xData = tmp.readX(0)
-    yData = tmp.readY(0)
-    eData = tmp.readE(0)
+    xData = problem.data_x
+    yData = problem.data_y
+    eData = problem.data_pattern_obs_errors
     raw_data = data("Data", xData, yData, eData)
     raw_data.showError = True
     raw_data.linestyle = ''
@@ -135,8 +135,8 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     fig.make_scatter_plot(figure_name)
 
 
-def make_starting_guess_plot(raw_data, function, wks, prob, count,
-                             figures_dir):
+def make_starting_guess_plot(algorithm, raw_data, function, data_struct, prob,
+                             count, figures_dir):
     """
     Creates a scatter plot of the raw data with the starting guess
     superimposed. The starting guess is obtained by setting the
@@ -144,7 +144,7 @@ def make_starting_guess_plot(raw_data, function, wks, prob, count,
 
     @param raw_data :: the raw data stored into an object
     @param function :: string holding the function that was fitted
-    @param wks :: mantid workspace containing problem data
+    @param data_struct :: mantid workspace containing problem data
     @param prob :: object holding the problem information
     @param count :: number of times same name was passed through
     @param figures_dir :: dir where figures are stored
@@ -153,15 +153,7 @@ def make_starting_guess_plot(raw_data, function, wks, prob, count,
                 superimosed, saved as a .png file.
     """
 
-    fit_result = msapi.Fit(function, wks, Output='ws_fitting_test',
-                           Minimizer='Levenberg-Marquardt',
-                           CostFunction='Least squares',IgnoreInvalidData=True,
-                           StartX=prob.start_x, EndX=prob.end_x,
-                           MaxIterations=0)
-
-    tmp = msapi.ConvertToPointData(fit_result.OutputWorkspace)
-    xData = tmp.readX(1)
-    yData = tmp.readY(1)
+    xData, yData = get_start_guess_data(algorithm, data_struct, function, prob)
     startData = data("Start Guess", xData, yData)
     startData.order_data()
     startData.colour = "red"
@@ -178,6 +170,43 @@ def make_starting_guess_plot(raw_data, function, wks, prob, count,
     start_figure_name = (figures_dir + os.sep + "start for " + prob.name +
                          " " + str(count) + ".png")
     start_fig.make_scatter_plot(start_figure_name)
+
+
+def get_start_guess_data(algorithm, data_struct, function, prob):
+    """
+    Gets the starting guess data for various algorithms.
+
+    @param algorithm ::
+    """
+
+    if algorithm == 'mantid':
+        return get_mantid_starting_guess_data(data_struct, function, prob)
+    else:
+        raise NameError("Sorry, that algorithm is not supported.")
+
+
+def get_mantid_starting_guess_data(wks, function, prob):
+    """
+    Gets the mantid starting guess data.
+
+    @param wks :: mantid workspace that holds the data for the problem
+    @param function :: the fitted function
+    @param prob :: object holding the problem information
+
+    @returns :: data describing the starting guess obtained by using the
+                fitting algorithm inside mantid
+    """
+
+    fit_result = msapi.Fit(function, wks, Output='ws_fitting_test',
+                            Minimizer='Levenberg-Marquardt',
+                            CostFunction='Least squares', IgnoreInvalidData=True,
+                            StartX=prob.start_x, EndX=prob.end_x,
+                            MaxIterations=0)
+    tmp = msapi.ConvertToPointData(fit_result.OutputWorkspace)
+    xData = tmp.readX(1)
+    yData = tmp.readY(1)
+
+    return xData, yData
 
 
 def problem_count(prob, previous_name, count):

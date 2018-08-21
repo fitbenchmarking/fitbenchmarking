@@ -35,11 +35,11 @@ class FittingTestProblem(object):
         # can be for example the list of starting values from
         # NIST test problems
         self.starting_values = None
-        # The Mantid X
+        # The X data
         self.data_x = None
-        # The Mantid Y
+        # The Y data
         self.data_y = None
-        # The Mantid E
+        # The Error data
         self.data_pattern_obs_errors = None
         # The 'certified' or reference sum of squares, if provided
         # (for example in NIST tests).

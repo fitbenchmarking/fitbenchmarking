@@ -140,8 +140,8 @@ class plot(data):
         if len(data.x)==len(data.y):
             self.make_plot(data)
         else:
-            log.error("Data " + data.name + " contains data" +
-                      " of unequal lengths ", len(data.x), len(data.y))
+            logger.error("Data " + data.name + " contains data" +
+                         " of unequal lengths ", len(data.x), len(data.y))
 
     @staticmethod
     def make_plot(data):

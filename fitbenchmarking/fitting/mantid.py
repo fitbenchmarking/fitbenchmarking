@@ -24,13 +24,47 @@ Fittng and utility functions for the mantid fitting algorithms.
 
 from __future__ import (absolute_import, division, print_function)
 
-import time
+import time, sys, copy
 import numpy as np
 import mantid.simpleapi as msapi
 
 from utils.logging_setup import logger
-from fitting.plotting import plot_helper
 from fitting import misc
+from fitting.plotting import plot_helper
+
+MAX_FLOAT = sys.float_info.max
+
+
+def benchmark(problem, wks, function, minimizers, cost_function):
+    """
+    Fit benchmark one problem, with one function definition and all
+    the selected minimizers, using the mantid fitting algorithms.
+
+    @param problem :: a problem object containing information used in fitting
+    @param wks :: workspace holding the problem data
+    @param function :: the fitted function
+    @param minimizers :: array of minimizers used in fitting
+    @param cost_function :: the cost function used for fitting
+
+    @returns :: nested array of result objects, per minimizer
+                and data object for the best fit
+    """
+
+    min_chi_sq, best_fit = MAX_FLOAT, None
+    results_problem = []
+
+    for minimizer in minimizers:
+        status, fit_wks, fin_function_def, runtime = \
+        fit(problem, wks, function, minimizer, cost_function)
+        chi_sq, min_chi_sq, best_fit = \
+        chisq(status, fit_wks, min_chi_sq, best_fit, minimizer)
+        individual_result = \
+        misc.create_result_entry(problem, status, chi_sq, runtime, minimizer,
+                                 function, fin_function_def)
+
+        results_problem.append(individual_result)
+
+    return results_problem, best_fit
 
 
 def fit(prob, wks, function, minimizer='Levenberg-Marquardt',
@@ -111,12 +145,12 @@ def optimum(fit_wks, minimizer_name, best_fit):
     return  best_fit
 
 
-def wks_cost_function(prob, use_errors=True):
+def wks_cost_function(problem, use_errors=True):
     """
     Helper function that prepares the data workspace used by mantid
     for fitting.
 
-    @param prob :: object holding the problem information
+    @param problem :: object holding the problem information
     @param use_errors :: whether to use errors or not
 
     @returns :: the fitting data in workspace format and the
@@ -124,12 +158,16 @@ def wks_cost_function(prob, use_errors=True):
     """
 
     if use_errors:
-        data_e = setup_errors(prob)
-        wks = msapi.CreateWorkspace(DataX=prob.data_x, DataY=prob.data_y,
+        data_e = setup_errors(problem)
+        wks = msapi.CreateWorkspace(DataX=problem.data_x, DataY=problem.data_y,
                                     DataE=data_e)
+        tmp = msapi.ConvertToPointData(wks)
+        problem.data_x = tmp.readX(0)
+        problem.data_y = tmp.readY(0)
+        problem.data_pattern_obs_errors = tmp.readE(0)
         cost_function = 'Least squares'
     else:
-        wks = msapi.CreateWorkspace(DataX=prob.data_x, DataY=prob.data_y)
+        wks = msapi.CreateWorkspace(DataX=problem.data_x, DataY=prolem.data_y)
         cost_function = 'Unweighted least squares'
 
     return wks, cost_function
@@ -203,6 +241,7 @@ def parse_nist_function_definitions(prob, nb_start_vals):
 
     return function_defs
 
+
 def chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
     """
     Function that calcuates the chisq obtained through the
@@ -230,24 +269,25 @@ def chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
     return chi_sq, min_chi_sq, best_fit
 
 
-def setup_errors(prob):
+def setup_errors(problem):
     """
     Gets errors on the data points from the problem object if there are
     any. If not, the errors are approximated by taking the square root
     of the absolute y-value, since we cannot know how the data was
     obtained and this is a reasonable approximation.
 
-    @param prob :: object holding the problem information
+    @param problem :: object holding the problem information
 
     @returns :: array of errors of particular problem
     """
 
     data_e = None
-    if prob.data_pattern_obs_errors is None:
+    if problem.data_pattern_obs_errors is None:
+        print("HELLO")
         # Fake errors
-        data_e = np.sqrt(abs(prob.data_y))
+        data_e = np.sqrt(abs(problem.data_y))
     else:
         # True errors
-        data_e = prob.data_pattern_obs_errors
+        data_e = problem.data_pattern_obs_errors
 
     return data_e
