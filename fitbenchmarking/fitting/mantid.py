@@ -30,7 +30,7 @@ import mantid.simpleapi as msapi
 
 from utils.logging_setup import logger
 from fitting.plotting import plot_helper
-from fitting.utils import misc
+from fitting import misc
 
 
 def fit(prob, wks, function, minimizer='Levenberg-Marquardt',
