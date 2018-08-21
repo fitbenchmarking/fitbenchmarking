@@ -62,6 +62,6 @@ def mantid(prob, wks, function, minimizer='Levenberg-Marquardt',
         logger.error("Warning, fit failed. Going on. Error: " + str(err))
 
     status, fit_wks, params, errors, runtime = \
-    mantid_utils.parse_result(fit_result, t_end, t_start)
+    mantid_utils.parse_result(fit_result, t_start, t_end)
 
     return status, fit_wks, params, errors, runtime
