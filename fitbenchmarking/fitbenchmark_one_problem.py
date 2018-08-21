@@ -30,15 +30,16 @@ import numpy as np
 import mantid.simpleapi as msapi
 
 
-from fitting import fit_algorithms, mantid_utils
+from fitting import mantid
 from fitting.plotting import plots
-from utils import fit_misc, test_result
+from utils import test_result
 from utils.logging_setup import logger
 
 MAX_FLOAT = sys.float_info.max
 
 
-def fitbm_one_problem(prob, minimizers, use_errors=True, group_results_dir=None):
+def fitbm_one_problem(prob, minimizers, use_errors=True,
+                      group_results_dir=None):
     """
     Sets up the workspace, cost function and function definitons for
     a particular problem and fits the models provided in the problem
@@ -57,8 +58,8 @@ def fitbm_one_problem(prob, minimizers, use_errors=True, group_results_dir=None)
 
     previous_name, count = None, 0
     results_fit_problem = []
-    wks, cost_function = mantid_utils.wks_cost_function(prob, use_errors)
-    function_definitions = mantid_utils.function_definitions(prob)
+    wks, cost_function = mantid.wks_cost_function(prob, use_errors)
+    function_definitions = mantid.function_definitions(prob)
 
     for function in function_definitions:
         results_problem, best_fit = \
@@ -93,41 +94,14 @@ def fit_one_function_def(prob, wks, function, minimizers, cost_function):
     for minimizer in minimizers:
 
         status, fit_wks, fin_function_def, runtime = \
-        fit_algorithms.mantid(prob, wks, function, minimizer, cost_function)
+        mantid.fit(prob, wks, function, minimizer, cost_function)
         chi_sq, min_chi_sq, best_fit = \
-        mantid_chisq(status, fit_wks, min_chi_sq, best_fit, minimizer)
+        mantid.chisq(status, fit_wks, min_chi_sq, best_fit, minimizer)
         result = create_result_entry(prob, status, chi_sq, runtime, minimizer,
                                      function, fin_function_def)
         results_problem.append(result)
 
     return results_problem, best_fit
-
-
-def mantid_chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
-    """
-    Function that calcuates the chisq obtained through the
-    mantid fitting algorithm and find the best fit out of all
-    the attempted minimizers.
-
-    @param status :: the status of the fit, i.e. success or failure
-    @param fit_wks :: the fit workspace
-    @param min_chi_sq :: the minimium chisq (at the moment)
-    @param best_fit :: the best fit (at the moment)
-    @param minimizer :: minimizer with which the fit_wks was obtained
-
-    @returns :: the chi squared, the new/unaltered minimum chi squared
-                and the new/unaltered best fit data object
-    """
-
-    if status != 'failed':
-        chi_sq = fit_misc.compute_chisq(fit_wks.readY(2))
-        if chi_sq < min_chi_sq and not chi_sq == np.nan:
-            best_fit = mantid_utils.optimum(fit_wks, minimizer, best_fit)
-            min_chi_sq = chi_sq
-    else:
-        chi_sq = np.nan
-
-    return chi_sq, min_chi_sq, best_fit
 
 
 def create_result_entry(prob, status, chi_sq, runtime, minimizer,
