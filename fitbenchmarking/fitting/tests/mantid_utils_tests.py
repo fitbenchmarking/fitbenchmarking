@@ -135,8 +135,8 @@ class MantidUtilsTests(unittest.TestCase):
 
         function_defs = function_definitions(prob)
         function_defs_expected = \
-        ["name=UserFunction, Formula=b1*(1-exp(-b2*x)), b1=500.0,b2=0.0001,",
-         "name=UserFunction, Formula=b1*(1-exp(-b2*x)), b1=250.0,b2=0.0005,"]
+        ["name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=500.0,b2=0.0001",
+         "name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=250.0,b2=0.0005"]
 
         self.assertListEqual(function_defs_expected, function_defs)
 

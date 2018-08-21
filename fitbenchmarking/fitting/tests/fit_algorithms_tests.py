@@ -76,8 +76,8 @@ class FittingAlgorithmsTests(unittest.TestCase):
         wks = msapi.CreateWorkspace(DataX=prob.data_x,
                                     DataY=prob.data_y,
                                     DataE=np.sqrt(prob.data_y))
-        function = ("name=UserFunction, Formula=b1*(1-exp(-b2*x)), "
-                    "b1=500.0,b2=0.0001,")
+        function = \
+        "name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=500.0,b2=0.0001"
         minimizer = 'Levenberg-Merquardtss'
         cost_function = 'Least squared'
 
@@ -92,10 +92,10 @@ class FittingAlgorithmsTests(unittest.TestCase):
         """
 
         fit_status = 'success'
-        params = [234.53440075754128, 0.00056228017032756289]
-        errors = [166.95843730560517, 0.00045840028643556361]
+        fin_function_def = \
+        "name=UserFunction,Formula=b1*(1-exp( -b2*x)),b1=234.534,b2=0.00056228"
 
-        return fit_status, params, errors
+        return fit_status, fin_function_def
 
 
     def expected_results_problem_Misra1a_fail(self):
@@ -108,11 +108,10 @@ class FittingAlgorithmsTests(unittest.TestCase):
 
         status = 'failed'
         fit_wks = None
-        params = None
-        errors = None
+        fin_function_def = None
         runtime = np.nan
 
-        return status, fit_wks, params, errors, runtime
+        return status, fit_wks, fin_function_def, runtime
 
 
     def test_fitAlgorithms_mantid_return_success_for_NIST_Misra1a_prob_file(self):
@@ -120,15 +119,13 @@ class FittingAlgorithmsTests(unittest.TestCase):
         prob, wks, function, minimizer, cost_function = \
         self.setup_problem_Misra1a_success()
 
-        status, fit_wks, params, errors, runtime = \
+        status, fit_wks, fin_function_def, runtime = \
         mantid(prob, wks, function, minimizer, cost_function)
-        status_expected, params_expected, errors_expected = \
+        status_expected, fin_function_def_expected = \
         self.expected_results_problem_Misra1a_success()
 
         self.assertEqual(status_expected, status)
-        np.testing.assert_almost_equal(params_expected, params, 1)
-        np.testing.assert_almost_equal(errors_expected, errors, 1)
-
+        self.assertEqual(fin_function_def_expected[:44], fin_function_def[:44])
 
 
     def test_runFit_mantidFit_fails(self):
@@ -136,14 +133,13 @@ class FittingAlgorithmsTests(unittest.TestCase):
         prob, wks, function, minimizer, cost_function = \
         self.setup_problem_Misra1a_fail()
 
-        status, fit_wks, params, errors, runtime = \
+        status, fit_wks, fin_function_def, runtime = \
         mantid(prob, wks, function, minimizer, cost_function)
-        (status_expected, fit_wks_expected, params_expected, errors_expected,
+        (status_expected, fit_wks_expected, fin_function_def_expected,
         runtime_expected) = self.expected_results_problem_Misra1a_fail()
 
         self.assertEqual(status_expected, status)
-        self.assertEqual(params_expected, params)
-        self.assertEqual(errors_expected, errors)
+        self.assertEqual(fin_function_def_expected, fin_function_def)
         np.testing.assert_equal(runtime_expected, runtime)
         np.testing.assert_equal(fit_wks_expected, fit_wks)
 
