@@ -96,8 +96,8 @@ def fit_one_function_def(prob, wks, function, minimizers, cost_function):
         fit_algorithms.mantid(prob, wks, function, minimizer, cost_function)
         chi_sq, min_chi_sq, best_fit = mantid_chisq(status, fit_wks, min_chi_sq,
                                                     best_fit, minimizer)
-        result = create_result_entry(prob, status, params, errors, chi_sq, runtime,
-                               minimizer, function)
+        result = create_result_entry(prob, status, params, errors, chi_sq,
+                                     runtime, minimizer, function)
         results_problem.append(result)
 
     return results_problem, best_fit

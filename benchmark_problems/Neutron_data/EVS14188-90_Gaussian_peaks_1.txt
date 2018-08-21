@@ -1,6 +1,6 @@
 # An example of two Gaussian peaks from the instrument VESUVIO, bad initial values
 name = 'EVS14188-90_processed Gaussian peaks 1'
 input_file = 'EVS14188-90_peaks.nxs'
-function = 'name=Gaussian, Height=0.01,PeakCentre=0.00037,Sigma=1e-05 ; name=LinearBackground,A0=0,A1=0;name=Gaussian, Height=0.0979798,PeakCentre=0.000167,Sigma=1e-05'
+function = 'name=Gaussian, Height=0.01,PeakCentre=0.00037,Sigma=1e-05 ;name=LinearBackground,A0=0,A1=0;name=Gaussian, Height=0.0979798,PeakCentre=0.000167,Sigma=1e-05'
 # fit_parameters = {'StartX': 0, 'EndX': 0}
 description = ''
