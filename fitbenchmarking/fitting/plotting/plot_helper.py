@@ -108,13 +108,13 @@ class plot(data):
         """
 
         plt.figure()
-        set_plot_misc()
+        self.set_plot_misc()
         for data in self.data:
-            check_and_make_plot(data)
+            self.check_and_make_plot(data)
 
-        save_plot()
+        self.save_plot(save)
 
-    def set_plot_misc():
+    def set_plot_misc(self):
         """
         Add the title, x/y lables and legend to the plot.
         """
@@ -126,7 +126,7 @@ class plot(data):
         # Customize the layout of the plot.
         plt.tight_layout()
 
-    def check_and_make_plot(data):
+    def check_and_make_plot(self, data):
         """
         Check if the data used for plotting is legitimate and
         do the plotting.
@@ -134,11 +134,12 @@ class plot(data):
         @param data :: object that holds all the relevant data
         """
         if len(data.x)==len(data.y):
-            make_plot(data)
+            self.make_plot(data)
         else:
             log.error("Data " + data.name + " contains data" +
                       " of unequal lengths ", len(data.x), len(data.y))
 
+    @staticmethod
     def make_plot(data):
         """
         Make a plot of the data, with or without errors,
@@ -157,7 +158,9 @@ class plot(data):
             plt.plot(data.x, data.y, label=data.name,
                      marker=data.markers, color=data.colour,
                      linestyle=data.linestyle, markersize=8)
-    def save_plot():
+
+    @staticmethod
+    def save_plot(save):
         """
         Save the plot to a .png file or just display it in the
         console if that option is available.
