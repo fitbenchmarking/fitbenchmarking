@@ -15,7 +15,7 @@ Python 2.7 or later is required to install and run the FtiBenchmarking tool. If 
 `git clone https://github.com/mantidproject/fitbenchmarking.git`
 2. Open up a terminal(cmd) and change directory to `../fitbenchmarking/`
 3. Once you are in the right directory, type `python setup.py install` to install the tool's external package dependencies.
-    * To perform this step, you need to have the `setuptools` module installed. If it is not already installed on your machine:
+    * To perform this step, you need to have the `setuptools` module installed. If it is not already available:
     * On Linux: `pip install setuptools` or `sudo apt-get install setuptools`
     * On Windows: please follow this [guide](https://packaging.python.org/tutorials/installing-packages/)
 4. Optionally, you can install some of the supported fitting software that is benchmarked using this tool. To do this, please run `python setup.py help` and follow the instructions displayed there.
