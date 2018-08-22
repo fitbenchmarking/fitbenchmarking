@@ -7,7 +7,8 @@ Currently, it can be used to compare minimizers in Mantid.
 Work is being done to allow this tool to benchmark minimizers from other libraries/software as well.
 
 
-### Installation:
+
+## Installation:
 ---
 Python 2.7 or later is required to install and run the FtiBenchmarking tool. If you are using Windows, instructions on how to set up python and how to change the PATH environment variable are available [here](https://anthonydebarros.com/2018/06/21/setting-up-python-in-windows-10/).
 
@@ -19,6 +20,6 @@ Python 2.7 or later is required to install and run the FtiBenchmarking tool. If 
     * On Linux: `pip install setuptools` or `sudo apt-get install setuptools`
     * On Windows: please follow this [guide](https://packaging.python.org/tutorials/installing-packages/)
 4. Optionally, you can install some of the supported fitting software that is benchmarked using this tool. To do this, please run `python setup.py help` and follow the instructions displayed there.
-5. Finally, you can see what the tool by running `example_runScript.py` located in the `../fitbenchmarking/example_scripts/` folder. This example script fit benchmarks Mantid using all the available minimizers.
+5. Finally, you can see what the tool by running `example_runScript.py` located in the `example_scripts` folder. This example script fit benchmarks Mantid using all the available minimizers.
 
 
