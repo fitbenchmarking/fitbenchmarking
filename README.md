@@ -1,9 +1,12 @@
-# fitbenchmarking
-Tool for comparing the run time and accuracy of minimizers on fit benchmarking problems.
+[![Build Status](https://travis-ci.com/mantidproject/fitbenchmarking.svg?branch=master)](https://travis-ci.com/mantidproject/fitbenchmarking)
 
-Currently, can be used to compare minimizers in Mantid. Work in progress to allow this tool to compare against minimizers from other libraries/software also.
+# FitBenchmarking
+FitBenchmarking is an open source tool for comparing different minimizers/fitting frameworks based on their accuracy and runtimes.
+Currently, it can be used to compare minimizers in Mantid.
 
-## Installation Instructions:
+Work is being done to allow this tool to benchmark minimizers from other libraries/software as well.
+
+# Installation Instructions:
 
 * Download this repository
 * Download Mantid (http://download.mantidproject.org/)
