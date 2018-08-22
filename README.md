@@ -9,7 +9,6 @@ Work is being done to allow this tool to benchmark minimizers from other librari
 
 
 ## Installation:
----
 Python 2.7 or later is required to install and run the FtiBenchmarking tool. If you are using Windows, instructions on how to set up python and how to change the PATH environment variable are available [here](https://anthonydebarros.com/2018/06/21/setting-up-python-in-windows-10/).
 
 1. Download this repository or clone it using git:
