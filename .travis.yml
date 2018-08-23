@@ -13,17 +13,13 @@ stages:
     if: type = cron
 
 before_install:
-  # Coverage pre-requisites
-  - pip install python-coveralls
-  - pip install coverage
-  - pip install nose
-  # Dependencies like matplotlib, scipy, numpy etc.
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
   - conda update --yes conda
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib h5py yaml ipython
 install:
+  - pip install -r requirements.txt
   - python setup.py install
   - python setup.py externals
 
@@ -32,14 +28,20 @@ jobs:
     - stage: Tests
       before_script: mantidpython -m mantid.simpleapi || true
       script:
-        - nosetests --with-coverage
+        # ======= Fitting Tests =============== #
+        - mantidpython -m pytest fitbenchmarking/fitting/tests/
+        # ======= Parsing Tests =============== #
+        - pytest fitbenchmarking/parsing/tests/
+        # ======= Result Processing Tests =============== #
+        - pytest fitbenchmarking/result_processing/tests/
+        # ======= Utils Tests =============== #
+        - pytest fitbenchmarking/utils/tests/
       after_success:
         - coveralls
-
     - stage: SysTests
       before_script: mantidpython -m mantid.simpleapi || true
       script:
         # ======= System Test =============== #
-        - mantidpython system_tests/generate_current_results.py
-        - mantidpython system_tests/system_test.py
+        - mantidpython systests/generate_current_results.py
+        - mantidpython systests/tbl_comparison.py
 
