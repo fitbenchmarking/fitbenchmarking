@@ -61,6 +61,7 @@ def fitbm_one_problem(algorithm, problem, minimizers, use_errors=True,
     results_fit_problem = []
     data_struct, cost_function, function_definitions = \
     prepare_algorithm_prerequisites(algorithm, problem, use_errors)
+
     for function in function_definitions:
         results_problem, best_fit = \
         fit_one_function_def(algorithm, problem, data_struct, function,

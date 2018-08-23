@@ -67,9 +67,9 @@ def save_results_tables(minimizers, results_per_test, group_name,
     runtime_tbl = create_runtime_tbl(minimizers, linked_problems, norm_runtimes,
                                      use_errors, color_scale)
 
-    save_tables(tables_dir, tbl_acc_indiv, use_errors, group_name,
+    save_tables(tables_dir, acc_tbl, use_errors, group_name,
                 FILENAME_SUFFIX_ACCURACY)
-    save_tables(tables_dir, tbl_runtime_indiv, use_errors, group_name,
+    save_tables(tables_dir, runtime_tbl, use_errors, group_name,
                 FILENAME_SUFFIX_RUNTIME)
 
     # Shut down logging at end of run
