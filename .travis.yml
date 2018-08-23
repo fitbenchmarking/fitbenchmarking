@@ -13,6 +13,11 @@ stages:
     if: type = cron
 
 before_install:
+  # Coverage pre-requisites
+  - pip install python-coveralls
+  - pip install coverage
+  - pip install nose
+  # Dependencies like matplotlib, scipy, numpy etc.
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
@@ -27,20 +32,9 @@ jobs:
     - stage: Tests
       before_script: mantidpython -m mantid.simpleapi || true
       script:
-        # ======= Fitting Tests =============== #
-        - mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py
-        - mantidpython fitbenchmarking/fitting/tests/mantid_utils_tests.py
-        # ======= Parsing Tests =============== #
-        - python fitbenchmarking/parsing/tests/fetch_data_tests.py
-        - python fitbenchmarking/parsing/tests/parse_neutron_tests.py
-        - python fitbenchmarking/parsing/tests/parse_nist_tests.py
-        # ======= Result Processing Tests =============== #
-        - python fitbenchmarking/result_processing/tests/fitdetails_tbls_tests.py
-        - python fitbenchmarking/result_processing/tests/misc_tests.py
-        - python fitbenchmarking/result_processing/tests/numpy_restables_tests.py
-        - python fitbenchmarking/result_processing/tests/rst_table_tests.py
-        # ======= Utils Tests =============== #
-        - python fitbenchmarking/utils/tests/fit_misc_tests.py
+        - nosetests --with-coverage
+      after_success:
+        - coveralls
 
     - stage: SysTests
       before_script: mantidpython -m mantid.simpleapi || true
