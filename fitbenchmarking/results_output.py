@@ -40,8 +40,8 @@ FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
 
-def save_results_tables(minimizers, results_per_test, group_name,
-                        use_errors, color_scale=None, results_dir=None):
+def save_results_tables(minimizers, results_per_test, group_name, use_errors,
+                        color_scale=None, results_dir=None):
     """
     Saves the results of the fitting to html/rst tables.
 

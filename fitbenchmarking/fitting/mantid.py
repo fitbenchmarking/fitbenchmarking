@@ -67,12 +67,12 @@ def benchmark(problem, wks, function, minimizers, cost_function):
     return results_problem, best_fit
 
 
-def fit(prob, wks, function, minimizer='Levenberg-Marquardt',
+def fit(problem, wks, function, minimizer='Levenberg-Marquardt',
         cost_function='Least squares'):
     """
     The mantid fit algorithm.
 
-    @param prob :: object holding the problem information
+    @param problem :: object holding the problem information
     @param wks :: workspace holding the problem data
     @param function :: the fitted function
     @param minimizer :: the minimizer used in the fitting process
@@ -87,12 +87,12 @@ def fit(prob, wks, function, minimizer='Levenberg-Marquardt',
 
     fit_result, t_start, t_end = None, None, None
     try:
-        ignore_invalid = get_ignore_invalid(prob, cost_function)
+        ignore_invalid = get_ignore_invalid(problem, cost_function)
         t_start = time.clock()
         fit_result = msapi.Fit(function, wks, Output='ws_fitting_test',
                                Minimizer=minimizer, CostFunction=cost_function,
                                IgnoreInvalidData=ignore_invalid,
-                               StartX=prob.start_x, EndX=prob.end_x)
+                               StartX=problem.start_x, EndX=problem.end_x)
         t_end = time.clock()
     except (RuntimeError, ValueError) as err:
         logger.error("Warning, fit failed. Going on. Error: " + str(err))
@@ -101,6 +101,33 @@ def fit(prob, wks, function, minimizer='Levenberg-Marquardt',
     parse_result(fit_result, t_start, t_end)
 
     return status, fit_wks, fin_function_def, runtime
+
+
+def chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
+    """
+    Function that calcuates the chisq obtained through the
+    mantid fitting algorithm and find the best fit out of all
+    the attempted minimizers.
+
+    @param status :: the status of the fit, i.e. success or failure
+    @param fit_wks :: the fit workspace
+    @param min_chi_sq :: the minimium chisq (at the moment)
+    @param best_fit :: the best fit (at the moment)
+    @param minimizer :: minimizer with which the fit_wks was obtained
+
+    @returns :: the chi squared, the new/unaltered minimum chi squared
+                and the new/unaltered best fit data object
+    """
+
+    if status != 'failed':
+        chi_sq = misc.compute_chisq(fit_wks.readY(2))
+        if chi_sq < min_chi_sq and not chi_sq == np.nan:
+            best_fit = optimum(fit_wks, minimizer, best_fit)
+            min_chi_sq = chi_sq
+    else:
+        chi_sq = np.nan
+
+    return chi_sq, min_chi_sq, best_fit
 
 
 def parse_result(fit_result, t_start, t_end):
@@ -159,12 +186,10 @@ def wks_cost_function(problem, use_errors=True):
 
     if use_errors:
         data_e = setup_errors(problem)
+        data_x = problem.data_x
+        data_y = problem.data_y
         wks = msapi.CreateWorkspace(DataX=problem.data_x, DataY=problem.data_y,
                                     DataE=data_e)
-        tmp = msapi.ConvertToPointData(wks)
-        problem.data_x = tmp.readX(0)
-        problem.data_y = tmp.readY(0)
-        problem.data_pattern_obs_errors = tmp.readE(0)
         cost_function = 'Least squares'
     else:
         wks = msapi.CreateWorkspace(DataX=problem.data_x, DataY=prolem.data_y)
@@ -173,7 +198,7 @@ def wks_cost_function(problem, use_errors=True):
     return wks, cost_function
 
 
-def function_definitions(prob):
+def function_definitions(problem):
     """
     Transforms the prob.equation field into a function that can be
     understood by the mantid fitting algorithm.
@@ -184,19 +209,19 @@ def function_definitions(prob):
                 mantid understands
     """
 
-    if prob.starting_values:
+    if problem.starting_values:
         # NIST data requires prior formatting
-        nb_start_vals = len(prob.starting_values[0][1])
-        function_defs = parse_nist_function_definitions(prob, nb_start_vals)
+        nb_start_vals = len(problem.starting_values[0][1])
+        function_defs = parse_nist_function_definitions(problem, nb_start_vals)
     else:
         # Neutron data does not require any
         function_defs = []
-        function_defs.append(prob.equation)
+        function_defs.append(problem.equation)
 
     return function_defs
 
 
-def get_ignore_invalid(prob, cost_function):
+def get_ignore_invalid(problem, cost_function):
     """
     Helper function that sets the whether the mantid fitting algorithm
     ignores invalid data or not. This depends on the cost function.
@@ -211,13 +236,13 @@ def get_ignore_invalid(prob, cost_function):
 
     # The WISH data presents some issues
     # For which this adhoc if must is present
-    if 'WISH17701' in prob.name:
+    if 'WISH17701' in problem.name:
         ignore_invalid = False
 
     return ignore_invalid
 
 
-def parse_nist_function_definitions(prob, nb_start_vals):
+def parse_nist_function_definitions(problem, nb_start_vals):
     """
     Helper function that parses the NIST function definitions and
     transforms them into a mantid-redeable format.
@@ -232,41 +257,14 @@ def parse_nist_function_definitions(prob, nb_start_vals):
     function_defs = []
     for start_idx in range(0, nb_start_vals):
         start_val_str = ''
-        for param in prob.starting_values:
+        for param in problem.starting_values:
             start_val_str += ('{0}={1},'.format(param[0], param[1][start_idx]))
         # Eliminate trailing comma
         start_val_str = start_val_str[:-1]
         function_defs.append("name=UserFunction,Formula={0},{1}".
-                             format(prob.equation, start_val_str))
+                             format(problem.equation, start_val_str))
 
     return function_defs
-
-
-def chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
-    """
-    Function that calcuates the chisq obtained through the
-    mantid fitting algorithm and find the best fit out of all
-    the attempted minimizers.
-
-    @param status :: the status of the fit, i.e. success or failure
-    @param fit_wks :: the fit workspace
-    @param min_chi_sq :: the minimium chisq (at the moment)
-    @param best_fit :: the best fit (at the moment)
-    @param minimizer :: minimizer with which the fit_wks was obtained
-
-    @returns :: the chi squared, the new/unaltered minimum chi squared
-                and the new/unaltered best fit data object
-    """
-
-    if status != 'failed':
-        chi_sq = misc.compute_chisq(fit_wks.readY(2))
-        if chi_sq < min_chi_sq and not chi_sq == np.nan:
-            best_fit = optimum(fit_wks, minimizer, best_fit)
-            min_chi_sq = chi_sq
-    else:
-        chi_sq = np.nan
-
-    return chi_sq, min_chi_sq, best_fit
 
 
 def setup_errors(problem):
@@ -282,12 +280,21 @@ def setup_errors(problem):
     """
 
     data_e = None
-    if problem.data_pattern_obs_errors is None:
-        print("HELLO")
+    if problem.data_e is None:
         # Fake errors
-        data_e = np.sqrt(abs(problem.data_y))
+        y_data = copy.copy(problem.data_y)
+        data_e = np.sqrt(abs(y_data))
     else:
         # True errors
-        data_e = problem.data_pattern_obs_errors
+        data_e = copy.copy(problem.data_e)
 
     return data_e
+
+
+def unpack_data(wks, problem, use_errors):
+
+    tmp = msapi.ConvertToPointData(wks)
+    problem.data_x = tmp.readX(0)
+    problem.data_y = tmp.readY(0)
+    if use_errors:
+        problem.data_e = tmp.readE(0)

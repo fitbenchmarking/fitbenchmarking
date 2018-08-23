@@ -135,8 +135,8 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     fig.make_scatter_plot(figure_name)
 
 
-def make_starting_guess_plot(algorithm, raw_data, function, data_struct, prob,
-                             count, figures_dir):
+def make_starting_guess_plot(algorithm, raw_data, function, data_struct,
+                             problem, count, figures_dir):
     """
     Creates a scatter plot of the raw data with the starting guess
     superimposed. The starting guess is obtained by setting the
@@ -145,7 +145,7 @@ def make_starting_guess_plot(algorithm, raw_data, function, data_struct, prob,
     @param raw_data :: the raw data stored into an object
     @param function :: string holding the function that was fitted
     @param data_struct :: mantid workspace containing problem data
-    @param prob :: object holding the problem information
+    @param problem :: object holding the problem information
     @param count :: number of times same name was passed through
     @param figures_dir :: dir where figures are stored
 
@@ -153,7 +153,8 @@ def make_starting_guess_plot(algorithm, raw_data, function, data_struct, prob,
                 superimosed, saved as a .png file.
     """
 
-    xData, yData = get_start_guess_data(algorithm, data_struct, function, prob)
+    xData, yData =\
+    get_start_guess_data(algorithm, data_struct, function, problem)
     startData = data("Start Guess", xData, yData)
     startData.order_data()
     startData.colour = "red"
@@ -172,7 +173,7 @@ def make_starting_guess_plot(algorithm, raw_data, function, data_struct, prob,
     start_fig.make_scatter_plot(start_figure_name)
 
 
-def get_start_guess_data(algorithm, data_struct, function, prob):
+def get_start_guess_data(algorithm, data_struct, function, problem):
     """
     Gets the starting guess data for various algorithms.
 
@@ -180,18 +181,18 @@ def get_start_guess_data(algorithm, data_struct, function, prob):
     """
 
     if algorithm == 'mantid':
-        return get_mantid_starting_guess_data(data_struct, function, prob)
+        return get_mantid_starting_guess_data(data_struct, function, problem)
     else:
         raise NameError("Sorry, that algorithm is not supported.")
 
 
-def get_mantid_starting_guess_data(wks, function, prob):
+def get_mantid_starting_guess_data(wks, function, problem):
     """
     Gets the mantid starting guess data.
 
     @param wks :: mantid workspace that holds the data for the problem
     @param function :: the fitted function
-    @param prob :: object holding the problem information
+    @param problem :: object holding the problem information
 
     @returns :: data describing the starting guess obtained by using the
                 fitting algorithm inside mantid
@@ -199,8 +200,9 @@ def get_mantid_starting_guess_data(wks, function, prob):
 
     fit_result = msapi.Fit(function, wks, Output='ws_fitting_test',
                             Minimizer='Levenberg-Marquardt',
-                            CostFunction='Least squares', IgnoreInvalidData=True,
-                            StartX=prob.start_x, EndX=prob.end_x,
+                            CostFunction='Least squares',
+                            IgnoreInvalidData=True,
+                            StartX=problem.start_x, EndX=problem.end_x,
                             MaxIterations=0)
     tmp = msapi.ConvertToPointData(fit_result.OutputWorkspace)
     xData = tmp.readX(1)
@@ -208,12 +210,12 @@ def get_mantid_starting_guess_data(wks, function, prob):
 
     return xData, yData
 
-def problem_count(prob, previous_name, count):
+def problem_count(problem, previous_name, count):
     """
     Helper function that counts how many times the name of the problem
     comes up consecutively.
 
-    @param prob :: object holding the problem information
+    @param problem :: object holding the problem information
     @param previous_name :: name of the previous problem
     @param count :: number of times same name was passed through
 
@@ -221,11 +223,11 @@ def problem_count(prob, previous_name, count):
                 times it has seen that name in a row (int).
     """
 
-    if prob.name == previous_name:
+    if problem.name == previous_name:
         count += 1
     else:
         count = 1
-        previous_name = prob.name
+        previous_name = problem.name
 
     return previous_name, count
 

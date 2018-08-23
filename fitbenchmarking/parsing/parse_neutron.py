@@ -44,10 +44,10 @@ def load_file(fname):
 
     with open(fname) as probf:
         entries = get_neutron_data_problem_entries(probf)
-        prob = test_problem.FittingTestProblem()
+        problem = test_problem.FittingTestProblem()
         data_file = get_data_file(fname, entries['input_file'])
         store_main_problem_data(data_file, prob)
-        store_misc_problem_data(prob, entries)
+        store_misc_problem_data(problem, entries)
 
     return prob
 
@@ -98,36 +98,36 @@ def get_neutron_data_problem_entries(fname):
     return entries
 
 
-def store_main_problem_data(fname, prob):
+def store_main_problem_data(fname, problem):
     """
     Stores the main problem data into the relevant attributes of the
     problem object.
 
     @param fname :: path to the neutron problem definition file
-    @param prob :: object holding the problem information
+    @param problem :: object holding the problem information
     """
 
     import mantid.simpleapi as msapi
 
     wks = msapi.Load(Filename=fname)
-    prob.data_x = wks.readX(0)
-    prob.data_y = wks.readY(0)
-    prob.data_pattern_obs_errors = wks.readE(0)
-    prob.ref_residual_sum_sq = 0
+    problem.data_x = wks.readX(0)
+    problem.data_y = wks.readY(0)
+    problem.data_e = wks.readE(0)
+    problem.ref_residual_sum_sq = 0
 
 
-def store_misc_problem_data(prob, entries):
+def store_misc_problem_data(problem, entries):
     """
     Stores the misc data from the problem file into the problem object.
 
-    @param prob :: object holding the problem information
+    @param problem :: object holding the problem information
     @param entires :: dictionary containg the entires from the
                       problem definition object
     """
 
-    prob.name = entries['name']
-    prob.equation = entries['function']
-    prob.starting_values = None
+    problem.name = entries['name']
+    problem.equation = entries['function']
+    problem.starting_values = None
     if 'fit_parameters' in entries:
-        prob.start_x = entries['fit_parameters']['StartX']
-        prob.end_x = entries['fit_parameters']['EndX']
+        problem.start_x = entries['fit_parameters']['StartX']
+        problem.end_x = entries['fit_parameters']['EndX']

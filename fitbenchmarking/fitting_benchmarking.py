@@ -78,9 +78,10 @@ def do_fitting_benchmark_group(algorithm, minimizers, group_name, problem_block,
 
     results_per_problem = []
     for prob_file in problem_block:
-        prob = parse.parse_problem_file(group_name, prob_file)
+        problem = parse.parse_problem_file(group_name, prob_file)
         results_prob = \
-        fitbm_one_problem(algorithm, prob, minimizers, use_errors, results_dir)
+        fitbm_one_problem(algorithm, problem, minimizers, use_errors,
+                          results_dir)
         results_per_problem.extend(results_prob)
 
     return results_per_problem

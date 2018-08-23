@@ -50,10 +50,10 @@ def load_file(fname):
         data_pattern = parse_data_pattern(data_pattern_text)
         parsed_eq = parse_equation(equation_text)
 
-        prob = store_prob_details(spec_file, parsed_eq, starting_values,
-                                  data_pattern, residual_sum_sq)
+        problem = store_prob_details(spec_file, parsed_eq, starting_values,
+                                     data_pattern, residual_sum_sq)
 
-    return prob
+    return problem
 
 
 def store_prob_details(spec_file, parsed_eq, starting_values, data_pattern,

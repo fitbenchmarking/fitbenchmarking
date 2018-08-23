@@ -274,8 +274,8 @@ def color_scale_cv(color_scale, value):
     return value_text
 
 
-def save_table_to_file(results_dir, table_data, use_errors, group_name, metric_type,
-                       file_extension):
+def save_table_to_file(results_dir, table_data, use_errors, group_name,
+                       metric_type, file_extension):
     """
     Saves the rst table to a file, both in text and html formats.
 
