@@ -13,11 +13,13 @@ stages:
     if: type = cron
 
 before_install:
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O
+    miniconda.sh
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
   - conda update --yes conda
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib h5py yaml ipython
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib
+    h5py yaml ipython
 install:
   - pip install -r requirements.txt
   - python setup.py install
@@ -29,13 +31,18 @@ jobs:
       before_script: mantidpython -m mantid.simpleapi || true
       script:
         # ======= Fitting Tests =============== #
-        - mantidpython -m pytest fitbenchmarking/fitting/tests/ --cov=fitbenchmarking/fitting/
+        - mantidpython -m pytest fitbenchmarking/fitting/tests/
+          --cov=fitbenchmarking/fitting/ --cov-report term-missing
         # ======= Parsing Tests =============== #
         - pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
+          --cov-report term-missing --cov-append
         # ======= Result Processing Tests =============== #
-        - pytest fitbenchmarking/result_processing/tests/ --cov=fitbenchmarking/result_processing
+        - pytest fitbenchmarking/result_processing/tests/
+          --cov=fitbenchmarking/result_processing --cov-report term-missing
+          --cov-append
         # ======= Utils Tests =============== #
         - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
+          --cov-report term-missing
       after_success:
         - coveralls
     - stage: SysTests
