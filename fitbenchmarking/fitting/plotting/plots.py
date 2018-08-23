@@ -208,7 +208,6 @@ def get_mantid_starting_guess_data(wks, function, prob):
 
     return xData, yData
 
-
 def problem_count(prob, previous_name, count):
     """
     Helper function that counts how many times the name of the problem
