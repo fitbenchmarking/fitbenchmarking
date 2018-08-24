@@ -11,10 +11,10 @@ parent_dir = os.path.dirname(os.path.normpath(test_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
-from result_processing.rst_table import calc_cell_len
-from result_processing.rst_table import format_cell_value
-from result_processing.rst_table import calc_first_col_len
-from result_processing.rst_table import build_header_chunks
+from resproc.rst_table import calc_cell_len
+from resproc.rst_table import format_cell_value
+from resproc.rst_table import calc_first_col_len
+from resproc.rst_table import build_header_chunks
 
 class RstTableTests(unittest.TestCase):
 
