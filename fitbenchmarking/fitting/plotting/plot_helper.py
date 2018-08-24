@@ -24,6 +24,8 @@ the fitbenchmarking tool.
 from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import copy
 from utils.logging_setup import logger
