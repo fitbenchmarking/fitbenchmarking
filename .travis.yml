@@ -43,7 +43,6 @@ jobs:
         # ======= Utils Tests =============== #
         - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
           --cov-report term-missing --cov-append
-        - cat .coverage
       after_success:
         - coveralls
     - stage: SysTests
