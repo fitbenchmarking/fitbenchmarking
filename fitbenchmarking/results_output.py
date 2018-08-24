@@ -76,34 +76,6 @@ def save_results_tables(minimizers, results_per_test, group_name, use_errors,
     logging.shutdown()
 
 
-def create_acc_tbl(minimizers, linked_problems, norm_acc_rankings, use_errors,
-                   color_scale):
-
-    # Save accuracy table for this group of fit problems
-    tbl_acc_indiv = rst_table.create(minimizers, linked_problems,
-                                     norm_acc_rankings,
-                                     comparison_type='accuracy',
-                                     comparison_dim='',
-                                     using_errors=use_errors,
-                                     color_scale=color_scale)
-
-    return tbl_acc_indiv
-
-
-def create_runtime_tbl(minimizers, linked_problems, norm_runtimes, use_errors,
-                       color_scale):
-
-    # Save runtime table for this group of fit problems
-    tbl_runtime_indiv = rst_table.create(minimizers, linked_problems,
-                                         norm_runtimes,
-                                         comparison_type='runtime',
-                                         comparison_dim='',
-                                         using_errors=use_errors,
-                                         color_scale=color_scale)
-
-    return tbl_runtime_indiv
-
-
 def generate_tables(results_per_test, minimizers):
     """
     Generates accuracy and runtime normalised tables and summary tables.
@@ -122,6 +94,38 @@ def generate_tables(results_per_test, minimizers):
     numpy_restables.create_summary_tbls(norm_acc_rankings, norm_runtimes)
 
     return norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime
+
+
+def create_acc_tbl(minimizers, linked_problems, norm_acc_rankings, use_errors,
+                   color_scale):
+    """
+    Creates an accuracy table using the given parameters.
+    """
+    # Save accuracy table for this group of fit problems
+    tbl_acc_indiv = rst_table.create(minimizers, linked_problems,
+                                     norm_acc_rankings,
+                                     comparison_type='accuracy',
+                                     comparison_dim='',
+                                     using_errors=use_errors,
+                                     color_scale=color_scale)
+
+    return tbl_acc_indiv
+
+
+def create_runtime_tbl(minimizers, linked_problems, norm_runtimes, use_errors,
+                       color_scale):
+    """
+    Creates a runtime table using the given paramters.
+    """
+    # Save runtime table for this group of fit problems
+    tbl_runtime_indiv = rst_table.create(minimizers, linked_problems,
+                                         norm_runtimes,
+                                         comparison_type='runtime',
+                                         comparison_dim='',
+                                         using_errors=use_errors,
+                                         color_scale=color_scale)
+
+    return tbl_runtime_indiv
 
 
 def save_tables(tables_dir, table_data, use_errors, group_name, metric):

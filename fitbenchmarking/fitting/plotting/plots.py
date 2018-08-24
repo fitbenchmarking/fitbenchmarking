@@ -1,5 +1,5 @@
 """
-Higher level function that are used for plotting the raw data of a
+Higher level functions that are used for plotting the raw data of a
 problem, a best fit plot and a starting guess plot.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD

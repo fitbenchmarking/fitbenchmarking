@@ -29,11 +29,10 @@ import sys
 import numpy as np
 import mantid.simpleapi as msapi
 
-
-from fitting import misc
 from fitting import mantid
+from fitting import misc
 from fitting.plotting import plots
-from utils import test_result
+
 from utils.logging_setup import logger
 
 
@@ -102,22 +101,4 @@ def fit_one_function_def(algorithm, problem, data_struct, function, minimizers,
         raise NameError("Sorry, that algorithm is not supported.")
 
 
-def prepare_algorithm_prerequisites(algorithm, problem, use_errors):
-    """
-    Prepare the required data structures and function definitions for each
-    algorithm.
 
-    @param algorithm :: algorithm used in fitting the problem, can be
-                        e.g. mantid, numpy etc.
-    @param problem :: a problem object containing information used in fitting
-    @param use_errors :: wether or not to use errors
-
-    @returns :: prerequisites, depending on the algorithm.
-    """
-
-    if algorithm == 'mantid':
-        wks_mtd, cost_function = mantid.wks_cost_function(problem, use_errors)
-        function_definitions = mantid.function_definitions(problem)
-        return wks_mtd, cost_function, function_definitions
-    else:
-        raise NameError("Sorry, the specified algorithm is not supported yet.")
