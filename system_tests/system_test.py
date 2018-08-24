@@ -56,12 +56,12 @@ class SystemTest(unittest.TestCase):
         nist_low_path, nist_average_path, nist_high_path = \
         self.get_expected_results_paths_nist()
 
-        with open(nist_low_path) as f:
-            nist_low = f.read()
-        with open(nist_average_path) as f:
-            nist_average = f.read()
-        with open(nist_high_path) as f:
-            nist_high = f.read()
+        with open(nist_low_path) as file:
+            nist_low = file.read()
+        with open(nist_average_path) as file:
+            nist_average = file.read()
+        with open(nist_high_path) as file:
+            nist_high = file.read()
 
         return nist_low, nist_average, nist_high
 
@@ -76,8 +76,8 @@ class SystemTest(unittest.TestCase):
 
         neutron_path = self.get_expected_results_paths_neutron()
 
-        with open(neutron_path) as f:
-            neutron = f.read()
+        with open(neutron_path) as file:
+            neutron = file.read()
 
         return neutron
 
@@ -104,12 +104,12 @@ class SystemTest(unittest.TestCase):
         nist_low_path, nist_average_path, nist_high_path = \
         self.get_results_paths_nist()
 
-        with open(nist_low_path) as f:
-            nist_low = f.read()
-        with open(nist_average_path) as f:
-            nist_average = f.read()
-        with open(nist_high_path) as f:
-            nist_high = f.read()
+        with open(nist_low_path) as file:
+            nist_low = file.read()
+        with open(nist_average_path) as file:
+            nist_average = file.read()
+        with open(nist_high_path) as file:
+            nist_high = file.read()
 
         return nist_low, nist_average, nist_high
 
@@ -126,8 +126,8 @@ class SystemTest(unittest.TestCase):
 
         neutron_path = self.get_results_paths_neutron()
 
-        with open(neutron_path) as f:
-            neutron = f.read()
+        with open(neutron_path) as file:
+            neutron = file.read()
 
         return neutron
 
@@ -141,7 +141,7 @@ class SystemTest(unittest.TestCase):
 
     def nist_expected_results_np_tables(self):
 
-        expected_results = self.read_expected_results_nist()
+        expected_results = selfile.read_expected_results_nist()
         nist_low = self.string_to_np_table(expected_results[0])
         nist_avg = self.string_to_np_table(expected_results[1])
         nist_high = self.string_to_np_table(expected_results[2])
@@ -150,7 +150,7 @@ class SystemTest(unittest.TestCase):
 
     def nist_results_np_tables(self):
 
-        results = self.read_results_nist()
+        results = selfile.read_results_nist()
         nist_low = self.string_to_np_table(results[0])
         nist_avg = self.string_to_np_table(results[1])
         nist_high = self.string_to_np_table(results[2])
@@ -159,14 +159,14 @@ class SystemTest(unittest.TestCase):
 
     def neutron_expected_results_np_tables(self):
 
-        expected_results = self.read_expected_results_neutron()
+        expected_results = selfile.read_expected_results_neutron()
         neutron = self.string_to_np_table(expected_results)
 
         return neutron
 
     def neutron_results_np_tables(self):
 
-        results = self.read_results_neutron()
+        results = selfile.read_results_neutron()
         neutron = self.string_to_np_table(results)
 
         return neutron
