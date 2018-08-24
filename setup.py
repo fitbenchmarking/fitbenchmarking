@@ -5,7 +5,7 @@ from build.commands.help import Help
 
 
 setup(name='FitBenchmarking',
-      version='1.0',
+      version='0.1dev',
       description='Fit benchmarking software',
       author='ISIS Fit Benchmarking Team',
       url='http://github.com/mantidproject/fitbenchmarking',
