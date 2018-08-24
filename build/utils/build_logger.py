@@ -30,6 +30,7 @@ class BuildLogger(object):
         self.logger = logging.getLogger("build")
         handler = logging.FileHandler(os.path.join(root_directory, 'build.log'))
         handler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s : '
+        handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s : '
                                                '%(message)s'))
         self.logger.addHandler(handler)
         self.logger.setLevel(logging.INFO)

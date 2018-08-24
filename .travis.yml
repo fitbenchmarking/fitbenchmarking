@@ -51,4 +51,3 @@ jobs:
         # ======= System Test =============== #
         - mantidpython systests/generate_current_results.py
         - mantidpython systests/tbl_comparison.py
-
