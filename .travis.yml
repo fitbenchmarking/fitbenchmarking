@@ -31,18 +31,19 @@ jobs:
       before_script: mantidpython -m mantid.simpleapi || true
       script:
         # ======= Fitting Tests =============== #
-        - mantidpython -m pytest fitbenchmarking/fitting/tests/
+
         # ======= Parsing Tests =============== #
         - pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
-          --cov-report term-missing --cov-append
+          --cov-report term-missing
         # ======= Result Processing Tests =============== #
         - pytest fitbenchmarking/result_processing/tests/
           --cov=fitbenchmarking/result_processing --cov-report term-missing
-          --cov-append
         # ======= Utils Tests =============== #
         - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
           --cov-report term-missing
+        - cat .coverage
       after_success:
+        - coverage combine --append
         - coveralls
     - stage: SysTests
       before_script: mantidpython -m mantid.simpleapi || true
