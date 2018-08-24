@@ -26,7 +26,9 @@ problem, a best fit plot and a starting guess plot.
 from __future__ import (absolute_import, division, print_function)
 
 import os
+import numpy as np
 import mantid.simpleapi as msapi
+from fitting.mantid import unpack_data
 from fitting.plotting.plot_helper import *
 
 
@@ -52,6 +54,7 @@ def make_plots(algorithm, problem, data_struct, function, best_fit,
     figures_dir = setup_dirs(group_results_dir)
     previous_name, count = problem_count(problem, previous_name, count)
 
+    unpack_data(algorithm, data_struct, problem)
     raw_data = get_data_points(problem)
     make_data_plot(problem.name, raw_data, count, figures_dir)
     make_best_fit_plot(problem.name, raw_data, best_fit, count, figures_dir)
@@ -70,9 +73,9 @@ def get_data_points(problem):
     @returns :: data object for plotting
     """
 
-    xData = problem.data_x
-    yData = problem.data_y
-    eData = problem.data_pattern_obs_errors
+    xData = np.copy(problem.data_x)
+    yData = np.copy(problem.data_y)
+    eData = np.copy(problem.data_e)
     raw_data = data("Data", xData, yData, eData)
     raw_data.showError = True
     raw_data.linestyle = ''
@@ -166,9 +169,9 @@ def make_starting_guess_plot(algorithm, raw_data, function, data_struct,
     start_fig.add_data(startData)
     start_fig.labels['x'] = "Time ($\mu s$)"
     start_fig.labels['y'] = "Arbitrary units"
-    start_fig.labels['title'] = prob.name + " " + str(count)
+    start_fig.labels['title'] = problem.name + " " + str(count)
     start_fig.title_size = 10
-    start_figure_name = (figures_dir + os.sep + "start for " + prob.name +
+    start_figure_name = (figures_dir + os.sep + "start for " + problem.name +
                          " " + str(count) + ".png")
     start_fig.make_scatter_plot(start_figure_name)
 

@@ -183,16 +183,14 @@ def wks_cost_function(problem, use_errors=True):
     @returns :: the fitting data in workspace format and the
                 cost function used in fitting
     """
-
+    data_x = np.copy(problem.data_x)
+    data_y = np.copy(problem.data_y)
     if use_errors:
         data_e = setup_errors(problem)
-        data_x = problem.data_x
-        data_y = problem.data_y
-        wks = msapi.CreateWorkspace(DataX=problem.data_x, DataY=problem.data_y,
-                                    DataE=data_e)
+        wks = msapi.CreateWorkspace(DataX=data_x, DataY=data_y, DataE=data_e)
         cost_function = 'Least squares'
     else:
-        wks = msapi.CreateWorkspace(DataX=problem.data_x, DataY=prolem.data_y)
+        wks = msapi.CreateWorkspace(DataX=data_x, DataY=data_y)
         cost_function = 'Unweighted least squares'
 
     return wks, cost_function
@@ -282,19 +280,28 @@ def setup_errors(problem):
     data_e = None
     if problem.data_e is None:
         # Fake errors
-        y_data = copy.copy(problem.data_y)
-        data_e = np.sqrt(abs(y_data))
+        data_y = np.copy(problem.data_y)
+        data_e = np.sqrt(abs(data_y))
     else:
         # True errors
-        data_e = copy.copy(problem.data_e)
+        data_e = np.copy(problem.data_e)
 
     return data_e
 
 
-def unpack_data(wks, problem, use_errors):
+def unpack_data(algorithm, wks, problem):
+    """
+    Workaround for mantid bug where the numpy arrays are lost after
+    creating workspace using mantid api.
 
-    tmp = msapi.ConvertToPointData(wks)
-    problem.data_x = tmp.readX(0)
-    problem.data_y = tmp.readY(0)
-    if use_errors:
+    @param algorithm :: name of the algorithm used, want to do this only
+                        for mantid
+    @param wks :: mantid workspace that hold the data
+    @param problem :: problem object holding the problem data
+                      (potentially corrupted arrays)
+    """
+    if algorithm == 'mantid':
+        tmp = msapi.ConvertToPointData(wks)
+        problem.data_x = tmp.readX(0)
+        problem.data_y = tmp.readY(0)
         problem.data_e = tmp.readE(0)

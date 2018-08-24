@@ -46,10 +46,10 @@ def load_file(fname):
         entries = get_neutron_data_problem_entries(probf)
         problem = test_problem.FittingTestProblem()
         data_file = get_data_file(fname, entries['input_file'])
-        store_main_problem_data(data_file, prob)
+        store_main_problem_data(data_file, problem)
         store_misc_problem_data(problem, entries)
 
-    return prob
+    return problem
 
 
 def get_data_file(fname, input_file):
@@ -110,9 +110,9 @@ def store_main_problem_data(fname, problem):
     import mantid.simpleapi as msapi
 
     wks = msapi.Load(Filename=fname)
-    problem.data_x = wks.readX(0)
-    problem.data_y = wks.readY(0)
-    problem.data_e = wks.readE(0)
+    problem.data_x = np.asarray(wks.readX(0))
+    problem.data_y = np.asarray(wks.readY(0))
+    problem.data_e = np.asarray(wks.readE(0))
     problem.ref_residual_sum_sq = 0
 
 

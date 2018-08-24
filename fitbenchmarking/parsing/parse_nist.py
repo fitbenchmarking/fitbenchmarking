@@ -49,7 +49,6 @@ def load_file(fname):
         parse_line_by_line(lines)
         data_pattern = parse_data_pattern(data_pattern_text)
         parsed_eq = parse_equation(equation_text)
-
         problem = store_prob_details(spec_file, parsed_eq, starting_values,
                                      data_pattern, residual_sum_sq)
 
