@@ -52,14 +52,16 @@ class data:
             self.name ='none'
             self.x = [0.0,0.0,0.0]
             self.y = [0.0,0.0,0.0]
-        if(len(E)==0):
-            self.E=np.zeros(len(self.x))
+        if(len(E) == 0):
+            self.E = np.zeros(len(self.x))
         else:
-            self.E=copy.copy(E)
-        self.showError=False
-        self.markers="x"
-        self.colour="k"
-        self.linestyle='--'
+            self.E = copy.copy(E)
+        self.showError = False
+        self.markers = "x"
+        self.colour = "k"
+        self.linestyle = '--'
+        self.z_order = 1
+        self.linewidth = 1
 
 
     def order_data(self):
@@ -154,12 +156,14 @@ class plot(data):
             # Plot with errors
             plt.errorbar(data.x, data.y, yerr=data.E, label=data.name,
                          marker=data.markers, color=data.colour,
-                         linestyle=data.linestyle, markersize=8)
+                         linestyle=data.linestyle, markersize=8,
+                         zorder=data.z_order, linewidth=data.linewidth)
         else:
             # Plot without errors
             plt.plot(data.x, data.y, label=data.name,
                      marker=data.markers, color=data.colour,
-                     linestyle=data.linestyle, markersize=8)
+                     linestyle=data.linestyle, markersize=8,
+                     zorder=data.z_order, linewidth=data.linewidth)
 
     @staticmethod
     def save_plot(save):
