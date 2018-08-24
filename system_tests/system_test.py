@@ -141,7 +141,7 @@ class SystemTest(unittest.TestCase):
 
     def nist_expected_results_np_tables(self):
 
-        expected_results = selfile.read_expected_results_nist()
+        expected_results = self.read_expected_results_nist()
         nist_low = self.string_to_np_table(expected_results[0])
         nist_avg = self.string_to_np_table(expected_results[1])
         nist_high = self.string_to_np_table(expected_results[2])
@@ -150,7 +150,7 @@ class SystemTest(unittest.TestCase):
 
     def nist_results_np_tables(self):
 
-        results = selfile.read_results_nist()
+        results = self.read_results_nist()
         nist_low = self.string_to_np_table(results[0])
         nist_avg = self.string_to_np_table(results[1])
         nist_high = self.string_to_np_table(results[2])
@@ -159,14 +159,14 @@ class SystemTest(unittest.TestCase):
 
     def neutron_expected_results_np_tables(self):
 
-        expected_results = selfile.read_expected_results_neutron()
+        expected_results = self.read_expected_results_neutron()
         neutron = self.string_to_np_table(expected_results)
 
         return neutron
 
     def neutron_results_np_tables(self):
 
-        results = selfile.read_results_neutron()
+        results = self.read_results_neutron()
         neutron = self.string_to_np_table(results)
 
         return neutron
