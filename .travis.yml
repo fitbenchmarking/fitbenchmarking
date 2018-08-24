@@ -38,13 +38,13 @@ jobs:
         # ======= Result Processing Tests =============== #
         - pytest fitbenchmarking/result_processing/tests/
           --cov=fitbenchmarking/result_processing --cov-report term-missing
+          --cov-append
         # ======= Utils Tests =============== #
         - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
-          --cov-report term-missing
+          --cov-report term-missing --cov-append
         - cat .coverage
       after_success:
-        - coverage combine --append
-        - coveralls
+        - coveralls --data-file=.coverage
     - stage: SysTests
       before_script: mantidpython -m mantid.simpleapi || true
       script:
