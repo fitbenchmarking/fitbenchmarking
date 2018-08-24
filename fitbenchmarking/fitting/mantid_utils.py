@@ -130,6 +130,9 @@ def ignore_invalid(prob, cost_function):
     """
 
     ignore_invalid = cost_function == 'Least squares'
+
+    # The WISH data presents some issues
+    # For which this adhoc if must be present
     if 'WISH17701' in prob.name:
         ignore_invalid = False
 
