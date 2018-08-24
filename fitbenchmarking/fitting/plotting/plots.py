@@ -28,7 +28,6 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import numpy as np
 import mantid.simpleapi as msapi
-from fitting.mantid import unpack_data
 from fitting.plotting.plot_helper import *
 
 
@@ -54,7 +53,6 @@ def make_plots(algorithm, problem, data_struct, function, best_fit,
     figures_dir = setup_dirs(group_results_dir)
     previous_name, count = problem_count(problem, previous_name, count)
 
-    unpack_data(algorithm, data_struct, problem)
     raw_data = get_data_points(problem)
     make_data_plot(problem.name, raw_data, count, figures_dir)
     make_best_fit_plot(problem.name, raw_data, best_fit, count, figures_dir)
@@ -73,9 +71,9 @@ def get_data_points(problem):
     @returns :: data object for plotting
     """
 
-    xData = np.copy(problem.data_x)
-    yData = np.copy(problem.data_y)
-    eData = np.copy(problem.data_e)
+    xData = problem.data_x
+    yData = problem.data_y
+    eData = problem.data_e
     raw_data = data("Data", xData, yData, eData)
     raw_data.showError = True
     raw_data.linestyle = ''
@@ -189,11 +187,11 @@ def get_start_guess_data(algorithm, data_struct, function, problem):
         raise NameError("Sorry, that algorithm is not supported.")
 
 
-def get_mantid_starting_guess_data(wks, function, problem):
+def get_mantid_starting_guess_data(wks_created, function, problem):
     """
     Gets the mantid starting guess data.
 
-    @param wks :: mantid workspace that holds the data for the problem
+    @param wks_created :: mantid workspace that holds the data for the problem
     @param function :: the fitted function
     @param problem :: object holding the problem information
 
@@ -201,7 +199,7 @@ def get_mantid_starting_guess_data(wks, function, problem):
                 fitting algorithm inside mantid
     """
 
-    fit_result = msapi.Fit(function, wks, Output='ws_fitting_test',
+    fit_result = msapi.Fit(function, wks_created, Output='ws_fitting_test',
                             Minimizer='Levenberg-Marquardt',
                             CostFunction='Least squares',
                             IgnoreInvalidData=True,

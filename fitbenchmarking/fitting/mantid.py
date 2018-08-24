@@ -35,13 +35,13 @@ from fitting.plotting import plot_helper
 MAX_FLOAT = sys.float_info.max
 
 
-def benchmark(problem, wks, function, minimizers, cost_function):
+def benchmark(problem, wks_created, function, minimizers, cost_function):
     """
     Fit benchmark one problem, with one function definition and all
     the selected minimizers, using the mantid fitting algorithms.
 
     @param problem :: a problem object containing information used in fitting
-    @param wks :: workspace holding the problem data
+    @param wks_created :: workspace holding the problem data
     @param function :: the fitted function
     @param minimizers :: array of minimizers used in fitting
     @param cost_function :: the cost function used for fitting
@@ -55,7 +55,7 @@ def benchmark(problem, wks, function, minimizers, cost_function):
 
     for minimizer in minimizers:
         status, fit_wks, fin_function_def, runtime = \
-        fit(problem, wks, function, minimizer, cost_function)
+        fit(problem, wks_created, function, minimizer, cost_function)
         chi_sq, min_chi_sq, best_fit = \
         chisq(status, fit_wks, min_chi_sq, best_fit, minimizer)
         individual_result = \
@@ -67,19 +67,19 @@ def benchmark(problem, wks, function, minimizers, cost_function):
     return results_problem, best_fit
 
 
-def fit(problem, wks, function, minimizer='Levenberg-Marquardt',
+def fit(problem, wks_created, function, minimizer='Levenberg-Marquardt',
         cost_function='Least squares'):
     """
     The mantid fit algorithm.
 
     @param problem :: object holding the problem information
-    @param wks :: workspace holding the problem data
+    @param wks_created :: workspace holding the problem data
     @param function :: the fitted function
     @param minimizer :: the minimizer used in the fitting process
     @param cost_function :: the type of cost function used in fitting
 
     @returns :: the status, either success or failure (str), the fit
-                workspace (mantid wks), containing the fitted data,
+                workspace (mantid wks_created), containing the fitted data,
                 the corresponding points of the fit and the difference
                 between them, the fitted parameters, their errors [arrays]
                 and how much time it took for the fit to finish (float)
@@ -89,7 +89,7 @@ def fit(problem, wks, function, minimizer='Levenberg-Marquardt',
     try:
         ignore_invalid = get_ignore_invalid(problem, cost_function)
         t_start = time.clock()
-        fit_result = msapi.Fit(function, wks, Output='ws_fitting_test',
+        fit_result = msapi.Fit(function, wks_created, Output='ws_fitting_test',
                                Minimizer=minimizer, CostFunction=cost_function,
                                IgnoreInvalidData=ignore_invalid,
                                StartX=problem.start_x, EndX=problem.end_x)
@@ -183,17 +183,20 @@ def wks_cost_function(problem, use_errors=True):
     @returns :: the fitting data in workspace format and the
                 cost function used in fitting
     """
-    data_x = np.copy(problem.data_x)
-    data_y = np.copy(problem.data_y)
+    data_x = problem.data_x
+    data_y = problem.data_y
     if use_errors:
         data_e = setup_errors(problem)
-        wks = msapi.CreateWorkspace(DataX=data_x, DataY=data_y, DataE=data_e)
+        wks_created = msapi.CreateWorkspace(DataX=data_x, DataY=data_y,
+                                            DataE=data_e)
+        convert_back(wks_created, problem, use_errors)
         cost_function = 'Least squares'
     else:
-        wks = msapi.CreateWorkspace(DataX=data_x, DataY=data_y)
+        wks_created = msapi.CreateWorkspace(DataX=data_x, DataY=data_y)
+        convert_back(wks_created, problem, use_errors)
         cost_function = 'Unweighted least squares'
 
-    return wks, cost_function
+    return wks_created, cost_function
 
 
 def function_definitions(problem):
@@ -280,28 +283,23 @@ def setup_errors(problem):
     data_e = None
     if problem.data_e is None:
         # Fake errors
-        data_y = np.copy(problem.data_y)
-        data_e = np.sqrt(abs(data_y))
+        data_e = np.sqrt(abs(problem.data_y))
     else:
         # True errors
-        data_e = np.copy(problem.data_e)
+        data_e = problem.data_e
 
     return data_e
 
 
-def unpack_data(algorithm, wks, problem):
+def convert_back(wks_created, problem, use_errors):
     """
-    Workaround for mantid bug where the numpy arrays are lost after
-    creating workspace using mantid api.
+    Convert back so data is of equal lengths.
 
-    @param algorithm :: name of the algorithm used, want to do this only
-                        for mantid
-    @param wks :: mantid workspace that hold the data
+    @param wks_created :: mantid workspace that hold the data
     @param problem :: problem object holding the problem data
-                      (potentially corrupted arrays)
     """
-    if algorithm == 'mantid':
-        tmp = msapi.ConvertToPointData(wks)
-        problem.data_x = tmp.readX(0)
-        problem.data_y = tmp.readY(0)
-        problem.data_e = tmp.readE(0)
+    tmp = msapi.ConvertToPointData(wks_created)
+    problem.data_x = np.copy(tmp.readX(0))
+    problem.data_y = np.copy(tmp.readY(0))
+    if use_errors:
+        problem.data_e = np.copy(tmp.readE(0))

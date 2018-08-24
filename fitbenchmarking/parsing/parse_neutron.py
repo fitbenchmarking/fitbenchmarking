@@ -109,10 +109,10 @@ def store_main_problem_data(fname, problem):
 
     import mantid.simpleapi as msapi
 
-    wks = msapi.Load(Filename=fname)
-    problem.data_x = np.asarray(wks.readX(0))
-    problem.data_y = np.asarray(wks.readY(0))
-    problem.data_e = np.asarray(wks.readE(0))
+    wks_imported = msapi.Load(Filename=fname)
+    problem.data_x = wks_imported.readX(0)
+    problem.data_y = wks_imported.readY(0)
+    problem.data_e = wks_imported.readE(0)
     problem.ref_residual_sum_sq = 0
 
 

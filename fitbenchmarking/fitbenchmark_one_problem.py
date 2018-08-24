@@ -116,8 +116,8 @@ def prepare_algorithm_prerequisites(algorithm, problem, use_errors):
     """
 
     if algorithm == 'mantid':
-        wks, cost_function = mantid.wks_cost_function(problem, use_errors)
+        wks_mtd, cost_function = mantid.wks_cost_function(problem, use_errors)
         function_definitions = mantid.function_definitions(problem)
-        return wks, cost_function, function_definitions
+        return wks_mtd, cost_function, function_definitions
     else:
         raise NameError("Sorry, the specified algorithm is not supported yet.")
