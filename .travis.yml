@@ -44,7 +44,7 @@ jobs:
           --cov-report term-missing --cov-append
         - cat .coverage
       after_success:
-        - coveralls --data-file=.coverage
+        - coveralls
     - stage: SysTests
       before_script: mantidpython -m mantid.simpleapi || true
       script:
