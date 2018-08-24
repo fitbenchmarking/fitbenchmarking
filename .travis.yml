@@ -31,6 +31,7 @@ jobs:
       before_script: mantidpython -m mantid.simpleapi || true
       script:
         # ======= Fitting Tests =============== #
+
         - pytest fitbenchmarking/fitting/tests/ --cov=fitbenchmarking/fitting/
           --cov-report term-missing
         # ======= Parsing Tests =============== #
