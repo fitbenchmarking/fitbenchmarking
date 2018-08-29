@@ -137,11 +137,11 @@ class plot(data):
 
         @param data :: object that holds all the relevant data
         """
-        if len(data.x)==len(data.y):
+        if len(data.x) == len(data.y):
             self.make_plot(data)
         else:
-            log.error("Data " + data.name + " contains data" +
-                      " of unequal lengths ", len(data.x), len(data.y))
+            logger.error("Data " + data.name + " contains data" +
+                         " of unequal lengths ", len(data.x), len(data.y))
 
     @staticmethod
     def make_plot(data):
@@ -152,7 +152,7 @@ class plot(data):
         @param data :: object that holds all the relevant data
         """
 
-        if(data.showError):
+        if data.showError:
             # Plot with errors
             plt.errorbar(data.x, data.y, yerr=data.E, label=data.name,
                          marker=data.markers, color=data.colour,

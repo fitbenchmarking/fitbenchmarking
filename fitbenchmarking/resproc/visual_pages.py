@@ -26,7 +26,7 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import re
 from docutils.core import publish_string
-from result_processing import fitdetails_tbls
+from resproc import fitdetails_tbls
 from utils.logging_setup import logger
 
 # Some naming conventions for the output files

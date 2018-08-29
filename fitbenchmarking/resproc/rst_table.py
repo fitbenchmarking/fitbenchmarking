@@ -26,9 +26,9 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import numpy as np
 from docutils.core import publish_string
-from result_processing.misc import build_items_links
-from result_processing.misc import display_name_for_minimizers
-from result_processing.misc import weighted_suffix_string
+from resproc.misc import build_items_links
+from resproc.misc import display_name_for_minimizers
+from resproc.misc import weighted_suffix_string
 from utils.logging_setup import logger
 
 
@@ -274,8 +274,8 @@ def color_scale_cv(color_scale, value):
     return value_text
 
 
-def save_table_to_file(results_dir, table_data, use_errors, group_name, metric_type,
-                       file_extension):
+def save_table_to_file(results_dir, table_data, use_errors, group_name,
+                       metric_type, file_extension):
     """
     Saves the rst table to a file, both in text and html formats.
 

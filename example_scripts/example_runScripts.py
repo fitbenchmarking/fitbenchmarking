@@ -68,7 +68,7 @@ neutron_data_dir = os.path.join(benchmark_problems_dir, 'Neutron_data')
 # If the full path is not given and the results_dir name is valid
 #  ../fitbenchmarking/fitbenchmarking/ is taken as the path
 results_dir = None
-
+algorithm = 'mantid'
 
 # Whether to use errors in the fitting process
 use_errors = True
@@ -76,18 +76,20 @@ use_errors = True
 for run_data in ["neutron", "nist"]:
 
     if run_data == "neutron":
-        group_suffix_names = ['neutron_data']
+        group_suffix_names = ['neutron']
         group_names = ["Neutron data"]
         results_per_group, results_dir = \
-        fitBenchmarking(data_dir=neutron_data_dir, minimizers=minimizers,
-                        use_errors=use_errors, results_dir=results_dir)
+        fitBenchmarking(algorithm=algorithm, data_dir=neutron_data_dir,
+                        minimizers=minimizers, use_errors=use_errors,
+                        results_dir=results_dir)
     elif run_data == "nist":
         group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
                        'NIST, "higher" difficulty']
         group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher']
         results_per_group, results_dir = \
-        fitBenchmarking(data_dir=nist_data_dir, minimizers=minimizers,
-                        use_errors=use_errors, results_dir=results_dir)
+        fitBenchmarking(algorithm=algorithm, data_dir=nist_data_dir,
+                        minimizers=minimizers, use_errors=use_errors,
+                        results_dir=results_dir)
     else:
         raise RuntimeError("Invalid run_data, please check if the array"
                            "contains the correct names!")

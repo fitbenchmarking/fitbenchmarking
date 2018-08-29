@@ -11,9 +11,9 @@ parent_dir = os.path.dirname(os.path.normpath(test_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
-from result_processing.numpy_restables import create_accuracy_runtime_tbls
-from result_processing.numpy_restables import create_norm_tbls
-from result_processing.numpy_restables import create_summary_tbls
+from resproc.numpy_restables import create_accuracy_runtime_tbls
+from resproc.numpy_restables import create_norm_tbls
+from resproc.numpy_restables import create_summary_tbls
 from utils import test_result
 
 class NumpyRestablesTests(unittest.TestCase):
