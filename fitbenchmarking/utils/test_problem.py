@@ -28,7 +28,6 @@ class FittingTestProblem(object):
     def __init__(self):
         self.name = None
         # If there is an online/documentation link describing this problem
-        self.linked_name = None
         self.equation = None
         self.start_x = None
         self.end_x = None

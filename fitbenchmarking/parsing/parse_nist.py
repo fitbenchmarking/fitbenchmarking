@@ -73,8 +73,6 @@ def store_prob_details(spec_file, parsed_eq, starting_values, data_pattern,
 
     prob = test_problem.FittingTestProblem()
     prob.name = os.path.basename(spec_file.name.split('.')[0])
-    prob.linked_name = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data"
-                        "/{1}.shtml>`__".format(prob.name, prob.name.lower()))
     prob.equation = parsed_eq
     prob.starting_values = starting_values
     prob.data_x = data_pattern[:, 1]

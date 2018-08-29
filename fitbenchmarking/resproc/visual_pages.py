@@ -148,12 +148,12 @@ def setup_detail_page_tbls(initial_fdef, final_fdef):
     return initial_details_tbl, final_details_tbl
 
 
-def setup_nist_page_misc(linked_name, results_dir):
+def setup_nist_page_misc(link, results_dir):
     """
     Sets up some miscellaneous things for the NIST visual display
     page like path to the folder they are saved in.
 
-    @param linked_name :: link to the NIST website for the
+    @param link :: link to the NIST website for the
                           considered NIST problem
     @param results_dir :: path to the results directory
 
@@ -165,8 +165,7 @@ def setup_nist_page_misc(linked_name, results_dir):
                                      "support_pages")
     if not os.path.exists(support_pages_dir):
         os.makedirs(support_pages_dir)
-    see_also_link = 'See also:\n ' + linked_name + \
-                    '\n on NIST website\n\n'
+    see_also_link = 'See also:\n ' + link + '\n on NIST website\n\n'
 
     return support_pages_dir, see_also_link
 
@@ -211,8 +210,10 @@ def setup_page_misc(group_name, problem_name, res_obj, results_dir, count):
 
     # Group specific path and other misc stuff
     if 'nist' in group_name:
+        link = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data"
+                "/{1}.shtml>`__".format(problem_name, problem_name.lower()))
         support_pages_dir, see_also_link = \
-        setup_nist_page_misc(res_obj.problem.linked_name, results_dir)
+        setup_nist_page_misc(link, results_dir)
     elif 'neutron' in group_name:
         support_pages_dir, see_also_link = \
         setup_neutron_page_misc(results_dir)

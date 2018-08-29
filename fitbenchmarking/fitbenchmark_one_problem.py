@@ -29,8 +29,9 @@ import sys
 import numpy as np
 import mantid.simpleapi as msapi
 
-from fitting import mantid
+from fitting import prerequisites as prereq
 from fitting import misc
+from fitting import mantid
 from fitting.plotting import plots
 
 from utils.logging_setup import logger
@@ -59,7 +60,7 @@ def fitbm_one_problem(algorithm, problem, minimizers, use_errors=True,
     previous_name, count = None, 0
     results_fit_problem = []
     data_struct, cost_function, function_definitions = \
-    prepare_algorithm_prerequisites(algorithm, problem, use_errors)
+    prereq.prepare_algorithm_prerequisites(algorithm, problem, use_errors)
 
     for function in function_definitions:
         results_problem, best_fit = \

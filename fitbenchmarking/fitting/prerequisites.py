@@ -1,5 +1,5 @@
 """
-Parse the problem file depending on the type of problem.
+General utility functions for calculating some attributes of the fit.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -23,33 +23,26 @@ Parse the problem file depending on the type of problem.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 
 from __future__ import (absolute_import, division, print_function)
-
-from parsing import parse_nist, parse_neutron
-from utils.logging_setup import logger
+import mantid
 
 
-def parse_problem_file(group_name, prob_file):
+def prepare_algorithm_prerequisites(algorithm, problem, use_errors):
     """
-    Helper function that does the parsing of a specified problem file.
-    This method needs group_name to inform how the prob_file should be
-    passed.
+    Prepare the required data structures and function definitions for each
+    algorithm.
 
-    @param group_name :: name of the group of problems
-    @param prob_file :: path to the problem file
+    @param algorithm :: algorithm used in fitting the problem, can be
+                        e.g. mantid, numpy etc.
+    @param problem :: a problem object containing information used in fitting
+    @param use_errors :: wether or not to use errors
 
-    @returns :: problem object with fitting information
+    @returns :: prerequisites, depending on the algorithm.
     """
 
-    if group_name == 'nist':
-        prob = parse_nist.load_file(prob_file)
-        prob.type = 'nist'
-    elif group_name == 'neutron':
-        prob = parse_neutron.load_file(prob_file)
-        prob.type = 'neutron'
+    if algorithm == 'mantid':
+        from fitting import mantid
+        wks_mtd, cost_function = mantid.wks_cost_function(problem, use_errors)
+        function_definitions = mantid.function_definitions(problem)
+        return wks_mtd, cost_function, function_definitions
     else:
-        raise NameError("Could not find group name! Please check if it was"
-                        "given correctly...")
-
-    logger.info("* Testing fitting of problem {0}".format(prob.name))
-
-    return prob
+        raise NameError("Sorry, the specified algorithm is not supported yet.")
