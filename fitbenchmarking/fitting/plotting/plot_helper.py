@@ -60,7 +60,7 @@ class data:
         self.markers = "x"
         self.colour = "k"
         self.linestyle = '--'
-        self.zorder = 1
+        self.z_order = 1
         self.linewidth = 1
 
 
@@ -157,13 +157,13 @@ class plot(data):
             plt.errorbar(data.x, data.y, yerr=data.E, label=data.name,
                          marker=data.markers, color=data.colour,
                          linestyle=data.linestyle, markersize=8,
-                         zorder=data.zorder, linewidth=data.linewidth)
+                         zorder=data.z_order, linewidth=data.linewidth)
         else:
             # Plot without errors
             plt.plot(data.x, data.y, label=data.name,
                      marker=data.markers, color=data.colour,
-                     linestyle=data.linestyle, markersize=8, zorder=data.zorder,
-                     linewidth=data.linewidth)
+                     linestyle=data.linestyle, markersize=8,
+                     zorder=data.z_order, linewidth=data.linewidth)
 
     @staticmethod
     def save_plot(save):
