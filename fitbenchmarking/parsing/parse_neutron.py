@@ -27,6 +27,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import os, re
 import numpy as np
+import mantid.simpleapi as msapi
 
 from utils import test_problem
 from utils.logging_setup import logger
@@ -107,8 +108,6 @@ def store_main_problem_data(fname, problem):
     @param problem :: object holding the problem information
     """
 
-    import mantid.simpleapi as msapi
-
     wks_imported = msapi.Load(Filename=fname)
     problem.data_x = wks_imported.readX(0)
     problem.data_y = wks_imported.readY(0)
@@ -131,3 +130,11 @@ def store_misc_problem_data(problem, entries):
     if 'fit_parameters' in entries:
         problem.start_x = entries['fit_parameters']['StartX']
         problem.end_x = entries['fit_parameters']['EndX']
+
+
+def gen_func_obj(function_name):
+
+    function_array = []
+    exec "function_object = msapi." + function_name + "()"
+
+    return function_object

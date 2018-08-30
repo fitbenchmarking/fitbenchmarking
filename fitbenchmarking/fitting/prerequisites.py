@@ -24,6 +24,7 @@ General utility functions for calculating some attributes of the fit.
 
 from __future__ import (absolute_import, division, print_function)
 import mantid
+import scipyfit
 
 
 def prepare_algorithm_prerequisites(algorithm, problem, use_errors):
@@ -40,9 +41,25 @@ def prepare_algorithm_prerequisites(algorithm, problem, use_errors):
     """
 
     if algorithm == 'mantid':
-        from fitting import mantid
-        wks_mtd, cost_function = mantid.wks_cost_function(problem, use_errors)
-        function_definitions = mantid.function_definitions(problem)
-        return wks_mtd, cost_function, function_definitions
+        return prepare_mantid(problem, use_errors)
+    elif algorithm == 'scipy':
+        return prepare_scipy(problem, use_errors)
+    elif algorithm == 'matlab':
+        print("Work in progress!")
     else:
         raise NameError("Sorry, the specified algorithm is not supported yet.")
+
+
+def prepare_mantid(problem, use_errors):
+
+    wks_mtd, cost_function = mantid.wks_cost_function(problem, use_errors)
+    function_definitions = mantid.function_definitions(problem)
+    return wks_mtd, cost_function, function_definitions
+
+
+def prepare_scipy(problem, use_errors):
+
+    data, cost_function = scipyfit.prepare_data(problem, use_errors)
+    function_definitions = scipyfit.function_definitions(problem)
+    return data, cost_function, function_definitions
+

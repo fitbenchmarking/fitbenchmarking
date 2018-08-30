@@ -210,11 +210,11 @@ def function_definitions(problem):
                 mantid understands
     """
 
-    if problem.starting_values:
+    if problem.type == 'nist':
         # NIST data requires prior formatting
         nb_start_vals = len(problem.starting_values[0][1])
         function_defs = parse_nist_function_definitions(problem, nb_start_vals)
-    else:
+    elif problem.type == 'neutron':
         # Neutron data does not require any
         function_defs = []
         function_defs.append(problem.equation)
