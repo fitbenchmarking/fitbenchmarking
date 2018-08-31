@@ -65,7 +65,7 @@ class MantidTests(unittest.TestCase):
 
         prob = test_problem.FittingTestProblem()
         prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
-        prob.equation = ("name=LinearBackground;"
+        prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                          "name=BackToBackExponential,"
                          "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
         prob.starting_values = None
@@ -244,7 +244,7 @@ class MantidTests(unittest.TestCase):
 
         function_defs = function_definitions(prob)
         function_defs_expected = \
-        [("name=LinearBackground;name=BackToBackExponential,"
+        [("name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,"
           "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")]
 
         self.assertListEqual(function_defs_expected, function_defs)

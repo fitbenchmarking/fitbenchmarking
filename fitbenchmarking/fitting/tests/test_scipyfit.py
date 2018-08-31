@@ -25,7 +25,7 @@ class ScipyfitTests(unittest.TestCase):
 
     def test_nistFuncConverter_return_appropriate_function_object(self):
 
-        function = ("name=LinearBackground;"
+        function = ("name=LinearBackground,A0=0,A1=0;"
                     "name=BackToBackExponential,"
                     "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
 

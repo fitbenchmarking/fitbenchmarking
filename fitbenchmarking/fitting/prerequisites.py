@@ -45,7 +45,7 @@ def prepare_algorithm_prerequisites(algorithm, problem, use_errors):
     elif algorithm == 'scipy':
         return prepare_scipy(problem, use_errors)
     elif algorithm == 'matlab':
-        print("Work in progress!")
+        RuntimeError("Work in progress!")
     else:
         raise NameError("Sorry, the specified algorithm is not supported yet.")
 
