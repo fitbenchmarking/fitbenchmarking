@@ -303,3 +303,9 @@ def convert_back(wks_created, problem, use_errors):
     problem.data_y = np.copy(tmp.readY(0))
     if use_errors:
         problem.data_e = np.copy(tmp.readE(0))
+
+def gen_func_obj(function_name):
+
+    exec "function_object = msapi." + function_name + "()"
+
+    return function_object

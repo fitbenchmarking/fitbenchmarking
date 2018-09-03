@@ -25,12 +25,11 @@ from __future__ import (absolute_import, division, print_function)
 
 from scipy.optimize import curve_fit
 import numpy as np
-import sys
-import re
-import copy
+import sys, re, copy
 
 from fitting import misc
-from parsing import parse_neutron
+from fitting import mantid
+from fitting.plotting import plot_helper
 from utils.logging_setup import logger
 
 MAX_FLOAT = sys.float_info.max
@@ -41,10 +40,10 @@ def benchmark(problem, data, function, minimizers, cost_function):
     results_problem = []
 
     for minimizer in minimizers:
-        status, fin_function_def, runtime = \
-        fit(problem, data, function, minimizer, cost_function)
+        status, fitted_y, fin_function_def, runtime = \
+        fit(data, function, minimizer, cost_function)
         chi_sq, min_chi_sq, best_fit = \
-        chisq()
+        chisq(status, data, fitted_y, min_chi_sq, best_fit)
         individual_result = \
         misc.create_result_entry(problem, status, chi_sq, runtime, minimizer,
                                  function, fin_function_def)
@@ -53,11 +52,11 @@ def benchmark(problem, data, function, minimizers, cost_function):
 
     return results_problem, best_fit
 
-def fit(problem, data, function, minimizer, cost_function):
+def fit(data, function, minimizer, cost_function):
 
-    popt, pcov, t_start, t_end = None, None, None, None
-    initial_params = function[1]
+    popt, t_start, t_end = None, None, None
     func_callable = function[0]
+    initial_params = function[1]
 
     try:
         t_start = time.clock()
@@ -67,13 +66,14 @@ def fit(problem, data, function, minimizer, cost_function):
     except(RuntimeError, ValueError) as err:
         logger.error("Warning, fit failed. Going on. Error: " + str(err))
 
-    status, fin_function_def, runtime = \
-    parse_result(func_callable, popt, t_start, t_end, problem)
+    status, fitted_y, fin_function_def, runtime = \
+    parse_result(func_callable, popt, t_start, t_end)
 
-    return status, differences, fin_function_def, runtime
+    return status, fitted_y, fin_function_def, runtime
 
 def execute_fit(function, data, initial_params, minimizer, cost_function):
 
+    popt, pcov = None, None
     if cost_function == 'least squares':
         popt, pcov = curve_fit(f=function.__call__, xdata=data[0],
                                ydata=data[1], sigma=data[2], p0=initial_params,
@@ -84,27 +84,30 @@ def execute_fit(function, data, initial_params, minimizer, cost_function):
                                method=minimizer)
     return popt
 
-def parse_result(function, popt, t_start, t_end, problem):
+def parse_result(function, popt, t_start, t_end):
 
     status = 'failed'
-    fin_function_def, differences, runtime = None, None, np.nan
+    fin_function_def, fitted_y, runtime = None, None, np.nan
     if not popt is None:
         status = 'success'
-        function = create_final_function_callable()
-        differences = calculate_differences(popt, problem, function)
+        fitted_y = create_fitted_ydata(function, data_x, popt)
         fin_function_def = create_final_function_def(problem, popt)
         runtime = t_end - t_start
 
-    return status, differences, fin_function_def, runtime
+    return status, fitted_y, fin_function_def, runtime
 
-def calculate_differences(popt, problem, function):
+def chisq(status, data, fitted_y, min_chi_sq, best_fit):
 
-    measured_y = copy.copy(problem.data_y)
-    fitted_y = function(copy.copy(problem.data_x))
+    if status != 'failed':
+        differences = fitted_y - data[1]
+        chi_sq = misc.compute_chisq(differences)
+        if chi_sq < min_chi_sq and not chi_sq == np.nan:
+            best_fit = plot_helper.data(minimizer_name, data[0], fitted_y)
+            min_chi_sq = chi_sq
+    else:
+        chi_sq = np.nan
 
-
-
-
+    return chi_sq, min_chi_sq, best_fit
 
 def create_final_function_def(problem, popt):
 
@@ -115,6 +118,37 @@ def create_final_function_def(problem, popt):
         fin_function_def = find_float.sub(popt[idx], fin_function_def,  idx)
 
     return fin_function_def
+
+def create_fitted_ydata(function, data_x, popt):
+
+    parameter_names = get_all_parameter_names(problem)
+    for idx in range(0, len(popt)):
+        function[parameter_names[idx]] = popt[idx]
+
+    fitted_y = function(data_x)
+
+    return fitted_y
+
+def get_neutron_initial_param_names(function_string, parameter_names):
+
+    while True:
+        comma = function_string.find(',')
+        equal = function_string.find('=', comma)
+        if equal == -1: break
+        parameter_names.append(function_string[comma+1:equal-1])
+
+    return parameter_names
+
+def get_all_parameter_names(problem):
+
+    functions = problem.equation.split(';')
+    parameter_names = []
+    for function_string in functions:
+        parameter_names = \
+        get_neutron_initial_param_names(function_string, parameter_names)
+
+    return parameter_names
+
 
 def prepare_data(problem, use_errors):
 
@@ -151,18 +185,45 @@ def nist_func_definitions(function, startvals):
 
     return function_defs
 
-def get_neutron_func(function, function_names, function_parameters):
+def get_neutron_func_params(function, function_params):
+
+    first_comma = function.find(',')
+    if first_comma != -1:
+        function_params.append(function[first_comma+1:])
+    else:
+        function_params.append('')
+
+    function_params[-1] = function_params[-1].replace(',', ', ')
+
+    return function_params
+
+def get_all_neutron_func_params(functions_string):
+
+    functions = functions_string.split(';')
+    function_params = []
+    for function in functions:
+        function_params = get_neutron_func_params(function, function_params)
+
+    return function_params
+
+def get_neutron_func_names(function, function_names):
 
     first_comma = function.find(',')
     if first_comma != -1:
         function_names.append(function[5:first_comma])
-        function_parameters.append(function[first_comma+1:])
     else:
         function_names.append(function[5:])
-        function_parameters.append('')
 
-    function_parameters[-1] = function_parameters[-1].replace(',', ', ')
-    return function_names, function_parameters
+    return function_names
+
+def get_all_neutron_func_names(functions_string):
+
+    functions = functions_string.split(';')
+    function_names = []
+    for function in functions:
+        function_names = get_neutron_func_names(function, function_names)
+
+    return function_names
 
 def make_neutron_fit_function(func_name, fit_function):
 
@@ -184,7 +245,7 @@ def find_neutron_params(param_set, params):
 
     return params
 
-def get_neutron_initial_parameters(function_params):
+def get_neutron_initial_params_values(function_params):
 
     params = []
     for param_set in function_params:
@@ -195,28 +256,12 @@ def get_neutron_initial_parameters(function_params):
 
 def neutron_func_definitions(functions_string):
 
-    function_defs = []
-    functions = functions_string.split(';')
-    function_names, function_params = [], []
-    for function in functions:
-        function_names, function_params = \
-        get_neutron_func(function, function_names, function_params)
+    function_names = get_all_neutron_func_names(functions_string)
+    function_params = get_all_neutron_func_params(function_string)
     for name in function_names:
         fit_function = make_neutron_fit_function(name, fit_function)
 
-    params = make_neutron_initial_parameters(function_params)
+    params = get_neutron_initial_params_values(function_params)
     function_defs = [[fit_function, params]]
 
     return function_defs
-
-def chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
-
-    if status != 'failed':
-        chi_sq = misc.compute_chisq(fit_wks.readY(2))
-        if chi_sq < min_chi_sq and not chi_sq == np.nan:
-            best_fit = optimum(fit_wks, minimizer, best_fit)
-            min_chi_sq = chi_sq
-    else:
-        chi_sq = np.nan
-
-    return chi_sq, min_chi_sq, best_fit
