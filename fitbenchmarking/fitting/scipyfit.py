@@ -25,7 +25,7 @@ from __future__ import (absolute_import, division, print_function)
 
 from scipy.optimize import curve_fit
 import numpy as np
-import sys, re, copy
+import sys, re, copy, time
 
 from fitting import misc
 from fitting import mantid
@@ -153,8 +153,8 @@ def get_all_parameter_names(problem):
 def prepare_data(problem, use_errors):
 
     if use_errors:
-        data = np.array(np.copy(problem.data_x), np.copy(problem.data_y),
-                        np.copy(problem.data_e))
+        data = np.array([np.copy(problem.data_x), np.copy(problem.data_y),
+                         np.copy(problem.data_e)])
         cost_function = 'least squares'
     else:
         data = np.array(np.copy(problem.data_x), np.copy(problem.data_y))
@@ -227,7 +227,7 @@ def get_all_neutron_func_names(functions_string):
 
 def make_neutron_fit_function(func_name, fit_function):
 
-    func_obj = parse_neutron.gen_func_obj(func_name)
+    func_obj = mantid.gen_func_obj(func_name)
     if fit_function == None: fit_function = func_obj
     else: fit_function += func_obj
 
@@ -235,6 +235,7 @@ def make_neutron_fit_function(func_name, fit_function):
 
 def find_neutron_params(param_set, params):
 
+    start = 0
     while True:
         comma = param_set.find(',', start)
         if comma == -1: break;
@@ -257,7 +258,8 @@ def get_neutron_initial_params_values(function_params):
 def neutron_func_definitions(functions_string):
 
     function_names = get_all_neutron_func_names(functions_string)
-    function_params = get_all_neutron_func_params(function_string)
+    function_params = get_all_neutron_func_params(functions_string)
+    fit_function = None
     for name in function_names:
         fit_function = make_neutron_fit_function(name, fit_function)
 

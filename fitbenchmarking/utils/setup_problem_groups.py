@@ -37,9 +37,31 @@ def setup(algorithm, data_dir):
     """
     if algorithm == 'mantid':
         return mantid(data_dir)
+    elif algorithm == 'scipy':
+        return scipydata(data_dir)
     else:
         raise NameError("Sorry, that application is not supported yet.")
 
+def scipydata(data_dir):
+    """
+    Set the problem groups for the mantid problem sets.
+
+    @param data_dir :: directory containing all the problem files
+                       considered when using the mantid fitting
+                       algorithm
+
+    @returns :: the paths to the problem files
+    """
+
+    problem_groups = {}
+    if 'NIST' in data_dir:
+        problem_groups['nist'] = get_nist_problem_files(data_dir)
+    elif 'Neutron' in data_dir:
+        problem_groups['neutron'] = get_neutron_problem_files(data_dir)
+    else:
+        raise NameError("Data directory not recognised!")
+
+    return problem_groups
 
 def mantid(data_dir):
     """

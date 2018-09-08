@@ -68,7 +68,7 @@ neutron_data_dir = os.path.join(benchmark_problems_dir, 'Neutron_data')
 # If the full path is not given and the results_dir name is valid
 #  ../fitbenchmarking/fitbenchmarking/ is taken as the path
 results_dir = None
-algorithm = 'mantid'
+algorithm = 'scipy'
 
 # Whether to use errors in the fitting process
 use_errors = True

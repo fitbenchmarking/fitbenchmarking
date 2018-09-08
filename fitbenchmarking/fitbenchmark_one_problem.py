@@ -32,6 +32,7 @@ import mantid.simpleapi as msapi
 from fitting import prerequisites as prereq
 from fitting import misc
 from fitting import mantid
+from fitting import scipyfit
 from fitting.plotting import plots
 
 from utils.logging_setup import logger
