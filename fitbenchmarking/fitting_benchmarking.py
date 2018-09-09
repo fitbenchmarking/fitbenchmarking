@@ -27,27 +27,32 @@ and for a certain fitting algorithm.
 
 from __future__ import (absolute_import, division, print_function)
 
+import os, json
+
 from utils.logging_setup import logger
 from parsing import parse
 from utils import create_dirs, setup_problem_groups
 from fitbenchmark_one_problem import fitbm_one_problem
 
 
-def do_fitting_benchmark(algorithm, data_dir, minimizers=None, use_errors=True,
-                         results_dir=None):
+def do_fitting_benchmark(algorithm, data_dir, minimizers_group=None,
+                         use_errors=True, results_dir=None):
     """
     High level function that does the fitting benchmarking for a
     specified group of problems.
 
     @param data_dir :: directory that holds the problem group data
-    @param minimizers :: array of minimizers used in fitting
+    @param minimizers_group :: array of minimizers used in fitting
     @param use_errors :: whether to use errors on the data or not
     @param results_dir :: directory in which to put the results
 
     @returns :: array of fitting results for the problem group and
                 the path to the results directory
     """
-
+    current_path = os.path.dirname(os.path.realpath(__file__))
+    minimizers_dir = os.path.join(current_path, "fitting")
+    all_minimizers = json.load(open(minimizers_dir+ os.sep + "minimizers.json"))
+    minimizers = all_minimizers[minimizers_group]
     results_dir = create_dirs.results(results_dir)
     problem_groups = setup_problem_groups.setup(algorithm, data_dir)
 

@@ -4,5 +4,6 @@
                      "Damped GaussNewton",
                      "Levenberg-Marquardt", "Levenberg-MarquardtMD",
                      "Simplex","SteepestDescent",
-                     "Trust Region"]
+                     "Trust Region"],
+    "scipy" : ["lm", "trf", "dogbox"]
 }
