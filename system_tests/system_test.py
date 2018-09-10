@@ -78,7 +78,6 @@ class SystemTest(unittest.TestCase):
 
         with open(neutron_path) as file:
             neutron = file.read()
-
         return neutron
 
     def get_results_paths_nist(self):
@@ -103,13 +102,14 @@ class SystemTest(unittest.TestCase):
 
         nist_low_path, nist_average_path, nist_high_path = \
         self.get_results_paths_nist()
-
+        
         with open(nist_low_path) as file:
             nist_low = file.read()
         with open(nist_average_path) as file:
             nist_average = file.read()
         with open(nist_high_path) as file:
             nist_high = file.read()
+
 
         return nist_low, nist_average, nist_high
 
@@ -125,7 +125,7 @@ class SystemTest(unittest.TestCase):
     def read_results_neutron(self):
 
         neutron_path = self.get_results_paths_neutron()
-
+        
         with open(neutron_path) as file:
             neutron = file.read()
 
