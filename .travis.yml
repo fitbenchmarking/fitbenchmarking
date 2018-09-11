@@ -13,12 +13,15 @@ stages:
     if: type = cron
 
 before_install:
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O
+    miniconda.sh
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
   - conda update --yes conda
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib h5py yaml ipython
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib
+    h5py yaml ipython
 install:
+  - pip install -r requirements.txt
   - python setup.py install
   - python setup.py externals
 
@@ -28,23 +31,24 @@ jobs:
       before_script: mantidpython -m mantid.simpleapi || true
       script:
         # ======= Fitting Tests =============== #
-        - mantidpython fitbenchmarking/fitting/tests/fit_algorithms_tests.py
-        - mantidpython fitbenchmarking/fitting/tests/mantid_utils_tests.py
-        # ======= Parsing Tests =============== #
-        - python fitbenchmarking/parsing/tests/fetch_data_tests.py
-        - python fitbenchmarking/parsing/tests/parse_neutron_tests.py
-        - python fitbenchmarking/parsing/tests/parse_nist_tests.py
-        # ======= Result Processing Tests =============== #
-        - python fitbenchmarking/result_processing/tests/fitdetails_tbls_tests.py
-        - python fitbenchmarking/result_processing/tests/misc_tests.py
-        - python fitbenchmarking/result_processing/tests/numpy_restables_tests.py
-        - python fitbenchmarking/result_processing/tests/rst_table_tests.py
-        # ======= Utils Tests =============== #
-        - python fitbenchmarking/utils/tests/fit_misc_tests.py
 
+        - pytest fitbenchmarking/fitting/tests/ --cov=fitbenchmarking/fitting/
+          --cov-report term-missing
+        # ======= Parsing Tests =============== #
+        - pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
+          --cov-report term-missing --cov-append
+        # ======= Result Processing Tests =============== #
+        - pytest fitbenchmarking/result_processing/tests/
+          --cov=fitbenchmarking/result_processing --cov-report term-missing
+          --cov-append
+        # ======= Utils Tests =============== #
+        - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
+          --cov-report term-missing --cov-append
+      after_success:
+        - coveralls
     - stage: SysTests
       before_script: mantidpython -m mantid.simpleapi || true
       script:
         # ======= System Test =============== #
-        - mantidpython system_tests/generate_current_results.py
-        - mantidpython system_tests/system_test.py
+        - mantidpython systests/generate_current_results.py
+        - mantidpython systests/tbl_comparison.py

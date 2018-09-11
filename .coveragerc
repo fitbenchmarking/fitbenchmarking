@@ -1,0 +1,9 @@
+[run]
+omit =
+    /fitbenchmarking/utils/test_problem.py
+    /fitbenchmarking/utils/test_result.py
+
+[report]
+omit =
+    *__init__*
+    *test_*
