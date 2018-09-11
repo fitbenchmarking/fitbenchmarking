@@ -35,8 +35,8 @@ from utils import create_dirs, setup_problem_groups
 from fitbenchmark_one_problem import fitbm_one_problem
 
 
-def do_fitting_benchmark(algorithm, data_dir, minimizers_group=None,
-                         use_errors=True, results_dir=None):
+def do_fitting_benchmark(algorithm, data_dir, use_errors=True,
+                         results_dir=None):
     """
     High level function that does the fitting benchmarking for a
     specified group of problems.
@@ -52,7 +52,7 @@ def do_fitting_benchmark(algorithm, data_dir, minimizers_group=None,
     current_path = os.path.dirname(os.path.realpath(__file__))
     minimizers_dir = os.path.join(current_path, "fitting")
     all_minimizers = json.load(open(minimizers_dir+ os.sep + "minimizers.json"))
-    minimizers = all_minimizers[minimizers_group]
+    minimizers = all_minimizers[algorithm]
     results_dir = create_dirs.results(results_dir)
     problem_groups = setup_problem_groups.setup(algorithm, data_dir)
 

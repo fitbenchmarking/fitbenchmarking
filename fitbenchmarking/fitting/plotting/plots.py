@@ -183,6 +183,8 @@ def get_start_guess_data(algorithm, data_struct, function, problem):
 
     if algorithm == 'mantid':
         return get_mantid_starting_guess_data(data_struct, function, problem)
+    elif algorithm == 'scipy':
+        return [0,0,0], [0,0,0]
     else:
         raise NameError("Sorry, that algorithm is not supported.")
 

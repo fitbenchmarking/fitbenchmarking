@@ -25,6 +25,7 @@ General utility functions for calculating some attributes of the fit.
 from __future__ import (absolute_import, division, print_function)
 from fitting import mantid
 from fitting import scipyfit
+import numpy as np
 
 
 def prepare_algorithm_prerequisites(algorithm, problem, use_errors):
@@ -61,5 +62,8 @@ def prepare_scipy(problem, use_errors):
 
     data, cost_function = scipyfit.prepare_data(problem, use_errors)
     function_definitions = scipyfit.function_definitions(problem)
+    if problem.start_x == None and problem.end_x == None:
+        problem.start_x = - np.inf
+        problem.end_x = np.inf
     return data, cost_function, function_definitions
 

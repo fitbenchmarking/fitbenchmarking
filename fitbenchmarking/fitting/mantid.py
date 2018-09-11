@@ -304,8 +304,17 @@ def convert_back(wks_created, problem, use_errors):
     if use_errors:
         problem.data_e = np.copy(tmp.readE(0))
 
+
 def gen_func_obj(function_name):
 
     exec "function_object = msapi." + function_name + "()"
+    return function_object
+
+
+def set_ties(function_object, ties):
+
+    print(function_object)
+    for one_tie in ties:
+        exec "function_object.tie(" + one_tie + ")"
 
     return function_object
