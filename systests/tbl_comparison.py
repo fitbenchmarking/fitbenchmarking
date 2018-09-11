@@ -107,7 +107,7 @@ class SystemTest(unittest.TestCase):
         with open(nist_low_path) as file:
             nist_low = file.read()
         with open(nist_average_path) as file:
-            nist_average = f.read()
+            nist_average = file.read()
         with open(nist_high_path) as file:
             nist_high = file.read()
 
