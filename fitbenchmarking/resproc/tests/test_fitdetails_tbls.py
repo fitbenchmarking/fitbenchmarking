@@ -10,9 +10,9 @@ parent_dir = os.path.dirname(os.path.normpath(test_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
-from result_processing.fitdetails_tbls import parse_nist_function_def
-from result_processing.fitdetails_tbls import parse_neutron_function_def
-from result_processing.fitdetails_tbls import fit_details_table_hdims
+from resproc.fitdetails_tbls import parse_nist_function_def
+from resproc.fitdetails_tbls import parse_neutron_function_def
+from resproc.fitdetails_tbls import fit_details_table_hdims
 
 
 class FitDetailsTblsTests(unittest.TestCase):

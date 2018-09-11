@@ -29,10 +29,9 @@ import mantid.simpleapi as msapi
 
 
 from utils.logging_setup import logger
-from result_processing import numpy_restables
-from result_processing import rst_table
-from result_processing import visual_pages
-from result_processing import misc
+from resproc import numpy_restables
+from resproc import rst_table
+from resproc import misc
 
 # Some naming conventions for the output files
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -41,13 +40,13 @@ FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
 
-def save_results_tables(minimizers, results_per_test, group_name,
-                        use_errors, color_scale=None, results_dir=None):
+def save_results_tables(minimizers, results_per_test, group_name, use_errors,
+                        color_scale=None, results_dir=None):
     """
     Saves the results of the fitting to html/rst tables.
 
     @param minimizers :: array with minimizer names
-    @param results_per_test :: results object
+    @param results_per_test :: results nested array of objects
     @param group_name :: name of the problem group
     @param use_errors :: bool whether to use errors or not
     @param color_scale :: color the html table
@@ -57,8 +56,35 @@ def save_results_tables(minimizers, results_per_test, group_name,
     """
 
     tables_dir = misc.make_restables_dir(results_dir, group_name)
-    linked_problems = create_linked_probs(results_per_test, group_name,
-                                          results_dir)
+    linked_problems = \
+    misc.create_linked_probs(results_per_test, group_name, results_dir)
+
+    norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = \
+    generate_tables(results_per_test, minimizers)
+
+    acc_tbl = create_acc_tbl(minimizers, linked_problems, norm_acc_rankings,
+                             use_errors, color_scale)
+    runtime_tbl = create_runtime_tbl(minimizers, linked_problems, norm_runtimes,
+                                     use_errors, color_scale)
+
+    save_tables(tables_dir, acc_tbl, use_errors, group_name,
+                FILENAME_SUFFIX_ACCURACY)
+    save_tables(tables_dir, runtime_tbl, use_errors, group_name,
+                FILENAME_SUFFIX_RUNTIME)
+
+    # Shut down logging at end of run
+    logging.shutdown()
+
+
+def generate_tables(results_per_test, minimizers):
+    """
+    Generates accuracy and runtime normalised tables and summary tables.
+
+    @param results_per_test :: results nested array of objects
+    @param minimizers :: array with minimizer names
+
+    @returns :: normalised and summary tables of the results as np arrays
+    """
 
     accuracy_tbl, runtime_tbl = \
     numpy_restables.create_accuracy_runtime_tbls(results_per_test, minimizers)
@@ -67,6 +93,14 @@ def save_results_tables(minimizers, results_per_test, group_name,
     sum_cells_acc, sum_cells_runtime = \
     numpy_restables.create_summary_tbls(norm_acc_rankings, norm_runtimes)
 
+    return norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime
+
+
+def create_acc_tbl(minimizers, linked_problems, norm_acc_rankings, use_errors,
+                   color_scale):
+    """
+    Creates an accuracy table using the given parameters.
+    """
     # Save accuracy table for this group of fit problems
     tbl_acc_indiv = rst_table.create(minimizers, linked_problems,
                                      norm_acc_rankings,
@@ -74,9 +108,15 @@ def save_results_tables(minimizers, results_per_test, group_name,
                                      comparison_dim='',
                                      using_errors=use_errors,
                                      color_scale=color_scale)
-    save_tables(tables_dir, tbl_acc_indiv, use_errors, group_name,
-                FILENAME_SUFFIX_ACCURACY)
 
+    return tbl_acc_indiv
+
+
+def create_runtime_tbl(minimizers, linked_problems, norm_runtimes, use_errors,
+                       color_scale):
+    """
+    Creates a runtime table using the given paramters.
+    """
     # Save runtime table for this group of fit problems
     tbl_runtime_indiv = rst_table.create(minimizers, linked_problems,
                                          norm_runtimes,
@@ -85,42 +125,7 @@ def save_results_tables(minimizers, results_per_test, group_name,
                                          using_errors=use_errors,
                                          color_scale=color_scale)
 
-    save_tables(tables_dir, tbl_runtime_indiv, use_errors, group_name,
-                FILENAME_SUFFIX_RUNTIME)
-
-    logging.shutdown()
-
-
-def create_linked_probs(results_per_test, group_name, results_dir):
-    """
-    Creates the problem names with links to the visual display pages
-    in rst.
-
-    @param results_per_test :: results object
-    @param group_name :: name of the problem group
-    @param results_dir :: directory in which the results are saved
-
-    @returns :: array of the problem names with the links in rst
-    """
-
-    # Count keeps track if it is the same problem but different starting point
-    prev_name = ''
-    count = 1
-
-    linked_problems = []
-    for test_idx, prob_results in enumerate(results_per_test):
-        name = results_per_test[test_idx][0].problem.name
-        if name == prev_name:
-            count += 1
-        else:
-            count = 1
-        prev_name = name
-        name_index = name + ' ' + str(count)
-        name = '`' + name_index + ' ' + \
-               visual_pages.create(prob_results, group_name, results_dir, count)
-        linked_problems.append(name)
-
-    return linked_problems
+    return tbl_runtime_indiv
 
 
 def save_tables(tables_dir, table_data, use_errors, group_name, metric):

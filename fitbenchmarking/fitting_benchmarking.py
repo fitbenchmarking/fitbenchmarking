@@ -1,4 +1,9 @@
 
+"""
+Main module of the tool, this holds the master function that calls
+a bunch of lower level functions to fit and benchmark a set of problems
+and for a certain fitting algorithm.
+"""
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
 #
@@ -22,14 +27,13 @@
 
 from __future__ import (absolute_import, division, print_function)
 
-from parsing import parse_nist, parse_neutron
 from utils.logging_setup import logger
+from parsing import parse
 from utils import create_dirs, setup_problem_groups
 from fitbenchmark_one_problem import fitbm_one_problem
 
 
-
-def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
+def do_fitting_benchmark(algorithm, data_dir, minimizers=None, use_errors=True,
                          results_dir=None):
     """
     High level function that does the fitting benchmarking for a
@@ -45,27 +49,27 @@ def do_fitting_benchmark(data_dir, minimizers=None, use_errors=True,
     """
 
     results_dir = create_dirs.results(results_dir)
-    problem_groups = setup_problem_groups.mantid(data_dir)
+    problem_groups = setup_problem_groups.setup(algorithm, data_dir)
 
     prob_results = None
     for group_name in problem_groups:
         group_results_dir = create_dirs.group_results(results_dir, group_name)
         prob_results = \
-        [do_fitting_benchmark_group(group_name, group_results_dir, problem_bl,
-                                    minimizers, use_errors=use_errors)
-         for problem_bl in problem_groups[group_name]]
+        [do_fitting_benchmark_group(algorithm, minimizers, group_name, block,
+                                    use_errors, group_results_dir)
+         for block in problem_groups[group_name]]
 
     return prob_results, results_dir
 
 
-def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
-                               minimizers, use_errors=True):
+def do_fitting_benchmark_group(algorithm, minimizers, group_name, problem_block,
+                               use_errors, results_dir):
     """
     Fit benchmark a specific group of problems.
 
     @param group_name :: name of the group of problems
-    @param group_results_dir :: result directory for the problem group
-    @param problem_files :: array of paths to problem files in the group
+    @param results_dir :: result directory for the problem group
+    @param problem_block :: array of paths to problem files in the group
     @param minimizers :: array of minimizers used in fitting
     @param use_errors :: whether to use errors or not
 
@@ -73,36 +77,11 @@ def do_fitting_benchmark_group(group_name, group_results_dir, problem_files,
     """
 
     results_per_problem = []
-    for prob_file in problem_files:
-        prob = parse_problem_file(group_name, prob_file)
+    for prob_file in problem_block:
+        problem = parse.parse_problem_file(group_name, prob_file)
         results_prob = \
-        fitbm_one_problem(prob, minimizers, use_errors, group_results_dir)
+        fitbm_one_problem(algorithm, problem, minimizers, use_errors,
+                          results_dir)
         results_per_problem.extend(results_prob)
 
     return results_per_problem
-
-
-def parse_problem_file(group_name, prob_file):
-    """
-    Helper function that does the parsing of a specified problem file.
-    This method needs group_name to inform how the prob_file should be
-    passed.
-
-    @param group_name :: name of the group of problems
-    @param prob_file :: path to the problem file
-
-    @returns :: problem object with fitting information
-    """
-
-    if group_name in ['nist']:
-        prob = parse_nist.load_file(prob_file)
-    elif group_name in ['neutron']:
-        prob = parse_neutron.load_file(prob_file)
-    else:
-        raise NameError("Could not find group name! Please check if it was"
-                        "given correctly...")
-
-    logger.info("* Testing fitting of problem {0}".format(prob.name))
-
-    return prob
-

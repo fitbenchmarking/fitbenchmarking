@@ -1,5 +1,5 @@
 """
-General utility functions for calculating some attributes of the fit.
+Parse the problem file depending on the type of problem.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -22,20 +22,32 @@ General utility functions for calculating some attributes of the fit.
 # <https://github.com/mantidproject/fitbenchmarking>.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 
-import numpy as np
+from __future__ import (absolute_import, division, print_function)
+
+from parsing import parse_nist, parse_neutron
+from utils.logging_setup import logger
 
 
-def compute_chisq(differences):
+def parse_problem_file(group_name, prob_file):
     """
-    Simple function that calculates the sum of the differences squared
-    between the data and the fit.
+    Helper function that does the parsing of a specified problem file.
+    This method needs group_name to inform how the prob_file should be
+    passed.
 
-    @param differences :: differences between the actual data and the
-                          fit points.
+    @param group_name :: name of the group of problems
+    @param prob_file :: path to the problem file
 
-    @returns :: the sum of the square of each element in differences
+    @returns :: problem object with fitting information
     """
-    chi_sq = np.sum(np.square(differences))
 
-    return chi_sq
+    if group_name in ['nist']:
+        prob = parse_nist.load_file(prob_file)
+    elif group_name in ['neutron']:
+        prob = parse_neutron.load_file(prob_file)
+    else:
+        raise NameError("Could not find group name! Please check if it was"
+                        "given correctly...")
 
+    logger.info("* Testing fitting of problem {0}".format(prob.name))
+
+    return prob

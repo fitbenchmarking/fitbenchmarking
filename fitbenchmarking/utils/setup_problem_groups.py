@@ -27,6 +27,20 @@ from __future__ import (absolute_import, division, print_function)
 from parsing.fetch_data import *
 
 
+def setup(algorithm, data_dir):
+    """
+    Sets up the problem groups depending on the algorithms inputted by the
+    user.
+
+    @param algorithms :: algorithms given by user, e.g. mantid
+    @param data_dir :: directory holding the problem data used to test
+    """
+    if algorithm == 'mantid':
+        return mantid(data_dir)
+    else:
+        raise NameError("Sorry, that application is not supported yet.")
+
+
 def mantid(data_dir):
     """
     Set the problem groups for the mantid problem sets.

@@ -11,7 +11,7 @@ parent_dir = os.path.dirname(os.path.normpath(test_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
-from utils.fit_misc import compute_chisq
+from fitting.misc import compute_chisq
 
 
 class FitMiscTests(unittest.TestCase):
