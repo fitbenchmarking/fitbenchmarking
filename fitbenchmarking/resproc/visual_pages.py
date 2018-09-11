@@ -23,6 +23,7 @@ Set up and build the visual display pages for various types of problems.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 from __future__ import (absolute_import, division, print_function)
 
+import numpy as np
 import os
 import re
 from docutils.core import publish_string
@@ -51,7 +52,9 @@ def create(prob_results, group_name, results_dir, count):
 
     # Get the best result for a group
     best_result = min((result for result in prob_results),
-                       key=lambda result: result.chi_sq)
+                       key=lambda result: result.chi_sq
+                       if not result.chi_sq is np.nan else np.inf)
+
     problem_name = process_problem_name(best_result.problem.name)
     support_pages_dir, file_path, see_also_link = \
     setup_page_misc(group_name, problem_name, best_result, results_dir, count)
@@ -143,7 +146,7 @@ def setup_detail_page_tbls(initial_fdef, final_fdef):
     if not final_fdef is None:
         final_details_tbl = fitdetails_tbls.create(final_fdef)
     else:
-        final_details_tbl = "None - fit failed"
+        final_details_tbl = "None - fit failed\n\n"
 
     return initial_details_tbl, final_details_tbl
 

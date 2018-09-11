@@ -51,7 +51,6 @@ def make_plots(algorithm, problem, data_struct, function, best_fit,
     """
 
     figures_dir = setup_dirs(group_results_dir)
-    previous_name, count = problem_count(problem, previous_name, count)
 
     raw_data = get_data_points(problem)
     make_data_plot(problem.name, raw_data, count, figures_dir)
@@ -59,7 +58,7 @@ def make_plots(algorithm, problem, data_struct, function, best_fit,
     make_starting_guess_plot(algorithm, raw_data, function, data_struct,
                              problem, count, figures_dir)
 
-    return previous_name, count
+    return previous_name
 
 
 def get_data_points(problem):
@@ -212,28 +211,6 @@ def get_mantid_starting_guess_data(wks_created, function, problem):
     yData = tmp.readY(1)
 
     return xData, yData
-
-def problem_count(problem, previous_name, count):
-    """
-    Helper function that counts how many times the name of the problem
-    comes up consecutively.
-
-    @param problem :: object holding the problem information
-    @param previous_name :: name of the previous problem
-    @param count :: number of times same name was passed through
-
-    @returns :: the new/same previous name (str) and the number of
-                times it has seen that name in a row (int).
-    """
-
-    if problem.name == previous_name:
-        count += 1
-    else:
-        count = 1
-        previous_name = problem.name
-
-    return previous_name, count
-
 
 def setup_dirs(group_results_dir):
     """

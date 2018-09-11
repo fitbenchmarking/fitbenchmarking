@@ -185,8 +185,9 @@ def wks_cost_function(problem, use_errors=True):
     """
     data_x = problem.data_x
     data_y = problem.data_y
+    data_e = setup_errors(problem)
+
     if use_errors:
-        data_e = setup_errors(problem)
         wks_created = msapi.CreateWorkspace(DataX=data_x, DataY=data_y,
                                             DataE=data_e)
         convert_back(wks_created, problem, use_errors)
@@ -280,29 +281,41 @@ def setup_errors(problem):
     @returns :: array of errors of particular problem
     """
 
-    data_e = None
     if problem.data_e is None:
         # Fake errors
-        data_e = np.sqrt(abs(problem.data_y))
+        return np.sqrt(abs(problem.data_y))
     else:
         # True errors
-        data_e = problem.data_e
-
-    return data_e
+        return problem.data_e
 
 
-def convert_back(wks_created, problem, use_errors):
+def convert_back(wks_used, problem, use_errors):
     """
     Convert back so data is of equal lengths.
 
-    @param wks_created :: mantid workspace that hold the data
+    @param wks_used :: mantid workspace that hold the data
     @param problem :: problem object holding the problem data
     """
-    tmp = msapi.ConvertToPointData(wks_created)
+    tmp = msapi.ConvertToPointData(wks_used)
     problem.data_x = np.copy(tmp.readX(0))
     problem.data_y = np.copy(tmp.readY(0))
-    if use_errors:
-        problem.data_e = np.copy(tmp.readE(0))
+    if use_errors: problem.data_e = np.copy(tmp.readE(0))
+
+
+def store_main_problem_data(fname, problem):
+    """
+    Stores the main problem data into the relevant attributes of the
+    problem object.
+
+    @param fname :: path to the neutron problem definition file
+    @param problem :: object holding the problem information
+    """
+
+    wks_imported = msapi.Load(Filename=fname)
+    problem.data_x = wks_imported.readX(0)
+    problem.data_y = wks_imported.readY(0)
+    problem.data_e = wks_imported.readE(0)
+    problem.ref_residual_sum_sq = 0
 
 
 def gen_func_obj(function_name):

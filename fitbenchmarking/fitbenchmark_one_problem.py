@@ -64,12 +64,13 @@ def fitbm_one_problem(algorithm, problem, minimizers, use_errors=True,
     prereq.prepare_algorithm_prerequisites(algorithm, problem, use_errors)
 
     for function in function_definitions:
+        if 'GEM' in problem.name and algorithm == 'scipy': break;
         results_problem, best_fit = \
         fit_one_function_def(algorithm, problem, data_struct, function,
                              minimizers, cost_function)
-
+        count += 1
         if not best_fit is None:
-            previous_name, count = \
+            previous_name = \
             plots.make_plots(algorithm, problem, data_struct, function,
                              best_fit, previous_name, count, group_results_dir)
 

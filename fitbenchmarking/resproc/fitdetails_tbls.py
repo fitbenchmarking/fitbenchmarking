@@ -42,8 +42,13 @@ def create(functions_str):
         # Otherwise it is a neutron problem
         if 'UserFunction' in function:
             names, params = parse_nist_function_def(function)
-        else:
+        elif 'name=' in function:
             names, params = parse_neutron_function_def(function, names, params)
+        elif isinstance(function, list):
+            names, params = function
+        else:
+            raise TypeError("Sorry, your type of function is not supported")
+
 
     name_hdim, params_hdim = fit_details_table_hdims(names, params)
     header = generate_fit_det_header(name_hdim, params_hdim)

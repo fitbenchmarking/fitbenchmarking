@@ -27,10 +27,11 @@ from __future__ import (absolute_import, division, print_function)
 
 import os, re
 import numpy as np
-import mantid.simpleapi as msapi
 
 from utils import test_problem
+from fitting import mantid
 from utils.logging_setup import logger
+
 
 
 def load_file(fname):
@@ -47,7 +48,7 @@ def load_file(fname):
         entries = get_neutron_data_problem_entries(probf)
         problem = test_problem.FittingTestProblem()
         data_file = get_data_file(fname, entries['input_file'])
-        store_main_problem_data(data_file, problem)
+        mantid.store_main_problem_data(data_file, problem)
         store_misc_problem_data(problem, entries)
 
     return problem
@@ -97,22 +98,6 @@ def get_neutron_data_problem_entries(fname):
         entries[lhs.strip()] = eval(rhs.strip())
 
     return entries
-
-
-def store_main_problem_data(fname, problem):
-    """
-    Stores the main problem data into the relevant attributes of the
-    problem object.
-
-    @param fname :: path to the neutron problem definition file
-    @param problem :: object holding the problem information
-    """
-
-    wks_imported = msapi.Load(Filename=fname)
-    problem.data_x = wks_imported.readX(0)
-    problem.data_y = wks_imported.readY(0)
-    problem.data_e = wks_imported.readE(0)
-    problem.ref_residual_sum_sq = 0
 
 
 def store_misc_problem_data(problem, entries):

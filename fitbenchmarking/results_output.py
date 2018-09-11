@@ -152,21 +152,3 @@ def save_tables(tables_dir, table_data, use_errors, group_name, metric):
                                  use_errors=use_errors, group_name=group_name,
                                  metric_type=metric,
                                  file_extension=FILENAME_EXT_HTML)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
