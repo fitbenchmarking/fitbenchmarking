@@ -94,7 +94,7 @@ def fit(data, function, minimizer, cost_function, init_function_def):
     except(RuntimeError, ValueError) as err:
         logger.error("Warning, fit failed. Going on. Error: " + str(err))
 
-    fin_func_def = None
+    fin_def = None
     if not popt is None:
         fin_def = get_fin_function_def(init_function_def, func_callable, popt)
     status, fitted_y, runtime = \

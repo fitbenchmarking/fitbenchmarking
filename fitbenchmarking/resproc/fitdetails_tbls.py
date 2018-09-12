@@ -35,7 +35,6 @@ def create(functions_str):
     @returns :: rst table of the function string
     """
     functions = functions_str.split(';')
-    names, params = [], []
 
     for function in functions:
         names, params = generate_names_and_params(function)
@@ -53,6 +52,8 @@ def generate_names_and_params(function):
     If string contains UserFunction then it means it is a nist problem.
     If it contains name it is a neutron problem.
     """
+    names, params = [], []
+
     if 'UserFunction' in function:
         names, params = parse_nist_mantid_function_def(function)
     elif 'name=' in function:
