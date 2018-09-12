@@ -41,12 +41,7 @@ from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
 
-minimizers = ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
-              'Conjugate gradient (Polak-Ribiere imp.)',
-              'Damped GaussNewton',
-              'Levenberg-Marquardt', 'Levenberg-MarquardtMD',
-              'Simplex','SteepestDescent',
-              'Trust Region']
+algorithm = 'mantid'
 
 # Parameters of how the final tables are colored
 # e.g. lower that 1.1 -> light yellow, higher than 3 -> dark red
@@ -70,31 +65,29 @@ neutron_data_dir = os.path.join(benchmark_problems_dir, 'Neutron_data')
 #  ../fitbenchmarking/fitbenchmarking/ is taken as the path
 results_dir = None
 
-
 # Whether to use errors in the fitting process
 use_errors = True
 
 for run_data in ["neutron", "nist"]:
 
     if run_data == "neutron":
-        group_suffix_names = ['neutron_data']
+        group_suffix_names = ['neutron']
         group_names = ["Neutron data"]
         results_per_group, results_dir = \
-        fitBenchmarking(data_dir=neutron_data_dir, minimizers=minimizers,
+        fitBenchmarking(algorithm=algorithm, data_dir=neutron_data_dir,
                         use_errors=use_errors, results_dir=results_dir)
     elif run_data == "nist":
         group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
                        'NIST, "higher" difficulty']
         group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher']
         results_per_group, results_dir = \
-        fitBenchmarking(data_dir=nist_data_dir, minimizers=minimizers,
+        fitBenchmarking(algorithm=algorithm, data_dir=nist_data_dir,
                         use_errors=use_errors, results_dir=results_dir)
     else:
         raise RuntimeError("Invalid run_data, please check if the array"
                            "contains the correct names!")
 
     for idx, group_results in enumerate(results_per_group):
-        printTables(minimizers, group_results,
-                    group_name=group_suffix_names[idx],
-                    use_errors=use_errors, color_scale=color_scale,
-                    results_dir=results_dir)
+        printTables(algorithm, group_results,
+                    group_name=group_suffix_names[idx], use_errors=use_errors,
+                    color_scale=color_scale, results_dir=results_dir)

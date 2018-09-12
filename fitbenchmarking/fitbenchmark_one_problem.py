@@ -105,6 +105,3 @@ def fit_one_function_def(algorithm, problem, data_struct, function, minimizers,
                                   cost_function)
     else:
         raise NameError("Sorry, that algorithm is not supported.")
-
-
-

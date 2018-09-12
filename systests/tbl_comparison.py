@@ -78,7 +78,6 @@ class SystemTest(unittest.TestCase):
 
         with open(neutron_path) as file:
             neutron = file.read()
-
         return neutron
 
     def get_results_paths_nist(self):
@@ -111,6 +110,7 @@ class SystemTest(unittest.TestCase):
         with open(nist_high_path) as file:
             nist_high = file.read()
 
+
         return nist_low, nist_average, nist_high
 
     def get_results_paths_neutron(self):
@@ -118,7 +118,7 @@ class SystemTest(unittest.TestCase):
         results_dir = self.path_to_results()
         neutron_tables_dir = os.path.join(results_dir, "neutron", "tables")
         neutron_path = \
-        os.path.join(neutron_tables_dir, "neutron_data_acc_weighted_table.txt")
+        os.path.join(neutron_tables_dir, "neutron_acc_weighted_table.txt")
 
         return neutron_path
 
@@ -177,17 +177,17 @@ class SystemTest(unittest.TestCase):
         expected_results = self.nist_expected_results_np_tables()
         results = self.nist_results_np_tables()
 
-        np.testing.assert_array_almost_equal(expected_results[0], results[0], 2)
-        np.testing.assert_array_almost_equal(expected_results[1], results[1], 2)
-        np.testing.assert_array_almost_equal(expected_results[2], results[2], 2)
+        np.testing.assert_allclose(results[0], expected_results[0], 3)
+        np.testing.assert_allclose(results[1], expected_results[1], 3)
+        np.testing.assert_allclose(results[2], expected_results[2], 3)
 
     def test_neutron(self):
 
         expected_results = self.neutron_expected_results_np_tables()
         results = self.neutron_results_np_tables()
 
-        np.testing.assert_array_almost_equal(expected_results, results, 2)
+        np.testing.assert_allclose(expected_results, results, 1)
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)
