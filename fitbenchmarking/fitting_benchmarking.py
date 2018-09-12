@@ -40,8 +40,8 @@ def do_fitting_benchmark(algorithm, data_dir, use_errors=True,
     High level function that does the fitting benchmarking for a
     specified group of problems.
 
+    @param algorithm :: string defining the algorithm used
     @param data_dir :: directory that holds the problem group data
-    @param minimizers_group :: array of minimizers used in fitting
     @param use_errors :: whether to use errors on the data or not
     @param results_dir :: directory in which to put the results
 

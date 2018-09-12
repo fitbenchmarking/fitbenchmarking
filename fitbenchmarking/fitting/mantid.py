@@ -79,9 +79,9 @@ def fit(problem, wks_created, function, minimizer='Levenberg-Marquardt',
     @param cost_function :: the type of cost function used in fitting
 
     @returns :: the status, either success or failure (str), the fit
-                workspace (mantid wks_created), containing the fitted data,
-                the corresponding points of the fit and the difference
-                between them, the fitted parameters, their errors [arrays]
+                workspace (mantid wks_created), containing the
+                differences between the fit data and actual data,
+                the final function definition
                 and how much time it took for the fit to finish (float)
     """
 
@@ -319,14 +319,26 @@ def store_main_problem_data(fname, problem):
 
 
 def gen_func_obj(function_name):
+    """
+    Generates a mantid function object.
 
+    @param function_name :: the name of the function to be generated
+
+    @returns :: mantid function object that can be called in python
+    """
     exec "function_object = msapi." + function_name + "()"
     return function_object
 
 
 def set_ties(function_object, ties):
+    """
+    Sets the ties for a function/composite function object.
 
-    print(function_object)
+    @param function_object :: mantid function object
+    @param ties :: array of strings containing the ties
+
+    @returns :: mantid function object with ties
+    """
     for one_tie in ties:
         exec "function_object.tie(" + one_tie + ")"
 

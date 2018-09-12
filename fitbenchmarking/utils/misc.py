@@ -28,7 +28,12 @@ import os, json
 
 def get_minimizers(algorithm):
     """
-    Gets the a
+    Gets an array of minimizers to fitbenchmark from the json file depending
+    on which algorithm is used.
+
+    @param algorithm :: string defining the algorithm used
+
+    @returns :: an array of strings containing minimizer names
     """
     current_path = os.path.dirname(os.path.realpath(__file__))
     fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))

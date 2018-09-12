@@ -38,19 +38,7 @@ def create(functions_str):
     names, params = [], []
 
     for function in functions:
-        # If string contains UserFunction then it means it is a nist problem
-        # Otherwise it is a neutron problem
-        if 'UserFunction' in function:
-            names, params = parse_nist_mantid_function_def(function)
-        elif 'name=' in function:
-            names, params = parse_neutron_function_def(function, names, params)
-        elif " | " in function:
-            names, params = function.split('|')
-            names = [names]; params = [params]
-        else:
-            print(function)
-            raise TypeError("Sorry, your type of function is not supported")
-
+        names, params = generate_names_and_params(function)
 
     name_hdim, params_hdim = fit_details_table_hdims(names, params)
     header = generate_fit_det_header(name_hdim, params_hdim)
@@ -59,6 +47,23 @@ def create(functions_str):
 
     return tbl
 
+def generate_names_and_params(function):
+    """
+    Generates the function names and params.
+    If string contains UserFunction then it means it is a nist problem.
+    If it contains name it is a neutron problem.
+    """
+    if 'UserFunction' in function:
+        names, params = parse_nist_mantid_function_def(function)
+    elif 'name=' in function:
+        names, params = parse_neutron_function_def(function, names, params)
+    elif " | " in function:
+        # Exception for nist scipy problems
+        names, params = [function.split('|')[0]], [function.split('|')[1]]
+    else:
+        raise TypeError("Sorry, your type of function is not supported")
+
+    return names, params
 
 def parse_nist_mantid_function_def(function):
     """

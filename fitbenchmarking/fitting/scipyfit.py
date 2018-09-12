@@ -34,8 +34,21 @@ from utils.logging_setup import logger
 
 MAX_FLOAT = sys.float_info.max
 
-def benchmark(problem, data, function, minimizers, cost_function):
 
+def benchmark(problem, data, function, minimizers, cost_function):
+    """
+    Fit benchmark one problem, with one function definition and all
+    the selected minimizers, using the scipy fitting algorithms.
+
+    @param problem :: a problem object containing information used in fitting
+    @param data :: workspace holding the problem data
+    @param function :: the fitted function
+    @param minimizers :: array of minimizers used in fitting
+    @param cost_function :: the cost function used for fitting
+
+    @returns :: nested array of result objects, per minimizer
+                and data object for the best fit
+    """
     min_chi_sq, best_fit = MAX_FLOAT, None
     results_problem = []
 
@@ -54,7 +67,21 @@ def benchmark(problem, data, function, minimizers, cost_function):
     return results_problem, best_fit
 
 def fit(data, function, minimizer, cost_function, init_function_def):
+    """
+    Perform a fit for a single minimizer using the scipy fitting
+    algorithm.
 
+    @param data :: workspace holding the problem data
+    @param function :: the fitted function
+    @param minimizer :: the minimizer used in the fitting process
+    @param cost_function :: the type of cost function used in fitting
+    @param init_function_def :: string containing the initial function
+                                definition
+
+    @returns :: the status, either success or failure (str), the data
+                of the fit, the final function definition and the
+                runtime of the fitting algorithm
+    """
     popt, t_start, t_end = None, None, None
     func_callable = function[0]
     initial_params = function[1]
@@ -69,15 +96,29 @@ def fit(data, function, minimizer, cost_function, init_function_def):
 
     fin_func_def = None
     if not popt is None:
-        fin_func_def = get_fin_function_def(init_function_def, func_callable,
-                                            popt)
+        fin_def = get_fin_function_def(init_function_def, func_callable, popt)
     status, fitted_y, runtime = \
     parse_result(func_callable, popt, t_start, t_end, data[0])
 
-    return status, fitted_y, fin_func_def, runtime
+    return status, fitted_y, fin_def, runtime
 
 def chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer_name):
+    """
+    Calculates the chi squared and compares it to the minimum chi squared
+    found until now. If the current chi_squared is lower than the minimum,
+    the new values becomes the minimum and the data of the fit is stored
+    in the variable best_fit.
 
+    @param status :: the status of the fit, either success or failure
+    @param fitted_y :: the y-data of the fit
+    @param min_chi_sq :: the minimum chi_squared value
+    @param best_fit :: object where the best fit data is stored
+    @param minimizer_name :: name of the minimizer used in storing the
+                             best_fit data
+
+    @returns :: The chi-squared values, the minimum chi-squared found
+                until now and the best fit data object
+    """
     if status != 'failed':
         differences = fitted_y - data[1]
         chi_sq = misc.compute_chisq(differences)
@@ -90,7 +131,15 @@ def chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer_name):
     return chi_sq, min_chi_sq, best_fit
 
 def execute_fit(function, data, initial_params, minimizer, cost_function):
+    """
+    Helper function that executes the fit depending on the type
+    of cost_function the user wants.
 
+    @param initial_params :: array of initial parameters given
+                             to the variables defining the function
+
+    @returns :: array of final variables after the fit was performed
+    """
     popt, pcov = None, None
     if cost_function == 'least squares':
         popt, pcov = curve_fit(f=function.__call__,
@@ -103,7 +152,10 @@ def execute_fit(function, data, initial_params, minimizer, cost_function):
     return popt
 
 def parse_result(function, popt, t_start, t_end, data_x):
-
+    """
+    Helper function that parses the result and processes it into
+    a useful form. Returns the status, fitted y data and runtime of the fit.
+    """
     status = 'failed'
     fitted_y, runtime = None, np.nan
     if not popt is None:
@@ -114,21 +166,37 @@ def parse_result(function, popt, t_start, t_end, data_x):
     return status, fitted_y, runtime
 
 def get_fin_function_def(init_function_def, func_callable, popt):
+    """
+    Produces the final function definition.
 
+    @param init_function_def :: the initial function definition string
+    @param func_callable :: callable function object
+    @param popt :: array containing the values of the function variables
+                   after the fit was performed
+
+    @returns :: the final function definition string
+    """
     if not 'name=' in str(func_callable):
         popt = list(popt)
         params = init_function_def.split("|")[1]
         params = re.sub(r"[-+]?\d+\.\d+", lambda m, rep=iter(popt):
                         str(round(next(rep), 3)), params)
         fin_function_def = init_function_def.split("|")[0] + " | " + params
-        print(fin_function_def)
     else:
         fin_function_def = str(func_callable)
 
     return fin_function_def
 
 def get_init_function_def(function, mantid_definition):
+    """
+    Get the initial function definition string.
 
+    @param function :: array containing the function information
+    @param mantid_definition :: the string containing the function
+                                definition in mantid format
+
+    @returns :: the initial function defintion string
+    """
     if not 'name=' in str(function[0]):
         params = function[0].__code__.co_varnames[1:]
         param_string = ''
@@ -142,7 +210,9 @@ def get_init_function_def(function, mantid_definition):
     return init_function_def
 
 def get_fittedy(function, data_x, popt):
-
+    """
+    Gets the fitted y data corresponding to given x values.
+    """
     try:
         fitted_y = function.__call__(data_x)
     except:
@@ -152,7 +222,9 @@ def get_fittedy(function, data_x, popt):
 
 
 def prepare_data(problem, use_errors):
-
+    """
+    Prepares the data to be used in the fitting process.
+    """
     data_x = np.copy(problem.data_x)
     data_y = np.copy(problem.data_y)
     data_e = problem.data_e
@@ -168,7 +240,12 @@ def prepare_data(problem, use_errors):
     return data, cost_function
 
 def misc_preparations(problem, data_x, data_y, data_e):
-
+    """
+    Helper function that does some miscellaneous preparation of the data.
+    It calculates the errors if they are not presented in problem file
+    itself by assuming a Poisson distribution. Additionally, it applies
+    constraints to the data if such constraints are provided.
+    """
     if len(data_x) != len(data_y):
         data_x = data_x[:-1]
         problem.data_x = np.copy(data_x)
@@ -185,7 +262,10 @@ def misc_preparations(problem, data_x, data_y, data_e):
     return data_x, data_y, data_e
 
 def apply_constraints(start_x, end_x, data_x, data_y, data_e):
-
+    """
+    Applied constraints to the data if they are provided. Useful when
+    fitting only part of the available data.
+    """
     start_idx = (np.abs(data_x - start_x)).argmin()
     end_idx = (np.abs(data_x - end_x)).argmin()
     data_x = np.copy(data_x[start_idx:end_idx])
@@ -196,7 +276,10 @@ def apply_constraints(start_x, end_x, data_x, data_y, data_e):
 
 
 def function_definitions(problem):
-
+    """
+    Processing the function definitions into an appropriate format for
+    the algorithm to understand.
+    """
     if problem.type == 'nist':
         return nist_func_definitions(problem.equation, problem.starting_values)
     elif problem.type == 'neutron':
@@ -206,8 +289,18 @@ def function_definitions(problem):
 
 
 def nist_func_definitions(function, startvals):
+    """
+    Processing the nist function definitions into an appropriate format
+    for the scipy algorithm to use.
 
-    param_names, all_values = get_nist_formula_and_params(startvals)
+    @param function :: function string as defined in the problem file
+    @param startvals :: starting values for the function variables
+                        provided in the problem definition file
+
+    @returns :: array containing the fitting_function callable by scipy,
+                values of the parameters and the function string
+    """
+    param_names, all_values = get_nist_param_names_and_values(startvals)
     function = format_function_scipy(function)
     function_defs = []
     for values in all_values:
@@ -216,8 +309,10 @@ def nist_func_definitions(function, startvals):
 
     return function_defs
 
-def get_nist_formula_and_params(startvals):
-
+def get_nist_param_names_and_values(startvals):
+    """
+    Parses startvals and retrieves the nist param names and values.
+    """
     param_names = [row[0] for row in startvals]
     param_names = ", ".join(param for param in param_names)
     all_values = [row[1] for row in startvals]
@@ -226,6 +321,9 @@ def get_nist_formula_and_params(startvals):
     return param_names, all_values
 
 def format_function_scipy(function):
+    """
+    Formats the function string such that it is scipy-ready.
+    """
 
     function = function.replace("exp", "np.exp")
     function = function.replace("^", "**")
@@ -237,6 +335,16 @@ def format_function_scipy(function):
 
 
 def neutron_func_definitions(functions_string):
+    """
+    Processing the neutron function definition into an appropriate format
+    for the scipy algorithm to use.
+
+    @param function_string :: string defining the function in
+                              mantid format
+
+    @returns :: function definition array containing a mantid function
+                callable and the function parameter values respectively
+    """
 
     function_names = get_all_neutron_func_names(functions_string)
     function_params = get_all_neutron_func_params(functions_string)
@@ -250,6 +358,10 @@ def neutron_func_definitions(functions_string):
     return function_defs
 
 def get_all_neutron_func_names(functions_string):
+    """
+    Helper function that parses the function_string and retrieves
+    all the function names to be fitted.
+    """
 
     functions = functions_string.split(';')
     function_names = []
@@ -259,7 +371,10 @@ def get_all_neutron_func_names(functions_string):
     return function_names
 
 def get_all_neutron_func_params(functions_string):
-
+    """
+    Helper function that parses the function_string and retrieves all
+    the function parameters.
+    """
     functions = functions_string.split(';')
     function_params = []
     for function in functions:
@@ -268,7 +383,10 @@ def get_all_neutron_func_params(functions_string):
     return function_params
 
 def get_neutron_func_names(function, function_names):
-
+    """
+    Helper function that retrieves the function name of only
+    one function.
+    """
     first_comma = function.find(',')
     if first_comma != -1:
         function_names.append(function[5:first_comma])
@@ -278,7 +396,10 @@ def get_neutron_func_names(function, function_names):
     return function_names
 
 def get_neutron_func_params(function, function_params):
-
+    """
+    Helper function that retrieves the function parameters of only
+    one function.
+    """
     first_comma = function.find(',')
     if first_comma != -1:
         function_params.append(function[first_comma+1:])
@@ -290,7 +411,10 @@ def get_neutron_func_params(function, function_params):
     return function_params
 
 def get_neutron_initial_params_values(function_params):
-
+    """
+    Parses the function_params string and puts only the initial parameter
+    values into a numpy array to be used by scipy.
+    """
     params = []
     for param_set in function_params:
         get_neutron_params(param_set, params)
@@ -299,7 +423,9 @@ def get_neutron_initial_params_values(function_params):
     return params
 
 def make_neutron_fit_function(func_name, fit_function):
-
+    """
+    Create the neutron fit function object that is used by scipy.
+    """
     func_obj = mantid.gen_func_obj(func_name)
     if fit_function == None: fit_function = func_obj
     else: fit_function += func_obj
@@ -307,7 +433,10 @@ def make_neutron_fit_function(func_name, fit_function):
     return fit_function
 
 def get_neutron_params(param_set, params):
-
+    """
+    Get the neutron param values from the param_set string array which
+    may contain multiple parameter sets (for each function).
+    """
     start = 0
     while True:
         comma = param_set.find(',', start)

@@ -117,7 +117,6 @@ def create_runtime_tbl(minimizers, linked_problems, norm_runtimes, use_errors,
     """
     Creates a runtime table using the given paramters.
     """
-    # Save runtime table for this group of fit problems
     tbl_runtime_indiv = rst_table.create(minimizers, linked_problems,
                                          norm_runtimes,
                                          comparison_type='runtime',
