@@ -26,7 +26,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import logging
 import mantid.simpleapi as msapi
-import os, json
+import utils.misc
 
 from utils.logging_setup import logger
 from resproc import numpy_restables
@@ -40,7 +40,7 @@ FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
 
-def save_results_tables(minimizers_group, results_per_test, group_name,
+def save_results_tables(algorithm, results_per_test, group_name,
                         use_errors, color_scale=None, results_dir=None):
     """
     Saves the results of the fitting to html/rst tables.
@@ -54,10 +54,7 @@ def save_results_tables(minimizers_group, results_per_test, group_name,
 
     @returns :: html/rst tables with the fitting results
     """
-    current_path = os.path.dirname(os.path.realpath(__file__))
-    minimizers_dir = os.path.join(current_path, "fitting")
-    all_minimizers = json.load(open(minimizers_dir+ os.sep + "minimizers.json"))
-    minimizers = all_minimizers[minimizers_group]
+    minimizers = utils.misc.get_minimizers(algorithm)
     tables_dir = misc.make_restables_dir(results_dir, group_name)
     linked_problems = \
     misc.create_linked_probs(results_per_test, group_name, results_dir)

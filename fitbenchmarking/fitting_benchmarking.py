@@ -1,4 +1,3 @@
-
 """
 Main module of the tool, this holds the master function that calls
 a bunch of lower level functions to fit and benchmark a set of problems
@@ -31,7 +30,7 @@ import os, json
 
 from utils.logging_setup import logger
 from parsing import parse
-from utils import create_dirs, setup_problem_groups
+from utils import create_dirs, setup_problem_groups, misc
 from fitbenchmark_one_problem import fitbm_one_problem
 
 
@@ -49,10 +48,7 @@ def do_fitting_benchmark(algorithm, data_dir, use_errors=True,
     @returns :: array of fitting results for the problem group and
                 the path to the results directory
     """
-    current_path = os.path.dirname(os.path.realpath(__file__))
-    minimizers_dir = os.path.join(current_path, "fitting")
-    all_minimizers = json.load(open(minimizers_dir+ os.sep + "minimizers.json"))
-    minimizers = all_minimizers[algorithm]
+    minimizers = misc.get_minimizers(algorithm)
     results_dir = create_dirs.results(results_dir)
     problem_groups = setup_problem_groups.setup(algorithm, data_dir)
 

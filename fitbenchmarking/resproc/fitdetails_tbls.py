@@ -41,7 +41,7 @@ def create(functions_str):
         # If string contains UserFunction then it means it is a nist problem
         # Otherwise it is a neutron problem
         if 'UserFunction' in function:
-            names, params = parse_nist_function_def(function)
+            names, params = parse_nist_mantid_function_def(function)
         elif 'name=' in function:
             names, params = parse_neutron_function_def(function, names, params)
         elif " | " in function:
