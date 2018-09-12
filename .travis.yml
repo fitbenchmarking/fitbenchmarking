@@ -41,8 +41,8 @@ jobs:
           --cov=fitbenchmarking/resproc --cov-report term-missing
           --cov-append
         # ======= Utils Tests =============== #
-        #- pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
-        #  --cov-report term-missing --cov-append
+        - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
+          --cov-report term-missing --cov-append
       after_success:
         - coveralls
     - stage: SysTests
