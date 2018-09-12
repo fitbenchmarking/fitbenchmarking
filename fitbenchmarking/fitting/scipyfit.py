@@ -40,19 +40,20 @@ def benchmark(problem, data, function, minimizers, cost_function):
     results_problem = []
 
     for minimizer in minimizers:
+        init_function_def = get_init_function_def(function, problem.equation)
         status, fitted_y, fin_function_def, runtime = \
-        fit(data, function, minimizer, cost_function)
+        fit(data, function, minimizer, cost_function, init_function_def)
         chi_sq, min_chi_sq, best_fit = \
         chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer)
         individual_result = \
         misc.create_result_entry(problem, status, chi_sq, runtime, minimizer,
-                                 problem.equation, fin_function_def)
+                                 init_function_def, fin_function_def)
 
         results_problem.append(individual_result)
 
     return results_problem, best_fit
 
-def fit(data, function, minimizer, cost_function):
+def fit(data, function, minimizer, cost_function, init_function_def):
 
     popt, t_start, t_end = None, None, None
     func_callable = function[0]
@@ -66,56 +67,14 @@ def fit(data, function, minimizer, cost_function):
     except(RuntimeError, ValueError) as err:
         logger.error("Warning, fit failed. Going on. Error: " + str(err))
 
-    status, fitted_y, fin_function_def, runtime = \
+    fin_func_def = None
+    if not popt is None:
+        fin_func_def = get_fin_function_def(init_function_def, func_callable,
+                                            popt)
+    status, fitted_y, runtime = \
     parse_result(func_callable, popt, t_start, t_end, data[0])
 
-    return status, fitted_y, fin_function_def, runtime
-
-def execute_fit(function, data, initial_params, minimizer, cost_function):
-
-    popt, pcov = None, None
-
-    if cost_function == 'least squares':
-        popt, pcov = curve_fit(f=function.__call__,
-                               xdata=data[0], ydata=data[1], sigma=data[2],
-                               p0=initial_params, method=minimizer, maxfev=500)
-    elif cost_function == 'unweighted least squares':
-        popt, pcov = curve_fit(f=function.__call__,
-                               xdata=data[0], ydata=data[1],
-                               p0=initial_params, method=minimizer, maxfev=500)
-    return popt
-
-def parse_result(function, popt, t_start, t_end, data_x):
-
-    status = 'failed'
-    fin_function_def, fitted_y, runtime = None, None, np.nan
-    if not popt is None:
-        status = 'success'
-        fitted_y = get_fittedy(function, data_x, popt)
-        fin_function_def = get_fin_function_def(function, popt)
-        runtime = t_end - t_start
-
-    return status, fitted_y, fin_function_def, runtime
-
-def get_fin_function_def(function, popt):
-
-    if 'fitting_function' in str(function):
-        var_names = function.__code__.co_varnames
-        for idx in range(len(var_names)):
-            params = ", ".join(var_names[idx] + "= " + str(popt))
-        names = str(function.__call__)
-        function = names + " | " + params
-
-    return str(function)
-
-def get_fittedy(function, data_x, popt):
-
-    try:
-        fitted_y = function.__call__(data_x)
-    except:
-        fitted_y = function(data_x, *popt)
-
-    return fitted_y
+    return status, fitted_y, fin_func_def, runtime
 
 def chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer_name):
 
@@ -129,6 +88,68 @@ def chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer_name):
         chi_sq = np.nan
 
     return chi_sq, min_chi_sq, best_fit
+
+def execute_fit(function, data, initial_params, minimizer, cost_function):
+
+    popt, pcov = None, None
+    if cost_function == 'least squares':
+        popt, pcov = curve_fit(f=function.__call__,
+                               xdata=data[0], ydata=data[1], sigma=data[2],
+                               p0=initial_params, method=minimizer, maxfev=500)
+    elif cost_function == 'unweighted least squares':
+        popt, pcov = curve_fit(f=function.__call__,
+                               xdata=data[0], ydata=data[1],
+                               p0=initial_params, method=minimizer, maxfev=500)
+    return popt
+
+def parse_result(function, popt, t_start, t_end, data_x):
+
+    status = 'failed'
+    fitted_y, runtime = None, np.nan
+    if not popt is None:
+        status = 'success'
+        fitted_y = get_fittedy(function, data_x, popt)
+        runtime = t_end - t_start
+
+    return status, fitted_y, runtime
+
+def get_fin_function_def(init_function_def, func_callable, popt):
+
+    if not 'name=' in str(func_callable):
+        popt = list(popt)
+        params = init_function_def.split("|")[1]
+        params = re.sub(r"[-+]?\d+\.\d+", lambda m, rep=iter(popt):
+                        str(round(next(rep), 3)), params)
+        fin_function_def = init_function_def.split("|")[0] + " | " + params
+        print(fin_function_def)
+    else:
+        fin_function_def = str(func_callable)
+
+    return fin_function_def
+
+def get_init_function_def(function, mantid_definition):
+
+    if not 'name=' in str(function[0]):
+        params = function[0].__code__.co_varnames[1:]
+        param_string = ''
+        for idx in range(len(function[1])):
+            param_string += params[idx] + "= " + str(function[1][idx]) + ", "
+        param_string = param_string[:-2]
+        init_function_def = function[2] + " | " + param_string
+    else:
+        init_function_def = mantid_definition
+
+    return init_function_def
+
+def get_fittedy(function, data_x, popt):
+
+    try:
+        fitted_y = function.__call__(data_x)
+    except:
+        fitted_y = function(data_x, *popt)
+
+    return fitted_y
+
 
 def prepare_data(problem, use_errors):
 
@@ -173,6 +194,7 @@ def apply_constraints(start_x, end_x, data_x, data_y, data_e):
     data_e[data_e == 0] = 0.000001
     return data_x, data_y, data_e
 
+
 def function_definitions(problem):
 
     if problem.type == 'nist':
@@ -182,20 +204,26 @@ def function_definitions(problem):
     else:
         RuntimeError("Your desired algorithm is not supported yet!")
 
+
 def nist_func_definitions(function, startvals):
 
-    param_names = [row[0] for row in startvals]
-    param_names = ", ".join(param for param in param_names)
+    param_names, all_values = get_nist_formula_and_params(startvals)
     function = format_function_scipy(function)
-    all_values = [row[1] for row in startvals]
-    all_values = map(list, zip(*all_values))
-
     function_defs = []
     for values in all_values:
         exec "def fitting_function(x, " + param_names + "): return " + function
-        function_defs.append([fitting_function, values])
+        function_defs.append([fitting_function, values, function])
 
     return function_defs
+
+def get_nist_formula_and_params(startvals):
+
+    param_names = [row[0] for row in startvals]
+    param_names = ", ".join(param for param in param_names)
+    all_values = [row[1] for row in startvals]
+    all_values = map(list, zip(*all_values))
+
+    return param_names, all_values
 
 def format_function_scipy(function):
 
@@ -206,6 +234,7 @@ def format_function_scipy(function):
     function = function.replace("pi", "np.pi")
 
     return function
+
 
 def neutron_func_definitions(functions_string):
 
@@ -220,17 +249,14 @@ def neutron_func_definitions(functions_string):
 
     return function_defs
 
-def get_neutron_func_params(function, function_params):
+def get_all_neutron_func_names(functions_string):
 
-    first_comma = function.find(',')
-    if first_comma != -1:
-        function_params.append(function[first_comma+1:])
-    else:
-        function_params.append('')
+    functions = functions_string.split(';')
+    function_names = []
+    for function in functions:
+        function_names = get_neutron_func_names(function, function_names)
 
-    function_params[-1] = function_params[-1].replace(',', ', ')
-
-    return function_params
+    return function_names
 
 def get_all_neutron_func_params(functions_string):
 
@@ -251,14 +277,26 @@ def get_neutron_func_names(function, function_names):
 
     return function_names
 
-def get_all_neutron_func_names(functions_string):
+def get_neutron_func_params(function, function_params):
 
-    functions = functions_string.split(';')
-    function_names = []
-    for function in functions:
-        function_names = get_neutron_func_names(function, function_names)
+    first_comma = function.find(',')
+    if first_comma != -1:
+        function_params.append(function[first_comma+1:])
+    else:
+        function_params.append('')
 
-    return function_names
+    function_params[-1] = function_params[-1].replace(',', ', ')
+
+    return function_params
+
+def get_neutron_initial_params_values(function_params):
+
+    params = []
+    for param_set in function_params:
+        get_neutron_params(param_set, params)
+
+    params = np.array(params)
+    return params
 
 def make_neutron_fit_function(func_name, fit_function):
 
@@ -268,7 +306,7 @@ def make_neutron_fit_function(func_name, fit_function):
 
     return fit_function
 
-def find_neutron_params(param_set, params):
+def get_neutron_params(param_set, params):
 
     start = 0
     while True:
@@ -281,13 +319,4 @@ def find_neutron_params(param_set, params):
         if comma == -1: break;
         start = comma + 1
 
-    return params
-
-def get_neutron_initial_params_values(function_params):
-
-    params = []
-    for param_set in function_params:
-        find_neutron_params(param_set, params)
-
-    params = np.array(params)
     return params

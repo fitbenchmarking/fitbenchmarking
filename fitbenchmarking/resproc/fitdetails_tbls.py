@@ -44,9 +44,11 @@ def create(functions_str):
             names, params = parse_nist_function_def(function)
         elif 'name=' in function:
             names, params = parse_neutron_function_def(function, names, params)
-        elif isinstance(function, list):
-            names, params = function
+        elif " | " in function:
+            names, params = function.split('|')
+            names = [names]; params = [params]
         else:
+            print(function)
             raise TypeError("Sorry, your type of function is not supported")
 
 
@@ -58,7 +60,7 @@ def create(functions_str):
     return tbl
 
 
-def parse_nist_function_def(function):
+def parse_nist_mantid_function_def(function):
     """
     Helper function that parses the function definition of a NIST problem
     and returns the function name and parameters.
