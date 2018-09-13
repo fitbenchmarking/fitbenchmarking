@@ -22,7 +22,8 @@ class FitDetailsTblsTests(unittest.TestCase):
         function = ("name=UserFunction,Formula=b1*(1-exp(-b2*x)),"
                     "b1=500.0,b2=0.0001")
 
-        function_name, function_parameters = parse_nist_function_def(function)
+        function_name, function_parameters = \
+        parse_nist_mantid_function_def(function)
         function_name_expected = "b1*(1-exp(-b2*x))"
         function_parameters_expected = "b1=500.0, b2=0.0001"
 
