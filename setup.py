@@ -11,7 +11,7 @@ setup(name='FitBenchmarking',
       url='http://github.com/mantidproject/fitbenchmarking',
       license='GPL-3.0',
       packages=find_packages(),
-      install_requires=['docutils'],
+      install_requires=['docutils', 'scipy>=0.17'],
       zip_safe=False,
       cmdclass={
           'externals': InstallExternals,
