@@ -14,7 +14,8 @@ sys.path.insert(0, main_dir)
 
 class ScipyfitTests(unittest.TestCase):
 
-
+    def function():
+        pass
 
 
 if __name__ == "__main__":
