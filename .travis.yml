@@ -51,4 +51,6 @@ jobs:
         # ======= System Test =============== #
         - mantidpython systests/generate_current_results.py
         - ls systests/
+        - ls systests/results
+        - ls systests/neutron/tables
         - mantidpython systests/tbl_comparison.py
