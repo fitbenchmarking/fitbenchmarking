@@ -40,7 +40,7 @@ from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
 
-algorithm = 'scipy'
+algorithm = 'mantid'
 
 # Parameters of how the final tables are colored
 # e.g. lower that 1.1 -> light yellow, higher than 3 -> dark red
@@ -63,7 +63,6 @@ neutron_data_dir = os.path.join(benchmark_problems_dir, 'Neutron_data')
 # If the full path is not given and the results_dir name is valid
 #  ../fitbenchmarking/fitbenchmarking/ is taken as the path
 results_dir = None
-
 # Whether to use errors in the fitting process
 use_errors = True
 

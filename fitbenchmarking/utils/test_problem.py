@@ -27,6 +27,8 @@ class FittingTestProblem(object):
     """
     def __init__(self):
         self.name = None
+        # The type of problem, i.e. either neutron or nist etc.
+        self.type = None
         # If there is an online/documentation link describing this problem
         self.equation = None
         self.start_x = None

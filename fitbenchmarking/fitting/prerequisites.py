@@ -23,6 +23,7 @@ General utility functions for calculating some attributes of the fit.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 
 from __future__ import (absolute_import, division, print_function)
+
 from fitting import mantid
 from fitting import scipyfit
 import numpy as np

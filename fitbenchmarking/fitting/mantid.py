@@ -210,7 +210,6 @@ def function_definitions(problem):
     @returns :: a function definitions string with functions that
                 mantid understands
     """
-
     if problem.type == 'nist':
         # NIST data requires prior formatting
         nb_start_vals = len(problem.starting_values[0][1])
