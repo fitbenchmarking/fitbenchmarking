@@ -348,10 +348,11 @@ def neutron_func_definitions(functions_string):
 
     function_names = get_all_neutron_func_names(functions_string)
     function_params = get_all_neutron_func_params(functions_string)
-    params = get_neutron_initial_params_values(function_params)
+    params, ties = get_neutron_initial_params_values(function_params)
     fit_function = None
     for name in function_names:
         fit_function = make_neutron_fit_function(name, fit_function)
+    fit_function = mantid.set_ties(fit_function, ties)
 
     function_defs = [[fit_function, params]]
 
@@ -416,11 +417,13 @@ def get_neutron_initial_params_values(function_params):
     values into a numpy array to be used by scipy.
     """
     params = []
+    ties = []
     for param_set in function_params:
         get_neutron_params(param_set, params)
+        get_neutron_ties(param_set, ties)
 
     params = np.array(params)
-    return params
+    return params, ties
 
 def make_neutron_fit_function(func_name, fit_function):
     """
@@ -449,3 +452,22 @@ def get_neutron_params(param_set, params):
         start = comma + 1
 
     return params
+
+def get_neutron_ties(param_set, ties):
+    """
+    Gets the neutron problem tie values.
+    """
+    start = param_set.find("ties=") + 5
+    ties_per_function = []
+    while True:
+        if start == 4: break
+        comma = param_set.find(',', start+1)
+        if comma != -1: tie = param_set[start+1:comma]
+        else: tie = param_set[start+1:comma]
+        ties_per_function.append(tie.replace("=","': "))
+        if comma == -1: break;
+        start = comma + 1
+
+    ties.append(ties_per_function)
+
+    return ties

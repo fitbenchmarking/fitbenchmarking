@@ -40,7 +40,7 @@ from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
 
-algorithm = 'mantid'
+algorithm = 'scipy'
 
 # Parameters of how the final tables are colored
 # e.g. lower that 1.1 -> light yellow, higher than 3 -> dark red

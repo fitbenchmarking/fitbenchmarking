@@ -338,7 +338,8 @@ def set_ties(function_object, ties):
 
     @returns :: mantid function object with ties
     """
-    for one_tie in ties:
-        exec "function_object.tie(" + one_tie + ")"
+    for idx, ties_per_func in enumerate(ties):
+        for tie in ties_per_func:
+            exec "function_object.tie({'f" + str(idx) + "." + tie + "})"
 
     return function_object

@@ -64,6 +64,8 @@ def fitbm_one_problem(algorithm, problem, minimizers, use_errors=True,
     prereq.prepare_algorithm_prerequisites(algorithm, problem, use_errors)
 
     for function in function_definitions:
+        # Ad hoc exception for running the scipy script
+        # scipy does not currently support the GEM problem
         if 'GEM' in problem.name and algorithm == 'scipy': break;
         results_problem, best_fit = \
         fit_one_function_def(algorithm, problem, data_struct, function,
