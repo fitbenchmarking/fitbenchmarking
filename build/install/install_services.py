@@ -1,5 +1,5 @@
 """
-Python wraps to windows/linux install scripts for services
+Python wrappers to windows/linux install scripts for external dependencies
 """
 import logging
 import os
