@@ -15,7 +15,7 @@ FitBenchmarking is tool for comparing different minimizers/fitting software base
 5. Finally run `example_scripts/example_runScript.py`, located in the example_scripts folder. This example script fit benchmarks Mantid using all the available minimizers. The result tables can be found in `example_scripts/results`.
 
 ## What the tool does
-The tool creates a table/tables that shows a comparison between the different minimizers available in a fitting software (e.g. scipy), based on their accuracy and/or runtimes.
+The tool creates a table/tables that shows a comparison between the different minimizers available in a fitting software (e.g. scipy or mantid), based on their accuracy and/or runtimes.
 An example of a table is:
 
 ![Example Table](docs/example_table.png)
