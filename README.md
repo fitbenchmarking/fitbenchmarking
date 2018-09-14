@@ -13,3 +13,5 @@ You will need [Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg) for
 3. Once you are in the right directory, type `python setup.py install`.
 4. Install mantid, platform specific instructions [here](https://github.com/mantidproject/fitbenchmarking/wiki/Installing-Mantid).
 5. Finally run `example_runScript.py`, located in the example_scripts folder. This example script fit benchmarks Mantid using all the available minimizers.
+
+## What it does
