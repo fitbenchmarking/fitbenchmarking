@@ -1,5 +1,5 @@
 """
-Utility functions for setting up the problem groups.
+Utility functions for setting up groups of problem, .e.g. nist etc.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
