@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/mantidproject/fitbenchmarking.svg?branch=master)](https://travis-ci.com/mantidproject/fitbenchmarking) [![Coverage Status](https://coveralls.io/repos/github/mantidproject/fitbenchmarking/badge.svg?branch=112_addTestCoverageTracking)](https://coveralls.io/github/mantidproject/fitbenchmarking?branch=112_addTestCoverageTracking)
+[![Build Status](https://travis-ci.com/mantidproject/fitbenchmarking.svg?branch=master)](https://travis-ci.com/mantidproject/fitbenchmarking) [![Coverage Status](https://coveralls.io/repos/github/mantidproject/fitbenchmarking/badge.svg?branch=master)](https://coveralls.io/github/mantidproject/fitbenchmarking?branch=master)
 
 # FitBenchmarking
 FitBenchmarking is an open source tool for comparing different minimizers/fitting frameworks based on their accuracy and runtimes.
