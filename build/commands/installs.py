@@ -1,6 +1,6 @@
 """
 Installs all the optional external dependencies of the project giving
-the user a choice of what to install.
+the user a choice of what to install. See help for setup.py for user choices.
 """
 
 from __future__ import (absolute_import, division, print_function)
@@ -16,7 +16,7 @@ from build.install.install_services import install_service
 
 class InstallExternals(Command):
     """
-    A custom command to run Pylint on all Python source files.
+    Enables commands to install externals for fit benchmarking.
     """
 
     description = 'Install optional external dependencies of the project.\n' \
@@ -61,6 +61,7 @@ class InstallExternals(Command):
         BUILD_LOGGER.print_and_log("=== Installing external dependencies ===")
         services_to_install = self._get_valid_services_to_install()
 
+        # explanation for installing the below is in build.install.install_services 
         self._install_7zip(services_to_install)
         self._check_service_dictionary(services_to_install)
         self._install_services(services_to_install)

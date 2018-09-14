@@ -50,7 +50,7 @@ class ParseNeutronTests(unittest.TestCase):
         entries = {}
         entries['name'] = "ENGINX 193749 calibration, spectrum 651, peak 19"
         entries['input_file'] = "ENGINX193749_calibration_spec651.nxs"
-        entries['function'] = ("name=LinearBackground;"
+        entries['function'] = ("name=LinearBackground,A0=0,A1=0;"
                                "name=BackToBackExponential,"
                                "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
         entries['fit_parameters'] = {'StartX': 23919.5789114,

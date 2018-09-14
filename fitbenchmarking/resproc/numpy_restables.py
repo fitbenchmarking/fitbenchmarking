@@ -1,7 +1,7 @@
 """
 Functions that create numpy arrays of the accuracy and runtime obtained
 through fitting a set of problems by using various minimizers and a
-certain fitting algorithm.
+certain fitting software.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source

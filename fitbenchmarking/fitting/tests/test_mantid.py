@@ -48,6 +48,7 @@ class MantidTests(unittest.TestCase):
 
         prob = test_problem.FittingTestProblem()
         prob.name = 'Misra1a'
+        prob.type = 'nist'
         prob.equation = 'b1*(1-exp(-b2*x))'
         prob.starting_values = [['b1', [500.0,250.0]],
                                 ['b2', [0.0001,0.0005]]]
@@ -65,7 +66,8 @@ class MantidTests(unittest.TestCase):
 
         prob = test_problem.FittingTestProblem()
         prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
-        prob.equation = ("name=LinearBackground;"
+        prob.type = 'neutron'
+        prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                          "name=BackToBackExponential,"
                          "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
         prob.starting_values = None
@@ -78,7 +80,7 @@ class MantidTests(unittest.TestCase):
     def setup_problem_Misra1a_success(self):
         """
         Helper function.
-        Sets up the parameters needed to run fit_algorithms.mantid
+        Sets up the parameters needed to run fitting.mantid
         """
 
         prob = self.NIST_problem()
@@ -96,7 +98,7 @@ class MantidTests(unittest.TestCase):
     def setup_problem_Misra1a_fail(self):
         """
         Helper function.
-        Sets up the parameters needed to run fit_algorithms.mantid
+        Sets up the parameters needed to run fitting.mantid
         but fail due to incorrect minimizer name.
         """
 
@@ -116,7 +118,7 @@ class MantidTests(unittest.TestCase):
         """
         Helper function.
         Sets up the expected results after running
-        fit_algorithms.mantid with Misra1a.dat problem data.
+        fitting.mantid with Misra1a.dat problem data.
         """
 
         fit_status = 'success'
@@ -130,7 +132,7 @@ class MantidTests(unittest.TestCase):
         """
         Helper function.
         Sets up the expected failure results after running
-        fit_algorithms.mantid with Misra1a.dat problem data but
+        fitting.mantid with Misra1a.dat problem data but
         fail parameters.
         """
 
@@ -168,7 +170,7 @@ class MantidTests(unittest.TestCase):
         return wks_exp
 
 
-    def test_fitAlgorithms_mantid_return_success_for_NIST_Misra1a_prob_file(self):
+    def test_fitting_mantid_return_success_for_NIST_Misra1a_prob_file(self):
 
         prob, wks, function, minimizer, cost_function = \
         self.setup_problem_Misra1a_success()
@@ -244,7 +246,7 @@ class MantidTests(unittest.TestCase):
 
         function_defs = function_definitions(prob)
         function_defs_expected = \
-        [("name=LinearBackground;name=BackToBackExponential,"
+        [("name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,"
           "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")]
 
         self.assertListEqual(function_defs_expected, function_defs)

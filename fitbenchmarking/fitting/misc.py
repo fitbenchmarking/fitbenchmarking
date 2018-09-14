@@ -21,7 +21,7 @@ General utility functions for calculating some attributes of the fit.
 # File change history is stored at:
 # <https://github.com/mantidproject/fitbenchmarking>.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
-
+from __future__ import (absolute_import, division, print_function)
 import numpy as np
 import mantid
 from utils import test_result
@@ -72,24 +72,3 @@ def create_result_entry(problem, status, chi_sq, runtime, minimizer,
     result.fin_function_def = fin_function_def
 
     return result
-
-
-def prepare_algorithm_prerequisites(algorithm, problem, use_errors):
-    """
-    Prepare the required data structures and function definitions for each
-    algorithm.
-
-    @param algorithm :: algorithm used in fitting the problem, can be
-                        e.g. mantid, numpy etc.
-    @param problem :: a problem object containing information used in fitting
-    @param use_errors :: wether or not to use errors
-
-    @returns :: prerequisites, depending on the algorithm.
-    """
-
-    if algorithm == 'mantid':
-        wks_mtd, cost_function = mantid.wks_cost_function(problem, use_errors)
-        function_definitions = mantid.function_definitions(problem)
-        return wks_mtd, cost_function, function_definitions
-    else:
-        raise NameError("Sorry, the specified algorithm is not supported yet.")
