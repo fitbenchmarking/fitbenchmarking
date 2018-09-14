@@ -49,5 +49,6 @@ jobs:
       before_script: mantidpython -m mantid.simpleapi || true
       script:
         # ======= System Test =============== #
-        - mantidpython systests/generate_current_results.py
-        - mantidpython systests/tbl_comparison.py
+        - cd systests
+        - mantidpython generate_current_results.py
+        - mantidpython tbl_comparison.py
