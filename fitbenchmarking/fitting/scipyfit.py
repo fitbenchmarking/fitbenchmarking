@@ -1,5 +1,5 @@
 """
-Fittng and utility functions for the scipy fitting algorithms.
+Fittng and utility functions for the scipy fitting software.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -38,7 +38,7 @@ MAX_FLOAT = sys.float_info.max
 def benchmark(problem, data, function, minimizers, cost_function):
     """
     Fit benchmark one problem, with one function definition and all
-    the selected minimizers, using the scipy fitting algorithms.
+    the selected minimizers, using the scipy fitting software.
 
     @param problem :: a problem object containing information used in fitting
     @param data :: workspace holding the problem data
@@ -69,7 +69,7 @@ def benchmark(problem, data, function, minimizers, cost_function):
 def fit(data, function, minimizer, cost_function, init_function_def):
     """
     Perform a fit for a single minimizer using the scipy fitting
-    algorithm.
+    software
 
     @param data :: workspace holding the problem data
     @param function :: the fitted function
@@ -80,8 +80,7 @@ def fit(data, function, minimizer, cost_function, init_function_def):
 
     @returns :: the status, either success or failure (str), the data
                 of the fit, the final function definition and the
-                runtime of the fitting algorithm
-    """
+                runtime of the fitting software    """
     popt, t_start, t_end = None, None, None
     func_callable = function[0]
     initial_params = function[1]
@@ -278,20 +277,20 @@ def apply_constraints(start_x, end_x, data_x, data_y, data_e):
 def function_definitions(problem):
     """
     Processing the function definitions into an appropriate format for
-    the algorithm to understand.
+    the softwareto understand.
     """
     if problem.type == 'nist':
         return nist_func_definitions(problem.equation, problem.starting_values)
     elif problem.type == 'neutron':
         return neutron_func_definitions(problem.equation)
     else:
-        RuntimeError("Your desired algorithm is not supported yet!")
+        RuntimeError("Your desired softwareis not supported yet!")
 
 
 def nist_func_definitions(function, startvals):
     """
     Processing the nist function definitions into an appropriate format
-    for the scipy algorithm to use.
+    for the scipy softwareto use.
 
     @param function :: function string as defined in the problem file
     @param startvals :: starting values for the function variables
@@ -337,7 +336,7 @@ def format_function_scipy(function):
 def neutron_func_definitions(functions_string):
     """
     Processing the neutron function definition into an appropriate format
-    for the scipy algorithm to use.
+    for the scipy softwareto use.
 
     @param function_string :: string defining the function in
                               mantid format

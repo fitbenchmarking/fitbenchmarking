@@ -27,17 +27,17 @@ from __future__ import (absolute_import, division, print_function)
 from parsing.fetch_data import *
 
 
-def setup(algorithm, data_dir):
+def setup(software, data_dir):
     """
-    Sets up the problem groups depending on the algorithms inputted by the
+    Sets up the problem groups depending on the softwares inputted by the
     user.
 
-    @param algorithms :: algorithms given by user, e.g. mantid
+    @param software :: software given by user, e.g. mantid
     @param data_dir :: directory holding the problem data used to test
     """
-    if algorithm == 'mantid':
+    if software == 'mantid':
         return mantid(data_dir)
-    elif algorithm == 'scipy':
+    elif software == 'scipy':
         return scipydata(data_dir)
     else:
         raise NameError("Sorry, that application is not supported yet.")
@@ -48,7 +48,7 @@ def scipydata(data_dir):
 
     @param data_dir :: directory containing all the problem files
                        considered when using the mantid fitting
-                       algorithm
+                       software
 
     @returns :: the paths to the problem files
     """
@@ -69,7 +69,7 @@ def mantid(data_dir):
 
     @param data_dir :: directory containing all the problem files
                        considered when using the mantid fitting
-                       algorithm
+                       software
 
     @returns :: the paths to the problem files
     """

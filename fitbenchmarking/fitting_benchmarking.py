@@ -1,7 +1,7 @@
 """
 Main module of the tool, this holds the master function that calls
 a bunch of lower level functions to fit and benchmark a set of problems
-and for a certain fitting algorithm.
+and for a certain fitting software.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -34,13 +34,13 @@ from utils import create_dirs, setup_problem_groups, misc
 from fitbenchmark_one_problem import fitbm_one_problem
 
 
-def do_fitting_benchmark(algorithm, data_dir, use_errors=True,
+def do_fitting_benchmark(software, data_dir, use_errors=True,
                          results_dir=None):
     """
     High level function that does the fitting benchmarking for a
     specified group of problems.
 
-    @param algorithm :: algorithm used in fitting the problem, can be
+    @param software :: software used in fitting the problem, can be
                         e.g. mantid, numpy etc.
     @param data_dir :: directory that holds the problem group data
     @param use_errors :: whether to use errors on the data or not
@@ -49,27 +49,27 @@ def do_fitting_benchmark(algorithm, data_dir, use_errors=True,
     @returns :: array of fitting results for the problem group and
                 the path to the results directory
     """
-    minimizers = misc.get_minimizers(algorithm)
+    minimizers = misc.get_minimizers(software)
     results_dir = create_dirs.results(results_dir)
-    problem_groups = setup_problem_groups.setup(algorithm, data_dir)
+    problem_groups = setup_problem_groups.setup(software, data_dir)
 
     prob_results = None
     for group_name in problem_groups:
         group_results_dir = create_dirs.group_results(results_dir, group_name)
         prob_results = \
-        [do_fitting_benchmark_group(algorithm, minimizers, group_name, block,
+        [do_fitting_benchmark_group(software, minimizers, group_name, block,
                                     use_errors, group_results_dir)
          for block in problem_groups[group_name]]
 
     return prob_results, results_dir
 
 
-def do_fitting_benchmark_group(algorithm, minimizers, group_name, problem_block,
+def do_fitting_benchmark_group(software, minimizers, group_name, problem_block,
                                use_errors, results_dir):
     """
     Fit benchmark a specific group of problems.
 
-    @param algorithm :: algorithm used in fitting the problem, can be
+    @param software :: software used in fitting the problem, can be
                         e.g. mantid, numpy etc.
     @param group_name :: name of the group of problems
     @param results_dir :: result directory for the problem group
@@ -84,7 +84,7 @@ def do_fitting_benchmark_group(algorithm, minimizers, group_name, problem_block,
     for prob_file in problem_block:
         problem = parse.parse_problem_file(group_name, prob_file)
         results_prob = \
-        fitbm_one_problem(algorithm, problem, minimizers, use_errors,
+        fitbm_one_problem(software, problem, minimizers, use_errors,
                           results_dir)
         results_per_problem.extend(results_prob)
 

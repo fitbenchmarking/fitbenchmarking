@@ -40,12 +40,12 @@ FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
 
-def save_results_tables(algorithm, results_per_test, group_name,
+def save_results_tables(software, results_per_test, group_name,
                         use_errors, color_scale=None, results_dir=None):
     """
     Saves the results of the fitting to html/rst tables.
 
-    @param algorithm :: algorithm used in fitting the problem, can be
+    @param software :: software used in fitting the problem, can be
                         e.g. mantid, numpy etc.
     @param minimizers :: array with minimizer names
     @param results_per_test :: results nested array of objects
@@ -56,7 +56,7 @@ def save_results_tables(algorithm, results_per_test, group_name,
 
     @returns :: html/rst tables with the fitting results
     """
-    minimizers = utils.misc.get_minimizers(algorithm)
+    minimizers = utils.misc.get_minimizers(software)
     tables_dir = misc.make_restables_dir(results_dir, group_name)
     linked_problems = \
     misc.create_linked_probs(results_per_test, group_name, results_dir)

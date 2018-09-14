@@ -80,7 +80,7 @@ class MantidTests(unittest.TestCase):
     def setup_problem_Misra1a_success(self):
         """
         Helper function.
-        Sets up the parameters needed to run fit_algorithms.mantid
+        Sets up the parameters needed to run fitting.mantid
         """
 
         prob = self.NIST_problem()
@@ -98,7 +98,7 @@ class MantidTests(unittest.TestCase):
     def setup_problem_Misra1a_fail(self):
         """
         Helper function.
-        Sets up the parameters needed to run fit_algorithms.mantid
+        Sets up the parameters needed to run fitting.mantid
         but fail due to incorrect minimizer name.
         """
 
@@ -118,7 +118,7 @@ class MantidTests(unittest.TestCase):
         """
         Helper function.
         Sets up the expected results after running
-        fit_algorithms.mantid with Misra1a.dat problem data.
+        fitting.mantid with Misra1a.dat problem data.
         """
 
         fit_status = 'success'
@@ -132,7 +132,7 @@ class MantidTests(unittest.TestCase):
         """
         Helper function.
         Sets up the expected failure results after running
-        fit_algorithms.mantid with Misra1a.dat problem data but
+        fitting.mantid with Misra1a.dat problem data but
         fail parameters.
         """
 
@@ -170,7 +170,7 @@ class MantidTests(unittest.TestCase):
         return wks_exp
 
 
-    def test_fitAlgorithms_mantid_return_success_for_NIST_Misra1a_prob_file(self):
+    def test_fitting_mantid_return_success_for_NIST_Misra1a_prob_file(self):
 
         prob, wks, function, minimizer, cost_function = \
         self.setup_problem_Misra1a_success()

@@ -29,27 +29,27 @@ from fitting import scipyfit
 import numpy as np
 
 
-def prepare_algorithm_prerequisites(algorithm, problem, use_errors):
+def prepare_software_prerequisites(software, problem, use_errors):
     """
     Prepare the required data structures and function definitions for each
-    algorithm.
+    software.
 
-    @param algorithm :: algorithm used in fitting the problem, can be
+    @param software :: software used in fitting the problem, can be
                         e.g. mantid, numpy etc.
     @param problem :: a problem object containing information used in fitting
     @param use_errors :: wether or not to use errors
 
-    @returns :: prerequisites, depending on the algorithm.
+    @returns :: prerequisites, depending on the software.
     """
 
-    if algorithm == 'mantid':
+    if software == 'mantid':
         return prepare_mantid(problem, use_errors)
-    elif algorithm == 'scipy':
+    elif software == 'scipy':
         return prepare_scipy(problem, use_errors)
-    elif algorithm == 'matlab':
-        RuntimeError("Work in progress!")
+    elif software == 'matlab':
+        raise RuntimeError("Work in progress!")
     else:
-        raise NameError("Sorry, the specified algorithm is not supported yet.")
+        raise NameError("Sorry, the specified software is not supported yet.")
 
 
 def prepare_mantid(problem, use_errors):

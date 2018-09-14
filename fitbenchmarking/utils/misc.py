@@ -26,12 +26,12 @@ from __future__ import (absolute_import, division, print_function)
 
 import os, json
 
-def get_minimizers(algorithm):
+def get_minimizers(software):
     """
     Gets an array of minimizers to fitbenchmark from the json file depending
-    on which algorithm is used.
+    on which software is used.
 
-    @param algorithm :: string defining the algorithm used
+    @param software :: string defining the software used
 
     @returns :: an array of strings containing minimizer names
     """
@@ -40,6 +40,6 @@ def get_minimizers(algorithm):
     minimizers_dir = os.path.join(fitbm_path, "fitting")
     minimizers_json = os.path.join(minimizers_dir, "minimizers.json")
     all_minimizers = json.load(open(minimizers_json))
-    minimizers = all_minimizers[algorithm]
+    minimizers = all_minimizers[software]
 
     return minimizers

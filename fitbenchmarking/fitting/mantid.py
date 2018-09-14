@@ -1,5 +1,5 @@
 """
-Fittng and utility functions for the mantid fitting algorithms.
+Fittng and utility functions for the mantid fitting software.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -38,7 +38,7 @@ MAX_FLOAT = sys.float_info.max
 def benchmark(problem, wks_created, function, minimizers, cost_function):
     """
     Fit benchmark one problem, with one function definition and all
-    the selected minimizers, using the mantid fitting algorithms.
+    the selected minimizers, using the mantid fitting software.
 
     @param problem :: a problem object containing information used in fitting
     @param wks_created :: workspace holding the problem data
@@ -70,7 +70,7 @@ def benchmark(problem, wks_created, function, minimizers, cost_function):
 def fit(problem, wks_created, function, minimizer='Levenberg-Marquardt',
         cost_function='Least squares'):
     """
-    The mantid fit algorithm.
+    The mantid fit software.
 
     @param problem :: object holding the problem information
     @param wks_created :: workspace holding the problem data
@@ -106,7 +106,7 @@ def fit(problem, wks_created, function, minimizer='Levenberg-Marquardt',
 def chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
     """
     Function that calcuates the chisq obtained through the
-    mantid fitting algorithm and find the best fit out of all
+    mantid fitting software and find the best fit out of all
     the attempted minimizers.
 
     @param status :: the status of the fit, i.e. success or failure
@@ -132,10 +132,10 @@ def chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
 
 def parse_result(fit_result, t_start, t_end):
     """
-    Function that takes the raw result from the mantid fitting algorithm
+    Function that takes the raw result from the mantid fitting software
     and refines it.
 
-    @param fit_result :: result object from the mantid fitting algorithm
+    @param fit_result :: result object from the mantid fitting software
     @param t_start :: time the fitting started
     @param t_end :: time the fitting completed
 
@@ -203,7 +203,7 @@ def wks_cost_function(problem, use_errors=True):
 def function_definitions(problem):
     """
     Transforms the prob.equation field into a function that can be
-    understood by the mantid fitting algorithm.
+    understood by the mantid fitting software.
 
     @param prob :: object holding the problem infomation
 
@@ -224,7 +224,7 @@ def function_definitions(problem):
 
 def get_ignore_invalid(problem, cost_function):
     """
-    Helper function that sets the whether the mantid fitting algorithm
+    Helper function that sets the whether the mantid fitting software
     ignores invalid data or not. This depends on the cost function.
 
     @param prob :: object holding the problem information

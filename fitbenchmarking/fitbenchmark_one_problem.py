@@ -38,7 +38,7 @@ from fitting.plotting import plots
 from utils.logging_setup import logger
 
 
-def fitbm_one_problem(algorithm, problem, minimizers, use_errors=True,
+def fitbm_one_problem(software, problem, minimizers, use_errors=True,
                       group_results_dir=None):
     """
     Sets up the workspace, cost function and function definitons for
@@ -46,7 +46,7 @@ def fitbm_one_problem(algorithm, problem, minimizers, use_errors=True,
     object. The best fit, along with the data and a starting guess
     is then plotted on a visual display page.
 
-    @param algorithm :: algorithm used in fitting the problem, can be
+    @param software :: software used in fitting the problem, can be
                         e.g. mantid, numpy etc.
     @param problem :: a problem object containing information used in fitting
     @param minimizers :: array of minimizers used in fitting
@@ -61,19 +61,19 @@ def fitbm_one_problem(algorithm, problem, minimizers, use_errors=True,
     previous_name, count = None, 0
     results_fit_problem = []
     data_struct, cost_function, function_definitions = \
-    prereq.prepare_algorithm_prerequisites(algorithm, problem, use_errors)
+    prereq.prepare_software_prerequisites(software, problem, use_errors)
 
     for function in function_definitions:
         # Ad hoc exception for running the scipy script
         # scipy does not currently support the GEM problem
-        if 'GEM' in problem.name and algorithm == 'scipy': break;
+        if 'GEM' in problem.name and software == 'scipy': break;
         results_problem, best_fit = \
-        fit_one_function_def(algorithm, problem, data_struct, function,
+        fit_one_function_def(software, problem, data_struct, function,
                              minimizers, cost_function)
         count += 1
         if not best_fit is None:
             previous_name = \
-            plots.make_plots(algorithm, problem, data_struct, function,
+            plots.make_plots(software, problem, data_struct, function,
                              best_fit, previous_name, count, group_results_dir)
 
         results_fit_problem.append(results_problem)
@@ -81,12 +81,12 @@ def fitbm_one_problem(algorithm, problem, minimizers, use_errors=True,
     return results_fit_problem
 
 
-def fit_one_function_def(algorithm, problem, data_struct, function, minimizers,
+def fit_one_function_def(software, problem, data_struct, function, minimizers,
                          cost_function):
     """
     Fits a given function definition (model) to the data in the workspace.
 
-    @param algorithm :: algorithm used in fitting the problem, can be
+    @param software :: software used in fitting the problem, can be
                         e.g. mantid, numpy etc.
     @param problem :: a problem object containing information used in fitting
     @param data_struct :: a structre in which the data to be fitted is
@@ -99,11 +99,11 @@ def fit_one_function_def(algorithm, problem, data_struct, function, minimizers,
                 and data object for the best fit
     """
 
-    if algorithm == 'mantid':
+    if software == 'mantid':
         return mantid.benchmark(problem, data_struct, function, minimizers,
                                 cost_function)
-    elif algorithm == 'scipy':
+    elif software == 'scipy':
         return scipyfit.benchmark(problem, data_struct, function, minimizers,
                                   cost_function)
     else:
-        raise NameError("Sorry, that algorithm is not supported.")
+        raise NameError("Sorry, that software is not supported.")
