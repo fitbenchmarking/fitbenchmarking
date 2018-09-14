@@ -5,17 +5,24 @@ FitBenchmarking is tool for comparing different minimizers/fitting software base
 
 
 ## Quick start
-You will need [Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg) for running/installing this. Instructions for setting up python are available [here](https://github.com/mantidproject/fitbenchmarking/wiki/Setting-up-Python).
+You will need ![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg) for running/installing this. Instructions for setting up python are available [here](https://github.com/mantidproject/fitbenchmarking/wiki/Setting-up-Python).
 
 1. Download this repository or clone it using [git](https://git-scm.com/):
 `git clone https://github.com/mantidproject/fitbenchmarking.git`
 2. Open up a terminal (command prompt) and go into the `fitbenchmarking` directory.
 3. Once you are in the right directory, type `python setup.py install`.
 4. Install mantid, platform specific instructions [here](https://github.com/mantidproject/fitbenchmarking/wiki/Installing-Mantid).
-5. Finally run `example_runScript.py`, located in the example_scripts folder. This example script fit benchmarks Mantid using all the available minimizers.
+5. Finally run `example_scripts/example_runScript.py`, located in the example_scripts folder. This example script fit benchmarks Mantid using all the available minimizers. The result tables can be found in `fitbenchmarking/example_scripts/results`.
 
 ## What the tool does
+The tool creates a table/tables that shows a comparison between the different minimizers available in a fitting software (e.g. scipy), based on their accuracy and/or runtimes.
+An example of a table is:
 
+![Example Table](docs/example_table.png)
+
+This is the result of fitbenchmarking mantid on a set of neutron data. The results are normalised with respect to the best minimizer per problem. The problem names link to html pages that display plots of the data and the fit that was performed, together with initial and final values of the parameters. Here is an example of the final plot fit.
+
+![Example Plot](docs/example_plot.png)
 
 ## Currently Benchmarking
 <div style="text-align: center">
