@@ -1,5 +1,5 @@
 """
-Functions that fetch the problem files.
+Functions that creates the tables and the visual display pages.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
