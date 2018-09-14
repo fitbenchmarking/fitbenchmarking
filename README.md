@@ -19,7 +19,5 @@ You will need [Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg) for
 
 ## Currently Benchmarking
 
-<p style="text-align: center;">
-  <img width="40" height="40" src="https://avatars0.githubusercontent.com/u/671496?s=400&v=4">
-  <img width="40" height="40" src="http://gracca.github.io/images/python-scipy.png">
-</p>
+<img width="100" height="100" style="text-align: center;" src="https://avatars0.githubusercontent.com/u/671496?s=400&v=4">
+<img width="100" height="100" src="http://gracca.github.io/images/python-scipy.png">
