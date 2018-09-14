@@ -1,5 +1,6 @@
 """
-General utility functions for calculating some attributes of the fit.
+Functions which deals with the things that are software (Mantid, scipy etc)
+specific.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
