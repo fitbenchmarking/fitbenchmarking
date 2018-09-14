@@ -1,5 +1,5 @@
 """
-Fittng and utility functions for the mantid fitting algorithms.
+Fittng and utility functions for the mantid fitting software.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -38,7 +38,7 @@ MAX_FLOAT = sys.float_info.max
 def benchmark(problem, wks_created, function, minimizers, cost_function):
     """
     Fit benchmark one problem, with one function definition and all
-    the selected minimizers, using the mantid fitting algorithms.
+    the selected minimizers, using the mantid fitting software.
 
     @param problem :: a problem object containing information used in fitting
     @param wks_created :: workspace holding the problem data
@@ -70,7 +70,7 @@ def benchmark(problem, wks_created, function, minimizers, cost_function):
 def fit(problem, wks_created, function, minimizer='Levenberg-Marquardt',
         cost_function='Least squares'):
     """
-    The mantid fit algorithm.
+    The mantid fit software.
 
     @param problem :: object holding the problem information
     @param wks_created :: workspace holding the problem data
@@ -79,9 +79,9 @@ def fit(problem, wks_created, function, minimizer='Levenberg-Marquardt',
     @param cost_function :: the type of cost function used in fitting
 
     @returns :: the status, either success or failure (str), the fit
-                workspace (mantid wks_created), containing the fitted data,
-                the corresponding points of the fit and the difference
-                between them, the fitted parameters, their errors [arrays]
+                workspace (mantid wks_created), containing the
+                differences between the fit data and actual data,
+                the final function definition
                 and how much time it took for the fit to finish (float)
     """
 
@@ -106,7 +106,7 @@ def fit(problem, wks_created, function, minimizer='Levenberg-Marquardt',
 def chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
     """
     Function that calcuates the chisq obtained through the
-    mantid fitting algorithm and find the best fit out of all
+    mantid fitting software and find the best fit out of all
     the attempted minimizers.
 
     @param status :: the status of the fit, i.e. success or failure
@@ -132,10 +132,10 @@ def chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
 
 def parse_result(fit_result, t_start, t_end):
     """
-    Function that takes the raw result from the mantid fitting algorithm
+    Function that takes the raw result from the mantid fitting software
     and refines it.
 
-    @param fit_result :: result object from the mantid fitting algorithm
+    @param fit_result :: result object from the mantid fitting software
     @param t_start :: time the fitting started
     @param t_end :: time the fitting completed
 
@@ -185,8 +185,9 @@ def wks_cost_function(problem, use_errors=True):
     """
     data_x = problem.data_x
     data_y = problem.data_y
+    data_e = setup_errors(problem)
+
     if use_errors:
-        data_e = setup_errors(problem)
         wks_created = msapi.CreateWorkspace(DataX=data_x, DataY=data_y,
                                             DataE=data_e)
         convert_back(wks_created, problem, use_errors)
@@ -202,19 +203,18 @@ def wks_cost_function(problem, use_errors=True):
 def function_definitions(problem):
     """
     Transforms the prob.equation field into a function that can be
-    understood by the mantid fitting algorithm.
+    understood by the mantid fitting software.
 
     @param prob :: object holding the problem infomation
 
     @returns :: a function definitions string with functions that
                 mantid understands
     """
-
-    if problem.starting_values:
+    if problem.type == 'nist':
         # NIST data requires prior formatting
         nb_start_vals = len(problem.starting_values[0][1])
         function_defs = parse_nist_function_definitions(problem, nb_start_vals)
-    else:
+    elif problem.type == 'neutron':
         # Neutron data does not require any
         function_defs = []
         function_defs.append(problem.equation)
@@ -224,7 +224,7 @@ def function_definitions(problem):
 
 def get_ignore_invalid(problem, cost_function):
     """
-    Helper function that sets the whether the mantid fitting algorithm
+    Helper function that sets the whether the mantid fitting software
     ignores invalid data or not. This depends on the cost function.
 
     @param prob :: object holding the problem information
@@ -280,26 +280,66 @@ def setup_errors(problem):
     @returns :: array of errors of particular problem
     """
 
-    data_e = None
     if problem.data_e is None:
         # Fake errors
-        data_e = np.sqrt(abs(problem.data_y))
+        return np.sqrt(abs(problem.data_y))
     else:
         # True errors
-        data_e = problem.data_e
-
-    return data_e
+        return problem.data_e
 
 
-def convert_back(wks_created, problem, use_errors):
+def convert_back(wks_used, problem, use_errors):
     """
     Convert back so data is of equal lengths.
 
-    @param wks_created :: mantid workspace that hold the data
+    @param wks_used :: mantid workspace that hold the data
     @param problem :: problem object holding the problem data
     """
-    tmp = msapi.ConvertToPointData(wks_created)
+    tmp = msapi.ConvertToPointData(wks_used)
     problem.data_x = np.copy(tmp.readX(0))
     problem.data_y = np.copy(tmp.readY(0))
-    if use_errors:
-        problem.data_e = np.copy(tmp.readE(0))
+    if use_errors: problem.data_e = np.copy(tmp.readE(0))
+
+
+def store_main_problem_data(fname, problem):
+    """
+    Stores the main problem data into the relevant attributes of the
+    problem object.
+
+    @param fname :: path to the neutron problem definition file
+    @param problem :: object holding the problem information
+    """
+
+    wks_imported = msapi.Load(Filename=fname)
+    problem.data_x = wks_imported.readX(0)
+    problem.data_y = wks_imported.readY(0)
+    problem.data_e = wks_imported.readE(0)
+    problem.ref_residual_sum_sq = 0
+
+
+def gen_func_obj(function_name):
+    """
+    Generates a mantid function object.
+
+    @param function_name :: the name of the function to be generated
+
+    @returns :: mantid function object that can be called in python
+    """
+    exec "function_object = msapi." + function_name + "()"
+    return function_object
+
+
+def set_ties(function_object, ties):
+    """
+    Sets the ties for a function/composite function object.
+
+    @param function_object :: mantid function object
+    @param ties :: array of strings containing the ties
+
+    @returns :: mantid function object with ties
+    """
+    for idx, ties_per_func in enumerate(ties):
+        for tie in ties_per_func:
+            exec "function_object.tie({'f" + str(idx) + "." + tie + "})"
+
+    return function_object

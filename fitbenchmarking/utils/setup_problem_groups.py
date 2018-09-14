@@ -27,19 +27,41 @@ from __future__ import (absolute_import, division, print_function)
 from parsing.fetch_data import *
 
 
-def setup(algorithm, data_dir):
+def setup(software, data_dir):
     """
-    Sets up the problem groups depending on the algorithms inputted by the
+    Sets up the problem groups depending on the softwares inputted by the
     user.
 
-    @param algorithms :: algorithms given by user, e.g. mantid
+    @param software :: software given by user, e.g. mantid
     @param data_dir :: directory holding the problem data used to test
     """
-    if algorithm == 'mantid':
+    if software == 'mantid':
         return mantid(data_dir)
+    elif software == 'scipy':
+        return scipydata(data_dir)
     else:
         raise NameError("Sorry, that application is not supported yet.")
 
+def scipydata(data_dir):
+    """
+    Set the problem groups for the mantid problem sets.
+
+    @param data_dir :: directory containing all the problem files
+                       considered when using the mantid fitting
+                       software
+
+    @returns :: the paths to the problem files
+    """
+
+    problem_groups = {}
+    if 'NIST' in data_dir:
+        problem_groups['nist'] = get_nist_problem_files(data_dir)
+    elif 'Neutron' in data_dir:
+        problem_groups['neutron'] = get_neutron_problem_files(data_dir)
+    else:
+        raise NameError("Data directory not recognised!")
+
+    return problem_groups
 
 def mantid(data_dir):
     """
@@ -47,7 +69,7 @@ def mantid(data_dir):
 
     @param data_dir :: directory containing all the problem files
                        considered when using the mantid fitting
-                       algorithm
+                       software
 
     @returns :: the paths to the problem files
     """

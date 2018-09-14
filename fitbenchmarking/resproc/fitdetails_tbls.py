@@ -35,15 +35,9 @@ def create(functions_str):
     @returns :: rst table of the function string
     """
     functions = functions_str.split(';')
-    names, params = [], []
 
     for function in functions:
-        # If string contains UserFunction then it means it is a nist problem
-        # Otherwise it is a neutron problem
-        if 'UserFunction' in function:
-            names, params = parse_nist_function_def(function)
-        else:
-            names, params = parse_neutron_function_def(function, names, params)
+        names, params = generate_names_and_params(function)
 
     name_hdim, params_hdim = fit_details_table_hdims(names, params)
     header = generate_fit_det_header(name_hdim, params_hdim)
@@ -52,8 +46,27 @@ def create(functions_str):
 
     return tbl
 
+def generate_names_and_params(function):
+    """
+    Generates the function names and params.
+    If string contains UserFunction then it means it is a nist problem.
+    If it contains name it is a neutron problem.
+    """
+    names, params = [], []
 
-def parse_nist_function_def(function):
+    if 'UserFunction' in function:
+        names, params = parse_nist_mantid_function_def(function)
+    elif 'name=' in function:
+        names, params = parse_neutron_function_def(function, names, params)
+    elif " | " in function:
+        # Exception for nist scipy problems
+        names, params = [function.split('|')[0]], [function.split('|')[1]]
+    else:
+        raise TypeError("Sorry, your type of function is not supported")
+
+    return names, params
+
+def parse_nist_mantid_function_def(function):
     """
     Helper function that parses the function definition of a NIST problem
     and returns the function name and parameters.

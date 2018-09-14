@@ -26,7 +26,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import logging
 import mantid.simpleapi as msapi
-
+import utils.misc
 
 from utils.logging_setup import logger
 from resproc import numpy_restables
@@ -40,11 +40,13 @@ FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
 
-def save_results_tables(minimizers, results_per_test, group_name, use_errors,
-                        color_scale=None, results_dir=None):
+def save_results_tables(software, results_per_test, group_name,
+                        use_errors, color_scale=None, results_dir=None):
     """
     Saves the results of the fitting to html/rst tables.
 
+    @param software :: software used in fitting the problem, can be
+                        e.g. mantid, numpy etc.
     @param minimizers :: array with minimizer names
     @param results_per_test :: results nested array of objects
     @param group_name :: name of the problem group
@@ -54,7 +56,7 @@ def save_results_tables(minimizers, results_per_test, group_name, use_errors,
 
     @returns :: html/rst tables with the fitting results
     """
-
+    minimizers = utils.misc.get_minimizers(software)
     tables_dir = misc.make_restables_dir(results_dir, group_name)
     linked_problems = \
     misc.create_linked_probs(results_per_test, group_name, results_dir)
@@ -117,7 +119,6 @@ def create_runtime_tbl(minimizers, linked_problems, norm_runtimes, use_errors,
     """
     Creates a runtime table using the given paramters.
     """
-    # Save runtime table for this group of fit problems
     tbl_runtime_indiv = rst_table.create(minimizers, linked_problems,
                                          norm_runtimes,
                                          comparison_type='runtime',
@@ -149,21 +150,3 @@ def save_tables(tables_dir, table_data, use_errors, group_name, metric):
                                  use_errors=use_errors, group_name=group_name,
                                  metric_type=metric,
                                  file_extension=FILENAME_EXT_HTML)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

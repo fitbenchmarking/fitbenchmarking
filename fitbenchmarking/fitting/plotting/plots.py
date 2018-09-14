@@ -31,7 +31,7 @@ import mantid.simpleapi as msapi
 from fitting.plotting.plot_helper import *
 
 
-def make_plots(algorithm, problem, data_struct, function, best_fit,
+def make_plots(software, problem, data_struct, function, best_fit,
                previous_name, count, group_results_dir):
     """
     Makes plots of the raw data, best fit and starting guess.
@@ -51,15 +51,14 @@ def make_plots(algorithm, problem, data_struct, function, best_fit,
     """
 
     figures_dir = setup_dirs(group_results_dir)
-    previous_name, count = problem_count(problem, previous_name, count)
 
     raw_data = get_data_points(problem)
     make_data_plot(problem.name, raw_data, count, figures_dir)
     make_best_fit_plot(problem.name, raw_data, best_fit, count, figures_dir)
-    make_starting_guess_plot(algorithm, raw_data, function, data_struct,
+    make_starting_guess_plot(software, raw_data, function, data_struct,
                              problem, count, figures_dir)
 
-    return previous_name, count
+    return previous_name
 
 
 def get_data_points(problem):
@@ -136,12 +135,12 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     fig.make_scatter_plot(figure_name)
 
 
-def make_starting_guess_plot(algorithm, raw_data, function, data_struct,
+def make_starting_guess_plot(software, raw_data, function, data_struct,
                              problem, count, figures_dir):
     """
     Creates a scatter plot of the raw data with the starting guess
     superimposed. The starting guess is obtained by setting the
-    MaxIterations option of the mantid fit algorithm to 0.
+    MaxIterations option of the mantid fit software to 0.
 
     @param raw_data :: the raw data stored into an object
     @param function :: string holding the function that was fitted
@@ -155,7 +154,7 @@ def make_starting_guess_plot(algorithm, raw_data, function, data_struct,
     """
 
     xData, yData =\
-    get_start_guess_data(algorithm, data_struct, function, problem)
+    get_start_guess_data(software, data_struct, function, problem)
     startData = data("Start Guess", xData, yData)
     startData.order_data()
     startData.colour = "red"
@@ -174,17 +173,19 @@ def make_starting_guess_plot(algorithm, raw_data, function, data_struct,
     start_fig.make_scatter_plot(start_figure_name)
 
 
-def get_start_guess_data(algorithm, data_struct, function, problem):
+def get_start_guess_data(software, data_struct, function, problem):
     """
-    Gets the starting guess data for various algorithms.
+    Gets the starting guess data for various softwares.
 
-    @param algorithm ::
+    @param software ::
     """
 
-    if algorithm == 'mantid':
+    if software == 'mantid':
         return get_mantid_starting_guess_data(data_struct, function, problem)
+    elif software == 'scipy':
+        return [0,0,0], [0,0,0]
     else:
-        raise NameError("Sorry, that algorithm is not supported.")
+        raise NameError("Sorry, that software is not supported.")
 
 
 def get_mantid_starting_guess_data(wks_created, function, problem):
@@ -196,7 +197,7 @@ def get_mantid_starting_guess_data(wks_created, function, problem):
     @param problem :: object holding the problem information
 
     @returns :: data describing the starting guess obtained by using the
-                fitting algorithm inside mantid
+                fitting software inside mantid
     """
 
     fit_result = msapi.Fit(function, wks_created, Output='ws_fitting_test',
@@ -210,28 +211,6 @@ def get_mantid_starting_guess_data(wks_created, function, problem):
     yData = tmp.readY(1)
 
     return xData, yData
-
-def problem_count(problem, previous_name, count):
-    """
-    Helper function that counts how many times the name of the problem
-    comes up consecutively.
-
-    @param problem :: object holding the problem information
-    @param previous_name :: name of the previous problem
-    @param count :: number of times same name was passed through
-
-    @returns :: the new/same previous name (str) and the number of
-                times it has seen that name in a row (int).
-    """
-
-    if problem.name == previous_name:
-        count += 1
-    else:
-        count = 1
-        previous_name = problem.name
-
-    return previous_name, count
-
 
 def setup_dirs(group_results_dir):
     """

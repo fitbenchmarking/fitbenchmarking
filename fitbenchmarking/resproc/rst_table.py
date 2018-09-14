@@ -41,7 +41,7 @@ def create(columns_txt, rows_txt, cells, comparison_type, comparison_dim,
     """
     Creates a rst table of accuracy and runtime tables obtained
     through fitting a certain problem set by using various
-    minimizers and a fitting algorithm.
+    minimizers and a fitting software.
 
     @param columns_txt :: array of minimizers used in fitting
     @param rows_txt :: array of the problems that were fitted
