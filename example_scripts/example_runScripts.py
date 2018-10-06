@@ -1,6 +1,7 @@
 """
 Script that runs the fitbenchmarking tool with various problems and minimizers.
 """
+# ========================================================================
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
 #
@@ -20,13 +21,15 @@ Script that runs the fitbenchmarking tool with various problems and minimizers.
 #
 # File change history is stored at: <https://github.com/mantidproject/mantid>.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
-# ==============================================================================
+# ========================================================================
 
 from __future__ import (absolute_import, division, print_function)
-
 import os
 import sys
+
 # Avoid reaching the maximum recursion depth by setting recursion limit
+# This is useful when running multiple data set benchmarking
+# Otherwise recursion limit is reached and the interpreter throws an error
 sys.setrecursionlimit(10000)
 
 # Insert path to where the scripts are located, relative to
@@ -54,6 +57,7 @@ color_scale = [(1.1, 'ranking-top-1'),
 benchmark_problems_dir = os.path.join(fitbenchmarking_path,
                                       'benchmark_problems')
 
+# Specify problem directories
 nist_data_dir = os.path.join(benchmark_problems_dir,'NIST_nonlinear_regression')
 neutron_data_dir = os.path.join(benchmark_problems_dir, 'Neutron_data')
 
@@ -61,8 +65,9 @@ neutron_data_dir = os.path.join(benchmark_problems_dir, 'Neutron_data')
 # If left as None, they will be saved in a "results" folder in the working dir
 # When specifying a results_dir, please GIVE THE FULL PATH
 # If the full path is not given and the results_dir name is valid
-#  ../fitbenchmarking/fitbenchmarking/ is taken as the path
+# ../fitbenchmarking/fitbenchmarking/example_scripts is taken as the path
 results_dir = None
+
 # Whether to use errors in the fitting process
 use_errors = True
 
