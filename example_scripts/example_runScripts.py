@@ -1,6 +1,7 @@
 """
 Script that runs the fitbenchmarking tool with various problems and minimizers.
 """
+# ========================================================================
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
 #
@@ -20,7 +21,7 @@ Script that runs the fitbenchmarking tool with various problems and minimizers.
 #
 # File change history is stored at: <https://github.com/mantidproject/mantid>.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
-# ==============================================================================
+# ========================================================================
 
 # ---------------------------------------------------------------------------
 from __future__ import (absolute_import, division, print_function)
@@ -28,7 +29,12 @@ import os
 import sys
 
 # Avoid reaching the maximum recursion depth by setting recursion limit
+<<<<<<< HEAD
 # This is required to run multiple problem set fitting
+=======
+# This is useful when running multiple data set benchmarking
+# Otherwise recursion limit is reached and the interpreter throws an error
+>>>>>>> 4145182f0d2e74fdffe719e1b04af664fcb9d53d
 sys.setrecursionlimit(10000)
 
 # Insert path to where the scripts are located, relative to
