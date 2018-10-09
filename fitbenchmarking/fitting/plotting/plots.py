@@ -183,7 +183,10 @@ def get_start_guess_data(software, data_struct, function, problem):
     if software == 'mantid':
         return get_mantid_starting_guess_data(data_struct, function, problem)
     elif software == 'scipy':
+        # This is just a placeholder
         return [0,0,0], [0,0,0]
+    # elif software == 'scipy':
+        # return get_starting_guess_data(data_struct, function, problem)
     else:
         raise NameError("Sorry, that software is not supported.")
 

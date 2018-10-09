@@ -24,6 +24,12 @@ class FittingTestProblem(object):
     """
     Definition of a fitting test problem, normally loaded from a problem
     definition file.
+
+    Types of data:
+        - strings: name, type, equation
+        - floats: start_x, end_x, ref_residual_sum_sq
+        - numpy arrays: data_x, data_y, data_e
+        - arrays: starting_values
     """
     def __init__(self):
         self.name = None

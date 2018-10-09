@@ -105,5 +105,8 @@ def fit_one_function_def(software, problem, data_struct, function, minimizers,
     elif software == 'scipy':
         return scipyfit.benchmark(problem, data_struct, function, minimizers,
                                   cost_function)
+    # elif software == 'your_software':
+        # return your_software.benchmark(problem, data_struct, function,
+        #                                minimizers, cost_function)
     else:
         raise NameError("Sorry, that software is not supported.")

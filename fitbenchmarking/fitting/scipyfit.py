@@ -80,7 +80,8 @@ def fit(data, function, minimizer, cost_function, init_function_def):
 
     @returns :: the status, either success or failure (str), the data
                 of the fit, the final function definition and the
-                runtime of the fitting software    """
+                runtime of the fitting software
+    """
     popt, t_start, t_end = None, None, None
     func_callable = function[0]
     initial_params = function[1]
@@ -284,9 +285,10 @@ def function_definitions(problem):
     elif problem.type == 'neutron':
         return neutron_func_definitions(problem.equation)
     else:
-        RuntimeError("Your desired softwareis not supported yet!")
+        RuntimeError("Your problem type is not supported yet!")
 
 
+# -----------------------------------------------------------------------------
 def nist_func_definitions(function, startvals):
     """
     Processing the nist function definitions into an appropriate format
@@ -331,8 +333,9 @@ def format_function_scipy(function):
     function = function.replace("pi", "np.pi")
 
     return function
+# -----------------------------------------------------------------------------
 
-
+# -----------------------------------------------------------------------------
 def neutron_func_definitions(functions_string):
     """
     Processing the neutron function definition into an appropriate format
@@ -470,3 +473,4 @@ def get_neutron_ties(param_set, ties):
     ties.append(ties_per_function)
 
     return ties
+# -----------------------------------------------------------------------------

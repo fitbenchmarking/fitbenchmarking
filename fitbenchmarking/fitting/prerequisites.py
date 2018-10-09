@@ -47,8 +47,8 @@ def prepare_software_prerequisites(software, problem, use_errors):
         return prepare_mantid(problem, use_errors)
     elif software == 'scipy':
         return prepare_scipy(problem, use_errors)
-    elif software == 'matlab':
-        raise RuntimeError("Work in progress!")
+    # elif software == 'your_software':
+        # return prepare_your_software(problem, use_errors)
     else:
         raise NameError("Sorry, the specified software is not supported yet.")
 

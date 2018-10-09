@@ -22,11 +22,13 @@ Script that runs the fitbenchmarking tool with various problems and minimizers.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 # ==============================================================================
 
+# ---------------------------------------------------------------------------
 from __future__ import (absolute_import, division, print_function)
-
 import os
 import sys
+
 # Avoid reaching the maximum recursion depth by setting recursion limit
+# This is required to run multiple problem set fitting
 sys.setrecursionlimit(10000)
 
 # Insert path to where the scripts are located, relative to
@@ -38,12 +40,15 @@ sys.path.insert(0, scripts_path)
 
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
+# ---------------------------------------------------------------------------
 
 
+# SOFTWARE YOU WANT TO BENCHMARK WILL REPLACE "mantid"
 software = 'mantid'
 
 # Parameters of how the final tables are colored
 # e.g. lower that 1.1 -> light yellow, higher than 3 -> dark red
+# Change these values to suit your needs
 color_scale = [(1.1, 'ranking-top-1'),
                (1.33, 'ranking-top-2'),
                (1.75, 'ranking-med-3'),
@@ -51,33 +56,45 @@ color_scale = [(1.1, 'ranking-top-1'),
                (float('nan'), 'ranking-low-5')]
 
 
-benchmark_problems_dir = os.path.join(fitbenchmarking_path,
-                                      'benchmark_problems')
+# Problem directories
+# Define any additional problem directories if you want to include other
+# sets of problems
+benchmark_probs_dir = os.path.join(fitbenchmarking_path, 'benchmark_problems')
+nist_data_dir = os.path.join(benchmark_probs_dir, 'NIST_nonlinear_regression')
+neutron_data_dir = os.path.join(benchmark_probs_dir, 'Neutron_data')
 
-nist_data_dir = os.path.join(benchmark_problems_dir,'NIST_nonlinear_regression')
-neutron_data_dir = os.path.join(benchmark_problems_dir, 'Neutron_data')
-
-# Modify results_dir to specify where the results of the fit should be saved
-# If left as None, they will be saved in a "results" folder in the working dir
-# When specifying a results_dir, please GIVE THE FULL PATH
-# If the full path is not given and the results_dir name is valid
-#  ../fitbenchmarking/fitbenchmarking/ is taken as the path
+"""
+Modify results_dir to specify where the results of the fit should be saved
+If left as None, they will be saved in a "results" folder in the working dir
+When specifying a results_dir, please GIVE THE FULL PATH
+If the full path is not given and the results_dir name is valid
+../fitbenchmarking/fitbenchmarking/ is taken as the path
+"""
 results_dir = None
+
 # Whether to use errors in the fitting process
 use_errors = True
 
+# ADD WHICH PROBLEM SETS TO TEST AGAINST HERE
+# CURRENTLY TESTING AGAINST "neutron", "nist"
 for run_data in ["neutron", "nist"]:
 
     if run_data == "neutron":
+        # Group name definitions
         group_suffix_names = ['neutron']
         group_names = ["Neutron data"]
+
+        # Running the benchmarking on the nist group
         results_per_group, results_dir = \
         fitBenchmarking(software=software, data_dir=neutron_data_dir,
                         use_errors=use_errors, results_dir=results_dir)
     elif run_data == "nist":
+        # Group name definitions
         group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
                        'NIST, "higher" difficulty']
         group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher']
+
+        # Running the benchmarking on the nist group
         results_per_group, results_dir = \
         fitBenchmarking(software=software, data_dir=nist_data_dir,
                         use_errors=use_errors, results_dir=results_dir)
@@ -86,6 +103,7 @@ for run_data in ["neutron", "nist"]:
                            "contains the correct names!")
 
     for idx, group_results in enumerate(results_per_group):
+        # Display the runtime and accuracy results in a table
         printTables(software, group_results,
                     group_name=group_suffix_names[idx], use_errors=use_errors,
                     color_scale=color_scale, results_dir=results_dir)

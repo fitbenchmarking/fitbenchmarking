@@ -39,12 +39,16 @@ def setup(software, data_dir):
         return mantid(data_dir)
     elif software == 'scipy':
         return scipydata(data_dir)
+
+    # elif software == 'your_software':
+    #    return your_software(data_dir)
+
     else:
         raise NameError("Sorry, that application is not supported yet.")
 
 def scipydata(data_dir):
     """
-    Set the problem groups for the mantid problem sets.
+    Set the problem groups for the scipy problem sets.
 
     @param data_dir :: directory containing all the problem files
                        considered when using the mantid fitting
@@ -58,6 +62,8 @@ def scipydata(data_dir):
         problem_groups['nist'] = get_nist_problem_files(data_dir)
     elif 'Neutron' in data_dir:
         problem_groups['neutron'] = get_neutron_problem_files(data_dir)
+    # elif 'your_group' in data_dir
+    #     problem_groups['your_group'] = get_your_group_problem_files(data_dir)
     else:
         raise NameError("Data directory not recognised!")
 

@@ -46,6 +46,11 @@ def parse_problem_file(group_name, prob_file):
     elif group_name == 'neutron':
         prob = parse_neutron.load_file(prob_file)
         prob.type = 'neutron'
+
+    # elif group_name == 'your_group':
+        # prob = parse_your_group.load_file(prob_file)
+        # prob.type = 'your_group'
+
     else:
         raise NameError("Could not find group name! Please check if it was"
                         "given correctly...")
