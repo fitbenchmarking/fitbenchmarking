@@ -82,19 +82,19 @@ use_errors = True
 for run_data in ["neutron", "nist"]:
 
     if run_data == "neutron":
-        # Group name definitions
-        group_suffix_names = ['neutron']
-        group_names = ["Neutron data"]
+        # Group label used in output folder and table file names
+        group_labels = ['neutron']
 
         # Running the benchmarking on the nist group
         results_per_group, results_dir = \
         fitBenchmarking(software=software, data_dir=neutron_data_dir,
                         use_errors=use_errors, results_dir=results_dir)
     elif run_data == "nist":
-        # Group name definitions
-        group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
-                       'NIST, "higher" difficulty']
-        group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher']
+        # Group label used in output folder and table file names
+        # Note for now, for NIST problems there is a hardcoded grouping
+        # which in the code, hence the reason for needing 3 labels
+        # An issue has been created for removing this
+        group_labels = ['nist_lower', 'nist_average', 'nist_higher']
 
         # Running the benchmarking on the nist group
         results_per_group, results_dir = \
@@ -107,5 +107,5 @@ for run_data in ["neutron", "nist"]:
     for idx, group_results in enumerate(results_per_group):
         # Display the runtime and accuracy results in a table
         printTables(software, group_results,
-                    group_name=group_suffix_names[idx], use_errors=use_errors,
+                    group_name=group_labels[idx], use_errors=use_errors,
                     color_scale=color_scale, results_dir=results_dir)
