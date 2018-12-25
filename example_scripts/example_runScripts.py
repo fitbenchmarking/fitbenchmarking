@@ -1,7 +1,7 @@
 """
 Script that runs the fitbenchmarking tool with various problems and minimizers.
 """
-# ========================================================================
+
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
 #
@@ -21,9 +21,8 @@ Script that runs the fitbenchmarking tool with various problems and minimizers.
 #
 # File change history is stored at: <https://github.com/mantidproject/mantid>.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
-# ========================================================================
 
-# ---------------------------------------------------------------------------
+
 from __future__ import (absolute_import, division, print_function)
 import os
 import sys
@@ -46,7 +45,7 @@ from results_output import save_results_tables as printTables
 
 
 # SOFTWARE YOU WANT TO BENCHMARK WILL REPLACE "mantid"
-software = 'mantid'
+software = 'scipy'
 
 # Parameters of how the final tables are colored
 # e.g. lower that 1.1 -> light yellow, higher than 3 -> dark red
