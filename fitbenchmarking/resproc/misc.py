@@ -129,32 +129,3 @@ def create_linked_probs(results_per_test, group_name, results_dir):
         linked_problems.append(name)
 
     return linked_problems
-
-
-def make_restables_dir(results_dir, group_name):
-    """
-    Creates the results directory where the tables are located.
-    e.g. fitbenchmarking/results/neutron/Tables/
-
-    @param results_dir :: directory that holds all the results
-    @param group_name :: string containing the name of the problem group
-
-    @returns :: path to folder where the tables are stored
-    """
-
-    if 'nist' in group_name:
-        group_results_dir = os.path.join(results_dir, 'nist')
-        if not os.path.exists(group_results_dir):
-            os.makedirs(group_results_dir)
-        tables_dir = os.path.join(group_results_dir, "tables", group_name)
-
-    elif 'neutron' in group_name:
-        group_results_dir = os.path.join(results_dir, 'neutron')
-        if not os.path.exists(group_results_dir):
-            os.makedirs(group_results_dir)
-        tables_dir = os.path.join(group_results_dir, "tables")
-
-    if not os.path.exists(tables_dir):
-        os.makedirs(tables_dir)
-
-    return tables_dir

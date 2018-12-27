@@ -1,8 +1,9 @@
 """
 Main module of the tool, this holds the master function that calls
-a bunch of lower level functions to fit and benchmark a set of problems
-and for a certain fitting software.
+lower level functions to fit and benchmark a set of problems
+for a certain fitting software.
 """
+
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
 #
@@ -41,7 +42,7 @@ def do_fitting_benchmark(software, data_dir, use_errors=True,
     specified group of problems.
 
     @param software :: software used in fitting the problem, can be
-                        e.g. mantid, numpy etc.
+                        e.g. mantid, scipy etc.
     @param data_dir :: directory that holds the problem group data
     @param use_errors :: whether to use errors on the data or not
     @param results_dir :: directory in which to put the results
@@ -70,7 +71,7 @@ def do_fitting_benchmark_group(software, minimizers, group_name, problem_block,
     Fit benchmark a specific group of problems.
 
     @param software :: software used in fitting the problem, can be
-                        e.g. mantid, numpy etc.
+                        e.g. mantid, scipy etc.
     @param group_name :: name of the group of problems
     @param results_dir :: result directory for the problem group
     @param problem_block :: array of paths to problem files in the group

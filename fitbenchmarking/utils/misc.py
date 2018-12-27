@@ -1,5 +1,5 @@
 """
-Miscellaneous functions and utilites for fitting.
+Miscellaneous functions and utilites used in fitting benchmarking.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -24,7 +24,8 @@ Miscellaneous functions and utilites for fitting.
 
 from __future__ import (absolute_import, division, print_function)
 
-import os, json
+import os
+import json
 
 def get_minimizers(software):
     """
@@ -35,6 +36,7 @@ def get_minimizers(software):
 
     @returns :: an array of strings containing minimizer names
     """
+
     current_path = os.path.dirname(os.path.realpath(__file__))
     fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
     minimizers_dir = os.path.join(fitbm_path, "fitting")

@@ -72,6 +72,31 @@ def group_results(results_dir, group_name):
 
     return group_results_dir
 
+def restables_dir(results_dir, group_name):
+    """
+    Creates the results directory where the tables are located.
+    e.g. fitbenchmarking/results/neutron/Tables/
+
+    @param results_dir :: directory that holds all the results
+    @param group_name :: string containing the name of the problem group
+
+    @returns :: path to folder where the tables are stored
+    """
+
+    if 'nist' in group_name:
+        group_results_dir = os.path.join(results_dir, 'nist')
+        if not os.path.exists(group_results_dir):
+            os.makedirs(group_results_dir)
+        tables_dir = os.path.join(group_results_dir, group_name)
+
+    elif 'neutron' in group_name:
+        group_results_dir = os.path.join(results_dir, 'neutron')
+        tables_dir = group_results_dir
+
+    if not os.path.exists(tables_dir):
+        os.makedirs(tables_dir)
+
+    return tables_dir
 
 def figures(group_results_dir):
     """
@@ -83,12 +108,14 @@ def figures(group_results_dir):
     """
 
     support_pages_dir = \
-    os.path.join(group_results_dir, "tables", "support_pages")
+    os.path.join(group_results_dir, "support_pages")
     if not os.path.exists(support_pages_dir):
             os.makedirs(support_pages_dir)
     figures_dir = os.path.join(support_pages_dir, "figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
+
+    return figures_dir
 
 
 def del_contents_of_dir(directory):

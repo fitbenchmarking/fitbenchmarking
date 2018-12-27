@@ -35,32 +35,21 @@ sys.setrecursionlimit(10000)
 # Insert path to where the scripts are located, relative to
 # the example_scripts folder
 current_path = os.path.dirname(os.path.realpath(__file__))
-fitbenchmarking_path = os.path.abspath(os.path.join(current_path, os.pardir))
-scripts_path = os.path.join(fitbenchmarking_path, 'fitbenchmarking')
-sys.path.insert(0, scripts_path)
+fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
+scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
+sys.path.insert(0, scripts_folder)
 
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
-# ---------------------------------------------------------------------------
 
 
-# SOFTWARE YOU WANT TO BENCHMARK WILL REPLACE "mantid"
+# SOFTWARE YOU WANT TO BENCHMARK WILL REPLACE
 software = 'scipy'
-
-# Parameters of how the final tables are colored
-# e.g. lower that 1.1 -> light yellow, higher than 3 -> dark red
-# Change these values to suit your needs
-color_scale = [(1.1, 'ranking-top-1'),
-               (1.33, 'ranking-top-2'),
-               (1.75, 'ranking-med-3'),
-               (3, 'ranking-low-4'),
-               (float('nan'), 'ranking-low-5')]
-
 
 # Problem directories
 # Define any additional problem directories if you want to include other
 # sets of problems
-benchmark_probs_dir = os.path.join(fitbenchmarking_path, 'benchmark_problems')
+benchmark_probs_dir = os.path.join(fitbenchmarking_folder, 'benchmark_problems')
 nist_data_dir = os.path.join(benchmark_probs_dir, 'NIST_nonlinear_regression')
 neutron_data_dir = os.path.join(benchmark_probs_dir, 'Neutron_data')
 
@@ -76,9 +65,21 @@ results_dir = None
 # Whether to use errors in the fitting process
 use_errors = True
 
+# Parameters of how the final tables are colored
+# e.g. lower that 1.1 -> light yellow, higher than 3 -> dark red
+# Change these values to suit your needs
+color_scale = [(1.1, 'ranking-top-1'),
+               (1.33, 'ranking-top-2'),
+               (1.75, 'ranking-med-3'),
+               (3, 'ranking-low-4'),
+               (float('nan'), 'ranking-low-5')]
+
+
 # ADD WHICH PROBLEM SETS TO TEST AGAINST HERE
 # CURRENTLY TESTING AGAINST "neutron", "nist"
-for run_data in ["neutron", "nist"]:
+problem_sets = ["neutron", "nist"]
+
+for run_data in problem_sets:
 
     if run_data == "neutron":
         # Group label used in output folder and table file names

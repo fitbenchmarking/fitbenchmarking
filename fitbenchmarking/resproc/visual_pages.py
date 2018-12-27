@@ -164,8 +164,7 @@ def setup_nist_page_misc(link, results_dir):
                 a table with the fit details and the see also link
     """
 
-    support_pages_dir = os.path.join(results_dir, "nist", "tables",
-                                     "support_pages")
+    support_pages_dir = os.path.join(results_dir, "nist", "support_pages")
     if not os.path.exists(support_pages_dir):
         os.makedirs(support_pages_dir)
     see_also_link = 'See also:\n ' + link + '\n on NIST website\n\n'
@@ -184,8 +183,7 @@ def setup_neutron_page_misc(results_dir):
                 a table with the fit details and the see also link
     """
 
-    support_pages_dir = os.path.join(results_dir, "neutron", "tables",
-                                     "support_pages")
+    support_pages_dir = os.path.join(results_dir, "neutron", "support_pages")
     if not os.path.exists(support_pages_dir):
         os.makedirs(support_pages_dir)
     see_also_link = ''

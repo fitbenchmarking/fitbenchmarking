@@ -29,6 +29,7 @@ import os
 import numpy as np
 import mantid.simpleapi as msapi
 from fitting.plotting.plot_helper import *
+from utils import create_dirs
 
 
 def make_plots(software, problem, data_struct, function, best_fit,
@@ -50,7 +51,7 @@ def make_plots(software, problem, data_struct, function, best_fit,
                 saved to /group_results_dir/support_pages/figures
     """
 
-    figures_dir = setup_dirs(group_results_dir)
+    figures_dir = create_dirs.figures(group_results_dir)
 
     raw_data = get_data_points(problem)
     make_data_plot(problem.name, raw_data, count, figures_dir)
@@ -214,24 +215,3 @@ def get_mantid_starting_guess_data(wks_created, function, problem):
     yData = tmp.readY(1)
 
     return xData, yData
-
-def setup_dirs(group_results_dir):
-    """
-    Sets up the directories in which the figures will go.
-
-    @param group_results_dir :: dir where results for the current group
-                                are stored
-
-    @returns :: the path to the figures directory (str), of the form
-                /group_results_dir/support_pages/figures
-    """
-
-    support_pages_dir = os.path.join(group_results_dir, "tables",
-                                     "support_pages")
-    if not os.path.exists(support_pages_dir):
-            os.makedirs(support_pages_dir)
-    figures_dir = os.path.join(support_pages_dir, "figures")
-    if not os.path.exists(figures_dir):
-        os.makedirs(figures_dir)
-
-    return figures_dir

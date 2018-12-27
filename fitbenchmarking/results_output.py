@@ -32,6 +32,7 @@ from utils.logging_setup import logger
 from resproc import numpy_restables
 from resproc import rst_table
 from resproc import misc
+from utils import create_dirs
 
 # Some naming conventions for the output files
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -57,7 +58,7 @@ def save_results_tables(software, results_per_test, group_name,
     @returns :: html/rst tables with the fitting results
     """
     minimizers = utils.misc.get_minimizers(software)
-    tables_dir = misc.make_restables_dir(results_dir, group_name)
+    tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
     misc.create_linked_probs(results_per_test, group_name, results_dir)
 
