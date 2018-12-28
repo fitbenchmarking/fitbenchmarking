@@ -58,36 +58,29 @@ def do_fitting_benchmark(software, data_dir, use_errors=True, results_dir=None):
     group_results_dir = create_dirs.group_results(results_dir, group_name)
 
     user_input = misc.save_user_input(software, minimizers, group_name,
-                                      results_dir, user_errors)
+                                      group_results_dir, user_errors)
 
     prob_results = None
     prob_results = \
-    [do_fitbm_group(user_input, group_name, block, group_results_dir)
-     for block in problem_groups[group_name]]
+    [do_fitbm_group(user_input, block) for block in problem_groups[group_name]]
 
     return prob_results, results_dir
 
 
-def do_fitbm_group(user_input, problem_block, results_dir):
+def do_fitbm_group(user_input, problem_block):
     """
     Fit benchmark a specific group of problems.
 
-    @param software :: software used in fitting the problem, can be
-                        e.g. mantid, scipy etc.
-    @param group_name :: name of the group of problems
-    @param results_dir :: result directory for the problem group
+    @param user_input :: all the information specified by the user
     @param problem_block :: array of paths to problem files in the group
-    @param minimizers :: array of minimizers used in fitting
-    @param use_errors :: whether to use errors or not
 
     @returns :: array of result objects, per problem
     """
 
     results_per_problem = []
     for prob_file in problem_block:
-        problem = parse.parse_problem_file(group_name, prob_file)
-        results_prob = \
-        fitbm_one_prob(software, problem, minimizers, use_errors, results_dir)
+        problem = parse.parse_problem_file(user_input.group_name, prob_file)
+        results_prob = fitbm_one_prob(user_input, problem)
         results_per_problem.extend(results_prob)
 
     return results_per_problem

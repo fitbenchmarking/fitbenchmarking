@@ -32,8 +32,8 @@ class UserInput(object):
         self.minimizers = None
         # The name of the problem group to be analysed e.g. neutron
         self.group_name = None
-        # Director path in which to put the results
-        self.results_dir = None
+        # Director path in which to put the results for each problem group
+        self.group_results_dir = None
         # Whether or not to consider error bars in the fitting process
         self.use_errors = None
 

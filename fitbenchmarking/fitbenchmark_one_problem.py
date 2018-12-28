@@ -29,30 +29,23 @@ import sys
 import numpy as np
 import mantid.simpleapi as msapi
 
+import fitting
 from fitting import prerequisites as prereq
 from fitting import misc
-from fitting import mantid
-from fitting import scipyfit
 from fitting.plotting import plots
 
 from utils.logging_setup import logger
 
 
-def fitbm_one_prob(software, problem, minimizers, use_errors=True,
-                   group_results_dir=None):
+def fitbm_one_prob(user_input, problem):
     """
     Sets up the workspace, cost function and function definitons for
     a particular problem and fits the models provided in the problem
     object. The best fit, along with the data and a starting guess
     is then plotted on a visual display page.
 
-    @param software :: software used in fitting the problem, can be
-                        e.g. mantid, numpy etc.
+    @param user_input :: all the information specified by the user
     @param problem :: a problem object containing information used in fitting
-    @param minimizers :: array of minimizers used in fitting
-    @param use_errors :: whether to use errors or not
-    @param group_results_dir :: directory in which the group results
-                                are saved
 
     @returns :: nested array of result objects, per function definition
                 containing the fit information
@@ -61,20 +54,23 @@ def fitbm_one_prob(software, problem, minimizers, use_errors=True,
     previous_name, count = None, 0
     results_fit_problem = []
     data_struct, cost_function, function_definitions = \
-    prereq.prepare_software_prerequisites(software, problem, use_errors)
+    prereq.prepare_software_prerequisites(user_input.software, problem,
+                                          user_input.use_errors)
 
     for function in function_definitions:
         # Ad hoc exception for running the scipy script
         # scipy does not currently support the GEM problem
         if 'GEM' in problem.name and software == 'scipy': break;
         results_problem, best_fit = \
-        fit_one_function_def(software, problem, data_struct, function,
-                             minimizers, cost_function)
+        fit_one_function_def(user_input.software, problem, data_struct,
+                             function, user_input.minimizers, cost_function)
         count += 1
         if not best_fit is None:
+            # Make the plot of the best fit
             previous_name = \
-            plots.make_plots(software, problem, data_struct, function,
-                             best_fit, previous_name, count, group_results_dir)
+            plots.make_plots(user_input.software, problem, data_struct,
+                             function, best_fit, previous_name, count,
+                             user_input.group_results_dir)
 
         results_fit_problem.append(results_problem)
 
@@ -100,13 +96,10 @@ def fit_one_function_def(software, problem, data_struct, function, minimizers,
     """
 
     if software == 'mantid':
-        return mantid.benchmark(problem, data_struct, function, minimizers,
-                                cost_function)
+        return fitting.mantid.main.benchmark(problem, data_struct, function,
+                                             minimizers, cost_function)
     elif software == 'scipy':
-        return scipyfit.benchmark(problem, data_struct, function, minimizers,
-                                  cost_function)
-    # elif software == 'your_software':
-        # return your_software.benchmark(problem, data_struct, function,
-        #                                minimizers, cost_function)
+        return fitting.scipy.main.benchmark(problem, data_struct, function,
+                                            minimizers, cost_function)
     else:
         raise NameError("Sorry, that software is not supported.")

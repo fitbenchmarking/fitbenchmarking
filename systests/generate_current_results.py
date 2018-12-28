@@ -27,11 +27,9 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import sys
-# Avoid reaching the maximum recursion depth by setting recursion limit
-sys.setrecursionlimit(10000)
 
-# Insert path to where the scripts are located, relative to
-# the example_scripts folder
+
+sys.setrecursionlimit(10000)
 current_path = os.path.dirname(os.path.realpath(__file__))
 fitbenchmarking_path = os.path.abspath(os.path.join(current_path, os.pardir))
 scripts_path = os.path.join(fitbenchmarking_path, 'fitbenchmarking')
@@ -42,9 +40,6 @@ from results_output import save_results_tables as printTables
 
 
 software = 'mantid'
-
-# Parameters of how the final tables are colored
-# e.g. lower that 1.1 -> light yellow, higher than 3 -> dark red
 color_scale = [(1.1, 'ranking-top-1'),
                (1.33, 'ranking-top-2'),
                (1.75, 'ranking-med-3'),
@@ -58,14 +53,7 @@ benchmark_problems_dir = os.path.join(fitbenchmarking_path,
 nist_data_dir = os.path.join(benchmark_problems_dir,'NIST_nonlinear_regression')
 neutron_data_dir = os.path.join(benchmark_problems_dir, 'Neutron_data')
 
-# Modify results_dir to specify where the results of the fit should be saved
-# If left as None, they will be saved in a "results" folder in the working dir
-# When specifying a results_dir, please GIVE THE FULL PATH
-# If the full path is not given and the results_dir name is valid
-#  ../fitbenchmarking/fitbenchmarking/ is taken as the path
 results_dir = None
-
-# Whether to use errors in the fitting process
 use_errors = True
 
 for run_data in ["neutron", "nist"]:

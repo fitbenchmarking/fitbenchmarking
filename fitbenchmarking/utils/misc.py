@@ -49,7 +49,6 @@ def get_minimizers(software):
 
     return minimizers
 
-
 def setup_fitting_problems(data_dir):
     """
     Sets up the problem groups specified by the user by providing
@@ -64,6 +63,8 @@ def setup_fitting_problems(data_dir):
         problem_groups['nist'] = get_nist_problem_files(data_dir)
     elif 'Neutron' in data_dir:
         problem_groups['neutron'] = get_neutron_problem_files(data_dir)
+    # elif ...
+    #    problem_groups[your-group-name] = your_function(your_data_dir)
     else:
         raise NameError("Data directory not recognised!")
 
@@ -81,8 +82,8 @@ def save_user_iput(software, minimizers, group_name, use_errors, results_dir):
     uinput = user_input.UserInput()
     uinput.software = software
     uinput.minimizers = minimizers
-    uinput.group_name = gorup_name
-    uinput.results_dir = results_dir
+    uinput.group_name = group_name
+    uinput.group_results_dir = results_dir
     uinput.use_errors = use_errors
 
     return uinput
