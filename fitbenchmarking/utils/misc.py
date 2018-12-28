@@ -26,7 +26,9 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import json
+
 from parsing.fetch_data import *
+from utils import user_input
 
 
 def get_minimizers(software):
@@ -66,3 +68,21 @@ def setup_fitting_problems(data_dir):
         raise NameError("Data directory not recognised!")
 
     return problem_groups
+
+def save_user_iput(software, minimizers, group_name, use_errors, results_dir):
+    """
+    All parameters inputed by the user are stored in an object.
+
+    @params :: please check the user_input.py file in the utils dir.
+
+    @returns :: an object containing all the information specified by the user.
+    """
+
+    uinput = user_input.UserInput()
+    uinput.software = software
+    uinput.minimizers = minimizers
+    uinput.group_name = gorup_name
+    uinput.results_dir = results_dir
+    uinput.use_errors = use_errors
+
+    return uinput

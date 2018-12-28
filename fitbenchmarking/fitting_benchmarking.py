@@ -35,8 +35,7 @@ from utils import create_dirs, misc
 from fitbenchmark_one_problem import fitbm_one_problem
 
 
-def do_fitting_benchmark(software, data_dir, use_errors=True,
-                         results_dir=None):
+def do_fitting_benchmark(software, data_dir, use_errors=True, results_dir=None):
     """
     High level function that does the fitting benchmarking for a
     specified group of problems.
@@ -53,21 +52,23 @@ def do_fitting_benchmark(software, data_dir, use_errors=True,
 
     minimizers = misc.get_minimizers(software)
     problem_groups = misc.setup_fitting_problems(data_dir)
+
+    group_name = next(iter(problem_groups))
     results_dir = create_dirs.results(results_dir)
+    group_results_dir = create_dirs.group_results(results_dir, group_name)
+
+    user_input = misc.save_user_input(software, minimizers, group_name,
+                                      results_dir, user_errors)
 
     prob_results = None
-    for group_name in problem_groups:
-        group_results_dir = create_dirs.group_results(results_dir, group_name)
-        prob_results = \
-        [do_fitting_benchmark_group(software, minimizers, group_name, block,
-                                    use_errors, group_results_dir)
-         for block in problem_groups[group_name]]
+    prob_results = \
+    [do_fitbm_group(user_input, group_name, block, group_results_dir)
+     for block in problem_groups[group_name]]
 
     return prob_results, results_dir
 
 
-def do_fitting_benchmark_group(software, minimizers, group_name, problem_block,
-                               use_errors, results_dir):
+def do_fitbm_group(user_input, problem_block, results_dir):
     """
     Fit benchmark a specific group of problems.
 
@@ -86,8 +87,7 @@ def do_fitting_benchmark_group(software, minimizers, group_name, problem_block,
     for prob_file in problem_block:
         problem = parse.parse_problem_file(group_name, prob_file)
         results_prob = \
-        fitbm_one_problem(software, problem, minimizers, use_errors,
-                          results_dir)
+        fitbm_one_prob(software, problem, minimizers, use_errors, results_dir)
         results_per_problem.extend(results_prob)
 
     return results_per_problem

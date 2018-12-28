@@ -60,7 +60,7 @@ def create_result_entry(problem, status, chi_sq, runtime, minimizer,
     """
 
     # Create empty fitting result object
-    result = test_result.FittingTestResult()
+    result = test_result.FittingResult()
 
     # Populate result object
     result.problem = problem

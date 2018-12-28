@@ -20,34 +20,26 @@
 from __future__ import (absolute_import, division, print_function)
 
 
-class FittingTestProblem(object):
+class FittingResult(object):
     """
-    Definition of a fitting test problem, normally loaded from a problem
-    definition file.
+    Minimal definition of a class to hold results from a
+    fitting problem test.
+    """
 
-    Types of data:
-        - strings: name, type, equation
-        - floats: start_x, end_x, ref_residual_sum_sq
-        - numpy arrays: data_x, data_y, data_e
-        - arrays: starting_values
-    """
     def __init__(self):
-        self.name = None
-        # The type of problem, i.e. either neutron or nist etc.
-        self.type = None
-        # If there is an online/documentation link describing this problem
-        self.equation = None
-        self.start_x = None
-        self.end_x = None
+        self.problem = None
+        self.fit_status = None
+        self.chi_sq = None
 
-        # can be for example the list of starting values from
-        # NIST test problems
-        self.starting_values = None
-        # The data
-        self.data_x = None
-        self.data_y = None
-        self.data_e = None
+        # Workspace with data to fit
+        self.fit_wks = None
+        self.params = None
+        self.errors = None
 
-        # The 'certified' or reference sum of squares, if provided
-        # (for example in NIST tests).
-        self.ref_residual_sum_sq = None
+        # Time it took to run the Fit algorithm
+        self.runtime = None
+
+        # Best minimizer for a certain problem and its function definition
+        self.minimizer = None
+        self.ini_function_def = None
+        self.fin_function_def = None

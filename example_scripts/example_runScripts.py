@@ -43,7 +43,7 @@ from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
 
-# SOFTWARE YOU WANT TO BENCHMARK WILL REPLACE
+# SOFTWARE YOU WANT TO BENCHMARK
 software = 'scipy'
 
 # Problem directories

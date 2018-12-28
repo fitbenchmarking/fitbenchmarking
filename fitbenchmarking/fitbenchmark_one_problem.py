@@ -38,8 +38,8 @@ from fitting.plotting import plots
 from utils.logging_setup import logger
 
 
-def fitbm_one_problem(software, problem, minimizers, use_errors=True,
-                      group_results_dir=None):
+def fitbm_one_prob(software, problem, minimizers, use_errors=True,
+                   group_results_dir=None):
     """
     Sets up the workspace, cost function and function definitons for
     a particular problem and fits the models provided in the problem
