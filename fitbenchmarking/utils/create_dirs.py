@@ -51,7 +51,6 @@ def results(results_dir):
 
     return results_dir
 
-
 def group_results(results_dir, group_name):
     """
     Creates the group results folder into the main results directory.
@@ -75,7 +74,7 @@ def group_results(results_dir, group_name):
 def restables_dir(results_dir, group_name):
     """
     Creates the results directory where the tables are located.
-    e.g. fitbenchmarking/results/neutron/Tables/
+    e.g. fitbenchmarking/results/neutron/
 
     @param results_dir :: directory that holds all the results
     @param group_name :: string containing the name of the problem group
@@ -116,7 +115,6 @@ def figures(group_results_dir):
         os.makedirs(figures_dir)
 
     return figures_dir
-
 
 def del_contents_of_dir(directory):
     """

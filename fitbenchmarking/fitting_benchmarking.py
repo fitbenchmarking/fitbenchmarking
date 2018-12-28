@@ -28,10 +28,10 @@ for a certain fitting software.
 from __future__ import (absolute_import, division, print_function)
 
 import os, json
-
 from utils.logging_setup import logger
+
 from parsing import parse
-from utils import create_dirs, setup_problem_groups, misc
+from utils import create_dirs, misc
 from fitbenchmark_one_problem import fitbm_one_problem
 
 
@@ -50,9 +50,10 @@ def do_fitting_benchmark(software, data_dir, use_errors=True,
     @returns :: array of fitting results for the problem group and
                 the path to the results directory
     """
+
     minimizers = misc.get_minimizers(software)
+    problem_groups = misc.setup_fitting_problems(data_dir)
     results_dir = create_dirs.results(results_dir)
-    problem_groups = setup_problem_groups.setup(software, data_dir)
 
     prob_results = None
     for group_name in problem_groups:

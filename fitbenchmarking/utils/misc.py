@@ -26,6 +26,8 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import json
+from parsing.fetch_data import *
+
 
 def get_minimizers(software):
     """
@@ -39,9 +41,28 @@ def get_minimizers(software):
 
     current_path = os.path.dirname(os.path.realpath(__file__))
     fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
-    minimizers_dir = os.path.join(fitbm_path, "fitting")
-    minimizers_json = os.path.join(minimizers_dir, "minimizers.json")
+    minimizers_json = os.path.join(fitbm_path, "minimizers.json")
     all_minimizers = json.load(open(minimizers_json))
     minimizers = all_minimizers[software]
 
     return minimizers
+
+
+def setup_fitting_problems(data_dir):
+    """
+    Sets up the problem groups specified by the user by providing
+    a respective data directory.
+
+    @param data_dir :: directory holding the problem data used to test
+
+    @returns :: the problem groups dictionary
+    """
+
+    if 'NIST' in data_dir:
+        problem_groups['nist'] = get_nist_problem_files(data_dir)
+    elif 'Neutron' in data_dir:
+        problem_groups['neutron'] = get_neutron_problem_files(data_dir)
+    else:
+        raise NameError("Data directory not recognised!")
+
+    return problem_groups
