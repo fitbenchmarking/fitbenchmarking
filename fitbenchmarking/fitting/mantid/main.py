@@ -67,7 +67,7 @@ def benchmark(problem, wks_created, function, minimizers, cost_function):
     return results_problem, best_fit
 
 
-def fit(problem, wks_created, function, minimizer='Levenberg-Marquardt',
+def fit(problem, wks_created, function, minimizer,
         cost_function='Least squares'):
     """
     The mantid fit software.

@@ -9,18 +9,18 @@ import mantid.simpleapi as msapi
 import sys
 test_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(os.path.normpath(test_dir))
+parent_dir = os.path.dirname(os.path.normpath(parent_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
-from fitting.mantid import fit
-from fitting.mantid import parse_result
-from fitting.mantid import optimum
-from fitting.mantid import wks_cost_function
-from fitting.mantid import function_definitions
-from fitting.mantid import get_ignore_invalid
-from fitting.mantid import parse_nist_function_definitions
-from fitting.mantid import setup_errors
-from utils import test_problem
+from fitting.mantid.main import benchmark
+from fitting.mantid.main import fit
+from fitting.mantid.main import chisq
+from fitting.mantid.main import parse_result
+from fitting.mantid.main import optimum
+from fitting.mantid.main import get_ignore_invalid
+
+from utils import fitbm_problem
 
 
 class MantidTests(unittest.TestCase):
@@ -46,7 +46,7 @@ class MantidTests(unittest.TestCase):
                                   [75.47, 689.1],
                                   [81.78, 760.0] ])
 
-        prob = test_problem.FittingTestProblem()
+        prob = fitbm_problem.FittingProblem()
         prob.name = 'Misra1a'
         prob.type = 'nist'
         prob.equation = 'b1*(1-exp(-b2*x))'
@@ -56,26 +56,6 @@ class MantidTests(unittest.TestCase):
         prob.data_y = data_pattern[:, 0]
 
         return prob
-
-
-    def Neutron_problem(self):
-        """
-        Sets up the problem object for the neutron problem file:
-        ENGINX193749_calibration_peak19.txt
-        """
-
-        prob = test_problem.FittingTestProblem()
-        prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
-        prob.type = 'neutron'
-        prob.equation = ("name=LinearBackground,A0=0,A1=0;"
-                         "name=BackToBackExponential,"
-                         "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
-        prob.starting_values = None
-        prob.start_x = 23919.5789114
-        prob.end_x = 24189.3183142
-
-        return prob
-
 
     def setup_problem_Misra1a_success(self):
         """
@@ -144,33 +124,7 @@ class MantidTests(unittest.TestCase):
         return status, fit_wks, fin_function_def, runtime
 
 
-    def create_wks_NIST_problem_with_errors(self):
-        """
-        Helper function.
-        Creates a mantid workspace using the data provided by the
-        NIST problem Misra1a.
-        """
-
-        prob = self.NIST_problem()
-        data_e = np.sqrt(abs(prob.data_y))
-        wks_exp = msapi.CreateWorkspace(DataX=prob.data_x, DataY=prob.data_y,
-                                        DataE=data_e)
-        return wks_exp
-
-
-    def create_wks_NIST_problem_without_errors(self):
-        """
-        Helper function.
-        Creates a mantid workspace using the data provided by the
-        NIST problem Misra1a.
-        """
-
-        prob = self.NIST_problem()
-        wks_exp = msapi.CreateWorkspace(DataX=prob.data_x, DataY=prob.data_y)
-        return wks_exp
-
-
-    def test_fitting_mantid_return_success_for_NIST_Misra1a_prob_file(self):
+    def test_fit_return_success_for_NIST_Misra1a_prob_file(self):
 
         prob, wks, function, minimizer, cost_function = \
         self.setup_problem_Misra1a_success()
@@ -183,8 +137,7 @@ class MantidTests(unittest.TestCase):
         self.assertEqual(status_expected, status)
         self.assertEqual(fin_function_def_expected[:44], fin_function_def[:44])
 
-
-    def test_runFit_mantidFit_fails(self):
+    def test_fit_fails(self):
 
         prob, wks, function, minimizer, cost_function = \
         self.setup_problem_Misra1a_fail()
@@ -199,62 +152,58 @@ class MantidTests(unittest.TestCase):
         np.testing.assert_equal(runtime_expected, runtime)
         np.testing.assert_equal(fit_wks_expected, fit_wks)
 
+    def test_chisq_status_failed(self):
 
-    def test_wksCostFunction_return_with_errors(self):
+        status = 'failed'
 
-        prob = self.NIST_problem()
-        use_errors = True
+        chi_sq, min_chi_sq, best_fit = chisq(status, 1, 1, 1, 1)
+        chi_sq_expected, min_chi_sq_expected, best_fit_expected = np.nan, 1, 1
 
-        wks, cost_function = wks_cost_function(prob, use_errors)
-        wks_expected = self.create_wks_NIST_problem_with_errors()
-        cost_function_expected = 'Least squares'
+        np.testing.assert_equal(chi_sq_expected, chi_sq)
+        self.assertEqual(min_chi_sq_expected, min_chi_sq)
+        self.assertEqual(best_fit_expected, best_fit)
 
-        self.assertEqual(cost_function_expected, cost_function)
-        result, messages = msapi.CompareWorkspaces(wks_expected, wks)
-        self.assertTrue(result)
+    def test_chisq_status_succeeded_greater_chisq(self):
 
+        status = 'success'
+        wks = msapi.CreateWorkspace(DataX=np.array([1,2,3,4,5,6]),
+                                    DataY=np.array([1,2,3,4,5,6]),
+                                    DataE=np.sqrt(np.array([1,2,3,4,5,6])),
+                                    NSpec=3)
+        minimizer = 'Levenberg-Marquardt'
+        min_chi_sq = 1000000
+        best_fit = None
 
-    def test_wksCostFunction_return_without_errors(self):
+        chi_sq, min_chi_sq, best_fit = \
+        chisq(status, wks, min_chi_sq, best_fit, minimizer, 0)
+        chi_sq_expected = 5
+        min_chi_sq_expected = chi_sq
 
-        prob = self.NIST_problem()
-        use_errors = False
+        self.assertEqual(chi_sq_expected, chi_sq)
+        self.assertEqual(min_chi_sq_expected, min_chi_sq)
+        self.assertTrue(best_fit is not None)
 
-        wks, cost_function = wks_cost_function(prob, use_errors)
-        wks_expected = self.create_wks_NIST_problem_without_errors()
-        cost_function_expected = 'Unweighted least squares'
+    def test_parse_result_failed(self):
 
-        self.assertEqual(cost_function_expected, cost_function)
-        result, messages = msapi.CompareWorkspaces(wks_expected, wks)
-        self.assertTrue(result)
+        fit_result = None
+        t_start = 1
+        t_end = 2
 
+        status, fit_wks, fin_function_def, runtime = \
+        parse_result(fit_result, t_start, t_end)
+        status_expected = 'failed'
+        fit_wks_expected = None
+        fin_function_def_expected = None
+        runtime_expected = np.nan
 
-    def test_functionDefinitions_return_NIST_functions(self):
-
-        prob = self.NIST_problem()
-
-        function_defs = function_definitions(prob)
-        function_defs_expected = \
-        ["name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=500.0,b2=0.0001",
-         "name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=250.0,b2=0.0005"]
-
-        self.assertListEqual(function_defs_expected, function_defs)
-
-
-    def test_functionDefinitions_return_neutron_function(self):
-
-        prob = self.Neutron_problem()
-
-        function_defs = function_definitions(prob)
-        function_defs_expected = \
-        [("name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,"
-          "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")]
-
-        self.assertListEqual(function_defs_expected, function_defs)
-
+        self.assertEqual(status_expected, status)
+        self.assertEqual(fit_wks_expected, fit_wks)
+        self.assertEqual(fin_function_def_expected, fin_function_def)
+        np.testing.assert_equal(runtime_expected, runtime)
 
     def test_ignoreInvalid_return_True(self):
 
-        prob = test_problem.FittingTestProblem()
+        prob = fitbm_problem.FittingProblem()
         prob.name = 'notWish'
         cost_function = 'Least squares'
 
@@ -266,7 +215,7 @@ class MantidTests(unittest.TestCase):
 
     def test_ignoreInvalid_return_False_because_of_WISH17701(self):
 
-        prob = test_problem.FittingTestProblem()
+        prob = fitbm_problem.FittingProblem()
         prob.name = 'WISH17701lol'
         cost_function = 'Least squares'
 
