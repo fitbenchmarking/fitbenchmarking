@@ -34,6 +34,36 @@ from utils.logging_setup import logger
 FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
+def create_linked_probs(results_per_test, group_name, results_dir):
+    """
+    Creates the problem names with links to the visual display pages
+    in rst.
+
+    @param results_per_test :: results object
+    @param group_name :: name of the problem group
+    @param results_dir :: directory in which the results are saved
+
+    @returns :: array of the problem names with the links in rst
+    """
+
+    # Count keeps track if it is the same problem but different starting point
+    prev_name = ''
+    count = 1
+
+    linked_problems = []
+    for test_idx, prob_results in enumerate(results_per_test):
+        name = results_per_test[test_idx][0].problem.name
+        if name == prev_name:
+            count += 1
+        else:
+            count = 1
+        prev_name = name
+        name_index = name + ' ' + str(count)
+        name = '`' + name_index + ' ' + \
+               create(prob_results, group_name, results_dir, count)
+        linked_problems.append(name)
+
+    return linked_problems
 
 def create(prob_results, group_name, results_dir, count):
     """

@@ -31,7 +31,7 @@ import utils.misc
 from utils.logging_setup import logger
 from resproc import numpy_restables
 from resproc import rst_table
-from resproc import misc
+from resproc import visual_pages
 from utils import create_dirs
 
 # Some naming conventions for the output files
@@ -60,7 +60,7 @@ def save_results_tables(software, results_per_test, group_name,
     minimizers = utils.misc.get_minimizers(software)
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
-    misc.create_linked_probs(results_per_test, group_name, results_dir)
+    visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
 
     norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = \
     generate_tables(results_per_test, minimizers)

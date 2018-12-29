@@ -1,7 +1,13 @@
 [run]
 omit =
-    /fitbenchmarking/utils/test_problem.py
-    /fitbenchmarking/utils/test_result.py
+    /fitbenchmarking/utils/fitbm_problem.py
+    /fitbenchmarking/utils/ftibm_result.py
+    /fitbenchmarking/fitting/plotting/*
+    /fitbenchmarking/utils/logging_setup.py
+    /fitbenchmarking/utils/user_input.py
+    /fitbenchmarking/resproc/visual_pages.py
+    /fitbenchmarking/resproc/parse.py
+
 
 [report]
 omit =

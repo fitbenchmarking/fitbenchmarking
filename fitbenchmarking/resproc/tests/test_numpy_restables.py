@@ -14,7 +14,7 @@ sys.path.insert(0, main_dir)
 from resproc.numpy_restables import create_accuracy_runtime_tbls
 from resproc.numpy_restables import create_norm_tbls
 from resproc.numpy_restables import create_summary_tbls
-from utils import test_result
+from utils import fitbm_result
 
 class NumpyRestablesTests(unittest.TestCase):
 
@@ -29,7 +29,7 @@ class NumpyRestablesTests(unittest.TestCase):
         for test_idx in range(0, len(chi_sq)):
             prob_results = []
             for minimiz_idx in range(0, len(chi_sq[test_idx])):
-                result = test_result.FittingTestResult()
+                result = fitbm_result.FittingResult()
                 result.chi_sq = chi_sq[test_idx][minimiz_idx]
                 result.runtime = runtime[test_idx][minimiz_idx]
                 prob_results.append(result)
