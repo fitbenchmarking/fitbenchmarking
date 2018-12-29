@@ -24,8 +24,7 @@ General utility functions for calculating some attributes of the fit.
 from __future__ import (absolute_import, division, print_function)
 import numpy as np
 import mantid
-from utils import test_result
-
+from utils import fitbm_result
 
 def compute_chisq(differences):
     """
@@ -60,7 +59,7 @@ def create_result_entry(problem, status, chi_sq, runtime, minimizer,
     """
 
     # Create empty fitting result object
-    result = test_result.FittingResult()
+    result = fitbm_result.FittingResult()
 
     # Populate result object
     result.problem = problem

@@ -27,7 +27,8 @@ from __future__ import (absolute_import, division, print_function)
 import numpy as np
 import re
 
-from fitting import scipy
+from fitting.scipy.nist_def import nist_func_definitions
+from fitting.scipy.neutron_def import neutron_func_definitions
 from utils.logging_setup import logger
 
 
@@ -37,10 +38,10 @@ def function_definitions(problem):
     the softwareto understand.
     """
     if problem.type == 'nist':
-        return scipy.nist_def.nist_func_definitions(problem.equation,
+        return nist_func_definitions(problem.equation,
                                                     problem.starting_values)
     elif problem.type == 'neutron':
-        return scipy.neutron_def.neutron_func_definitions(problem.equation)
+        return neutron_func_definitions(problem.equation)
     else:
         RuntimeError("Your problem type is not supported yet!")
 

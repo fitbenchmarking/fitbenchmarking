@@ -25,7 +25,6 @@ specific.
 
 from __future__ import (absolute_import, division, print_function)
 
-import fitting
 import numpy as np
 
 
@@ -61,10 +60,13 @@ def prepare_mantid(problem, use_errors):
                 mantid cost funtion
                 mantid function definitions
     """
+    from fitting.mantid.prepare_data import wks_cost_function
+    from fitting.mantid.func_def import function_definitions
+
     wks_mtd, cost_function = \
-    fitting.mantid.prepare_data.wks_cost_function(problem, use_errors)
+    wks_cost_function(problem, use_errors)
     function_definitions = \
-    fitting.mantid.func_def.function_definitions(problem)
+    function_definitions(problem)
 
     return wks_mtd, cost_function, function_definitions
 
@@ -78,9 +80,12 @@ def prepare_scipy(problem, use_errors):
                 scipy cost funtion
                 scipy function definitions
     """
+    from fitting.scipy.prepare_data import prepare_data
+    from fitting.scipy.func_def import function_definitions
+
     data, cost_function = \
-    fitting.scipy.prepare_data.prepare_data(problem, use_errors)
-    function_definitions = fitting.scipy.func_def.function_definitions(problem)
+    prepare_data(problem, use_errors)
+    function_definitions = function_definitions(problem)
     # For problems that have no specified boundries, set -inf and +inf
     if problem.start_x == None and problem.end_x == None:
         problem.start_x = - np.inf

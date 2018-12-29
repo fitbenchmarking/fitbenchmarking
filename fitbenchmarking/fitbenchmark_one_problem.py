@@ -29,7 +29,6 @@ import sys
 import numpy as np
 import mantid.simpleapi as msapi
 
-import fitting
 from fitting import prerequisites as prereq
 from fitting import misc
 from fitting.plotting import plots
@@ -60,7 +59,7 @@ def fitbm_one_prob(user_input, problem):
     for function in function_definitions:
         # Ad hoc exception for running the scipy script
         # scipy does not currently support the GEM problem
-        if 'GEM' in problem.name and software == 'scipy': break;
+        if 'GEM' in problem.name and user_input.software == 'scipy': break;
         results_problem, best_fit = \
         fit_one_function_def(user_input.software, problem, data_struct,
                              function, user_input.minimizers, cost_function)
@@ -96,10 +95,12 @@ def fit_one_function_def(software, problem, data_struct, function, minimizers,
     """
 
     if software == 'mantid':
-        return fitting.mantid.main.benchmark(problem, data_struct, function,
+        from fitting.mantid.main import benchmark
+        return benchmark(problem, data_struct, function,
                                              minimizers, cost_function)
     elif software == 'scipy':
-        return fitting.scipy.main.benchmark(problem, data_struct, function,
+        from fitting.scipy.main import benchmark
+        return benchmark(problem, data_struct, function,
                                             minimizers, cost_function)
     else:
         raise NameError("Sorry, that software is not supported.")

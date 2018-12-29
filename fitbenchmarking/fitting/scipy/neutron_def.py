@@ -26,7 +26,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
 
-from fitting import mantid
+from fitting.mantid.externals import gen_func_obj, set_ties
 from utils.logging_setup import logger
 
 def neutron_func_definitions(functions_string):
@@ -47,7 +47,7 @@ def neutron_func_definitions(functions_string):
     fit_function = None
     for name in function_names:
         fit_function = make_neutron_fit_function(name, fit_function)
-    fit_function = mantid.set_ties(fit_function, ties)
+    fit_function = set_ties(fit_function, ties)
 
     function_defs = [[fit_function, params]]
 
@@ -124,7 +124,7 @@ def make_neutron_fit_function(func_name, fit_function):
     """
     Create the neutron fit function object that is used by scipy.
     """
-    func_obj = mantid.gen_func_obj(func_name)
+    func_obj = gen_func_obj(func_name)
     if fit_function == None: fit_function = func_obj
     else: fit_function += func_obj
 

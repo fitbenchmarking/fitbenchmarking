@@ -54,3 +54,18 @@ def set_ties(function_object, ties):
             exec "function_object.tie({'f" + str(idx) + "." + tie + "})"
 
     return function_object
+
+def store_main_problem_data(fname, problem):
+    """
+    Stores the main problem data into the relevant attributes of the
+    problem object.
+
+    @param fname :: path to the neutron problem definition file
+    @param problem :: object holding the problem information
+    """
+
+    wks_imported = msapi.Load(Filename=fname)
+    problem.data_x = wks_imported.readX(0)
+    problem.data_y = wks_imported.readY(0)
+    problem.data_e = wks_imported.readE(0)
+    problem.ref_residual_sum_sq = 0

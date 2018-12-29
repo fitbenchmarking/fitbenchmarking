@@ -58,7 +58,7 @@ def setup_fitting_problems(data_dir):
 
     @returns :: the problem groups dictionary
     """
-
+    problem_groups = {}
     if 'NIST' in data_dir:
         problem_groups['nist'] = get_nist_problem_files(data_dir)
     elif 'Neutron' in data_dir:
@@ -70,7 +70,7 @@ def setup_fitting_problems(data_dir):
 
     return problem_groups
 
-def save_user_iput(software, minimizers, group_name, use_errors, results_dir):
+def save_user_input(software, minimizers, group_name, results_dir, use_errors):
     """
     All parameters inputed by the user are stored in an object.
 

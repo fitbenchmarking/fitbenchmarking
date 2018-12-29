@@ -24,6 +24,7 @@ the right format.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 from __future__ import (absolute_import, division, print_function)
 
+import numpy as np
 from utils.logging_setup import logger
 
 

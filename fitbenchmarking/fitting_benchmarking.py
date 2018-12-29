@@ -32,7 +32,7 @@ from utils.logging_setup import logger
 
 from parsing import parse
 from utils import create_dirs, misc
-from fitbenchmark_one_problem import fitbm_one_problem
+from fitbenchmark_one_problem import fitbm_one_prob
 
 
 def do_fitting_benchmark(software, data_dir, use_errors=True, results_dir=None):
@@ -58,7 +58,7 @@ def do_fitting_benchmark(software, data_dir, use_errors=True, results_dir=None):
     group_results_dir = create_dirs.group_results(results_dir, group_name)
 
     user_input = misc.save_user_input(software, minimizers, group_name,
-                                      group_results_dir, user_errors)
+                                      group_results_dir, use_errors)
 
     prob_results = None
     prob_results = \

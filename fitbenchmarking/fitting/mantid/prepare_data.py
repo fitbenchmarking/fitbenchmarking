@@ -88,18 +88,3 @@ def convert_back(wks_used, problem, use_errors):
     problem.data_x = np.copy(tmp.readX(0))
     problem.data_y = np.copy(tmp.readY(0))
     if use_errors: problem.data_e = np.copy(tmp.readE(0))
-
-def store_main_problem_data(fname, problem):
-    """
-    Stores the main problem data into the relevant attributes of the
-    problem object.
-
-    @param fname :: path to the neutron problem definition file
-    @param problem :: object holding the problem information
-    """
-
-    wks_imported = msapi.Load(Filename=fname)
-    problem.data_x = wks_imported.readX(0)
-    problem.data_y = wks_imported.readY(0)
-    problem.data_e = wks_imported.readE(0)
-    problem.ref_residual_sum_sq = 0

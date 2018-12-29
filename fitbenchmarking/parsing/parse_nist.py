@@ -27,7 +27,7 @@ from __future__ import (absolute_import, division, print_function)
 import os, re
 import numpy as np
 
-from utils import fitting_problem
+from utils import fitbm_problem
 from utils.logging_setup import logger
 
 
@@ -71,7 +71,7 @@ def store_prob_details(spec_file, parsed_eq, starting_values, data_pattern,
                               of the fit
     """
 
-    prob = fitting_problem.FittingProblem()
+    prob = fitbm_problem.FittingProblem()
     prob.name = os.path.basename(spec_file.name.split('.')[0])
     prob.equation = parsed_eq
     prob.starting_values = starting_values
