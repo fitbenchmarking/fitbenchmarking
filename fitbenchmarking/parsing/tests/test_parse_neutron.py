@@ -2,6 +2,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import unittest
 import os
+import numpy as np
 
 # Delete four lines below when automated tests ar enabled
 import sys
@@ -10,10 +11,13 @@ parent_dir = os.path.dirname(os.path.normpath(test_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
+from fitting.mantid.externals import store_main_problem_data
+from parsing.parse_neutron import load_file
 from parsing.parse_neutron import get_data_file
 from parsing.parse_neutron import get_neutron_data_problem_entries
+from parsing.parse_neutron import store_misc_problem_data
 
-from utils import test_problem
+from utils import fitbm_problem
 
 
 class ParseNeutronTests(unittest.TestCase):
@@ -59,6 +63,56 @@ class ParseNeutronTests(unittest.TestCase):
 
         return entries
 
+    def expected_neutron_problem(self):
+
+        bench_prob_dir = self.get_bench_prob_dir()
+        entries = self.expected_neutron_problem_entries()
+        problem = fitbm_problem.FittingProblem()
+        problem.name = entries['name']
+        problem.equation = entries['function']
+        problem.starting_values = None
+        if 'fit_parameters' in entries:
+            problem.start_x = entries['fit_parameters']['StartX']
+            problem.end_x = entries['fit_parameters']['EndX']
+        problem.ref_residual_sum_sq = 0
+        data_file = os.path.join(bench_prob_dir, 'Neutron_data',
+                                 'data_files', entries['input_file'])
+        store_main_problem_data(data_file, problem)
+
+        return problem
+
+    def test_loadFile_returns_correct_problem_object(self):
+
+        fname = self.neutron_peak_19_file()
+
+        problem = load_file(fname)
+        problem_expected = self.expected_neutron_problem()
+
+        self.assertEqual(problem_expected.name, problem.name)
+        self.assertEqual(problem_expected.equation, problem.equation)
+        self.assertEqual(problem_expected.starting_values,
+                         problem.starting_values)
+        self.assertEqual(problem_expected.start_x, problem.start_x)
+        self.assertEqual(problem_expected.end_x, problem.end_x)
+
+        # Correcting for bugs in mantid :(
+        data_x = np.copy(problem.data_x)
+        data_y = np.copy(problem.data_y)
+        data_e = np.copy(problem.data_e)
+
+        data_x[0] = 6000.
+        data_y[0] = 1.
+        data_e[0] = 1.
+
+        # Continuing testing
+        np.testing.assert_allclose(problem_expected.data_x, data_x,
+                                   rtol=1e-3,atol=0)
+        np.testing.assert_allclose(problem_expected.data_y, data_y,
+                                   rtol=1e-3, atol=0)
+        np.testing.assert_allclose(problem_expected.data_e, data_e,
+                                   rtol=1e-3, atol=0)
+        self.assertEqual(problem_expected.ref_residual_sum_sq,
+                         problem.ref_residual_sum_sq)
 
     def test_getDataFilesDir_return_data_files_path(self):
 
@@ -89,6 +143,18 @@ class ParseNeutronTests(unittest.TestCase):
         self.assertEqual(entries_expected['description'],
                          entries['description'])
 
+    def test_storeMiscProbData(self):
+
+        problem = fitbm_problem.FittingProblem()
+        entries = self.expected_neutron_problem_entries()
+
+        store_misc_problem_data(problem, entries)
+
+        self.assertEqual(entries['name'], problem.name)
+        self.assertEqual(entries['function'], problem.equation)
+        self.assertEqual(entries['fit_parameters']['StartX'], problem.start_x)
+        self.assertEqual(entries['fit_parameters']['EndX'], problem.end_x)
+        self.assertEqual(None, problem.starting_values)
 
 if __name__ == "__main__":
     unittest.main()
