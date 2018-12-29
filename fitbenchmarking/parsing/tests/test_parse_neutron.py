@@ -104,6 +104,10 @@ class ParseNeutronTests(unittest.TestCase):
         data_y[0] = 1.
         data_e[0] = 1.
 
+        data_x[-1] = 45999.
+        data_y[-1] = 0
+        data_e[-1] = 0
+
         # Continuing testing
         np.testing.assert_allclose(problem_expected.data_x, data_x,
                                    rtol=1e-3,atol=0)

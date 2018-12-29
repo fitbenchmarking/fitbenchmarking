@@ -13,7 +13,6 @@ sys.path.insert(0, main_dir)
 
 from resproc.rst_table import create
 from resproc.rst_table import create_table_body
-from resproc.rst_table import create_link
 from resproc.rst_table import calc_cell_len
 from resproc.rst_table import format_cell_value
 from resproc.rst_table import calc_first_col_len
