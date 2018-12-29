@@ -54,12 +54,12 @@ class RstTableTests(unittest.TestCase):
 
         tbl_htop, tbl_htext, tbl_hbottom = self.PrepareTableHeader()
         tbl_footer = tbl_htop + '\n'
-        tbl_body = '|`Misra1a 1 <file:///C:/Users/511/fitbenchmarking/' + \
-                   'fitbenchmarking/resproc/tests/dump/nist/VDPages/' + \
+        tbl_body = '|`Misra1a 1 <file:///' + current_dir + \
+                   'dump/nist/VDPages/' + \
                    'nist_lower_misra1a.html>`__| :ranking-top-1:`1`  | ' + \
                    ':ranking-low-4:`2`  | :ranking-low-4:`3`  |\n' + \
-                   tbl_footer + '|`Misra1a 2 <file:///C:/Users/511/' + \
-                   'fitbenchmarking/fitbenchmarking/resproc/tests/dump/' + \
+                   tbl_footer + '|`Misra1a 2 <file:///' + current_dir + \
+                   '/dump/' + \
                    'nist/VDPages/nist_lower_misra1a.html>`__| ' + \
                    ':ranking-low-5:`5`  | :ranking-low-5:`10` |' + \
                    ' :ranking-low-5:`13` |\n'

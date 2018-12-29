@@ -94,27 +94,6 @@ class ParseNeutronTests(unittest.TestCase):
                          problem.starting_values)
         self.assertEqual(problem_expected.start_x, problem.start_x)
         self.assertEqual(problem_expected.end_x, problem.end_x)
-
-        # Correcting for bugs in mantid :(
-        data_x = np.copy(problem.data_x)
-        data_y = np.copy(problem.data_y)
-        data_e = np.copy(problem.data_e)
-
-        data_x[0] = 6000.
-        data_y[0] = 1.
-        data_e[0] = 1.
-
-        data_x[-1] = 45999.
-        data_y[-1] = 0
-        data_e[-1] = 0
-
-        # Continuing testing
-        np.testing.assert_allclose(problem_expected.data_x, data_x,
-                                   rtol=1e-3,atol=0)
-        np.testing.assert_allclose(problem_expected.data_y, data_y,
-                                   rtol=1e-3, atol=0)
-        np.testing.assert_allclose(problem_expected.data_e, data_e,
-                                   rtol=1e-3, atol=0)
         self.assertEqual(problem_expected.ref_residual_sum_sq,
                          problem.ref_residual_sum_sq)
 
