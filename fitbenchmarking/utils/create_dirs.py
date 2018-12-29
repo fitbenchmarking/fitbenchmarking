@@ -42,12 +42,12 @@ def results(results_dir):
     if results_dir is None:
         results_dir = os.path.join(working_dir, "results")
     elif not isinstance(results_dir, str):
-        TypeError("results_dir must be a string!")
+        raise TypeError("results_dir must be a string!")
     elif not os.sep in results_dir:
         results_dir = os.path.join(working_dir, results_dir)
-    else:
-        if not os.path.exists(results_dir):
-            os.makedirs(results_dir)
+
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
 
     return results_dir
 
