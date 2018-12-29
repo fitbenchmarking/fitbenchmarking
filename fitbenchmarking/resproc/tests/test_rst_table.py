@@ -52,6 +52,7 @@ class RstTableTests(unittest.TestCase):
 
     def GenerateTableBody(self):
 
+        current_dir = self.getRSTcurrentDir()
         tbl_htop, tbl_htext, tbl_hbottom = self.PrepareTableHeader()
         tbl_footer = tbl_htop + '\n'
         tbl_body = '|`Misra1a 1 <file:///' + current_dir + \
