@@ -1,5 +1,6 @@
 """
-Fitting and utility functions for the mantid fitting software.
+Functions that are dependent on mantid api and are used by external methods
+(e.g. scipy).
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source

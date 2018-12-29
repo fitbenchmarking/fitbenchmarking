@@ -1,5 +1,6 @@
 """
-Fitting and utility functions for the mantid fitting software.
+Methods that prepare the function definitions to be used by the mantid
+fitting software.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
