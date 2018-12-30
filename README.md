@@ -1,4 +1,9 @@
-[![Build Status](https://travis-ci.com/mantidproject/fitbenchmarking.svg?branch=master)](https://travis-ci.com/mantidproject/fitbenchmarking) [![Coverage Status](https://coveralls.io/repos/github/mantidproject/fitbenchmarking/badge.svg?branch=master)](https://coveralls.io/github/mantidproject/fitbenchmarking?branch=master)
+[![Build Status](https://img.shields.io/travis/com/mantidproject/fitbenchmarking.svg?style=flat-square)](https://travis-ci.com/mantidproject/fitbenchmarking)
+[![Coverage Status](https://img.shields.io/coveralls/github/mantidproject/fitbenchmarking.svg?style=flat-square)](https://coveralls.io/github/mantidproject/fitbenchmarking)
+![Windows Supported](https://img.shields.io/badge/win10-support-blue.svg?style=flat-square&logo=windows)
+![Ubuntu Supported](https://img.shields.io/badge/16.04-support-orange.svg?style=flat-square&logo=ubuntu)
+[![Chat](https://img.shields.io/badge/chat-CompareFitMinimizers-lightgrey.svg?style=flat-square&logo=slack)](https://slack.com/)
+[![email](https://img.shields.io/badge/gmail-fitbenchmarking.supp-red.svg?style=flat-square&logo=gmail)](mailto:fitbenchmarking.supp@gmail.com)
 
 # FitBenchmarking
 FitBenchmarking is a tool for comparing different minimizers/fitting software based on their accuracy and runtimes.
