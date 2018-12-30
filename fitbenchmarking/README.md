@@ -1,32 +1,26 @@
+# FitBenchmarking Main Code
 ## Usage
 
-The benchmarking scripts can be run via the `FittingBenchmarks.py` system test.
+The fitBenchmarking scripts can be run from the `example_scripts` folder. For more details on how to do this, please check the documentation in the root directory readme. Alternatively, please read the [wiki](https://github.com/mantidproject/fitbenchmarking/wiki).
 
 ## Code Structure
 
 The following psuedocode demonstrates how the benchmarking scripts work:
 
-> Fitting settings (data directories, minimizers, etc.) passed into 
-`fitting_benchmarking.do_fitting_benchmark`:
+> User input from `example_scripts` is passed onto `fitting_benchmarking.py`
 
-> > Nested list of groups containing fit problems created
+> > The fit problem details are read using the modules in `parsing/` and passed onto `fitbenchmark_one_problem.py`
 
-> > Each group passed into `fitting_benchmarking.do_fitting_benchmark_group`
+> > Each minimizer for the tested software in `minimizers.json` is benchmarked against each considered problem.
 
-> > > For each file in the group:
+> > > For each problem:
 
-> > > > File parsed for relevant data, and a `FittingTestProblem` object created from this
+> > > > Fitting and benchmarking is done in the `main.py` file of the respective software folder in `fitting/`.
 
-> > > > `FittingTestProblem` object passed into `fitting_benchmarking.do_fitting_benchmark_one_problem`
+> > > > Results are stored in an object and passed back to the higher modules.
 
-> > > > > For each starting point:
+> > > An array of result objects is returned for one problem.
 
-> > > > > >  Fit the data via `fitting_benchmarking.run_fit` 
+> > Array of arrays of objects returned to `example_scripts`
 
-> > > > > Return a list of (starting points * minimizers) `FittingTestResult` objects (per file)
-
-> > > Return a list of every file's individual results for the group
-
-> > Return a nested list of results per group
-
-> An entire list of groups (or an individual group) can be passed into a chosen `results_output.py` function to be printed out and optionally saved to file
+> The main module `results_output` uses the modules in `resproc/` to produce the final tables and support pages with all the results.
