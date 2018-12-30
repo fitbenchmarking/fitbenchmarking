@@ -175,7 +175,7 @@ class MantidTests(unittest.TestCase):
         best_fit = None
 
         chi_sq, min_chi_sq, best_fit = \
-        chisq(status, wks, min_chi_sq, best_fit, minimizer, 0)
+        chisq(status, wks, min_chi_sq, best_fit, minimizer)
         chi_sq_expected = 5
         min_chi_sq_expected = chi_sq
 
