@@ -2,7 +2,7 @@
 omit =
 	# utils omits
     fitbenchmarking/utils/fitbm_problem.py
-    fitbenchmarking/utils/ftibm_result.py
+    fitbenchmarking/utils/fitbm_result.py
     fitbenchmarking/utils/logging_setup.py
     fitbenchmarking/utils/user_input.py
     # resproc omits
@@ -11,7 +11,7 @@ omit =
     # fitting omits
     fitbenchmarking/fitting/plotting/*
     fitbenchmarking/fitting/prerequisites.py
-    fitbenchmarking/fitting/externals.py
+    fitbenchmarking/fitting/mantid/externals.py
 
 
 [report]
