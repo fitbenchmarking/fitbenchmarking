@@ -176,7 +176,7 @@ class MantidTests(unittest.TestCase):
 
         chi_sq, min_chi_sq, best_fit = \
         chisq(status, wks, min_chi_sq, best_fit, minimizer)
-        chi_sq_expected = 5
+        chi_sq_expected = 61.0
         min_chi_sq_expected = chi_sq
 
         self.assertEqual(chi_sq_expected, chi_sq)
