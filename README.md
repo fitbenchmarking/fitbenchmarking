@@ -35,7 +35,7 @@ The `example_runScript` file can be changed such that it benchmarks scipy instea
 
 This is required on Windows since mantidpython on this platform comes with an older version of scipy. **Linux works without doing the steps described above, given that you followed the setup instructions in the eariler section.**
 
-## Tool Description
+## Description
 The tool creates a table/tables that shows a comparison between the different minimizers available in a fitting software (e.g. scipy or mantid), based on their accuracy and/or runtimes.
 An example of a table is:
 
