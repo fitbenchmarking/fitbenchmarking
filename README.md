@@ -1,10 +1,15 @@
-[![Build Status](https://travis-ci.com/mantidproject/fitbenchmarking.svg?branch=master)](https://travis-ci.com/mantidproject/fitbenchmarking) [![Coverage Status](https://coveralls.io/repos/github/mantidproject/fitbenchmarking/badge.svg?branch=master)](https://coveralls.io/github/mantidproject/fitbenchmarking?branch=master)
+[![Build Status](https://img.shields.io/travis/com/mantidproject/fitbenchmarking.svg?style=flat-square)](https://travis-ci.com/mantidproject/fitbenchmarking)
+[![Coverage Status](https://img.shields.io/coveralls/github/mantidproject/fitbenchmarking.svg?style=flat-square)](https://coveralls.io/github/mantidproject/fitbenchmarking)
+![Windows Supported](https://img.shields.io/badge/win10-support-blue.svg?style=flat-square&logo=windows)
+![Ubuntu Supported](https://img.shields.io/badge/16.04-support-orange.svg?style=flat-square&logo=ubuntu)
+[![email](https://img.shields.io/badge/gmail-fitbenchmarking.supp-red.svg?style=flat-square&logo=gmail)](mailto:fitbenchmarking.supp@gmail.com)
+[![Chat](https://img.shields.io/badge/chat-CompareFitMinimizers-lightgrey.svg?style=flat-square&logo=slack)](https://slack.com/)
 
 # FitBenchmarking
-FitBenchmarking is tool for comparing different minimizers/fitting software based on their accuracy and runtimes.
+FitBenchmarking is a tool for comparing different minimizers/fitting software based on their accuracy and runtimes.
 
 
-## Quick start
+## Quick Start
 [![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)](https://www.python.org/downloads/release/python-2715/) will be needed for running/installing this. Instructions for setting up python are available [here](https://github.com/mantidproject/fitbenchmarking/wiki/Setting-up-Python).
 
 1. Download this repository or clone it using [git](https://git-scm.com/):
@@ -16,9 +21,21 @@ FitBenchmarking is tool for comparing different minimizers/fitting software base
     * Ubuntu: in a normal terminal cd to /opt/Mantid/bin and run `./mantidpython`
     * Windows: go to where you installed Mantid and search for a file called `mantidpython`
 
-Finally, in this terminal, run `example_scripts/example_runScript.py`, located in the example_scripts folder. This example script fit benchmarks Mantid using all the available minimizers. The resulting tables can be found in `example_scripts/results`.
+Finally, in this terminal, run `example_scripts/example_runScript.py`, located in the fitbenchmarking folder. This example script fit benchmarks Mantid using all the available minimizers. The resulting tables can be found in `example_scripts/results`.
 
-## What the tool does
+## FitBenchmarking Scipy
+The `example_runScript` file can be changed such that it benchmarks scipy instead of mantid (details provided in the file itself). To avoid a known issue with the mantidpython console on Windows please do the following:
+
+1. Start the mantidpython console as admin.
+2. Run the follwoing commands:
+    - `!python -m pip install --upgrade pip`
+    - `!python -m pip install scipy --upgrade`
+    - `!python -m pip install numpy upgrade`
+3. Restart the mantidpython terminal.
+
+This is required on Windows since mantidpython on this platform comes with an older version of scipy. **Linux works without doing the steps described above, given that you followed the setup instructions in the eariler section.**
+
+## Description
 The tool creates a table/tables that shows a comparison between the different minimizers available in a fitting software (e.g. scipy or mantid), based on their accuracy and/or runtimes.
 An example of a table is:
 

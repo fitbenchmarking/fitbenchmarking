@@ -1,5 +1,5 @@
 """
-Fitting and utility functions for the mantid fitting software.
+Benchmarking fitting and utility functions for the mantid software.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -24,7 +24,7 @@ Fitting and utility functions for the mantid fitting software.
 
 from __future__ import (absolute_import, division, print_function)
 
-import time, sys, copy
+import time, sys
 import numpy as np
 import mantid.simpleapi as msapi
 
@@ -67,7 +67,7 @@ def benchmark(problem, wks_created, function, minimizers, cost_function):
     return results_problem, best_fit
 
 
-def fit(problem, wks_created, function, minimizer='Levenberg-Marquardt',
+def fit(problem, wks_created, function, minimizer,
         cost_function='Least squares'):
     """
     The mantid fit software.
@@ -171,57 +171,6 @@ def optimum(fit_wks, minimizer_name, best_fit):
 
     return  best_fit
 
-
-def wks_cost_function(problem, use_errors=True):
-    """
-    Helper function that prepares the data workspace used by mantid
-    for fitting.
-
-    @param problem :: object holding the problem information
-    @param use_errors :: whether to use errors or not
-
-    @returns :: the fitting data in workspace format and the
-                cost function used in fitting
-    """
-    data_x = problem.data_x
-    data_y = problem.data_y
-    data_e = setup_errors(problem)
-
-    if use_errors:
-        wks_created = msapi.CreateWorkspace(DataX=data_x, DataY=data_y,
-                                            DataE=data_e)
-        convert_back(wks_created, problem, use_errors)
-        cost_function = 'Least squares'
-    else:
-        wks_created = msapi.CreateWorkspace(DataX=data_x, DataY=data_y)
-        convert_back(wks_created, problem, use_errors)
-        cost_function = 'Unweighted least squares'
-
-    return wks_created, cost_function
-
-
-def function_definitions(problem):
-    """
-    Transforms the prob.equation field into a function that can be
-    understood by the mantid fitting software.
-
-    @param prob :: object holding the problem infomation
-
-    @returns :: a function definitions string with functions that
-                mantid understands
-    """
-    if problem.type == 'nist':
-        # NIST data requires prior formatting
-        nb_start_vals = len(problem.starting_values[0][1])
-        function_defs = parse_nist_function_definitions(problem, nb_start_vals)
-    elif problem.type == 'neutron':
-        # Neutron data does not require any
-        function_defs = []
-        function_defs.append(problem.equation)
-
-    return function_defs
-
-
 def get_ignore_invalid(problem, cost_function):
     """
     Helper function that sets the whether the mantid fitting software
@@ -241,105 +190,3 @@ def get_ignore_invalid(problem, cost_function):
         ignore_invalid = False
 
     return ignore_invalid
-
-
-def parse_nist_function_definitions(problem, nb_start_vals):
-    """
-    Helper function that parses the NIST function definitions and
-    transforms them into a mantid-redeable format.
-
-    @param prob :: object holding the problem information
-    @param nb_start_vals :: the number of starting points for a given
-                            function definition
-
-    @returns :: the formatted function definition (str)
-    """
-
-    function_defs = []
-    for start_idx in range(0, nb_start_vals):
-        start_val_str = ''
-        for param in problem.starting_values:
-            start_val_str += ('{0}={1},'.format(param[0], param[1][start_idx]))
-        # Eliminate trailing comma
-        start_val_str = start_val_str[:-1]
-        function_defs.append("name=UserFunction,Formula={0},{1}".
-                             format(problem.equation, start_val_str))
-
-    return function_defs
-
-
-def setup_errors(problem):
-    """
-    Gets errors on the data points from the problem object if there are
-    any. If not, the errors are approximated by taking the square root
-    of the absolute y-value, since we cannot know how the data was
-    obtained and this is a reasonable approximation.
-
-    @param problem :: object holding the problem information
-
-    @returns :: array of errors of particular problem
-    """
-
-    if problem.data_e is None:
-        # Fake errors
-        return np.sqrt(abs(problem.data_y))
-    else:
-        # True errors
-        return problem.data_e
-
-
-def convert_back(wks_used, problem, use_errors):
-    """
-    Convert back so data is of equal lengths.
-
-    @param wks_used :: mantid workspace that hold the data
-    @param problem :: problem object holding the problem data
-    """
-    tmp = msapi.ConvertToPointData(wks_used)
-    problem.data_x = np.copy(tmp.readX(0))
-    problem.data_y = np.copy(tmp.readY(0))
-    if use_errors: problem.data_e = np.copy(tmp.readE(0))
-
-
-def store_main_problem_data(fname, problem):
-    """
-    Stores the main problem data into the relevant attributes of the
-    problem object.
-
-    @param fname :: path to the neutron problem definition file
-    @param problem :: object holding the problem information
-    """
-
-    wks_imported = msapi.Load(Filename=fname)
-    problem.data_x = wks_imported.readX(0)
-    problem.data_y = wks_imported.readY(0)
-    problem.data_e = wks_imported.readE(0)
-    problem.ref_residual_sum_sq = 0
-
-
-def gen_func_obj(function_name):
-    """
-    Generates a mantid function object.
-
-    @param function_name :: the name of the function to be generated
-
-    @returns :: mantid function object that can be called in python
-    """
-    exec "function_object = msapi." + function_name + "()"
-    return function_object
-
-
-def set_ties(function_object, ties):
-    """
-    Sets the ties for a function/composite function object.
-
-    @param function_object :: mantid function object
-    @param ties :: array of strings containing the ties
-
-    @returns :: mantid function object with ties
-    """
-    for idx, ties_per_func in enumerate(ties):
-        for tie in ties_per_func:
-            exec "function_object.tie({'f" + str(idx) + "." + tie + "})"
-
-    return function_object

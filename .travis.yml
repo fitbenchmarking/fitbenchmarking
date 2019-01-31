@@ -33,6 +33,8 @@ jobs:
         # ======= Fitting Tests =============== #
         - pytest fitbenchmarking/fitting/tests/ --cov=fitbenchmarking/fitting/
           --cov-report term-missing
+        - pytest fitbenchmarking/fitting/mantid/tests/
+          --cov=fitbenchmarking/fitting/ --cov-report term-missing
         # ======= Parsing Tests =============== #
         - pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
           --cov-report term-missing --cov-append
@@ -40,9 +42,9 @@ jobs:
         - pytest fitbenchmarking/resproc/tests/
           --cov=fitbenchmarking/resproc --cov-report term-missing
           --cov-append
-        # ======= Utils Tests =============== - no tests at the moment #
-        #- pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
-        #  --cov-report term-missing --cov-append
+        # ======= Utils Tests =============== #
+        - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
+          --cov-report term-missing --cov-append
       after_success:
         - coveralls
     - stage: SysTests

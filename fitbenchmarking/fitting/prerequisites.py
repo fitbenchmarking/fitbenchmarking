@@ -25,8 +25,6 @@ specific.
 
 from __future__ import (absolute_import, division, print_function)
 
-from fitting import mantid
-from fitting import scipyfit
 import numpy as np
 
 
@@ -54,16 +52,41 @@ def prepare_software_prerequisites(software, problem, use_errors):
 
 
 def prepare_mantid(problem, use_errors):
+    """
+    Does the things specified in the above description for benchmarking
+    the mantid software.
 
-    wks_mtd, cost_function = mantid.wks_cost_function(problem, use_errors)
-    function_definitions = mantid.function_definitions(problem)
+    @returns :: mantid workspace data structure
+                mantid cost funtion
+                mantid function definitions
+    """
+    from fitting.mantid.prepare_data import wks_cost_function
+    from fitting.mantid.func_def import function_definitions
+
+    wks_mtd, cost_function = \
+    wks_cost_function(problem, use_errors)
+    function_definitions = \
+    function_definitions(problem)
+
     return wks_mtd, cost_function, function_definitions
 
 
 def prepare_scipy(problem, use_errors):
+    """
+    Does the things specified in the above description for benchmarking
+    the scipy software.
 
-    data, cost_function = scipyfit.prepare_data(problem, use_errors)
-    function_definitions = scipyfit.function_definitions(problem)
+    @returns :: scipy workspace data structure
+                scipy cost funtion
+                scipy function definitions
+    """
+    from fitting.scipy.prepare_data import prepare_data
+    from fitting.scipy.func_def import function_definitions
+
+    data, cost_function = \
+    prepare_data(problem, use_errors)
+    function_definitions = function_definitions(problem)
+    # For problems that have no specified boundries, set -inf and +inf
     if problem.start_x == None and problem.end_x == None:
         problem.start_x = - np.inf
         problem.end_x = np.inf

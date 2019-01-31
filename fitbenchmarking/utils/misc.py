@@ -1,5 +1,5 @@
 """
-Miscellaneous functions and utilites for fitting.
+Miscellaneous functions and utilites used in fitting benchmarking.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -24,7 +24,12 @@ Miscellaneous functions and utilites for fitting.
 
 from __future__ import (absolute_import, division, print_function)
 
-import os, json
+import os
+import json
+
+from parsing.fetch_data import *
+from utils import user_input
+
 
 def get_minimizers(software):
     """
@@ -35,11 +40,50 @@ def get_minimizers(software):
 
     @returns :: an array of strings containing minimizer names
     """
+
     current_path = os.path.dirname(os.path.realpath(__file__))
     fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
-    minimizers_dir = os.path.join(fitbm_path, "fitting")
-    minimizers_json = os.path.join(minimizers_dir, "minimizers.json")
+    minimizers_json = os.path.join(fitbm_path, "minimizers.json")
     all_minimizers = json.load(open(minimizers_json))
     minimizers = all_minimizers[software]
 
     return minimizers
+
+def setup_fitting_problems(data_dir):
+    """
+    Sets up the problem groups specified by the user by providing
+    a respective data directory.
+
+    @param data_dir :: directory holding the problem data used to test
+
+    @returns :: the problem groups dictionary
+    """
+    problem_groups = {}
+    if 'NIST' in data_dir:
+        problem_groups['nist'] = get_nist_problem_files(data_dir)
+    elif 'Neutron' in data_dir:
+        problem_groups['neutron'] = get_neutron_problem_files(data_dir)
+    # elif ...
+    #    problem_groups[your-group-name] = your_function(your_data_dir)
+    else:
+        raise NameError("Data directory not recognised!")
+
+    return problem_groups
+
+def save_user_input(software, minimizers, group_name, results_dir, use_errors):
+    """
+    All parameters inputed by the user are stored in an object.
+
+    @params :: please check the user_input.py file in the utils dir.
+
+    @returns :: an object containing all the information specified by the user.
+    """
+
+    uinput = user_input.UserInput()
+    uinput.software = software
+    uinput.minimizers = minimizers
+    uinput.group_name = group_name
+    uinput.group_results_dir = results_dir
+    uinput.use_errors = use_errors
+
+    return uinput

@@ -11,14 +11,57 @@ parent_dir = os.path.dirname(os.path.normpath(test_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
+from parsing.parse_nist import load_file
+from parsing.parse_nist import store_prob_details
+from parsing.parse_nist import parse_line_by_line
 from parsing.parse_nist import get_nist_model
 from parsing.parse_nist import get_nist_starting_values
 from parsing.parse_nist import get_data_pattern_txt
 from parsing.parse_nist import parse_data_pattern
 from parsing.parse_nist import parse_equation
 
+from utils import fitbm_problem
+
 
 class ParseNistTests(unittest.TestCase):
+
+    def misra1a_file(self):
+        """
+        Helper function that returns the path to
+        /fitbenchmarking/benchmark_problems
+        """
+
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        parent_dir = os.path.dirname(os.path.normpath(test_dir))
+        main_dir = os.path.dirname(os.path.normpath(parent_dir))
+        root_dir = os.path.dirname(os.path.normpath(main_dir))
+        bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
+        fname = os.path.join(bench_prob_dir, 'NIST_nonlinear_regression',
+                             'Misra1a.dat')
+
+        return fname
+
+    def setup_misra1a_data_pattern_lines(self):
+
+        lines = ['Data:   y               x',
+                 '10.07E0      77.6E0',
+                 '14.73E0     114.9E0',
+                 '17.94E0     141.1E0',
+                 '23.93E0     190.8E0',
+                 '29.61E0     239.9E0',
+                 '35.18E0     289.0E0',
+                 '40.02E0     332.8E0',
+                 '44.82E0     378.4E0',
+                 '50.76E0     434.8E0',
+                 '55.05E0     477.3E0',
+                 '61.01E0     536.8E0',
+                 '66.40E0     593.1E0',
+                 '75.47E0     689.1E0',
+                 '81.78E0     760.0E0'
+                ]
+
+        return lines
+
 
     def setup_misra1a_model_lines(self):
 
@@ -82,6 +125,78 @@ class ParseNistTests(unittest.TestCase):
 
         return data_pattern
 
+    def setup_nist_expected_problem(self):
+
+        prob = fitbm_problem.FittingProblem()
+        prob.name = 'Misra1a'
+        prob.equation = 'b1*(1-exp(-b2*x))'
+        prob.starting_values = [['b1',[500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
+        data_pattern = self.setup_misra1a_expected_data_points()
+        prob.data_x = data_pattern[:, 1]
+        prob.data_y = data_pattern[:, 0]
+        prob.ref_residual_sum_sq = 1.2455138894e-01
+
+        return prob
+
+
+    def test_loadFile_correct_problem_object(self):
+
+        fname = self.misra1a_file()
+
+        problem = load_file(fname)
+        problem_expected = self.setup_nist_expected_problem()
+
+        self.assertEqual(problem_expected.name, problem.name)
+        self.assertEqual(problem_expected.equation, problem.equation)
+        self.assertEqual(problem_expected.starting_values,
+                         problem.starting_values)
+        np.testing.assert_allclose(problem_expected.data_x, problem.data_x)
+        np.testing.assert_allclose(problem_expected.data_y, problem.data_y)
+        self.assertEqual(problem_expected.ref_residual_sum_sq,
+                         problem.ref_residual_sum_sq)
+
+    def test_storeProbDetails_correct_storing(self):
+
+        fname = self.misra1a_file()
+        parsed_eq = 'b1*(1-exp(-b2*x))'
+        starting_values = [['b1',[500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
+        data_pattern = self.setup_misra1a_expected_data_points()
+        residual_sum_sq = 1.2455138894e-01
+
+        with open(fname) as spec_file:
+            prob = store_prob_details(spec_file, parsed_eq, starting_values,
+                                      data_pattern, residual_sum_sq)
+
+        prob_expected = self.setup_nist_expected_problem()
+
+        self.assertEqual(prob_expected.name, prob.name)
+        self.assertEqual(prob_expected.equation, prob.equation)
+        self.assertEqual(prob_expected.starting_values,
+                         prob.starting_values)
+        np.testing.assert_allclose(prob_expected.data_x, prob.data_x)
+        np.testing.assert_allclose(prob_expected.data_y, prob.data_y)
+        self.assertEqual(prob_expected.ref_residual_sum_sq,
+                         prob.ref_residual_sum_sq)
+
+    def test_parseLineByLine_correct_lines(self):
+
+        fname = self.misra1a_file()
+
+        with open(fname) as spec_file:
+            lines = spec_file.readlines()
+            equation_text, data_pattern_text, \
+            starting_values, residual_sum_sq = parse_line_by_line(lines)
+
+        equation_text_expected = 'y = b1*(1-exp[-b2*x])  +  e'
+        data_pattern_text_expected = self.setup_misra1a_data_pattern_text()
+        starting_values_expected = [['b1',[500.0, 250.0]],
+                                    ['b2', [0.0001, 0.0005]]]
+        residual_sum_sq_expected = 1.2455138894e-01
+
+        self.assertEqual(equation_text_expected, equation_text)
+        self.assertListEqual(data_pattern_text_expected, data_pattern_text)
+        self.assertListEqual(starting_values_expected,starting_values)
+        self.assertEqual(residual_sum_sq_expected, residual_sum_sq)
 
     def test_getNistModel_return_proper_eqtxt(self):
 
@@ -132,7 +247,24 @@ class ParseNistTests(unittest.TestCase):
 
         self.assertRaises(RuntimeError, get_nist_starting_values, lines, idx)
 
+    def test_getDataPatternTxt_correct_data(self):
 
+        lines = self.setup_misra1a_data_pattern_lines()
+        idx = 0
+
+        data_pattern_text, idx = get_data_pattern_txt(lines, idx)
+        data_pattern_text_expected = self.setup_misra1a_data_pattern_lines()
+        idx_expected = 15
+
+        self.assertEqual(idx_expected, idx)
+        self.assertListEqual(data_pattern_text_expected, data_pattern_text)
+
+    def test_getDataPatternTxt_raises_error(self):
+
+        lines = []
+        idx = 0
+
+        self.assertRaises(RuntimeError, get_data_pattern_txt, lines, idx)
     def test_parseDataPattern_return_parsed_data_pattern_array(self):
 
         data_pattern_text = self.setup_misra1a_data_pattern_text()

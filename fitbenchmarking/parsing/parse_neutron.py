@@ -28,8 +28,8 @@ from __future__ import (absolute_import, division, print_function)
 import os, re
 import numpy as np
 
-from utils import test_problem
-from fitting import mantid
+from utils import fitbm_problem
+from fitting.mantid.externals import store_main_problem_data
 from utils.logging_setup import logger
 
 
@@ -46,9 +46,9 @@ def load_file(fname):
 
     with open(fname) as probf:
         entries = get_neutron_data_problem_entries(probf)
-        problem = test_problem.FittingTestProblem()
+        problem = fitbm_problem.FittingProblem()
         data_file = get_data_file(fname, entries['input_file'])
-        mantid.store_main_problem_data(data_file, problem)
+        store_main_problem_data(data_file, problem)
         store_misc_problem_data(problem, entries)
 
     return problem

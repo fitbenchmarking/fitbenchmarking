@@ -20,26 +20,20 @@
 from __future__ import (absolute_import, division, print_function)
 
 
-class FittingTestResult(object):
+class UserInput(object):
     """
-    Minimal definition of a class to hold results from a
-    fitting problem test.
+    Structure to hold all the user inputted data.
     """
-
     def __init__(self):
-        self.problem = None
-        self.fit_status = None
-        self.chi_sq = None
+        # The software that is benchmarked e.g. scipy, mantid etc.
+        self.software = None
+        # The minimizers inside that certain software that are
+        # being benchmarked
+        self.minimizers = None
+        # The name of the problem group to be analysed e.g. neutron
+        self.group_name = None
+        # Director path in which to put the results for each problem group
+        self.group_results_dir = None
+        # Whether or not to consider error bars in the fitting process
+        self.use_errors = None
 
-        # Workspace with data to fit
-        self.fit_wks = None
-        self.params = None
-        self.errors = None
-
-        # Time it took to run the Fit algorithm
-        self.runtime = None
-
-        # Best minimizer for a certain problem and its function definition
-        self.minimizer = None
-        self.ini_function_def = None
-        self.fin_function_def = None

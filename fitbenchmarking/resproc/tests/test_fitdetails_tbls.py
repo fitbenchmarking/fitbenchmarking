@@ -10,12 +10,56 @@ parent_dir = os.path.dirname(os.path.normpath(test_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
+from resproc.fitdetails_tbls import create
+from resproc.fitdetails_tbls import generate_names_and_params
 from resproc.fitdetails_tbls import parse_nist_mantid_function_def
 from resproc.fitdetails_tbls import parse_neutron_function_def
 from resproc.fitdetails_tbls import fit_details_table_hdims
-
+from resproc.fitdetails_tbls import generate_fit_det_header
+from resproc.fitdetails_tbls import generate_fit_det_body
 
 class FitDetailsTblsTests(unittest.TestCase):
+
+
+    def test_create_produces_correct_tbl(self):
+
+        functions_str = ("name=UserFunction,Formula=b1*(1-exp(-b2*x)),"
+                         "b1=500.0,b2=0.0001")
+
+        tbl = create(functions_str)
+        tbl_expected = '+-------------------+---------------------+\n' + \
+                       '| Form              | Parameters          |\n' + \
+                       '+===================+=====================+\n' + \
+                       '| b1*(1-exp(-b2*x)) | b1=500.0, b2=0.0001 |\n' + \
+                       '+-------------------+---------------------+\n\n'
+        self.assertEqual(tbl_expected, tbl)
+
+    def test_generateNamesAndParams_for_nist_case(self):
+
+        function = ("name=UserFunction,Formula=b1*(1-exp(-b2*x)),"
+                     "b1=500.0,b2=0.0001")
+        names, params = generate_names_and_params(function)
+        function_name_expected = "b1*(1-exp(-b2*x))"
+        function_parameters_expected = "b1=500.0, b2=0.0001"
+
+        self.assertEqual(function_name_expected, names[0])
+        self.assertEqual(function_parameters_expected, params[0])
+
+    def test_generateNamesAndParams_for_neutron_case(self):
+
+        function = ("name=BackToBackExponential,I=597.076,A=1,B=0.05,"
+                    "X0=24027.5,S=22.9096")
+
+        names, params = generate_names_and_params(function)
+        func_names_expected = "BackToBackExponential"
+        func_parameters_expected = "I=597.076, A=1, B=0.05, X0=24027.5, S=22.9096"
+
+        self.assertEqual(func_names_expected, names[0])
+        self.assertEqual(func_parameters_expected, params[0])
+
+    def test_generateNamesAndParams_raise_error(self):
+
+        self.assertRaises(TypeError, generate_names_and_params, 'test12')
 
     def test_parseNistFunctionDef_return_proper_parsed_string(self):
 
@@ -77,6 +121,37 @@ class FitDetailsTblsTests(unittest.TestCase):
         self.assertEqual(name_hdim_expected, name_hdim)
         self.assertEqual(params_hdim_expected, params_hdim)
 
+    def test_generateFitDetHeader_return_correct_header(self):
+
+        name_dim = 15
+        params_dim = 15
+
+        header = generate_fit_det_header(name_dim, params_dim)
+        header_expected = '+-----------------+-----------------+\n' + \
+                          '| Form            | Parameters      |\n' + \
+                          '+=================+=================+\n'
+        self.assertEqual(header_expected, header)
+
+    def test_generateFitDetBody(self):
+
+        func_names = ["LinearBackground", "BackToBackExponential"]
+        func_params = ["None",
+                           "I=597.076, A=1, B=0.05, X0=24027.5,S=22.9096"]
+        name_dim = 21
+        params_dim = 44
+
+        body = \
+        generate_fit_det_body(func_names, func_params, name_dim, params_dim)
+        body_expected = '| LinearBackground      |' + \
+                        ' None                                         |\n' + \
+                        '+-----------------------+' + \
+                        '----------------------------------------------+\n' + \
+                        '| BackToBackExponential | I=597.076, A=1, B=0.05,' + \
+                        ' X0=24027.5,S=22.9096 |\n' + \
+                        '+-----------------------+' + \
+                        '----------------------------------------------+\n'
+
+        self.assertEqual(body_expected, body)
 
 if __name__ == "__main__":
     unittest.main()

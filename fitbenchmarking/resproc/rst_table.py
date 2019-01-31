@@ -91,7 +91,7 @@ def create_table_body(cells, items_link, rows_txt, first_col_len, cell_len,
 
     tbl_body = ''
     for row in range(0, cells.shape[0]):
-        link = create_link(items_link)
+        link = items_link
         tbl_body += '|' + rows_txt[row].ljust(first_col_len, ' ') + '|'
         for col in range(0, cells.shape[1]):
             tbl_body += format_cell_value(cells[row, col], cell_len,
@@ -101,24 +101,6 @@ def create_table_body(cells, items_link, rows_txt, first_col_len, cell_len,
         tbl_body += '\n' + tbl_footer
 
     return tbl_body
-
-
-def create_link(items_link):
-    """
-    Create either individual or group link.
-
-    @param items_link :: items_link string or array
-
-    @returns :: the correct items_link
-    """
-
-    link = None
-    if isinstance(items_link, list):
-        link = items_link[row]
-    else:
-        link = items_link
-
-    return link
 
 
 def calc_cell_len(columns_txt, items_link, cells, color_scale=None):
