@@ -39,7 +39,7 @@ def function_definitions(problem):
     """
     if problem.type == 'nist':
         return nist_func_definitions(problem.equation,
-                                                    problem.starting_values)
+                                     problem.starting_values)
     elif problem.type == 'neutron':
         return neutron_func_definitions(problem.equation)
     else:
