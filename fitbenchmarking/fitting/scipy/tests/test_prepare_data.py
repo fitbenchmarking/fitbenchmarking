@@ -4,7 +4,6 @@ import unittest
 import os
 import numpy as np
 
-# Delete four lines below when automated tests ar enabled
 import sys
 test_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(os.path.normpath(test_dir))
