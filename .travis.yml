@@ -35,6 +35,8 @@ jobs:
           --cov-report term-missing
         - pytest fitbenchmarking/fitting/mantid/tests/
           --cov=fitbenchmarking/fitting/ --cov-report term-missing
+        - pytest fitbenchmarking/fitting/scipy/tests/
+          --cov=fitbenchmarking/fitting/ --cov-report term-missing
         # ======= Parsing Tests =============== #
         - pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
           --cov-report term-missing --cov-append
