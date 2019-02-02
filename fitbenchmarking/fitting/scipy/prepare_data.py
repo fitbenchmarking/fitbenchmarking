@@ -78,5 +78,5 @@ def apply_constraints(start_x, end_x, data_x, data_y, data_e):
     data_x = np.copy(data_x[start_idx:end_idx])
     data_y = np.copy(data_y[start_idx:end_idx])
     data_e = np.copy(data_e[start_idx:end_idx])
-    data_e[data_e == 0] = 0.000001
+    data_e[data_e == 0] = 0.00000001
     return data_x, data_y, data_e
