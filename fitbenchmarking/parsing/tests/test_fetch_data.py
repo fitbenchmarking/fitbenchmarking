@@ -10,9 +10,9 @@ parent_dir = os.path.dirname(os.path.normpath(test_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
-from parsing.fetch_data import get_nist_problem_files
-from parsing.fetch_data import get_neutron_problem_files
-
+from parsing.fetch_data import get_problem_files
+from parsing.fetch_data import search_string_definition
+from parsing.fetch_data import sub_dirs
 
 class FetchDataTests(unittest.TestCase):
 
@@ -60,49 +60,45 @@ class FetchDataTests(unittest.TestCase):
         Helper function that returns the names of all NIST problems.
         """
 
-        nist_problems = [['Misra1a.dat', 'Chwirut2.dat', 'Chwirut1.dat',
-                          'Lanczos3.dat', 'Gauss1.dat', 'Gauss2.dat',
-                          'DanWood.dat', 'Misra1b.dat'],
-                         ['Kirby2.dat', 'Hahn1.dat','MGH17.dat',
-                          'Lanczos1.dat', 'Lanczos2.dat','Gauss3.dat',
-                          'Misra1c.dat', 'Misra1d.dat','ENSO.dat'],
-                         ['MGH09.dat', 'Thurber.dat', 'BoxBOD.dat', 'Rat42.dat',
-                          'MGH10.dat', 'Eckerle4.dat', 'Rat43.dat',
-                          'Bennett5.dat']]
+        nist_problems = [['ENSO.dat', 'Gauss3.dat', 'Hahn1.dat', 'Kirby2.dat',
+                          'Lanczos1.dat', 'Lanczos2.dat', 'MGH17.dat',
+                          'Misra1c.dat', 'Misra1d.dat'],
+                         ['Bennett5.dat', 'BoxBOD.dat', 'Eckerle4.dat',
+                          'MGH09.dat', 'MGH10.dat',
+                          'Rat42.dat', 'Rat43.dat', 'Thurber.dat'],
+                         ['Chwirut1.dat', 'Chwirut2.dat', 'DanWood.dat',
+                          'Gauss1.dat', 'Gauss2.dat', 'Lanczos3.dat',
+                          'Misra1a.dat', 'Misra1b.dat']]
 
         return nist_problems
 
 
-    def test_getNISTproblemFiles_return_expected_paths(self):
+    def test_getproblemFiles_return_expected_nist_paths(self):
 
         base_path_nist = os.path.join(self.base_path(),
                                       'NIST_nonlinear_regression')
         nist_problems = self.all_nist_problems()
+        diffs = ["average_diff", "high_diff", "low_diff"]
 
-        paths_to_nist_problems = get_nist_problem_files(base_path_nist)
-
-        # This for loop (and similar ones in other tests)
-        # attaches the proper path to a problem file name
-        # e.g. Misra1a.dat becomes
-        # d:/fitbenchmarking/benchmark_problems/
-        # NIST_nonlinear_regression/Misra1a.dat
+        paths_to_nist_problems = get_problem_files(base_path_nist)
         paths_to_nist_problems_expected = []
-        for nist_level_group in nist_problems:
-            paths_to_level_group = [os.path.join(base_path_nist,nist_prob_name)
-                                    for nist_prob_name in nist_level_group]
-            paths_to_nist_problems_expected.append(paths_to_level_group)
+        for i in range(0, len(diffs)):
+            subdir_path = os.path.join(base_path_nist, diffs[i])
+            paths_to_nist_problems_expected.append(
+            [os.path.join(subdir_path, nist_prob) for nist_prob
+             in nist_problems[i]])
 
         self.assertListEqual(paths_to_nist_problems_expected,
                              paths_to_nist_problems)
 
 
-    def test_getNeutronProblemFiles_return_expected_neutron_paths(self):
+    def test_getProblemFiles_return_expected_neutron_paths(self):
 
         base_path_neutron = os.path.join(self.base_path(),'Neutron_data')
         neutron_problems = self.all_neutron_problems()
 
         paths_to_neutron_problems = \
-        get_neutron_problem_files(base_path_neutron)[0]
+        get_problem_files(base_path_neutron)[0]
         # Please see the above for loop comments for
         # a description of this one
         paths_to_neutron_problems_expected = []
@@ -114,6 +110,19 @@ class FetchDataTests(unittest.TestCase):
 
         self.assertListEqual(paths_to_neutron_problems_expected[0],
                              paths_to_neutron_problems)
+
+    def test_subDirs_return_paths_to_NIST_subdirs(self):
+
+        base_path_nist = os.path.join(self.base_path(),
+                                      'NIST_nonlinear_regression')
+        diffs = ["average_diff", "high_diff", "low_diff"]
+
+
+        paths = sub_dirs(base_path_nist)
+        expected_paths = \
+        [os.path.join(base_path_nist, difficutly) for difficutly in diffs]
+
+        self.assertListEqual(expected_paths, paths)
 
 
 if __name__ == "__main__":
