@@ -60,12 +60,12 @@ class FetchDataTests(unittest.TestCase):
         Helper function that returns the names of all NIST problems.
         """
 
-        nist_problems = [['ENSO.dat', 'Gauss3.dat', 'Hahn1.dat', 'Kirby2.dat',
-                          'Lanczos1.dat', 'Lanczos2.dat', 'MGH17.dat',
-                          'Misra1c.dat', 'Misra1d.dat'],
-                         ['Bennett5.dat', 'BoxBOD.dat', 'Eckerle4.dat',
+        nist_problems = [['Bennett5.dat', 'BoxBOD.dat', 'Eckerle4.dat',
                           'MGH09.dat', 'MGH10.dat',
                           'Rat42.dat', 'Rat43.dat', 'Thurber.dat'],
+                          ['ENSO.dat', 'Gauss3.dat', 'Hahn1.dat', 'Kirby2.dat',
+                          'Lanczos1.dat', 'Lanczos2.dat', 'MGH17.dat',
+                          'Misra1c.dat', 'Misra1d.dat'],
                          ['Chwirut1.dat', 'Chwirut2.dat', 'DanWood.dat',
                           'Gauss1.dat', 'Gauss2.dat', 'Lanczos3.dat',
                           'Misra1a.dat', 'Misra1b.dat']]
@@ -78,7 +78,7 @@ class FetchDataTests(unittest.TestCase):
         base_path_nist = os.path.join(self.base_path(),
                                       'NIST_nonlinear_regression')
         nist_problems = self.all_nist_problems()
-        diffs = ["average_diff", "high_diff", "low_diff"]
+        diffs = ["high_diff", "average_diff", "low_diff"]
 
         paths_to_nist_problems = get_problem_files(base_path_nist)
         paths_to_nist_problems_expected = []
@@ -115,8 +115,7 @@ class FetchDataTests(unittest.TestCase):
 
         base_path_nist = os.path.join(self.base_path(),
                                       'NIST_nonlinear_regression')
-        diffs = ["average_diff", "high_diff", "low_diff"]
-
+        diffs = ["high_diff", "average_diff", "low_diff"]
 
         paths = sub_dirs(base_path_nist)
         expected_paths = \
