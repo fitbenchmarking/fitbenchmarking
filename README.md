@@ -27,7 +27,7 @@ Finally, in this terminal, run `example_scripts/example_runScript.py`, located i
 The `example_runScript` file can be changed such that it benchmarks minimizers supported by scipy instead of mantid (details provided in the file itself).
 
 For this to work scipy version 0.17 or higher is needed
-(which includes needed [curve_fit](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.htmlhttps://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html) support).
+(which includes needed [curve_fit](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html) support).
 
 The Linux distributions we have tested against so far have all included scipy 0.17+
 (0.17 is from Feb 2016).
