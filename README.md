@@ -24,16 +24,26 @@ FitBenchmarking is a tool for comparing different minimizers/fitting software ba
 Finally, in this terminal, run `example_scripts/example_runScript.py`, located in the fitbenchmarking folder. This example script fit benchmarks Mantid using all the available minimizers. The resulting tables can be found in `example_scripts/results`.
 
 ## FitBenchmarking Scipy
-The `example_runScript` file can be changed such that it benchmarks scipy instead of mantid (details provided in the file itself). To avoid a known issue with the mantidpython console on Windows please do the following:
+The `example_runScript` file can be changed such that it benchmarks minimizers supported by scipy instead of mantid (details provided in the file itself).
 
-1. Start the mantidpython console as admin.
-2. Run the follwoing commands:
+For this to work scipy version 0.17 or higher is needed (which includes needed [curve_fit](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html) support). **The Linux distributions we have tested against so far have all included scipy 0.17+ (0.17 is from Feb 2016).**
+
+However, as of this writing, the Mantid installer on Windows is shipped with an older version of scipy
+and a manual workaround is currently needed.
+
+#### Windows workaround ####
+After installing Mantid on Windows please do the following:
+
+1. Start the mantidpython (IPython) console as admin.
+2. Run the following IPython commands:
     - `!python -m pip install --upgrade pip`
     - `!python -m pip install scipy --upgrade`
-    - `!python -m pip install numpy upgrade`
+    - `!python -m pip install numpy --upgrade`
 3. Restart the mantidpython terminal.
 
-This is required on Windows since mantidpython on this platform comes with an older version of scipy. **Linux works without doing the steps described above, given that you followed the setup instructions in the eariler section.**
+Mantid on Windows is shipped with Python. The above steps can also be done from a standard command
+terminal, in which case please ensure that you are upgrading against Python
+installed with Mantid, which by default is located in `C:\MantidInstall\bin`.
 
 ## Description
 The tool creates a table/tables that shows a comparison between the different minimizers available in a fitting software (e.g. scipy or mantid), based on their accuracy and/or runtimes.
