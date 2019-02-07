@@ -37,7 +37,7 @@ class ParseNistTests(unittest.TestCase):
         root_dir = os.path.dirname(os.path.normpath(main_dir))
         bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
         fname = os.path.join(bench_prob_dir, 'NIST_nonlinear_regression',
-                             'Misra1a.dat')
+                             'low_diff', 'Misra1a.dat')
 
         return fname
 

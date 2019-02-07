@@ -53,16 +53,16 @@ def setup_fitting_problems(data_dir):
     """
     Sets up the problem groups specified by the user by providing
     a respective data directory.
-
+s
     @param data_dir :: directory holding the problem data used to test
 
     @returns :: the problem groups dictionary
     """
     problem_groups = {}
     if 'NIST' in data_dir:
-        problem_groups['nist'] = get_nist_problem_files(data_dir)
+        problem_groups['nist'] = get_problem_files(data_dir)
     elif 'Neutron' in data_dir:
-        problem_groups['neutron'] = get_neutron_problem_files(data_dir)
+        problem_groups['neutron'] = get_problem_files(data_dir)
     # elif ...
     #    problem_groups[your-group-name] = your_function(your_data_dir)
     else:
