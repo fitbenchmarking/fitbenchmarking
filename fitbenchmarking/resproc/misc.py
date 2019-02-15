@@ -27,6 +27,7 @@ fitting results.
 from __future__ import (absolute_import, division, print_function)
 import os
 
+import re
 from resproc import visual_pages
 
 
@@ -97,3 +98,21 @@ def build_items_links(comparison_type, comp_dim, using_errors):
         items_link = ''
 
     return items_link
+
+def find_ranking_strings(rst_table):
+    """
+    Gets the intervals between which a table has ':ranking-number:' and
+    puts them in an array.
+
+    @param rst_table :: the restructured text table containing the results.
+
+    @returns :: array of tuples containing the starting and ending index
+                where every ':ranking-number:' is.
+    """
+
+    expression = re.compile('(:ranking)(.*?)(:)')
+    iterator = expression.finditer(rst_table)
+    matches = []
+    for match in iterator: matches.append(match.span())
+
+    return matches

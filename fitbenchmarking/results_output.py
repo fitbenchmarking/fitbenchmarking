@@ -32,6 +32,7 @@ from utils.logging_setup import logger
 from resproc import numpy_restables
 from resproc import rst_table
 from resproc import visual_pages
+from resproc.misc import find_ranking_strings
 from utils import create_dirs
 
 # Some naming conventions for the output files
@@ -70,6 +71,10 @@ def save_results_tables(software, results_per_test, group_name,
     runtime_tbl = create_runtime_tbl(minimizers, linked_problems, norm_runtimes,
                                      use_errors, color_scale)
 
+    combined_table = create_combined_table(acc_tbl, runtime_tbl)
+
+    save_tables(tables_dir, combined_table, use_errors, group_name,
+                "combined_table")
     save_tables(tables_dir, acc_tbl, use_errors, group_name,
                 FILENAME_SUFFIX_ACCURACY)
     save_tables(tables_dir, runtime_tbl, use_errors, group_name,
@@ -77,7 +82,6 @@ def save_results_tables(software, results_per_test, group_name,
 
     # Shut down logging at end of run
     logging.shutdown()
-
 
 def generate_tables(results_per_test, minimizers):
     """
@@ -129,6 +133,30 @@ def create_runtime_tbl(minimizers, linked_problems, norm_runtimes, use_errors,
 
     return tbl_runtime_indiv
 
+
+def create_combined_table(acc_tbl, runtime_tbl):
+    """
+    Combines the accuracy and runtime tables by giving the accuracy table
+    the colours found in the timeline table.
+
+    @param acc_tbl :: accuracy table
+    @param runtime_tbl :: runtime table
+
+    @returns :: combined table with the accuracy table results but
+                with the timing table colours.
+    """
+    matches_acc = find_ranking_strings(acc_tbl)
+    matches_tim = find_ranking_strings(runtime_tbl)
+
+    combined_table = acc_tbl[:matches_acc[0][0]] + \
+                     runtime_tbl[matches_tim[0][0]:matches_tim[0][1]]
+
+    for idx in range(0, len(matches_acc)-1):
+        combined_table += acc_tbl[matches_acc[idx][1]:matches_acc[idx+1][0]] + \
+                          runtime_tbl[matches_tim[idx+1][0]:matches_tim[idx+1][1]]
+
+    combined_table += acc_tbl[matches_acc[-1][1]:]
+    return combined_table
 
 def save_tables(tables_dir, table_data, use_errors, group_name, metric):
     """
