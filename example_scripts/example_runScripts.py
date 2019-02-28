@@ -27,9 +27,6 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import sys
 
-import ipdb
-ipdb.set_trace()
-
 # Avoid reaching the maximum recursion depth by setting recursion limit
 # This is useful when running multiple data set benchmarking
 # Otherwise recursion limit is reached and the interpreter throws an error
