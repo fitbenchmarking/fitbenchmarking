@@ -46,6 +46,10 @@ def function_definitions(problem):
         # Neutron data does not require any
         function_defs = []
         function_defs.append(problem.equation)
+    elif problem.type == 'muon':
+        # Neutron data does not require any
+        function_defs = []
+        function_defs.append(problem.equation)
 
     return function_defs
 

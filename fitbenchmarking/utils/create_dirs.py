@@ -92,6 +92,10 @@ def restables_dir(results_dir, group_name):
         group_results_dir = os.path.join(results_dir, 'neutron')
         tables_dir = group_results_dir
 
+    elif 'muon' in group_name:
+        group_results_dir = os.path.join(results_dir, 'muon')
+        tables_dir = group_results_dir
+
     if not os.path.exists(tables_dir):
         os.makedirs(tables_dir)
 

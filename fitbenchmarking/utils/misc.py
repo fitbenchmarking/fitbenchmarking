@@ -63,6 +63,8 @@ s
         problem_groups['nist'] = get_problem_files(data_dir)
     elif 'Neutron' in data_dir:
         problem_groups['neutron'] = get_problem_files(data_dir)
+    elif 'Muon' in data_dir:
+        problem_groups['muon'] = get_problem_files(data_dir)
     # elif ...
     #    problem_groups[your-group-name] = your_function(your_data_dir)
     else:

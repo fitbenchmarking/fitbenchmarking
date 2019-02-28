@@ -24,7 +24,7 @@ Parse the problem file depending on the type of problem.
 
 from __future__ import (absolute_import, division, print_function)
 
-from parsing import parse_nist, parse_neutron
+from parsing import parse_nist, parse_neutron, parse_muon
 from utils.logging_setup import logger
 
 
@@ -46,6 +46,9 @@ def parse_problem_file(group_name, prob_file):
     elif group_name == 'neutron':
         prob = parse_neutron.load_file(prob_file)
         prob.type = 'neutron'
+    elif group_name == 'muon':
+        prob = parse_muon.load_file(prob_file)
+        prob.type = 'muon'
     # elif ...
     #    prob = call_parse_function_here
     #    prob.type = ...

@@ -64,9 +64,9 @@ def prepare_mantid(problem, use_errors):
     from fitting.mantid.func_def import function_definitions
 
     wks_mtd, cost_function = \
-    wks_cost_function(problem, use_errors)
+        wks_cost_function(problem, use_errors)
     function_definitions = \
-    function_definitions(problem)
+        function_definitions(problem)
 
     return wks_mtd, cost_function, function_definitions
 
@@ -84,11 +84,10 @@ def prepare_scipy(problem, use_errors):
     from fitting.scipy.func_def import function_definitions
 
     data, cost_function = \
-    prepare_data(problem, use_errors)
+        prepare_data(problem, use_errors)
     function_definitions = function_definitions(problem)
     # For problems that have no specified boundries, set -inf and +inf
     if problem.start_x == None and problem.end_x == None:
         problem.start_x = - np.inf
         problem.end_x = np.inf
     return data, cost_function, function_definitions
-

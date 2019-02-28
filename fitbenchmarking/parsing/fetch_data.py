@@ -52,7 +52,7 @@ def search_string_definition(directory):
     """
     Either search for text or dat files.
     """
-    if 'Neutron' in directory:
+    if 'Neutron' in directory or 'Muon' in directory:
         search_str = os.path.join(directory, "*.txt")
     else:
         search_str = os.path.join(directory, "*.dat")

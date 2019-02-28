@@ -27,6 +27,9 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import sys
 
+import ipdb
+ipdb.set_trace()
+
 # Avoid reaching the maximum recursion depth by setting recursion limit
 # This is useful when running multiple data set benchmarking
 # Otherwise recursion limit is reached and the interpreter throws an error
@@ -44,7 +47,7 @@ from results_output import save_results_tables as printTables
 
 
 # SOFTWARE YOU WANT TO BENCHMARK
-software = 'scipy'
+software = 'mantid'
 
 # Problem directories
 # Define any additional problem directories if you want to include other
@@ -52,6 +55,7 @@ software = 'scipy'
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder, 'benchmark_problems')
 nist_data_dir = os.path.join(benchmark_probs_dir, 'NIST_nonlinear_regression')
 neutron_data_dir = os.path.join(benchmark_probs_dir, 'Neutron_data')
+muon_data_dir = os.path.join(benchmark_probs_dir, 'Muon_data')
 
 """
 Modify results_dir to specify where the results of the fit should be saved
@@ -79,16 +83,24 @@ color_scale = [(1.1, 'ranking-top-1'),
 # CURRENTLY TESTING AGAINST "neutron", "nist"
 problem_sets = ["neutron", "nist"]
 
-for run_data in problem_sets:
+for run_data in ["muon"]:
 
     if run_data == "neutron":
         # Group label used in output folder and table file names
         group_labels = ['neutron']
 
-        # Running the benchmarking on the nist group
+        # Running the benchmarking on the neutron group
         results_per_group, results_dir = \
-        fitBenchmarking(software=software, data_dir=neutron_data_dir,
-                        use_errors=use_errors, results_dir=results_dir)
+            fitBenchmarking(software=software, data_dir=neutron_data_dir,
+                            use_errors=use_errors, results_dir=results_dir)
+    elif run_data == "muon":
+        # Group label used in output folder and table file names
+        group_labels = ['muon']
+
+        # Running the benchmarking on the moun group
+        results_per_group, results_dir = \
+            fitBenchmarking(software=software, data_dir=muon_data_dir,
+                            use_errors=use_errors, results_dir=results_dir)
     elif run_data == "nist":
         # Group label used in output folder and table file names
         # Note for now, for NIST problems there is a hardcoded grouping
@@ -98,8 +110,8 @@ for run_data in problem_sets:
 
         # Running the benchmarking on the nist group
         results_per_group, results_dir = \
-        fitBenchmarking(software=software, data_dir=nist_data_dir,
-                        use_errors=use_errors, results_dir=results_dir)
+            fitBenchmarking(software=software, data_dir=nist_data_dir,
+                            use_errors=use_errors, results_dir=results_dir)
     else:
         raise RuntimeError("Invalid run_data, please check if the array"
                            "contains the correct names!")
