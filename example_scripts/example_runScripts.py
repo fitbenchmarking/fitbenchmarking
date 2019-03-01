@@ -44,7 +44,7 @@ from results_output import save_results_tables as printTables
 
 
 # SOFTWARE YOU WANT TO BENCHMARK
-software = 'mantid'
+software = 'scipy'
 
 # Problem directories
 # Define any additional problem directories if you want to include other
