@@ -29,6 +29,7 @@ import re
 
 from fitting.scipy.nist_def import nist_func_definitions
 from fitting.scipy.neutron_def import neutron_func_definitions
+from fitting.scipy.muon_def import muon_func_definitions
 from utils.logging_setup import logger
 
 
@@ -42,8 +43,11 @@ def function_definitions(problem):
                                      problem.starting_values)
     elif problem.type == 'neutron':
         return neutron_func_definitions(problem.equation)
+    elif problem.type == 'muon':
+        return muon_func_definitions(problem.equation)
     else:
         RuntimeError("Your problem type is not supported yet!")
+
 
 def get_fin_function_def(init_function_def, func_callable, popt):
     """
@@ -66,6 +70,7 @@ def get_fin_function_def(init_function_def, func_callable, popt):
         fin_function_def = str(func_callable)
 
     return fin_function_def
+
 
 def get_init_function_def(function, mantid_definition):
     """
