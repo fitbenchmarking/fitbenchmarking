@@ -1,11 +1,20 @@
-[10:01:15]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Muon_data/Muon_67068_coadd_67108_long.txt
-[10:01:15]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Muon_data/Muon_EMU_73673.txt
-[10:01:15]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Muon_data/Muon_HIFI_113856.txt
-[10:01:15]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Muon_data/Muon_HIFI_116891.txt
-[10:01:15]  INFO: * Testing fitting of problem EMU 67068 coadd 67108
-[10:01:16]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: Number of calls to function has reached maxfev = 500.
-[10:01:21]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: The maximum number of function evaluations is exceeded.
-[10:01:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/muon/support_pages/figures/Data_Plot_EMU_67068_coadd_67108_1.png
-[10:01:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/muon/support_pages/figures/Fit_for_EMU_67068_coadd_67108_1.png
-[10:01:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/muon/support_pages/figures/start_for_EMU_67068_coadd_67108_1.png
-[10:01:22]  INFO: * Testing fitting of problem EMU 73673
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak19.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak20.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak23.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak5.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak6.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX236516_vanadium_bank1_10brk.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX236516_vanadium_bank1_20brk.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/EVS14188-90_Gaussian_peaks_1.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/EVS14188-90_Gaussian_peaks_2.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/GEMpeak1.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak1.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak2.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak3.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak4.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak5.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak6.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak7.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak8.txt
+[13:53:29]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak9.txt
+[13:53:29]  INFO: * Testing fitting of problem ENGINX 193749 calibration, spectrum 651, peak 19

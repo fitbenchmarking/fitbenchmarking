@@ -24,8 +24,9 @@ Parse the problem file depending on the type of problem.
 
 from __future__ import (absolute_import, division, print_function)
 
-from parsing import parse_nist, parse_neutron, parse_muon
+from parsing import parse_data
 from utils.logging_setup import logger
+import sys
 
 
 def parse_problem_file(group_name, prob_file):
@@ -40,22 +41,12 @@ def parse_problem_file(group_name, prob_file):
     @returns :: problem object with fitting information
     """
 
-    if group_name == 'nist':
-        prob = parse_nist.load_file(prob_file)
-        prob.type = 'nist'
-    elif group_name == 'neutron':
-        prob = parse_neutron.load_file(prob_file)
-        prob.type = 'neutron'
-    elif group_name == 'muon':
-        prob = parse_muon.load_file(prob_file)
-        prob.type = 'muon'
-    # elif ...
-    #    prob = call_parse_function_here
-    #    prob.type = ...
-    else:
-        raise NameError("Could not find group name! Please check if it was"
-                        "given correctly...")
-
+    try:
+        prob = parse_data.load_file(prob_file)
+    except NameError:
+        print("Could not find group name! Please check if it was"
+              " given correctly...")
+        sys.exit()
     logger.info("* Testing fitting of problem {0}".format(prob.name))
 
     return prob

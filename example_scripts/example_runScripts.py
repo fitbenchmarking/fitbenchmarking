@@ -44,7 +44,7 @@ from results_output import save_results_tables as printTables
 
 
 # SOFTWARE YOU WANT TO BENCHMARK
-software = 'scipy'
+software = 'mantid'
 
 # Problem directories
 # Define any additional problem directories if you want to include other
@@ -80,7 +80,7 @@ color_scale = [(1.1, 'ranking-top-1'),
 # CURRENTLY TESTING AGAINST "neutron", "nist"
 problem_sets = ["neutron", "nist"]
 
-for run_data in ["muon"]:
+for run_data in ["neutron"]:
 
     if run_data == "neutron":
         # Group label used in output folder and table file names
