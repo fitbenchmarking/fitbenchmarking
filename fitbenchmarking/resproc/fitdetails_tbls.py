@@ -56,7 +56,7 @@ def generate_names_and_params(function):
     names, params = [], []
 
     if 'UserFunction' in function:
-        names, params = parse_data_mantid_function_def(function)
+        names, params = parse_dat_mantid_function_def(function)
     elif 'name=' in function:
         names, params = parse_txt_function_def(function, names, params)
     elif " | " in function:
@@ -68,7 +68,7 @@ def generate_names_and_params(function):
     return names, params
 
 
-def parse_data_mantid_function_def(function):
+def parse_dat_mantid_function_def(function):
     """
     Helper function that parses the function definition of a NIST problem
     and returns the function name and parameters.
