@@ -11,11 +11,12 @@ parent_dir = os.path.dirname(os.path.normpath(parent_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
-from fitting.scipy.nist_def import nist_func_definitions
-from fitting.scipy.nist_def import get_nist_param_names_and_values
-from fitting.scipy.nist_def import format_function_scipy
+from fitting.scipy.dat_functions import dat_func_definitions
+from fitting.scipy.dat_functions import get_dat_param_names_and_values
+from fitting.scipy.dat_functions import format_function_scipy
 
 from utils import fitbm_problem
+
 
 class ScipyTests(unittest.TestCase):
 
@@ -31,25 +32,25 @@ class ScipyTests(unittest.TestCase):
     def test_nistFuncDefinitions_return_function_definitions(self):
 
         function = "b1*(1-exp(-b2*x))"
-        startvals = [['b1', [500.0,250.0]], ['b2', [0.0001,0.0005]]]
+        startvals = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
 
-        function_defs = nist_func_definitions(function, startvals)
+        function_defs = dat_func_definitions(function, startvals)
         expected_function_defs = self.create_expected_function_definitions()
 
         self.assertListEqual(expected_function_defs[0][1], function_defs[0][1])
         self.assertListEqual(expected_function_defs[1][1], function_defs[1][1])
         self.assertEqual(expected_function_defs[0][2], function_defs[0][2])
         self.assertEqual(expected_function_defs[1][2], function_defs[1][2])
-        np.testing.assert_equal(expected_function_defs[0][0](1,2,3),
-                                function_defs[0][0](1,2,3))
-        np.testing.assert_equal(expected_function_defs[1][0](1,2,3),
-                                function_defs[1][0](1,2,3))
+        np.testing.assert_equal(expected_function_defs[0][0](1, 2, 3),
+                                function_defs[0][0](1, 2, 3))
+        np.testing.assert_equal(expected_function_defs[1][0](1, 2, 3),
+                                function_defs[1][0](1, 2, 3))
 
     def test_getNistParamNamesAndValues_return_correct_output(self):
 
-        startvals = [['b1', [500.0,250.0]], ['b2', [0.0001,0.0005]]]
+        startvals = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
 
-        param_names, all_values = get_nist_param_names_and_values(startvals)
+        param_names, all_values = get_dat_param_names_and_values(startvals)
         expected_param_names = "b1, b2"
         expected_all_values = [[500.0, 0.0001], [250.0, 0.0005]]
 
