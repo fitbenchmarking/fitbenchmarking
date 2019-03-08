@@ -183,65 +183,6 @@ def setup_detail_page_tbls(initial_fdef, final_fdef):
     return initial_details_tbl, final_details_tbl
 
 
-def setup_nist_page_misc(link, results_dir):
-    """
-    Sets up some miscellaneous things for the NIST visual display
-    page like path to the folder they are saved in.
-
-    @param link :: link to the NIST website for the
-                          considered NIST problem
-    @param results_dir :: path to the results directory
-
-    @returns :: the directory in which visual display pages go,
-                a table with the fit details and the see also link
-    """
-
-    support_pages_dir = os.path.join(results_dir, "nist", "support_pages")
-    if not os.path.exists(support_pages_dir):
-        os.makedirs(support_pages_dir)
-    see_also_link = 'See also:\n ' + link + '\n on NIST website\n\n'
-
-    return support_pages_dir, see_also_link
-
-
-def setup_neutron_page_misc(results_dir):
-    """
-    Sets up some miscellaneous things for the neutron visual display
-    page like path to the folder they are saved in.
-
-    @param results_dir :: path to the results directory
-
-    @returns :: the directory in which visual display pages go,
-                a table with the fit details and the see also link
-    """
-
-    support_pages_dir = os.path.join(results_dir, "neutron", "support_pages")
-    if not os.path.exists(support_pages_dir):
-        os.makedirs(support_pages_dir)
-    see_also_link = ''
-
-    return support_pages_dir, see_also_link
-
-
-def setup_muon_page_misc(results_dir):
-    """
-    Sets up some miscellaneous things for the muon visual display
-    page like path to the folder they are saved in.
-
-    @param results_dir :: path to the results directory
-
-    @returns :: the directory in which visual display pages go,
-                a table with the fit details and the see also link
-    """
-
-    support_pages_dir = os.path.join(results_dir, "muon", "support_pages")
-    if not os.path.exists(support_pages_dir):
-        os.makedirs(support_pages_dir)
-    see_also_link = ''
-
-    return support_pages_dir, see_also_link
-
-
 def setup_page_misc(group_name, problem_name, res_obj, results_dir, count):
     """
     Sets up some miscellaneous things for the visual display pages.
@@ -261,17 +202,15 @@ def setup_page_misc(group_name, problem_name, res_obj, results_dir, count):
     """
 
     # Group specific path and other misc stuff
-    if 'nist' in group_name:
+
+    support_pages_dir = os.path.join(results_dir, group_name, "support_pages")
+    if not os.path.exists(support_pages_dir):
+        os.makedirs(support_pages_dir)
+    see_also_link = ''
+    if 'nist' in group_name.lower():
         link = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data"
                 "/{1}.shtml>`__".format(problem_name, problem_name.lower()))
-        support_pages_dir, see_also_link = \
-            setup_nist_page_misc(link, results_dir)
-    elif 'neutron' in group_name:
-        support_pages_dir, see_also_link = \
-            setup_neutron_page_misc(results_dir)
-    elif 'muon' in group_name:
-        support_pages_dir, see_also_link = \
-            setup_muon_page_misc(results_dir)
+        see_also_link = 'See also:\n ' + link + '\n on NIST website\n\n'
 
     file_name = (group_name + '_' + problem_name + '_' + str(count)).lower()
     file_path = os.path.join(support_pages_dir, file_name)

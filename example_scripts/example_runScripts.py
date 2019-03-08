@@ -25,6 +25,7 @@ Script that runs the fitbenchmarking tool with various problems and minimizers.
 
 from __future__ import (absolute_import, division, print_function)
 import os
+import glob
 import sys
 
 # Avoid reaching the maximum recursion depth by setting recursion limit
@@ -44,15 +45,10 @@ from results_output import save_results_tables as printTables
 
 
 # SOFTWARE YOU WANT TO BENCHMARK
-software = 'mantid'
+software = 'scipy'
 
-# Problem directories
-# Define any additional problem directories if you want to include other
-# sets of problems
+# Benchmark problem directories
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder, 'benchmark_problems')
-nist_data_dir = os.path.join(benchmark_probs_dir, 'NIST_nonlinear_regression')
-neutron_data_dir = os.path.join(benchmark_probs_dir, 'Neutron_data')
-muon_data_dir = os.path.join(benchmark_probs_dir, 'Muon_data')
 
 """
 Modify results_dir to specify where the results of the fit should be saved
@@ -78,43 +74,32 @@ color_scale = [(1.1, 'ranking-top-1'),
 
 # ADD WHICH PROBLEM SETS TO TEST AGAINST HERE
 # CURRENTLY TESTING AGAINST "neutron", "nist"
-problem_sets = ["neutron", "nist"]
+# problem_sets = ["neutron", "nist"]
+problem_sets = [
+    'NIST_average_diff',
+    'NIST_low_diff',
+    'Neutron_data',
+    'NIST_high_diff']
+for group_label in problem_sets:
+    results_dir = None
+    print('\nRunning the benchmarking on {} problem set\n'.format(group_label))
 
-for run_data in ["neutron"]:
+    # Problem data directories
+    data_dir = os.path.join(benchmark_probs_dir, group_label)
+    # Running the benchmarking
+    results_per_group, results_dir = \
+        fitBenchmarking(group_name=group_label, software=software,
+                        data_dir=data_dir,
+                        use_errors=use_errors, results_dir=results_dir)
+# else:
+#     raise RuntimeError("Invalid run_data, please check if the array"
+#                        "contains the correct names!")
 
-    if run_data == "neutron":
-        # Group label used in output folder and table file names
-        group_labels = ['neutron']
-
-        # Running the benchmarking on the neutron group
-        results_per_group, results_dir = \
-            fitBenchmarking(software=software, data_dir=neutron_data_dir,
-                            use_errors=use_errors, results_dir=results_dir)
-    elif run_data == "muon":
-        # Group label used in output folder and table file names
-        group_labels = ['muon']
-
-        # Running the benchmarking on the moun group
-        results_per_group, results_dir = \
-            fitBenchmarking(software=software, data_dir=muon_data_dir,
-                            use_errors=use_errors, results_dir=results_dir)
-    elif run_data == "nist":
-        # Group label used in output folder and table file names
-        # Note for now, for NIST problems there is a hardcoded grouping
-        # which in the code, hence the reason for needing 3 labels
-        # An issue has been created for removing this
-        group_labels = ['nist_lower', 'nist_average', 'nist_higher']
-
-        # Running the benchmarking on the nist group
-        results_per_group, results_dir = \
-            fitBenchmarking(software=software, data_dir=nist_data_dir,
-                            use_errors=use_errors, results_dir=results_dir)
-    else:
-        raise RuntimeError("Invalid run_data, please check if the array"
-                           "contains the correct names!")
-
+    print('\nProducing output {} problem set\n'.format(group_label))
     for idx, group_results in enumerate(results_per_group):
         # Display the runtime and accuracy results in a table
         printTables(software, group_results,
-                    group_name=group_labels[idx], use_errors=use_errors,
+                    group_name=group_label, use_errors=use_errors,
                     color_scale=color_scale, results_dir=results_dir)
+
+    print('\nCompleted benchmarking for {} problem set\n'.format(group_label))

@@ -53,23 +53,24 @@ def fitbm_one_prob(user_input, problem):
     previous_name, count = None, 0
     results_fit_problem = []
     data_struct, cost_function, function_definitions = \
-    prereq.prepare_software_prerequisites(user_input.software, problem,
-                                          user_input.use_errors)
+        prereq.prepare_software_prerequisites(user_input.software, problem,
+                                              user_input.use_errors)
 
     for function in function_definitions:
         # Ad hoc exception for running the scipy script
         # scipy does not currently support the GEM problem
-        if 'GEM' in problem.name and user_input.software == 'scipy': break;
+        if 'GEM' in problem.name and user_input.software == 'scipy':
+            break
         results_problem, best_fit = \
-        fit_one_function_def(user_input.software, problem, data_struct,
-                             function, user_input.minimizers, cost_function)
+            fit_one_function_def(user_input.software, problem, data_struct,
+                                 function, user_input.minimizers, cost_function)
         count += 1
         if not best_fit is None:
             # Make the plot of the best fit
             previous_name = \
-            plots.make_plots(user_input.software, problem, data_struct,
-                             function, best_fit, previous_name, count,
-                             user_input.group_results_dir)
+                plots.make_plots(user_input.software, problem, data_struct,
+                                 function, best_fit, previous_name, count,
+                                 user_input.group_results_dir)
 
         results_fit_problem.append(results_problem)
 
@@ -97,10 +98,10 @@ def fit_one_function_def(software, problem, data_struct, function, minimizers,
     if software == 'mantid':
         from fitting.mantid.main import benchmark
         return benchmark(problem, data_struct, function,
-                                             minimizers, cost_function)
+                         minimizers, cost_function)
     elif software == 'scipy':
         from fitting.scipy.main import benchmark
         return benchmark(problem, data_struct, function,
-                                            minimizers, cost_function)
+                         minimizers, cost_function)
     else:
         raise NameError("Sorry, that software is not supported.")

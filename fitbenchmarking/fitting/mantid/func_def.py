@@ -38,20 +38,20 @@ def function_definitions(problem):
     @returns :: a function definitions string with functions that
                 mantid understands
     """
-    if problem.type == 'nist':
+    if problem.type == 'dat':
         # NIST data requires prior formatting
         nb_start_vals = len(problem.starting_values[0][1])
         function_defs = parse_nist_function_definitions(problem, nb_start_vals)
-    elif problem.type == 'neutron':
+    elif problem.type == 'txt':
         # Neutron data does not require any
         function_defs = []
         function_defs.append(problem.equation)
-    elif problem.type == 'muon':
-        # Neutron data does not require any
-        function_defs = []
-        function_defs.append(problem.equation)
+    else:
+        raise AssertionError('Currently data types supported are .txt'
+            'and .dat, data type supplied was .{}'.format(ext))
 
     return function_defs
+
 
 def parse_nist_function_definitions(problem, nb_start_vals):
     """

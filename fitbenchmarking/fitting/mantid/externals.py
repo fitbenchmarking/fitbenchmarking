@@ -35,7 +35,7 @@ def gen_func_obj(function_name):
 
     @param function_name :: the name of the function to be generated
 
-    @returns :: mantid function object that can be called in python
+    @returns :: mantid function object thta can be called in python
     """
     exec "function_object = msapi." + function_name + "()"
     return function_object

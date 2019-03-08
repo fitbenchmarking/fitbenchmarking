@@ -27,9 +27,8 @@ from __future__ import (absolute_import, division, print_function)
 import numpy as np
 import re
 
-from fitting.scipy.nist_def import nist_func_definitions
-from fitting.scipy.neutron_def import neutron_func_definitions
-from fitting.scipy.muon_def import muon_func_definitions
+from fitting.scipy.dat_functions import dat_func_definitions
+from fitting.scipy.txt_functions import txt_func_definitions
 from utils.logging_setup import logger
 
 
@@ -38,13 +37,11 @@ def function_definitions(problem):
     Processing the function definitions into an appropriate format for
     the softwareto understand.
     """
-    if problem.type == 'nist':
-        return nist_func_definitions(problem.equation,
-                                     problem.starting_values)
-    elif problem.type == 'neutron':
-        return neutron_func_definitions(problem.equation)
-    elif problem.type == 'muon':
-        return muon_func_definitions(problem.equation)
+    if problem.type == 'dat':
+        return dat_func_definitions(problem.equation,
+                                    problem.starting_values)
+    elif problem.type == 'txt':
+        return txt_func_definitions(problem.equation)
     else:
         RuntimeError("Your problem type is not supported yet!")
 

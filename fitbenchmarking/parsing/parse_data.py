@@ -50,7 +50,6 @@ def load_file(fname):
     @returns :: problem object containing all the relevant information
     """
     ext = get_extension(fname)
-    print ("Attempting to loading file with extension {}".format(ext))
     if ext == 'txt':
         with open(fname) as probf:
             entries = get_txt_data_problem_entries(probf)
@@ -73,7 +72,7 @@ def load_file(fname):
             problem.type = ext
     else:
         AssertionError('Currently data types supported are .txt and .dat,'
-            ' data type supplied was .{}'.format(ext))
+                       ' data type supplied was .{}'.format(ext))
     return problem
 
 
@@ -90,12 +89,12 @@ def get_data_file(fname, input_file):
     @returns :: path to the data files directory (str)
     """
 
-    prefix=""
+    prefix = ""
     if os.sep in fname:
-        sep_idx=fname.rfind(os.sep)
-        prefix=os.path.join(fname[:sep_idx], "data_files")
+        sep_idx = fname.rfind(os.sep)
+        prefix = os.path.join(fname[:sep_idx], "data_files")
 
-    data_file=os.path.join(prefix, input_file)
+    data_file = os.path.join(prefix, input_file)
 
     return data_file
 
@@ -109,16 +108,16 @@ def get_txt_data_problem_entries(fname):
     @returns :: a dictionary with all the entires of the problem file
     """
 
-    entries={}
+    entries = {}
     for line in fname:
         # Discard comments
-        line=line.partition('#')[0]
-        line=line.rstrip()
+        line = line.partition('#')[0]
+        line = line.rstrip()
         if not line:
             continue
 
-        lhs, rhs=line.split("=", 1)
-        entries[lhs.strip()]=eval(rhs.strip())
+        lhs, rhs = line.split("=", 1)
+        entries[lhs.strip()] = eval(rhs.strip())
 
     return entries
 
@@ -132,12 +131,12 @@ def store_misc_problem_data(problem, entries):
                       problem definition object
     """
 
-    problem.name=entries['name']
-    problem.equation=entries['function']
-    problem.starting_values=None
+    problem.name = entries['name']
+    problem.equation = entries['function']
+    problem.starting_values = None
     if 'fit_parameters' in entries:
-        problem.start_x=entries['fit_parameters']['StartX']
-        problem.end_x=entries['fit_parameters']['EndX']
+        problem.start_x = entries['fit_parameters']['StartX']
+        problem.end_x = entries['fit_parameters']['EndX']
 
 
 def store_prob_details(spec_file, parsed_eq, starting_values, data_pattern,
@@ -156,13 +155,13 @@ def store_prob_details(spec_file, parsed_eq, starting_values, data_pattern,
                               of the fit
     """
 
-    prob=fitbm_problem.FittingProblem()
-    prob.name=os.path.basename(spec_file.name.split('.')[0])
-    prob.equation=parsed_eq
-    prob.starting_values=starting_values
-    prob.data_x=data_pattern[:, 1]
-    prob.data_y=data_pattern[:, 0]
-    prob.ref_residual_sum_sq=residual_sum_sq
+    prob = fitbm_problem.FittingProblem()
+    prob.name = os.path.basename(spec_file.name.split('.')[0])
+    prob.equation = parsed_eq
+    prob.starting_values = starting_values
+    prob.data_x = data_pattern[:, 1]
+    prob.data_y = data_pattern[:, 0]
+    prob.ref_residual_sum_sq = residual_sum_sq
 
     return prob
 
@@ -178,23 +177,23 @@ def parse_line_by_line(lines):
                 values and the reference residual sum from the file
     """
 
-    idx, ignored_lines, residual_sum_sq=0, 0, 0
+    idx, ignored_lines, residual_sum_sq = 0, 0, 0
 
     while idx < len(lines):
-        line=lines[idx].strip()
+        line = lines[idx].strip()
         idx += 1
         if not line:
             continue
 
         if line.startswith('Model:'):
-            equation_text, idx=get_dat_model(lines, idx)
+            equation_text, idx = get_dat_model(lines, idx)
         elif 'Starting values' in line or 'Starting Values' in line:
-            starting_values, idx=get_dat_starting_values(lines, idx)
+            starting_values, idx = get_dat_starting_values(lines, idx)
         elif line.startswith('Residual Sum of Squares'):
-            residual_sum_sq=float(line.split()[4])
+            residual_sum_sq = float(line.split()[4])
         elif line.startswith("Data:"):
             if " x" in line and " y " in line:
-                data_pattern_text, idx=get_data_pattern_txt(lines, idx)
+                data_pattern_text, idx = get_data_pattern_txt(lines, idx)
         else:
             ignored_lines += 1
             # print("unknown line in supposedly dat test file, ignoring: {0}".

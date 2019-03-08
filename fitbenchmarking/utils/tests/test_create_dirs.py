@@ -1,7 +1,8 @@
 from __future__ import (absolute_import, division, print_function)
 
 import unittest
-import os, shutil
+import os
+import shutil
 
 # Delete four lines below when automated tests ar enabled
 import sys
@@ -45,14 +46,14 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_results_create_correct_fullPath_dir(self):
 
-        results_dir = os.path.join(os.getcwd(),"full_path", "test")
+        results_dir = os.path.join(os.getcwd(), "full_path", "test")
         results_dir = results(results_dir)
-        results_dir_expected = os.path.join(os.getcwd(),"full_path", "test")
+        results_dir_expected = os.path.join(os.getcwd(), "full_path", "test")
 
         self.assertEqual(results_dir_expected, results_dir)
 
         shutil.rmtree(results_dir_expected)
-        os.rmdir(os.path.join(os.getcwd(),"full_path"))
+        os.rmdir(os.path.join(os.getcwd(), "full_path"))
 
     def test_groupResults_create_correct_group_results(self):
 
@@ -65,27 +66,13 @@ class CreateDirsTests(unittest.TestCase):
 
         shutil.rmtree(results_dir)
 
-    def test_restablesDir_create_correct_nist_dir(self):
+    def test_restablesDir_create_correct_random_dir(self):
 
         results_dir = results(None)
-        group_name = 'nist_lower'
-        group_results_dir = os.path.join(results_dir, 'nist')
+        group_name = 'random'
 
         tables_dir = restables_dir(results_dir, group_name)
-        tables_dir_expected = os.path.join(group_results_dir, group_name)
-
-        self.assertEqual(tables_dir_expected, tables_dir)
-        self.assertTrue(os.path.exists(tables_dir_expected))
-
-        shutil.rmtree(results_dir)
-
-    def test_restablesDir_create_correct_neutron_dir(self):
-
-        results_dir = results(None)
-        group_name = 'neutron'
-
-        tables_dir = restables_dir(results_dir, group_name)
-        tables_dir_expected = os.path.join(results_dir, 'neutron')
+        tables_dir_expected = os.path.join(results_dir, 'random')
 
         self.assertEqual(tables_dir_expected, tables_dir)
         self.assertTrue(os.path.exists(tables_dir_expected))

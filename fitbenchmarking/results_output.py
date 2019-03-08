@@ -40,6 +40,20 @@ FILENAME_SUFFIX_RUNTIME = 'runtime'
 FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
+minimizers_dict = {"mantid": ["BFGS",
+                              "Conjugate gradient (Fletcher-Reeves imp.)",
+                              "Conjugate gradient (Polak-Ribiere imp.)",
+                              "Damped GaussNewton",
+                              "Levenberg-Marquardt",
+                              "Levenberg-MarquardtMD",
+                              "Simplex",
+                              "SteepestDescent",
+                              "Trust Region"],
+                   "scipy": ["lm",
+                             "trf",
+                             "dogbox"]
+                   }
+
 
 def save_results_tables(software, results_per_test, group_name,
                         use_errors, color_scale=None, results_dir=None):
@@ -57,13 +71,13 @@ def save_results_tables(software, results_per_test, group_name,
 
     @returns :: html/rst tables with the fitting results
     """
-    minimizers = utils.misc.get_minimizers(software)
+    minimizers = minimizers_dict[software]
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
-    visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
+        visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
 
     norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = \
-    generate_tables(results_per_test, minimizers)
+        generate_tables(results_per_test, minimizers)
 
     acc_tbl = create_acc_tbl(minimizers, linked_problems, norm_acc_rankings,
                              use_errors, color_scale)
@@ -90,11 +104,11 @@ def generate_tables(results_per_test, minimizers):
     """
 
     accuracy_tbl, runtime_tbl = \
-    numpy_restables.create_accuracy_runtime_tbls(results_per_test, minimizers)
+        numpy_restables.create_accuracy_runtime_tbls(results_per_test, minimizers)
     norm_acc_rankings, norm_runtimes = \
-    numpy_restables.create_norm_tbls(accuracy_tbl, runtime_tbl)
+        numpy_restables.create_norm_tbls(accuracy_tbl, runtime_tbl)
     sum_cells_acc, sum_cells_runtime = \
-    numpy_restables.create_summary_tbls(norm_acc_rankings, norm_runtimes)
+        numpy_restables.create_summary_tbls(norm_acc_rankings, norm_runtimes)
 
     return norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime
 
