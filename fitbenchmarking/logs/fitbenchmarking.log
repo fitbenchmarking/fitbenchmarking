@@ -1,46 +1,6 @@
-[14:12:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/ENSO.dat
-[14:12:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Gauss3.dat
-[14:12:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Hahn1.dat
-[14:12:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Kirby2.dat
-[14:12:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Lanczos1.dat
-[14:12:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Lanczos2.dat
-[14:12:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/MGH17.dat
-[14:12:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Misra1c.dat
-[14:12:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Misra1d.dat
-[14:12:22]  INFO: *** Loading dat data file ENSO.dat ***
-[14:12:22]  INFO: 23 lines were ignored in this problem file.
+[14:21:16]  ERROR: Could not find equation, index went out of bounds!
+[14:21:16]  INFO: *** Loading dat data file Misra1a.dat ***
+[14:21:16]  INFO: 17 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[14:12:22]  INFO: * Testing fitting of problem ENSO
-[14:12:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_ENSO_1.png
-[14:12:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_ENSO_1.png
-[14:12:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_ENSO_1.png
-[14:12:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_ENSO_2.png
-[14:12:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_ENSO_2.png
-[14:12:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_ENSO_2.png
-[14:12:23]  INFO: *** Loading dat data file Gauss3.dat ***
-[14:12:23]  INFO: 15 lines were ignored in this problem file.
+[14:21:16]  INFO: 17 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[14:12:23]  INFO: * Testing fitting of problem Gauss3
-[14:12:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Gauss3_1.png
-[14:12:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Gauss3_1.png
-[14:12:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Gauss3_1.png
-[14:12:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Gauss3_2.png
-[14:12:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Gauss3_2.png
-[14:12:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Gauss3_2.png
-[14:12:23]  INFO: *** Loading dat data file Hahn1.dat ***
-[14:12:23]  INFO: 18 lines were ignored in this problem file.
-If any problems occur, please uncomment line above this print to display the full output.
-[14:12:23]  INFO: * Testing fitting of problem Hahn1
-[14:12:23]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: Number of calls to function has reached maxfev = 500.
-[14:12:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Hahn1_1.png
-[14:12:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Hahn1_1.png
-[14:12:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Hahn1_1.png
-[14:12:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Hahn1_2.png
-[14:12:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Hahn1_2.png
-[14:12:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Hahn1_2.png
-[14:12:24]  INFO: *** Loading dat data file Kirby2.dat ***
-[14:12:24]  INFO: 15 lines were ignored in this problem file.
-If any problems occur, please uncomment line above this print to display the full output.
-[14:12:24]  INFO: * Testing fitting of problem Kirby2
-[14:12:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Kirby2_1.png
-[14:12:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Kirby2_1.png
