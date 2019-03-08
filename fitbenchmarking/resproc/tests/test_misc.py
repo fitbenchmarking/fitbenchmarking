@@ -15,6 +15,7 @@ from utils import fitbm_problem
 from resproc.misc import display_name_for_minimizers
 from resproc.misc import weighted_suffix_string
 from resproc.misc import build_items_links
+from resproc.misc import find_ranking_strings
 
 
 class MiscTests(unittest.TestCase):
@@ -105,6 +106,15 @@ class MiscTests(unittest.TestCase):
         items_link_expected = ''
 
         self.assertEqual(items_link_expected, items_link)
+
+    def test_findRankingStrings_get_ranking_strings(self):
+
+        rst_table = "something something :ranking-9 example: something"
+
+        matches = find_ranking_strings(rst_table)
+        expected_matches = [(20,39)]
+
+        self.assertListEqual(expected_matches, matches)
 
 
 if __name__ == "__main__":
