@@ -29,8 +29,8 @@ Model:         Miscellaneous Class
 
                y = dist * tan( alpha * (1 - x/16) + beta*(x/16))  +  e
 
- 
- 
+
+
           Starting Values                  Certified Values
 
         Start 1            Parameter     Standard Deviation

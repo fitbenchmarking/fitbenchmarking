@@ -76,7 +76,7 @@ color_scale = [(1.1, 'ranking-top-1'),
 # CURRENTLY TESTING AGAINST "Neutron_data", "NIST_average_diff", "NIST_low_diff", "NIST_high_diff"
 # "CUTEst" and "Muon_data" work for mantid minimizers
 # problem_sets = ["Neutron_data", "NIST_average_diff"]
-problem_sets = ["Neutron_data"]
+problem_sets = ["CUTEst"]
 for group_label in problem_sets:
     results_dir = None
     print('\nRunning the benchmarking on {} problem set\n'.format(group_label))

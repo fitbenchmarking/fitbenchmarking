@@ -1,19 +1,84 @@
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak19.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak20.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak23.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak5.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak6.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX236516_vanadium_bank1_10brk.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX236516_vanadium_bank1_20brk.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/EVS14188-90_Gaussian_peaks_1.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/EVS14188-90_Gaussian_peaks_2.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/GEMpeak1.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak1.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak2.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak3.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak4.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak5.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak6.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak7.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak8.txt
-[10:11:23]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak9.txt
+[13:13:15]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/CUTEst/DIAMON2D.dat
+[13:13:15]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/CUTEst/PALMER6C.dat
+[13:13:15]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/CUTEst/PALMER7C.dat
+[13:13:15]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/CUTEst/PALMER8C.dat
+[13:13:15]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/CUTEst/VESUVIOLS.dat
+[13:13:15]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/CUTEst/VIBRBEAM.dat
+[13:13:15]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/CUTEst/YFITU.dat
+[13:13:15]  INFO: *** Loading dat data file DIAMON2D.dat ***
+[13:13:15]  INFO: 17 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this print to display the full output.
+[13:13:15]  INFO: * Testing fitting of problem DIAMON2D
+[13:13:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Data_Plot_DIAMON2D_1.png
+[13:13:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Fit_for_DIAMON2D_1.png
+[13:13:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/start_for_DIAMON2D_1.png
+[13:13:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Data_Plot_DIAMON2D_2.png
+[13:13:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Fit_for_DIAMON2D_2.png
+[13:13:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/start_for_DIAMON2D_2.png
+[13:13:16]  INFO: *** Loading dat data file PALMER6C.dat ***
+[13:13:16]  INFO: 14 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this print to display the full output.
+[13:13:16]  INFO: * Testing fitting of problem PALMER6C
+[13:13:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Data_Plot_PALMER6C_1.png
+[13:13:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Fit_for_PALMER6C_1.png
+[13:13:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/start_for_PALMER6C_1.png
+[13:13:17]  INFO: *** Loading dat data file PALMER7C.dat ***
+[13:13:17]  INFO: 14 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this print to display the full output.
+[13:13:17]  INFO: * Testing fitting of problem PALMER7C
+[13:13:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Data_Plot_PALMER7C_1.png
+[13:13:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Fit_for_PALMER7C_1.png
+[13:13:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/start_for_PALMER7C_1.png
+[13:13:17]  INFO: *** Loading dat data file PALMER8C.dat ***
+[13:13:17]  INFO: 14 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this print to display the full output.
+[13:13:17]  INFO: * Testing fitting of problem PALMER8C
+[13:13:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Data_Plot_PALMER8C_1.png
+[13:13:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Fit_for_PALMER8C_1.png
+[13:13:18]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/start_for_PALMER8C_1.png
+[13:13:18]  INFO: *** Loading dat data file VESUVIOLS.dat ***
+[13:13:18]  INFO: 12 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this print to display the full output.
+[13:13:18]  INFO: * Testing fitting of problem VESUVIOLS
+[13:13:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Data_Plot_VESUVIOLS_1.png
+[13:13:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Fit_for_VESUVIOLS_1.png
+[13:13:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/start_for_VESUVIOLS_1.png
+[13:13:19]  INFO: *** Loading dat data file VIBRBEAM.dat ***
+[13:13:19]  INFO: 17 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this print to display the full output.
+[13:13:19]  INFO: * Testing fitting of problem VIBRBEAM
+[13:13:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Data_Plot_VIBRBEAM_1.png
+[13:13:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Fit_for_VIBRBEAM_1.png
+[13:13:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/start_for_VIBRBEAM_1.png
+[13:13:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Data_Plot_VIBRBEAM_2.png
+[13:13:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Fit_for_VIBRBEAM_2.png
+[13:13:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/start_for_VIBRBEAM_2.png
+[13:13:20]  INFO: *** Loading dat data file YFITU.dat ***
+[13:13:20]  INFO: 14 lines were ignored in this problem file.
+If any problems occur, please uncomment line above this print to display the full output.
+[13:13:20]  INFO: * Testing fitting of problem YFITU
+[13:13:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Data_Plot_YFITU_1.png
+[13:13:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/Fit_for_YFITU_1.png
+[13:13:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/figures/start_for_YFITU_1.png
+[13:13:20]  INFO: Saved DIAMON2D.txt to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_diamon2d_1
+[13:13:20]  INFO: Saved DIAMON2D.html to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_diamon2d_1
+[13:13:20]  INFO: Saved DIAMON2D.txt to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_diamon2d_2
+[13:13:20]  INFO: Saved DIAMON2D.html to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_diamon2d_2
+[13:13:20]  INFO: Saved PALMER6C.txt to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_palmer6c_1
+[13:13:20]  INFO: Saved PALMER6C.html to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_palmer6c_1
+[13:13:20]  INFO: Saved PALMER7C.txt to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_palmer7c_1
+[13:13:20]  INFO: Saved PALMER7C.html to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_palmer7c_1
+[13:13:20]  INFO: Saved PALMER8C.txt to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_palmer8c_1
+[13:13:20]  INFO: Saved PALMER8C.html to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_palmer8c_1
+[13:13:20]  INFO: Saved VESUVIOLS.txt to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_vesuviols_1
+[13:13:20]  INFO: Saved VESUVIOLS.html to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_vesuviols_1
+[13:13:20]  INFO: Saved VIBRBEAM.txt to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_vibrbeam_1
+[13:13:20]  INFO: Saved VIBRBEAM.html to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_vibrbeam_1
+[13:13:20]  INFO: Saved VIBRBEAM.txt to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_vibrbeam_2
+[13:13:20]  INFO: Saved VIBRBEAM.html to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_vibrbeam_2
+[13:13:20]  INFO: Saved YFITU.txt to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_yfitu_1
+[13:13:20]  INFO: Saved YFITU.html to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/support_pages/cutest_yfitu_1
+[13:13:20]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/CUTEst_acc_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst
+[13:13:20]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/CUTEst_acc_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst
+[13:13:20]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/CUTEst_runtime_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst
+[13:13:20]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst/CUTEst_runtime_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/CUTEst

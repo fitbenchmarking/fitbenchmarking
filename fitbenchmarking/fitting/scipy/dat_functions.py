@@ -69,6 +69,7 @@ def format_function_scipy(function):
     function = function.replace("^", "**")
     function = function.replace("cos", "np.cos")
     function = function.replace("sin", "np.sin")
+    function = function.replace("tan", "np.tan")
     function = function.replace("pi", "np.pi")
 
     return function
