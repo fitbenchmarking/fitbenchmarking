@@ -40,20 +40,6 @@ FILENAME_SUFFIX_RUNTIME = 'runtime'
 FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
-minimizers_dict = {"mantid": ["BFGS",
-                              "Conjugate gradient (Fletcher-Reeves imp.)",
-                              "Conjugate gradient (Polak-Ribiere imp.)",
-                              "Damped GaussNewton",
-                              "Levenberg-Marquardt",
-                              "Levenberg-MarquardtMD",
-                              "Simplex",
-                              "SteepestDescent",
-                              "Trust Region"],
-                   "scipy": ["lm",
-                             "trf",
-                             "dogbox"]
-                   }
-
 
 def save_results_tables(software, results_per_test, group_name,
                         use_errors, color_scale=None, results_dir=None):
@@ -71,7 +57,7 @@ def save_results_tables(software, results_per_test, group_name,
 
     @returns :: html/rst tables with the fitting results
     """
-    minimizers = minimizers_dict[software]
+    minimizers = utils.misc.get_minimizers(software)
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
         visual_pages.create_linked_probs(results_per_test, group_name, results_dir)

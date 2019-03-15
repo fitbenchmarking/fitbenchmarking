@@ -1,525 +1,525 @@
-[09:25:08]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/ENSO.dat
-[09:25:08]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Gauss3.dat
-[09:25:08]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Hahn1.dat
-[09:25:08]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Kirby2.dat
-[09:25:08]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Lanczos1.dat
-[09:25:08]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Lanczos2.dat
-[09:25:08]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/MGH17.dat
-[09:25:08]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Misra1c.dat
-[09:25:08]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Misra1d.dat
-[09:25:08]  INFO: *** Loading dat data file ENSO.dat ***
-[09:25:08]  INFO: 23 lines were ignored in this problem file.
+[09:28:56]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/ENSO.dat
+[09:28:56]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Gauss3.dat
+[09:28:56]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Hahn1.dat
+[09:28:56]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Kirby2.dat
+[09:28:56]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Lanczos1.dat
+[09:28:56]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Lanczos2.dat
+[09:28:56]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/MGH17.dat
+[09:28:56]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Misra1c.dat
+[09:28:56]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_average_diff/Misra1d.dat
+[09:28:56]  INFO: *** Loading dat data file ENSO.dat ***
+[09:28:56]  INFO: 23 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:08]  INFO: * Testing fitting of problem ENSO
-[09:25:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_ENSO_1.png
-[09:25:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_ENSO_1.png
-[09:25:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_ENSO_1.png
-[09:25:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_ENSO_2.png
-[09:25:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_ENSO_2.png
-[09:25:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_ENSO_2.png
-[09:25:09]  INFO: *** Loading dat data file Gauss3.dat ***
-[09:25:09]  INFO: 15 lines were ignored in this problem file.
+[09:28:56]  INFO: * Testing fitting of problem ENSO
+[09:28:57]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_ENSO_1.png
+[09:28:57]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_ENSO_1.png
+[09:28:57]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_ENSO_1.png
+[09:28:57]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_ENSO_2.png
+[09:28:57]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_ENSO_2.png
+[09:28:57]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_ENSO_2.png
+[09:28:57]  INFO: *** Loading dat data file Gauss3.dat ***
+[09:28:57]  INFO: 15 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:09]  INFO: * Testing fitting of problem Gauss3
-[09:25:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Gauss3_1.png
-[09:25:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Gauss3_1.png
-[09:25:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Gauss3_1.png
-[09:25:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Gauss3_2.png
-[09:25:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Gauss3_2.png
-[09:25:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Gauss3_2.png
-[09:25:10]  INFO: *** Loading dat data file Hahn1.dat ***
-[09:25:10]  INFO: 18 lines were ignored in this problem file.
+[09:28:57]  INFO: * Testing fitting of problem Gauss3
+[09:28:57]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Gauss3_1.png
+[09:28:57]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Gauss3_1.png
+[09:28:57]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Gauss3_1.png
+[09:28:57]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Gauss3_2.png
+[09:28:57]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Gauss3_2.png
+[09:28:58]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Gauss3_2.png
+[09:28:58]  INFO: *** Loading dat data file Hahn1.dat ***
+[09:28:58]  INFO: 18 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:10]  INFO: * Testing fitting of problem Hahn1
-[09:25:10]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: Number of calls to function has reached maxfev = 500.
-[09:25:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Hahn1_1.png
-[09:25:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Hahn1_1.png
-[09:25:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Hahn1_1.png
-[09:25:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Hahn1_2.png
-[09:25:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Hahn1_2.png
-[09:25:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Hahn1_2.png
-[09:25:10]  INFO: *** Loading dat data file Kirby2.dat ***
-[09:25:10]  INFO: 15 lines were ignored in this problem file.
+[09:28:58]  INFO: * Testing fitting of problem Hahn1
+[09:28:58]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: Number of calls to function has reached maxfev = 500.
+[09:28:58]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Hahn1_1.png
+[09:28:58]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Hahn1_1.png
+[09:28:58]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Hahn1_1.png
+[09:28:58]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Hahn1_2.png
+[09:28:58]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Hahn1_2.png
+[09:28:58]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Hahn1_2.png
+[09:28:58]  INFO: *** Loading dat data file Kirby2.dat ***
+[09:28:58]  INFO: 15 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:10]  INFO: * Testing fitting of problem Kirby2
-[09:25:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Kirby2_1.png
-[09:25:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Kirby2_1.png
-[09:25:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Kirby2_1.png
-[09:25:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Kirby2_2.png
-[09:25:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Kirby2_2.png
-[09:25:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Kirby2_2.png
-[09:25:11]  INFO: *** Loading dat data file Lanczos1.dat ***
-[09:25:11]  INFO: 19 lines were ignored in this problem file.
+[09:28:58]  INFO: * Testing fitting of problem Kirby2
+[09:28:58]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Kirby2_1.png
+[09:28:58]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Kirby2_1.png
+[09:28:58]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Kirby2_1.png
+[09:28:58]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Kirby2_2.png
+[09:28:59]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Kirby2_2.png
+[09:28:59]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Kirby2_2.png
+[09:28:59]  INFO: *** Loading dat data file Lanczos1.dat ***
+[09:28:59]  INFO: 19 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:11]  INFO: * Testing fitting of problem Lanczos1
-[09:25:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Lanczos1_1.png
-[09:25:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Lanczos1_1.png
-[09:25:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Lanczos1_1.png
-[09:25:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Lanczos1_2.png
-[09:25:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Lanczos1_2.png
-[09:25:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Lanczos1_2.png
-[09:25:11]  INFO: *** Loading dat data file Lanczos2.dat ***
-[09:25:11]  INFO: 19 lines were ignored in this problem file.
+[09:28:59]  INFO: * Testing fitting of problem Lanczos1
+[09:28:59]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Lanczos1_1.png
+[09:28:59]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Lanczos1_1.png
+[09:28:59]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Lanczos1_1.png
+[09:28:59]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Lanczos1_2.png
+[09:28:59]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Lanczos1_2.png
+[09:28:59]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Lanczos1_2.png
+[09:28:59]  INFO: *** Loading dat data file Lanczos2.dat ***
+[09:28:59]  INFO: 19 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:11]  INFO: * Testing fitting of problem Lanczos2
-[09:25:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Lanczos2_1.png
-[09:25:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Lanczos2_1.png
-[09:25:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Lanczos2_1.png
-[09:25:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Lanczos2_2.png
-[09:25:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Lanczos2_2.png
-[09:25:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Lanczos2_2.png
-[09:25:12]  INFO: *** Loading dat data file MGH17.dat ***
-[09:25:12]  INFO: 22 lines were ignored in this problem file.
+[09:28:59]  INFO: * Testing fitting of problem Lanczos2
+[09:28:59]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Lanczos2_1.png
+[09:28:59]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Lanczos2_1.png
+[09:28:59]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Lanczos2_1.png
+[09:28:59]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Lanczos2_2.png
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Lanczos2_2.png
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Lanczos2_2.png
+[09:29:00]  INFO: *** Loading dat data file MGH17.dat ***
+[09:29:00]  INFO: 22 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:12]  INFO: * Testing fitting of problem MGH17
-[09:25:12]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: The maximum number of function evaluations is exceeded.
-[09:25:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_MGH17_1.png
-[09:25:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_MGH17_1.png
-[09:25:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_MGH17_1.png
-[09:25:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_MGH17_2.png
-[09:25:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_MGH17_2.png
-[09:25:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_MGH17_2.png
-[09:25:12]  INFO: *** Loading dat data file Misra1c.dat ***
-[09:25:12]  INFO: 17 lines were ignored in this problem file.
+[09:29:00]  INFO: * Testing fitting of problem MGH17
+[09:29:00]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: The maximum number of function evaluations is exceeded.
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_MGH17_1.png
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_MGH17_1.png
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_MGH17_1.png
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_MGH17_2.png
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_MGH17_2.png
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_MGH17_2.png
+[09:29:00]  INFO: *** Loading dat data file Misra1c.dat ***
+[09:29:00]  INFO: 17 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:12]  INFO: * Testing fitting of problem Misra1c
-[09:25:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Misra1c_1.png
-[09:25:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Misra1c_1.png
-[09:25:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Misra1c_1.png
-[09:25:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Misra1c_2.png
-[09:25:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Misra1c_2.png
-[09:25:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Misra1c_2.png
-[09:25:13]  INFO: *** Loading dat data file Misra1d.dat ***
-[09:25:13]  INFO: 17 lines were ignored in this problem file.
+[09:29:00]  INFO: * Testing fitting of problem Misra1c
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Misra1c_1.png
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Misra1c_1.png
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Misra1c_1.png
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Misra1c_2.png
+[09:29:00]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Misra1c_2.png
+[09:29:01]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Misra1c_2.png
+[09:29:01]  INFO: *** Loading dat data file Misra1d.dat ***
+[09:29:01]  INFO: 17 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:13]  INFO: * Testing fitting of problem Misra1d
-[09:25:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Misra1d_1.png
-[09:25:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Misra1d_1.png
-[09:25:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Misra1d_1.png
-[09:25:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Misra1d_2.png
-[09:25:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Misra1d_2.png
-[09:25:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Misra1d_2.png
-[09:25:13]  INFO: Saved ENSO.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_enso_1
-[09:25:13]  INFO: Saved ENSO.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_enso_1
-[09:25:13]  INFO: Saved ENSO.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_enso_2
-[09:25:13]  INFO: Saved ENSO.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_enso_2
-[09:25:13]  INFO: Saved Gauss3.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_gauss3_1
-[09:25:13]  INFO: Saved Gauss3.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_gauss3_1
-[09:25:13]  INFO: Saved Gauss3.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_gauss3_2
-[09:25:13]  INFO: Saved Gauss3.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_gauss3_2
-[09:25:13]  INFO: Saved Hahn1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_hahn1_1
-[09:25:13]  INFO: Saved Hahn1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_hahn1_1
-[09:25:13]  INFO: Saved Hahn1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_hahn1_2
-[09:25:13]  INFO: Saved Hahn1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_hahn1_2
-[09:25:13]  INFO: Saved Kirby2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_kirby2_1
-[09:25:13]  INFO: Saved Kirby2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_kirby2_1
-[09:25:13]  INFO: Saved Kirby2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_kirby2_2
-[09:25:13]  INFO: Saved Kirby2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_kirby2_2
-[09:25:13]  INFO: Saved Lanczos1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos1_1
-[09:25:13]  INFO: Saved Lanczos1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos1_1
-[09:25:13]  INFO: Saved Lanczos1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos1_2
-[09:25:13]  INFO: Saved Lanczos1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos1_2
-[09:25:13]  INFO: Saved Lanczos2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos2_1
-[09:25:13]  INFO: Saved Lanczos2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos2_1
-[09:25:13]  INFO: Saved Lanczos2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos2_2
-[09:25:13]  INFO: Saved Lanczos2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos2_2
-[09:25:13]  INFO: Saved MGH17.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_mgh17_1
-[09:25:13]  INFO: Saved MGH17.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_mgh17_1
-[09:25:13]  INFO: Saved MGH17.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_mgh17_2
-[09:25:13]  INFO: Saved MGH17.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_mgh17_2
-[09:25:13]  INFO: Saved Misra1c.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1c_1
-[09:25:13]  INFO: Saved Misra1c.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1c_1
-[09:25:13]  INFO: Saved Misra1c.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1c_2
-[09:25:13]  INFO: Saved Misra1c.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1c_2
-[09:25:13]  INFO: Saved Misra1d.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1d_1
-[09:25:13]  INFO: Saved Misra1d.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1d_1
-[09:25:13]  INFO: Saved Misra1d.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1d_2
-[09:25:13]  INFO: Saved Misra1d.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1d_2
-[09:25:13]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/NIST_average_diff_acc_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff
-[09:25:13]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/NIST_average_diff_acc_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff
-[09:25:13]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/NIST_average_diff_runtime_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff
-[09:25:13]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/NIST_average_diff_runtime_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff
-[09:25:13]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Chwirut1.dat
-[09:25:13]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Chwirut2.dat
-[09:25:13]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/DanWood.dat
-[09:25:13]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Gauss1.dat
-[09:25:13]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Gauss2.dat
-[09:25:13]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Lanczos3.dat
-[09:25:13]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Misra1a.dat
-[09:25:13]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Misra1b.dat
-[09:25:13]  INFO: *** Loading dat data file Chwirut1.dat ***
-[09:25:13]  INFO: 17 lines were ignored in this problem file.
+[09:29:01]  INFO: * Testing fitting of problem Misra1d
+[09:29:01]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Misra1d_1.png
+[09:29:01]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Misra1d_1.png
+[09:29:01]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Misra1d_1.png
+[09:29:01]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Data_Plot_Misra1d_2.png
+[09:29:01]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/Fit_for_Misra1d_2.png
+[09:29:01]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/figures/start_for_Misra1d_2.png
+[09:29:01]  INFO: Saved ENSO.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_enso_1
+[09:29:01]  INFO: Saved ENSO.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_enso_1
+[09:29:01]  INFO: Saved ENSO.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_enso_2
+[09:29:01]  INFO: Saved ENSO.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_enso_2
+[09:29:01]  INFO: Saved Gauss3.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_gauss3_1
+[09:29:01]  INFO: Saved Gauss3.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_gauss3_1
+[09:29:01]  INFO: Saved Gauss3.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_gauss3_2
+[09:29:01]  INFO: Saved Gauss3.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_gauss3_2
+[09:29:01]  INFO: Saved Hahn1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_hahn1_1
+[09:29:01]  INFO: Saved Hahn1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_hahn1_1
+[09:29:01]  INFO: Saved Hahn1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_hahn1_2
+[09:29:01]  INFO: Saved Hahn1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_hahn1_2
+[09:29:01]  INFO: Saved Kirby2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_kirby2_1
+[09:29:01]  INFO: Saved Kirby2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_kirby2_1
+[09:29:01]  INFO: Saved Kirby2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_kirby2_2
+[09:29:01]  INFO: Saved Kirby2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_kirby2_2
+[09:29:01]  INFO: Saved Lanczos1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos1_1
+[09:29:01]  INFO: Saved Lanczos1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos1_1
+[09:29:01]  INFO: Saved Lanczos1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos1_2
+[09:29:01]  INFO: Saved Lanczos1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos1_2
+[09:29:01]  INFO: Saved Lanczos2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos2_1
+[09:29:01]  INFO: Saved Lanczos2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos2_1
+[09:29:01]  INFO: Saved Lanczos2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos2_2
+[09:29:01]  INFO: Saved Lanczos2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_lanczos2_2
+[09:29:01]  INFO: Saved MGH17.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_mgh17_1
+[09:29:01]  INFO: Saved MGH17.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_mgh17_1
+[09:29:01]  INFO: Saved MGH17.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_mgh17_2
+[09:29:01]  INFO: Saved MGH17.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_mgh17_2
+[09:29:01]  INFO: Saved Misra1c.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1c_1
+[09:29:01]  INFO: Saved Misra1c.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1c_1
+[09:29:01]  INFO: Saved Misra1c.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1c_2
+[09:29:01]  INFO: Saved Misra1c.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1c_2
+[09:29:01]  INFO: Saved Misra1d.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1d_1
+[09:29:01]  INFO: Saved Misra1d.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1d_1
+[09:29:01]  INFO: Saved Misra1d.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1d_2
+[09:29:01]  INFO: Saved Misra1d.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/support_pages/nist_average_diff_misra1d_2
+[09:29:01]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/NIST_average_diff_acc_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff
+[09:29:01]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/NIST_average_diff_acc_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff
+[09:29:01]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/NIST_average_diff_runtime_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff
+[09:29:01]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff/NIST_average_diff_runtime_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_average_diff
+[09:29:01]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Chwirut1.dat
+[09:29:01]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Chwirut2.dat
+[09:29:01]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/DanWood.dat
+[09:29:01]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Gauss1.dat
+[09:29:01]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Gauss2.dat
+[09:29:01]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Lanczos3.dat
+[09:29:01]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Misra1a.dat
+[09:29:01]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_low_diff/Misra1b.dat
+[09:29:01]  INFO: *** Loading dat data file Chwirut1.dat ***
+[09:29:01]  INFO: 17 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:13]  INFO: * Testing fitting of problem Chwirut1
-[09:25:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Chwirut1_1.png
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Chwirut1_1.png
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Chwirut1_1.png
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Chwirut1_2.png
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Chwirut1_2.png
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Chwirut1_2.png
-[09:25:14]  INFO: *** Loading dat data file Chwirut2.dat ***
-[09:25:14]  INFO: 17 lines were ignored in this problem file.
+[09:29:01]  INFO: * Testing fitting of problem Chwirut1
+[09:29:01]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Chwirut1_1.png
+[09:29:01]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Chwirut1_1.png
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Chwirut1_1.png
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Chwirut1_2.png
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Chwirut1_2.png
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Chwirut1_2.png
+[09:29:02]  INFO: *** Loading dat data file Chwirut2.dat ***
+[09:29:02]  INFO: 17 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:14]  INFO: * Testing fitting of problem Chwirut2
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Chwirut2_1.png
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Chwirut2_1.png
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Chwirut2_1.png
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Chwirut2_2.png
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Chwirut2_2.png
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Chwirut2_2.png
-[09:25:14]  INFO: *** Loading dat data file DanWood.dat ***
-[09:25:14]  INFO: 22 lines were ignored in this problem file.
+[09:29:02]  INFO: * Testing fitting of problem Chwirut2
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Chwirut2_1.png
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Chwirut2_1.png
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Chwirut2_1.png
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Chwirut2_2.png
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Chwirut2_2.png
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Chwirut2_2.png
+[09:29:02]  INFO: *** Loading dat data file DanWood.dat ***
+[09:29:02]  INFO: 22 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:14]  INFO: * Testing fitting of problem DanWood
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_DanWood_1.png
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_DanWood_1.png
-[09:25:14]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_DanWood_1.png
-[09:25:15]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_DanWood_2.png
-[09:25:15]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_DanWood_2.png
-[09:25:15]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_DanWood_2.png
-[09:25:15]  INFO: *** Loading dat data file Gauss1.dat ***
-[09:25:15]  INFO: 15 lines were ignored in this problem file.
+[09:29:02]  INFO: * Testing fitting of problem DanWood
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_DanWood_1.png
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_DanWood_1.png
+[09:29:02]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_DanWood_1.png
+[09:29:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_DanWood_2.png
+[09:29:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_DanWood_2.png
+[09:29:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_DanWood_2.png
+[09:29:03]  INFO: *** Loading dat data file Gauss1.dat ***
+[09:29:03]  INFO: 15 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:15]  INFO: * Testing fitting of problem Gauss1
-[09:25:15]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Gauss1_1.png
-[09:25:15]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Gauss1_1.png
-[09:25:15]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Gauss1_1.png
-[09:25:15]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Gauss1_2.png
-[09:25:15]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Gauss1_2.png
-[09:25:15]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Gauss1_2.png
-[09:25:15]  INFO: *** Loading dat data file Gauss2.dat ***
-[09:25:15]  INFO: 15 lines were ignored in this problem file.
+[09:29:03]  INFO: * Testing fitting of problem Gauss1
+[09:29:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Gauss1_1.png
+[09:29:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Gauss1_1.png
+[09:29:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Gauss1_1.png
+[09:29:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Gauss1_2.png
+[09:29:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Gauss1_2.png
+[09:29:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Gauss1_2.png
+[09:29:03]  INFO: *** Loading dat data file Gauss2.dat ***
+[09:29:03]  INFO: 15 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:15]  INFO: * Testing fitting of problem Gauss2
-[09:25:15]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Gauss2_1.png
-[09:25:15]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Gauss2_1.png
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Gauss2_1.png
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Gauss2_2.png
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Gauss2_2.png
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Gauss2_2.png
-[09:25:16]  INFO: *** Loading dat data file Lanczos3.dat ***
-[09:25:16]  INFO: 19 lines were ignored in this problem file.
+[09:29:03]  INFO: * Testing fitting of problem Gauss2
+[09:29:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Gauss2_1.png
+[09:29:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Gauss2_1.png
+[09:29:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Gauss2_1.png
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Gauss2_2.png
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Gauss2_2.png
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Gauss2_2.png
+[09:29:04]  INFO: *** Loading dat data file Lanczos3.dat ***
+[09:29:04]  INFO: 19 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:16]  INFO: * Testing fitting of problem Lanczos3
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Lanczos3_1.png
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Lanczos3_1.png
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Lanczos3_1.png
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Lanczos3_2.png
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Lanczos3_2.png
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Lanczos3_2.png
-[09:25:16]  INFO: *** Loading dat data file Misra1a.dat ***
-[09:25:16]  INFO: 17 lines were ignored in this problem file.
+[09:29:04]  INFO: * Testing fitting of problem Lanczos3
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Lanczos3_1.png
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Lanczos3_1.png
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Lanczos3_1.png
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Lanczos3_2.png
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Lanczos3_2.png
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Lanczos3_2.png
+[09:29:04]  INFO: *** Loading dat data file Misra1a.dat ***
+[09:29:04]  INFO: 17 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:16]  INFO: * Testing fitting of problem Misra1a
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Misra1a_1.png
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Misra1a_1.png
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Misra1a_1.png
-[09:25:16]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Misra1a_2.png
-[09:25:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Misra1a_2.png
-[09:25:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Misra1a_2.png
-[09:25:17]  INFO: *** Loading dat data file Misra1b.dat ***
-[09:25:17]  INFO: 17 lines were ignored in this problem file.
+[09:29:04]  INFO: * Testing fitting of problem Misra1a
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Misra1a_1.png
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Misra1a_1.png
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Misra1a_1.png
+[09:29:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Misra1a_2.png
+[09:29:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Misra1a_2.png
+[09:29:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Misra1a_2.png
+[09:29:05]  INFO: *** Loading dat data file Misra1b.dat ***
+[09:29:05]  INFO: 17 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:25:17]  INFO: * Testing fitting of problem Misra1b
-[09:25:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Misra1b_1.png
-[09:25:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Misra1b_1.png
-[09:25:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Misra1b_1.png
-[09:25:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Misra1b_2.png
-[09:25:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Misra1b_2.png
-[09:25:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Misra1b_2.png
-[09:25:17]  INFO: Saved Chwirut1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut1_1
-[09:25:17]  INFO: Saved Chwirut1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut1_1
-[09:25:17]  INFO: Saved Chwirut1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut1_2
-[09:25:17]  INFO: Saved Chwirut1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut1_2
-[09:25:17]  INFO: Saved Chwirut2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut2_1
-[09:25:17]  INFO: Saved Chwirut2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut2_1
-[09:25:17]  INFO: Saved Chwirut2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut2_2
-[09:25:17]  INFO: Saved Chwirut2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut2_2
-[09:25:17]  INFO: Saved DanWood.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_danwood_1
-[09:25:17]  INFO: Saved DanWood.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_danwood_1
-[09:25:17]  INFO: Saved DanWood.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_danwood_2
-[09:25:17]  INFO: Saved DanWood.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_danwood_2
-[09:25:17]  INFO: Saved Gauss1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss1_1
-[09:25:17]  INFO: Saved Gauss1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss1_1
-[09:25:17]  INFO: Saved Gauss1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss1_2
-[09:25:17]  INFO: Saved Gauss1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss1_2
-[09:25:17]  INFO: Saved Gauss2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss2_1
-[09:25:17]  INFO: Saved Gauss2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss2_1
-[09:25:17]  INFO: Saved Gauss2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss2_2
-[09:25:17]  INFO: Saved Gauss2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss2_2
-[09:25:17]  INFO: Saved Lanczos3.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_lanczos3_1
-[09:25:17]  INFO: Saved Lanczos3.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_lanczos3_1
-[09:25:17]  INFO: Saved Lanczos3.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_lanczos3_2
-[09:25:17]  INFO: Saved Lanczos3.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_lanczos3_2
-[09:25:17]  INFO: Saved Misra1a.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1a_1
-[09:25:17]  INFO: Saved Misra1a.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1a_1
-[09:25:17]  INFO: Saved Misra1a.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1a_2
-[09:25:17]  INFO: Saved Misra1a.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1a_2
-[09:25:17]  INFO: Saved Misra1b.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1b_1
-[09:25:17]  INFO: Saved Misra1b.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1b_1
-[09:25:17]  INFO: Saved Misra1b.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1b_2
-[09:25:17]  INFO: Saved Misra1b.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1b_2
-[09:25:17]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/NIST_low_diff_acc_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff
-[09:25:17]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/NIST_low_diff_acc_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff
-[09:25:17]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/NIST_low_diff_runtime_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff
-[09:25:17]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/NIST_low_diff_runtime_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak19.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak20.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak23.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak5.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak6.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX236516_vanadium_bank1_10brk.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX236516_vanadium_bank1_20brk.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/EVS14188-90_Gaussian_peaks_1.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/EVS14188-90_Gaussian_peaks_2.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/GEMpeak1.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak1.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak2.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak3.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak4.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak5.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak6.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak7.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak8.txt
-[09:25:17]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak9.txt
-[09:25:17]  INFO: * Testing fitting of problem ENGINX 193749 calibration, spectrum 651, peak 19
-[09:25:18]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_193749_calibration_spectrum_651_peak_19_1.png
-[09:25:18]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_193749_calibration_spectrum_651_peak_19_1.png
-[09:25:18]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_193749_calibration_spectrum_651_peak_19_1.png
-[09:25:18]  INFO: * Testing fitting of problem ENGINX 193749 calibration, spectrum 651, peak 20
-[09:25:18]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_193749_calibration_spectrum_651_peak_20_1.png
-[09:25:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_193749_calibration_spectrum_651_peak_20_1.png
-[09:25:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_193749_calibration_spectrum_651_peak_20_1.png
-[09:25:19]  INFO: * Testing fitting of problem ENGINX 193749 calibration, spectrum 651, peak 23
-[09:25:19]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: Number of calls to function has reached maxfev = 500.
-[09:25:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_193749_calibration_spectrum_651_peak_23_1.png
-[09:25:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_193749_calibration_spectrum_651_peak_23_1.png
-[09:25:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_193749_calibration_spectrum_651_peak_23_1.png
-[09:25:20]  INFO: * Testing fitting of problem ENGINX 193749 calibration, spectrum 651, peak 5
-[09:25:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_193749_calibration_spectrum_651_peak_5_1.png
-[09:25:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_193749_calibration_spectrum_651_peak_5_1.png
-[09:25:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_193749_calibration_spectrum_651_peak_5_1.png
-[09:25:21]  INFO: * Testing fitting of problem ENGINX 193749 calibration, spectrum 651, peak 6
-[09:25:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_193749_calibration_spectrum_651_peak_6_1.png
-[09:25:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_193749_calibration_spectrum_651_peak_6_1.png
-[09:25:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_193749_calibration_spectrum_651_peak_6_1.png
-[09:25:22]  INFO: * Testing fitting of problem ENGINX 236516 vanadium, bank 1, 10 brk
-[09:25:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_236516_vanadium_bank_1_10_brk_1.png
-[09:25:49]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_236516_vanadium_bank_1_10_brk_1.png
-[09:25:49]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_236516_vanadium_bank_1_10_brk_1.png
-[09:25:49]  INFO: * Testing fitting of problem ENGINX 236516 vanadium, bank 1, 30 brk
-[09:25:50]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_236516_vanadium_bank_1_30_brk_1.png
-[09:26:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_236516_vanadium_bank_1_30_brk_1.png
-[09:26:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_236516_vanadium_bank_1_30_brk_1.png
-[09:26:17]  INFO: * Testing fitting of problem EVS14188-90_processed Gaussian peaks 1
-[09:26:17]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_EVS14188-90_processed_Gaussian_peaks_1_1.png
-[09:26:18]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_EVS14188-90_processed_Gaussian_peaks_1_1.png
-[09:26:18]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_EVS14188-90_processed_Gaussian_peaks_1_1.png
-[09:26:18]  INFO: * Testing fitting of problem EVS14188-90_processed Gaussian peaks 2
-[09:26:18]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_EVS14188-90_processed_Gaussian_peaks_2_1.png
-[09:26:18]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_EVS14188-90_processed_Gaussian_peaks_2_1.png
-[09:26:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_EVS14188-90_processed_Gaussian_peaks_2_1.png
-[09:26:19]  INFO: * Testing fitting of problem GEM peak 1
-[09:26:19]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 1
-[09:26:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_1_1.png
-[09:26:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_1_1.png
-[09:26:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_1_1.png
-[09:26:19]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 2
-[09:26:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_2_1.png
-[09:26:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_2_1.png
-[09:26:19]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_2_1.png
-[09:26:20]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 3
-[09:26:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_3_1.png
-[09:26:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_3_1.png
-[09:26:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_3_1.png
-[09:26:20]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 4
-[09:26:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_4_1.png
-[09:26:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_4_1.png
-[09:26:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_4_1.png
-[09:26:20]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 5
-[09:26:20]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_5_1.png
-[09:26:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_5_1.png
-[09:26:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_5_1.png
-[09:26:21]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 6
-[09:26:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_6_1.png
-[09:26:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_6_1.png
-[09:26:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_6_1.png
-[09:26:21]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 7
-[09:26:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_7_1.png
-[09:26:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_7_1.png
-[09:26:21]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_7_1.png
-[09:26:21]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 8
-[09:26:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_8_1.png
-[09:26:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_8_1.png
-[09:26:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_8_1.png
-[09:26:22]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 9
-[09:26:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_9_1.png
-[09:26:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_9_1.png
-[09:26:22]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_9_1.png
-[09:26:22]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_19.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_19_1
-[09:26:22]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_19.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_19_1
-[09:26:22]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_20.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_20_1
-[09:26:22]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_20.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_20_1
-[09:26:22]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_23.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_23_1
-[09:26:22]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_23.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_23_1
-[09:26:22]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_5.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_5_1
-[09:26:22]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_5.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_5_1
-[09:26:22]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_6.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_6_1
-[09:26:22]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_6.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_6_1
-[09:26:22]  INFO: Saved ENGINX_236516_vanadium_bank_1_10_brk.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_236516_vanadium_bank_1_10_brk_1
-[09:26:22]  INFO: Saved ENGINX_236516_vanadium_bank_1_10_brk.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_236516_vanadium_bank_1_10_brk_1
-[09:26:22]  INFO: Saved ENGINX_236516_vanadium_bank_1_30_brk.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_236516_vanadium_bank_1_30_brk_1
-[09:26:22]  INFO: Saved ENGINX_236516_vanadium_bank_1_30_brk.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_236516_vanadium_bank_1_30_brk_1
-[09:26:22]  INFO: Saved EVS14188-90_processed_Gaussian_peaks_1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_evs14188-90_processed_gaussian_peaks_1_1
-[09:26:22]  INFO: Saved EVS14188-90_processed_Gaussian_peaks_1.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_evs14188-90_processed_gaussian_peaks_1_1
-[09:26:22]  INFO: Saved EVS14188-90_processed_Gaussian_peaks_2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_evs14188-90_processed_gaussian_peaks_2_1
-[09:26:22]  INFO: Saved EVS14188-90_processed_Gaussian_peaks_2.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_evs14188-90_processed_gaussian_peaks_2_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_1_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_1.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_1_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_2_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_2.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_2_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_3.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_3_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_3.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_3_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_4.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_4_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_4.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_4_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_5.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_5_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_5.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_5_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_6.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_6_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_6.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_6_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_7.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_7_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_7.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_7_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_8.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_8_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_8.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_8_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_9.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_9_1
-[09:26:22]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_9.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_9_1
-[09:26:22]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/Neutron_data_acc_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data
-[09:26:22]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/Neutron_data_acc_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data
-[09:26:22]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/Neutron_data_runtime_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data
-[09:26:22]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/Neutron_data_runtime_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data
-[09:26:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/Bennett5.dat
-[09:26:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/BoxBOD.dat
-[09:26:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/Eckerle4.dat
-[09:26:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/MGH09.dat
-[09:26:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/MGH10.dat
-[09:26:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/Rat42.dat
-[09:26:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/Rat43.dat
-[09:26:22]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/Thurber.dat
-[09:26:22]  INFO: *** Loading dat data file Bennett5.dat ***
-[09:26:22]  INFO: 18 lines were ignored in this problem file.
+[09:29:05]  INFO: * Testing fitting of problem Misra1b
+[09:29:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Misra1b_1.png
+[09:29:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Misra1b_1.png
+[09:29:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Misra1b_1.png
+[09:29:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Data_Plot_Misra1b_2.png
+[09:29:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/Fit_for_Misra1b_2.png
+[09:29:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/figures/start_for_Misra1b_2.png
+[09:29:05]  INFO: Saved Chwirut1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut1_1
+[09:29:05]  INFO: Saved Chwirut1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut1_1
+[09:29:05]  INFO: Saved Chwirut1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut1_2
+[09:29:05]  INFO: Saved Chwirut1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut1_2
+[09:29:05]  INFO: Saved Chwirut2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut2_1
+[09:29:05]  INFO: Saved Chwirut2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut2_1
+[09:29:05]  INFO: Saved Chwirut2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut2_2
+[09:29:05]  INFO: Saved Chwirut2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_chwirut2_2
+[09:29:05]  INFO: Saved DanWood.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_danwood_1
+[09:29:05]  INFO: Saved DanWood.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_danwood_1
+[09:29:05]  INFO: Saved DanWood.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_danwood_2
+[09:29:05]  INFO: Saved DanWood.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_danwood_2
+[09:29:05]  INFO: Saved Gauss1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss1_1
+[09:29:05]  INFO: Saved Gauss1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss1_1
+[09:29:05]  INFO: Saved Gauss1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss1_2
+[09:29:05]  INFO: Saved Gauss1.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss1_2
+[09:29:05]  INFO: Saved Gauss2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss2_1
+[09:29:05]  INFO: Saved Gauss2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss2_1
+[09:29:05]  INFO: Saved Gauss2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss2_2
+[09:29:05]  INFO: Saved Gauss2.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_gauss2_2
+[09:29:05]  INFO: Saved Lanczos3.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_lanczos3_1
+[09:29:05]  INFO: Saved Lanczos3.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_lanczos3_1
+[09:29:05]  INFO: Saved Lanczos3.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_lanczos3_2
+[09:29:05]  INFO: Saved Lanczos3.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_lanczos3_2
+[09:29:05]  INFO: Saved Misra1a.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1a_1
+[09:29:05]  INFO: Saved Misra1a.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1a_1
+[09:29:05]  INFO: Saved Misra1a.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1a_2
+[09:29:05]  INFO: Saved Misra1a.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1a_2
+[09:29:05]  INFO: Saved Misra1b.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1b_1
+[09:29:05]  INFO: Saved Misra1b.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1b_1
+[09:29:05]  INFO: Saved Misra1b.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1b_2
+[09:29:05]  INFO: Saved Misra1b.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/support_pages/nist_low_diff_misra1b_2
+[09:29:05]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/NIST_low_diff_acc_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff
+[09:29:05]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/NIST_low_diff_acc_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff
+[09:29:05]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/NIST_low_diff_runtime_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff
+[09:29:05]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff/NIST_low_diff_runtime_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_low_diff
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak19.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak20.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak23.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak5.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX193749_calibration_peak6.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX236516_vanadium_bank1_10brk.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/ENGINX236516_vanadium_bank1_20brk.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/EVS14188-90_Gaussian_peaks_1.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/EVS14188-90_Gaussian_peaks_2.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/GEMpeak1.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak1.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak2.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak3.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak4.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak5.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak6.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak7.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak8.txt
+[09:29:05]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/Neutron_data/WISH17701_peak9.txt
+[09:29:05]  INFO: * Testing fitting of problem ENGINX 193749 calibration, spectrum 651, peak 19
+[09:29:06]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_193749_calibration_spectrum_651_peak_19_1.png
+[09:29:06]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_193749_calibration_spectrum_651_peak_19_1.png
+[09:29:06]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_193749_calibration_spectrum_651_peak_19_1.png
+[09:29:06]  INFO: * Testing fitting of problem ENGINX 193749 calibration, spectrum 651, peak 20
+[09:29:07]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_193749_calibration_spectrum_651_peak_20_1.png
+[09:29:07]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_193749_calibration_spectrum_651_peak_20_1.png
+[09:29:07]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_193749_calibration_spectrum_651_peak_20_1.png
+[09:29:07]  INFO: * Testing fitting of problem ENGINX 193749 calibration, spectrum 651, peak 23
+[09:29:07]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: Number of calls to function has reached maxfev = 500.
+[09:29:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_193749_calibration_spectrum_651_peak_23_1.png
+[09:29:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_193749_calibration_spectrum_651_peak_23_1.png
+[09:29:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_193749_calibration_spectrum_651_peak_23_1.png
+[09:29:08]  INFO: * Testing fitting of problem ENGINX 193749 calibration, spectrum 651, peak 5
+[09:29:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_193749_calibration_spectrum_651_peak_5_1.png
+[09:29:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_193749_calibration_spectrum_651_peak_5_1.png
+[09:29:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_193749_calibration_spectrum_651_peak_5_1.png
+[09:29:09]  INFO: * Testing fitting of problem ENGINX 193749 calibration, spectrum 651, peak 6
+[09:29:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_193749_calibration_spectrum_651_peak_6_1.png
+[09:29:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_193749_calibration_spectrum_651_peak_6_1.png
+[09:29:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_193749_calibration_spectrum_651_peak_6_1.png
+[09:29:10]  INFO: * Testing fitting of problem ENGINX 236516 vanadium, bank 1, 10 brk
+[09:29:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_236516_vanadium_bank_1_10_brk_1.png
+[09:29:36]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_236516_vanadium_bank_1_10_brk_1.png
+[09:29:36]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_236516_vanadium_bank_1_10_brk_1.png
+[09:29:36]  INFO: * Testing fitting of problem ENGINX 236516 vanadium, bank 1, 30 brk
+[09:29:37]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_ENGINX_236516_vanadium_bank_1_30_brk_1.png
+[09:30:03]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_ENGINX_236516_vanadium_bank_1_30_brk_1.png
+[09:30:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_ENGINX_236516_vanadium_bank_1_30_brk_1.png
+[09:30:04]  INFO: * Testing fitting of problem EVS14188-90_processed Gaussian peaks 1
+[09:30:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_EVS14188-90_processed_Gaussian_peaks_1_1.png
+[09:30:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_EVS14188-90_processed_Gaussian_peaks_1_1.png
+[09:30:04]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_EVS14188-90_processed_Gaussian_peaks_1_1.png
+[09:30:04]  INFO: * Testing fitting of problem EVS14188-90_processed Gaussian peaks 2
+[09:30:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_EVS14188-90_processed_Gaussian_peaks_2_1.png
+[09:30:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_EVS14188-90_processed_Gaussian_peaks_2_1.png
+[09:30:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_EVS14188-90_processed_Gaussian_peaks_2_1.png
+[09:30:05]  INFO: * Testing fitting of problem GEM peak 1
+[09:30:05]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 1
+[09:30:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_1_1.png
+[09:30:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_1_1.png
+[09:30:05]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_1_1.png
+[09:30:06]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 2
+[09:30:06]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_2_1.png
+[09:30:06]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_2_1.png
+[09:30:06]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_2_1.png
+[09:30:06]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 3
+[09:30:06]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_3_1.png
+[09:30:06]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_3_1.png
+[09:30:06]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_3_1.png
+[09:30:06]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 4
+[09:30:06]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_4_1.png
+[09:30:06]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_4_1.png
+[09:30:07]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_4_1.png
+[09:30:07]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 5
+[09:30:07]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_5_1.png
+[09:30:07]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_5_1.png
+[09:30:07]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_5_1.png
+[09:30:07]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 6
+[09:30:07]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_6_1.png
+[09:30:07]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_6_1.png
+[09:30:07]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_6_1.png
+[09:30:07]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 7
+[09:30:07]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_7_1.png
+[09:30:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_7_1.png
+[09:30:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_7_1.png
+[09:30:08]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 8
+[09:30:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_8_1.png
+[09:30:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_8_1.png
+[09:30:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_8_1.png
+[09:30:08]  INFO: * Testing fitting of problem WISH17701 panel 103 tube 3 calibration, peak 9
+[09:30:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Data_Plot_WISH17701_panel_103_tube_3_calibration_peak_9_1.png
+[09:30:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/Fit_for_WISH17701_panel_103_tube_3_calibration_peak_9_1.png
+[09:30:08]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/figures/start_for_WISH17701_panel_103_tube_3_calibration_peak_9_1.png
+[09:30:08]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_19.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_19_1
+[09:30:08]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_19.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_19_1
+[09:30:08]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_20.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_20_1
+[09:30:08]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_20.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_20_1
+[09:30:08]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_23.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_23_1
+[09:30:08]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_23.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_23_1
+[09:30:08]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_5.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_5_1
+[09:30:08]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_5.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_5_1
+[09:30:08]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_6.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_6_1
+[09:30:08]  INFO: Saved ENGINX_193749_calibration_spectrum_651_peak_6.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_193749_calibration_spectrum_651_peak_6_1
+[09:30:08]  INFO: Saved ENGINX_236516_vanadium_bank_1_10_brk.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_236516_vanadium_bank_1_10_brk_1
+[09:30:08]  INFO: Saved ENGINX_236516_vanadium_bank_1_10_brk.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_236516_vanadium_bank_1_10_brk_1
+[09:30:08]  INFO: Saved ENGINX_236516_vanadium_bank_1_30_brk.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_236516_vanadium_bank_1_30_brk_1
+[09:30:08]  INFO: Saved ENGINX_236516_vanadium_bank_1_30_brk.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_enginx_236516_vanadium_bank_1_30_brk_1
+[09:30:08]  INFO: Saved EVS14188-90_processed_Gaussian_peaks_1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_evs14188-90_processed_gaussian_peaks_1_1
+[09:30:08]  INFO: Saved EVS14188-90_processed_Gaussian_peaks_1.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_evs14188-90_processed_gaussian_peaks_1_1
+[09:30:08]  INFO: Saved EVS14188-90_processed_Gaussian_peaks_2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_evs14188-90_processed_gaussian_peaks_2_1
+[09:30:08]  INFO: Saved EVS14188-90_processed_Gaussian_peaks_2.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_evs14188-90_processed_gaussian_peaks_2_1
+[09:30:08]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_1.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_1_1
+[09:30:08]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_1.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_1_1
+[09:30:08]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_2.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_2_1
+[09:30:08]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_2.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_2_1
+[09:30:08]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_3.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_3_1
+[09:30:08]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_3.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_3_1
+[09:30:09]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_4.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_4_1
+[09:30:09]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_4.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_4_1
+[09:30:09]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_5.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_5_1
+[09:30:09]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_5.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_5_1
+[09:30:09]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_6.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_6_1
+[09:30:09]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_6.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_6_1
+[09:30:09]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_7.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_7_1
+[09:30:09]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_7.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_7_1
+[09:30:09]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_8.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_8_1
+[09:30:09]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_8.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_8_1
+[09:30:09]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_9.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_9_1
+[09:30:09]  INFO: Saved WISH17701_panel_103_tube_3_calibration_peak_9.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/support_pages/neutron_data_wish17701_panel_103_tube_3_calibration_peak_9_1
+[09:30:09]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/Neutron_data_acc_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data
+[09:30:09]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/Neutron_data_acc_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data
+[09:30:09]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/Neutron_data_runtime_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data
+[09:30:09]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data/Neutron_data_runtime_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/Neutron_data
+[09:30:09]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/Bennett5.dat
+[09:30:09]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/BoxBOD.dat
+[09:30:09]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/Eckerle4.dat
+[09:30:09]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/MGH09.dat
+[09:30:09]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/MGH10.dat
+[09:30:09]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/Rat42.dat
+[09:30:09]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/Rat43.dat
+[09:30:09]  INFO: /home/mwathen/fitbenchmarking/benchmark_problems/NIST_high_diff/Thurber.dat
+[09:30:09]  INFO: *** Loading dat data file Bennett5.dat ***
+[09:30:09]  INFO: 18 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:26:22]  INFO: * Testing fitting of problem Bennett5
-[09:26:22]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: Number of calls to function has reached maxfev = 500.
-[09:26:22]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: The maximum number of function evaluations is exceeded.
-[09:26:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Bennett5_1.png
-[09:26:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Bennett5_1.png
-[09:26:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Bennett5_1.png
-[09:26:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Bennett5_2.png
-[09:26:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Bennett5_2.png
-[09:26:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Bennett5_2.png
-[09:26:23]  INFO: *** Loading dat data file BoxBOD.dat ***
-[09:26:23]  INFO: 18 lines were ignored in this problem file.
+[09:30:09]  INFO: * Testing fitting of problem Bennett5
+[09:30:09]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: Number of calls to function has reached maxfev = 500.
+[09:30:09]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: The maximum number of function evaluations is exceeded.
+[09:30:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Bennett5_1.png
+[09:30:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Bennett5_1.png
+[09:30:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Bennett5_1.png
+[09:30:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Bennett5_2.png
+[09:30:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Bennett5_2.png
+[09:30:09]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Bennett5_2.png
+[09:30:10]  INFO: *** Loading dat data file BoxBOD.dat ***
+[09:30:10]  INFO: 18 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:26:23]  INFO: * Testing fitting of problem BoxBOD
-[09:26:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_BoxBOD_1.png
-[09:26:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_BoxBOD_1.png
-[09:26:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_BoxBOD_1.png
-[09:26:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_BoxBOD_2.png
-[09:26:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_BoxBOD_2.png
-[09:26:23]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_BoxBOD_2.png
-[09:26:23]  INFO: *** Loading dat data file Eckerle4.dat ***
-[09:26:23]  INFO: 17 lines were ignored in this problem file.
+[09:30:10]  INFO: * Testing fitting of problem BoxBOD
+[09:30:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_BoxBOD_1.png
+[09:30:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_BoxBOD_1.png
+[09:30:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_BoxBOD_1.png
+[09:30:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_BoxBOD_2.png
+[09:30:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_BoxBOD_2.png
+[09:30:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_BoxBOD_2.png
+[09:30:10]  INFO: *** Loading dat data file Eckerle4.dat ***
+[09:30:10]  INFO: 17 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:26:23]  INFO: * Testing fitting of problem Eckerle4
-[09:26:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Eckerle4_1.png
-[09:26:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Eckerle4_1.png
-[09:26:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Eckerle4_1.png
-[09:26:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Eckerle4_2.png
-[09:26:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Eckerle4_2.png
-[09:26:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Eckerle4_2.png
-[09:26:24]  INFO: *** Loading dat data file MGH09.dat ***
-[09:26:24]  INFO: 22 lines were ignored in this problem file.
+[09:30:10]  INFO: * Testing fitting of problem Eckerle4
+[09:30:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Eckerle4_1.png
+[09:30:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Eckerle4_1.png
+[09:30:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Eckerle4_1.png
+[09:30:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Eckerle4_2.png
+[09:30:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Eckerle4_2.png
+[09:30:10]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Eckerle4_2.png
+[09:30:10]  INFO: *** Loading dat data file MGH09.dat ***
+[09:30:10]  INFO: 22 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:26:24]  INFO: * Testing fitting of problem MGH09
-[09:26:24]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: Number of calls to function has reached maxfev = 500.
-[09:26:24]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: The maximum number of function evaluations is exceeded.
-[09:26:24]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: The maximum number of function evaluations is exceeded.
-[09:26:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_MGH09_2.png
-[09:26:24]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_MGH09_2.png
-[09:26:25]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_MGH09_2.png
-[09:26:25]  INFO: *** Loading dat data file MGH10.dat ***
-[09:26:25]  INFO: 22 lines were ignored in this problem file.
+[09:30:10]  INFO: * Testing fitting of problem MGH09
+[09:30:10]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: Number of calls to function has reached maxfev = 500.
+[09:30:10]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: The maximum number of function evaluations is exceeded.
+[09:30:11]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: The maximum number of function evaluations is exceeded.
+[09:30:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_MGH09_2.png
+[09:30:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_MGH09_2.png
+[09:30:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_MGH09_2.png
+[09:30:11]  INFO: *** Loading dat data file MGH10.dat ***
+[09:30:11]  INFO: 22 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:26:25]  INFO: * Testing fitting of problem MGH10
-[09:26:25]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: Number of calls to function has reached maxfev = 500.
-[09:26:25]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_MGH10_1.png
-[09:26:25]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_MGH10_1.png
-[09:26:25]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_MGH10_1.png
-[09:26:25]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_MGH10_2.png
-[09:26:25]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_MGH10_2.png
-[09:26:25]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_MGH10_2.png
-[09:26:25]  INFO: *** Loading dat data file Rat42.dat ***
-[09:26:25]  INFO: 18 lines were ignored in this problem file.
+[09:30:11]  INFO: * Testing fitting of problem MGH10
+[09:30:11]  ERROR: Warning, fit failed. Going on. Error: Optimal parameters not found: Number of calls to function has reached maxfev = 500.
+[09:30:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_MGH10_1.png
+[09:30:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_MGH10_1.png
+[09:30:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_MGH10_1.png
+[09:30:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_MGH10_2.png
+[09:30:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_MGH10_2.png
+[09:30:11]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_MGH10_2.png
+[09:30:11]  INFO: *** Loading dat data file Rat42.dat ***
+[09:30:11]  INFO: 18 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:26:25]  INFO: * Testing fitting of problem Rat42
-[09:26:25]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Rat42_1.png
-[09:26:25]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Rat42_1.png
-[09:26:25]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Rat42_1.png
-[09:26:25]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Rat42_2.png
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Rat42_2.png
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Rat42_2.png
-[09:26:26]  INFO: *** Loading dat data file Rat43.dat ***
-[09:26:26]  INFO: 18 lines were ignored in this problem file.
+[09:30:11]  INFO: * Testing fitting of problem Rat42
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Rat42_1.png
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Rat42_1.png
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Rat42_1.png
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Rat42_2.png
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Rat42_2.png
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Rat42_2.png
+[09:30:12]  INFO: *** Loading dat data file Rat43.dat ***
+[09:30:12]  INFO: 18 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:26:26]  INFO: * Testing fitting of problem Rat43
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Rat43_1.png
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Rat43_1.png
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Rat43_1.png
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Rat43_2.png
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Rat43_2.png
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Rat43_2.png
-[09:26:26]  INFO: *** Loading dat data file Thurber.dat ***
-[09:26:26]  INFO: 17 lines were ignored in this problem file.
+[09:30:12]  INFO: * Testing fitting of problem Rat43
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Rat43_1.png
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Rat43_1.png
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Rat43_1.png
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Rat43_2.png
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Rat43_2.png
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Rat43_2.png
+[09:30:12]  INFO: *** Loading dat data file Thurber.dat ***
+[09:30:12]  INFO: 17 lines were ignored in this problem file.
 If any problems occur, please uncomment line above this print to display the full output.
-[09:26:26]  INFO: * Testing fitting of problem Thurber
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Thurber_1.png
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Thurber_1.png
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Thurber_1.png
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Thurber_2.png
-[09:26:26]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Thurber_2.png
-[09:26:27]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Thurber_2.png
-[09:26:27]  INFO: Saved Bennett5.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_bennett5_1
-[09:26:27]  INFO: Saved Bennett5.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_bennett5_1
-[09:26:27]  INFO: Saved Bennett5.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_bennett5_2
-[09:26:27]  INFO: Saved Bennett5.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_bennett5_2
-[09:26:27]  INFO: Saved BoxBOD.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_boxbod_1
-[09:26:27]  INFO: Saved BoxBOD.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_boxbod_1
-[09:26:27]  INFO: Saved BoxBOD.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_boxbod_2
-[09:26:27]  INFO: Saved BoxBOD.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_boxbod_2
-[09:26:27]  INFO: Saved Eckerle4.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_eckerle4_1
-[09:26:27]  INFO: Saved Eckerle4.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_eckerle4_1
-[09:26:27]  INFO: Saved Eckerle4.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_eckerle4_2
-[09:26:27]  INFO: Saved Eckerle4.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_eckerle4_2
-[09:26:27]  INFO: Saved MGH09.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh09_1
-[09:26:27]  INFO: Saved MGH09.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh09_1
-[09:26:27]  INFO: Saved MGH09.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh09_2
-[09:26:27]  INFO: Saved MGH09.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh09_2
-[09:26:27]  INFO: Saved MGH10.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh10_1
-[09:26:27]  INFO: Saved MGH10.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh10_1
-[09:26:27]  INFO: Saved MGH10.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh10_2
-[09:26:27]  INFO: Saved MGH10.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh10_2
-[09:26:27]  INFO: Saved Rat42.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat42_1
-[09:26:27]  INFO: Saved Rat42.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat42_1
-[09:26:27]  INFO: Saved Rat42.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat42_2
-[09:26:27]  INFO: Saved Rat42.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat42_2
-[09:26:27]  INFO: Saved Rat43.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat43_1
-[09:26:27]  INFO: Saved Rat43.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat43_1
-[09:26:27]  INFO: Saved Rat43.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat43_2
-[09:26:27]  INFO: Saved Rat43.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat43_2
-[09:26:27]  INFO: Saved Thurber.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_thurber_1
-[09:26:27]  INFO: Saved Thurber.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_thurber_1
-[09:26:27]  INFO: Saved Thurber.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_thurber_2
-[09:26:27]  INFO: Saved Thurber.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_thurber_2
-[09:26:27]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/NIST_high_diff_acc_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff
-[09:26:27]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/NIST_high_diff_acc_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff
-[09:26:27]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/NIST_high_diff_runtime_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff
-[09:26:27]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/NIST_high_diff_runtime_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff
+[09:30:12]  INFO: * Testing fitting of problem Thurber
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Thurber_1.png
+[09:30:12]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Thurber_1.png
+[09:30:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Thurber_1.png
+[09:30:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Data_Plot_Thurber_2.png
+[09:30:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/Fit_for_Thurber_2.png
+[09:30:13]  INFO: saving to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/figures/start_for_Thurber_2.png
+[09:30:13]  INFO: Saved Bennett5.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_bennett5_1
+[09:30:13]  INFO: Saved Bennett5.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_bennett5_1
+[09:30:13]  INFO: Saved Bennett5.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_bennett5_2
+[09:30:13]  INFO: Saved Bennett5.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_bennett5_2
+[09:30:13]  INFO: Saved BoxBOD.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_boxbod_1
+[09:30:13]  INFO: Saved BoxBOD.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_boxbod_1
+[09:30:13]  INFO: Saved BoxBOD.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_boxbod_2
+[09:30:13]  INFO: Saved BoxBOD.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_boxbod_2
+[09:30:13]  INFO: Saved Eckerle4.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_eckerle4_1
+[09:30:13]  INFO: Saved Eckerle4.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_eckerle4_1
+[09:30:13]  INFO: Saved Eckerle4.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_eckerle4_2
+[09:30:13]  INFO: Saved Eckerle4.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_eckerle4_2
+[09:30:13]  INFO: Saved MGH09.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh09_1
+[09:30:13]  INFO: Saved MGH09.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh09_1
+[09:30:13]  INFO: Saved MGH09.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh09_2
+[09:30:13]  INFO: Saved MGH09.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh09_2
+[09:30:13]  INFO: Saved MGH10.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh10_1
+[09:30:13]  INFO: Saved MGH10.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh10_1
+[09:30:13]  INFO: Saved MGH10.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh10_2
+[09:30:13]  INFO: Saved MGH10.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_mgh10_2
+[09:30:13]  INFO: Saved Rat42.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat42_1
+[09:30:13]  INFO: Saved Rat42.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat42_1
+[09:30:13]  INFO: Saved Rat42.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat42_2
+[09:30:13]  INFO: Saved Rat42.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat42_2
+[09:30:13]  INFO: Saved Rat43.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat43_1
+[09:30:13]  INFO: Saved Rat43.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat43_1
+[09:30:13]  INFO: Saved Rat43.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat43_2
+[09:30:13]  INFO: Saved Rat43.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_rat43_2
+[09:30:13]  INFO: Saved Thurber.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_thurber_1
+[09:30:13]  INFO: Saved Thurber.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_thurber_1
+[09:30:13]  INFO: Saved Thurber.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_thurber_2
+[09:30:13]  INFO: Saved Thurber.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/support_pages/nist_high_diff_thurber_2
+[09:30:13]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/NIST_high_diff_acc_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff
+[09:30:13]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/NIST_high_diff_acc_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff
+[09:30:13]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/NIST_high_diff_runtime_weighted_table.txt to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff
+[09:30:13]  INFO: Saved /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff/NIST_high_diff_runtime_weighted_table.html to /home/mwathen/fitbenchmarking/example_scripts/results/NIST_high_diff
