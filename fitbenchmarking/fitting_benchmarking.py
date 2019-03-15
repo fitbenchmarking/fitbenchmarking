@@ -31,73 +31,57 @@ import os
 import json
 from utils.logging_setup import logger
 
-from parsing import parse, fetch_data
-from utils import create_dirs, user_input
+from parsing import parse
+from utils import create_dirs, misc
 from fitbenchmark_one_problem import fitbm_one_prob
-
-
-minimizers_dict = {"mantid": ["BFGS",
-                              "Conjugate gradient (Fletcher-Reeves imp.)",
-                              "Conjugate gradient (Polak-Ribiere imp.)",
-                              "Damped GaussNewton",
-                              "Levenberg-Marquardt",
-                              "Levenberg-MarquardtMD",
-                              "Simplex",
-                              "SteepestDescent",
-                              "Trust Region"],
-                   "scipy": ["lm",
-                             "trf",
-                             "dogbox"]
-                   }
 
 
 def do_fitting_benchmark(group_name, software, data_dir,
                          use_errors=True, results_dir=None):
-    """
-    High level function that does the fitting benchmarking for a
-    specified group of problems.
+  """
+  High level function that does the fitting benchmarking for a
+  specified group of problems.
 
-    @param software :: software used in fitting the problem, can be
-                        e.g. mantid, scipy etc.
-    @param data_dir :: directory that holds the problem group data
-    @param use_errors :: whether to use errors on the data or not
-    @param results_dir :: directory in which to put the results
+  @param software :: software used in fitting the problem, can be
+                      e.g. mantid, scipy etc.
+  @param data_dir :: directory that holds the problem group data
+  @param use_errors :: whether to use errors on the data or not
+  @param results_dir :: directory in which to put the results
 
-    @returns :: array of fitting results for the problem group and
-                the path to the results directory
-    """
+  @returns :: array of fitting results for the problem group and
+              the path to the results directory
+  """
 
-    problem_groups = {}
-    minimizers = minimizers_dict[software]
-    problem_groups[group_name] = fetch_data.get_problem_files(data_dir)
+  minimizers = misc.get_minimizers(software)
+  problem_groups = misc.setup_fitting_problems(data_dir, group_name)
 
-    results_dir = create_dirs.results(results_dir)
-    group_results_dir = create_dirs.group_results(results_dir, group_name)
+  results_dir = create_dirs.results(results_dir)
+  group_results_dir = create_dirs.group_results(results_dir, group_name)
 
-    problem = user_input.UserInput(software, minimizers, group_name,
-                                   group_results_dir, use_errors)
+  user_input = misc.save_user_input(software, minimizers, group_name,
+                                    group_results_dir, use_errors)
 
-    prob_results = None
-    prob_results = \
-        [do_fitbm_group(problem, block) for block in problem_groups[group_name]]
+  prob_results = None
+  prob_results = \
+      [do_fitbm_group(user_input, block) for block in problem_groups[group_name]]
 
-    return prob_results, results_dir
+  return prob_results, results_dir
 
 
 def do_fitbm_group(user_input, problem_block):
-    """
-    Fit benchmark a specific group of problems.
+  """
+  Fit benchmark a specific group of problems.
 
-    @param user_input :: all the information specified by the user
-    @param problem_block :: array of paths to problem files in the group
+  @param user_input :: all the information specified by the user
+  @param problem_block :: array of paths to problem files in the group
 
-    @returns :: array of result objects, per problem
-    """
+  @returns :: array of result objects, per problem
+  """
 
-    results_per_problem = []
-    for prob_file in problem_block:
-        problem = parse.parse_problem_file(user_input.group_name, prob_file)
-        results_prob = fitbm_one_prob(user_input, problem)
-        results_per_problem.extend(results_prob)
+  results_per_problem = []
+  for prob_file in problem_block:
+    problem = parse.parse_problem_file(user_input.group_name, prob_file)
+    results_prob = fitbm_one_prob(user_input, problem)
+    results_per_problem.extend(results_prob)
 
-    return results_per_problem
+  return results_per_problem
