@@ -50,29 +50,29 @@ def load_file(fname):
     @returns :: problem object containing all the relevant information
     """
     ext = get_extension(fname)
-    if ext == 'txt':
-        with open(fname) as probf:
+    with open(fname) as probf:
+        line = probf.readline()
+        if "#" in line:
             entries = get_txt_data_problem_entries(probf)
             problem = fitbm_problem.FittingProblem()
             data_file = get_data_file(fname, entries['input_file'])
             store_main_problem_data(data_file, problem)
             store_misc_problem_data(problem, entries)
             problem.type = ext
-    elif ext == 'dat':
-        with open(fname) as spec_file:
+        elif "NIST" in line:
             logger.info("*** Loading dat data file {0} ***".
-                        format(os.path.basename(spec_file.name)))
-            lines = spec_file.readlines()
+                        format(os.path.basename(probf.name)))
+            lines = probf.readlines()
             equation_text, data_pattern_text, starting_values, \
                 residual_sum_sq = parse_line_by_line(lines)
             data_pattern = parse_data_pattern(data_pattern_text)
             parsed_eq = parse_equation(equation_text)
-            problem = store_prob_details(spec_file, parsed_eq, starting_values,
+            problem = store_prob_details(probf, parsed_eq, starting_values,
                                          data_pattern, residual_sum_sq)
             problem.type = ext
-    else:
-        AssertionError('Currently data types supported are .txt and .dat,'
-                       ' data type supplied was .{}'.format(ext))
+        else:
+            AssertionError('Currently data types supported are .txt and .dat,'
+                           ' data type supplied was .{}'.format(ext))
     return problem
 
 

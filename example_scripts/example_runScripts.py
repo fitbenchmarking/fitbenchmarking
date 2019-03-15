@@ -45,7 +45,7 @@ from results_output import save_results_tables as printTables
 
 
 # SOFTWARE YOU WANT TO BENCHMARK
-software = 'scipy'
+software = 'mantid'
 
 # Benchmark problem directories
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder, 'benchmark_problems')
@@ -73,13 +73,10 @@ color_scale = [(1.1, 'ranking-top-1'),
 
 
 # ADD WHICH PROBLEM SETS TO TEST AGAINST HERE
-# CURRENTLY TESTING AGAINST "neutron", "nist"
-# problem_sets = ["neutron", "nist"]
-problem_sets = [
-    'NIST_average_diff',
-    'NIST_low_diff',
-    'Neutron_data',
-    'NIST_high_diff']
+# CURRENTLY TESTING AGAINST "Neutron_data", "NIST_average_diff", "NIST_low_diff", "NIST_high_diff"
+# "CUTEst" and "Muon_data" work for mantid minimizers
+# problem_sets = ["Neutron_data", "NIST_average_diff"]
+problem_sets = ["Neutron_data"]
 for group_label in problem_sets:
     results_dir = None
     print('\nRunning the benchmarking on {} problem set\n'.format(group_label))
