@@ -52,7 +52,7 @@ def setup_fitting_problems(data_dir, group_name):
     """
     Sets up the problem groups specified by the user by providing
     a respective data directory.
-s
+
     @param data_dir :: directory holding the problem data used to test
     @returns :: the problem groups dictionary
     """

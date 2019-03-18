@@ -26,6 +26,7 @@ import numpy as np
 import mantid
 from utils import fitbm_result
 
+
 def compute_chisq(differences):
     """
     Simple function that calculates the sum of the differences squared
