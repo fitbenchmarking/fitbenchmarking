@@ -44,7 +44,7 @@ from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
 
-# SOFTWARE YOU WANT TO BENCHMARK
+# SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
 software = 'mantid'
 
 # Benchmark problem directories
@@ -88,9 +88,6 @@ for group_label in problem_sets:
         fitBenchmarking(group_name=group_label, software=software,
                         data_dir=data_dir,
                         use_errors=use_errors, results_dir=results_dir)
-# else:
-#     raise RuntimeError("Invalid run_data, please check if the array"
-#                        "contains the correct names!")
 
     print('\nProducing output {} problem set\n'.format(group_label))
     for idx, group_results in enumerate(results_per_group):
