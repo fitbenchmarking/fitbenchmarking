@@ -35,12 +35,12 @@ from utils.logging_setup import logger
 def function_definitions(problem):
     """
     Processing the function definitions into an appropriate format for
-    the softwareto understand.
+    the software to understand.
     """
-    if problem.type == 'dat':
+    if problem.type == 'NIST':
         return dat_func_definitions(problem.equation,
                                     problem.starting_values)
-    elif problem.type == 'txt':
+    elif problem.type == 'FitBenchmark':
         return txt_func_definitions(problem.equation)
     else:
         RuntimeError("Your problem type is not supported yet!")

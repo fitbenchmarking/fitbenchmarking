@@ -34,33 +34,38 @@ from fitting.mantid.externals import store_main_problem_data
 from utils.logging_setup import logger
 
 
-def get_extension(filename):
-    basename = os.path.basename(filename)  # os independent
-    ext = '.'.join(basename.split('.')[1:])
-    return '' + ext if ext else None
-
-
 def load_file(fname):
     """
-    Loads a txt or data file with all the necessary data.
+    Load a problem definition file. That is a file defining a fitting
+    problem. As of this writing two problem definition file format are
+    support:
 
-    @param fname :: path to the txt problem definition file
+        NIST Noninear Regression format:
+        https://www.itl.nist.gov/div898/strd/nls/data/LINKS/DATA/Misra1a.dat
+
+        Format native to FitBenchmarking, denoted FitBenchmark
+
+    @param fname :: path to the problem definition file
                     that is being loaded
 
     @returns :: problem object containing all the relevant information
     """
-    ext = get_extension(fname)
     with open(fname) as probf:
         line = probf.readline()
+        # it is assumed that a problem definition file starting with # is
+        # for now sufficient to conclude that it conform to the format nature
+        # to FitBenchmarking
         if "#" in line:
+            logger.info("*** Loading FitBenchmark formatted problem definition file {0} ***".
+                        format(os.path.basename(probf.name)))
             entries = get_txt_data_problem_entries(probf)
             problem = fitbm_problem.FittingProblem()
             data_file = get_data_file(fname, entries['input_file'])
             store_main_problem_data(data_file, problem)
             store_misc_problem_data(problem, entries)
-            problem.type = ext
+            problem.type = 'FitBenchmark'
         elif "NIST" in line:
-            logger.info("*** Loading dat data file {0} ***".
+            logger.info("*** Loading NIST formatted problem definition file {0} ***".
                         format(os.path.basename(probf.name)))
             lines = probf.readlines()
             equation_text, data_pattern_text, starting_values, \
@@ -69,10 +74,11 @@ def load_file(fname):
             parsed_eq = parse_equation(equation_text)
             problem = store_prob_details(probf, parsed_eq, starting_values,
                                          data_pattern, residual_sum_sq)
-            problem.type = ext
+            problem.type = 'NIST'
         else:
-            AssertionError('Currently data types supported are .txt and .dat,'
-                           ' data type supplied was .{}'.format(ext))
+            AssertionError('Currently problem definition formats supported are the NIST'
+                           ' format and the format native to FitBenchmarking (denoted'
+                           ' FitBenchmark). Neither of these were detected.')
     return problem
 
 

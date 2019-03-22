@@ -38,12 +38,12 @@ def function_definitions(problem):
     @returns :: a function definitions string with functions that
                 mantid understands
     """
-    if problem.type == 'dat':
+    if problem.type == 'NIST':
         # NIST data requires prior formatting
         nb_start_vals = len(problem.starting_values[0][1])
         function_defs = parse_nist_function_definitions(problem, nb_start_vals)
-    elif problem.type == 'txt':
-        # Neutron data does not require any
+    elif problem.type == 'FitBenchmark':
+        # Native FitBenchmark format does not require any processing
         function_defs = []
         function_defs.append(problem.equation)
     else:

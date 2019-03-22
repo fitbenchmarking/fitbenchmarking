@@ -43,7 +43,7 @@ class MantidTests(unittest.TestCase):
 
         prob = fitbm_problem.FittingProblem()
         prob.name = 'Misra1a'
-        prob.type = 'dat'
+        prob.type = 'NIST'
         prob.equation = 'b1*(1-exp(-b2*x))'
         prob.starting_values = [['b1', [500.0, 250.0]],
                                 ['b2', [0.0001, 0.0005]]]
@@ -60,7 +60,7 @@ class MantidTests(unittest.TestCase):
 
         prob = fitbm_problem.FittingProblem()
         prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
-        prob.type = 'txt'
+        prob.type = 'FitBenchmark'
         prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                          "name=BackToBackExponential,"
                          "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
