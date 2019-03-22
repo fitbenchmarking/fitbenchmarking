@@ -11,6 +11,7 @@ parent_dir = os.path.dirname(os.path.normpath(parent_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
+from fitting.scipy.func_def import function_definitions
 from fitting.scipy.txt_functions import txt_func_definitions
 from fitting.scipy.txt_functions import get_all_txt_func_names
 from fitting.scipy.txt_functions import get_all_txt_func_params
@@ -51,6 +52,19 @@ class ScipyTests(unittest.TestCase):
                             "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
 
         function_defs = txt_func_definitions(functions_string)
+        expected_params_array = np.array([0, 0, 597.076, 1, 0.05, 24027.5, 22.9096])
+
+        np.testing.assert_equal(expected_params_array, function_defs[0][1])
+
+    def test_FunctionDefinitions_Dat_return_function_definitions(self):
+
+        prob = fitbm_problem.FittingProblem()
+        prob.equation = ("name=LinearBackground,A0=0,A1=0;"
+                         "name=BackToBackExponential,"
+                         "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
+        prob.type = 'txt'
+
+        function_defs = function_definitions(prob)
         expected_params_array = np.array([0, 0, 597.076, 1, 0.05, 24027.5, 22.9096])
 
         np.testing.assert_equal(expected_params_array, function_defs[0][1])

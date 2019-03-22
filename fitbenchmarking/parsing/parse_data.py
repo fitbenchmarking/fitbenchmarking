@@ -196,8 +196,6 @@ def parse_line_by_line(lines):
                 data_pattern_text, idx = get_data_pattern_txt(lines, idx)
         else:
             ignored_lines += 1
-            # print("unknown line in supposedly dat test file, ignoring: {0}".
-            #       format(line))
 
     logger.info("%d lines were ignored in this problem file.\n"
                 "If any problems occur, please uncomment line above this print "

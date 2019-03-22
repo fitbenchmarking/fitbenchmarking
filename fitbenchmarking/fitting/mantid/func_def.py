@@ -47,8 +47,8 @@ def function_definitions(problem):
         function_defs = []
         function_defs.append(problem.equation)
     else:
-        raise AssertionError('Currently data types supported are .txt'
-            'and .dat, data type supplied was .{}'.format(ext))
+        raise NameError('Currently data types supported are .txt'
+                        'and .dat, data type supplied was .{}'.format(ext))
 
     return function_defs
 

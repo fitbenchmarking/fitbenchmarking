@@ -11,6 +11,7 @@ parent_dir = os.path.dirname(os.path.normpath(parent_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
+from fitting.scipy.func_def import function_definitions
 from fitting.scipy.dat_functions import dat_func_definitions
 from fitting.scipy.dat_functions import get_dat_param_names_and_values
 from fitting.scipy.dat_functions import format_function_scipy
@@ -28,6 +29,25 @@ class ScipyTests(unittest.TestCase):
                          [fitting_function, [250.0, 0.0005], function]]
 
         return function_defs
+
+    def test_FunctionDefinitions_Dat_return_function_definitions(self):
+
+        prob = fitbm_problem.FittingProblem()
+        prob.equation = "b1*(1-exp(-b2*x))"
+        prob.starting_values = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
+        prob.type = 'dat'
+
+        function_defs = function_definitions(prob)
+        expected_function_defs = self.create_expected_function_definitions()
+
+        self.assertListEqual(expected_function_defs[0][1], function_defs[0][1])
+        self.assertListEqual(expected_function_defs[1][1], function_defs[1][1])
+        self.assertEqual(expected_function_defs[0][2], function_defs[0][2])
+        self.assertEqual(expected_function_defs[1][2], function_defs[1][2])
+        np.testing.assert_equal(expected_function_defs[0][0](1, 2, 3),
+                                function_defs[0][0](1, 2, 3))
+        np.testing.assert_equal(expected_function_defs[1][0](1, 2, 3),
+                                function_defs[1][0](1, 2, 3))
 
     def test_nistFuncDefinitions_return_function_definitions(self):
 

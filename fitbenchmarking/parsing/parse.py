@@ -29,13 +29,12 @@ from utils.logging_setup import logger
 import sys
 
 
-def parse_problem_file(group_name, prob_file):
+def parse_problem_file(prob_file):
     """
     Helper function that does the parsing of a specified problem file.
     This method needs group_name to inform how the prob_file should be
     passed.
 
-    @param group_name :: name of the group of problems
     @param prob_file :: path to the problem file
 
     @returns :: problem object with fitting information

@@ -80,7 +80,7 @@ def do_fitbm_group(user_input, problem_block):
 
   results_per_problem = []
   for prob_file in problem_block:
-    problem = parse.parse_problem_file(user_input.group_name, prob_file)
+    problem = parse.parse_problem_file(prob_file)
     results_prob = fitbm_one_prob(user_input, problem)
     results_per_problem.extend(results_prob)
 
