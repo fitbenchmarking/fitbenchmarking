@@ -45,7 +45,7 @@ class MantidTests(unittest.TestCase):
 
         prob = fitbm_problem.FittingProblem()
         prob.name = 'Misra1a'
-        prob.type = 'nist'
+        prob.type = 'NIST'
         prob.equation = 'b1*(1-exp(-b2*x))'
         prob.starting_values = [['b1', [500.0,250.0]],
                                 ['b2', [0.0001,0.0005]]]
