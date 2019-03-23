@@ -53,9 +53,7 @@ benchmark_probs_dir = os.path.join(fitbenchmarking_folder, 'benchmark_problems')
 """
 Modify results_dir to specify where the results of the fit should be saved
 If left as None, they will be saved in a "results" folder in the working dir
-When specifying a results_dir, please GIVE THE FULL PATH
-If the full path is not given and the results_dir name is valid
-../fitbenchmarking/fitbenchmarking/ is taken as the path
+If the full path is not given results_dir is created relative to the working dir
 """
 results_dir = None
 
@@ -80,8 +78,6 @@ problem_sets = ["Muon_data"]
 for sub_dir in problem_sets:
     # generate group label/name used for problem set
     label = sub_dir.replace('/', '_')
-
-    results_dir = None
 
     # Problem data directory
     data_dir = os.path.join(benchmark_probs_dir, sub_dir)

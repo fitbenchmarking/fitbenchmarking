@@ -46,7 +46,8 @@ def do_fitting_benchmark(group_name, software, data_dir,
                       e.g. mantid, scipy etc.
   @param data_dir :: directory that holds the problem group data
   @param use_errors :: whether to use errors on the data or not
-  @param results_dir :: directory in which to put the results
+  @param results_dir :: directory in which to put the results. None
+                      means results directory is created for you
 
   @returns :: array of fitting results for the problem group and
               the path to the results directory
