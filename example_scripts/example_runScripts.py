@@ -73,27 +73,30 @@ color_scale = [(1.1, 'ranking-top-1'),
 
 
 # ADD WHICH PROBLEM SETS TO TEST AGAINST HERE
-# CURRENTLY TESTING AGAINST "Neutron_data", "NIST_average_diff", "NIST_low_diff", "NIST_high_diff", "CUTEst"
-# "Muon_data" work for mantid minimizers
+# Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
+# "Muon_data" works for mantid minimizers
 # problem_sets = ["Neutron_data", "NIST_average_diff"]
 problem_sets = ["Muon_data"]
-for group_label in problem_sets:
-    results_dir = None
-    print('\nRunning the benchmarking on {} problem set\n'.format(group_label))
+for sub_dir in problem_sets:
+    # generate group label/name used for problem set
+    label = sub_dir.replace('/', '_')
 
-    # Problem data directories
-    data_dir = os.path.join(benchmark_probs_dir, group_label)
-    # Running the benchmarking
+    results_dir = None
+
+    # Problem data directory
+    data_dir = os.path.join(benchmark_probs_dir, sub_dir)
+
+    print('\nRunning the benchmarking on the {} problem set\n'.format(label))
     results_per_group, results_dir = \
-        fitBenchmarking(group_name=group_label, software=software,
+        fitBenchmarking(group_name=label, software=software,
                         data_dir=data_dir,
                         use_errors=use_errors, results_dir=results_dir)
 
-    print('\nProducing output {} problem set\n'.format(group_label))
+    print('\nProducing output for the {} problem set\n'.format(label))
     for idx, group_results in enumerate(results_per_group):
         # Display the runtime and accuracy results in a table
         printTables(software, group_results,
-                    group_name=group_label, use_errors=use_errors,
+                    group_name=label, use_errors=use_errors,
                     color_scale=color_scale, results_dir=results_dir)
 
-    print('\nCompleted benchmarking for {} problem set\n'.format(group_label))
+    print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
