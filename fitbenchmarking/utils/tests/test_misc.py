@@ -99,7 +99,7 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_setupFittingProblems_get_correct_nist_probs(self):
 
-        data_dir = os.path.join(self.base_path(), 'NIST_low_diff')
+        data_dir = os.path.join(self.base_path(), 'NIST', 'low_difficulty')
         nist_problems = self.all_nist_problems()
 
         problem_groups = setup_fitting_problems(data_dir, 'NIST_low_diff')
