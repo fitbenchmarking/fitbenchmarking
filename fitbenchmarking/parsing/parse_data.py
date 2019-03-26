@@ -191,14 +191,14 @@ def parse_line_by_line(lines):
             continue
 
         if line.startswith('Model:'):
-            equation_text, idx = get_dat_model(lines, idx)
+            equation_text, idx = get_nist_model(lines, idx)
         elif 'Starting values' in line or 'Starting Values' in line:
-            starting_values, idx = get_dat_starting_values(lines, idx)
+            starting_values, idx = get_nist_starting_values(lines, idx)
         elif line.startswith('Residual Sum of Squares'):
             residual_sum_sq = float(line.split()[4])
         elif line.startswith("Data:"):
             if " x" in line and " y " in line:
-                data_pattern_text, idx = get_data_pattern_fitbenchmark(lines, idx)
+                data_pattern_text, idx = get_data_pattern_txt(lines, idx)
         else:
             ignored_lines += 1
 
@@ -209,7 +209,7 @@ def parse_line_by_line(lines):
     return equation_text, data_pattern_text, starting_values, residual_sum_sq
 
 
-def get_dat_model(lines, idx):
+def get_nist_model(lines, idx):
     """
     Gets the model equation used in the fitting process from the
     dat file.
@@ -263,7 +263,7 @@ def get_equation_text(lines, idxerr, idx):
     return equation_text, idx
 
 
-def get_data_pattern_fitbenchmark(lines, idx):
+def get_data_pattern_txt(lines, idx):
     """
     Gets the data pattern from the dat problem file.
 
@@ -327,11 +327,11 @@ def parse_equation(eq_text):
         raise RuntimeError("Unrecognized equation syntax when trying to parse "
                            "a dat equation: " + eq_text)
 
-    equation = convert_dat_to_muparser(equation)
+    equation = convert_nist_to_muparser(equation)
     return equation
 
 
-def convert_dat_to_muparser(equation):
+def convert_nist_to_muparser(equation):
     """
     Converts the raw equation from the dat file into muparser format.
 
@@ -348,7 +348,7 @@ def convert_dat_to_muparser(equation):
     return equation
 
 
-def get_dat_starting_values(lines, idx):
+def get_nist_starting_values(lines, idx):
     """
     Gets the function starting values from the dat problem file.
 

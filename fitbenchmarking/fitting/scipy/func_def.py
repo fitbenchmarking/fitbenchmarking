@@ -27,8 +27,8 @@ from __future__ import (absolute_import, division, print_function)
 import numpy as np
 import re
 
-from fitting.scipy.dat_functions import dat_func_definitions
-from fitting.scipy.txt_functions import txt_func_definitions
+from fitting.scipy.nist_data_functions import nist_func_definitions
+from fitting.scipy.fitbenchmark_data_functions import fitbenchmark_func_definitions
 from utils.logging_setup import logger
 
 
@@ -38,10 +38,10 @@ def function_definitions(problem):
     the software to understand.
     """
     if problem.type == 'NIST':
-        return dat_func_definitions(problem.equation,
-                                    problem.starting_values)
+        return nist_func_definitions(problem.equation,
+                                     problem.starting_values)
     elif problem.type == 'FitBenchmark':
-        return txt_func_definitions(problem.equation)
+        return fitbenchmark_func_definitions(problem.equation)
     else:
         RuntimeError("Your problem type is not supported yet!")
 

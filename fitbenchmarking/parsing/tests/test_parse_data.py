@@ -16,13 +16,13 @@ from parsing.parse import parse_problem_file
 from fitting.mantid.externals import store_main_problem_data
 from parsing.parse_data import load_file
 from parsing.parse_data import get_data_file
-from parsing.parse_data import get_txt_data_problem_entries
+from parsing.parse_data import get_fitbenchmark_data_problem_entries
 from parsing.parse_data import store_misc_problem_data
 
 from parsing.parse_data import store_prob_details
 from parsing.parse_data import parse_line_by_line
-from parsing.parse_data import get_dat_model
-from parsing.parse_data import get_dat_starting_values
+from parsing.parse_data import get_nist_model
+from parsing.parse_data import get_nist_starting_values
 from parsing.parse_data import get_data_pattern_txt
 from parsing.parse_data import parse_data_pattern
 from parsing.parse_data import parse_equation
@@ -139,7 +139,7 @@ class ParseTxtTests(unittest.TestCase):
         fname = self.neutron_peak_19_file()
 
         with open(fname) as probf:
-            entries = get_txt_data_problem_entries(probf)
+            entries = get_fitbenchmark_data_problem_entries(probf)
         entries_expected = self.expected_neutron_problem_entries()
 
         self.assertEqual(entries_expected['name'], entries['name'])
@@ -354,7 +354,7 @@ class ParseNistTests(unittest.TestCase):
         lines = self.setup_misra1a_model_lines()
         idx = 0
 
-        equation_text, idx = get_dat_model(lines, idx)
+        equation_text, idx = get_nist_model(lines, idx)
         equation_text_expected = 'y = b1*(1-exp[-b2*x])  +  e'
         idx_expected = 4
 
@@ -366,14 +366,14 @@ class ParseNistTests(unittest.TestCase):
         lines = ["\n", "\n"]
         idx = 33
 
-        self.assertRaises(RuntimeError, get_dat_model, lines, idx)
+        self.assertRaises(RuntimeError, get_nist_model, lines, idx)
 
     def test_getNistStartingValues_return_proper_startvaltxt(self):
 
         lines = self.setup_misra1a_startvals_lines()
         idx = 0
 
-        starting_vals, idx = get_dat_starting_values(lines, idx)
+        starting_vals, idx = get_nist_starting_values(lines, idx)
         starting_vals_expected = [['b1', [500.0, 250.0]],
                                   ['b2', [0.0001, 0.0005]]]
         idx = 3
@@ -393,7 +393,7 @@ class ParseNistTests(unittest.TestCase):
                  "      5.5015643181E-04  7.2668688436E-06"]
         idx = 0
 
-        self.assertRaises(RuntimeError, get_dat_starting_values, lines, idx)
+        self.assertRaises(RuntimeError, get_nist_starting_values, lines, idx)
 
     def test_getDataPatternTxt_correct_data(self):
 

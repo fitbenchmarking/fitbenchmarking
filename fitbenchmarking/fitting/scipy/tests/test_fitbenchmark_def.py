@@ -12,15 +12,15 @@ main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
 from fitting.scipy.func_def import function_definitions
-from fitting.scipy.txt_functions import txt_func_definitions
-from fitting.scipy.txt_functions import get_all_txt_func_names
-from fitting.scipy.txt_functions import get_all_txt_func_params
-from fitting.scipy.txt_functions import get_txt_func_names
-from fitting.scipy.txt_functions import get_txt_func_params
-from fitting.scipy.txt_functions import get_txt_initial_params_values
-from fitting.scipy.txt_functions import make_txt_fit_function
-from fitting.scipy.txt_functions import get_txt_params
-from fitting.scipy.txt_functions import get_txt_ties
+from fitting.scipy.fitbenchmark_data_functions import fitbenchmark_func_definitions
+from fitting.scipy.fitbenchmark_data_functions import get_all_fitbenchmark_func_names
+from fitting.scipy.fitbenchmark_data_functions import get_all_fitbenchmark_func_params
+from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_func_names
+from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_func_params
+from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_initial_params_values
+from fitting.scipy.fitbenchmark_data_functions import make_fitbenchmark_fit_function
+from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_params
+from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_ties
 
 from utils import fitbm_problem
 
@@ -51,7 +51,7 @@ class ScipyTests(unittest.TestCase):
                             "name=BackToBackExponential,"
                             "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
 
-        function_defs = txt_func_definitions(functions_string)
+        function_defs = fitbenchmark_func_definitions(functions_string)
         expected_params_array = np.array([0, 0, 597.076, 1, 0.05, 24027.5, 22.9096])
 
         np.testing.assert_equal(expected_params_array, function_defs[0][1])
@@ -75,7 +75,7 @@ class ScipyTests(unittest.TestCase):
                             "name=BackToBackExponential,"
                             "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
 
-        function_names = get_all_txt_func_names(functions_string)
+        function_names = get_all_fitbenchmark_func_names(functions_string)
         expected_function_names = ["LinearBackground", "BackToBackExponential"]
 
         self.assertListEqual(expected_function_names, function_names)
@@ -86,7 +86,7 @@ class ScipyTests(unittest.TestCase):
                             "name=BackToBackExponential,"
                             "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
 
-        function_params = get_all_txt_func_params(functions_string)
+        function_params = get_all_fitbenchmark_func_params(functions_string)
         expected_function_params = ['A0=0, A1=0',
                                     ('I=597.076, A=1, B=0.05, '
                                      'X0=24027.5, S=22.9096')]
@@ -98,7 +98,7 @@ class ScipyTests(unittest.TestCase):
         function_names = []
         function = "name=LinearBackground,A0=0,A1=0"
 
-        function_names = get_txt_func_names(function, function_names)
+        function_names = get_fitbenchmark_func_names(function, function_names)
         expected_function_names = ["LinearBackground"]
 
         self.assertListEqual(expected_function_names, function_names)
@@ -108,7 +108,7 @@ class ScipyTests(unittest.TestCase):
         function_names = []
         function = "name=BackToBackExponential"
 
-        function_names = get_txt_func_names(function, function_names)
+        function_names = get_fitbenchmark_func_names(function, function_names)
         expected_function_names = ["BackToBackExponential"]
 
         self.assertListEqual(expected_function_names, function_names)
@@ -118,7 +118,7 @@ class ScipyTests(unittest.TestCase):
         function = "name=LinearBackground,A0=0,A1=0"
         function_params = []
 
-        function_params = get_txt_func_params(function, function_params)
+        function_params = get_fitbenchmark_func_params(function, function_params)
         expected_function_params = ['A0=0, A1=0']
 
         self.assertListEqual(expected_function_params, function_params)
@@ -128,7 +128,7 @@ class ScipyTests(unittest.TestCase):
         function = ("name=BackToBackExponential")
         function_params = []
 
-        function_params = get_txt_func_params(function, function_params)
+        function_params = get_fitbenchmark_func_params(function, function_params)
         expected_function_params = ['']
 
         self.assertListEqual(expected_function_params, function_params)
@@ -137,7 +137,7 @@ class ScipyTests(unittest.TestCase):
 
         function_params = ['A0=0, A1=0']
 
-        params, ties = get_txt_initial_params_values(function_params)
+        params, ties = get_fitbenchmark_initial_params_values(function_params)
         expected_params, expected_ties = np.array([0, 0]), [[]]
 
         np.testing.assert_equal(expected_params, params)
@@ -148,7 +148,7 @@ class ScipyTests(unittest.TestCase):
         param_set = 'A0=0, A1=0'
         params = []
 
-        params = get_txt_params(param_set, params)
+        params = get_fitbenchmark_params(param_set, params)
         expected_params = [0, 0]
 
         self.assertListEqual(expected_params, params)

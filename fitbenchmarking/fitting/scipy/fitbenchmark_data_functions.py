@@ -30,7 +30,7 @@ from fitting.mantid.externals import gen_func_obj, set_ties
 from utils.logging_setup import logger
 
 
-def txt_func_definitions(functions_string):
+def fitbenchmark_func_definitions(functions_string):
     """
     Processing the txt function definition into an appropriate format
     for the scipy softwareto use.
@@ -42,12 +42,12 @@ def txt_func_definitions(functions_string):
                 callable and the function parameter values respectively
     """
 
-    function_names = get_all_txt_func_names(functions_string)
-    function_params = get_all_txt_func_params(functions_string)
-    params, ties = get_txt_initial_params_values(function_params)
+    function_names = get_all_fitbenchmark_func_names(functions_string)
+    function_params = get_all_fitbenchmark_func_params(functions_string)
+    params, ties = get_fitbenchmark_initial_params_values(function_params)
     fit_function = None
     for name in function_names:
-        fit_function = make_txt_fit_function(name, fit_function)
+        fit_function = make_fitbenchmark_fit_function(name, fit_function)
     fit_function = set_ties(fit_function, ties)
 
     function_defs = [[fit_function, params]]
@@ -55,7 +55,7 @@ def txt_func_definitions(functions_string):
     return function_defs
 
 
-def get_all_txt_func_names(functions_string):
+def get_all_fitbenchmark_func_names(functions_string):
     """
     Helper function that parses the function_string and retrieves
     all the function names to be fitted.
@@ -64,12 +64,12 @@ def get_all_txt_func_names(functions_string):
     functions = functions_string.split(';')
     function_names = []
     for function in functions:
-        function_names = get_txt_func_names(function, function_names)
+        function_names = get_fitbenchmark_func_names(function, function_names)
 
     return function_names
 
 
-def get_all_txt_func_params(functions_string):
+def get_all_fitbenchmark_func_params(functions_string):
     """
     Helper function that parses the function_string and retrieves all
     the function parameters.
@@ -77,12 +77,12 @@ def get_all_txt_func_params(functions_string):
     functions = functions_string.split(';')
     function_params = []
     for function in functions:
-        function_params = get_txt_func_params(function, function_params)
+        function_params = get_fitbenchmark_func_params(function, function_params)
 
     return function_params
 
 
-def get_txt_func_names(function, function_names):
+def get_fitbenchmark_func_names(function, function_names):
     """
     Helper function that retrieves the function name of only
     one function.
@@ -96,7 +96,7 @@ def get_txt_func_names(function, function_names):
     return function_names
 
 
-def get_txt_func_params(function, function_params):
+def get_fitbenchmark_func_params(function, function_params):
     """
     Helper function that retrieves the function parameters of only
     one function.
@@ -112,7 +112,7 @@ def get_txt_func_params(function, function_params):
     return function_params
 
 
-def get_txt_initial_params_values(function_params):
+def get_fitbenchmark_initial_params_values(function_params):
     """
     Parses the function_params string and puts only the initial parameter
     values into a numpy array to be used by scipy.
@@ -120,14 +120,14 @@ def get_txt_initial_params_values(function_params):
     params = []
     ties = []
     for param_set in function_params:
-        get_txt_params(param_set, params)
-        get_txt_ties(param_set, ties)
+        get_fitbenchmark_params(param_set, params)
+        get_fitbenchmark_ties(param_set, ties)
 
     params = np.array(params)
     return params, ties
 
 
-def make_txt_fit_function(func_name, fit_function):
+def make_fitbenchmark_fit_function(func_name, fit_function):
     """
     Create the txt fit function object that is used by scipy.
     """
@@ -140,7 +140,7 @@ def make_txt_fit_function(func_name, fit_function):
     return fit_function
 
 
-def get_txt_params(param_set, params):
+def get_fitbenchmark_params(param_set, params):
     """
     Get the txt param values from the param_set string array which
     may contain multiple parameter sets (for each function).
@@ -163,7 +163,7 @@ def get_txt_params(param_set, params):
     return params
 
 
-def get_txt_ties(param_set, ties):
+def get_fitbenchmark_ties(param_set, ties):
     """
     Gets the txt problem tie values.
     """

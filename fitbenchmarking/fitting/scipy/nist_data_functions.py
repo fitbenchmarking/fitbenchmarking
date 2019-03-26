@@ -1,5 +1,5 @@
 """
-Functions that prepare the dat problem function definitions to be in
+Functions that prepare the nist problem function definitions to be in
 the right format.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
@@ -8,7 +8,7 @@ the right format.
 # This file is part of Mantid.
 # Mantid is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
+# the Free Software Founnistion; either version 3 of the License, or
 # (at your option) any later version.
 #
 # Mantid is distributed in the hope that it will be useful,
@@ -28,9 +28,9 @@ import numpy as np
 from utils.logging_setup import logger
 
 
-def dat_func_definitions(function, startvals):
+def nist_func_definitions(function, startvals):
     """
-    Processing the dat function definitions into an appropriate format
+    Processing the nist function definitions into an appropriate format
     for the scipy softwareto use.
 
     @param function :: function string as defined in the problem file
@@ -40,7 +40,7 @@ def dat_func_definitions(function, startvals):
     @returns :: array containing the fitting_function callable by scipy,
                 values of the parameters and the function string
     """
-    param_names, all_values = get_dat_param_names_and_values(startvals)
+    param_names, all_values = get_nist_param_names_and_values(startvals)
     function = format_function_scipy(function)
     function_defs = []
     for values in all_values:
@@ -49,9 +49,9 @@ def dat_func_definitions(function, startvals):
 
     return function_defs
 
-def get_dat_param_names_and_values(startvals):
+def get_nist_param_names_and_values(startvals):
     """
-    Parses startvals and retrieves the dat param names and values.
+    Parses startvals and retrieves the nist param names and values.
     """
     param_names = [row[0] for row in startvals]
     param_names = ", ".join(param for param in param_names)
