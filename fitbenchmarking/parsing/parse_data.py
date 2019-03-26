@@ -58,7 +58,7 @@ def load_file(fname):
         if "#" in line:
             logger.info("*** Loading FitBenchmark formatted problem definition file {0} ***".
                         format(os.path.basename(probf.name)))
-            entries = get_txt_data_problem_entries(probf)
+            entries = get_fitbenchmark_data_problem_entries(probf)
             problem = fitbm_problem.FittingProblem()
             data_file = get_data_file(fname, entries['input_file'])
             store_main_problem_data(data_file, problem)
@@ -84,13 +84,12 @@ def load_file(fname):
 
 def get_data_file(fname, input_file):
     """
-    Gets the path to the txt data_file used in the problem.
+    Gets the path to the fitbenchmark data_file used in the problem.
     sep_idx is used to find the last separator in the problem file path
-    and set up the path for the data_files folder i.e truncates the path
-    to ../txt_data and adds ../txt_data/data_files
+    and set up the path for the data_files folder
 
-    @param fname :: path to the txt problem definition file
-    @param input_file :: name of the txt data file
+    @param fname :: path to the fitbenchmark problem definition file
+    @param input_file :: name of the fitbenchmark data file
 
     @returns :: path to the data files directory (str)
     """
@@ -105,11 +104,11 @@ def get_data_file(fname, input_file):
     return data_file
 
 
-def get_txt_data_problem_entries(fname):
+def get_fitbenchmark_data_problem_entries(fname):
     """
-    Get the problem entries from a txt problem definition file.
+    Get the problem entries from a fitbenchmark problem definition file.
 
-    @param fname :: path to the txt problem definition file
+    @param fname :: path to the fitbenchmark problem definition file
 
     @returns :: a dictionary with all the entires of the problem file
     """
@@ -199,7 +198,7 @@ def parse_line_by_line(lines):
             residual_sum_sq = float(line.split()[4])
         elif line.startswith("Data:"):
             if " x" in line and " y " in line:
-                data_pattern_text, idx = get_data_pattern_txt(lines, idx)
+                data_pattern_text, idx = get_data_pattern_fitbenchmark(lines, idx)
         else:
             ignored_lines += 1
 
@@ -264,7 +263,7 @@ def get_equation_text(lines, idxerr, idx):
     return equation_text, idx
 
 
-def get_data_pattern_txt(lines, idx):
+def get_data_pattern_fitbenchmark(lines, idx):
     """
     Gets the data pattern from the dat problem file.
 
