@@ -77,7 +77,7 @@ def prepare_scipy(problem, use_errors):
     the scipy software.
 
     @returns :: scipy workspace data structure
-                scipy cost funtion
+                scipy cost function
                 scipy function definitions
     """
     from fitting.scipy.prepare_data import prepare_data
@@ -86,7 +86,7 @@ def prepare_scipy(problem, use_errors):
     data, cost_function = \
         prepare_data(problem, use_errors)
     function_definitions = function_definitions(problem)
-    # For problems that have no specified boundries, set -inf and +inf
+    # For problems that have no specified boundaries, set -inf and +inf
     if problem.start_x == None and problem.end_x == None:
         problem.start_x = - np.inf
         problem.end_x = np.inf
