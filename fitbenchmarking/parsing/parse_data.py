@@ -132,7 +132,7 @@ def store_misc_problem_data(problem, entries):
     Stores the misc data from the problem file into the problem object.
 
     @param problem :: object holding the problem information
-    @param entires :: dictionary containg the entires from the
+    @param entires :: dictionary containing the entires from the
                       problem definition object
     """
 
@@ -147,10 +147,10 @@ def store_misc_problem_data(problem, entries):
 def store_prob_details(spec_file, parsed_eq, starting_values, data_pattern,
                        residual_sum_sq):
     """
-    Helper function that stores all the parsed dat problem definiton
+    Helper function that stores all the parsed nist problem definition
     information into a problem object.
 
-    @param spec_file :: path to the dat problem definition file
+    @param spec_file :: path to the nist problem definition file
                         that is being loaded
     @param parsed_eq :: the equation used in fitting the problem
     @param starting_values :: the starting values from where the
@@ -173,10 +173,10 @@ def store_prob_details(spec_file, parsed_eq, starting_values, data_pattern,
 
 def parse_line_by_line(lines):
     """
-    Parses the dat file one line at the time. Very unstable parser
+    Parses the nist file one line at the time. Very unstable parser
     but gets the job done.
 
-    @param lines :: array of all the lines in the imported dat file
+    @param lines :: array of all the lines in the imported nist file
 
     @returns :: strings of the equation, data pattern, array of starting
                 values and the reference residual sum from the file
@@ -212,9 +212,9 @@ def parse_line_by_line(lines):
 def get_nist_model(lines, idx):
     """
     Gets the model equation used in the fitting process from the
-    dat file.
+    nist file.
 
-    @param lines :: array of all the lines in the imported dat file
+    @param lines :: array of all the lines in the imported nist file
     @param idx :: the line at which the parser is at
 
     @returns :: string of the equation from the dat file and the
@@ -239,14 +239,14 @@ def get_nist_model(lines, idx):
 
 def get_equation_text(lines, idxerr, idx):
     """
-    Gets the equation text from the dat file.
+    Gets the equation text from the nist file.
 
-    @param lines :: array of all the lines in the imported dat file
+    @param lines :: array of all the lines in the imported nist file
     @param idxerr :: boolean that points out if there were any problems
                      in finding the equation in the file
     @param idx :: the line at which the parser is at
 
-    @returns :: string of the equation from the dat file and the
+    @returns :: string of the equation from the nist file and the
                 new index
     """
 
@@ -265,9 +265,9 @@ def get_equation_text(lines, idxerr, idx):
 
 def get_data_pattern_txt(lines, idx):
     """
-    Gets the data pattern from the dat problem file.
+    Gets the data pattern from the nist problem file.
 
-    @param lines :: array of all the lines in the imported dat file
+    @param lines :: array of all the lines in the imported nist file
     @param idx :: the line at which the parser is at
 
     @returns :: string of the data pattern and the new index
@@ -289,7 +289,7 @@ def parse_data_pattern(data_pattern_text):
     data points of the problem.
 
     @param data_pattern_text :: string of the data pattern from the
-                                dat problem file
+                                most problem file
 
     @returns :: numpy array of the data points of the problem
     """
@@ -333,7 +333,7 @@ def parse_equation(eq_text):
 
 def convert_nist_to_muparser(equation):
     """
-    Converts the raw equation from the dat file into muparser format.
+    Converts the raw equation from the nist file into muparser format.
 
     @param equation :: string of the raw equation
 
@@ -350,9 +350,9 @@ def convert_nist_to_muparser(equation):
 
 def get_nist_starting_values(lines, idx):
     """
-    Gets the function starting values from the dat problem file.
+    Gets the function starting values from the nist problem file.
 
-    @param lines :: array of all the lines in the imported dat file
+    @param lines :: array of all the lines in the imported nist file
     @param idx :: the line at which the parser is at
 
     @returns :: an array of the starting values and the new index
@@ -368,12 +368,12 @@ def get_nist_starting_values(lines, idx):
 
 def parse_starting_values(lines):
     """
-    Parses the starting values of a dat file and converts them into an
+    Parses the starting values of a nist file and converts them into an
     array.
 
-    @param lines :: array of all the lines in the imported dat file
+    @param lines :: array of all the lines in the imported nist file
 
-    @returns :: array of the starting values used in dat problem
+    @returns :: array of the starting values used in nist problem
     """
     starting_vals = []
     for line in lines:
