@@ -44,8 +44,8 @@ def parse_problem_file(prob_file):
         print ('\nAttempting to load file : \n{}\n'.format(prob_file))
         prob = parse_data.load_file(prob_file)
     except NameError:
-        print("Could not find group name! Please check if it was"
-              " given correctly...")
+        print("Could not find load problem file, check whether {} "
+              "is in NIST or fitbenchmarking format")
         sys.exit()
     logger.info("* Testing fitting of problem {0}".format(prob.name))
     print ('Data loaded \n')
