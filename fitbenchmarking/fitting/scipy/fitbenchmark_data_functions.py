@@ -1,5 +1,5 @@
 """
-Methods that prepare the txt problems function definitions to be
+Methods that prepare the fitbenchmark problems function definitions to be
 in the right format.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
@@ -32,8 +32,8 @@ from utils.logging_setup import logger
 
 def fitbenchmark_func_definitions(functions_string):
     """
-    Processing the txt function definition into an appropriate format
-    for the scipy softwareto use.
+    Processing the fitbenchmark function definition into an appropriate format
+    for the scipy software to use.
 
     @param function_string :: string defining the function in
                               mantid format
@@ -129,7 +129,7 @@ def get_fitbenchmark_initial_params_values(function_params):
 
 def make_fitbenchmark_fit_function(func_name, fit_function):
     """
-    Create the txt fit function object that is used by scipy.
+    Create the fitbenchmark fit function object that is used by scipy.
     """
     func_obj = gen_func_obj(func_name)
     if fit_function == None:
@@ -142,7 +142,7 @@ def make_fitbenchmark_fit_function(func_name, fit_function):
 
 def get_fitbenchmark_params(param_set, params):
     """
-    Get the txt param values from the param_set string array which
+    Get the fitbenchmark param values from the param_set string array which
     may contain multiple parameter sets (for each function).
     """
     start = 0
@@ -165,7 +165,7 @@ def get_fitbenchmark_params(param_set, params):
 
 def get_fitbenchmark_ties(param_set, ties):
     """
-    Gets the txt problem tie values.
+    Gets the fitbenchmark problem tie values.
     """
     start = param_set.find("ties=") + 5
     ties_per_function = []
