@@ -38,7 +38,7 @@ from utils.logging_setup import logger
 
 def fitbm_one_prob(user_input, problem):
     """
-    Sets up the workspace, cost function and function definitons for
+    Sets up the workspace, cost function and function definitions for
     a particular problem and fits the models provided in the problem
     object. The best fit, along with the data and a starting guess
     is then plotted on a visual display page.
@@ -85,7 +85,7 @@ def fit_one_function_def(software, problem, data_struct, function, minimizers,
     @param software :: software used in fitting the problem, can be
                         e.g. mantid, numpy etc.
     @param problem :: a problem object containing information used in fitting
-    @param data_struct :: a structre in which the data to be fitted is
+    @param data_struct :: a structure in which the data to be fitted is
                           stored, can be e.g. mantid workspace, np array etc.
     @param function :: analytical function string that is fitted
     @param minimizers :: array of minimizers used in fitting
