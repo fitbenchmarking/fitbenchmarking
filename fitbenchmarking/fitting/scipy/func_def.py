@@ -77,7 +77,7 @@ def get_init_function_def(function, mantid_definition):
     @param mantid_definition :: the string containing the function
                                 definition in mantid format
 
-    @returns :: the initial function defintion string
+    @returns :: the initial function definition string
     """
     if not 'name=' in str(function[0]):
         params = function[0].__code__.co_varnames[1:]
