@@ -30,27 +30,27 @@ class MantidTests(unittest.TestCase):
         Sets up the problem object for the nist problem file Misra1a.dat
         """
 
-        data_pattern = np.array([ [10.07, 77.6],
-                                  [14.73, 114.9],
-                                  [17.94, 141.1],
-                                  [23.93, 190.8],
-                                  [29.61, 239.9],
-                                  [35.18, 289.0],
-                                  [40.02, 332.8],
-                                  [44.82, 378.4],
-                                  [50.76, 434.8],
-                                  [55.05, 477.3],
-                                  [61.01, 536.8],
-                                  [66.40, 593.1],
-                                  [75.47, 689.1],
-                                  [81.78, 760.0] ])
+        data_pattern = np.array([[10.07, 77.6],
+                                 [14.73, 114.9],
+                                 [17.94, 141.1],
+                                 [23.93, 190.8],
+                                 [29.61, 239.9],
+                                 [35.18, 289.0],
+                                 [40.02, 332.8],
+                                 [44.82, 378.4],
+                                 [50.76, 434.8],
+                                 [55.05, 477.3],
+                                 [61.01, 536.8],
+                                 [66.40, 593.1],
+                                 [75.47, 689.1],
+                                 [81.78, 760.0]])
 
         prob = fitbm_problem.FittingProblem()
         prob.name = 'Misra1a'
         prob.type = 'NIST'
         prob.equation = 'b1*(1-exp(-b2*x))'
-        prob.starting_values = [['b1', [500.0,250.0]],
-                                ['b2', [0.0001,0.0005]]]
+        prob.starting_values = [['b1', [500.0, 250.0]],
+                                ['b2', [0.0001, 0.0005]]]
         prob.data_x = data_pattern[:, 1]
         prob.data_y = data_pattern[:, 0]
 
@@ -73,7 +73,6 @@ class MantidTests(unittest.TestCase):
 
         return prob, wks, function, minimizer, cost_function
 
-
     def setup_problem_Misra1a_fail(self):
         """
         Helper function.
@@ -86,12 +85,11 @@ class MantidTests(unittest.TestCase):
                                     DataY=prob.data_y,
                                     DataE=np.sqrt(prob.data_y))
         function = \
-        "name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=500.0,b2=0.0001"
+            "name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=500.0,b2=0.0001"
         minimizer = 'Levenberg-Merquardtss'
         cost_function = 'Least squared'
 
         return prob, wks, function, minimizer, cost_function
-
 
     def expected_results_problem_Misra1a_success(self):
         """
@@ -102,10 +100,9 @@ class MantidTests(unittest.TestCase):
 
         fit_status = 'success'
         fin_function_def = \
-        "name=UserFunction,Formula=b1*(1-exp( -b2*x)),b1=234.534,b2=0.00056228"
+            "name=UserFunction,Formula=b1*(1-exp( -b2*x)),b1=234.534,b2=0.00056228"
 
         return fit_status, fin_function_def
-
 
     def expected_results_problem_Misra1a_fail(self):
         """
@@ -122,16 +119,15 @@ class MantidTests(unittest.TestCase):
 
         return status, fit_wks, fin_function_def, runtime
 
-
     def test_fit_return_success_for_NIST_Misra1a_prob_file(self):
 
         prob, wks, function, minimizer, cost_function = \
-        self.setup_problem_Misra1a_success()
+            self.setup_problem_Misra1a_success()
 
         status, fit_wks, fin_function_def, runtime = \
-        fit(prob, wks, function, minimizer, cost_function)
+            fit(prob, wks, function, minimizer, cost_function)
         status_expected, fin_function_def_expected = \
-        self.expected_results_problem_Misra1a_success()
+            self.expected_results_problem_Misra1a_success()
 
         self.assertEqual(status_expected, status)
         self.assertEqual(fin_function_def_expected[:44], fin_function_def[:44])
@@ -139,12 +135,12 @@ class MantidTests(unittest.TestCase):
     def test_fit_fails(self):
 
         prob, wks, function, minimizer, cost_function = \
-        self.setup_problem_Misra1a_fail()
+            self.setup_problem_Misra1a_fail()
 
         status, fit_wks, fin_function_def, runtime = \
-        fit(prob, wks, function, minimizer, cost_function)
+            fit(prob, wks, function, minimizer, cost_function)
         (status_expected, fit_wks_expected, fin_function_def_expected,
-        runtime_expected) = self.expected_results_problem_Misra1a_fail()
+         runtime_expected) = self.expected_results_problem_Misra1a_fail()
 
         self.assertEqual(status_expected, status)
         self.assertEqual(fin_function_def_expected, fin_function_def)
@@ -165,16 +161,16 @@ class MantidTests(unittest.TestCase):
     def test_chisq_status_succeeded_greater_chisq(self):
 
         status = 'success'
-        wks = msapi.CreateWorkspace(DataX=np.array([1,2,3,4,5,6]),
-                                    DataY=np.array([1,2,3,4,5,6]),
-                                    DataE=np.sqrt(np.array([1,2,3,4,5,6])),
+        wks = msapi.CreateWorkspace(DataX=np.array([1, 2, 3, 4, 5, 6]),
+                                    DataY=np.array([1, 2, 3, 4, 5, 6]),
+                                    DataE=np.sqrt(np.array([1, 2, 3, 4, 5, 6])),
                                     NSpec=3)
         minimizer = 'Levenberg-Marquardt'
         min_chi_sq = 1000000
         best_fit = None
 
         chi_sq, min_chi_sq, best_fit = \
-        chisq(status, wks, min_chi_sq, best_fit, minimizer)
+            chisq(status, wks, min_chi_sq, best_fit, minimizer)
         chi_sq_expected = 61.0
         min_chi_sq_expected = chi_sq
 
@@ -189,7 +185,7 @@ class MantidTests(unittest.TestCase):
         t_end = 2
 
         status, fit_wks, fin_function_def, runtime = \
-        parse_result(fit_result, t_start, t_end)
+            parse_result(fit_result, t_start, t_end)
         status_expected = 'failed'
         fit_wks_expected = None
         fin_function_def_expected = None
@@ -210,7 +206,6 @@ class MantidTests(unittest.TestCase):
         ign_invalid_expected = True
 
         self.assertEqual(ign_invalid_expected, ign_invalid)
-
 
     def test_ignoreInvalid_return_False_because_of_WISH17701(self):
 
