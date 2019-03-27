@@ -3,7 +3,7 @@ from __future__ import (absolute_import, division, print_function)
 import unittest
 import os
 
-# Delete four lines below when automated tests ar enabled
+# Delete four lines below when automated tests are enabled
 import sys
 test_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(os.path.normpath(test_dir))
