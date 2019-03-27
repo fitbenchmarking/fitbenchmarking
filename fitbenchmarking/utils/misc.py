@@ -1,5 +1,5 @@
 """
-Miscellaneous functions and utilites used in fitting benchmarking.
+Miscellaneous functions and utilities used in fitting benchmarking.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
