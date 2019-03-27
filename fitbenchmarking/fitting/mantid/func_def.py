@@ -33,7 +33,7 @@ def function_definitions(problem):
     Transforms the prob.equation field into a function that can be
     understood by the mantid fitting software.
 
-    @param prob :: object holding the problem infomation
+    @param prob :: object holding the problem information
 
     @returns :: a function definitions string with functions that
                 mantid understands
@@ -47,8 +47,8 @@ def function_definitions(problem):
         function_defs = []
         function_defs.append(problem.equation)
     else:
-        raise NameError('Currently data types supported are .txt'
-                        'and .dat, data type supplied was .{}'.format(ext))
+        raise NameError('Currently data types supported are FitBenchmark'
+                        ' and nist, data type supplied was .{}'.format(ext))
 
     return function_defs
 
@@ -56,7 +56,7 @@ def function_definitions(problem):
 def parse_nist_function_definitions(problem, nb_start_vals):
     """
     Helper function that parses the NIST function definitions and
-    transforms them into a mantid-redeable format.
+    transforms them into a mantid-readable format.
 
     @param prob :: object holding the problem information
     @param nb_start_vals :: the number of starting points for a given
