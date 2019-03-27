@@ -8,7 +8,7 @@ the right format.
 # This file is part of Mantid.
 # Mantid is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Founnistion; either version 3 of the License, or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # Mantid is distributed in the hope that it will be useful,
@@ -31,7 +31,7 @@ from utils.logging_setup import logger
 def nist_func_definitions(function, startvals):
     """
     Processing the nist function definitions into an appropriate format
-    for the scipy softwareto use.
+    for the scipy software to use.
 
     @param function :: function string as defined in the problem file
     @param startvals :: starting values for the function variables
