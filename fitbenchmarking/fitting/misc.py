@@ -46,7 +46,7 @@ def create_result_entry(problem, status, chi_sq, runtime, minimizer,
                         ini_function_def, fin_function_def):
     """
     Helper function that creates a result object after fitting a problem
-    with a certain function and minimzier.
+    with a certain function and minimizer.
 
     @param problem :: problem object containing info that was fitted
     @param status :: status of the fit, i.e. success or failure
