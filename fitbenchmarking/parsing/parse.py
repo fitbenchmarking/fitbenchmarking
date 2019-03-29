@@ -44,10 +44,8 @@ def parse_problem_file(prob_file):
     elif "#" in fline:
         prob = parse_fitbenchmark_data.load_file(prob_file)
         prob.type = 'FitBenchmark'
-
     else:
-        raise NameError("Could not find group name! Please check if it was"
-                        "given correctly...")
+        raise RuntimeError("Data type supplied currently not supported")
 
     logger.info("* Testing fitting of problem {0}".format(prob.name))
 
