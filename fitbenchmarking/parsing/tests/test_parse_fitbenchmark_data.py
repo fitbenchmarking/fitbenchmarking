@@ -12,6 +12,7 @@ main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
 from fitting.mantid.externals import store_main_problem_data
+from parsing.parse import parse_problem_file
 from parsing.parse_fitbenchmark_data import load_file
 from parsing.parse_fitbenchmark_data import get_data_file
 from parsing.parse_fitbenchmark_data import get_neutron_data_problem_entries
@@ -85,6 +86,22 @@ class ParseNeutronTests(unittest.TestCase):
         fname = self.neutron_peak_19_file()
 
         problem = load_file(fname)
+        problem_expected = self.expected_neutron_problem()
+
+        self.assertEqual(problem_expected.name, problem.name)
+        self.assertEqual(problem_expected.equation, problem.equation)
+        self.assertEqual(problem_expected.starting_values,
+                         problem.starting_values)
+        self.assertEqual(problem_expected.start_x, problem.start_x)
+        self.assertEqual(problem_expected.end_x, problem.end_x)
+        self.assertEqual(problem_expected.ref_residual_sum_sq,
+                         problem.ref_residual_sum_sq)
+
+    def test_ParseProblemFileNeutron_returns_correct_problem_object(self):
+
+        fname = self.neutron_peak_19_file()
+
+        problem = parse_problem_file(fname)
         problem_expected = self.expected_neutron_problem()
 
         self.assertEqual(problem_expected.name, problem.name)
