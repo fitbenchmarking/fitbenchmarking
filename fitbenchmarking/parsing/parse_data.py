@@ -211,14 +211,14 @@ def parse_line_by_line(lines):
 
 def get_nist_model(lines, idx):
     """
-    Gets the model equation used in the fitting process from the
-    nist file.
+    Gets the model equation used in the fitting process from a
+    nist formatted file.
 
     @param lines :: array of all the lines in the imported nist file
     @param idx :: the line at which the parser is at
 
-    @returns :: string of the equation from the dat file and the
-                new index
+    @returns :: string of the equation from the nist formatted file and
+                the new index
     """
 
     equation_text, idxerr = None, False
