@@ -24,7 +24,8 @@ test_result object.
 
 from __future__ import (absolute_import, division, print_function)
 
-import os, re
+import os
+import re
 import numpy as np
 
 from utils import fitbm_problem
@@ -46,7 +47,7 @@ def load_file(fname):
                     format(os.path.basename(spec_file.name)))
         lines = spec_file.readlines()
         equation_text, data_pattern_text, starting_values, residual_sum_sq = \
-        parse_line_by_line(lines)
+            parse_line_by_line(lines)
         data_pattern = parse_data_pattern(data_pattern_text)
         parsed_eq = parse_equation(equation_text)
         problem = store_prob_details(spec_file, parsed_eq, starting_values,
@@ -117,40 +118,30 @@ def parse_line_by_line(lines):
 
     logger.info("%d lines were ignored in this problem file.\n"
                 "If any problems occur, please uncomment line above this print "
-                "to display the full output." %ignored_lines)
+                "to display the full output." % ignored_lines)
 
     return equation_text, data_pattern_text, starting_values, residual_sum_sq
 
 
 def get_nist_model(lines, idx):
     """
-<<<<<<< HEAD:fitbenchmarking/parsing/parse_nist_data.py
     Gets the model equation used in the fitting process from the
     NIST file.
-=======
-    Gets the model equation used in the fitting process from a
-    nist formatted file.
->>>>>>> 45abdfe634283135855d80d46611db26db97f301:fitbenchmarking/parsing/parse_data.py
 
     @param lines :: array of all the lines in the imported nist file
     @param idx :: the line at which the parser is at
 
-<<<<<<< HEAD:fitbenchmarking/parsing/parse_nist_data.py
     @returns :: string of the equation from the NIST file and the
                 new index
-=======
-    @returns :: string of the equation from the nist formatted file and
-                the new index
->>>>>>> 45abdfe634283135855d80d46611db26db97f301:fitbenchmarking/parsing/parse_data.py
     """
 
     equation_text, idxerr = None, False
     try:
         while (not re.match(r'\s*y\s*=(.+)', lines[idx])
                and not re.match(r'\s*log\[y\]\s*=(.+)', lines[idx]))\
-               and idx < len(lines):
+                and idx < len(lines):
 
-                idx += 1
+            idx += 1
     except IndexError as err:
         logger.error("Could not find equation, index went out of bounds!")
         idxerr = True
@@ -322,7 +313,7 @@ def check_startval_validity(startval_str, line):
 
     if 6 != len(startval_str) and 5 != len(startval_str):
         raise RuntimeError("Failed to parse this line as starting "
-                            "values information: {0}".format(line))
+                           "values information: {0}".format(line))
 
 
 def get_startvals_floats(startval_str):
