@@ -12,7 +12,6 @@ main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
 from parsing.parse import parse_problem_file
-from parsing.parse_nist_data import load_file
 from parsing.parse_nist_data import store_prob_details
 from parsing.parse_nist_data import parse_line_by_line
 from parsing.parse_nist_data import get_nist_model
@@ -134,22 +133,6 @@ class ParseNistTests(unittest.TestCase):
     prob.ref_residual_sum_sq = 1.2455138894e-01
 
     return prob
-
-  def test_loadFile_correct_problem_object(self):
-
-    fname = self.misra1a_file()
-
-    problem = load_file(fname)
-    problem_expected = self.setup_nist_expected_problem()
-
-    self.assertEqual(problem_expected.name, problem.name)
-    self.assertEqual(problem_expected.equation, problem.equation)
-    self.assertEqual(problem_expected.starting_values,
-                     problem.starting_values)
-    np.testing.assert_allclose(problem_expected.data_x, problem.data_x)
-    np.testing.assert_allclose(problem_expected.data_y, problem.data_y)
-    self.assertEqual(problem_expected.ref_residual_sum_sq,
-                     problem.ref_residual_sum_sq)
 
   def test_ParseProblemFileNIST_returns_correct_problem_object(self):
 
