@@ -25,7 +25,8 @@ information into problem objects
 
 from __future__ import (absolute_import, division, print_function)
 
-import os, re
+import os
+import re
 import numpy as np
 
 from utils import fitbm_problem
@@ -33,30 +34,9 @@ from fitting.mantid.externals import store_main_problem_data
 from utils.logging_setup import logger
 
 
-
-def load_file(fname):
-    """
-    Loads a neutron file with all the necessary data.
-
-    @param fname :: path to the neutron problem definition file
-                    that is being loaded
-
-    @returns :: problem object containing all the relevant information
-    """
-
-    with open(fname) as probf:
-        entries = get_neutron_data_problem_entries(probf)
-        problem = fitbm_problem.FittingProblem()
-        data_file = get_data_file(fname, entries['input_file'])
-        store_main_problem_data(data_file, problem)
-        store_misc_problem_data(problem, entries)
-
-    return problem
-
-
 def get_data_file(fname, input_file):
     """
-    Gets the path to the neutron data_file used in the problem.
+    Gets the path to the fitbenchmark problem data_file used in the problem.
     sep_idx is used to find the last separator in the problem file path
     and set up the path for the data_files folder i.e truncates the path
     to ../Neutron_data and adds ../Neutron_data/data_files
@@ -70,18 +50,18 @@ def get_data_file(fname, input_file):
     prefix = ""
     if os.sep in fname:
         sep_idx = fname.rfind(os.sep)
-        prefix = os.path.join(fname[:sep_idx],"data_files")
+        prefix = os.path.join(fname[:sep_idx], "data_files")
 
     data_file = os.path.join(prefix, input_file)
 
     return data_file
 
 
-def get_neutron_data_problem_entries(fname):
+def get_fitbenchmark_data_problem_entries(fname):
     """
-    Get the problem entries from a neutron problem definition file.
+    Get the problem entries from a fitbenchmark problem definition file.
 
-    @param fname :: path to the neutron problem definition file
+    @param fname :: path to the fitbenchmark problem definition file
 
     @returns :: a dictionary with all the entires of the problem file
     """

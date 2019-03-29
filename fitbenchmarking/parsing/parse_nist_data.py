@@ -32,30 +32,6 @@ from utils import fitbm_problem
 from utils.logging_setup import logger
 
 
-def load_file(fname):
-    """
-    Loads a nist file with all the necessary data.
-
-    @param fname :: path to the nist problem definition file
-                    that is being loaded
-
-    @returns :: problem object containing all the relevant information
-    """
-
-    with open(fname) as spec_file:
-        logger.info("*** Loading NIST data file {0} ***".
-                    format(os.path.basename(spec_file.name)))
-        lines = spec_file.readlines()
-        equation_text, data_pattern_text, starting_values, residual_sum_sq = \
-            parse_line_by_line(lines)
-        data_pattern = parse_data_pattern(data_pattern_text)
-        parsed_eq = parse_equation(equation_text)
-        problem = store_prob_details(spec_file, parsed_eq, starting_values,
-                                     data_pattern, residual_sum_sq)
-
-    return problem
-
-
 def store_prob_details(spec_file, parsed_eq, starting_values, data_pattern,
                        residual_sum_sq):
     """

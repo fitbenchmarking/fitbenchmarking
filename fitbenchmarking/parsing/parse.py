@@ -24,29 +24,73 @@ Parse the problem file depending on the type of problem.
 
 from __future__ import (absolute_import, division, print_function)
 
+import os
+import re
+import numpy as np
+
+from utils import fitbm_problem
+from fitting.mantid.externals import store_main_problem_data
 from parsing import parse_nist_data, parse_fitbenchmark_data
 from utils.logging_setup import logger
 
 
 def parse_problem_file(prob_file):
     """
-    Helper function that does the parsing of a specified problem file.
-    This method needs group_name to inform how the prob_file should be
-    passed.
-    @param group_name :: name of the group of problems
+    Helper function that loads the problem file and populates the fitting
+    problem.
+
     @param prob_file :: path to the problem file
     @returns :: problem object with fitting information
     """
+
+    prob_type = determine_problem_type(prob_file)
+
+    with open(prob_file) as probf:
+        if prob_type == "NIST":
+            logger.info("*** Loading NIST formatted problem definition "
+                        "file {0} ***".format(os.path.basename(probf.name)))
+            lines = probf.readlines()
+            equation_text, data_pattern_text, starting_values, \
+                residual_sum_sq = parse_nist_data.parse_line_by_line(lines)
+            data_pattern = parse_nist_data.parse_data_pattern(data_pattern_text)
+            parsed_eq = parse_nist_data.parse_equation(equation_text)
+            problem = parse_nist_data.store_prob_details(probf, parsed_eq, starting_values, data_pattern, residual_sum_sq)
+            problem.type = prob_type
+        elif prob_type == "FitBenchmark":
+            logger.info("*** Loading FitBenchmark formatted problem definition file {0} ***".
+                        format(os.path.basename(probf.name)))
+            entries = parse_fitbenchmark_data.get_fitbenchmark_data_problem_entries(probf)
+            problem = fitbm_problem.FittingProblem()
+            data_file = parse_fitbenchmark_data.get_data_file(
+                prob_file, entries['input_file'])
+            parse_fitbenchmark_data.store_main_problem_data(data_file, problem)
+            parse_fitbenchmark_data.store_misc_problem_data(problem, entries)
+            problem.type = prob_type
+
+    logger.info("* Testing fitting of problem {0}".format(problem.name))
+
+    return problem
+
+
+def determine_problem_type(prob_file):
+    """
+    Helper function that determines the problem type from the file using
+    the first line of the problem file.
+
+    @param prob_file :: path to the problem file
+    @returns :: problem type
+    """
+
+    # Pulls out the first line of the problem file
     fline = open(prob_file).readline().rstrip()
+
     if "NIST" in fline:
-        prob = parse_nist_data.load_file(prob_file)
-        prob.type = 'NIST'
+        # Checking for NIST in first line
+        prob_type = "NIST"
     elif "#" in fline:
-        prob = parse_fitbenchmark_data.load_file(prob_file)
-        prob.type = 'FitBenchmark'
+        # Checking for a comment in the first line
+        prob_type = "FitBenchmark"
     else:
         raise RuntimeError("Data type supplied currently not supported")
 
-    logger.info("* Testing fitting of problem {0}".format(prob.name))
-
-    return prob
+    return prob_type
