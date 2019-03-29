@@ -24,9 +24,8 @@ Parse the problem file depending on the type of problem.
 
 from __future__ import (absolute_import, division, print_function)
 
-from parsing import parse_data
+from parsing import parse_nist_data, parse_fitbenchmark_data
 from utils.logging_setup import logger
-import sys
 
 
 def parse_problem_file(prob_file):
@@ -34,19 +33,22 @@ def parse_problem_file(prob_file):
     Helper function that does the parsing of a specified problem file.
     This method needs group_name to inform how the prob_file should be
     passed.
-
+    @param group_name :: name of the group of problems
     @param prob_file :: path to the problem file
-
     @returns :: problem object with fitting information
     """
+    fline = open(prob_file).readline().rstrip()
+    if "NIST" in fline:
+        prob = parse_nist_data.load_file(prob_file)
+        prob.type = 'NIST'
+    elif "#" in fline:
+        prob = parse_fitbenchmark_data.load_file(prob_file)
+        prob.type = 'FitBenchmark'
 
-    try:
-        print ('\nAttempting to load file : \n{}\n'.format(prob_file))
-        prob = parse_data.load_file(prob_file)
-    except NameError:
-        print("Could not find load problem file, check whether {} "
-              "is in NIST or fitbenchmarking format")
-        sys.exit()
+    else:
+        raise NameError("Could not find group name! Please check if it was"
+                        "given correctly...")
+
     logger.info("* Testing fitting of problem {0}".format(prob.name))
-    print ('Data loaded \n')
+
     return prob
