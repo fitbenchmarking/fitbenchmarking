@@ -24,8 +24,10 @@ Functions that fetch the problem files.
 
 from __future__ import (absolute_import, division, print_function)
 
-import os, glob
+import os
+import glob
 from utils.logging_setup import logger
+
 
 def get_problem_files(data_dir):
     """
@@ -33,41 +35,18 @@ def get_problem_files(data_dir):
 
     @param dirs :: array of directories that contain the problems
 
-    @returns :: array containing paths to all the neutron problems
+    @returns :: array containing paths to all the problems
     """
-
     probs_all = []
-    dirs = sub_dirs(data_dir)
+    dirs = filter(os.path.isdir, os.listdir(data_dir))
+    if dirs == [] or dirs == ['data_files']:
+        dirs.insert(0, data_dir)
     for directory in dirs:
-        search_str = search_string_definition(directory)
-        problems = glob.glob(search_str)
+        test_data = glob.glob(directory + '/*.*')
+        problems = [os.path.join(directory, data) for data in test_data]
         problems.sort()
         for problem in problems:
             logger.info(problem)
         probs_all.append(problems)
 
     return probs_all
-
-def search_string_definition(directory):
-    """
-    Either search for text or dat files.
-    """
-    if 'Neutron' in directory:
-        search_str = os.path.join(directory, "*.txt")
-    else:
-        search_str = os.path.join(directory, "*.dat")
-
-    return search_str
-
-def sub_dirs(directory):
-    """
-    Check if the folder has any subdirectories.
-    """
-    subdirs = [x[0] for x in os.walk(directory)]
-    subdirs = subdirs[1:]
-
-    if len(subdirs) != 1:
-        return subdirs
-    else:
-        return [directory]
-

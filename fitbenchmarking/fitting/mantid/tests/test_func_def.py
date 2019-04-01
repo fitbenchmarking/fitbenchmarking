@@ -26,32 +26,31 @@ class MantidTests(unittest.TestCase):
         Sets up the problem object for the nist problem file Misra1a.dat
         """
 
-        data_pattern = np.array([ [10.07, 77.6],
-                                  [14.73, 114.9],
-                                  [17.94, 141.1],
-                                  [23.93, 190.8],
-                                  [29.61, 239.9],
-                                  [35.18, 289.0],
-                                  [40.02, 332.8],
-                                  [44.82, 378.4],
-                                  [50.76, 434.8],
-                                  [55.05, 477.3],
-                                  [61.01, 536.8],
-                                  [66.40, 593.1],
-                                  [75.47, 689.1],
-                                  [81.78, 760.0] ])
+        data_pattern = np.array([[10.07, 77.6],
+                                 [14.73, 114.9],
+                                 [17.94, 141.1],
+                                 [23.93, 190.8],
+                                 [29.61, 239.9],
+                                 [35.18, 289.0],
+                                 [40.02, 332.8],
+                                 [44.82, 378.4],
+                                 [50.76, 434.8],
+                                 [55.05, 477.3],
+                                 [61.01, 536.8],
+                                 [66.40, 593.1],
+                                 [75.47, 689.1],
+                                 [81.78, 760.0]])
 
         prob = fitbm_problem.FittingProblem()
         prob.name = 'Misra1a'
-        prob.type = 'nist'
+        prob.type = 'NIST'
         prob.equation = 'b1*(1-exp(-b2*x))'
-        prob.starting_values = [['b1', [500.0,250.0]],
-                                ['b2', [0.0001,0.0005]]]
+        prob.starting_values = [['b1', [500.0, 250.0]],
+                                ['b2', [0.0001, 0.0005]]]
         prob.data_x = data_pattern[:, 1]
         prob.data_y = data_pattern[:, 0]
 
         return prob
-
 
     def Neutron_problem(self):
         """
@@ -61,7 +60,7 @@ class MantidTests(unittest.TestCase):
 
         prob = fitbm_problem.FittingProblem()
         prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
-        prob.type = 'neutron'
+        prob.type = 'FitBenchmark'
         prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                          "name=BackToBackExponential,"
                          "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
@@ -84,7 +83,6 @@ class MantidTests(unittest.TestCase):
                                         DataE=data_e)
         return wks_exp
 
-
     def create_wks_NIST_problem_without_errors(self):
         """
         Helper function.
@@ -102,11 +100,10 @@ class MantidTests(unittest.TestCase):
 
         function_defs = function_definitions(prob)
         function_defs_expected = \
-        ["name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=500.0,b2=0.0001",
-         "name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=250.0,b2=0.0005"]
+            ["name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=500.0,b2=0.0001",
+             "name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=250.0,b2=0.0005"]
 
         self.assertListEqual(function_defs_expected, function_defs)
-
 
     def test_functionDefinitions_return_neutron_function(self):
 
@@ -114,8 +111,8 @@ class MantidTests(unittest.TestCase):
 
         function_defs = function_definitions(prob)
         function_defs_expected = \
-        [("name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,"
-          "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")]
+            [("name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,"
+              "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")]
 
         self.assertListEqual(function_defs_expected, function_defs)
 
@@ -126,10 +123,11 @@ class MantidTests(unittest.TestCase):
 
         function_defs = parse_nist_function_definitions(prob, nb_start_vals)
         function_defs_expected = \
-        ["name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=500.0,b2=0.0001",
-         "name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=250.0,b2=0.0005"]
+            ["name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=500.0,b2=0.0001",
+             "name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=250.0,b2=0.0005"]
 
         self.assertListEqual(function_defs_expected, function_defs)
+
 
 if __name__ == "__main__":
     unittest.main()

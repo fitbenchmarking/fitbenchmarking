@@ -17,6 +17,7 @@ from fitting.scipy.prepare_data import apply_constraints
 
 from utils import fitbm_problem
 
+
 class ScipyTests(unittest.TestCase):
 
     def NIST_problem(self):
@@ -25,27 +26,27 @@ class ScipyTests(unittest.TestCase):
         Sets up the problem object for the nist problem file Misra1a.dat
         """
 
-        data_pattern = np.array([ [10.07, 77.6],
-                                  [14.73, 114.9],
-                                  [17.94, 141.1],
-                                  [23.93, 190.8],
-                                  [29.61, 239.9],
-                                  [35.18, 289.0],
-                                  [40.02, 332.8],
-                                  [44.82, 378.4],
-                                  [50.76, 434.8],
-                                  [55.05, 477.3],
-                                  [61.01, 536.8],
-                                  [66.40, 593.1],
-                                  [75.47, 689.1],
-                                  [81.78, 760.0] ])
+        data_pattern = np.array([[10.07, 77.6],
+                                 [14.73, 114.9],
+                                 [17.94, 141.1],
+                                 [23.93, 190.8],
+                                 [29.61, 239.9],
+                                 [35.18, 289.0],
+                                 [40.02, 332.8],
+                                 [44.82, 378.4],
+                                 [50.76, 434.8],
+                                 [55.05, 477.3],
+                                 [61.01, 536.8],
+                                 [66.40, 593.1],
+                                 [75.47, 689.1],
+                                 [81.78, 760.0]])
 
         prob = fitbm_problem.FittingProblem()
         prob.name = 'Misra1a'
-        prob.type = 'nist'
+        prob.type = 'NIST'
         prob.equation = 'b1*(1-exp(-b2*x))'
-        prob.starting_values = [['b1', [500.0,250.0]],
-                                ['b2', [0.0001,0.0005]]]
+        prob.starting_values = [['b1', [500.0, 250.0]],
+                                ['b2', [0.0001, 0.0005]]]
         prob.data_x = data_pattern[:, 1]
         prob.data_y = data_pattern[:, 0]
 
@@ -89,7 +90,7 @@ class ScipyTests(unittest.TestCase):
         data_x, data_y, data_e = problem.data_x, problem.data_y, problem.data_e
 
         data_x, data_y, data_e = \
-        misc_preparations(problem, data_x, data_y, data_e)
+            misc_preparations(problem, data_x, data_y, data_e)
         expected_data = self.get_expected_data()
 
         np.testing.assert_equal(expected_data[0], data_x)
@@ -105,7 +106,7 @@ class ScipyTests(unittest.TestCase):
         problem.end_x = 540
 
         data_x, data_y, data_e = \
-        misc_preparations(problem, data_x, data_y, data_e)
+            misc_preparations(problem, data_x, data_y, data_e)
         expected_data = self.get_expected_data()
         expected_data[0] = np.array(expected_data[0])[1:10]
         expected_data[1] = np.array(expected_data[1])[1:10]
@@ -123,7 +124,7 @@ class ScipyTests(unittest.TestCase):
         data_e = np.sqrt(abs(problem.data_y))
 
         data_x, data_y, data_e = \
-        apply_constraints(start_x, end_x, data_x, data_y, data_e)
+            apply_constraints(start_x, end_x, data_x, data_y, data_e)
         expected_data = self.get_expected_data()
         expected_data[0] = np.array(expected_data[0])[1:10]
         expected_data[1] = np.array(expected_data[1])[1:10]
@@ -132,6 +133,7 @@ class ScipyTests(unittest.TestCase):
         np.testing.assert_equal(expected_data[0], data_x)
         np.testing.assert_equal(expected_data[1], data_y)
         np.testing.assert_equal(expected_data[2], data_e)
+
 
 if __name__ == "__main__":
     unittest.main()

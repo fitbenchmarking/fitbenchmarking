@@ -1,5 +1,5 @@
 """
-Miscellaneous functions and utilites used in fitting benchmarking.
+Miscellaneous functions and utilities used in fitting benchmarking.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -35,9 +35,7 @@ def get_minimizers(software):
     """
     Gets an array of minimizers to fitbenchmark from the json file depending
     on which software is used.
-
     @param software :: string defining the software used
-
     @returns :: an array of strings containing minimizer names
     """
 
@@ -49,33 +47,25 @@ def get_minimizers(software):
 
     return minimizers
 
-def setup_fitting_problems(data_dir):
+
+def setup_fitting_problems(data_dir, group_name):
     """
     Sets up the problem groups specified by the user by providing
     a respective data directory.
-s
-    @param data_dir :: directory holding the problem data used to test
 
+    @param data_dir :: directory holding the problem data used to test
     @returns :: the problem groups dictionary
     """
     problem_groups = {}
-    if 'NIST' in data_dir:
-        problem_groups['nist'] = get_problem_files(data_dir)
-    elif 'Neutron' in data_dir:
-        problem_groups['neutron'] = get_problem_files(data_dir)
-    # elif ...
-    #    problem_groups[your-group-name] = your_function(your_data_dir)
-    else:
-        raise NameError("Data directory not recognised!")
+    problem_groups[group_name] = get_problem_files(data_dir)
 
     return problem_groups
+
 
 def save_user_input(software, minimizers, group_name, results_dir, use_errors):
     """
     All parameters inputed by the user are stored in an object.
-
     @params :: please check the user_input.py file in the utils dir.
-
     @returns :: an object containing all the information specified by the user.
     """
 

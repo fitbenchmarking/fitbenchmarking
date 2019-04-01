@@ -66,7 +66,7 @@ class data:
 
     def order_data(self):
         """
-        Ensures that the data is in assending order in x.
+        Ensures that the data is in ascending order in x.
         Prevents line plots looping back on themselves.
         """
 
@@ -120,7 +120,7 @@ class plot(data):
 
     def set_plot_misc(self):
         """
-        Add the title, x/y lables and legend to the plot.
+        Add the title, x/y labels and legend to the plot.
         """
         plt.xlabel(self.labels["x"])
         plt.ylabel(self.labels["y"])

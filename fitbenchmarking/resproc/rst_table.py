@@ -56,13 +56,13 @@ def create(columns_txt, rows_txt, cells, comparison_type, comparison_dim,
 
     columns_txt = display_name_for_minimizers(columns_txt)
     items_link = \
-    build_items_links(comparison_type, comparison_dim, using_errors)
+        build_items_links(comparison_type, comparison_dim, using_errors)
     cell_len = calc_cell_len(columns_txt, items_link, cells, color_scale)
 
     # The first column tends to be disproportionately long if it has a link
     first_col_len = calc_first_col_len(cell_len, rows_txt)
     tbl_htop, tbl_htext, tbl_hbottom = \
-    build_header_chunks(first_col_len, cell_len, columns_txt)
+        build_header_chunks(first_col_len, cell_len, columns_txt)
 
     tbl_header = tbl_htop + '\n' + tbl_htext + '\n' + tbl_hbottom + '\n'
     tbl_footer = tbl_htop + '\n'
@@ -263,7 +263,7 @@ def save_table_to_file(results_dir, table_data, use_errors, group_name,
 
     @param results_dir :: directory where results are located
     @param table_data :: the data of the table
-    @param use_errors :: boolean with wether or not to use errors
+    @param use_errors :: boolean with whether or not to use errors
     @param group_name :: the name of the problem group for
                          which the table is built
     @param metric_type :: either accuracy or runitme data
@@ -281,16 +281,16 @@ def save_table_to_file(results_dir, table_data, use_errors, group_name,
         print(table_data, file=tbl_file)
 
     logger.info('Saved {file_name}{extension} to {working_directory}'.
-                 format(file_name=file_name, extension=file_extension,
-                        working_directory=results_dir))
+                format(file_name=file_name, extension=file_extension,
+                       working_directory=results_dir))
 
 
 def set_file_name(use_errors, metric_type, group_name, results_dir):
     """
     Sets the name of the html/text table file that is saved.
 
-    @param use_errors :: boolean with wether or not to use errors
-    @param metric_type :: either accuracy or runitme data
+    @param use_errors :: boolean with whether or not to use errors
+    @param metric_type :: either accuracy or runtime data
     @param group_name :: the name of the problem group for
                          which the table is built
     @param results_dir :: directory where results are located

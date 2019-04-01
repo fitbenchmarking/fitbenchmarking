@@ -33,26 +33,30 @@ def function_definitions(problem):
     Transforms the prob.equation field into a function that can be
     understood by the mantid fitting software.
 
-    @param prob :: object holding the problem infomation
+    @param prob :: object holding the problem information
 
     @returns :: a function definitions string with functions that
                 mantid understands
     """
-    if problem.type == 'nist':
+    if problem.type == 'NIST':
         # NIST data requires prior formatting
         nb_start_vals = len(problem.starting_values[0][1])
         function_defs = parse_nist_function_definitions(problem, nb_start_vals)
-    elif problem.type == 'neutron':
-        # Neutron data does not require any
+    elif problem.type == 'FitBenchmark':
+        # Native FitBenchmark format does not require any processing
         function_defs = []
         function_defs.append(problem.equation)
+    else:
+        raise NameError('Currently data types supported are FitBenchmark'
+                        ' and nist, data type supplied was .{}'.format(ext))
 
     return function_defs
+
 
 def parse_nist_function_definitions(problem, nb_start_vals):
     """
     Helper function that parses the NIST function definitions and
-    transforms them into a mantid-redeable format.
+    transforms them into a mantid-readable format.
 
     @param prob :: object holding the problem information
     @param nb_start_vals :: the number of starting points for a given

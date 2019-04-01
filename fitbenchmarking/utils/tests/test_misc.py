@@ -1,17 +1,20 @@
 from __future__ import (absolute_import, division, print_function)
 
 import unittest
-import os, shutil
+import os
+import shutil
 
-# Delete four lines below when automated tests ar enabled
+# Delete four lines below when automated tests are enabled
 import sys
 test_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(os.path.normpath(test_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
+sys.path.insert(0, parent_dir)
 
 from misc import get_minimizers
 from misc import setup_fitting_problems
+
 
 class CreateDirsTests(unittest.TestCase):
 
@@ -28,7 +31,6 @@ class CreateDirsTests(unittest.TestCase):
         bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
 
         return bench_prob_dir
-
 
     def all_neutron_problems(self):
         """
@@ -53,23 +55,16 @@ class CreateDirsTests(unittest.TestCase):
 
         return neutron_problems
 
-
     def all_nist_problems(self):
         """
-        Helper function that returns the names of all NIST problems.
+        Helper function that returns the names of Nist low diff problems.
         """
 
-        nist_problems = [['Misra1a.dat', 'Chwirut2.dat', 'Chwirut1.dat',
-                          'Lanczos3.dat', 'Gauss1.dat', 'Gauss2.dat',
-                          'DanWood.dat', 'Misra1b.dat'],
-                         ['Kirby2.dat', 'Hahn1.dat','MGH17.dat',
-                          'Lanczos1.dat', 'Lanczos2.dat','Gauss3.dat',
-                          'Misra1c.dat', 'Misra1d.dat','ENSO.dat'],
-                         ['MGH09.dat', 'Thurber.dat', 'BoxBOD.dat', 'Rat42.dat',
-                          'MGH10.dat', 'Eckerle4.dat', 'Rat43.dat',
-                          'Bennett5.dat']]
+        nist_ld_problems = [['Misra1a.dat', 'Chwirut2.dat', 'Chwirut1.dat',
+                             'Lanczos3.dat', 'Gauss1.dat', 'Gauss2.dat',
+                             'DanWood.dat', 'Misra1b.dat']]
 
-        return nist_problems
+        return nist_ld_problems
 
     def get_minimizers_file(self):
 
@@ -86,10 +81,10 @@ class CreateDirsTests(unittest.TestCase):
 
         minimiers = get_minimizers(software)
         minmizers_expected = \
-        ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
-         "Conjugate gradient (Polak-Ribiere imp.)", "Damped GaussNewton",
-         "Levenberg-Marquardt", "Levenberg-MarquardtMD", "Simplex",
-         "SteepestDescent", "Trust Region"]
+            ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
+             "Conjugate gradient (Polak-Ribiere imp.)", "Damped GaussNewton",
+             "Levenberg-Marquardt", "Levenberg-MarquardtMD", "Simplex",
+             "SteepestDescent", "Trust Region"]
 
         self.assertListEqual(minmizers_expected, minimiers)
 
@@ -104,23 +99,24 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_setupFittingProblems_get_correct_nist_probs(self):
 
-        data_dir = os.path.join(self.base_path(), 'NIST_nonlinear_regression')
+        data_dir = os.path.join(self.base_path(), 'NIST', 'low_difficulty')
         nist_problems = self.all_nist_problems()
 
-        problem_groups = setup_fitting_problems(data_dir)
-        problem_groups_expected = {'nist' : nist_problems}
+        problem_groups = setup_fitting_problems(data_dir, 'NIST_low_diff')
+        problem_groups_expected = {'NIST_low_diff': nist_problems}
 
         self.assertTrue(problem_groups_expected, problem_groups)
 
     def test_setupFittingProblems_get_correct_neutron_probs(self):
 
-        data_dir = os.path.join(self.base_path(), 'Neutron')
+        data_dir = os.path.join(self.base_path(), 'Neutron_data')
         neutron_problems = self.all_neutron_problems()
 
-        problem_groups = setup_fitting_problems(data_dir)
-        problem_groups_expected = {'nist' : neutron_problems}
+        problem_groups = setup_fitting_problems(data_dir, 'Neutron')
+        problem_groups_expected = {'nist': neutron_problems}
 
         self.assertTrue(problem_groups_expected, problem_groups)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -60,10 +60,10 @@ def save_results_tables(software, results_per_test, group_name,
     minimizers = utils.misc.get_minimizers(software)
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
-    visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
+        visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
 
     norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = \
-    generate_tables(results_per_test, minimizers)
+        generate_tables(results_per_test, minimizers)
 
     acc_tbl = create_acc_tbl(minimizers, linked_problems, norm_acc_rankings,
                              use_errors, color_scale)
@@ -90,11 +90,11 @@ def generate_tables(results_per_test, minimizers):
     """
 
     accuracy_tbl, runtime_tbl = \
-    numpy_restables.create_accuracy_runtime_tbls(results_per_test, minimizers)
+        numpy_restables.create_accuracy_runtime_tbls(results_per_test, minimizers)
     norm_acc_rankings, norm_runtimes = \
-    numpy_restables.create_norm_tbls(accuracy_tbl, runtime_tbl)
+        numpy_restables.create_norm_tbls(accuracy_tbl, runtime_tbl)
     sum_cells_acc, sum_cells_runtime = \
-    numpy_restables.create_summary_tbls(norm_acc_rankings, norm_runtimes)
+        numpy_restables.create_summary_tbls(norm_acc_rankings, norm_runtimes)
 
     return norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime
 

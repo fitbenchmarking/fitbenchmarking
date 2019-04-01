@@ -24,6 +24,7 @@ class UserInput(object):
     """
     Structure to hold all the user inputted data.
     """
+
     def __init__(self):
         # The software that is benchmarked e.g. scipy, mantid etc.
         self.software = None
@@ -36,4 +37,3 @@ class UserInput(object):
         self.group_results_dir = None
         # Whether or not to consider error bars in the fitting process
         self.use_errors = None
-

@@ -34,6 +34,7 @@ from utils.logging_setup import logger
 FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
+
 def create_linked_probs(results_per_test, group_name, results_dir):
     """
     Creates the problem names with links to the visual display pages
@@ -65,6 +66,7 @@ def create_linked_probs(results_per_test, group_name, results_dir):
 
     return linked_problems
 
+
 def create(prob_results, group_name, results_dir, count):
     """
     Creates a visual display page containing figures and other
@@ -82,24 +84,24 @@ def create(prob_results, group_name, results_dir, count):
 
     # Get the best result for a group
     best_result = min((result for result in prob_results),
-                       key=lambda result: result.chi_sq
-                       if not result.chi_sq is np.nan else np.inf)
+                      key=lambda result: result.chi_sq
+                      if not result.chi_sq is np.nan else np.inf)
 
     problem_name = process_problem_name(best_result.problem.name)
     support_pages_dir, file_path, see_also_link = \
-    setup_page_misc(group_name, problem_name, best_result, results_dir, count)
+        setup_page_misc(group_name, problem_name, best_result, results_dir, count)
     rst_link = generate_rst_link(file_path)
 
     ini_details_tbl, fin_details_tbl = \
-    setup_detail_page_tbls(best_result.ini_function_def,
-                           best_result.fin_function_def)
+        setup_detail_page_tbls(best_result.ini_function_def,
+                               best_result.fin_function_def)
 
     fig_data, fig_fit, fig_start = \
-    get_figure_paths(support_pages_dir, problem_name, count)
+        get_figure_paths(support_pages_dir, problem_name, count)
     rst_text = \
-    create_rst_page(best_result.problem.name, fig_data, fig_start, fig_fit,
-                    best_result.minimizer, see_also_link, ini_details_tbl,
-                    fin_details_tbl)
+        create_rst_page(best_result.problem.name, fig_data, fig_start, fig_fit,
+                        best_result.minimizer, see_also_link, ini_details_tbl,
+                        fin_details_tbl)
     save_page(rst_text, problem_name, file_path)
 
     return rst_link
@@ -130,7 +132,7 @@ def create_rst_page(name, fig_data, fig_start, fig_fit, minimizer,
     solution_plot = generate_rst_solution_plot(fig_fit, minimizer, fin_det_tbl)
 
     rst_text = title + space + data_plot + starting_plot + solution_plot + \
-               space + see_also_link
+        space + see_also_link
 
     return rst_text
 
@@ -145,7 +147,7 @@ def process_problem_name(problem_name):
     """
 
     problem_name = problem_name.replace(',', '')
-    problem_name = problem_name.replace(' ','_')
+    problem_name = problem_name.replace(' ', '_')
 
     return problem_name
 
@@ -181,46 +183,6 @@ def setup_detail_page_tbls(initial_fdef, final_fdef):
     return initial_details_tbl, final_details_tbl
 
 
-def setup_nist_page_misc(link, results_dir):
-    """
-    Sets up some miscellaneous things for the NIST visual display
-    page like path to the folder they are saved in.
-
-    @param link :: link to the NIST website for the
-                          considered NIST problem
-    @param results_dir :: path to the results directory
-
-    @returns :: the directory in which visual display pages go,
-                a table with the fit details and the see also link
-    """
-
-    support_pages_dir = os.path.join(results_dir, "nist", "support_pages")
-    if not os.path.exists(support_pages_dir):
-        os.makedirs(support_pages_dir)
-    see_also_link = 'See also:\n ' + link + '\n on NIST website\n\n'
-
-    return support_pages_dir, see_also_link
-
-
-def setup_neutron_page_misc(results_dir):
-    """
-    Sets up some miscellaneous things for the neutron visual display
-    page like path to the folder they are saved in.
-
-    @param results_dir :: path to the results directory
-
-    @returns :: the directory in which visual display pages go,
-                a table with the fit details and the see also link
-    """
-
-    support_pages_dir = os.path.join(results_dir, "neutron", "support_pages")
-    if not os.path.exists(support_pages_dir):
-        os.makedirs(support_pages_dir)
-    see_also_link = ''
-
-    return support_pages_dir, see_also_link
-
-
 def setup_page_misc(group_name, problem_name, res_obj, results_dir, count):
     """
     Sets up some miscellaneous things for the visual display pages.
@@ -240,14 +202,15 @@ def setup_page_misc(group_name, problem_name, res_obj, results_dir, count):
     """
 
     # Group specific path and other misc stuff
-    if 'nist' in group_name:
+
+    support_pages_dir = os.path.join(results_dir, group_name, "support_pages")
+    if not os.path.exists(support_pages_dir):
+        os.makedirs(support_pages_dir)
+    see_also_link = ''
+    if 'nist' in group_name.lower():
         link = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data"
                 "/{1}.shtml>`__".format(problem_name, problem_name.lower()))
-        support_pages_dir, see_also_link = \
-        setup_nist_page_misc(link, results_dir)
-    elif 'neutron' in group_name:
-        support_pages_dir, see_also_link = \
-        setup_neutron_page_misc(results_dir)
+        see_also_link = 'See also:\n ' + link + '\n on NIST website\n\n'
 
     file_name = (group_name + '_' + problem_name + '_' + str(count)).lower()
     file_path = os.path.join(support_pages_dir, file_name)
@@ -336,7 +299,7 @@ def generate_rst_starting_plot(figure_start, initial_details_tbl):
     starting_plot += ('-' * len(starting_plot)) + '\n\n'
     starting_plot += '*Functions*:\n\n'
     starting_plot += initial_details_tbl
-    starting_plot += ('.. figure:: ' + figure_start  + '\n' +
+    starting_plot += ('.. figure:: ' + figure_start + '\n' +
                       '   :align: center' + '\n\n')
 
     return starting_plot
@@ -380,11 +343,11 @@ def save_page(rst_text, prob_name, file_path):
     with open(file_path + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
         print(rst_text, file=visual_rst)
         logger.info('Saved {prob_name}.{extension} to {working_directory}'.
-                     format(prob_name=prob_name, extension=FILENAME_EXT_TXT,
-                            working_directory=file_path))
+                    format(prob_name=prob_name, extension=FILENAME_EXT_TXT,
+                           working_directory=file_path))
 
     with open(file_path + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
         logger.info('Saved {prob_name}.{extension} to {working_directory}'.
-                     format(prob_name=prob_name, extension=FILENAME_EXT_HTML,
-                            working_directory=file_path))
+                    format(prob_name=prob_name, extension=FILENAME_EXT_HTML,
+                           working_directory=file_path))

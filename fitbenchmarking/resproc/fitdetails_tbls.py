@@ -46,6 +46,7 @@ def create(functions_str):
 
     return tbl
 
+
 def generate_names_and_params(function):
     """
     Generates the function names and params.
@@ -55,9 +56,9 @@ def generate_names_and_params(function):
     names, params = [], []
 
     if 'UserFunction' in function:
-        names, params = parse_nist_mantid_function_def(function)
+        names, params = parse_dat_mantid_function_def(function)
     elif 'name=' in function:
-        names, params = parse_neutron_function_def(function, names, params)
+        names, params = parse_txt_function_def(function, names, params)
     elif " | " in function:
         # Exception for nist scipy problems
         names, params = [function.split('|')[0]], [function.split('|')[1]]
@@ -66,7 +67,8 @@ def generate_names_and_params(function):
 
     return names, params
 
-def parse_nist_mantid_function_def(function):
+
+def parse_dat_mantid_function_def(function):
     """
     Helper function that parses the function definition of a NIST problem
     and returns the function name and parameters.
@@ -78,14 +80,14 @@ def parse_nist_mantid_function_def(function):
     """
     first_comma = function.find(',')
     second_comma = function.find(',', first_comma + 1)
-    function_name = function[first_comma+9:second_comma]
-    function_parameters = function[second_comma+1:]
+    function_name = function[first_comma + 9:second_comma]
+    function_parameters = function[second_comma + 1:]
     function_parameters = function_parameters.replace(',', ', ')
 
     return [function_name], [function_parameters]
 
 
-def parse_neutron_function_def(function, function_names, function_parameters):
+def parse_txt_function_def(function, function_names, function_parameters):
     """
     Helper function that parses the function definition of a neutron problem
     and returns the function name and parameters.
@@ -100,7 +102,7 @@ def parse_neutron_function_def(function, function_names, function_parameters):
     first_comma = function.find(',')
     if first_comma != -1:
         function_names.append(function[5:first_comma])
-        function_parameters.append(function[first_comma+1:])
+        function_parameters.append(function[first_comma + 1:])
     else:
         function_names.append(function[5:])
         function_parameters.append('None')
@@ -143,10 +145,10 @@ def generate_fit_det_header(name_dim, params_dim):
     """
 
     header = ''
-    header += '+-' + '-'*name_dim + '-+-' + '-'*params_dim + '-+\n'
-    header += ('| ' + 'Form' + ' '*(name_dim-4) + ' ' +
-               '| ' + 'Parameters' + ' '*(params_dim-10) + ' |\n')
-    header += '+=' + '='*name_dim + '=+=' + '='*params_dim + '=+\n'
+    header += '+-' + '-' * name_dim + '-+-' + '-' * params_dim + '-+\n'
+    header += ('| ' + 'Form' + ' ' * (name_dim - 4) + ' ' +
+               '| ' + 'Parameters' + ' ' * (params_dim - 10) + ' |\n')
+    header += '+=' + '=' * name_dim + '=+=' + '=' * params_dim + '=+\n'
 
     return header
 
@@ -168,9 +170,9 @@ def generate_fit_det_body(names, params, name_dim, params_dim):
     for idx in range(0, len(names)):
 
         body += ('| ' + names[idx] +
-                 ' '*(name_dim-len(names[idx])) + ' ' +
+                 ' ' * (name_dim - len(names[idx])) + ' ' +
                  '| ' + params[idx] +
-                 ' '*(params_dim-len(params[idx])) + ' |\n')
-        body += '+-' + '-'*name_dim + '-+-' + '-'*params_dim + '-+\n'
+                 ' ' * (params_dim - len(params[idx])) + ' |\n')
+        body += '+-' + '-' * name_dim + '-+-' + '-' * params_dim + '-+\n'
 
     return body

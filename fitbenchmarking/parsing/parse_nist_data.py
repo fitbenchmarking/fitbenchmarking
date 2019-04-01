@@ -24,35 +24,12 @@ test_result object.
 
 from __future__ import (absolute_import, division, print_function)
 
-import os, re
+import os
+import re
 import numpy as np
 
 from utils import fitbm_problem
 from utils.logging_setup import logger
-
-
-def load_file(fname):
-    """
-    Loads a nist file with all the necessary data.
-
-    @param fname :: path to the nist problem definition file
-                    that is being loaded
-
-    @returns :: problem object containing all the relevant information
-    """
-
-    with open(fname) as spec_file:
-        logger.info("*** Loading NIST data file {0} ***".
-                    format(os.path.basename(spec_file.name)))
-        lines = spec_file.readlines()
-        equation_text, data_pattern_text, starting_values, residual_sum_sq = \
-        parse_line_by_line(lines)
-        data_pattern = parse_data_pattern(data_pattern_text)
-        parsed_eq = parse_equation(equation_text)
-        problem = store_prob_details(spec_file, parsed_eq, starting_values,
-                                     data_pattern, residual_sum_sq)
-
-    return problem
 
 
 def store_prob_details(spec_file, parsed_eq, starting_values, data_pattern,
@@ -117,7 +94,7 @@ def parse_line_by_line(lines):
 
     logger.info("%d lines were ignored in this problem file.\n"
                 "If any problems occur, please uncomment line above this print "
-                "to display the full output." %ignored_lines)
+                "to display the full output." % ignored_lines)
 
     return equation_text, data_pattern_text, starting_values, residual_sum_sq
 
@@ -138,9 +115,9 @@ def get_nist_model(lines, idx):
     try:
         while (not re.match(r'\s*y\s*=(.+)', lines[idx])
                and not re.match(r'\s*log\[y\]\s*=(.+)', lines[idx]))\
-               and idx < len(lines):
+                and idx < len(lines):
 
-                idx += 1
+            idx += 1
     except IndexError as err:
         logger.error("Could not find equation, index went out of bounds!")
         idxerr = True
@@ -312,7 +289,7 @@ def check_startval_validity(startval_str, line):
 
     if 6 != len(startval_str) and 5 != len(startval_str):
         raise RuntimeError("Failed to parse this line as starting "
-                            "values information: {0}".format(line))
+                           "values information: {0}".format(line))
 
 
 def get_startvals_floats(startval_str):

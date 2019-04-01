@@ -27,10 +27,10 @@ Data:          1 Response Variable  (y = KJmol-1)
 Model:         Miscellaneous Class
                8 Parameters (A0 to A14)
 
-               y = A0 + A2 * x**2 + A4 * x**4 + A6 ** x**6 + A8 * X**8 + A10 * x**10 + A12 * x**12 + A14 * x**14 +  e
+               y = A0 + A2 * x**2 + A4 * x**4 + A6 ** x**6 + A8 * x**8 + A10 * x**10 + A12 * x**12 + A14 * x**14 +  e
 
- 
- 
+
+
           Starting Values                  Certified Values
 
         Start 1           Parameter     Standard Deviation
