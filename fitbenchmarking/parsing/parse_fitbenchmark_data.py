@@ -41,8 +41,8 @@ def get_data_file(fname, input_file):
     and set up the path for the data_files folder i.e truncates the path
     to ../Neutron_data and adds ../Neutron_data/data_files
 
-    @param fname :: path to the neutron problem definition file
-    @param input_file :: name of the neutron data file
+    @param fname :: path to the problem definition file
+    @param input_file :: file name of the data file
 
     @returns :: path to the data files directory (str)
     """
