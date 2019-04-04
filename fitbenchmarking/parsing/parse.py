@@ -57,16 +57,9 @@ def parse_problem_file(prob_file):
             problem = parse_nist_data.store_prob_details(probf, parsed_eq, starting_values, data_pattern, residual_sum_sq)
             problem.type = prob_type
         elif prob_type == "FitBenchmark":
-            # logger.info("*** Loading FitBenchmark formatted problem definition file {0} ***".
-            #             format(os.path.basename(probf.name)))
-            # entries = parse_fitbenchmark_data.get_fitbenchmark_data_problem_entries(probf)
-            # problem = fitbm_problem.FittingProblem(prob_file)
-            # data_file = parse_fitbenchmark_data.get_data_file(
-            #     prob_file, entries['input_file'])
-            # parse_fitbenchmark_data.store_main_problem_data(data_file, problem)
-            # parse_fitbenchmark_data.store_misc_problem_data(problem, entries)
-            # problem.type = prob_type
-            problem = fitbm_problem.FitbenchmarkFittingProblem(prob_file, prob_type)
+            logger.info("*** Loading FitBenchmark formatted problem definition file {0} ***".format(os.path.basename(probf.name)))
+
+            problem = parse_fitbenchmark_data.FitbenchmarkFittingProblem(prob_file, prob_type)
             problem()
             problem.set_definitions()
             problem.set_data()

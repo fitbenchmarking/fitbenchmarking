@@ -26,11 +26,52 @@ information into problem objects
 from __future__ import (absolute_import, division, print_function)
 
 import os
-import re
-import numpy as np
+from parsing import fitbm_problem
+import mantid.simpleapi as msapi
 
-from fitting.mantid.externals import store_main_problem_data
 from utils.logging_setup import logger
+
+
+class FitbenchmarkFittingProblem(fitbm_problem.FittingProblem):
+    """
+    Definition of the native fitbenchmarking problem class
+
+    Types of data:
+        - strings: name, type, equation
+        - floats: start_x, end_x, ref_residual_sum_sq
+        - numpy arrays: data_x, data_y, data_e
+        - arrays: starting_values
+    """
+
+    def __init__(self, file, prob_type):
+        super(FitbenchmarkFittingProblem, self).__init__(file)
+        self.entries = {}
+        self.type = prob_type
+        self.data_file = None
+
+    def __call__(self):
+        super(FitbenchmarkFittingProblem, self).read_file()
+        self.entries = get_fitbenchmark_data_problem_entries(self.contents)
+        self.data_file = get_data_file(self.file, self.entries['input_file'])
+
+    def set_data(self):
+
+        wks_imported = msapi.Load(Filename=self.data_file)
+        self.data_x = wks_imported.readX(0)
+        self.data_y = wks_imported.readY(0)
+        self.data_e = wks_imported.readE(0)
+        self.ref_residual_sum_sq = 0
+
+    def set_definitions(self):
+
+        self.name = self.entries['name']
+        self.equation = self.entries['function']
+
+    def set_initial_values(self):
+
+        self.starting_values = None
+        self.start_x = self.entries['fit_parameters']['StartX']
+        self.end_x = self.entries['fit_parameters']['EndX']
 
 
 def get_data_file(fname, input_file):
@@ -77,20 +118,3 @@ def get_fitbenchmark_data_problem_entries(fname):
         entries[lhs.strip()] = eval(rhs.strip())
 
     return entries
-
-
-def store_misc_problem_data(problem, entries):
-    """
-    Stores the misc data from the problem file into the problem object.
-
-    @param problem :: object holding the problem information
-    @param entires :: dictionary containg the entires from the
-                      problem definition object
-    """
-
-    problem.name = entries['name']
-    problem.equation = entries['function']
-    problem.starting_values = None
-    if 'fit_parameters' in entries:
-        problem.start_x = entries['fit_parameters']['StartX']
-        problem.end_x = entries['fit_parameters']['EndX']
