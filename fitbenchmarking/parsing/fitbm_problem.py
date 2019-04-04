@@ -35,10 +35,11 @@ class FittingProblem(object):
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, file):
+    def __init__(self, file, prob_type):
 
-        # Initializes
+        # Initializes base class with file and problem type
         self.file = file
+        self.prob_type = prob_type
 
         self.name = None
         # The type of problem, i.e. either neutron or nist etc.
@@ -73,21 +74,21 @@ class FittingProblem(object):
 
     @abstractmethod
     def set_data(self):
-        self.data_x, self.data_y, self.data_e
+        pass
 
     def get_data(self):
         return self.data_x, self.data_y, self.data_e
 
     @abstractmethod
     def set_definitions(self):
-        self.name, self.type, self.equation
+        pass
 
     def get_definitions(self):
         return self.name, self.type, self.equation
 
     @abstractmethod
     def set_initial_values(self):
-        self.start_x, self.end_x, self.starting_values
+        pass
 
     def get_initial_values(self):
         return self.start_x, self.end_x, self.starting_values

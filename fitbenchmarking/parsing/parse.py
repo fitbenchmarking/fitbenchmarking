@@ -59,10 +59,16 @@ def parse_problem_file(prob_file):
         elif prob_type == "FitBenchmark":
             logger.info("*** Loading FitBenchmark formatted problem definition file {0} ***".format(os.path.basename(probf.name)))
 
+            # Initializes fitting problem
             problem = parse_fitbenchmark_data.FitbenchmarkFittingProblem(prob_file, prob_type)
+
+            # Calls fitting problem to populate attributes needed to set_(definitions,data,initial_values)
             problem()
+            # Calling problem.set_definitions() to set attributes name and equation
             problem.set_definitions()
+            # Calling problem.set_data() to set attributes data_x, data_y and data_e
             problem.set_data()
+            # Calling problem.set_initial_values() to set attributes starting_values, start_x and end_x
             problem.set_initial_values()
 
     logger.info("* Testing fitting of problem {0}".format(problem.name))

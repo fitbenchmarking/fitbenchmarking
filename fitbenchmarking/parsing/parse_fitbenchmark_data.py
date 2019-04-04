@@ -44,17 +44,21 @@ class FitbenchmarkFittingProblem(fitbm_problem.FittingProblem):
     """
 
     def __init__(self, file, prob_type):
-        super(FitbenchmarkFittingProblem, self).__init__(file)
+
+        super(FitbenchmarkFittingProblem, self).__init__(file, prob_type)
         self.entries = {}
-        self.type = prob_type
         self.data_file = None
 
     def __call__(self):
+
         super(FitbenchmarkFittingProblem, self).read_file()
         self.entries = get_fitbenchmark_data_problem_entries(self.contents)
         self.data_file = get_data_file(self.file, self.entries['input_file'])
 
     def set_data(self):
+        """
+        Class function that sets the data (data_x, data_y and data_e)
+        """
 
         wks_imported = msapi.Load(Filename=self.data_file)
         self.data_x = wks_imported.readX(0)
@@ -63,11 +67,18 @@ class FitbenchmarkFittingProblem(fitbm_problem.FittingProblem):
         self.ref_residual_sum_sq = 0
 
     def set_definitions(self):
+        """
+        Class function that sets the problem definitions (name and equation)
+        """
 
         self.name = self.entries['name']
         self.equation = self.entries['function']
 
     def set_initial_values(self):
+        """
+        Class function that sets the problem initial values (starting value,
+        start_x and end_x)
+        """
 
         self.starting_values = None
         self.start_x = self.entries['fit_parameters']['StartX']
