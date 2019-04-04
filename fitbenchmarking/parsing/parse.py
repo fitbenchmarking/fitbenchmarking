@@ -72,6 +72,8 @@ def parse_problem_file(prob_file):
             problem.set_initial_values()
             problem.close_file()
 
+    check_problem_attributes(problem)
+
     logger.info("* Testing fitting of problem {0}".format(problem.name))
 
     return problem
@@ -106,3 +108,28 @@ def determine_problem_type(prob_file):
         raise RuntimeError("Data type supplied currently not supported")
 
     return prob_type
+
+
+def check_problem_attributes(problem):
+    """
+    Helper function that determines whether problem class has been required attributes
+
+    @param problem :: fitting problem
+    """
+
+    recAttr = ['name', 'equation', 'start_x', 'end_x',
+               'starting_values', 'data_x', 'data_y', 'data_e']
+
+    expectedType = ['str', 'str', 'float', 'float', 'NoneType', 'numpy.ndarray', 'numpy.ndarray', 'numpy.ndarray']
+
+    UnsetAttr = []
+    for r in recAttr:
+        if problem.__dict__[r] is None:
+            UnsetAttr.append(r)
+
+    if problem.__dict__['starting_values'] is None:
+        UnsetAttr.remove('starting_values')
+
+    if UnsetAttr != []:
+        raise ValueError('Attributes {} are not set correctly'.format(
+            UnsetAttr))

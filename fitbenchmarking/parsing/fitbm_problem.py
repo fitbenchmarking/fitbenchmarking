@@ -39,11 +39,9 @@ class FittingProblem(object):
 
         # Initializes base class with file and problem type
         self.file = file
-        self.prob_type = prob_type
+        self.type = prob_type
 
         self.name = None
-        # The type of problem, i.e. either neutron or nist etc.
-        self.type = None
         # If there is an online/documentation link describing this problem
         self.equation = None
         self.start_x = None
