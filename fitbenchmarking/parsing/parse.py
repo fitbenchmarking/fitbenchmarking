@@ -70,6 +70,7 @@ def parse_problem_file(prob_file):
             problem.set_data()
             # Calling problem.set_initial_values() to set attributes starting_values, start_x and end_x
             problem.set_initial_values()
+            problem.close_file()
 
     logger.info("* Testing fitting of problem {0}".format(problem.name))
 

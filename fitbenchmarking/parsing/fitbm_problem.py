@@ -72,6 +72,9 @@ class FittingProblem(object):
         for lines in self.contents:
             print(lines)
 
+    def close_file(self):
+        self.contents.close()
+
     @abstractmethod
     def set_data(self):
         pass
