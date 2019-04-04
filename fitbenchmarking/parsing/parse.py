@@ -28,7 +28,7 @@ import os
 import re
 import numpy as np
 
-from utils import fitbm_problem
+from parsing import fitbm_problem
 from fitting.mantid.externals import store_main_problem_data
 from parsing import parse_nist_data, parse_fitbenchmark_data
 from utils.logging_setup import logger

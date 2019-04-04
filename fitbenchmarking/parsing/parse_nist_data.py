@@ -28,7 +28,7 @@ import os
 import re
 import numpy as np
 
-from utils import fitbm_problem
+from parsing import fitbm_problem
 from utils.logging_setup import logger
 
 
