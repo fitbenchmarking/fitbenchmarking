@@ -48,7 +48,7 @@ def store_prob_details(spec_file, parsed_eq, starting_values, data_pattern,
                               of the fit
     """
 
-    prob = fitbm_problem.FittingProblem()
+    prob = fitbm_problem.FittingProblem(spec_file)
     prob.name = os.path.basename(spec_file.name.split('.')[0])
     prob.equation = parsed_eq
     prob.starting_values = starting_values
