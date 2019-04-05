@@ -15,9 +15,7 @@ from fitting.mantid.externals import store_main_problem_data
 from parsing.parse import parse_problem_file
 from parsing.parse_fitbenchmark_data import get_data_file
 from parsing.parse_fitbenchmark_data import get_fitbenchmark_data_problem_entries
-from parsing.parse_fitbenchmark_data import store_misc_problem_data
-
-from utils import fitbm_problem
+from parsing.parse_fitbenchmark_data import FitbenchmarkFittingProblem
 
 
 class ParseFitbenchmarkTests(unittest.TestCase):
@@ -66,7 +64,8 @@ class ParseFitbenchmarkTests(unittest.TestCase):
 
         bench_prob_dir = self.get_bench_prob_dir()
         entries = self.expected_fitbenchmark_problem_entries()
-        problem = fitbm_problem.FittingProblem()
+        fname = self.neutron_peak_19_file()
+        problem = FitbenchmarkFittingProblem(fname, 'FitBenchmark')
         problem.name = entries['name']
         problem.equation = entries['function']
         problem.starting_values = None
@@ -125,11 +124,12 @@ class ParseFitbenchmarkTests(unittest.TestCase):
                          entries['description'])
 
     def test_storeMiscProbData(self):
-
-        problem = fitbm_problem.FittingProblem()
+        fname = self.neutron_peak_19_file()
+        problem = FitbenchmarkFittingProblem(fname, 'FitBenchmark')
         entries = self.expected_fitbenchmark_problem_entries()
-
-        store_misc_problem_data(problem, entries)
+        problem()
+        problem.set_definitions()
+        problem.set_initial_values()
 
         self.assertEqual(entries['name'], problem.name)
         self.assertEqual(entries['function'], problem.equation)
