@@ -12,13 +12,29 @@ main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
 from utils import fitbm_result
-from utils import fitbm_problem
+from parsing.fitbm_problem import BaseFittingProblem
 
 from fitting.misc import compute_chisq
 from fitting.misc import create_result_entry
 
 
 class FitMiscTests(unittest.TestCase):
+
+    def misra1a_file(self):
+        """
+        Helper function that returns the path to
+        /fitbenchmarking/benchmark_problems
+        """
+
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        parent_dir = os.path.dirname(os.path.normpath(test_dir))
+        main_dir = os.path.dirname(os.path.normpath(parent_dir))
+        root_dir = os.path.dirname(os.path.normpath(main_dir))
+        bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
+        fname = os.path.join(bench_prob_dir, 'NIST', 'low_difficulty',
+                             'Misra1a.dat')
+
+        return fname
 
     def setup_misra1a_expected_data_points(self):
 
@@ -41,7 +57,9 @@ class FitMiscTests(unittest.TestCase):
 
     def setup_nist_expected_problem(self):
 
-        prob = fitbm_problem.FittingProblem()
+        fname = self.misra1a_file()
+        prob = BaseFittingProblem(fname)
+
         prob.name = 'Misra1a'
         prob.equation = 'b1*(1-exp(-b2*x))'
         prob.starting_values = [['b1', [500.0, 250.0]],
