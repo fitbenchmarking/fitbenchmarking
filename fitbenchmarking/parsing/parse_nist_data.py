@@ -68,29 +68,6 @@ class FittingProblem(fitbm_problem.BaseFittingProblem):
 
         super(FittingProblem, self).close_file()
 
-    def store_prob_details(self, spec_file, parsed_eq, starting_values, data_pattern,
-                           residual_sum_sq):
-        """
-        Helper function that stores all the parsed nist problem definiton
-        information into a problem object.
-
-        @param spec_file :: path to the nist problem definition file
-                            that is being loaded
-        @param parsed_eq :: the equation used in fitting the problem
-        @param starting_values :: the starting values from where the
-                                  fitting will commence
-        @param data_pattern :: numpy array containing the raw data
-        @param residual_sum_sq :: a reference sum of all the residuals squared
-                                  of the fit
-        """
-
-        prob = fitbm_problem.FittingProblem(spec_file)
-        prob.equation = parsed_eq
-        prob.starting_values = starting_values
-        prob.ref_residual_sum_sq = residual_sum_sq
-
-        return prob
-
     def parse_line_by_line(self, contents):
         """
         Parses the NIST file one line at the time. Very unstable parser
