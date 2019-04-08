@@ -50,7 +50,6 @@ class ScipyTests(unittest.TestCase):
         """
 
         fname = self.neutron_peak_19_file()
-        fname = self.misra1a_file()
         prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
         prob.type = 'FitBenchmark'
         prob.equation = ("name=LinearBackground,A0=0,A1=0;"

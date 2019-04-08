@@ -10,8 +10,6 @@ parent_dir = os.path.dirname(os.path.normpath(test_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
-from utils import fitbm_result
-from utils import fitbm_problem
 from resproc.misc import display_name_for_minimizers
 from resproc.misc import weighted_suffix_string
 from resproc.misc import build_items_links

@@ -20,6 +20,7 @@ from parsing.fitbm_problem import BaseFittingProblem
 
 
 class ScipyTests(unittest.TestCase):
+
     def misra1a_file(self):
         """
         Helper function that returns the path to
