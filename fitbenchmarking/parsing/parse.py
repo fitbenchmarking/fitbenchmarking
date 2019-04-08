@@ -44,23 +44,13 @@ def parse_problem_file(prob_file):
     """
 
     prob_type = determine_problem_type(prob_file)
+    logger.info("*** Loading {0} formatted problem definition "
+                "file {1} ***".format(prob_type, prob_file))
 
-    with open(prob_file) as probf:
-        if prob_type == "NIST":
-            logger.info("*** Loading NIST formatted problem definition "
-                        "file {0} ***".format(os.path.basename(probf.name)))
-            lines = probf.readlines()
-            equation_text, data_pattern_text, starting_values, \
-                residual_sum_sq = parse_nist_data.parse_line_by_line(lines)
-            data_pattern = parse_nist_data.parse_data_pattern(data_pattern_text)
-            parsed_eq = parse_nist_data.parse_equation(equation_text)
-            problem = parse_nist_data.store_prob_details(probf, parsed_eq, starting_values, data_pattern, residual_sum_sq)
-            problem.type = prob_type
-        elif prob_type == "FitBenchmark":
-            logger.info("*** Loading FitBenchmark formatted problem definition file {0} ***".format(os.path.basename(probf.name)))
-
-            # Initializes fitting problem
-            problem = parse_fitbenchmark_data.FittingProblem(prob_file)
+    if prob_type == "NIST":
+        problem = parse_nist_data.FittingProblem(prob_file)
+    elif prob_type == "FitBenchmark":
+        problem = parse_fitbenchmark_data.FittingProblem(prob_file)
 
     check_problem_attributes(problem)
 
@@ -107,8 +97,7 @@ def check_problem_attributes(problem):
     @param problem :: fitting problem
     """
 
-    recAttr = ['_name', '_equation', '_start_x', '_end_x',
-               '_data_x', '_data_y', '_data_e']
+    recAttr = ['_name', '_equation', '_data_x', '_data_y']
 
     UnsetAttr = []
     for r in recAttr:

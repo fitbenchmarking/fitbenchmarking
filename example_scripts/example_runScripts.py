@@ -74,7 +74,7 @@ color_scale = [(1.1, 'ranking-top-1'),
 # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
 # "Muon_data" works for mantid minimizers
 # problem_sets = ["Neutron_data", "NIST/average_difficulty"]
-problem_sets = ["Neutron_data"]
+problem_sets = ["NIST/average_difficulty"]
 for sub_dir in problem_sets:
     # generate group label/name used for problem set
     label = sub_dir.replace('/', '_')
