@@ -35,10 +35,10 @@ class BaseFittingProblem(object):
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, file):
+    def __init__(self, fname):
 
         # Initializes base class with file and problem type
-        self.file = file
+        self.fname = fname
         self._type = None
 
         self._name = None
@@ -60,7 +60,7 @@ class BaseFittingProblem(object):
         self.ref_residual_sum_sq = None
 
     def read_file(self):
-        self.contents = open(self.file, "r")
+        self.contents = open(self.fname, "r")
 
     def print_file(self):
         for lines in self.contents:
@@ -83,7 +83,7 @@ class BaseFittingProblem(object):
 
     @name.setter
     def name(self, value):
-        self.name = value
+        self._name = value
 
     @property
     def equation(self):

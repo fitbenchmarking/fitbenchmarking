@@ -43,13 +43,13 @@ class FittingProblem(fitbm_problem.BaseFittingProblem):
         - arrays: starting_values
     """
 
-    def __init__(self, file):
+    def __init__(self, fname):
 
-        super(FittingProblem, self).__init__(file)
+        super(FittingProblem, self).__init__(fname)
         super(FittingProblem, self).read_file()
 
         entries = self.get_fitbenchmark_data_problem_entries(self.contents)
-        data_file = self.get_data_file(self.file, entries['input_file'])
+        data_file = self.get_data_file(self.fname, entries['input_file'])
 
         wks_imported = msapi.Load(Filename=data_file)
 
@@ -66,6 +66,8 @@ class FittingProblem(fitbm_problem.BaseFittingProblem):
         self._starting_values = None
         self._start_x = entries['fit_parameters']['StartX']
         self._end_x = entries['fit_parameters']['EndX']
+
+        super(FittingProblem, self).close_file()
 
     def get_data_file(self, fname, input_file):
         """

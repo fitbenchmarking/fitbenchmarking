@@ -13,9 +13,8 @@ sys.path.insert(0, main_dir)
 
 from fitting.mantid.externals import store_main_problem_data
 from parsing.parse import parse_problem_file
-from parsing.parse_fitbenchmark_data import get_data_file
-from parsing.parse_fitbenchmark_data import get_fitbenchmark_data_problem_entries
-from parsing.parse_fitbenchmark_data import FitbenchmarkFittingProblem
+from parsing.parse_fitbenchmark_data import FittingProblem
+from parsing.fitbm_problem import BaseFittingProblem
 
 
 class ParseFitbenchmarkTests(unittest.TestCase):
@@ -65,7 +64,7 @@ class ParseFitbenchmarkTests(unittest.TestCase):
         bench_prob_dir = self.get_bench_prob_dir()
         entries = self.expected_fitbenchmark_problem_entries()
         fname = self.neutron_peak_19_file()
-        problem = FitbenchmarkFittingProblem(fname, 'FitBenchmark')
+        problem = BaseFittingProblem(fname)
         problem.name = entries['name']
         problem.equation = entries['function']
         problem.starting_values = None
@@ -92,16 +91,14 @@ class ParseFitbenchmarkTests(unittest.TestCase):
                          problem.starting_values)
         self.assertEqual(problem_expected.start_x, problem.start_x)
         self.assertEqual(problem_expected.end_x, problem.end_x)
-        self.assertEqual(problem_expected.ref_residual_sum_sq,
-                         problem.ref_residual_sum_sq)
 
     def test_getDataFilesDir_return_data_files_path(self):
 
         fname = self.neutron_peak_19_file()
         input_file = 'ENGINX193749_calibration_spec651'
         bench_prob_dir = self.get_bench_prob_dir()
-
-        data_file = get_data_file(fname, input_file)
+        prob = FittingProblem(fname)
+        data_file = prob.get_data_file(fname, input_file)
         data_file_expected = os.path.join(bench_prob_dir, 'Neutron_data',
                                           'data_files', input_file)
 
@@ -110,9 +107,9 @@ class ParseFitbenchmarkTests(unittest.TestCase):
     def test_getFitbenchmarkDataProblemEntries_return_problem_entries(self):
 
         fname = self.neutron_peak_19_file()
-
+        prob = FittingProblem(fname)
         with open(fname) as probf:
-            entries = get_fitbenchmark_data_problem_entries(probf)
+            entries = prob.get_fitbenchmark_data_problem_entries(probf)
         entries_expected = self.expected_fitbenchmark_problem_entries()
 
         self.assertEqual(entries_expected['name'], entries['name'])
@@ -125,11 +122,8 @@ class ParseFitbenchmarkTests(unittest.TestCase):
 
     def test_storeMiscProbData(self):
         fname = self.neutron_peak_19_file()
-        problem = FitbenchmarkFittingProblem(fname, 'FitBenchmark')
+        problem = FittingProblem(fname)
         entries = self.expected_fitbenchmark_problem_entries()
-        problem()
-        problem.set_definitions()
-        problem.set_initial_values()
 
         self.assertEqual(entries['name'], problem.name)
         self.assertEqual(entries['function'], problem.equation)
