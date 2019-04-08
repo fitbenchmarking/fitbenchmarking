@@ -22,7 +22,7 @@ from __future__ import (absolute_import, division, print_function)
 from abc import ABCMeta, abstractmethod
 
 
-class FittingProblem(object):
+class BaseFittingProblem(object):
     """
     Definition of a base class implementation of the fitting test problem,
     normally loaded from a problem definition file.
@@ -35,33 +35,29 @@ class FittingProblem(object):
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, file, prob_type):
+    def __init__(self, file):
 
         # Initializes base class with file and problem type
         self.file = file
-        self.type = prob_type
+        self._type = None
 
-        self.name = None
+        self._name = None
         # If there is an online/documentation link describing this problem
-        self.equation = None
-        self.start_x = None
-        self.end_x = None
+        self._equation = None
+        self._start_x = None
+        self._end_x = None
 
         # can be for example the list of starting values from
         # NIST test problems
-        self.starting_values = None
+        self._starting_values = None
         # The data
-        self.data_x = None
-        self.data_y = None
-        self.data_e = None
+        self._data_x = None
+        self._data_y = None
+        self._data_e = None
 
         # The 'certified' or reference sum of squares, if provided
         # (for example in NIST tests).
         self.ref_residual_sum_sq = None
-
-    @abstractmethod
-    def __call__(self):
-        pass
 
     def read_file(self):
         self.contents = open(self.file, "r")
@@ -73,23 +69,74 @@ class FittingProblem(object):
     def close_file(self):
         self.contents.close()
 
-    @abstractmethod
-    def set_data(self):
-        pass
+    @property
+    def type(self):
+        return self._type
 
-    def get_data(self):
-        return self.data_x, self.data_y, self.data_e
+    @type.setter
+    def type(self, value):
+        self._type = value
 
-    @abstractmethod
-    def set_definitions(self):
-        pass
+    @property
+    def name(self):
+        return self._name
 
-    def get_definitions(self):
-        return self.name, self.type, self.equation
+    @name.setter
+    def name(self, value):
+        self.name = value
 
-    @abstractmethod
-    def set_initial_values(self):
-        pass
+    @property
+    def equation(self):
+        return self._equation
 
-    def get_initial_values(self):
-        return self.start_x, self.end_x, self.starting_values
+    @equation.setter
+    def equation(self, value):
+        self._equation = value
+
+    @property
+    def start_x(self):
+        return self._start_x
+
+    @start_x.setter
+    def start_x(self, value):
+        self._start_x = value
+
+    @property
+    def end_x(self):
+        return self._end_x
+
+    @end_x.setter
+    def end_x(self, value):
+        self._end_x = value
+
+    @property
+    def starting_values(self):
+        return self._starting_values
+
+    @starting_values.setter
+    def starting_values(self, value):
+        self._starting_values = value
+
+    @property
+    def data_x(self):
+        return self._data_x
+
+    @data_x.setter
+    def data_x(self, value):
+        self._data_x = value
+
+    @property
+    def data_y(self):
+        return self._data_y
+
+    @data_y.setter
+    def data_y(self, value):
+        self._data_y = value
+
+    @property
+    def data_e(self):
+        return self._data_e
+
+    @data_e.setter
+    def data_e(self, value):
+        self._data_e = value

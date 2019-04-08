@@ -60,17 +60,7 @@ def parse_problem_file(prob_file):
             logger.info("*** Loading FitBenchmark formatted problem definition file {0} ***".format(os.path.basename(probf.name)))
 
             # Initializes fitting problem
-            problem = parse_fitbenchmark_data.FitbenchmarkFittingProblem(prob_file, prob_type)
-
-            # Calls fitting problem to populate attributes needed to set_(definitions,data,initial_values)
-            problem()
-            # Calling problem.set_definitions() to set attributes name and equation
-            problem.set_definitions()
-            # Calling problem.set_data() to set attributes data_x, data_y and data_e
-            problem.set_data()
-            # Calling problem.set_initial_values() to set attributes starting_values, start_x and end_x
-            problem.set_initial_values()
-            problem.close_file()
+            problem = parse_fitbenchmark_data.FittingProblem(prob_file)
 
     check_problem_attributes(problem)
 
@@ -117,18 +107,13 @@ def check_problem_attributes(problem):
     @param problem :: fitting problem
     """
 
-    recAttr = ['name', 'equation', 'start_x', 'end_x',
-               'starting_values', 'data_x', 'data_y', 'data_e']
-
-    expectedType = ['str', 'str', 'float', 'float', 'NoneType', 'numpy.ndarray', 'numpy.ndarray', 'numpy.ndarray']
+    recAttr = ['_name', '_equation', '_start_x', '_end_x',
+               '_data_x', '_data_y', '_data_e']
 
     UnsetAttr = []
     for r in recAttr:
         if problem.__dict__[r] is None:
             UnsetAttr.append(r)
-
-    if problem.__dict__['starting_values'] is None:
-        UnsetAttr.remove('starting_values')
 
     if UnsetAttr != []:
         raise ValueError('Attributes {} are not set correctly'.format(
