@@ -56,7 +56,7 @@ class FittingProblem(fitbm_problem.BaseFittingProblem):
         self._data_x = data_pattern[:, 1]
         self._data_y = data_pattern[:, 0]
 
-        self._ref_residual_sum_sq = 0
+        self._ref_residual_sum_sq = residual_sum_sq
 
         self._name = os.path.basename(self.contents.name.split('.')[0])
         self._equation = self.parse_equation(equation_text)

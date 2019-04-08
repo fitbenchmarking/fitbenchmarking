@@ -140,3 +140,11 @@ class BaseFittingProblem(object):
     @data_e.setter
     def data_e(self, value):
         self._data_e = value
+
+    @property
+    def ref_residual_sum_sq(self):
+        return self._ref_residual_sum_sq
+
+    @ref_residual_sum_sq.setter
+    def ref_residual_sum_sq(self, value):
+        self._ref_residual_sum_sq = value

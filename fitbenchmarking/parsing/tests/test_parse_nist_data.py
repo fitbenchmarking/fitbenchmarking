@@ -12,15 +12,8 @@ main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
 from parsing.parse import parse_problem_file
-from parsing.parse_nist_data import store_prob_details
-from parsing.parse_nist_data import parse_line_by_line
-from parsing.parse_nist_data import get_nist_model
-from parsing.parse_nist_data import get_nist_starting_values
-from parsing.parse_nist_data import get_data_pattern_txt
-from parsing.parse_nist_data import parse_data_pattern
-from parsing.parse_nist_data import parse_equation
-
-from utils import fitbm_problem
+from parsing.parse_nist_data import FittingProblem
+from parsing.fitbm_problem import BaseFittingProblem
 
 
 class ParseNistTests(unittest.TestCase):
@@ -122,8 +115,8 @@ class ParseNistTests(unittest.TestCase):
     return data_pattern
 
   def setup_nist_expected_problem(self):
-
-    prob = fitbm_problem.FittingProblem()
+    fname = self.misra1a_file()
+    prob = BaseFittingProblem(fname)
     prob.name = 'Misra1a'
     prob.equation = 'b1*(1-exp(-b2*x))'
     prob.starting_values = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
@@ -137,7 +130,6 @@ class ParseNistTests(unittest.TestCase):
   def test_ParseProblemFileNIST_returns_correct_problem_object(self):
 
     fname = self.misra1a_file()
-
     problem = parse_problem_file(fname)
     problem_expected = self.setup_nist_expected_problem()
 
@@ -158,9 +150,7 @@ class ParseNistTests(unittest.TestCase):
     data_pattern = self.setup_misra1a_expected_data_points()
     residual_sum_sq = 1.2455138894e-01
 
-    with open(fname) as spec_file:
-      prob = store_prob_details(spec_file, parsed_eq, starting_values,
-                                data_pattern, residual_sum_sq)
+    prob = FittingProblem(fname)
 
     prob_expected = self.setup_nist_expected_problem()
 
@@ -176,11 +166,10 @@ class ParseNistTests(unittest.TestCase):
   def test_parseLineByLine_correct_lines(self):
 
     fname = self.misra1a_file()
+    prob = FittingProblem(fname)
 
-    with open(fname) as spec_file:
-      lines = spec_file.readlines()
-      equation_text, data_pattern_text, \
-          starting_values, residual_sum_sq = parse_line_by_line(lines)
+    equation_text, data_pattern_text, starting_values, \
+        residual_sum_sq = prob.parse_line_by_line(open(fname))
 
     equation_text_expected = 'y = b1*(1-exp[-b2*x])  +  e'
     data_pattern_text_expected = self.setup_misra1a_data_pattern_text()
@@ -197,8 +186,10 @@ class ParseNistTests(unittest.TestCase):
 
     lines = self.setup_misra1a_model_lines()
     idx = 0
+    fname = self.misra1a_file()
+    prob = FittingProblem(fname)
 
-    equation_text, idx = get_nist_model(lines, idx)
+    equation_text, idx = prob.get_nist_model(lines, idx)
     equation_text_expected = 'y = b1*(1-exp[-b2*x])  +  e'
     idx_expected = 4
 
@@ -206,18 +197,22 @@ class ParseNistTests(unittest.TestCase):
     self.assertEqual(idx_expected, idx)
 
   def test_getNistModel_fail_runtimeError(self):
-
+    fname = self.misra1a_file()
+    prob = FittingProblem(fname)
     lines = ["\n", "\n"]
     idx = 33
 
-    self.assertRaises(RuntimeError, get_nist_model, lines, idx)
+    self.assertRaises(RuntimeError, prob.get_nist_model, lines, idx)
 
   def test_getNistStartingValues_return_proper_startvaltxt(self):
+
+    fname = self.misra1a_file()
+    prob = FittingProblem(fname)
 
     lines = self.setup_misra1a_startvals_lines()
     idx = 0
 
-    starting_vals, idx = get_nist_starting_values(lines, idx)
+    starting_vals, idx = prob.get_nist_starting_values(lines, idx)
     starting_vals_expected = [['b1', [500.0, 250.0]],
                               ['b2', [0.0001, 0.0005]]]
     idx = 3
@@ -230,6 +225,9 @@ class ParseNistTests(unittest.TestCase):
 
   def test_getNistStartingValues_fail_startvals_invalid(self):
 
+    fname = self.misra1a_file()
+    prob = FittingProblem(fname)
+
     lines = ["\n",
              "\n",
              "  b1 =   500         250   ",
@@ -237,14 +235,17 @@ class ParseNistTests(unittest.TestCase):
              "      5.5015643181E-04  7.2668688436E-06"]
     idx = 0
 
-    self.assertRaises(RuntimeError, get_nist_starting_values, lines, idx)
+    self.assertRaises(RuntimeError, prob.get_nist_starting_values, lines, idx)
 
   def test_getDataPatternTxt_correct_data(self):
+
+    fname = self.misra1a_file()
+    prob = FittingProblem(fname)
 
     lines = self.setup_misra1a_data_pattern_lines()
     idx = 0
 
-    data_pattern_text, idx = get_data_pattern_txt(lines, idx)
+    data_pattern_text, idx = prob.get_data_pattern_txt(lines, idx)
     data_pattern_text_expected = self.setup_misra1a_data_pattern_lines()
     idx_expected = 15
 
@@ -253,34 +254,46 @@ class ParseNistTests(unittest.TestCase):
 
   def test_getDataPatternTxt_raises_error(self):
 
+    fname = self.misra1a_file()
+    prob = FittingProblem(fname)
+
     lines = []
     idx = 0
 
-    self.assertRaises(RuntimeError, get_data_pattern_txt, lines, idx)
+    self.assertRaises(RuntimeError, prob.get_data_pattern_txt, lines, idx)
 
   def test_parseDataPattern_return_parsed_data_pattern_array(self):
 
+    fname = self.misra1a_file()
+    prob = FittingProblem(fname)
+
     data_pattern_text = self.setup_misra1a_data_pattern_text()
 
-    data_points = parse_data_pattern(data_pattern_text)
+    data_points = prob.parse_data_pattern(data_pattern_text)
     data_points_expected = self.setup_misra1a_expected_data_points()
 
     np.testing.assert_array_equal(data_points_expected, data_points)
 
   def test_parseEquation_return_proper_equation_form(self):
 
+    fname = self.misra1a_file()
+    prob = FittingProblem(fname)
+
     equation_text = 'y = b1*(1-exp[-b2*x])  +  e'
 
-    equation = parse_equation(equation_text)
+    equation = prob.parse_equation(equation_text)
     equation_expected = 'b1*(1-exp(-b2*x))'
 
     self.assertEqual(equation_expected, equation)
 
   def test_parseEquation_fail_runtimeError(self):
 
+    fname = self.misra1a_file()
+    prob = FittingProblem(fname)
+
     equation_text = 'LULy = bf1*(1-exdsp[-b2as*x])  +  e'
 
-    self.assertRaises(RuntimeError, parse_equation, equation_text)
+    self.assertRaises(RuntimeError, prob.parse_equation, equation_text)
 
 
 if __name__ == "__main__":
