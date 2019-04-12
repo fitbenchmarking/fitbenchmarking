@@ -19,7 +19,7 @@ from fitting.mantid.main import parse_result
 from fitting.mantid.main import optimum
 from fitting.mantid.main import get_ignore_invalid
 
-from parsing.fitbm_problem import BaseFittingProblem
+from parsing.base_fitting_problem import BaseFittingProblem
 
 
 class MantidTests(unittest.TestCase):

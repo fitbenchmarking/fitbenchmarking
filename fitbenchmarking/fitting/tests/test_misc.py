@@ -12,7 +12,7 @@ main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
 from utils import fitbm_result
-from parsing.fitbm_problem import BaseFittingProblem
+from parsing.base_fitting_problem import BaseFittingProblem
 
 from fitting.misc import compute_chisq
 from fitting.misc import create_result_entry

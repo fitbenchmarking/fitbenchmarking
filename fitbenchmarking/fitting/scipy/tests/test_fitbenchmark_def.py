@@ -22,7 +22,7 @@ from fitting.scipy.fitbenchmark_data_functions import make_fitbenchmark_fit_func
 from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_params
 from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_ties
 
-from parsing.fitbm_problem import BaseFittingProblem
+from parsing.base_fitting_problem import BaseFittingProblem
 
 
 class ScipyTests(unittest.TestCase):

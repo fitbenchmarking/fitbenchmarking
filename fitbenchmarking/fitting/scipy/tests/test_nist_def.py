@@ -16,7 +16,7 @@ from fitting.scipy.nist_data_functions import nist_func_definitions
 from fitting.scipy.nist_data_functions import get_nist_param_names_and_values
 from fitting.scipy.nist_data_functions import format_function_scipy
 
-from parsing.fitbm_problem import BaseFittingProblem
+from parsing.base_fitting_problem import BaseFittingProblem
 
 
 class ScipyTests(unittest.TestCase):

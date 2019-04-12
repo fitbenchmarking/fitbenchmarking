@@ -14,7 +14,7 @@ sys.path.insert(0, main_dir)
 from fitting.mantid.externals import store_main_problem_data
 from parsing.parse import parse_problem_file
 from parsing.parse_fitbenchmark_data import FittingProblem
-from parsing.fitbm_problem import BaseFittingProblem
+from parsing.base_fitting_problem import BaseFittingProblem
 
 
 class ParseFitbenchmarkTests(unittest.TestCase):

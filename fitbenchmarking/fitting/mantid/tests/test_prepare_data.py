@@ -17,7 +17,7 @@ from fitting.mantid.prepare_data import wks_cost_function
 from fitting.mantid.prepare_data import setup_errors
 from fitting.mantid.prepare_data import convert_back
 
-from parsing.fitbm_problem import BaseFittingProblem
+from parsing.base_fitting_problem import BaseFittingProblem
 
 
 class MantidTests(unittest.TestCase):

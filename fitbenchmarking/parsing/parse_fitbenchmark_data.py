@@ -26,13 +26,13 @@ information into problem objects
 from __future__ import (absolute_import, division, print_function)
 
 import os
-from parsing import fitbm_problem
+from parsing import base_fitting_problem
 import mantid.simpleapi as msapi
 
 from utils.logging_setup import logger
 
 
-class FittingProblem(fitbm_problem.BaseFittingProblem):
+class FittingProblem(base_fitting_problem.BaseFittingProblem):
     """
     Definition of the native fitbenchmarking problem class
 

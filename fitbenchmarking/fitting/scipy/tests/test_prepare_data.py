@@ -15,7 +15,7 @@ from fitting.scipy.prepare_data import prepare_data
 from fitting.scipy.prepare_data import misc_preparations
 from fitting.scipy.prepare_data import apply_constraints
 
-from parsing.fitbm_problem import BaseFittingProblem
+from parsing.base_fitting_problem import BaseFittingProblem
 
 
 class ScipyTests(unittest.TestCase):

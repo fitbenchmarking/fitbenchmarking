@@ -24,12 +24,6 @@ Parse the problem file depending on the type of problem.
 
 from __future__ import (absolute_import, division, print_function)
 
-import os
-import re
-import numpy as np
-
-from parsing import fitbm_problem
-from fitting.mantid.externals import store_main_problem_data
 from parsing import parse_nist_data, parse_fitbenchmark_data
 from utils.logging_setup import logger
 
