@@ -37,18 +37,19 @@ class BaseFittingProblem(object):
 
     def __init__(self, fname):
 
-        # Initializes base class with file and problem type
+        # Initializes base class with filename
         self._fname = fname
-        self._type = None
 
+        self._type = None
+        # Name (title) of the fitting problem
         self._name = None
-        # If there is an online/documentation link describing this problem
+        # Equation (function or model) to fit against data
         self._equation = None
+        # Define range to fit model data over if different from entire range of data
         self._start_x = None
         self._end_x = None
 
-        # can be for example the list of starting values from
-        # NIST test problems
+        # Starting values of the fitting parameters
         self._starting_values = None
         # The data
         self._data_x = None
@@ -59,7 +60,8 @@ class BaseFittingProblem(object):
         # (for example in NIST tests).
         self._ref_residual_sum_sq = None
 
-        # Initialize contents of file
+        # Initialize contents of file. Here included to reduce I/O, i.e.
+        # read file content once and then process as needed
         self._contents = None
 
     def read_file(self):
