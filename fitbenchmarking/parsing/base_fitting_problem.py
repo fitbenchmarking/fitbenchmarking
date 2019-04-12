@@ -38,7 +38,7 @@ class BaseFittingProblem(object):
     def __init__(self, fname):
 
         # Initializes base class with file and problem type
-        self.fname = fname
+        self._fname = fname
         self._type = None
 
         self._name = None
@@ -57,17 +57,16 @@ class BaseFittingProblem(object):
 
         # The 'certified' or reference sum of squares, if provided
         # (for example in NIST tests).
-        self.ref_residual_sum_sq = None
+        self._ref_residual_sum_sq = None
+
+        # Initialize contents of file
+        self._contents = None
 
     def read_file(self):
-        self.contents = open(self.fname, "r")
-
-    def print_file(self):
-        for lines in self.contents:
-            print(lines)
+        self._contents = open(self.fname, "r")
 
     def close_file(self):
-        self.contents.close()
+        self._contents.close()
 
     @property
     def type(self):
@@ -76,6 +75,14 @@ class BaseFittingProblem(object):
     @type.setter
     def type(self, value):
         self._type = value
+
+    @property
+    def fname(self):
+        return self._fname
+
+    @fname.setter
+    def fname(self, value):
+        self._fname = value
 
     @property
     def name(self):
