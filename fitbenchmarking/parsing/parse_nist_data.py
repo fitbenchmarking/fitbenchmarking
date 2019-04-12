@@ -63,8 +63,8 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._type = "NIST"
 
         self._starting_values = starting_values
-        # self._start_x = entries['fit_parameters']['StartX']
-        # self._end_x = entries['fit_parameters']['EndX']
+        # self._start_x = -np.inf
+        # self._end_x = np.inf
 
         super(FittingProblem, self).close_file()
 

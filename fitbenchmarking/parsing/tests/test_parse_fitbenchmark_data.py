@@ -3,6 +3,7 @@ from __future__ import (absolute_import, division, print_function)
 import unittest
 import os
 import numpy as np
+import json
 
 # Delete four lines below when automated tests are enabled
 import sys
@@ -13,6 +14,8 @@ sys.path.insert(0, main_dir)
 
 from fitting.mantid.externals import store_main_problem_data
 from parsing.parse import parse_problem_file
+from parsing.parse import check_problem_attributes
+from parsing.parse import determine_problem_type
 from parsing.parse_fitbenchmark_data import FittingProblem
 from parsing.base_fitting_problem import BaseFittingProblem
 
@@ -130,6 +133,21 @@ class ParseFitbenchmarkTests(unittest.TestCase):
         self.assertEqual(entries['fit_parameters']['StartX'], problem.start_x)
         self.assertEqual(entries['fit_parameters']['EndX'], problem.end_x)
         self.assertEqual(None, problem.starting_values)
+
+    def test_checkingAttributesAssertion(self):
+        fname = self.neutron_peak_19_file()
+        prob = BaseFittingProblem(fname)
+        with self.assertRaises(ValueError):
+            check_problem_attributes(prob)
+
+    def test_checkingDetermineProblemType(self):
+        f = open("RandomData.txt", "w+")
+        for i in range(10):
+            f.write("This is line %d\r\n" % (i + 1))
+        f.close()
+        with self.assertRaises(RuntimeError):
+            determine_problem_type("RandomData.txt")
+        os.remove("RandomData.txt")
 
 
 if __name__ == "__main__":
