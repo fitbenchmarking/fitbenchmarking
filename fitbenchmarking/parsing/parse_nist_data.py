@@ -1,8 +1,3 @@
-"""
-Parse input files describing fitting test examples and load the
-information into problem objects
-
-"""
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
 #
@@ -35,7 +30,9 @@ from utils.logging_setup import logger
 
 class FittingProblem(base_fitting_problem.BaseFittingProblem):
     """
-    Definition of the NIST problem class
+    Definition of the NIST problem class, which provides the
+    methods for parsing a NIST formatted FitBenchmarking
+    problem definition file
 
     Types of data:
         - strings: name, type, equation

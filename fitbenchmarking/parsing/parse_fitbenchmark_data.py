@@ -1,8 +1,3 @@
-"""
-Parse input files describing fitting test examples and load the
-information into problem objects
-
-"""
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
 #
@@ -34,7 +29,9 @@ from utils.logging_setup import logger
 
 class FittingProblem(base_fitting_problem.BaseFittingProblem):
     """
-    Definition of the native fitbenchmarking problem class
+    Definition of the native FitBenchmarking problem class, which
+    provides the methods for parsing a native FitBenchmarking
+    problem definition (FitBenchmark) file
 
     Types of data:
         - strings: name, type, equation
