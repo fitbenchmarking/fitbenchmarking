@@ -24,12 +24,6 @@ Parse the problem file depending on the type of problem.
 
 from __future__ import (absolute_import, division, print_function)
 
-import os
-import re
-import numpy as np
-
-from utils import fitbm_problem
-from fitting.mantid.externals import store_main_problem_data
 from parsing import parse_nist_data, parse_fitbenchmark_data
 from utils.logging_setup import logger
 
@@ -44,28 +38,15 @@ def parse_problem_file(prob_file):
     """
 
     prob_type = determine_problem_type(prob_file)
+    logger.info("*** Loading {0} formatted problem definition "
+                "file {1} ***".format(prob_type, prob_file))
 
-    with open(prob_file) as probf:
-        if prob_type == "NIST":
-            logger.info("*** Loading NIST formatted problem definition "
-                        "file {0} ***".format(os.path.basename(probf.name)))
-            lines = probf.readlines()
-            equation_text, data_pattern_text, starting_values, \
-                residual_sum_sq = parse_nist_data.parse_line_by_line(lines)
-            data_pattern = parse_nist_data.parse_data_pattern(data_pattern_text)
-            parsed_eq = parse_nist_data.parse_equation(equation_text)
-            problem = parse_nist_data.store_prob_details(probf, parsed_eq, starting_values, data_pattern, residual_sum_sq)
-            problem.type = prob_type
-        elif prob_type == "FitBenchmark":
-            logger.info("*** Loading FitBenchmark formatted problem definition file {0} ***".
-                        format(os.path.basename(probf.name)))
-            entries = parse_fitbenchmark_data.get_fitbenchmark_data_problem_entries(probf)
-            problem = fitbm_problem.FittingProblem()
-            data_file = parse_fitbenchmark_data.get_data_file(
-                prob_file, entries['input_file'])
-            parse_fitbenchmark_data.store_main_problem_data(data_file, problem)
-            parse_fitbenchmark_data.store_misc_problem_data(problem, entries)
-            problem.type = prob_type
+    if prob_type == "NIST":
+        problem = parse_nist_data.FittingProblem(prob_file)
+    elif prob_type == "FitBenchmark":
+        problem = parse_fitbenchmark_data.FittingProblem(prob_file)
+
+    check_problem_attributes(problem)
 
     logger.info("* Testing fitting of problem {0}".format(problem.name))
 
@@ -101,3 +82,22 @@ def determine_problem_type(prob_file):
         raise RuntimeError("Data type supplied currently not supported")
 
     return prob_type
+
+
+def check_problem_attributes(problem):
+    """
+    Helper function that determines whether problem class has been required attributes
+
+    @param problem :: fitting problem
+    """
+
+    recAttr = ['_name', '_equation', '_data_x', '_data_y']
+
+    UnsetAttr = []
+    for r in recAttr:
+        if problem.__dict__[r] is None:
+            UnsetAttr.append(r)
+
+    if UnsetAttr != []:
+        raise ValueError('Attributes {} are not set correctly'.format(
+            UnsetAttr))

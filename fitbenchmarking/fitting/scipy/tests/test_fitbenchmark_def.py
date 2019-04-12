@@ -22,10 +22,26 @@ from fitting.scipy.fitbenchmark_data_functions import make_fitbenchmark_fit_func
 from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_params
 from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_ties
 
-from utils import fitbm_problem
+from parsing.base_fitting_problem import BaseFittingProblem
 
 
 class ScipyTests(unittest.TestCase):
+
+    def neutron_peak_19_file(self):
+        """
+        Helper function that returns the path to
+        /fitbenchmarking/benchmark_problems
+        """
+
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        parent_dir = os.path.dirname(os.path.normpath(test_dir))
+        main_dir = os.path.dirname(os.path.normpath(parent_dir))
+        root_dir = os.path.dirname(os.path.normpath(main_dir))
+        bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
+        fname = os.path.join(bench_prob_dir, 'Neutron_data',
+                             'ENGINX193749_calibration_peak19.txt')
+
+        return fname
 
     def Neutron_problem(self):
         """
@@ -33,7 +49,7 @@ class ScipyTests(unittest.TestCase):
         ENGINX193749_calibration_peak19.txt
         """
 
-        prob = fitbm_problem.FittingProblem()
+        fname = self.neutron_peak_19_file()
         prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
         prob.type = 'FitBenchmark'
         prob.equation = ("name=LinearBackground,A0=0,A1=0;"
@@ -58,7 +74,8 @@ class ScipyTests(unittest.TestCase):
 
     def test_FunctionDefinitions_Dat_return_function_definitions(self):
 
-        prob = fitbm_problem.FittingProblem()
+        fname = self.neutron_peak_19_file()
+        prob = BaseFittingProblem(fname)
         prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                          "name=BackToBackExponential,"
                          "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
