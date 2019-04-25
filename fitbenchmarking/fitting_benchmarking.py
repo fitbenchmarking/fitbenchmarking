@@ -39,7 +39,7 @@ from fitbenchmark_one_problem import fitbm_one_prob
 def do_fitting_benchmark(group_name, software_options, data_dir,
                          use_errors=True, results_dir=None):
   """
-  High level function that does the fitting benchmarking for a
+  This function does the fitting benchmarking for a
   specified group of problems.
 
   @param software :: software used in fitting the problem, can be
