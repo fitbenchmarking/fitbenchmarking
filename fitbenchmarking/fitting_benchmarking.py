@@ -36,7 +36,7 @@ from utils import create_dirs, misc
 from fitbenchmark_one_problem import fitbm_one_prob
 
 
-def do_fitting_benchmark(group_name, software, data_dir,
+def do_fitting_benchmark(group_name, software_options, data_dir,
                          use_errors=True, results_dir=None):
   """
   High level function that does the fitting benchmarking for a
@@ -52,8 +52,11 @@ def do_fitting_benchmark(group_name, software, data_dir,
   @returns :: array of fitting results for the problem group and
               the path to the results directory
   """
+  software = software_options['software']
+  minimizers_list = software_options['minimizers_list']
+  json_file = software_options['json_file']
 
-  minimizers = misc.get_minimizers(software)
+  minimizers, software = misc.get_minimizers(software, minimizers_list, json_file)
   problem_groups = misc.setup_fitting_problems(data_dir, group_name)
 
   results_dir = create_dirs.results(results_dir)

@@ -75,27 +75,49 @@ class CreateDirsTests(unittest.TestCase):
 
         return minimizer_json
 
-    def test_getMinimizers_load_correct_minimizers_mantid(self):
+    def test_getMinimizers_load_correct_minimizers_mantid_default(self):
 
         software = 'mantid'
-
-        minimiers = get_minimizers(software)
+        minimizers_list = None
+        json_file = None
+        minimizers, _ = get_minimizers(software, minimizers_list, json_file)
         minmizers_expected = \
             ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
              "Conjugate gradient (Polak-Ribiere imp.)", "Damped GaussNewton",
              "Levenberg-Marquardt", "Levenberg-MarquardtMD", "Simplex",
              "SteepestDescent", "Trust Region"]
 
-        self.assertListEqual(minmizers_expected, minimiers)
+        self.assertListEqual(minmizers_expected, minimizers)
 
-    def test_getMinimizers_load_correct_minimizers_scipy(self):
+    def test_getMinimizers_load_correct_minimizers_scipy_default(self):
 
         software = 'scipy'
-
-        minimiers = get_minimizers(software)
+        minimizers_list = None
+        json_file = None
+        minimizers, _ = get_minimizers(software, minimizers_list, json_file)
         minmizers_expected = ["lm", "trf", "dogbox"]
 
-        self.assertListEqual(minmizers_expected, minimiers)
+        self.assertListEqual(minmizers_expected, minimizers)
+
+    def test_getMinimizers_load_correct_minimizers_scipy_min_list(self):
+
+        software = 'scipy'
+        minimizers_list = {"scipy": ["lm", "trf"]}
+        json_file = None
+        minimizers, _ = get_minimizers(software, minimizers_list, json_file)
+        minmizers_expected = ["lm", "trf"]
+
+        self.assertListEqual(minmizers_expected, minimizers)
+
+    def test_getMinimizers_load_correct_minimizers_mantid_min_list(self):
+
+        software = 'mantid'
+        minimizers_list = {"mantid": ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]}
+        json_file = None
+        minimizers, _ = get_minimizers(software, minimizers_list, json_file)
+        minmizers_expected = ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]
+
+        self.assertListEqual(minmizers_expected, minimizers)
 
     def test_setupFittingProblems_get_correct_nist_probs(self):
 

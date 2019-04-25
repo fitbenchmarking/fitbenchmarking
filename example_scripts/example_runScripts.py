@@ -28,6 +28,7 @@ import os
 import glob
 import sys
 
+
 # Avoid reaching the maximum recursion depth by setting recursion limit
 # This is useful when running multiple data set benchmarking
 # Otherwise recursion limit is reached and the interpreter throws an error
@@ -43,9 +44,25 @@ sys.path.insert(0, scripts_folder)
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
-
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = 'mantid'
+software = 'scipy'
+minimizers = None
+# Custom minimizer options:
+# minimizers = {"mantid": ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
+#                          "Conjugate gradient (Polak-Ribiere imp.)",
+#                          "Damped GaussNewton",
+#                          "Levenberg-Marquardt", "Levenberg-MarquardtMD",
+#                          "Simplex", "SteepestDescent",
+#                          "Trust Region"],
+#              "scipy" : ["lm", "trf", "dogbox"]}
+try:
+    json_file = current_path + sys.argv[1]
+except:
+    json_file = None
+
+software_options = {'software': software,
+                    'json_file': json_file,
+                    'minimizers_list': minimizers}
 
 # Benchmark problem directories
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder, 'benchmark_problems')
@@ -83,15 +100,14 @@ for sub_dir in problem_sets:
     data_dir = os.path.join(benchmark_probs_dir, sub_dir)
 
     print('\nRunning the benchmarking on the {} problem set\n'.format(label))
-    results_per_group, results_dir = \
-        fitBenchmarking(group_name=label, software=software,
-                        data_dir=data_dir,
-                        use_errors=use_errors, results_dir=results_dir)
+    results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
+                                                     data_dir=data_dir,
+                                                     use_errors=use_errors, results_dir=results_dir)
 
     print('\nProducing output for the {} problem set\n'.format(label))
     for idx, group_results in enumerate(results_per_group):
         # Display the runtime and accuracy results in a table
-        printTables(software, group_results,
+        printTables(software_options, group_results,
                     group_name=label, use_errors=use_errors,
                     color_scale=color_scale, results_dir=results_dir)
 

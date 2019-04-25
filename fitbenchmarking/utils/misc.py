@@ -31,7 +31,7 @@ from parsing.fetch_data import *
 from utils import user_input
 
 
-def get_minimizers(software):
+def get_minimizers(software, minimizers_list, json_file):
     """
     Gets an array of minimizers to fitbenchmark from the json file depending
     on which software is used.
@@ -39,13 +39,18 @@ def get_minimizers(software):
     @returns :: an array of strings containing minimizer names
     """
 
-    current_path = os.path.dirname(os.path.realpath(__file__))
-    fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
-    minimizers_json = os.path.join(fitbm_path, "minimizers.json")
-    all_minimizers = json.load(open(minimizers_json))
-    minimizers = all_minimizers[software]
-
-    return minimizers
+    if minimizers_list:
+        if len(minimizers_list) == 1:
+            software = minimizers_list.keys()[0]
+        minimizers = minimizers_list[software]
+    else:
+        if not json_file:
+            current_path = os.path.dirname(os.path.realpath(__file__))
+            fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
+            json_file = os.path.join(fitbm_path, "minimizers.json")
+        minimizers_list = json.load(open(json_file))
+        minimizers = minimizers_list[software]
+    return minimizers, software
 
 
 def setup_fitting_problems(data_dir, group_name):

@@ -41,7 +41,7 @@ FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
 
-def save_results_tables(software, results_per_test, group_name,
+def save_results_tables(software_options, results_per_test, group_name,
                         use_errors, color_scale=None, results_dir=None):
     """
     Saves the results of the fitting to html/rst tables.
@@ -57,7 +57,12 @@ def save_results_tables(software, results_per_test, group_name,
 
     @returns :: html/rst tables with the fitting results
     """
-    minimizers = utils.misc.get_minimizers(software)
+
+    software = software_options['software']
+    minimizers_list = software_options['minimizers_list']
+    json_file = software_options['json_file']
+
+    minimizers, software = utils.misc.get_minimizers(software, minimizers_list, json_file)
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
         visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
