@@ -36,6 +36,8 @@ def get_minimizers(software, minimizers_list, json_file):
     Gets an array of minimizers to fitbenchmark from the json file depending
     on which software is used.
     @param software :: string defining the software used
+    @param miimizers_list :: dictionary containing minimizers
+    @param json_file :: location of the json file containing minimizers
     @returns :: an array of strings containing minimizer names
     """
 
