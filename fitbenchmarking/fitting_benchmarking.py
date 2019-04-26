@@ -42,8 +42,7 @@ def do_fitting_benchmark(group_name, software_options, data_dir,
   This function does the fitting benchmarking for a
   specified group of problems.
 
-  @param software :: software used in fitting the problem, can be
-                      e.g. mantid, scipy etc.
+  @param software_options :: dictionary containing software used in fitting the problem, list of minimizers and location of json file contain minimizers
   @param data_dir :: directory that holds the problem group data
   @param use_errors :: whether to use errors on the data or not
   @param results_dir :: directory in which to put the results. None

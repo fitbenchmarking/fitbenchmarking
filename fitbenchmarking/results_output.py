@@ -46,8 +46,7 @@ def save_results_tables(software_options, results_per_test, group_name,
     """
     Saves the results of the fitting to html/rst tables.
 
-    @param software :: software used in fitting the problem, can be
-                        e.g. mantid, numpy etc.
+    @param software_options :: dictionary containing software used in fitting the problem, list of minimizers and location of json file contain minimizers
     @param minimizers :: array with minimizer names
     @param results_per_test :: results nested array of objects
     @param group_name :: name of the problem group
