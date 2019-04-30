@@ -57,11 +57,7 @@ def save_results_tables(software_options, results_per_test, group_name,
     @returns :: html/rst tables with the fitting results
     """
 
-    software = software_options['software']
-    minimizers_list = software_options['minimizers_list']
-    json_file = software_options['json_file']
-
-    minimizers, software = utils.misc.get_minimizers(software, minimizers_list, json_file)
+    minimizers, software = utils.misc.get_minimizers(software_options)
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
         visual_pages.create_linked_probs(results_per_test, group_name, results_dir)

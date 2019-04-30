@@ -31,27 +31,28 @@ from parsing.fetch_data import *
 from utils import user_input
 
 
-def get_minimizers(software, minimizers_list, json_file):
+def get_minimizers(software_options):
     """
     Gets an array of minimizers to fitbenchmark from the json file depending
     on which software is used.
-    @param software :: string defining the software used
-    @param miimizers_list :: dictionary containing minimizers
-    @param json_file :: location of the json file containing minimizers
-    @returns :: an array of strings containing minimizer names
+    @param software_options :: dictionary containing software used in fitting the problem, list of minimizers and location of json file contain minimizers
+    @returns :: an array of strings containing minimizer names and software used
     """
+    minimizers_list = software_options['minimizers_list']
+    software = software_options['software']
+    json_file = software_options['json_file']
 
-    if minimizers_list:
-        if len(minimizers_list) == 1:
-            software = minimizers_list.keys()[0]
-        minimizers = minimizers_list[software]
-    else:
+    if not minimizers_list:
         if not json_file:
             current_path = os.path.dirname(os.path.realpath(__file__))
             fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
             json_file = os.path.join(fitbm_path, "minimizers.json")
         minimizers_list = json.load(open(json_file))
+    try:
         minimizers = minimizers_list[software]
+    except KeyError:
+        raise KeyError('Minimizer_list does not contain user set software')
+
     return minimizers, software
 
 

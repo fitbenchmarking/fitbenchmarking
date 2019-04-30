@@ -51,11 +51,8 @@ def do_fitting_benchmark(group_name, software_options, data_dir,
   @returns :: array of fitting results for the problem group and
               the path to the results directory
   """
-  software = software_options['software']
-  minimizers_list = software_options['minimizers_list']
-  json_file = software_options['json_file']
 
-  minimizers, software = misc.get_minimizers(software, minimizers_list, json_file)
+  minimizers, software = misc.get_minimizers(software_options)
   problem_groups = misc.setup_fitting_problems(data_dir, group_name)
 
   results_dir = create_dirs.results(results_dir)
