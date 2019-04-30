@@ -77,10 +77,8 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_getMinimizers_load_correct_minimizers_mantid_default(self):
 
-        software = 'mantid'
-        minimizers_list = None
-        json_file = None
-        minimizers, _ = get_minimizers(software, minimizers_list, json_file)
+        software_options = {'software': 'mantid', 'minimizers_list': None, 'json_file': None}
+        minimizers, _ = get_minimizers(software_options)
         minmizers_expected = \
             ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
              "Conjugate gradient (Polak-Ribiere imp.)", "Damped GaussNewton",
@@ -91,30 +89,24 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_getMinimizers_load_correct_minimizers_scipy_default(self):
 
-        software = 'scipy'
-        minimizers_list = None
-        json_file = None
-        minimizers, _ = get_minimizers(software, minimizers_list, json_file)
+        software_options = {'software': 'scipy', 'minimizers_list': None, 'json_file': None}
+        minimizers, _ = get_minimizers(software_options)
         minmizers_expected = ["lm", "trf", "dogbox"]
 
         self.assertListEqual(minmizers_expected, minimizers)
 
     def test_getMinimizers_load_correct_minimizers_scipy_min_list(self):
 
-        software = 'scipy'
-        minimizers_list = {"scipy": ["lm", "trf"]}
-        json_file = None
-        minimizers, _ = get_minimizers(software, minimizers_list, json_file)
+        software_options = {'software': 'scipy', 'minimizers_list': {"scipy": ["lm", "trf"]}, 'json_file': None}
+        minimizers, _ = get_minimizers(software_options)
         minmizers_expected = ["lm", "trf"]
 
         self.assertListEqual(minmizers_expected, minimizers)
 
     def test_getMinimizers_load_correct_minimizers_mantid_min_list(self):
 
-        software = 'mantid'
-        minimizers_list = {"mantid": ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]}
-        json_file = None
-        minimizers, _ = get_minimizers(software, minimizers_list, json_file)
+        software_options = {'software': 'mantid', 'minimizers_list': {"mantid": ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]}, 'json_file': None}
+        minimizers, _ = get_minimizers(software_options)
         minmizers_expected = ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]
 
         self.assertListEqual(minmizers_expected, minimizers)
