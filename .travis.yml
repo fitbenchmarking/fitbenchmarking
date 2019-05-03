@@ -1,7 +1,7 @@
 sudo: required
 language: python
 python:
-  - "2.7", "3.5"
+  - "2.7"
 dist: trusty
 virtualenv:
   system_site_packages: true
