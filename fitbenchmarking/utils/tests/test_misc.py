@@ -3,6 +3,7 @@ from __future__ import (absolute_import, division, print_function)
 import unittest
 import os
 import shutil
+import json
 
 # Delete four lines below when automated tests are enabled
 import sys
@@ -77,7 +78,8 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_getMinimizers_load_correct_minimizers_mantid_default(self):
 
-        software_options = {'software': 'mantid', 'minimizers_list': None, 'json_file': None}
+        software_options = {'software': 'mantid'}
+
         minimizers, _ = get_minimizers(software_options)
         minmizers_expected = \
             ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
@@ -89,7 +91,8 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_getMinimizers_load_correct_minimizers_scipy_default(self):
 
-        software_options = {'software': 'scipy', 'minimizers_list': None, 'json_file': None}
+        software_options = {'software': 'scipy'}
+
         minimizers, _ = get_minimizers(software_options)
         minmizers_expected = ["lm", "trf", "dogbox"]
 
@@ -97,7 +100,9 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_getMinimizers_load_correct_minimizers_scipy_min_list(self):
 
-        software_options = {'software': 'scipy', 'minimizers_list': {"scipy": ["lm", "trf"]}, 'json_file': None}
+        software_options = {'software': 'scipy',
+                            'minimizer_list': {"scipy": ["lm", "trf"]}}
+
         minimizers, _ = get_minimizers(software_options)
         minmizers_expected = ["lm", "trf"]
 
@@ -105,11 +110,48 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_getMinimizers_load_correct_minimizers_mantid_min_list(self):
 
-        software_options = {'software': 'mantid', 'minimizers_list': {"mantid": ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]}, 'json_file': None}
+        software_options = {'software': 'mantid',
+                            'minimizer_list': {"mantid": ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]}}
+
         minimizers, _ = get_minimizers(software_options)
         minmizers_expected = ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]
 
         self.assertListEqual(minmizers_expected, minimizers)
+
+    def test_getMinimizers_load_correct_minimizers_scipy_read_file(self):
+        minimizer_list = {"scipy": ["lm", "trf"]}
+
+        with open('example_minimizer_list.json', 'w') as fp:
+            json.dump(minimizer_list, fp)
+        dir_path = str(os.path.dirname(os.path.realpath(__file__)))
+
+        software_options = {'software': 'scipy',
+                            'minimizer_file': dir_path +
+                            '/example_minimizer_list.json'}
+
+        minimizers, _ = get_minimizers(software_options)
+        minmizers_expected = ["lm", "trf"]
+
+        self.assertListEqual(minmizers_expected, minimizers)
+        os.remove('example_minimizer_list.json')
+
+    def test_getMinimizers_load_correct_minimizers_mantid_read_file(self):
+        minimizer_list = {"mantid": ["BFGS",
+                                     "Conjugate gradient (Fletcher-Reeves imp.)",
+                                     "Conjugate gradient (Polak-Ribiere imp.)"]}
+        with open('example_minimizer_list.json', 'w') as fp:
+            json.dump(minimizer_list, fp)
+        dir_path = str(os.path.dirname(os.path.realpath(__file__)))
+
+        software_options = {'software': 'mantid',
+                            'minimizer_file': dir_path +
+                            '/example_minimizer_list.json'}
+
+        minimizers, _ = get_minimizers(software_options)
+        minmizers_expected = ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]
+
+        self.assertListEqual(minmizers_expected, minimizers)
+        os.remove('example_minimizer_list.json')
 
     def test_setupFittingProblems_get_correct_nist_probs(self):
 

@@ -38,16 +38,19 @@ def get_minimizers(software_options):
     @param software_options :: dictionary containing software used in fitting the problem, list of minimizers and location of json file contain minimizers
     @returns :: an array of strings containing minimizer names and software used
     """
-    minimizers_list = software_options['minimizers_list']
     software = software_options['software']
-    json_file = software_options['json_file']
 
-    if not minimizers_list:
-        if not json_file:
-            current_path = os.path.dirname(os.path.realpath(__file__))
-            fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
-            json_file = os.path.join(fitbm_path, "minimizers.json")
-        minimizers_list = json.load(open(json_file))
+    if 'minimizer_file' in software_options:
+        minimizers_list = json.load(open(software_options['minimizer_file']))
+    elif 'minimizer_list' in software_options:
+        minimizers_list = software_options['minimizer_list']
+    else:
+        current_path = os.path.dirname(os.path.realpath(__file__))
+        fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
+        minimizer_file = os.path.join(fitbm_path,
+                                      "minimizers_list_default.json")
+        minimizers_list = json.load(open(minimizer_file))
+
     try:
         minimizers = minimizers_list[software]
     except KeyError:

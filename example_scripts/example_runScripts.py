@@ -46,23 +46,23 @@ from results_output import save_results_tables as printTables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
 software = 'scipy'
-minimizers = None
-# Custom minimizer options:
-# minimizers = {"mantid": ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
-#                          "Conjugate gradient (Polak-Ribiere imp.)",
-#                          "Damped GaussNewton",
-#                          "Levenberg-Marquardt", "Levenberg-MarquardtMD",
-#                          "Simplex", "SteepestDescent",
-#                          "Trust Region"],
-#              "scipy" : ["lm", "trf", "dogbox"]}
-try:
-    json_file = current_path + sys.argv[1]
-except:
-    json_file = None
+software_options = {'software': software}
 
-software_options = {'software': software,
-                    'json_file': json_file,
-                    'minimizers_list': minimizers}
+if len(sys.argv) > 1:
+    software_options['minimizer_file'] = current_path + sys.argv[1]
+else:
+    # Custom minimizer options:
+    minimizers = {"mantid": ["BFGS",
+                             "Conjugate gradient (Fletcher-Reeves imp.)",
+                             "Conjugate gradient (Polak-Ribiere imp.)",
+                             "Damped GaussNewton",
+                             "Levenberg-Marquardt",
+                             "Levenberg-MarquardtMD",
+                             "Simplex",
+                             "SteepestDescent",
+                             "Trust Region"],
+                  "scipy": ["lm", "trf", "dogbox"]}
+    software_options['minimizer_list'] = minimizers
 
 # Benchmark problem directories
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder, 'benchmark_problems')
