@@ -25,7 +25,6 @@ Script that runs the fitbenchmarking tool with various problems and minimizers.
 
 from __future__ import (absolute_import, division, print_function)
 import os
-import glob
 import sys
 
 
@@ -48,7 +47,9 @@ from results_output import save_results_tables as printTables
 software = 'scipy'
 software_options = {'software': software}
 
+# SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
+    # Read custom minimizer options from file
     software_options['minimizer_file'] = current_path + sys.argv[1]
 else:
     # Custom minimizer options:
