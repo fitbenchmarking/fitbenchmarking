@@ -69,12 +69,11 @@ class CreateDirsTests(unittest.TestCase):
 
     def get_minimizers_file(self):
 
-        test_dir = os.getcwd()
-        utils_dir = os.path.dirname(os.path.normpath(test_dir))
-        fitbm_dir = os.path.dirname(os.path.normpath(utils_dir))
-        minimizer_json = os.path.join(fitbm_dir,
+        current_path = os.path.dirname(os.path.realpath(__file__))
+        utils_path = os.path.abspath(os.path.join(current_path, os.pardir))
+        fitbm_path = os.path.abspath(os.path.join(utils_path, os.pardir))
+        minimizer_json = os.path.join(fitbm_path,
                                       "minimizers_list_default.json")
-
         return minimizer_json
 
     def test_getMinimizers_load_correct_minimizers_mantid_default(self):
