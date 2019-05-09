@@ -47,26 +47,34 @@ from results_output import save_results_tables as printTables
 software = 'scipy'
 software_options = {'software': software}
 
+# User defined minimizers
+# minimizers = {"mantid": ["BFGS",
+#                          "Conjugate gradient (Fletcher-Reeves imp.)",
+#                          "Conjugate gradient (Polak-Ribiere imp.)",
+#                          "Damped GaussNewton",
+#                          "Levenberg-Marquardt",
+#                          "Levenberg-MarquardtMD",
+#                          "Simplex",
+#                          "SteepestDescent",
+#                          "Trust Region"],
+#               "scipy": ["lm", "trf", "dogbox"]}
+
+
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
     # Read custom minimizer options from file
-    software_options['minimizer_file'] = current_path + sys.argv[1]
-else:
+    software_options['minimizer_options'] = current_path + sys.argv[1]
+elif:
     # Custom minimizer options:
-    minimizers = {"mantid": ["BFGS",
-                             "Conjugate gradient (Fletcher-Reeves imp.)",
-                             "Conjugate gradient (Polak-Ribiere imp.)",
-                             "Damped GaussNewton",
-                             "Levenberg-Marquardt",
-                             "Levenberg-MarquardtMD",
-                             "Simplex",
-                             "SteepestDescent",
-                             "Trust Region"],
-                  "scipy": ["lm", "trf", "dogbox"]}
-    software_options['minimizer_list'] = minimizers
+    software_options['minimizer_options'] = minimizers
+else:
+    # Using default minimizers from
+    # fitbenchmarking/fitbenchmarking/minimizers_list_default.json
+    software_options['minimizer_options'] = None
 
 # Benchmark problem directories
-benchmark_probs_dir = os.path.join(fitbenchmarking_folder, 'benchmark_problems')
+benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
+                                   'benchmark_problems')
 
 """
 Modify results_dir to specify where the results of the fit should be saved

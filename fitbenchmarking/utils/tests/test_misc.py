@@ -78,7 +78,7 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_getMinimizers_load_correct_minimizers_mantid_default(self):
 
-        software_options = {'software': 'mantid'}
+        software_options = {'software': 'mantid', 'minimizer_options': None}
 
         minimizers, _ = get_minimizers(software_options)
         minmizers_expected = \
@@ -91,7 +91,7 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_getMinimizers_load_correct_minimizers_scipy_default(self):
 
-        software_options = {'software': 'scipy'}
+        software_options = {'software': 'scipy', 'minimizer_options': None}
 
         minimizers, _ = get_minimizers(software_options)
         minmizers_expected = ["lm", "trf", "dogbox"]
@@ -101,7 +101,7 @@ class CreateDirsTests(unittest.TestCase):
     def test_getMinimizers_load_correct_minimizers_scipy_min_list(self):
 
         software_options = {'software': 'scipy',
-                            'minimizer_list': {"scipy": ["lm", "trf"]}}
+                            'minimizer_options': {"scipy": ["lm", "trf"]}}
 
         minimizers, _ = get_minimizers(software_options)
         minmizers_expected = ["lm", "trf"]
@@ -111,7 +111,7 @@ class CreateDirsTests(unittest.TestCase):
     def test_getMinimizers_load_correct_minimizers_mantid_min_list(self):
 
         software_options = {'software': 'mantid',
-                            'minimizer_list': {"mantid": ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]}}
+                            'minimizer_options': {"mantid": ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]}}
 
         minimizers, _ = get_minimizers(software_options)
         minmizers_expected = ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]
@@ -120,7 +120,7 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_getMinimizers_load_correct_minimizers_scipy_read_file(self):
         software_options = {'software': 'scipy',
-                            'minimizer_file': self.get_minimizers_file()}
+                            'minimizer_options': self.get_minimizers_file()}
 
         minimizers, _ = get_minimizers(software_options)
         minmizers_expected = ["lm", "trf", "dogbox"]
@@ -130,7 +130,7 @@ class CreateDirsTests(unittest.TestCase):
     def test_getMinimizers_load_correct_minimizers_mantid_read_file(self):
 
         software_options = {'software': 'mantid',
-                            'minimizer_file': self.get_minimizers_file()}
+                            'minimizer_options': self.get_minimizers_file()}
 
         minimizers, _ = get_minimizers(software_options)
         minmizers_expected = ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
@@ -141,6 +141,19 @@ class CreateDirsTests(unittest.TestCase):
                               "Trust Region"]
 
         self.assertListEqual(minmizers_expected, minimizers)
+
+    def test_getMinimizers_value_error_incorrect_input_software_options(self):
+
+        software_options = 2
+
+        self.assertRaises(ValueError, get_minimizers, software_options)
+
+    def test_getMinimizers_value_error_incorrect_input_minimizer_options(self):
+
+        software_options = {'software': 'mantid',
+                            'minimizer_options': 1}
+
+        self.assertRaises(ValueError, get_minimizers, software_options)
 
     def test_setupFittingProblems_get_correct_nist_probs(self):
 
