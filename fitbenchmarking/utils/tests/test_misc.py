@@ -72,7 +72,8 @@ class CreateDirsTests(unittest.TestCase):
         test_dir = os.getcwd()
         utils_dir = os.path.dirname(os.path.normpath(test_dir))
         fitbm_dir = os.path.dirname(os.path.normpath(utils_dir))
-        minimizer_json = os.path.join(fitbm_dir, "minimizers.json")
+        minimizer_json = os.path.join(fitbm_dir,
+                                      "minimizers_list_default.json")
 
         return minimizer_json
 
@@ -119,39 +120,28 @@ class CreateDirsTests(unittest.TestCase):
         self.assertListEqual(minmizers_expected, minimizers)
 
     def test_getMinimizers_load_correct_minimizers_scipy_read_file(self):
-        minimizer_list = {"scipy": ["lm", "trf"]}
-
-        with open('example_minimizer_list.json', 'w') as fp:
-            json.dump(minimizer_list, fp)
-        dir_path = str(os.path.dirname(os.path.realpath(__file__)))
-
         software_options = {'software': 'scipy',
-                            'minimizer_file': dir_path +
-                            '/example_minimizer_list.json'}
+                            'minimizer_file': self.get_minimizers_file()}
 
         minimizers, _ = get_minimizers(software_options)
-        minmizers_expected = ["lm", "trf"]
+        minmizers_expected = ["lm", "trf", "dogbox"]
 
         self.assertListEqual(minmizers_expected, minimizers)
-        os.remove('example_minimizer_list.json')
 
     def test_getMinimizers_load_correct_minimizers_mantid_read_file(self):
-        minimizer_list = {"mantid": ["BFGS",
-                                     "Conjugate gradient (Fletcher-Reeves imp.)",
-                                     "Conjugate gradient (Polak-Ribiere imp.)"]}
-        with open('example_minimizer_list.json', 'w') as fp:
-            json.dump(minimizer_list, fp)
-        dir_path = str(os.path.dirname(os.path.realpath(__file__)))
 
         software_options = {'software': 'mantid',
-                            'minimizer_file': dir_path +
-                            '/example_minimizer_list.json'}
+                            'minimizer_file': self.get_minimizers_file()}
 
         minimizers, _ = get_minimizers(software_options)
-        minmizers_expected = ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]
+        minmizers_expected = ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
+                              "Conjugate gradient (Polak-Ribiere imp.)",
+                              "Damped GaussNewton",
+                              "Levenberg-Marquardt", "Levenberg-MarquardtMD",
+                              "Simplex", "SteepestDescent",
+                              "Trust Region"]
 
         self.assertListEqual(minmizers_expected, minimizers)
-        os.remove('example_minimizer_list.json')
 
     def test_setupFittingProblems_get_correct_nist_probs(self):
 
