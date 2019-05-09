@@ -40,7 +40,9 @@ fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
 sys.path.insert(0, scripts_folder)
 
-from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
+from fitting_benchmarking import do_fitbm_group
+from utils import misc
+from utils import create_dirs
 from results_output import save_results_tables as printTables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
@@ -59,7 +61,6 @@ software_options = {'software': software}
 #                          "Trust Region"],
 #               "scipy": ["lm", "trf", "dogbox"]}
 minimizers = None
-
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
@@ -103,22 +104,37 @@ color_scale = [(1.1, 'ranking-top-1'),
 # problem_sets = ["Neutron_data", "NIST/average_difficulty"]
 problem_sets = ["NIST/average_difficulty"]
 for sub_dir in problem_sets:
-    # generate group label/name used for problem set
-    label = sub_dir.replace('/', '_')
+    # generate group group_name/name used for problem set
+    group_name = sub_dir.replace('/', '_')
 
     # Problem data directory
     data_dir = os.path.join(benchmark_probs_dir, sub_dir)
 
-    print('\nRunning the benchmarking on the {} problem set\n'.format(label))
-    results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
-                                                     data_dir=data_dir,
-                                                     use_errors=use_errors, results_dir=results_dir)
+    print('\nRunning the benchmarking on the {} problem set\n'.format(group_name))
 
-    print('\nProducing output for the {} problem set\n'.format(label))
+    print('Loading minimizers')
+    minimizers, software = misc.get_minimizers(software_options)
+
+    print('Loading fitting problems')
+    problem_groups = misc.setup_fitting_problems(data_dir, group_name)
+
+    print('Creating results directories')
+    results_dir = create_dirs.results(results_dir)
+    group_results_dir = create_dirs.group_results(results_dir, group_name)
+
+    user_input = misc.save_user_input(software, minimizers, group_name,
+                                      group_results_dir, use_errors)
+
+    print('\nFitting')
+    prob_results = None
+    prob_results = \
+        [do_fitbm_group(user_input, block) for block in problem_groups[group_name]]
+
+    print('\nProducing output for the {} problem set\n'.format(group_name))
     for idx, group_results in enumerate(results_per_group):
         # Display the runtime and accuracy results in a table
         printTables(software_options, group_results,
-                    group_name=label, use_errors=use_errors,
+                    group_name=group_name, use_errors=use_errors,
                     color_scale=color_scale, results_dir=results_dir)
 
     print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))

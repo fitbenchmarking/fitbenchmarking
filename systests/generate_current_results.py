@@ -40,24 +40,9 @@ from results_output import save_results_tables as printTables
 
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = 'mantid'
-minimizers = None
-# Custom minimizer options:
-# minimizers = {"mantid": ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
-#                          "Conjugate gradient (Polak-Ribiere imp.)",
-#                          "Damped GaussNewton",
-#                          "Levenberg-Marquardt", "Levenberg-MarquardtMD",
-#                          "Simplex", "SteepestDescent",
-#                          "Trust Region"],
-#              "scipy" : ["lm", "trf", "dogbox"]}
-try:
-  json_file = current_path + sys.argv[1]
-except:
-  json_file = None
-
-software_options = {'software': software,
-                    'json_file': json_file,
-                    'minimizers_list': minimizers}
+# SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
+software = 'scipy'
+software_options = {'software': software, 'minimizer_options': None}
 
 color_scale = [(1.1, 'ranking-top-1'),
                (1.33, 'ranking-top-2'),
@@ -72,8 +57,9 @@ benchmark_probs_dir = os.path.join(fitbenchmarking_path,
 results_dir = None
 use_errors = True
 
-problem_sets = ["Neutron_data", "NIST/low_difficulty", "NIST/average_difficulty",
-                "NIST/high_difficulty"]
+problem_sets = ["Neutron_data", "NIST/low_difficulty",
+                "NIST/average_difficulty", "NIST/high_difficulty"]
+
 for sub_dir in problem_sets:
   # generate group label/name used for problem set
   label = sub_dir.replace('/', '_')
