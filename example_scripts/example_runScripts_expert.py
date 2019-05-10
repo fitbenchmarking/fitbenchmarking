@@ -1,5 +1,7 @@
 """
-Script that runs the fitbenchmarking tool with various problems and minimizers.
+Script that runs the fitbenchmarking tool with various problems and minimizers
+for an expert user. This script will show exactly what fitbenchmarking is doing
+at each stage to enable a user to customize their problem to their needs.
 """
 
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
@@ -43,32 +45,28 @@ sys.path.insert(0, scripts_folder)
 from fitting_benchmarking import do_fitbm_group
 from utils import misc
 from utils import create_dirs
-from results_output import save_results_tables as printTables
+from results_output import save_tables, generate_tables, \
+    create_acc_tbl, create_runtime_tbl
+from resproc import visual_pages
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = 'scipy'
+software = 'mantid'
 software_options = {'software': software}
 
 # User defined minimizers
-# minimizers = {"mantid": ["BFGS",
-#                          "Conjugate gradient (Fletcher-Reeves imp.)",
-#                          "Conjugate gradient (Polak-Ribiere imp.)",
-#                          "Damped GaussNewton",
-#                          "Levenberg-Marquardt",
-#                          "Levenberg-MarquardtMD",
-#                          "Simplex",
-#                          "SteepestDescent",
-#                          "Trust Region"],
-#               "scipy": ["lm", "trf", "dogbox"]}
-minimizers = None
+custom_minimizers = {"mantid": ["BFGS",
+                                "Conjugate gradient (Fletcher-Reeves imp.)",
+                                "Conjugate gradient (Polak-Ribiere imp.)"],
+                     "scipy": ["lm"]}
+# custom_minimizers = None
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
     # Read custom minimizer options from file
     software_options['minimizer_options'] = current_path + sys.argv[1]
-elif minimizers:
+elif custom_minimizers:
     # Custom minimizer options:
-    software_options['minimizer_options'] = minimizers
+    software_options['minimizer_options'] = custom_minimizers
 else:
     # Using default minimizers from
     # fitbenchmarking/fitbenchmarking/minimizers_list_default.json
@@ -112,29 +110,51 @@ for sub_dir in problem_sets:
 
     print('\nRunning the benchmarking on the {} problem set\n'.format(group_name))
 
-    print('Loading minimizers')
+    # Processes software_options dictionary into Fitbenchmarking format
     minimizers, software = misc.get_minimizers(software_options)
 
-    print('Loading fitting problems')
+    # Sets up the problem groups specified by the user by providing
+    # a respective data directory.
     problem_groups = misc.setup_fitting_problems(data_dir, group_name)
 
-    print('Creating results directories')
     results_dir = create_dirs.results(results_dir)
     group_results_dir = create_dirs.group_results(results_dir, group_name)
 
+    # All parameters inputed by the user are stored in an object
     user_input = misc.save_user_input(software, minimizers, group_name,
                                       group_results_dir, use_errors)
 
-    print('\nFitting')
+    # Loops through group of problems and benchmark them
     prob_results = None
     prob_results = \
         [do_fitbm_group(user_input, block) for block in problem_groups[group_name]]
 
     print('\nProducing output for the {} problem set\n'.format(group_name))
-    for idx, group_results in enumerate(results_per_group):
-        # Display the runtime and accuracy results in a table
-        printTables(software_options, group_results,
-                    group_name=group_name, use_errors=use_errors,
-                    color_scale=color_scale, results_dir=results_dir)
+    for idx, group_results in enumerate(prob_results):
+
+        # Creates the results directory where the tables are located
+        tables_dir = create_dirs.restables_dir(results_dir, group_name)
+
+        # Creates the problem names with links to the visual display pages
+        # in rst
+        linked_problems = \
+            visual_pages.create_linked_probs(group_results,
+                                             group_name, results_dir)
+
+        # Generates accuracy and runtime normalised tables and summary tables
+        norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = \
+            generate_tables(group_results, minimizers)
+
+        # Creates an accuracy table
+        acc_tbl = create_acc_tbl(minimizers, linked_problems, norm_acc_rankings, use_errors, color_scale)
+
+        # Creates an runtime table
+        runtime_tbl = create_runtime_tbl(minimizers, linked_problems, norm_runtimes, use_errors, color_scale)
+
+        # Saves accuracy minimizer results
+        save_tables(tables_dir, acc_tbl, use_errors, group_name, 'acc')
+
+        # Saves runtime minimizer results
+        save_tables(tables_dir, runtime_tbl, use_errors, group_name, 'runtime')
 
     print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
