@@ -31,21 +31,36 @@ from parsing.fetch_data import *
 from utils import user_input
 
 
-def get_minimizers(software):
+def get_minimizers(software_options):
     """
     Gets an array of minimizers to fitbenchmark from the json file depending
     on which software is used.
-    @param software :: string defining the software used
-    @returns :: an array of strings containing minimizer names
+    @param software_options :: dictionary containing software used in fitting the problem and list of minimizers or location of json file contain minimizers
+    @returns :: an array of strings containing minimizer names and software used
     """
+    try:
+        software = software_options['software']
+        minimizer_options = software_options['minimizer_options']
+        if not minimizer_options:
+            current_path = os.path.dirname(os.path.realpath(__file__))
+            fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
+            minimizer_file = os.path.join(fitbm_path,
+                                          "minimizers_list_default.json")
+            minimizers_list = json.load(open(minimizer_file))
+        elif isinstance(minimizer_options, str):
+            minimizers_list = json.load(open(minimizer_options))
+        elif isinstance(minimizer_options, dict):
+            minimizers_list = minimizer_options
+        else:
+            raise ValueError('minimizer_options required to be None, string '
+                             'or dictionary, type(minimizer_options) '
+                             '= {}'.format(type(minimizer_options)))
+        minimizers = minimizers_list[software]
+    except:
+        raise ValueError('software_options required to be a dictionary with '
+                         'keys software and minimizer_options')
 
-    current_path = os.path.dirname(os.path.realpath(__file__))
-    fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
-    minimizers_json = os.path.join(fitbm_path, "minimizers.json")
-    all_minimizers = json.load(open(minimizers_json))
-    minimizers = all_minimizers[software]
-
-    return minimizers
+    return minimizers, software
 
 
 def setup_fitting_problems(data_dir, group_name):
