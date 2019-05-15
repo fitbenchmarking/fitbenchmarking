@@ -49,10 +49,10 @@ def create_accuracy_runtime_tbls(results_per_test, minimizers):
     for test_idx in range(0, len(results_per_test)):
         for minimiz_idx in range(0, len(minimizers)):
             accuracy_tbl[test_idx, minimiz_idx] = \
-            results_per_test[test_idx][minimiz_idx].chi_sq
+                results_per_test[test_idx][minimiz_idx].chi_sq
 
             time_tbl[test_idx, minimiz_idx] = \
-            results_per_test[test_idx][minimiz_idx].runtime
+                results_per_test[test_idx][minimiz_idx].runtime
 
     return accuracy_tbl, time_tbl
 

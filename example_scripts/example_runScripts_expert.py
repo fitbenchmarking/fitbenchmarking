@@ -54,8 +54,11 @@ software = ['scipy', 'mantid']
 software_options = {'software': software}
 
 # User defined minimizers
-custom_minimizers = {"mantid": ["BFGS"],
-                     "scipy": ["dogbox"]}
+custom_minimizers = {"mantid": ["BFGS",
+                                "Conjugate gradient (Fletcher-Reeves imp.)",
+                                "Conjugate gradient (Polak-Ribiere imp.)",
+                                "Damped GaussNewton"],
+                     "scipy": ["lm"]}
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
@@ -97,7 +100,7 @@ color_scale = [(1.1, 'ranking-top-1'),
 # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
 # "Muon_data" works for mantid minimizers
 # problem_sets = ["Neutron_data", "NIST/average_difficulty"]
-problem_sets = ["NIST/average_difficulty"]
+problem_sets = ["test"]
 for sub_dir in problem_sets:
     # generate group group_name/name used for problem set
     group_name = sub_dir.replace('/', '_')
@@ -118,29 +121,42 @@ for sub_dir in problem_sets:
     group_results_dir = create_dirs.group_results(results_dir, group_name)
 
     # All parameters inputed by the user are stored in an object
-    user_input = misc.save_user_input(software, minimizers, group_name,
-                                      group_results_dir, use_errors)
-
+    if len(software) == 1:
+        user_input = misc.save_user_input(software, minimizers, group_name,
+                                          group_results_dir, use_errors)
+    else:
+        user_input = []
+        for i in range(len(software)):
+            user_input.append(misc.save_user_input(software[i], minimizers[i],
+                                                   group_name,
+                                                   group_results_dir, use_errors))
     # Loops through group of problems and benchmark them
-    prob_results = None
-    prob_results = \
-        [do_fitbm_group(user_input, block) for block in problem_groups[group_name]]
+    out = []
+    for user in user_input:
+        for block in problem_groups[group_name]:
+            out.append(do_fitbm_group(user, block))
+    print (out)
+    prob_results = []
+    for a, b in zip(out[0], out[1]):
+        prob_results.append(a + b)
 
     print('\nProducing output for the {} problem set\n'.format(group_name))
-    for idx, group_results in enumerate(prob_results):
-
+    for idx, group_results in enumerate([prob_results]):
         # Creates the results directory where the tables are located
         tables_dir = create_dirs.restables_dir(results_dir, group_name)
 
+        try:
+            minimizers = sum(minimizers, [])
+        except:
+            pass
+
         # Creates the problem names with links to the visual display pages
         # in rst
-        linked_problems = \
-            visual_pages.create_linked_probs(group_results,
-                                             group_name, results_dir)
+        linked_problems = visual_pages.create_linked_probs(group_results,
+                                                           group_name, results_dir)
 
         # Generates accuracy and runtime normalised tables and summary tables
-        norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = \
-            generate_tables(group_results, minimizers)
+        norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = generate_tables(group_results, minimizers)
 
         # Creates an accuracy table
         acc_tbl = create_acc_tbl(minimizers, linked_problems, norm_acc_rankings, use_errors, color_scale)

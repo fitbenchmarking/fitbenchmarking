@@ -44,7 +44,7 @@ from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = 'scipy'
+software = 'mantid'
 software_options = {'software': software}
 
 # User defined minimizers
@@ -58,7 +58,9 @@ software_options = {'software': software}
 #                          "SteepestDescent",
 #                          "Trust Region"],
 #               "scipy": ["lm", "trf", "dogbox"]}
-minimizers = None
+minimizers = {"mantid": ["BFGS", "Simplex"],
+              "scipy": ["lm", "trf", "dogbox"]}
+# minimizers = None
 
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
@@ -101,7 +103,7 @@ color_scale = [(1.1, 'ranking-top-1'),
 # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
 # "Muon_data" works for mantid minimizers
 # problem_sets = ["Neutron_data", "NIST/average_difficulty"]
-problem_sets = ["NIST/average_difficulty"]
+problem_sets = ["test"]
 for sub_dir in problem_sets:
     # generate group label/name used for problem set
     label = sub_dir.replace('/', '_')
@@ -113,6 +115,7 @@ for sub_dir in problem_sets:
     results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
                                                      data_dir=data_dir,
                                                      use_errors=use_errors, results_dir=results_dir)
+    print (results_per_group)
 
     print('\nProducing output for the {} problem set\n'.format(label))
     for idx, group_results in enumerate(results_per_group):
