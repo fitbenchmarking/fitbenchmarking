@@ -91,12 +91,15 @@ def save_user_input(software, minimizers, group_name, results_dir, use_errors):
     @params :: please check the user_input.py file in the utils dir.
     @returns :: an object containing all the information specified by the user.
     """
-
-    uinput = user_input.UserInput()
-    uinput.software = software
-    uinput.minimizers = minimizers
-    uinput.group_name = group_name
-    uinput.group_results_dir = results_dir
-    uinput.use_errors = use_errors
-
+    if isinstance(software, str):
+        uinput = user_input.UserInput(software, minimizers, group_name,
+                                      results_dir, use_errors)
+    elif isinstance(software, list):
+        uinput = []
+        for i in range(len(software)):
+            uinput.append(user_input.UserInput(software[i], minimizers[i],
+                                               group_name,
+                                               results_dir, use_errors))
+    else:
+        raise TypeError('Software input required to be a string or list')
     return uinput

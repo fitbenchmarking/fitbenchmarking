@@ -42,7 +42,7 @@ fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
 sys.path.insert(0, scripts_folder)
 
-from fitting_benchmarking import do_fitbm_group
+from fitting_benchmarking import do_benchmarking
 from utils import misc
 from utils import create_dirs
 from results_output import save_tables, generate_tables, \
@@ -50,15 +50,14 @@ from results_output import save_tables, generate_tables, \
 from resproc import visual_pages
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = ['scipy', 'mantid']
+# software = ['mantid', 'scipy', 'mantid']
+software = 'mantid'
 software_options = {'software': software}
 
 # User defined minimizers
 custom_minimizers = {"mantid": ["BFGS",
-                                "Conjugate gradient (Fletcher-Reeves imp.)",
-                                "Conjugate gradient (Polak-Ribiere imp.)",
                                 "Damped GaussNewton"],
-                     "scipy": ["lm"]}
+                     "scipy": ["lm", "trf"]}
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
@@ -100,7 +99,7 @@ color_scale = [(1.1, 'ranking-top-1'),
 # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
 # "Muon_data" works for mantid minimizers
 # problem_sets = ["Neutron_data", "NIST/average_difficulty"]
-problem_sets = ["test"]
+problem_sets = ["NIST/average_difficulty"]
 for sub_dir in problem_sets:
     # generate group group_name/name used for problem set
     group_name = sub_dir.replace('/', '_')
@@ -121,34 +120,19 @@ for sub_dir in problem_sets:
     group_results_dir = create_dirs.group_results(results_dir, group_name)
 
     # All parameters inputed by the user are stored in an object
-    if len(software) == 1:
-        user_input = misc.save_user_input(software, minimizers, group_name,
-                                          group_results_dir, use_errors)
-    else:
-        user_input = []
-        for i in range(len(software)):
-            user_input.append(misc.save_user_input(software[i], minimizers[i],
-                                                   group_name,
-                                                   group_results_dir, use_errors))
+    user_input = misc.save_user_input(software, minimizers, group_name,
+                                      group_results_dir, use_errors)
+
     # Loops through group of problems and benchmark them
-    out = []
-    for user in user_input:
-        for block in problem_groups[group_name]:
-            out.append(do_fitbm_group(user, block))
-    print (out)
-    prob_results = []
-    for a, b in zip(out[0], out[1]):
-        prob_results.append(a + b)
+    prob_results = do_benchmarking(user_input, problem_groups, group_name)
 
     print('\nProducing output for the {} problem set\n'.format(group_name))
-    for idx, group_results in enumerate([prob_results]):
+    for idx, group_results in enumerate(prob_results):
         # Creates the results directory where the tables are located
         tables_dir = create_dirs.restables_dir(results_dir, group_name)
 
-        try:
+        if isinstance(software, list):
             minimizers = sum(minimizers, [])
-        except:
-            pass
 
         # Creates the problem names with links to the visual display pages
         # in rst
