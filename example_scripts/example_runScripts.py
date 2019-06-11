@@ -48,28 +48,18 @@ software = ['mantid', 'scipy']
 software_options = {'software': software}
 
 # User defined minimizers
-# minimizers = {"mantid": ["BFGS",
-#                          "Conjugate gradient (Fletcher-Reeves imp.)",
-#                          "Conjugate gradient (Polak-Ribiere imp.)",
-#                          "Damped GaussNewton",
-#                          "Levenberg-Marquardt",
-#                          "Levenberg-MarquardtMD",
-#                          "Simplex",
-#                          "SteepestDescent",
-#                          "Trust Region"],
+# custom_minimizers = {"mantid": ["BFGS", "Simplex"],
 #               "scipy": ["lm", "trf", "dogbox"]}
-minimizers = {"mantid": ["BFGS", "Simplex"],
-              "scipy": ["lm", "trf", "dogbox"]}
-# minimizers = None
+custom_minimizers = None
 
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
   # Read custom minimizer options from file
   software_options['minimizer_options'] = current_path + sys.argv[1]
-elif minimizers:
+elif custom_minimizers:
   # Custom minimizer options:
-  software_options['minimizer_options'] = minimizers
+  software_options['minimizer_options'] = custom_minimizers
 else:
   # Using default minimizers from
   # fitbenchmarking/fitbenchmarking/minimizers_list_default.json

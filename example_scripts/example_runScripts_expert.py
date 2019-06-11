@@ -51,13 +51,13 @@ from resproc import visual_pages
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
 # software = ['mantid', 'scipy', 'mantid']
-software = 'mantid'
+software = ['mantid', 'scipy']
 software_options = {'software': software}
 
 # User defined minimizers
-custom_minimizers = {"mantid": ["BFGS",
-                                "Damped GaussNewton"],
-                     "scipy": ["lm", "trf"]}
+# custom_minimizers = {"mantid": ["BFGS",
+#                                 "Damped GaussNewton"],
+#                      "scipy": ["lm", "trf"]}
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:

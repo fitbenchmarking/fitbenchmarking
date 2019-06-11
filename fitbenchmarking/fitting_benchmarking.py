@@ -77,22 +77,23 @@ def do_benchmarking(user_input, problem_groups, group_name):
 
   @returns :: array of result objects, per problem
   """
-  out = []
+
   if not isinstance(user_input, list):
+    prob_results = []
     for block in problem_groups[group_name]:
-      out.append(do_fitbm_group(user_input, block))
+      prob_results.append(do_fitbm_group(user_input, block))
   else:
+    list_prob_results = []
     for user in user_input:
       for block in problem_groups[group_name]:
-        out.append(do_fitbm_group(user, block))
-
-  prob_results = []
-  a = zip(*out)
-  for b in a:
-    list_out = []
-    for tup in b:
-      list_out += tup
-    prob_results.append(list_out)
+        list_prob_results.append(do_fitbm_group(user, block))
+    prob_results = []
+    tuple_prob_results = zip(*list_prob_results)
+    for tup in tuple_prob_results:
+      min_results = []
+      for i in tup:
+        min_results += i
+      prob_results.append(min_results)
 
   return [prob_results]
 
