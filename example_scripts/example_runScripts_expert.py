@@ -58,6 +58,7 @@ software_options = {'software': software}
 # custom_minimizers = {"mantid": ["BFGS",
 #                                 "Damped GaussNewton"],
 #                      "scipy": ["lm", "trf"]}
+custom_minimizers = None
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
