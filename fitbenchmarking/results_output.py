@@ -58,6 +58,9 @@ def save_results_tables(software_options, results_per_test, group_name,
     """
 
     minimizers, software = utils.misc.get_minimizers(software_options)
+    if isinstance(software, list):
+        minimizers = sum(minimizers, [])
+
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
         visual_pages.create_linked_probs(results_per_test, group_name, results_dir)

@@ -39,28 +39,36 @@ def get_minimizers(software_options):
     @returns :: an array of strings containing minimizer names and software used
     """
     try:
+
         software = software_options['software']
         minimizer_options = software_options['minimizer_options']
-        if not minimizer_options:
-            current_path = os.path.dirname(os.path.realpath(__file__))
-            fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
-            minimizer_file = os.path.join(fitbm_path,
-                                          "minimizers_list_default.json")
-            minimizers_list = json.load(open(minimizer_file))
-        elif isinstance(minimizer_options, str):
-            minimizers_list = json.load(open(minimizer_options))
-        elif isinstance(minimizer_options, dict):
-            minimizers_list = minimizer_options
-        else:
-            raise ValueError('minimizer_options required to be None, string '
-                             'or dictionary, type(minimizer_options) '
-                             '= {}'.format(type(minimizer_options)))
-        minimizers = minimizers_list[software]
+        if not isinstance(software, list):
+            software = [software]
+        minimizers = []
+        for x in software:
+            if not minimizer_options:
+                current_path = os.path.dirname(os.path.realpath(__file__))
+                fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
+                minimizer_file = os.path.join(fitbm_path,
+                                              "minimizers_list_default.json")
+                minimizers_list = json.load(open(minimizer_file))
+            elif isinstance(minimizer_options, str):
+                minimizers_list = json.load(open(minimizer_options))
+            elif isinstance(minimizer_options, dict):
+                minimizers_list = minimizer_options
+            else:
+                raise ValueError('minimizer_options required to be None, string '
+                                 'or dictionary, type(minimizer_options) '
+                                 '= {}'.format(type(minimizer_options)))
+            minimizers.append(minimizers_list[x])
     except:
         raise ValueError('software_options required to be a dictionary with '
                          'keys software and minimizer_options')
+    if len(software) > 1:
+        return minimizers, software
 
-    return minimizers, software
+    else:
+        return minimizers[0], software[0]
 
 
 def setup_fitting_problems(data_dir, group_name):
@@ -83,12 +91,15 @@ def save_user_input(software, minimizers, group_name, results_dir, use_errors):
     @params :: please check the user_input.py file in the utils dir.
     @returns :: an object containing all the information specified by the user.
     """
-
-    uinput = user_input.UserInput()
-    uinput.software = software
-    uinput.minimizers = minimizers
-    uinput.group_name = group_name
-    uinput.group_results_dir = results_dir
-    uinput.use_errors = use_errors
-
+    if isinstance(software, str):
+        uinput = user_input.UserInput(software, minimizers, group_name,
+                                      results_dir, use_errors)
+    elif isinstance(software, list):
+        uinput = []
+        for i in range(len(software)):
+            uinput.append(user_input.UserInput(software[i], minimizers[i],
+                                               group_name,
+                                               results_dir, use_errors))
+    else:
+        raise TypeError('Software input required to be a string or list')
     return uinput

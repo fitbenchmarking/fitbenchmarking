@@ -61,11 +61,41 @@ def do_fitting_benchmark(group_name, software_options, data_dir,
   user_input = misc.save_user_input(software, minimizers, group_name,
                                     group_results_dir, use_errors)
 
-  prob_results = None
-  prob_results = \
-      [do_fitbm_group(user_input, block) for block in problem_groups[group_name]]
+  prob_results = do_benchmarking(user_input, problem_groups, group_name)
 
   return prob_results, results_dir
+
+
+def do_benchmarking(user_input, problem_groups, group_name):
+  """
+  Loops through software and benchmarks each problem within the problem
+  group.
+
+  @param user_input :: all the information specified by the user
+  @param problem_block :: array of paths to problem files in the group
+  @param problem_name :: name of group to be benchmarked
+
+  @returns :: array of result objects, per problem
+  """
+
+  if not isinstance(user_input, list):
+    prob_results = []
+    for block in problem_groups[group_name]:
+      prob_results.append(do_fitbm_group(user_input, block))
+  else:
+    list_prob_results = []
+    for user in user_input:
+      for block in problem_groups[group_name]:
+        list_prob_results.append(do_fitbm_group(user, block))
+    prob_results = []
+    tuple_prob_results = zip(*list_prob_results)
+    for tup in tuple_prob_results:
+      min_results = []
+      for i in tup:
+        min_results += i
+      prob_results.append(min_results)
+
+  return [prob_results]
 
 
 def do_fitbm_group(user_input, problem_block):

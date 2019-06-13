@@ -42,7 +42,7 @@ fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
 sys.path.insert(0, scripts_folder)
 
-from fitting_benchmarking import do_fitbm_group
+from fitting_benchmarking import do_benchmarking
 from utils import misc
 from utils import create_dirs
 from results_output import save_tables, generate_tables, \
@@ -50,15 +50,15 @@ from results_output import save_tables, generate_tables, \
 from resproc import visual_pages
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = 'mantid'
+# software = ['mantid', 'scipy', 'mantid']
+software = ['mantid', 'scipy']
 software_options = {'software': software}
 
 # User defined minimizers
-custom_minimizers = {"mantid": ["BFGS",
-                                "Conjugate gradient (Fletcher-Reeves imp.)",
-                                "Conjugate gradient (Polak-Ribiere imp.)"],
-                     "scipy": ["lm"]}
-# custom_minimizers = None
+# custom_minimizers = {"mantid": ["BFGS",
+#                                 "Damped GaussNewton"],
+#                      "scipy": ["lm", "trf"]}
+custom_minimizers = None
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
@@ -120,30 +120,28 @@ for sub_dir in problem_sets:
     results_dir = create_dirs.results(results_dir)
     group_results_dir = create_dirs.group_results(results_dir, group_name)
 
-    # All parameters inputed by the user are stored in an object
+    # All parameters inputted by the user are stored in an object
     user_input = misc.save_user_input(software, minimizers, group_name,
                                       group_results_dir, use_errors)
 
     # Loops through group of problems and benchmark them
-    prob_results = None
-    prob_results = \
-        [do_fitbm_group(user_input, block) for block in problem_groups[group_name]]
+    prob_results = do_benchmarking(user_input, problem_groups, group_name)
 
     print('\nProducing output for the {} problem set\n'.format(group_name))
     for idx, group_results in enumerate(prob_results):
-
         # Creates the results directory where the tables are located
         tables_dir = create_dirs.restables_dir(results_dir, group_name)
 
+        if isinstance(software, list):
+            minimizers = sum(minimizers, [])
+
         # Creates the problem names with links to the visual display pages
         # in rst
-        linked_problems = \
-            visual_pages.create_linked_probs(group_results,
-                                             group_name, results_dir)
+        linked_problems = visual_pages.create_linked_probs(group_results,
+                                                           group_name, results_dir)
 
         # Generates accuracy and runtime normalised tables and summary tables
-        norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = \
-            generate_tables(group_results, minimizers)
+        norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = generate_tables(group_results, minimizers)
 
         # Creates an accuracy table
         acc_tbl = create_acc_tbl(minimizers, linked_problems, norm_acc_rankings, use_errors, color_scale)
