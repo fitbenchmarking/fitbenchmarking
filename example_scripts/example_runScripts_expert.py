@@ -119,7 +119,7 @@ for sub_dir in problem_sets:
     results_dir = create_dirs.results(results_dir)
     group_results_dir = create_dirs.group_results(results_dir, group_name)
 
-    # All parameters inputed by the user are stored in an object
+    # All parameters inputted by the user are stored in an object
     user_input = misc.save_user_input(software, minimizers, group_name,
                                       group_results_dir, use_errors)
 
