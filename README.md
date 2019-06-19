@@ -6,7 +6,7 @@
 [![Chat](https://img.shields.io/badge/chat-CompareFitMinimizers-lightgrey.svg?style=flat-square&logo=slack)](https://slack.com/)
 
 # FitBenchmarking
-FitBenchmarking is a tool for comparing different minimizers/fitting software based on their accuracy and runtimes. Other documentation can also be found on the FitBenchmarking [Wiki](https://github.com/fitbenchmarking/fitbenchmarking/wiki).
+FitBenchmarking is a tool for comparing different minimizers/fitting software based on their accuracy and runtimes. For further documentation on FitBenchmarking see also [Wiki](https://github.com/fitbenchmarking/fitbenchmarking/wiki).
 
 
 ## Quick Start
