@@ -1,3 +1,1 @@
-# Docs Resources
-
-Here are the images and other materials used in the main repository Readme. The documentation for fitBenchmarking will expand over time as more feedback is received.
+This folder includes images etc. used in the main FitBenchmarking [README](../README.md). Other documentation can also be found on the FitBenchmarking [Wiki](https://github.com/fitbenchmarking/fitbenchmarking/wiki).
