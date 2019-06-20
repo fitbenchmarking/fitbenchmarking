@@ -94,8 +94,9 @@ def do_benchmarking(user_input, problem_groups, group_name):
       for i in tup:
         min_results += i
       prob_results.append(min_results)
+    prob_results = [prob_results]
 
-  return [prob_results]
+  return prob_results
 
 
 def do_fitbm_group(user_input, problem_block):

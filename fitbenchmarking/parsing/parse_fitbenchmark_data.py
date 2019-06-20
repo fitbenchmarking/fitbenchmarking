@@ -61,8 +61,9 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._type = "FitBenchmark"
 
         self._starting_values = None
-        self._start_x = entries['fit_parameters']['StartX']
-        self._end_x = entries['fit_parameters']['EndX']
+        if 'fit_parameters' in entries:
+            self._start_x = entries['fit_parameters']['StartX']
+            self._end_x = entries['fit_parameters']['EndX']
 
         super(FittingProblem, self).close_file()
 

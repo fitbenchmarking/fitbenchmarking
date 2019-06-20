@@ -50,7 +50,6 @@ from results_output import save_tables, generate_tables, \
 from resproc import visual_pages
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-# software = ['mantid', 'scipy', 'mantid']
 software = ['mantid', 'scipy']
 software_options = {'software': software}
 
