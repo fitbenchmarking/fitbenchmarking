@@ -31,6 +31,7 @@ import re
 from resproc import visual_pages
 
 
+
 def display_name_for_minimizers(names):
     """
     Converts minimizer names into their "display names". For example
