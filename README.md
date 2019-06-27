@@ -20,6 +20,12 @@ FitBenchmarking is a tool for comparing different minimizers/fitting software ba
 5. Open the mantidpython terminal
     * Ubuntu: in a normal terminal cd to /opt/Mantid/bin and run `./mantidpython`
     * Windows: go to where you installed Mantid and search for a file called `mantidpython`
+    * macOS: in a normal terminal run `/Applications/MantidPlot.app/Contents/MacOS/mantidpython`
+#### For macOS ####
+6. On the mantidpython terminal, run the following IPython command:
+    - `!/usr/bin/python -m pip install docutils==0.12 --user`
+
+The above step is done to ensure that the compatible version of docutils packages (version 0.12) is installed. 
 
 Finally, in this terminal, run `example_scripts/example_runScript.py`, located in the fitbenchmarking folder. This example script fit benchmarks Mantid using all the available minimizers. The resulting tables can be found in `example_scripts/results`.
 
