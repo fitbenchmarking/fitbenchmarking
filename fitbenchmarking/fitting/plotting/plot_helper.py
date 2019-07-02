@@ -175,6 +175,8 @@ class plot(data):
             plt.show()
         else:
             output_file = save.replace(",", "")
-            logger.info("saving to " + output_file.replace(" ", "_"))
+            output_file = output_file.replace(" ","_")
+            logger.info("Saved " + output_file.rsplit('/', 1)[1] + " to "
+                        + output_file[output_file.find("fitbenchmarking"):])
         plt.savefig(output_file.replace(" ", "_"))
 

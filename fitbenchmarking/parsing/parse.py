@@ -38,8 +38,8 @@ def parse_problem_file(prob_file):
     """
 
     prob_type = determine_problem_type(prob_file)
-    logger.info("*** Loading {0} formatted problem definition "
-                "file {1} ***".format(prob_type, prob_file))
+    logger.info("Loading {0} formatted problem definition file {1} | Path: "
+                "{2}".format(prob_type,prob_file.rsplit('/',1)[1],prob_file[prob_file.find('fitbenchmarking'):]))
 
     if prob_type == "NIST":
         problem = parse_nist_data.FittingProblem(prob_file)

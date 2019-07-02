@@ -47,7 +47,7 @@ def get_problem_files(data_dir):
         problems.sort()
         logger.info('List of all problem definition files:')
         for problem in problems:
-            logger.info(problem)
+            logger.info(problem.rsplit('/',1)[1])
         probs_all.append(problems)
 
     return probs_all
