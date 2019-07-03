@@ -44,7 +44,7 @@ def function_definitions(problem):
         # NIST data requires prior formatting
         nb_start_vals = len(problem.starting_values[0][1])
         function_defs = parse_nist_function_definitions(problem, nb_start_vals)
-    elif problem.type == 'FitBenchmark'.upper():
+    elif (problem.type).upper() == 'FitBenchmark'.upper():
         # Native FitBenchmark format does not require any processing
         function_defs = []
         function_defs.append(problem.equation)
