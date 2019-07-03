@@ -40,9 +40,6 @@ def parse_problem_file(prob_file):
     """
 
     prob_type = determine_problem_type(prob_file)
-    # print(os.path.basename(prob_file))
-    # logger.info("Loading {0} formatted problem definition file {1} | Path: "
-    #             "{2}".format(prob_type,prob_file.rsplit('/',1)[1],prob_file[prob_file.find('fitbenchmarking'):]))
     logger.info("Loading {0} formatted problem definition file {1} | Path: "
                 "{2}".format(prob_type,os.path.basename(prob_file),prob_file[prob_file.find('fitbenchmarking'):]))
 
