@@ -23,6 +23,7 @@ the fitbenchmarking tool.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 from __future__ import (absolute_import, division, print_function)
 
+import os
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -176,7 +177,7 @@ class plot(data):
         else:
             output_file = save.replace(",", "")
             output_file = output_file.replace(" ","_")
-            logger.info("Saved " + output_file.rsplit('/', 1)[1] + " to "
+            logger.info("Saved " + os.path.basename(output_file) + " to "
                         + output_file[output_file.find("fitbenchmarking"):])
         plt.savefig(output_file.replace(" ", "_"))
 
