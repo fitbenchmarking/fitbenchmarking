@@ -52,9 +52,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         self._data_x = data_pattern[:, 1]
         self._data_y = data_pattern[:, 0]
-
-        self._ref_residual_sum_sq = residual_sum_sq
-
         self._name = os.path.basename(self.contents.name.split('.')[0])
         self._equation = self.parse_equation(equation_text)
         self._type = "NIST"
@@ -88,8 +85,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
                 equation_text, idx = self.get_nist_model(lines, idx)
             elif 'Starting values' in line or 'Starting Values' in line:
                 starting_values, idx = self.get_nist_starting_values(lines, idx)
-            elif line.startswith('Residual Sum of Squares'):
-                residual_sum_sq = float(line.split()[4])
             elif line.startswith("Data:"):
                 if " x" in line and " y " in line:
                     data_pattern_text, idx = self.get_data_pattern_txt(lines, idx)

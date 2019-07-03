@@ -53,9 +53,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._data_x = wks_imported.readX(0)
         self._data_y = wks_imported.readY(0)
         self._data_e = wks_imported.readE(0)
-
-        self._ref_residual_sum_sq = 0
-
         self._name = entries['name']
         self._equation = entries['function']
         self._type = "FitBenchmark"

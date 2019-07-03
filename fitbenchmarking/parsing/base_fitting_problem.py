@@ -56,10 +56,6 @@ class BaseFittingProblem(object):
         self._data_y = None
         self._data_e = None
 
-        # The 'certified' or reference sum of squares, if provided
-        # (for example in NIST tests).
-        self._ref_residual_sum_sq = None
-
         # Initialize contents of file. Here included to reduce I/O, i.e.
         # read file content once and then process as needed
         self._contents = None
@@ -149,14 +145,6 @@ class BaseFittingProblem(object):
     @data_e.setter
     def data_e(self, value):
         self._data_e = value
-
-    @property
-    def ref_residual_sum_sq(self):
-        return self._ref_residual_sum_sq
-
-    @ref_residual_sum_sq.setter
-    def ref_residual_sum_sq(self, value):
-        self._ref_residual_sum_sq = value
 
     @property
     def contents(self):
