@@ -57,7 +57,8 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         self._name = os.path.basename(self.contents.name.split('.')[0])
         self._equation = self.parse_equation(equation_text)
-        self._type = "NIST"
+
+        self._type = ((os.path.basename(__file__)).split('_')[1]).upper()
 
         self._starting_values = starting_values
         # self._start_x = -np.inf

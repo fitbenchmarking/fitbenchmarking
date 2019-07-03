@@ -40,7 +40,6 @@ class BaseFittingProblem(object):
         # Initializes base class with filename
         self._fname = fname
 
-        self._type = None
         # Name (title) of the fitting problem
         self._name = None
         # Equation (function or model) to fit against data
