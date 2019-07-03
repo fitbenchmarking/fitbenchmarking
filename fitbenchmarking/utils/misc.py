@@ -26,8 +26,9 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import json
+import glob
 
-from parsing.fetch_data import *
+from utils.logging_setup import logger
 from utils import user_input
 
 
@@ -103,3 +104,25 @@ def save_user_input(software, minimizers, group_name, results_dir, use_errors):
     else:
         raise TypeError('Software input required to be a string or list')
     return uinput
+
+def get_problem_files(data_dir):
+    """
+    Gets all the problem definition files from the neutron directory.
+
+    @param dirs :: array of directories that contain the problems
+
+    @returns :: array containing paths to all the problems
+    """
+    probs_all = []
+    dirs = filter(os.path.isdir, os.listdir(data_dir))
+    if dirs == [] or dirs == ['data_files']:
+        dirs.insert(0, data_dir)
+    for directory in dirs:
+        test_data = glob.glob(directory + '/*.*')
+        problems = [os.path.join(directory, data) for data in test_data]
+        problems.sort()
+        for problem in problems:
+            logger.info(problem)
+        probs_all.append(problems)
+
+    return probs_all
