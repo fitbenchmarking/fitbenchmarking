@@ -70,22 +70,18 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
     def get_data_file(self, fname, input_file):
         """
         Gets the path to the fitbenchmark problem data_file used in the problem.
-        sep_idx is used to find the last separator in the problem file path
-        and set up the path for the data_files folder i.e truncates the path
-        to ../Neutron_data and adds ../Neutron_data/data_files
 
         @param fname :: path to the problem definition file
+        @param dirpath :: path of the folder containing data files
         @param input_file :: file name of the data file
 
         @returns :: path to the data files directory (str)
         """
 
-        prefix = ""
-        if os.sep in fname:
-            sep_idx = fname.rfind(os.sep)
-            prefix = os.path.join(fname[:sep_idx], "data_files")
+        [x[0] for x in os.walk(os.path.dirname(fname))]
+        dirpath = x[0]
 
-        data_file = os.path.join(prefix, input_file)
+        data_file = os.path.join(dirpath, input_file)
 
         return data_file
 
