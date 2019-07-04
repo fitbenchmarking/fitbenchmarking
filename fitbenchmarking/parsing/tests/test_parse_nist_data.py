@@ -123,7 +123,6 @@ class ParseNistTests(unittest.TestCase):
         data_pattern = self.setup_misra1a_expected_data_points()
         prob.data_x = data_pattern[:, 1]
         prob.data_y = data_pattern[:, 0]
-        prob.ref_residual_sum_sq = 1.2455138894e-01
 
         return prob
 
@@ -139,8 +138,7 @@ class ParseNistTests(unittest.TestCase):
                          problem.starting_values)
         np.testing.assert_allclose(problem_expected.data_x, problem.data_x)
         np.testing.assert_allclose(problem_expected.data_y, problem.data_y)
-        self.assertEqual(problem_expected.ref_residual_sum_sq,
-                         problem.ref_residual_sum_sq)
+
 
     def test_storeProbDetails_correct_storing(self):
 
@@ -148,7 +146,6 @@ class ParseNistTests(unittest.TestCase):
         parsed_eq = 'b1*(1-exp(-b2*x))'
         starting_values = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
         data_pattern = self.setup_misra1a_expected_data_points()
-        residual_sum_sq = 1.2455138894e-01
 
         prob = FittingProblem(fname)
 
@@ -160,8 +157,6 @@ class ParseNistTests(unittest.TestCase):
                          prob.starting_values)
         np.testing.assert_allclose(prob_expected.data_x, prob.data_x)
         np.testing.assert_allclose(prob_expected.data_y, prob.data_y)
-        self.assertEqual(prob_expected.ref_residual_sum_sq,
-                         prob.ref_residual_sum_sq)
 
     def test_parseLineByLine_correct_lines(self):
 
@@ -175,12 +170,10 @@ class ParseNistTests(unittest.TestCase):
         data_pattern_text_expected = self.setup_misra1a_data_pattern_text()
         starting_values_expected = [['b1', [500.0, 250.0]],
                                     ['b2', [0.0001, 0.0005]]]
-        residual_sum_sq_expected = 1.2455138894e-01
 
         self.assertEqual(equation_text_expected, equation_text)
         self.assertListEqual(data_pattern_text_expected, data_pattern_text)
         self.assertListEqual(starting_values_expected, starting_values)
-        self.assertEqual(residual_sum_sq_expected, residual_sum_sq)
 
     def test_getNistModel_return_proper_eqtxt(self):
 
