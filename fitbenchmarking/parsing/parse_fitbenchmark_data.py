@@ -72,12 +72,12 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         Gets the path to the fitbenchmark problem data_file used in the problem.
 
         @param fname :: path to the problem definition file
-        @param dirpath :: path of the folder containing data files
         @param input_file :: file name of the data file
 
         @returns :: path to the data files directory (str)
         """
 
+        #find path of the folder containing data files
         [x[0] for x in os.walk(os.path.dirname(fname))]
         dirpath = x[0]
 
