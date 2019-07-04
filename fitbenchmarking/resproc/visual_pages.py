@@ -344,10 +344,11 @@ def save_page(rst_text, prob_name, file_path):
         print(rst_text, file=visual_rst)
         logger.info('Saved {prob_name}.{extension} to {working_directory}'.
                     format(prob_name=prob_name, extension=FILENAME_EXT_TXT,
-                           working_directory=file_path))
+                           working_directory=file_path[file_path.find('fitbenchmarking'):]))
 
     with open(file_path + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
         logger.info('Saved {prob_name}.{extension} to {working_directory}'.
                     format(prob_name=prob_name, extension=FILENAME_EXT_HTML,
-                           working_directory=file_path))
+                           working_directory=file_path[file_path.find('fitbenchmarking'):]))
+

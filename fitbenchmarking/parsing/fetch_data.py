@@ -45,8 +45,9 @@ def get_problem_files(data_dir):
         test_data = glob.glob(directory + '/*.*')
         problems = [os.path.join(directory, data) for data in test_data]
         problems.sort()
+        logger.info('List of all problem definition files:')
         for problem in problems:
-            logger.info(problem)
+            logger.info(os.path.basename(problem))
         probs_all.append(problems)
 
     return probs_all

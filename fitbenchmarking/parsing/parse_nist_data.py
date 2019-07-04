@@ -98,9 +98,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
                 # print("unknown line in supposedly NIST test file, ignoring: {0}".
                 #       format(line))
 
-        logger.info("%d lines were ignored in this problem file.\n"
-                    "If any problems occur, please uncomment line above this print "
-                    "to display the full output." % ignored_lines)
+        logger.info("{0} lines were ignored in this problem file".format(ignored_lines))
 
         return equation_text, data_pattern_text, starting_values, residual_sum_sq
 
