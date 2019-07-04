@@ -48,3 +48,10 @@ handler.setFormatter(formatter)
 logger = logging.getLogger('fitbenchmarking')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
+
+# Define a Handler which writes WARNING messages or higher to the console
+console = logging.StreamHandler()
+console.setLevel(logging.WARNING)
+console.setFormatter(formatter)
+logging.getLogger('').addHandler(console)
+
