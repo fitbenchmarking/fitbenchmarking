@@ -45,6 +45,7 @@ from results_output import save_results_tables as printTables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
 software = 'mantid'
+# software = 'scipy'
 software_options = {'software': software}
 
 # User defined minimizers
