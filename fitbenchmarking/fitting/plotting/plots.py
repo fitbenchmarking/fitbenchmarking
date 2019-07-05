@@ -25,9 +25,7 @@ problem, a best fit plot and a starting guess plot.
 
 from __future__ import (absolute_import, division, print_function)
 
-from scipy.optimize import curve_fit
 import os
-import numpy as np
 import mantid.simpleapi as msapi
 from fitting.plotting.plot_helper import *
 from utils import create_dirs
