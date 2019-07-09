@@ -66,9 +66,9 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """
-        Find/create the (full) path to a data_file specified in a fitbenchmark definition file, where
+        Find/create the (full) path to a data_file specified in a FitBenchmark definition file, where
         the data_file is search for in the directory of the definition file and subfolders of this 
-        definition
+        file
 
         @param full_path_of_fitting_def_file :: (full) path of a FitBenchmark definition file
         @param data_file_name :: the name of the data file as specified in the FitBenchmark definition file
