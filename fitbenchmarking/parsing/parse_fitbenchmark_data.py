@@ -76,12 +76,15 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         @returns :: path to the data files directory (str)
         """
-
+        data_file = None
         #find path of the folder containing data files
-        [x[0] for x in os.walk(os.path.dirname(fname))]
-        dirpath = x[0]
+        for root, dirs, files in os.walk(os.path.dirname(fname)):
+            for name in files:
+                if input_file == name:
+                    data_file = os.path.join(root, input_file)
 
-        data_file = os.path.join(dirpath, input_file)
+        if data_file == None:
+            logger.error("Data file {0} not found".format(input_file))
 
         return data_file
 
