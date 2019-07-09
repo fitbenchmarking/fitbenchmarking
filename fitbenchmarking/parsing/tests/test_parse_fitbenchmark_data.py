@@ -74,7 +74,6 @@ class ParseFitbenchmarkTests(unittest.TestCase):
         if 'fit_parameters' in entries:
             problem.start_x = entries['fit_parameters']['StartX']
             problem.end_x = entries['fit_parameters']['EndX']
-        problem.ref_residual_sum_sq = 0
         data_file = os.path.join(bench_prob_dir, 'Neutron_data',
                                  'data_files', entries['input_file'])
         store_main_problem_data(data_file, problem)

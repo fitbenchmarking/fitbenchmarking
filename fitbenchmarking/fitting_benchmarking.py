@@ -52,6 +52,7 @@ def do_fitting_benchmark(group_name, software_options, data_dir,
               the path to the results directory
   """
 
+  logger.info("Loading minimizers from {0}".format(software_options['software']))
   minimizers, software = misc.get_minimizers(software_options)
   problem_groups = misc.setup_fitting_problems(data_dir, group_name)
 
