@@ -50,6 +50,8 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
             residual_sum_sq = self.parse_line_by_line(self.contents)
         data_pattern = self.parse_data_pattern(data_pattern_text)
 
+        self._start_x, self._end_x = self.get_start_x_and_end_x(data_pattern[:, 1])
+
         self._data_x = data_pattern[:, 1]
         self._data_y = data_pattern[:, 0]
 
@@ -60,8 +62,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._type = "NIST"
 
         self._starting_values = starting_values
-        # self._start_x = -np.inf
-        # self._end_x = np.inf
 
         super(FittingProblem, self).close_file()
 
@@ -95,8 +95,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
                     data_pattern_text, idx = self.get_data_pattern_txt(lines, idx)
             else:
                 ignored_lines += 1
-                # print("unknown line in supposedly NIST test file, ignoring: {0}".
-                #       format(line))
 
         logger.info("{0} lines were ignored in this problem file".format(ignored_lines))
 
@@ -303,3 +301,20 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
             alt_values = [float(startval_str[2])]
 
         return alt_values
+
+    def get_start_x_and_end_x(self, x_data):
+        """
+
+        Get the start and end value of x from the list of x values.
+
+        @param x_data :: list containing x values
+        @return :: the start and end values of the x data
+        """
+
+
+        sorted_x_data = sorted(x_data)
+
+        start_x = sorted_x_data[0]
+        end_x = sorted_x_data[-1]
+
+        return start_x, end_x
