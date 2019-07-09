@@ -64,24 +64,26 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         super(FittingProblem, self).close_file()
 
-    def get_data_file(self, fname, input_file):
+    def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """
-        Gets the path to the fitbenchmark problem data_file used in the problem.
+        Find/create the (full) path to a data_file specified in a fitbenchmark definition file, where
+        the data_file is search for in the directory of the definition file and subfolders of this 
+        definition
 
-        @param fname :: path to the problem definition file
-        @param input_file :: file name of the data file
+        @param full_path_of_fitting_def_file :: (full) path of a FitBenchmark definition file
+        @param data_file_name :: the name of the data file as specified in the FitBenchmark definition file
 
-        @returns :: path to the data files directory (str)
+        @returns :: (full) path to a data file (str). Return None if not found
         """
         data_file = None
-        #find path of the folder containing data files
-        for root, dirs, files in os.walk(os.path.dirname(fname)):
+        # find or search for path for data_file_name
+        for root, dirs, files in os.walk(os.path.dirname(full_path_of_fitting_def_file)):
             for name in files:
-                if input_file == name:
-                    data_file = os.path.join(root, input_file)
+                if data_file_name == name:
+                    data_file = os.path.join(root, data_file_name)
 
         if data_file == None:
-            logger.error("Data file {0} not found".format(input_file))
+            logger.error("Data file {0} not found".format(data_file_name))
 
         return data_file
 
