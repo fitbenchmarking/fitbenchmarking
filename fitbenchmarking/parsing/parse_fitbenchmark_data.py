@@ -58,7 +58,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         self._name = entries['name']
         self._equation = entries['function']
-        self._type = ((os.path.basename(__file__)).split('_')[1]).upper()
 
         self._starting_values = None
         if 'fit_parameters' in entries:

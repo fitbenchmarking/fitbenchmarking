@@ -33,18 +33,19 @@ def function_definitions(problem):
     Transforms the prob.equation field into a function that can be
     understood by the mantid fitting software.
 
-    @param prob :: object holding the problem information
+    @param problem :: object holding the problem information
 
     @returns :: a function definitions string with functions that
                 mantid understands
     """
 
-    # logger.info(problem)
-    if problem.type == 'NIST':
+    problem_type = extract_problem_type(problem)
+
+    if problem_type == 'NIST':
         # NIST data requires prior formatting
         nb_start_vals = len(problem.starting_values[0][1])
         function_defs = parse_nist_function_definitions(problem, nb_start_vals)
-    elif (problem.type).upper() == 'FitBenchmark'.upper():
+    elif problem_type == 'FitBenchmark'.upper():
         # Native FitBenchmark format does not require any processing
         function_defs = []
         function_defs.append(problem.equation)
@@ -78,3 +79,17 @@ def parse_nist_function_definitions(problem, nb_start_vals):
                              format(problem.equation, start_val_str))
 
     return function_defs
+
+def extract_problem_type(problem):
+    """
+    This function gets the problem object and figure out the problem type
+    from the file name that the class that it has been sent from
+
+    @param problem :: object holding the problem information
+
+    @returns :: the type of the problem (e.g. NIST)
+    """
+    problem_file_name = problem.__class__.__module__
+    problem_type = (problem_file_name.split('_')[1]).upper()
+
+    return problem_type

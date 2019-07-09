@@ -70,14 +70,6 @@ class BaseFittingProblem(object):
         self._contents.close()
 
     @property
-    def type(self):
-        return self._type
-
-    @type.setter
-    def type(self, value):
-        self._type = value
-
-    @property
     def fname(self):
         return self._fname
 
