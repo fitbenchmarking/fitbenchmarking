@@ -50,7 +50,6 @@ class ScipyTests(unittest.TestCase):
 
         fname = self.neutron_peak_19_file()
         prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
-        prob.type = 'FitBenchmark'
         prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                          "name=BackToBackExponential,"
                          "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
@@ -78,7 +77,6 @@ class ScipyTests(unittest.TestCase):
         prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                          "name=BackToBackExponential,"
                          "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
-        prob.type = 'FitBenchmark'
 
         function_defs = function_definitions(prob)
         expected_params_array = np.array([0, 0, 597.076, 1, 0.05, 24027.5, 22.9096])

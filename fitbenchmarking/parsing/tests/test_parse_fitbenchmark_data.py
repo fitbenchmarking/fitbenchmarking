@@ -44,7 +44,8 @@ class ParseFitbenchmarkTests(unittest.TestCase):
         parent_dir = os.path.dirname(os.path.normpath(test_dir))
         main_dir = os.path.dirname(os.path.normpath(parent_dir))
         root_dir = os.path.dirname(os.path.normpath(main_dir))
-        bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
+        bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
+        bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
 
         return bench_prob_dir
 
