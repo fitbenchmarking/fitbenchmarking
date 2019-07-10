@@ -15,7 +15,9 @@ sys.path.insert(0, main_dir)
 from fitting.mantid.func_def import function_definitions
 from fitting.mantid.func_def import parse_nist_function_definitions
 
-from parsing.base_fitting_problem import BaseFittingProblem
+# from parsing.base_fitting_problem import BaseFittingProblem
+from parsing.parse_nist_data import FittingProblem as NISTFittingProblem
+from parsing.parse_fitbenchmark_data import FittingProblem as FBFittingProblem
 
 
 class MantidTests(unittest.TestCase):
@@ -30,9 +32,26 @@ class MantidTests(unittest.TestCase):
     parent_dir = os.path.dirname(os.path.normpath(test_dir))
     main_dir = os.path.dirname(os.path.normpath(parent_dir))
     root_dir = os.path.dirname(os.path.normpath(main_dir))
-    bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
+    bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
+    bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
     fname = os.path.join(bench_prob_dir, 'NIST', 'low_difficulty',
                          'Misra1a.dat')
+
+    return fname
+
+  def ENGINX_193749(self):
+    """
+    Helper function that returns the path to
+    /fitbenchmarking/benchmark_problems
+    """
+
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    parent_dir = os.path.dirname(os.path.normpath(test_dir))
+    main_dir = os.path.dirname(os.path.normpath(parent_dir))
+    root_dir = os.path.dirname(os.path.normpath(main_dir))
+    bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
+    bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
+    fname = os.path.join(bench_prob_dir, 'Neutron_data', 'ENGINX193749_calibration_peak19.txt')
 
     return fname
 
@@ -58,9 +77,9 @@ class MantidTests(unittest.TestCase):
                              [81.78, 760.0]])
 
     fname = self.misra1a_file()
-    prob = BaseFittingProblem(fname)
+    prob = NISTFittingProblem(fname)
     prob.name = 'Misra1a'
-    prob.type = 'NIST'
+    # prob.type = 'NIST'
     prob.equation = 'b1*(1-exp(-b2*x))'
     prob.starting_values = [['b1', [500.0, 250.0]],
                             ['b2', [0.0001, 0.0005]]]
@@ -75,10 +94,10 @@ class MantidTests(unittest.TestCase):
     ENGINX193749_calibration_peak19.txt
     """
 
-    fname = self.misra1a_file()
-    prob = BaseFittingProblem(fname)
+    fname = self.ENGINX_193749()
+    prob = FBFittingProblem(fname)
     prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
-    prob.type = 'FitBenchmark'
+    # prob.type = 'FitBenchmark'
     prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                      "name=BackToBackExponential,"
                      "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
