@@ -51,7 +51,7 @@ def function_definitions(problem):
         function_defs.append(problem.equation)
     else:
         raise NameError('Currently data types supported are FitBenchmark'
-                        ' and nist, data type supplied was .{}'.format(ext))
+                        ' and nist, data type supplied was {}'.format(problem_type))
 
     return function_defs
 
