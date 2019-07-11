@@ -98,13 +98,13 @@ class ParseFitbenchmarkTests(unittest.TestCase):
     def test_getDataFilesDir_return_data_files_path(self):
 
         fname = self.neutron_peak_19_file()
-        input_file = 'ENGINX193749_calibration_spec651'
+        input_file = 'ENGINX193749_calibration_spec651.nxs'
         bench_prob_dir = self.get_bench_prob_dir()
         prob = FittingProblem(fname)
         data_file = prob.get_data_file(fname, input_file)
         data_file_expected = os.path.join(bench_prob_dir, 'Neutron_data',
                                           'data_files', input_file)
-
+        
         self.assertEqual(data_file_expected, data_file)
 
     def test_getFitbenchmarkDataProblemEntries_return_problem_entries(self):
