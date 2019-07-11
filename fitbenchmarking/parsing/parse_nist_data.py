@@ -322,8 +322,8 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
     def get_data_e(self, data_pattern):
         """
 
-        :param data_pattern: numpy array of the data points of the problem
-        :return: array of data error (data_e)
+        @param data_pattern :: numpy array of the data points of the problem
+        @return :: array of data error (data_e)
         """
 
         data_e = None
