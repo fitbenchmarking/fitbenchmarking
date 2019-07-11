@@ -182,8 +182,7 @@ class ParseNistTests(unittest.TestCase):
         fname = self.misra1a_file()
         prob = FittingProblem(fname)
 
-        equation_text, data_pattern_text, starting_values, \
-            residual_sum_sq = prob.parse_line_by_line(open(fname))
+        equation_text, data_pattern_text, starting_values = prob.parse_line_by_line(open(fname))
 
         equation_text_expected = 'y = b1*(1-exp[-b2*x])  +  e'
         data_pattern_text_expected = self.setup_misra1a_data_pattern_text()
