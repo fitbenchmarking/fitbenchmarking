@@ -146,14 +146,17 @@ def execute_fit(function, data, initial_params, minimizer, cost_function):
     @returns :: array of final variables after the fit was performed
     """
     popt, pcov = None, None
-    if cost_function == 'least squares':
-        popt, pcov = curve_fit(f=function.__call__,
-                               xdata=data[0], ydata=data[1], p0=initial_params,
-                               sigma=data[2], method=minimizer, maxfev=500)
-    elif cost_function == 'unweighted least squares':
-        popt, pcov = curve_fit(f=function.__call__,
-                               xdata=data[0], ydata=data[1],
-                               p0=initial_params, method=minimizer, maxfev=500)
+    try:
+        if cost_function == 'least squares':
+            popt, pcov = curve_fit(f=function.__call__,
+                                   xdata=data[0], ydata=data[1], p0=initial_params,
+                                   sigma=data[2], method=minimizer, maxfev=500)
+        elif cost_function == 'unweighted least squares':
+            popt, pcov = curve_fit(f=function.__call__,
+                                   xdata=data[0], ydata=data[1],
+                                   p0=initial_params, method=minimizer, maxfev=500)
+    except(IndexError) as err:
+        logger.error('Index out of bound. Going on.')
     return popt
 
 
