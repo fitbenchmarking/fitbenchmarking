@@ -46,8 +46,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         super(FittingProblem, self).__init__(fname)
         super(FittingProblem, self).read_file()
 
-        equation_text, data_pattern_text, starting_values, \
-            residual_sum_sq = self.parse_line_by_line(self.contents)
+        equation_text, data_pattern_text, starting_values = self.parse_line_by_line(self.contents)
         data_pattern = self.parse_data_pattern(data_pattern_text)
 
         self._start_x, self._end_x = self.get_start_x_and_end_x(data_pattern[:, 1])
@@ -56,8 +55,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._data_y = data_pattern[:, 0]
 
         self._data_e = self.get_data_e(data_pattern)
-
-        self._ref_residual_sum_sq = residual_sum_sq
 
         self._name = os.path.basename(self.contents.name.split('.')[0])
         self._equation = self.parse_equation(equation_text)
@@ -98,7 +95,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         logger.info("{0} lines were ignored in this problem file".format(ignored_lines))
 
-        return equation_text, data_pattern_text, starting_values, residual_sum_sq
+        return equation_text, data_pattern_text, starting_values
 
     def get_nist_model(self, lines, idx):
         """
