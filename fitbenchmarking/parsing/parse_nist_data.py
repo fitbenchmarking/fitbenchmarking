@@ -54,7 +54,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         self._data_x = data_pattern[:, 1]
         self._data_y = data_pattern[:, 0]
-        
+
         self._data_e = self.get_data_e(data_pattern)
 
         self._ref_residual_sum_sq = residual_sum_sq

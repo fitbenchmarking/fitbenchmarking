@@ -97,7 +97,7 @@ class ParseFitbenchmarkTests(unittest.TestCase):
     def test_getDataFilesDir_return_data_files_path(self):
 
         fname = self.neutron_peak_19_file()
-        input_file = 'ENGINX193749_calibration_spec651'
+        input_file = 'ENGINX193749_calibration_spec651.nxs'
         bench_prob_dir = self.get_bench_prob_dir()
         prob = FittingProblem(fname)
         data_file = prob.get_data_file(fname, input_file)
