@@ -54,6 +54,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         self._data_x = data_pattern[:, 1]
         self._data_y = data_pattern[:, 0]
+        self._data_e = self.get_data_e(data_pattern)
 
         self._ref_residual_sum_sq = residual_sum_sq
 
@@ -275,7 +276,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         """
         Checks the validity of the starting value raw string.
         There can only be 2 cases when parsing nist files
-        i.e. line can only have six or 7 strings separated by white space.
+        i.e. line can only have 6 or 7 strings separated by white space.
 
         @param startval_str :: raw string of the starting values
         """
@@ -310,11 +311,22 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         @param x_data :: list containing x values
         @return :: the start and end values of the x data
         """
-
-
+        
         sorted_x_data = sorted(x_data)
 
         start_x = sorted_x_data[0]
         end_x = sorted_x_data[-1]
 
         return start_x, end_x
+
+    def get_data_e(self, data_pattern):
+        """
+
+        :param data_pattern: numpy array of the data points of the problem
+        :return: array of data error (data_e)
+        """
+
+        data_e = None
+        if len(data_pattern[0, :]) > 2: data_e = data_pattern[:, 2]
+
+        return data_e
