@@ -35,7 +35,7 @@ def check_input(packages):
     from build.install.install_packages import valid_packages, validate_input
     if not validate_input(packages, BUILD_LOGGER):
         BUILD_LOGGER.print_and_log("Some packages supplied were not valid.\n"
-                                    "Valid packages are: %s" % valid_packages(),
+                                    "Optional valid packages are: %s" % valid_packages(),
                                     logging.ERROR)
         return False
     return True
