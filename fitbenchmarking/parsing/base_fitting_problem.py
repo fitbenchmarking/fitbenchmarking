@@ -153,3 +153,9 @@ class BaseFittingProblem(object):
     @contents.setter
     def contents(self, value):
         self._contents = value
+
+    def __new__(cls, *args, **kwargs):
+        if cls is BaseFittingProblem:
+            raise TypeError("Base class {} may not be instantiated".format(cls))
+        return object.__new__(cls, *args, **kwargs)
+
