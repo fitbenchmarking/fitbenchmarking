@@ -1,0 +1,5 @@
+[2019-07-11 13:13:41,204] ERROR : "bob" not recognised as a valid package for this operating system.
+[2019-07-11 13:13:41,204] ERROR : Some packages supplied were not valid.
+Valid packages are: ['mantid']
+[2019-07-11 13:13:41,204] INFO : === Installing external dependencies ===
+[2019-07-11 13:13:41,204] INFO : Nothing to install - All given packages are valid
