@@ -35,13 +35,14 @@ def prepare_data(problem, use_errors):
     data_x = np.copy(problem.data_x)
     data_y = np.copy(problem.data_y)
     data_e = problem.data_e
-    data_x, data_y, data_e = misc_preparations(problem, data_x, data_y, data_e)
+    problem = misc_preparations(problem, data_x, data_y, data_e)
+    # print(data_x)
 
     if use_errors:
-        data = np.array([data_x, data_y, data_e])
+        data = np.array([problem.data_x, problem.data_y, problem.data_e])
         cost_function = 'least squares'
     else:
-        data = np.array([data_x, data_y])
+        data = np.array([problem.data_x, problem.data_y])
         cost_function = 'unweighted least squares'
 
     return data, cost_function
@@ -56,27 +57,27 @@ def misc_preparations(problem, data_x, data_y, data_e):
     if len(data_x) != len(data_y):
         data_x = data_x[:-1]
         problem.data_x = np.copy(data_x)
+        # print('opt 1: {}'.format(problem.data_x))
     if data_e is None:
         data_e = np.sqrt(abs(data_y))
         problem.data_e = np.copy(data_e)
 
     if problem.start_x is None and problem.end_x is None: pass
     else:
-        data_x, data_y, data_e = \
-        apply_constraints(problem.start_x, problem.end_x,
-                          data_x, data_y, data_e)
+        problem = \
+        apply_constraints(problem)
 
-    return data_x, data_y, data_e
+    return problem
 
-def apply_constraints(start_x, end_x, data_x, data_y, data_e):
+def apply_constraints(problem):
     """
     Applied constraints to the data if they are provided. Useful when
     fitting only part of the available data.
     """
-    start_idx = (np.abs(data_x - start_x)).argmin()
-    end_idx = (np.abs(data_x - end_x)).argmin()
-    data_x = np.copy(data_x[start_idx:end_idx])
-    data_y = np.copy(data_y[start_idx:end_idx])
-    data_e = np.copy(data_e[start_idx:end_idx])
-    data_e[data_e == 0] = 0.00000001
-    return data_x, data_y, data_e
+    start_idx = (np.abs(problem.data_x - problem.start_x)).argmin()
+    end_idx = (np.abs(problem.data_x - problem.end_x)).argmin()
+    problem.data_x = np.copy(problem.data_x[start_idx:end_idx+1])
+    problem.data_y = np.copy(problem.data_y[start_idx:end_idx+1])
+    problem.data_e = np.copy(problem.data_e[start_idx:end_idx+1])
+    problem.data_e[problem.data_e == 0] = 0.00000001
+    return problem

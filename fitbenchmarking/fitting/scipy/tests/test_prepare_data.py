@@ -61,7 +61,6 @@ class ScipyTests(unittest.TestCase):
         fname = self.misra1a_file()
         prob = FittingProblem(fname)
         prob.name = 'Misra1a'
-        prob.type = 'NIST'
         prob.equation = 'b1*(1-exp(-b2*x))'
         prob.starting_values = [['b1', [500.0, 250.0]],
                                 ['b2', [0.0001, 0.0005]]]
@@ -77,7 +76,7 @@ class ScipyTests(unittest.TestCase):
         data_y = problem.data_y
         data_e = np.sqrt(abs(data_y))
 
-        return [data_x, data_y, data_e]
+        return  np.array([data_x, data_y, data_e])
 
     def test_prepareData_use_errors_true(self):
 
@@ -85,9 +84,10 @@ class ScipyTests(unittest.TestCase):
         use_errors = True
 
         data, cost_function = prepare_data(problem, use_errors)
+        # print("From pd: {}".format(cost_function))
         expected_data = self.get_expected_data()
 
-        np.testing.assert_equal(expected_data, data)
+        np.testing.assert_array_equal(expected_data, data)
         self.assertEqual("least squares", cost_function)
 
     def test_prepareData_use_errors_false(self):
@@ -105,52 +105,51 @@ class ScipyTests(unittest.TestCase):
     def test_miscPreparations_no_errors_no_limits(self):
 
         problem = self.NIST_problem()
-        data_x, data_y, data_e = problem.data_x, problem.data_y, problem.data_e
 
-        data_x, data_y, data_e = \
-            misc_preparations(problem, data_x, data_y, data_e)
+        problem = \
+            misc_preparations(problem, problem.data_x, problem.data_y, problem.data_e)
+        # print(problem.data_x)
         expected_data = self.get_expected_data()
 
-        np.testing.assert_equal(expected_data[0], data_x)
-        np.testing.assert_equal(expected_data[1], data_y)
-        np.testing.assert_equal(expected_data[2], data_e)
+        np.testing.assert_equal(expected_data[0], problem.data_x)
+        np.testing.assert_equal(expected_data[1], problem.data_y)
+        np.testing.assert_equal(expected_data[2], problem.data_e)
 
     def test_miscPreparations_uneq_length_constrained(self):
 
         problem = self.NIST_problem()
-        data_x, data_y, data_e = problem.data_x, problem.data_y, problem.data_e
-        data_x = np.append(data_x, 0)
+        problem.data_x = np.append(problem.data_x, 0)
         problem.start_x = 115
         problem.end_x = 540
 
-        data_x, data_y, data_e = \
-            misc_preparations(problem, data_x, data_y, data_e)
+        problem = \
+            misc_preparations(problem, problem.data_x, problem.data_y, problem.data_e)
         expected_data = self.get_expected_data()
-        expected_data[0] = np.array(expected_data[0])[1:10]
-        expected_data[1] = np.array(expected_data[1])[1:10]
+        expected = [[None] * 3] * 10
+        expected[0] = np.array(expected_data[0])[1:11]
+        expected[1] = np.array(expected_data[1])[1:11]
 
-        np.testing.assert_equal(expected_data[0], data_x)
-        np.testing.assert_equal(expected_data[1], data_y)
+        np.testing.assert_equal(expected[0], problem.data_x)
+        np.testing.assert_equal(expected[1], problem.data_y)
 
     def test_applyConstraints_return_data(self):
 
         problem = self.NIST_problem()
-        start_x = 115
-        end_x = 540
-        data_x = problem.data_x
-        data_y = problem.data_y
-        data_e = np.sqrt(abs(problem.data_y))
+        problem.start_x = 115
+        problem.end_x = 540
+        problem.data_e = np.sqrt(abs(problem.data_y))
 
-        data_x, data_y, data_e = \
-            apply_constraints(start_x, end_x, data_x, data_y, data_e)
+        problem = \
+            apply_constraints(problem)
         expected_data = self.get_expected_data()
-        expected_data[0] = np.array(expected_data[0])[1:10]
-        expected_data[1] = np.array(expected_data[1])[1:10]
-        expected_data[2] = np.array(expected_data[2])[1:10]
+        expected = [ [ None ] * 3 ] * 10
+        expected[0] = np.array(expected_data[0])[1:11]
+        expected[1] = np.array(expected_data[1])[1:11]
+        expected[2] = np.array(expected_data[2])[1:11]
 
-        np.testing.assert_equal(expected_data[0], data_x)
-        np.testing.assert_equal(expected_data[1], data_y)
-        np.testing.assert_equal(expected_data[2], data_e)
+        np.testing.assert_equal(expected[0], problem.data_x)
+        np.testing.assert_equal(expected[1], problem.data_y)
+        np.testing.assert_equal(expected[2], problem.data_e)
 
 
 if __name__ == "__main__":
