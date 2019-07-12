@@ -12,7 +12,7 @@ main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
 from utils import fitbm_result
-from parsing.base_fitting_problem import BaseFittingProblem
+from parsing.parse_nist_data import FittingProblem
 
 from fitting.misc import compute_chisq
 from fitting.misc import create_result_entry
@@ -58,7 +58,7 @@ class FitMiscTests(unittest.TestCase):
     def setup_nist_expected_problem(self):
 
         fname = self.misra1a_file()
-        prob = BaseFittingProblem(fname)
+        prob = FittingProblem(fname)
 
         prob.name = 'Misra1a'
         prob.equation = 'b1*(1-exp(-b2*x))'

@@ -13,7 +13,6 @@ sys.path.insert(0, main_dir)
 
 from parsing.parse import parse_problem_file
 from parsing.parse_nist_data import FittingProblem
-from parsing.base_fitting_problem import BaseFittingProblem
 
 
 class ParseNistTests(unittest.TestCase):
@@ -135,7 +134,7 @@ class ParseNistTests(unittest.TestCase):
 
     def setup_nist_expected_problem(self):
         fname = self.misra1a_file()
-        prob = BaseFittingProblem(fname)
+        prob = FittingProblem(fname)
         prob.name = 'Misra1a'
         prob.equation = 'b1*(1-exp(-b2*x))'
         prob.starting_values = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]

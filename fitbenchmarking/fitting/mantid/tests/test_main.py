@@ -19,7 +19,7 @@ from fitting.mantid.main import parse_result
 from fitting.mantid.main import optimum
 from fitting.mantid.main import get_ignore_invalid
 
-from parsing.base_fitting_problem import BaseFittingProblem
+from parsing.parse_nist_data import FittingProblem
 
 
 class MantidTests(unittest.TestCase):
@@ -34,7 +34,8 @@ class MantidTests(unittest.TestCase):
         parent_dir = os.path.dirname(os.path.normpath(test_dir))
         main_dir = os.path.dirname(os.path.normpath(parent_dir))
         root_dir = os.path.dirname(os.path.normpath(main_dir))
-        bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
+        bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
+        bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
         fname = os.path.join(bench_prob_dir, 'NIST', 'low_difficulty',
                              'Misra1a.dat')
 
@@ -62,7 +63,7 @@ class MantidTests(unittest.TestCase):
                                  [81.78, 760.0]])
 
         fname = self.misra1a_file()
-        prob = BaseFittingProblem(fname)
+        prob = FittingProblem(fname)
         prob.name = 'Misra1a'
         prob.type = 'NIST'
         prob.equation = 'b1*(1-exp(-b2*x))'
@@ -216,7 +217,7 @@ class MantidTests(unittest.TestCase):
     def test_ignoreInvalid_return_True(self):
 
         fname = self.misra1a_file()
-        prob = BaseFittingProblem(fname)
+        prob = FittingProblem(fname)
         prob.name = 'notWish'
         cost_function = 'Least squares'
 
@@ -228,7 +229,7 @@ class MantidTests(unittest.TestCase):
     def test_ignoreInvalid_return_False_because_of_WISH17701(self):
 
         fname = self.misra1a_file()
-        prob = BaseFittingProblem(fname)
+        prob = FittingProblem(fname)
         prob.name = 'WISH17701lol'
         cost_function = 'Least squares'
 
