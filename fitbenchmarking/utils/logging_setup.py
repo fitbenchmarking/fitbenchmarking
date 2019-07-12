@@ -39,7 +39,7 @@ else:
     create_dirs.del_contents_of_dir(logs_path)
 
 # Create logger with name fitbenchmarking (this is the name of the file)
-FORMATTER = '[%(asctime)s]  %(levelname)s: %(message)s'
+FORMATTER = '[%(asctime)s]  %(levelname)s %(filename)s: %(message)s'
 
 formatter = logging.Formatter(FORMATTER, "%H:%M:%S")
 handler = logging.FileHandler(logs_path + os.sep + 'fitbenchmarking.log',
@@ -48,3 +48,10 @@ handler.setFormatter(formatter)
 logger = logging.getLogger('fitbenchmarking')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
+
+# Define a Handler which writes WARNING messages or higher to the console
+console = logging.StreamHandler()
+console.setLevel(logging.WARNING)
+console.setFormatter(formatter)
+logging.getLogger('').addHandler(console)
+

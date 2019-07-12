@@ -281,8 +281,8 @@ def save_table_to_file(results_dir, table_data, use_errors, group_name,
         print(table_data, file=tbl_file)
 
     logger.info('Saved {file_name}{extension} to {working_directory}'.
-                format(file_name=file_name, extension=file_extension,
-                       working_directory=results_dir))
+                format(file_name=os.path.basename(file_name), extension=file_extension,
+                       working_directory=results_dir[results_dir.find('fitbenchmarking'):]))
 
 
 def set_file_name(use_errors, metric_type, group_name, results_dir):

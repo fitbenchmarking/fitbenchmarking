@@ -1,10 +1,9 @@
-[![Build Status](https://img.shields.io/travis/com/mantidproject/fitbenchmarking.svg?style=flat-square)](https://travis-ci.com/mantidproject/fitbenchmarking)
-[![Coverage Status](https://img.shields.io/coveralls/github/mantidproject/fitbenchmarking.svg?style=flat-square)](https://coveralls.io/github/mantidproject/fitbenchmarking)
+[![Build Status](https://img.shields.io/travis/fitbenchmarking/fitbenchmarking.svg?style=flat-square)](https://travis-ci.org/fitbenchmarking/fitbenchmarking)
+[![Coverage Status](https://img.shields.io/coveralls/github/fitbenchmarking/fitbenchmarking.svg?style=flat-square)](https://coveralls.io/github/fitbenchmarking/fitbenchmarking)
 ![Windows Supported](https://img.shields.io/badge/win10-support-blue.svg?style=flat-square&logo=windows)
 ![Ubuntu Supported](https://img.shields.io/badge/16.04-support-orange.svg?style=flat-square&logo=ubuntu)
 [![email](https://img.shields.io/badge/gmail-fitbenchmarking.supp-red.svg?style=flat-square&logo=gmail)](mailto:fitbenchmarking.supp@gmail.com)
 [![Chat](https://img.shields.io/badge/chat-CompareFitMinimizers-lightgrey.svg?style=flat-square&logo=slack)](https://slack.com/)
-
 # FitBenchmarking
 FitBenchmarking is a tool for comparing different minimizers/fitting software based on their accuracy and runtimes. For further documentation on FitBenchmarking see also [Wiki](https://github.com/fitbenchmarking/fitbenchmarking/wiki).
 
@@ -20,6 +19,12 @@ FitBenchmarking is a tool for comparing different minimizers/fitting software ba
 5. Open the mantidpython terminal
     * Ubuntu: in a normal terminal cd to /opt/Mantid/bin and run `./mantidpython`
     * Windows: go to where you installed Mantid and search for a file called `mantidpython`
+    * macOS: in a normal terminal run `/Applications/MantidPlot.app/Contents/MacOS/mantidpython`
+#### For macOS only ####
+6. On the mantidpython terminal, run the following IPython command:
+    - `!/usr/bin/python -m pip install docutils==0.12 --user`
+
+The above step is done to ensure that the compatible version of docutils packages (version 0.12) is installed. 
 
 Finally, in this terminal, run `example_scripts/example_runScript.py`, located in the fitbenchmarking folder. This example script fit benchmarks Mantid using all the available minimizers. The resulting tables can be found in `example_scripts/results`.
 
