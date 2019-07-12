@@ -5,12 +5,16 @@ import os
 import numpy as np
 import mantid.simpleapi as msapi
 
+from pathlib import *
+
 import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-parent_dir = os.path.dirname(os.path.normpath(parent_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
+
+data_prob_path = Path()
+current_path = (Path(__file__).parts)
+fb_dir_idx = current_path.index('fitbenchmarking')
+data_prob_path = data_prob_path.joinpath(*current_path[:fb_dir_idx + 1])
+main_path = data_prob_path.joinpath('fitbenchmarking')
+sys.path.append(str(main_path))
 
 from fitting.mantid.func_def import function_definitions
 from fitting.mantid.func_def import parse_nist_function_definitions
@@ -25,15 +29,12 @@ class MantidTests(unittest.TestCase):
     Helper function that returns the path to
     /fitbenchmarking/benchmark_problems
     """
+    global data_prob_path
+    file_path = data_prob_path
+    file_path = file_path.joinpath('benchmark_problems',
+                                             'Mock_Problem_Files', 'NIST_Misra1a.dat')
 
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    parent_dir = os.path.dirname(os.path.normpath(test_dir))
-    main_dir = os.path.dirname(os.path.normpath(parent_dir))
-    root_dir = os.path.dirname(os.path.normpath(main_dir))
-    bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
-    bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
-    fname = os.path.join(bench_prob_dir, 'NIST', 'low_difficulty',
-                         'Misra1a.dat')
+    fname = str(file_path)
 
     return fname
 
@@ -43,13 +44,14 @@ class MantidTests(unittest.TestCase):
       /fitbenchmarking/benchmark_problems
       """
 
-      current_dir = os.path.dirname(os.path.realpath(__file__))
-      parent_dir = os.path.dirname(os.path.normpath(test_dir))
-      main_dir = os.path.dirname(os.path.normpath(parent_dir))
-      root_dir = os.path.dirname(os.path.normpath(main_dir))
-      bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
-      bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
-      fname = os.path.join(bench_prob_dir, 'Neutron_data', 'ENGINX193749_calibration_peak19.txt')
+      global data_prob_path
+      file_path = data_prob_path
+      file_path = file_path.joinpath('benchmark_problems',
+                                               'Mock_Problem_Files',
+                                               'FB_ENGINX193749_calibration_peak19.txt')
+
+      fname = str(file_path)
+      print(fname)
 
       return fname
 
