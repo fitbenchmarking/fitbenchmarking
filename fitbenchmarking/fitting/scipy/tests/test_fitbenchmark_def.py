@@ -41,7 +41,6 @@ class ScipyTests(unittest.TestCase):
         fname = os.path.join(bench_prob_dir, 'Neutron_data',
                              'ENGINX193749_calibration_peak19.txt')
 
-
         return fname
 
     def Neutron_problem(self):
