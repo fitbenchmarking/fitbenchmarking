@@ -38,7 +38,9 @@ class ScipyTests(unittest.TestCase):
         root_dir = os.path.dirname(os.path.normpath(main_dir))
         bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
         bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
-        fname = os.path.join(bench_prob_dir, 'Neutron_data', 'ENGINX193749_calibration_peak19.txt')
+
+        fname = os.path.join(bench_prob_dir, 'Neutron_data',
+                             'ENGINX193749_calibration_peak19.txt')
 
         return fname
 

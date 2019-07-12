@@ -53,9 +53,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._data_x = wks_imported.readX(0)
         self._data_y = wks_imported.readY(0)
         self._data_e = wks_imported.readE(0)
-
-        self._ref_residual_sum_sq = 0
-
         self._name = entries['name']
         self._equation = entries['function']
 
@@ -66,25 +63,26 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         super(FittingProblem, self).close_file()
 
-    def get_data_file(self, fname, input_file):
+    def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """
-        Gets the path to the fitbenchmark problem data_file used in the problem.
-        sep_idx is used to find the last separator in the problem file path
-        and set up the path for the data_files folder i.e truncates the path
-        to ../Neutron_data and adds ../Neutron_data/data_files
+        Find/create the (full) path to a data_file specified in a FitBenchmark definition file, where
+        the data_file is search for in the directory of the definition file and subfolders of this 
+        file
 
-        @param fname :: path to the problem definition file
-        @param input_file :: file name of the data file
+        @param full_path_of_fitting_def_file :: (full) path of a FitBenchmark definition file
+        @param data_file_name :: the name of the data file as specified in the FitBenchmark definition file
 
-        @returns :: path to the data files directory (str)
+        @returns :: (full) path to a data file (str). Return None if not found
         """
+        data_file = None
+        # find or search for path for data_file_name
+        for root, dirs, files in os.walk(os.path.dirname(full_path_of_fitting_def_file)):
+            for name in files:
+                if data_file_name == name:
+                    data_file = os.path.join(root, data_file_name)
 
-        prefix = ""
-        if os.sep in fname:
-            sep_idx = fname.rfind(os.sep)
-            prefix = os.path.join(fname[:sep_idx], "data_files")
-
-        data_file = os.path.join(prefix, input_file)
+        if data_file == None:
+            logger.error("Data file {0} not found".format(data_file_name))
 
         return data_file
 

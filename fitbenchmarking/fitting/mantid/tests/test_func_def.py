@@ -15,7 +15,6 @@ sys.path.insert(0, main_dir)
 from fitting.mantid.func_def import function_definitions
 from fitting.mantid.func_def import parse_nist_function_definitions
 
-# from parsing.base_fitting_problem import BaseFittingProblem
 from parsing.parse_nist_data import FittingProblem as NISTFittingProblem
 from parsing.parse_fitbenchmark_data import FittingProblem as FBFittingProblem
 
