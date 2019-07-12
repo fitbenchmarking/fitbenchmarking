@@ -46,19 +46,21 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         super(FittingProblem, self).__init__(fname)
         super(FittingProblem, self).read_file()
 
-        equation_text, data_pattern_text, starting_values, \
-            residual_sum_sq = self.parse_line_by_line(self.contents)
+        equation_text, data_pattern_text, starting_values = self.parse_line_by_line(self.contents)
         data_pattern = self.parse_data_pattern(data_pattern_text)
+
+        self._start_x, self._end_x = self.get_start_x_and_end_x(data_pattern[:, 1])
 
         self._data_x = data_pattern[:, 1]
         self._data_y = data_pattern[:, 0]
+
+        self._data_e = self.get_data_e(data_pattern)
+
         self._name = os.path.basename(self.contents.name.split('.')[0])
         self._equation = self.parse_equation(equation_text)
         self._type = "NIST"
 
         self._starting_values = starting_values
-        # self._start_x = -np.inf
-        # self._end_x = np.inf
 
         super(FittingProblem, self).close_file()
 
@@ -90,12 +92,10 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
                     data_pattern_text, idx = self.get_data_pattern_txt(lines, idx)
             else:
                 ignored_lines += 1
-                # print("unknown line in supposedly NIST test file, ignoring: {0}".
-                #       format(line))
 
         logger.info("{0} lines were ignored in this problem file".format(ignored_lines))
 
-        return equation_text, data_pattern_text, starting_values, residual_sum_sq
+        return equation_text, data_pattern_text, starting_values
 
     def get_nist_model(self, lines, idx):
         """
@@ -272,7 +272,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         """
         Checks the validity of the starting value raw string.
         There can only be 2 cases when parsing nist files
-        i.e. line can only have six or 7 strings separated by white space.
+        i.e. line can only have 6 or 7 strings separated by white space.
 
         @param startval_str :: raw string of the starting values
         """
@@ -298,3 +298,31 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
             alt_values = [float(startval_str[2])]
 
         return alt_values
+
+    def get_start_x_and_end_x(self, x_data):
+        """
+
+        Get the start and end value of x from the list of x values.
+
+        @param x_data :: list containing x values
+        @return :: the start and end values of the x data
+        """
+        
+        sorted_x_data = sorted(x_data)
+
+        start_x = sorted_x_data[0]
+        end_x = sorted_x_data[-1]
+
+        return start_x, end_x
+
+    def get_data_e(self, data_pattern):
+        """
+
+        @param data_pattern :: numpy array of the data points of the problem
+        @return :: array of data error (data_e)
+        """
+
+        data_e = None
+        if len(data_pattern[0, :]) > 2: data_e = data_pattern[:, 2]
+
+        return data_e

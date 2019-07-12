@@ -114,6 +114,25 @@ class ParseNistTests(unittest.TestCase):
 
         return data_pattern
 
+    def setup_misra1a_expected_data_points_with_data_e(self):
+
+        data_pattern = np.array([[10.07, 77.6, 0.1],
+                                 [14.73, 114.9, 0.1],
+                                 [17.94, 141.1, 0.1],
+                                 [23.93, 190.8, 0.1],
+                                 [29.61, 239.9, 0.1],
+                                 [35.18, 289.0, 0.1],
+                                 [40.02, 332.8, 0.1],
+                                 [44.82, 378.4, 0.1],
+                                 [50.76, 434.8, 0.1],
+                                 [55.05, 477.3, 0.1],
+                                 [61.01, 536.8, 0.1],
+                                 [66.40, 593.1, 0.1],
+                                 [75.47, 689.1, 0.1],
+                                 [81.78, 760.0, 0.1]])
+
+        return data_pattern
+
     def setup_nist_expected_problem(self):
         fname = self.misra1a_file()
         prob = BaseFittingProblem(fname)
@@ -163,8 +182,7 @@ class ParseNistTests(unittest.TestCase):
         fname = self.misra1a_file()
         prob = FittingProblem(fname)
 
-        equation_text, data_pattern_text, starting_values, \
-            residual_sum_sq = prob.parse_line_by_line(open(fname))
+        equation_text, data_pattern_text, starting_values = prob.parse_line_by_line(open(fname))
 
         equation_text_expected = 'y = b1*(1-exp[-b2*x])  +  e'
         data_pattern_text_expected = self.setup_misra1a_data_pattern_text()
@@ -288,6 +306,47 @@ class ParseNistTests(unittest.TestCase):
 
         self.assertRaises(RuntimeError, prob.parse_equation, equation_text)
 
+    def test_get_start_x_and_end_x(self):
+
+        fname = self.misra1a_file()
+        prob = FittingProblem(fname)
+
+        data_pattern = self.setup_misra1a_expected_data_points()
+        x_data = data_pattern[:,1]
+
+        expected_start_x = 77.6
+        expected_end_x = 760.0
+
+        start_x, end_x = prob.get_start_x_and_end_x(x_data)
+
+        self.assertEqual(expected_start_x, start_x)
+        self.assertEqual(expected_end_x, end_x)
+
+    def test_get_data_e_expect_None(self):
+
+        fname = self.misra1a_file()
+        prob = FittingProblem(fname)
+
+        data_pattern = self.setup_misra1a_expected_data_points()
+
+        expected_data_e = None
+
+        data_e = prob.get_data_e(data_pattern)
+
+        self.assertEqual(expected_data_e, data_e)
+
+    def test_get_data_e_expect_array(self):
+
+        fname = self.misra1a_file()
+        prob = FittingProblem(fname)
+
+        data_pattern = self.setup_misra1a_expected_data_points_with_data_e()
+
+        expected_data_e = data_pattern[:,2]
+
+        data_e = prob.get_data_e(data_pattern)
+
+        np.testing.assert_array_equal(expected_data_e, data_e)
 
 if __name__ == "__main__":
     unittest.main()
