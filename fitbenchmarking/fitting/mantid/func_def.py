@@ -82,12 +82,12 @@ def parse_nist_function_definitions(problem, nb_start_vals):
 
 def extract_problem_type(problem):
     """
-    This function gets the problem object and figure out the problem type
+    This function gets the problem object and figures out the problem type
     from the file name that the class that it has been sent from
 
     @param problem :: object holding the problem information
 
-    @returns :: the type of the problem (e.g. NIST)
+    @returns :: the type of the problem in capital letters (e.g. NIST)
     """
     problem_file_name = problem.__class__.__module__
     problem_type = (problem_file_name.split('_')[1]).upper()
