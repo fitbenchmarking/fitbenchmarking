@@ -33,6 +33,8 @@ The `example_runScripts.py` file can be changed such that it benchmarks minimize
 
 For this to work scipy version 0.17 or higher is needed (which includes needed [curve_fit](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html) support). **The Linux distributions we have tested against so far have all included scipy 0.17+ (0.17 is from Feb 2016).**
 
+To check your version of scipy, type `python -m pip show scipy` in the terminal(command line).
+
 However, as of this writing, the Mantid installer on Windows is shipped with an older version of scipy
 and a manual workaround is currently needed.
 
