@@ -53,6 +53,8 @@ def misc_preparations(problem, data_x, data_y, data_e):
     It calculates the errors if they are not presented in problem file
     itself by assuming a Poisson distribution. Additionally, it applies
     constraints to the data if such constraints are provided.
+    
+    @return :: returns problem object with updated data
     """
     if len(data_x) != len(data_y):
         data_x = data_x[:-1]
