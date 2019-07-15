@@ -75,10 +75,16 @@ def misc_preparations(problem, data_x, data_y, data_e):
 
 def apply_x_data_range(problem):
     """
-    Applied start and end values to the x data if they are provided. Useful when
-    fitting only part of the available data.
+    Crop the data to fit within specified start_x and end_x values if these are provided otherwise
+    return unalternated problem object.
+    Scipy don't take start_x and end_x, meaning Scipy can on fit over the entire data array.
+    
+    @return :: Modified problem object where data have been cropped
     """
 
+    if problem.start_x is None or problem.end_x is None: 
+        return problem
+    
     start_x_diff = problem.data_x - problem.start_x
     end_x_diff = problem.data_x - problem.end_x
     start_idx = np.where(start_x_diff >= 0, start_x_diff, np.inf).argmin()
