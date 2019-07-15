@@ -32,11 +32,11 @@ def prepare_data(problem, use_errors):
     """
     Prepares the data to be used in the fitting process.
     """
+
     data_x = np.copy(problem.data_x)
     data_y = np.copy(problem.data_y)
     data_e = problem.data_e
     problem = misc_preparations(problem, data_x, data_y, data_e)
-    # print(data_x)
 
     if use_errors:
         data = np.array([problem.data_x, problem.data_y, problem.data_e])
@@ -57,27 +57,33 @@ def misc_preparations(problem, data_x, data_y, data_e):
     if len(data_x) != len(data_y):
         data_x = data_x[:-1]
         problem.data_x = np.copy(data_x)
-        # print('opt 1: {}'.format(problem.data_x))
+
     if data_e is None:
         data_e = np.sqrt(abs(data_y))
         problem.data_e = np.copy(data_e)
 
     if problem.start_x is None and problem.end_x is None: pass
+
+    if problem.start_x is -np.inf and problem.end_x is np.inf: pass
     else:
         problem = \
-        apply_constraints(problem)
+        apply_x_data_range(problem)
 
     return problem
 
-def apply_constraints(problem):
+def apply_x_data_range(problem):
     """
-    Applied constraints to the data if they are provided. Useful when
+    Applied start and end values to the x data if they are provided. Useful when
     fitting only part of the available data.
     """
-    start_idx = (np.abs(problem.data_x - problem.start_x)).argmin()
-    end_idx = (np.abs(problem.data_x - problem.end_x)).argmin()
-    problem.data_x = np.copy(problem.data_x[start_idx:end_idx+1])
-    problem.data_y = np.copy(problem.data_y[start_idx:end_idx+1])
-    problem.data_e = np.copy(problem.data_e[start_idx:end_idx+1])
+
+    start_x_diff = problem.data_x - problem.start_x
+    end_x_diff = problem.data_x - problem.end_x
+    start_idx = np.where(start_x_diff >= 0, start_x_diff, np.inf).argmin()
+    end_idx = np.where(end_x_diff <= 0, end_x_diff, -np.inf).argmax()
+
+    problem.data_x = np.array(problem.data_x)[start_idx:end_idx+1]
+    problem.data_y = np.array(problem.data_y)[start_idx:end_idx+1]
+    problem.data_e = np.array(problem.data_e)[start_idx:end_idx+1]
     problem.data_e[problem.data_e == 0] = 0.00000001
     return problem

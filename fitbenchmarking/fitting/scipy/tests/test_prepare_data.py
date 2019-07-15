@@ -13,7 +13,7 @@ sys.path.insert(0, main_dir)
 
 from fitting.scipy.prepare_data import prepare_data
 from fitting.scipy.prepare_data import misc_preparations
-from fitting.scipy.prepare_data import apply_constraints
+from fitting.scipy.prepare_data import apply_x_data_range
 
 from parsing.parse_nist_data import FittingProblem
 
@@ -82,9 +82,9 @@ class ScipyTests(unittest.TestCase):
 
         problem = self.NIST_problem()
         use_errors = True
+        print(type(problem.data_x))
 
         data, cost_function = prepare_data(problem, use_errors)
-        # print("From pd: {}".format(cost_function))
         expected_data = self.get_expected_data()
 
         np.testing.assert_array_equal(expected_data, data)
@@ -126,13 +126,13 @@ class ScipyTests(unittest.TestCase):
             misc_preparations(problem, problem.data_x, problem.data_y, problem.data_e)
         expected_data = self.get_expected_data()
         expected = [[None] * 3] * 10
-        expected[0] = np.array(expected_data[0])[1:11]
-        expected[1] = np.array(expected_data[1])[1:11]
+        expected[0] = np.array(expected_data[0])[2:11]
+        expected[1] = np.array(expected_data[1])[2:11]
 
         np.testing.assert_equal(expected[0], problem.data_x)
         np.testing.assert_equal(expected[1], problem.data_y)
 
-    def test_applyConstraints_return_data(self):
+    def test_applyXRange_return_data(self):
 
         problem = self.NIST_problem()
         problem.start_x = 115
@@ -140,12 +140,13 @@ class ScipyTests(unittest.TestCase):
         problem.data_e = np.sqrt(abs(problem.data_y))
 
         problem = \
-            apply_constraints(problem)
+            apply_x_data_range(problem)
         expected_data = self.get_expected_data()
         expected = [ [ None ] * 3 ] * 10
-        expected[0] = np.array(expected_data[0])[1:11]
-        expected[1] = np.array(expected_data[1])[1:11]
-        expected[2] = np.array(expected_data[2])[1:11]
+        expected[0] = np.array(expected_data[0])[2:11]
+        # print(expected[0])
+        expected[1] = np.array(expected_data[1])[2:11]
+        expected[2] = np.array(expected_data[2])[2:11]
 
         np.testing.assert_equal(expected[0], problem.data_x)
         np.testing.assert_equal(expected[1], problem.data_y)
