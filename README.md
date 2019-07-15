@@ -26,7 +26,7 @@ FitBenchmarking is a tool for comparing different minimizers/fitting software ba
 
 The above step is done to ensure that the compatible version of docutils packages (version 0.12) is installed. 
 
-Finally, in this terminal, run `example_scripts/example_runScript.py`, located in the fitbenchmarking folder. This example script fit benchmarks Mantid using all the available minimizers. The resulting tables can be found in `example_scripts/results`.
+7. Finally, in this terminal, run `example_scripts/example_runScript.py`, located in the fitbenchmarking folder. This example script fit benchmarks Mantid using all the available minimizers. The resulting tables can be found in `example_scripts/results`.
 
 ## FitBenchmarking Scipy
 The `example_runScript` file can be changed such that it benchmarks minimizers supported by scipy instead of mantid (details provided in the file itself).
