@@ -58,7 +58,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         self._name = os.path.basename(self.contents.name.split('.')[0])
         self._equation = self.parse_equation(equation_text)
-        self._type = "NIST"
 
         self._starting_values = starting_values
 
@@ -192,7 +191,22 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
             point = [float(val) for val in point_text]
             data_points[idx, :] = point
 
+        data_points = self.sort_data_from_x_data(data_points)
+
         return data_points
+
+    def sort_data_from_x_data(self, data_points):
+        """
+        Sort the numpy array of the data points of the problem
+        using its x data.
+
+        @param data_points :: unsorted numpy array of the data points of the problem
+        @returns :: sorted numpy array of the data points of the problem
+        """
+
+        sorted_data_points = sorted(data_points, key=lambda x: x[1])
+
+        return np.asarray(sorted_data_points)
 
     def parse_equation(self, eq_text):
         """

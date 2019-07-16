@@ -18,7 +18,6 @@ from fitting.scipy.nist_data_functions import format_function_scipy
 
 from parsing.parse_nist_data import FittingProblem
 
-
 class ScipyTests(unittest.TestCase):
 
     def misra1a_file(self):
@@ -53,7 +52,6 @@ class ScipyTests(unittest.TestCase):
         prob = FittingProblem(fname)
         prob.equation = "b1*(1-exp(-b2*x))"
         prob.starting_values = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
-        prob.type = 'NIST'
 
         function_defs = function_definitions(prob)
         expected_function_defs = self.create_expected_function_definitions()
