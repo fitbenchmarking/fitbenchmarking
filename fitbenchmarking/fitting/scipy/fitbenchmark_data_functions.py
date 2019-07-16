@@ -26,7 +26,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
 
-from fitting.mantid.externals import gen_func_obj, set_ties
+# from fitting.mantid.externals import gen_func_obj, set_ties
 from utils.logging_setup import logger
 
 
