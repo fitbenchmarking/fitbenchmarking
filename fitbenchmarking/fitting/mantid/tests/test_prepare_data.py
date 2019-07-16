@@ -17,7 +17,7 @@ from fitting.mantid.prepare_data import wks_cost_function
 from fitting.mantid.prepare_data import setup_errors
 from fitting.mantid.prepare_data import convert_back
 
-from parsing.base_fitting_problem import BaseFittingProblem
+from parsing.parse_nist_data import FittingProblem
 
 
 class MantidTests(unittest.TestCase):
@@ -32,7 +32,8 @@ class MantidTests(unittest.TestCase):
         parent_dir = os.path.dirname(os.path.normpath(test_dir))
         main_dir = os.path.dirname(os.path.normpath(parent_dir))
         root_dir = os.path.dirname(os.path.normpath(main_dir))
-        bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
+        bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
+        bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
         fname = os.path.join(bench_prob_dir, 'NIST', 'low_difficulty',
                              'Misra1a.dat')
 
@@ -60,7 +61,7 @@ class MantidTests(unittest.TestCase):
                                  [81.78, 760.0]])
 
         fname = self.misra1a_file()
-        prob = BaseFittingProblem(fname)
+        prob = FittingProblem(fname)
 
         prob.name = 'Misra1a'
         prob.type = 'NIST'

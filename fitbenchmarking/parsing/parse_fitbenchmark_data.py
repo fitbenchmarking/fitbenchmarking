@@ -55,7 +55,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._data_e = wks_imported.readE(0)
         self._name = entries['name']
         self._equation = entries['function']
-        self._type = "FitBenchmark"
 
         self._starting_values = None
         if 'fit_parameters' in entries:

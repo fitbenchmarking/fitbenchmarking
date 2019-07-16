@@ -22,8 +22,7 @@ from fitting.scipy.fitbenchmark_data_functions import make_fitbenchmark_fit_func
 from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_params
 from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_ties
 
-from parsing.base_fitting_problem import BaseFittingProblem
-
+from parsing.parse_fitbenchmark_data import FittingProblem
 
 class ScipyTests(unittest.TestCase):
 
@@ -37,7 +36,8 @@ class ScipyTests(unittest.TestCase):
         parent_dir = os.path.dirname(os.path.normpath(test_dir))
         main_dir = os.path.dirname(os.path.normpath(parent_dir))
         root_dir = os.path.dirname(os.path.normpath(main_dir))
-        bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
+        bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
+        bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
         fname = os.path.join(bench_prob_dir, 'Neutron_data',
                              'ENGINX193749_calibration_peak19.txt')
 
@@ -51,7 +51,6 @@ class ScipyTests(unittest.TestCase):
 
         fname = self.neutron_peak_19_file()
         prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
-        prob.type = 'FitBenchmark'
         prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                          "name=BackToBackExponential,"
                          "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
@@ -75,11 +74,10 @@ class ScipyTests(unittest.TestCase):
     def test_FunctionDefinitions_Dat_return_function_definitions(self):
 
         fname = self.neutron_peak_19_file()
-        prob = BaseFittingProblem(fname)
+        prob = FittingProblem(fname)
         prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                          "name=BackToBackExponential,"
                          "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
-        prob.type = 'FitBenchmark'
 
         function_defs = function_definitions(prob)
         expected_params_array = np.array([0, 0, 597.076, 1, 0.05, 24027.5, 22.9096])
