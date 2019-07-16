@@ -26,7 +26,6 @@ problem, a best fit plot and a starting guess plot.
 from __future__ import (absolute_import, division, print_function)
 
 import os
-import mantid.simpleapi as msapi
 from fitting.plotting.plot_helper import *
 from utils import create_dirs
 
@@ -216,6 +215,8 @@ def get_mantid_starting_guess_data(wks_created, function, problem):
     @returns :: data describing the starting guess obtained by using the
                 fitting software inside mantid
     """
+
+    import mantid.simpleapi as msapi
 
     fit_result = msapi.Fit(function, wks_created, Output='ws_fitting_test',
                             Minimizer='Levenberg-Marquardt',

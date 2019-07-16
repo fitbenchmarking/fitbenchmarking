@@ -27,7 +27,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import sys
 import numpy as np
-import mantid.simpleapi as msapi
+# import mantid.simpleapi as msapi
 
 from fitting import prerequisites as prereq
 from fitting import misc
