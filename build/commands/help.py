@@ -35,7 +35,7 @@ class Help(Command):
         commands = (('     externals', 'Install all external programs'),
                     ('              ', 'Optional: Use the -s argument to '
                                        'specify a comma separated list of '
-                                       'services:'),
+                                       'packages:'),
                     ('              ', ' python setup.py externals -s mantid'),
                     ('              ', 'Available options: mantid'),
                     ('     help', 'Show the help documentation (i.e. this)')
