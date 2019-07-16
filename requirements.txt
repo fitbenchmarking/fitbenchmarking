@@ -1,5 +1,6 @@
+python-version<='2.7'
 pytest>=3.6
 pytest-cov
 coveralls
 python-coveralls
-urllib3<1.25,>=1.21.1
+urllib3==1.23
