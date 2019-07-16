@@ -48,6 +48,8 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         entries = self.get_fitbenchmark_data_problem_entries(self.contents)
         data_file = self.get_data_file(self.fname, entries['input_file'])
 
+        print(data_file)
+
         wks_imported = msapi.Load(Filename=data_file)
 
         self._data_x = wks_imported.readX(0)
