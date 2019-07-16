@@ -1,5 +1,5 @@
 """
-Checks if modules can be imported and if the services inputted by the user
+Checks if modules can be imported and if the packages inputted by the user
 can be installed.
 """
 from __future__ import (absolute_import, division, print_function)
@@ -16,53 +16,53 @@ def check_imports():
     """
     try:
         # pylint:disable=unused-variable
-        from build.install.install_services import (install_service,
+        from build.install.install_packages import (install_package,
                                                     validate_input,
-                                                    valid_services)
+                                                    valid_packages)
     except ImportError:
-        BUILD_LOGGER.print_and_log("Could not import install_services. ",
+        BUILD_LOGGER.print_and_log("Could not import install_packages. ",
                                     logging.ERROR)
         return False
     return True
 
 
-def check_input(services):
+def check_input(packages):
     """
     Check the user input is valid.
     @returns :: False if user input is invalid
     """
 
-    from build.install.install_services import valid_services, validate_input
-    if not validate_input(services, BUILD_LOGGER):
-        BUILD_LOGGER.print_and_log("Some services supplied were not valid.\n"
-                                    "Valid services are: %s" % valid_services(),
+    from build.install.install_packages import valid_packages, validate_input
+    if not validate_input(packages, BUILD_LOGGER):
+        BUILD_LOGGER.print_and_log("Some packages supplied were not valid.\n"
+                                    "Optional valid packages are: %s" % valid_packages(),
                                     logging.ERROR)
         return False
     return True
 
 
-def validate_services(list_of_services, quiet=True):
+def validate_packages(list_of_packages, quiet=True):
     """
-    Check if services are installed and usable.
+    Check if packages are installed and usable.
     Current checks: 7Zip, Mantid
 
     @param quiet :: boolean to decide if anything is printed
                     on validation failure
-    @returns :: dictionary of {"service_name": validity(True/False)}
+    @returns :: dictionary of {"package_name": validity(True/False)}
     """
 
     print("=======================")
-    service_validity = validate_installs(list_of_services)
+    package_validity = validate_installs(list_of_packages)
     if quiet is False:
-        for service in service_validity:
-            if service_validity[service] is False:
-                BUILD_LOGGER.print_and_log("%s: False" % service, logging.INFO)
+        for package in package_validity:
+            if package_validity[package] is False:
+                BUILD_LOGGER.print_and_log("%s: False" % package, logging.INFO)
             else:
-                if service == 'mantid' and os.name == 'nt':
+                if package == 'mantid' and os.name == 'nt':
                     # not required on windows
                     BUILD_LOGGER.print_and_log("Mantid: Skipped",
                                                logging.WARNING)
                 else:
-                    BUILD_LOGGER.print_and_log("%s: True" % service)
+                    BUILD_LOGGER.print_and_log("%s: True" % package)
     print("=======================")
-    return service_validity
+    return package_validity

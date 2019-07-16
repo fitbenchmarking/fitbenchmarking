@@ -6,20 +6,20 @@ import os
 from build.settings import INSTALL_DIRS
 
 
-def validate_installs(list_of_services):
+def validate_installs(list_of_packages):
     """
     Wrapper function to validate multiple installs
-    :param list_of_services: services to validate
-    :return: Dictionary of {"service_name": install_validity(true/False)
+    :param list_of_packages: packages to validate
+    :return: Dictionary of {"package_name": install_validity(true/False)
     """
-    service_validity = {}
-    for service in list_of_services:
-        service = service.lower()
-        if service == 'mantid':
-            service_validity['mantid'] = _validate_mantid()
-        elif service == '7zip':
-            service_validity['7zip'] = _validate_7zip()
-    return service_validity
+    package_validity = {}
+    for package in list_of_packages:
+        package = package.lower()
+        if package == 'mantid':
+            package_validity['mantid'] = _validate_mantid()
+        elif package == '7zip':
+            package_validity['7zip'] = _validate_7zip()
+    return package_validity
 
 
 def _validate_7zip():
