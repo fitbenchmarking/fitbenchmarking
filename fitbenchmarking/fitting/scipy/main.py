@@ -55,6 +55,7 @@ def benchmark(problem, data, function, minimizers, cost_function):
     results_problem = []
 
     for minimizer in minimizers:
+
         init_function_def = get_init_function_def(function, problem.equation)
         status, fitted_y, fin_function_def, runtime = \
             fit(data, function, minimizer, cost_function, init_function_def)
@@ -145,6 +146,7 @@ def execute_fit(function, data, initial_params, minimizer, cost_function):
 
     @returns :: array of final variables after the fit was performed
     """
+    print(str(function.__call__))
     popt, pcov = None, None
     try:
         if cost_function == 'least squares':

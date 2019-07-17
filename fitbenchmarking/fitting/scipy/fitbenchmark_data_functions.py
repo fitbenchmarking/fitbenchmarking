@@ -26,7 +26,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
 
-# from fitting.mantid.externals import gen_func_obj, set_ties
+from fitting.mantid.externals import gen_func_obj, set_ties
 from utils.logging_setup import logger
 
 
@@ -49,6 +49,7 @@ def fitbenchmark_func_definitions(functions_string):
     for name in function_names:
         fit_function = make_fitbenchmark_fit_function(name, fit_function)
     fit_function = set_ties(fit_function, ties)
+
 
     function_defs = [[fit_function, params]]
 
@@ -136,6 +137,8 @@ def make_fitbenchmark_fit_function(func_name, fit_function):
         fit_function = func_obj
     else:
         fit_function += func_obj
+
+    print(fit_function)
 
     return fit_function
 

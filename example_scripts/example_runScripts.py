@@ -44,13 +44,13 @@ from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = 'mantid'
-# software = 'scipy'
+# software = 'mantid'
+software = 'scipy'
 software_options = {'software': software}
 
 # User defined minimizers
 # custom_minimizers = {"mantid": ["BFGS", "Simplex"],
-#               "scipy": ["lm", "trf", "dogbox"]}
+              # "scipy": ["lm", "trf", "dogbox"]}
 custom_minimizers = None
 
 
