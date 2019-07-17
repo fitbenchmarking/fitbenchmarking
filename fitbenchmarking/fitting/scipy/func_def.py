@@ -26,11 +26,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
 import re
-
-from fitting.scipy.nist_data_functions import nist_func_definitions
-from fitting.scipy.fitbenchmark_data_functions import fitbenchmark_func_definitions
 from utils.logging_setup import logger
-
 
 def function_definitions(problem):
     """
@@ -40,9 +36,11 @@ def function_definitions(problem):
     problem_type = extract_problem_type(problem)
 
     if problem_type == 'NIST':
+        from fitting.scipy.nist_data_functions import nist_func_definitions
         return nist_func_definitions(problem.equation,
                                      problem.starting_values)
     elif problem_type == 'FitBenchmark'.upper():
+        from fitting.scipy.fitbenchmark_data_functions import fitbenchmark_func_definitions
         return fitbenchmark_func_definitions(problem.equation)
     else:
         RuntimeError("Your problem type is not supported yet!")
