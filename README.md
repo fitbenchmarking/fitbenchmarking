@@ -11,6 +11,8 @@ FitBenchmarking is a tool for comparing different minimizers/fitting software ba
 ## Quick Start
 [![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)](https://www.python.org/downloads/release/python-2715/) will be needed for running/installing this. Instructions for setting up python are available [here](https://github.com/mantidproject/fitbenchmarking/wiki/Setting-up-Python).
 
+For help of how to use the command line/terminal, click the hyperlink corresponding to your operating system: [Windows](https://red-dot-geek.com/basic-windows-command-prompt-commands/), [macOS](http://newsourcemedia.com/blog/basic-terminal-commands/) and [Ubuntu](https://hackingpress.com/basic-linux-commands/)
+
 1. Download this repository or clone it using [git](https://git-scm.com/):
 `git clone https://github.com/mantidproject/fitbenchmarking.git`
 2. Open up a terminal (command prompt) and go into the `fitbenchmarking` directory.
