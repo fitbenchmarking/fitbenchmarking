@@ -40,8 +40,3 @@ for path in paths:
                 data_file.seek(0)
                 data_file.writelines(data_string)
                 data_file.close()
-
-
-
-
-
