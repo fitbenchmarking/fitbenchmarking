@@ -51,7 +51,7 @@ class ParseFitbenchmarkTests(unittest.TestCase):
 
         entries = {}
         entries['name'] = "ENGINX 193749 calibration, spectrum 651, peak 19"
-        entries['input_file'] = "ENGINX193749_calibration_spec651.nxs"
+        entries['input_file'] = "ENGINX193749_calibration_spec651.txt"
         entries['function'] = ("name=LinearBackground,A0=0,A1=0;"
                                "name=BackToBackExponential,"
                                "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
@@ -96,7 +96,7 @@ class ParseFitbenchmarkTests(unittest.TestCase):
     def test_getDataFilesDir_return_data_files_path(self):
 
         fname = self.neutron_peak_19_file()
-        input_file = 'ENGINX193749_calibration_spec651.nxs'
+        input_file = 'ENGINX193749_calibration_spec651.txt'
         bench_prob_dir = self.get_bench_prob_dir()
         prob = FittingProblem(fname)
         data_file = prob.get_data_file(fname, input_file)
