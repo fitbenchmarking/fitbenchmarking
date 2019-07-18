@@ -49,7 +49,7 @@ software_options = {'software': software}
 
 # User defined minimizers
 # custom_minimizers = {"mantid": ["BFGS", "Simplex"],
-              # "scipy": ["lm", "trf", "dogbox"]}
+#               "scipy": ["lm", "trf", "dogbox"]}
 custom_minimizers = None
 
 
