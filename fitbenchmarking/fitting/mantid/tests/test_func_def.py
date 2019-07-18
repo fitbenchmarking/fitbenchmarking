@@ -39,10 +39,10 @@ class MantidTests(unittest.TestCase):
     return fname
 
   def ENGINX_193749(self):
-      """
-      Helper function that returns the path to
-      /fitbenchmarking/benchmark_problems
-      """
+    """
+    Helper function that returns the path to
+    /fitbenchmarking/benchmark_problems
+    """
 
       global data_prob_path
       file_path = data_prob_path
@@ -53,7 +53,7 @@ class MantidTests(unittest.TestCase):
       fname = str(file_path)
       print(fname)
 
-      return fname
+    return fname
 
   def NIST_problem(self):
     """
@@ -79,7 +79,6 @@ class MantidTests(unittest.TestCase):
     fname = self.misra1a_file()
     prob = NISTFittingProblem(fname)
     prob.name = 'Misra1a'
-    prob.type = 'NIST'
     prob.equation = 'b1*(1-exp(-b2*x))'
     prob.starting_values = [['b1', [500.0, 250.0]],
                             ['b2', [0.0001, 0.0005]]]
@@ -97,7 +96,6 @@ class MantidTests(unittest.TestCase):
     fname = self.ENGINX_193749()
     prob = FBFittingProblem(fname)
     prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
-    prob.type = 'FitBenchmark'
     prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                      "name=BackToBackExponential,"
                      "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")

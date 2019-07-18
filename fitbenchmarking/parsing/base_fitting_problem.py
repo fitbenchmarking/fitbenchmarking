@@ -40,7 +40,6 @@ class BaseFittingProblem(object):
         # Initializes base class with filename
         self._fname = fname
 
-        self._type = None
         # Name (title) of the fitting problem
         self._name = None
         # Equation (function or model) to fit against data
@@ -65,14 +64,6 @@ class BaseFittingProblem(object):
 
     def close_file(self):
         self._contents.close()
-
-    @property
-    def type(self):
-        return self._type
-
-    @type.setter
-    def type(self, value):
-        self._type = value
 
     @property
     def fname(self):

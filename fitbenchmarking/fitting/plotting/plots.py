@@ -223,6 +223,7 @@ def get_mantid_starting_guess_data(wks_created, function, problem):
                             IgnoreInvalidData=True,
                             StartX=problem.start_x, EndX=problem.end_x,
                             MaxIterations=0)
+
     tmp = msapi.ConvertToPointData(fit_result.OutputWorkspace)
     xData = tmp.readX(1)
     yData = tmp.readY(1)

@@ -11,7 +11,7 @@ import os
 from distutils.core import Command
 from build.utils.common import BUILD_LOGGER
 from build.utils import checks
-from build.install.install_services import install_service
+from build.install.install_packages import install_package
 
 
 class InstallExternals(Command):
@@ -21,103 +21,103 @@ class InstallExternals(Command):
 
     description = 'Install optional external dependencies of the project.\n' \
                   'Currently available: mantid'
-    user_options = [('services=', 's',
-                     'comma separated list of services to install')]
+    user_options = [('packages=', 's',
+                     'comma separated list of packages to install')]
 
     def initialize_options(self):
         """
-        Initialize services dictionary.
+        Initialize packages dictionary.
         """
         # Each user option must be listed here with their default value.
-        self.services = {}
+        self.packages = {}
 
     def finalize_options(self):
         """
-        If user has provided services format them to dictionary.
-        If not use all services.
+        If user has provided packages format them to dictionary.
+        If not use all packages.
         """
 
-        if self.services:
-            self.services = self.services.split(",")
-            service_dict = {}
-            for service_name in self.services:
-                service_dict[service_name] = False
-            self.services = service_dict
+        if self.packages:
+            self.packages = self.packages.split(",")
+            package_dict = {}
+            for package_name in self.packages:
+                package_dict[package_name] = False
+            self.packages = package_dict
         else:
-            self.services = {'mantid': False}
+            self.packages = {'mantid': False}
 
-        if os.name == 'nt' and '7zip' not in self.services:
-            self.services['7zip'] = False
+        if os.name == 'nt' and '7zip' not in self.packages:
+            self.packages['7zip'] = False
 
     def run(self):
         """
-        Validate services to see if any are currently installed
-        Install each service required by the project that did not validate
-        Re-validate to ensure services are now installed
+        Validate packages to see if any are currently installed
+        Install each package required by the project that did not validate
+        Re-validate to ensure packages are now installed
         """
 
         self._perform_preliminary_checks()
 
         BUILD_LOGGER.print_and_log("=== Installing external dependencies ===")
-        services_to_install = self._get_valid_services_to_install()
+        packages_to_install = self._get_valid_packages_to_install()
 
-        # explanation for installing the below is in build.install.install_services 
-        self._install_7zip(services_to_install)
-        self._check_service_dictionary(services_to_install)
-        self._install_services(services_to_install)
-        self._check_if_invalid_install(services_to_install)
+        # explanation for installing the below is in build.install.install_packages
+        self._install_7zip(packages_to_install)
+        self._check_package_dictionary(packages_to_install)
+        self._install_packages(packages_to_install)
+        self._check_if_invalid_install(packages_to_install)
 
         logging.shutdown()
 
 
-    def _get_valid_services_to_install(self):
-        self.services = checks.validate_services(self.services.keys(),
+    def _get_valid_packages_to_install(self):
+        self.packages = checks.validate_packages(self.packages.keys(),
                                                  quiet=False)
-        # Return a list of all non-valid services (those with value of false)
-        services_to_install = [serv_name for serv_name in self.services.keys()
-                               if self.services[serv_name] is False]
+        # Return a list of all non-valid packages (those with value of false)
+        packages_to_install = [serv_name for serv_name in self.packages.keys()
+                               if self.packages[serv_name] is False]
 
-        return services_to_install
+        return packages_to_install
 
-    def _install_7zip(self, services_to_install):
-        if '7zip' in services_to_install:
+    def _install_7zip(self, packages_to_install):
+        if '7zip' in packages_to_install:
             BUILD_LOGGER.print_and_log("Installing 7zip")
-            if install_service('7zip', BUILD_LOGGER) is False:
+            if install_package('7zip', BUILD_LOGGER) is False:
                 print("Unable to install 7zip. Check build logs for more info")
                 return
-            del self.services['7zip']
-            services_to_install.remove('7zip')
+            del self.packages['7zip']
+            packages_to_install.remove('7zip')
 
     def _perform_preliminary_checks(self):
         if not checks.check_imports():
             return
-        if not checks.check_input(self.services):
+        if not checks.check_input(self.packages):
             return
 
     @staticmethod
-    def _install_services(services_to_install):
-        for service in services_to_install:
-            if install_service(service, BUILD_LOGGER) is False:
+    def _install_packages(packages_to_install):
+        for package in packages_to_install:
+            if install_package(package, BUILD_LOGGER) is False:
                 print("Unable to install %s. "
-                      "Check build logs for more informaton" % service)
+                      "Check build logs for more informaton" % package)
             return
 
     @staticmethod
-    def _check_service_dictionary(services_to_install):
-        if not services_to_install:
+    def _check_package_dictionary(packages_to_install):
+        if not packages_to_install:
             BUILD_LOGGER.print_and_log("Nothing to install - "
-                                       "All given services are valid")
+                                       "All given packages are valid")
             return
 
     @staticmethod
-    def _check_if_invalid_install(services_to_install):
-        valid = checks.validate_services(services_to_install, quiet=False)
+    def _check_if_invalid_install(packages_to_install):
+        valid = checks.validate_packages(packages_to_install, quiet=False)
         if False in valid.values():
-            BUILD_LOGGER.print_and_log("One or more services did not "
+            BUILD_LOGGER.print_and_log("One or more packages did not "
                                        "correctly install:", logging.ERROR)
-            for service_name, _ in valid.items():
-                if valid[service_name] is False:
-                    BUILD_LOGGER.print_and_log("* %s" % service_name,
+            for package_name, _ in valid.items():
+                if valid[package_name] is False:
+                    BUILD_LOGGER.print_and_log("* %s" % package_name,
                                                logging.ERROR)
                 BUILD_LOGGER.print_and_log("See build.log for more details.",
                                            logging.ERROR)
