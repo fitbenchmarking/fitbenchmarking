@@ -146,7 +146,6 @@ def execute_fit(function, data, initial_params, minimizer, cost_function):
 
     @returns :: array of final variables after the fit was performed
     """
-    print(str(function.__call__))
     popt, pcov = None, None
     try:
         if cost_function == 'least squares':
