@@ -1,8 +1,11 @@
-
 import os
 
 file_path = os.path.realpath(__file__)
 bp_path = os.path.dirname(file_path)
+"""
+
+file_dir = os.path.dirname(os.path.realpath(__file__))
+bp_path = os.path.dirname(file_dir)
 muon_data_path = os.path.join(bp_path, 'Muon_data', 'data_files')
 neutron_data_path = os.path.join(bp_path, 'Neutron_data', 'data_files')
 
