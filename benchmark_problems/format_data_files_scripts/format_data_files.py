@@ -1,8 +1,11 @@
 import os
 
 """
-This script formats any FitBenchmark data files (.txt) in the sub-folder 'data_files' of Muon_data and Neutron_data
-In the data error column of these data files, if any of the values is 'nan' or 0, it will be changed to 1
+This script was used to re-format data files specified in FitBenchmark problem definition files in the sub-folder
+'data_files' of Muon_data and Neutron_data.
+
+If the data error column of the data files is 'nan' or 0 they are changed to 1. The latter is in accordance with the
+default fitting behaviour in Mantid. 
 """
 
 file_dir = os.path.dirname(os.path.realpath(__file__))
