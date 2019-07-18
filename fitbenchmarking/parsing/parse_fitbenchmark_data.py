@@ -54,12 +54,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._data_x = data_points[:,0]
         self._data_y = data_points[:,1]
         self._data_e = data_points[:,2]
-
-        # wks_imported = msapi.Load(Filename=data_file)
-        #
-        # self._data_x = wks_imported.readX(0)
-        # self._data_y = wks_imported.readY(0)
-        # self._data_e = wks_imported.readE(0)
         self._name = entries['name']
         self._equation = entries['function']
 
