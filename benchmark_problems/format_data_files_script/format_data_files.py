@@ -1,7 +1,8 @@
 import os
 
-file_path = os.path.realpath(__file__)
-bp_path = os.path.dirname(file_path)
+"""
+This script formats any FitBenchmark data files (.txt) in the sub-folder 'data_files' of Muon_data and Neutron_data
+In the data error column of these data files, if any of the values is 'nan' or 0, it will be changed to 1
 """
 
 file_dir = os.path.dirname(os.path.realpath(__file__))
