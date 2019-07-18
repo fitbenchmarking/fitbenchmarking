@@ -23,7 +23,6 @@ from __future__ import (absolute_import, division, print_function)
 import os
 from parsing import base_fitting_problem
 import numpy as np
-# import mantid.simpleapi as msapi
 
 from utils.logging_setup import logger
 
