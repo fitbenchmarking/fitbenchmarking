@@ -138,8 +138,6 @@ def make_fitbenchmark_fit_function(func_name, fit_function):
     else:
         fit_function += func_obj
 
-    print(fit_function)
-
     return fit_function
 
 
