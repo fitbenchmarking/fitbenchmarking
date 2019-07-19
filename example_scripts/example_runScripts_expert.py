@@ -107,6 +107,12 @@ for sub_dir in problem_sets:
     # Problem data directory
     data_dir = os.path.join(benchmark_probs_dir, sub_dir)
 
+    test_data = glob.glob(data_dir + '/*.*')
+
+    if test_data == []:
+        print('Problem set {} not found'.format(sub_dir))
+        continue
+
     print('\nRunning the benchmarking on the {} problem set\n'.format(group_name))
 
     # Processes software_options dictionary into Fitbenchmarking format

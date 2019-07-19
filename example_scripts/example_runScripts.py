@@ -1,5 +1,6 @@
 """
-Script that runs the fitbenchmarking tool with various problems and minimizers.
+This example script is designed to demonstrate the features of fitbenchmarking to benchmark
+the performance of Scipy minimizers against NIST-type problem definition files.
 """
 
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
@@ -26,6 +27,7 @@ Script that runs the fitbenchmarking tool with various problems and minimizers.
 from __future__ import (absolute_import, division, print_function)
 import os
 import sys
+import glob
 
 
 # Avoid reaching the maximum recursion depth by setting recursion limit
@@ -98,22 +100,28 @@ color_scale = [(1.1, 'ranking-top-1'),
 problem_sets = ["NIST/low_difficulty"]
 
 for sub_dir in problem_sets:
-  # generate group label/name used for problem set
-  label = sub_dir.replace('/', '_')
+    # generate group label/name used for problem set
+    label = sub_dir.replace('/', '_')
 
-  # Problem data directory
-  data_dir = os.path.join(benchmark_probs_dir, sub_dir)
+    # Problem data directory
+    data_dir = os.path.join(benchmark_probs_dir, sub_dir)
 
-  print('\nRunning the benchmarking on the {} problem set\n'.format(label))
-  results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
+    test_data = glob.glob(data_dir + '/*.*')
+
+    if test_data == []:
+        print('Problem set {} not found'.format(sub_dir))
+        continue
+
+    print('\nRunning the benchmarking on the {} problem set\n'.format(label))
+    results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
                                                    data_dir=data_dir,
                                                    use_errors=use_errors, results_dir=results_dir)
 
-  print('\nProducing output for the {} problem set\n'.format(label))
-  for idx, group_results in enumerate(results_per_group):
-    # Display the runtime and accuracy results in a table
-    printTables(software_options, group_results,
+    print('\nProducing output for the {} problem set\n'.format(label))
+    for idx, group_results in enumerate(results_per_group):
+        # Display the runtime and accuracy results in a table
+        printTables(software_options, group_results,
                 group_name=label, use_errors=use_errors,
                 color_scale=color_scale, results_dir=results_dir)
 
-  print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
+    print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))

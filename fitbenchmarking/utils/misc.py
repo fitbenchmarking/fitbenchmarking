@@ -107,7 +107,7 @@ def save_user_input(software, minimizers, group_name, results_dir, use_errors):
 
 def get_problem_files(data_dir):
     """
-    Gets all the problem definition files from the neutron directory.
+    Gets all the problem definition files from the specified problem set directory.
 
     @param dirs :: array of directories that contain the problems
 

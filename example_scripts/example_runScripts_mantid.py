@@ -1,5 +1,9 @@
 """
-Script that runs the fitbenchmarking tool with various problems and minimizers.
+This example script is designed to demonstrate the features of fitbenchmarking to benchmark
+the performance of Mantid minimizers against various different problem definition files.
+
+This example script can also be modified to benchmark against Scipy minimizers as well.
+To do that, simply change the variable "software" from "mantid" to "scipy".
 """
 
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
@@ -109,6 +113,12 @@ for sub_dir in problem_sets:
 
   # Problem data directory
   data_dir = os.path.join(benchmark_probs_dir, sub_dir)
+
+  test_data = glob.glob(data_dir + '/*.*')
+
+  if test_data == []:
+      print('Problem set {} not found'.format(sub_dir))
+      continue
 
   print('\nRunning the benchmarking on the {} problem set\n'.format(label))
   results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
