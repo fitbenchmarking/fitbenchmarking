@@ -13,25 +13,10 @@ sys.path.insert(0, main_dir)
 
 from parsing.parse import parse_problem_file
 from parsing.parse_nist_data import FittingProblem
+from mock_problem_files.get_problem_files import get_file
 
 
 class ParseNistTests(unittest.TestCase):
-
-    def misra1a_file(self):
-        """
-        Helper function that returns the path to
-        /fitbenchmarking/benchmark_problems
-        """
-
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        parent_dir = os.path.dirname(os.path.normpath(test_dir))
-        main_dir = os.path.dirname(os.path.normpath(parent_dir))
-        root_dir = os.path.dirname(os.path.normpath(main_dir))
-        bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
-        fname = os.path.join(bench_prob_dir, 'NIST', 'low_difficulty',
-                             'Misra1a.dat')
-
-        return fname
 
     def setup_misra1a_data_pattern_lines(self):
 
@@ -133,9 +118,9 @@ class ParseNistTests(unittest.TestCase):
         return data_pattern
 
     def setup_nist_expected_problem(self):
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
-        prob.name = 'Misra1a'
+        prob.name = 'NIST_Misra1a'
         prob.equation = 'b1*(1-exp(-b2*x))'
         prob.starting_values = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
         data_pattern = self.setup_misra1a_expected_data_points()
@@ -146,7 +131,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_ParseProblemFileNIST_returns_correct_problem_object(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         problem = parse_problem_file(fname)
         problem_expected = self.setup_nist_expected_problem()
 
@@ -160,7 +145,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_storeProbDetails_correct_storing(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         parsed_eq = 'b1*(1-exp(-b2*x))'
         starting_values = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
         data_pattern = self.setup_misra1a_expected_data_points()
@@ -178,7 +163,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_parseLineByLine_correct_lines(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
 
         equation_text, data_pattern_text, starting_values = prob.parse_line_by_line(open(fname))
@@ -196,7 +181,7 @@ class ParseNistTests(unittest.TestCase):
 
         lines = self.setup_misra1a_model_lines()
         idx = 0
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
 
         equation_text, idx = prob.get_nist_model(lines, idx)
@@ -207,7 +192,7 @@ class ParseNistTests(unittest.TestCase):
         self.assertEqual(idx_expected, idx)
 
     def test_getNistModel_fail_runtimeError(self):
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
         lines = ["\n", "\n"]
         idx = 33
@@ -216,7 +201,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_getNistStartingValues_return_proper_startvaltxt(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
 
         lines = self.setup_misra1a_startvals_lines()
@@ -235,7 +220,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_getNistStartingValues_fail_startvals_invalid(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
 
         lines = ["\n",
@@ -249,7 +234,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_getDataPatternTxt_correct_data(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
 
         lines = self.setup_misra1a_data_pattern_lines()
@@ -264,7 +249,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_getDataPatternTxt_raises_error(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
 
         lines = []
@@ -274,7 +259,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_parseDataPattern_return_parsed_data_pattern_array(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
 
         data_pattern_text = self.setup_misra1a_data_pattern_text()
@@ -286,7 +271,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_parseEquation_return_proper_equation_form(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
 
         equation_text = 'y = b1*(1-exp[-b2*x])  +  e'
@@ -298,7 +283,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_parseEquation_fail_runtimeError(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
 
         equation_text = 'LULy = bf1*(1-exdsp[-b2as*x])  +  e'
@@ -307,7 +292,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_get_start_x_and_end_x(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
 
         data_pattern = self.setup_misra1a_expected_data_points()
@@ -323,7 +308,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_get_data_e_expect_None(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
 
         data_pattern = self.setup_misra1a_expected_data_points()
@@ -336,7 +321,7 @@ class ParseNistTests(unittest.TestCase):
 
     def test_get_data_e_expect_array(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
 
         data_pattern = self.setup_misra1a_expected_data_points_with_data_e()

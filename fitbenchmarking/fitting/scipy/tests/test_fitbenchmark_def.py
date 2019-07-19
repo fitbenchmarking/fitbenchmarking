@@ -21,27 +21,11 @@ from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_initial_p
 from fitting.scipy.fitbenchmark_data_functions import make_fitbenchmark_fit_function
 from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_params
 from fitting.scipy.fitbenchmark_data_functions import get_fitbenchmark_ties
+from mock_problem_files.get_problem_files import get_file
 
 from parsing.parse_fitbenchmark_data import FittingProblem
 
 class ScipyTests(unittest.TestCase):
-
-    def neutron_peak_19_file(self):
-        """
-        Helper function that returns the path to
-        /fitbenchmarking/benchmark_problems
-        """
-
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        parent_dir = os.path.dirname(os.path.normpath(test_dir))
-        main_dir = os.path.dirname(os.path.normpath(parent_dir))
-        root_dir = os.path.dirname(os.path.normpath(main_dir))
-        bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
-        bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
-        fname = os.path.join(bench_prob_dir, 'Neutron_data',
-                             'ENGINX193749_calibration_peak19.txt')
-
-        return fname
 
     def Neutron_problem(self):
         """
@@ -49,7 +33,7 @@ class ScipyTests(unittest.TestCase):
         ENGINX193749_calibration_peak19.txt
         """
 
-        fname = self.neutron_peak_19_file()
+        fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
         prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
         prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                          "name=BackToBackExponential,"
@@ -73,7 +57,7 @@ class ScipyTests(unittest.TestCase):
 
     def test_FunctionDefinitions_Dat_return_function_definitions(self):
 
-        fname = self.neutron_peak_19_file()
+        fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
         prob = FittingProblem(fname)
         prob.equation = ("name=LinearBackground,A0=0,A1=0;"
                          "name=BackToBackExponential,"

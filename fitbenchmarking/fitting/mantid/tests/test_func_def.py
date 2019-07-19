@@ -5,55 +5,21 @@ import os
 import numpy as np
 import mantid.simpleapi as msapi
 
-from pathlib import *
-
 import sys
-
-data_prob_path = Path()
-current_path = (Path(__file__).parts)
-fb_dir_idx = current_path.index('fitbenchmarking')
-data_prob_path = data_prob_path.joinpath(*current_path[:fb_dir_idx + 1])
-main_path = data_prob_path.joinpath('fitbenchmarking')
-sys.path.append(str(main_path))
+test_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(os.path.normpath(test_dir))
+parent_dir = os.path.dirname(os.path.normpath(parent_dir))
+main_dir = os.path.dirname(os.path.normpath(parent_dir))
+sys.path.insert(0, main_dir)
 
 from fitting.mantid.func_def import function_definitions
 from fitting.mantid.func_def import parse_nist_function_definitions
 
 from parsing.parse_nist_data import FittingProblem as NISTFittingProblem
 from parsing.parse_fitbenchmark_data import FittingProblem as FBFittingProblem
+from mock_problem_files.get_problem_files import get_file
 
 class MantidTests(unittest.TestCase):
-
-  def misra1a_file(self):
-    """
-    Helper function that returns the path to
-    /fitbenchmarking/benchmark_problems
-    """
-    global data_prob_path
-    file_path = data_prob_path
-    file_path = file_path.joinpath('benchmark_problems',
-                                             'Mock_Problem_Files', 'NIST_Misra1a.dat')
-
-    fname = str(file_path)
-
-    return fname
-
-  def ENGINX_193749(self):
-    """
-    Helper function that returns the path to
-    /fitbenchmarking/benchmark_problems
-    """
-
-      global data_prob_path
-      file_path = data_prob_path
-      file_path = file_path.joinpath('benchmark_problems',
-                                               'Mock_Problem_Files',
-                                               'FB_ENGINX193749_calibration_peak19.txt')
-
-      fname = str(file_path)
-      print(fname)
-
-    return fname
 
   def NIST_problem(self):
     """
@@ -76,7 +42,7 @@ class MantidTests(unittest.TestCase):
                              [75.47, 689.1],
                              [81.78, 760.0]])
 
-    fname = self.misra1a_file()
+    fname = get_file('NIST_Misra1a.dat')
     prob = NISTFittingProblem(fname)
     prob.name = 'Misra1a'
     prob.equation = 'b1*(1-exp(-b2*x))'
@@ -93,7 +59,7 @@ class MantidTests(unittest.TestCase):
     ENGINX193749_calibration_peak19.txt
     """
 
-    fname = self.ENGINX_193749()
+    fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
     prob = FBFittingProblem(fname)
     prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
     prob.equation = ("name=LinearBackground,A0=0,A1=0;"
