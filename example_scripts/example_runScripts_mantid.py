@@ -27,7 +27,6 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import sys
 
-
 # Avoid reaching the maximum recursion depth by setting recursion limit
 # This is useful when running multiple data set benchmarking
 # Otherwise recursion limit is reached and the interpreter throws an error
@@ -43,13 +42,23 @@ sys.path.insert(0, scripts_folder)
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
+try:
+    import mantid.simpleapi as msapi
+except:
+    print('******************************************\n'
+          'Mantid is not yet installed on your computer\n'
+          'To install, go to the directory where setup.py is located and simply type:\n'
+          'python setup.py install externals -s mantid\n'
+          '******************************************')
+    sys.exit()
+
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = 'scipy'
+software = 'mantid'
 software_options = {'software': software}
 
 # User defined minimizers
 # custom_minimizers = {"mantid": ["BFGS", "Simplex"],
-#               "scipy": ["lm", "trf", "dogbox"]}
+              # "scipy": ["lm", "trf", "dogbox"]}
 custom_minimizers = None
 
 
@@ -92,10 +101,8 @@ color_scale = [(1.1, 'ranking-top-1'),
 # ADD WHICH PROBLEM SETS TO TEST AGAINST HERE
 # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
 # "Muon_data" works for mantid minimizers
-# problem_sets = ["Neutron_data", "NIST/average_difficulty"]
-# problem_sets = ["CUTEst", "Muon_data", "Neutron_data", "NIST/average_difficulty", "NIST/high_difficulty", "NIST/low_difficulty"]
-# problem_sets = ["CUTEst", "NIST/average_difficulty", "NIST/high_difficulty", "NIST/low_difficulty"]
-problem_sets = ['CUTEst']
+problem_sets = ["CUTEst", "Muon_data", "Neutron_data", "NIST/average_difficulty", "NIST/high_difficulty", "NIST/low_difficulty"]
+
 for sub_dir in problem_sets:
   # generate group label/name used for problem set
   label = sub_dir.replace('/', '_')

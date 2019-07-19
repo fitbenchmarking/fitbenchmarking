@@ -25,7 +25,6 @@ Functions that creates the tables and the visual display pages.
 from __future__ import (absolute_import, division, print_function)
 
 import logging
-import mantid.simpleapi as msapi
 import utils.misc
 
 from utils.logging_setup import logger

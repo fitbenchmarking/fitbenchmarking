@@ -22,7 +22,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 from parsing import base_fitting_problem
-import mantid.simpleapi as msapi
+import numpy as np
 
 from utils.logging_setup import logger
 
@@ -46,13 +46,13 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         super(FittingProblem, self).read_file()
 
         entries = self.get_fitbenchmark_data_problem_entries(self.contents)
-        data_file = self.get_data_file(self.fname, entries['input_file'])
+        data_file_path = self.get_data_file(self.fname, entries['input_file'])
 
-        wks_imported = msapi.Load(Filename=data_file)
+        data_points = self.get_data_points(data_file_path)
 
-        self._data_x = wks_imported.readX(0)
-        self._data_y = wks_imported.readY(0)
-        self._data_e = wks_imported.readE(0)
+        self._data_x = data_points[:,0]
+        self._data_y = data_points[:,1]
+        self._data_e = data_points[:,2]
         self._name = entries['name']
         self._equation = entries['function']
 
@@ -82,7 +82,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
                     data_file = os.path.join(root, data_file_name)
 
         if data_file == None:
-            logger.error("Data file {0} not found".format(data_file_name))
+            logger.error("Data file {} not found".format(data_file_name))
 
         return data_file
 
@@ -107,3 +107,31 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
             entries[lhs.strip()] = eval(rhs.strip())
 
         return entries
+
+    def get_data_points(self, data_file_path):
+        """
+        Get the data points of the problem from the data file.
+
+        @param data_file :: full path of the data file
+        @return :: array of data points
+        """
+
+        data_object = open(data_file_path, 'r')
+        data_text = data_object.readlines()
+
+        first_row = data_text[2].strip()
+        dim = len(first_row.split())
+        data_points = np.zeros((len(data_text)-2, dim))
+
+        for idx, line in enumerate(data_text[2:]):
+            line = line.strip()
+            point_text = line.split()
+            point = [float(val) for val in point_text]
+            data_points[idx, :] = point
+
+        return data_points
+
+
+
+
+

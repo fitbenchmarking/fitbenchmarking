@@ -50,6 +50,7 @@ def fitbenchmark_func_definitions(functions_string):
         fit_function = make_fitbenchmark_fit_function(name, fit_function)
     fit_function = set_ties(fit_function, ties)
 
+
     function_defs = [[fit_function, params]]
 
     return function_defs
