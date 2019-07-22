@@ -43,9 +43,6 @@ fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
 sys.path.insert(0, scripts_folder)
 
-from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
-from results_output import save_results_tables as printTables
-
 try:
     import mantid.simpleapi as msapi
 except:
@@ -55,6 +52,9 @@ except:
           'python setup.py install externals -s mantid\n'
           '******************************************')
     sys.exit()
+
+from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
+from results_output import save_results_tables as printTables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
 software = 'mantid'
