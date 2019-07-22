@@ -36,8 +36,8 @@ class RstTableTests(unittest.TestCase):
     linked_problem = "`Misra1a 1 <file:///" + current_dir + \
                      "/dump/nist/VDPages/nist_lower_misra1a.html>`__"
     length_table = len(linked_problem)
-    tbl_header_top = ("+" + "-" * length_table + "+" + ("-" * 21 + "+") * 10)
-    tbl_header_text = ("|" + " " * length_table + "|" + "Minimizer1" + " " * 11 + "|" +
+    tbl_header_top = ("+" + "-" * (length_table+20) + "+" + ("-" * 21 + "+") * 10)
+    tbl_header_text = ("|" + " " * (length_table+20) + "|" + "Minimizer1" + " " * 11 + "|" +
                        "Minimizer2" + 11 * " " + "|" + "Minimizer3" + " " * 11 +
                        "|" +
                        "Minimizer4" + 11 * " " + "|" + "Minimizer5" + " " * 11 +
@@ -47,7 +47,7 @@ class RstTableTests(unittest.TestCase):
                        "Minimizer8" + 11 * " " + "|" + "Minimizer9" + " " * 11 +
                        "|" +
                        "Trust Region" + " " * 9 + "|")
-    tbl_header_bottom = ("+" + "=" * length_table + "+" + ("=" * 21 + "+") * 10)
+    tbl_header_bottom = ("+" + "=" * (length_table+20) + "+" + ("=" * 21 + "+") * 10)
 
     return tbl_header_top, tbl_header_text, tbl_header_bottom
 
@@ -58,11 +58,11 @@ class RstTableTests(unittest.TestCase):
     tbl_footer = tbl_htop + '\n'
     tbl_body = '|`Misra1a 1 <file:///' + current_dir + \
                '/dump/nist/VDPages/' + \
-               'nist_lower_misra1a.html>`__| :ranking-top-1:`1`  | ' + \
+               'nist_lower_misra1a.html>`__'+' '*20 +'| :ranking-top-1:`1`  | ' + \
                ':ranking-low-4:`2`  | :ranking-low-4:`3`  |\n' + \
                tbl_footer + '|`Misra1a 2 <file:///' + current_dir + \
                '/dump/' + \
-               'nist/VDPages/nist_lower_misra1a.html>`__| ' + \
+               'nist/VDPages/nist_lower_misra1a.html>`__'+' '*20 + '| ' + \
                ':ranking-low-5:`5`  | :ranking-low-5:`10` |' + \
                ' :ranking-low-5:`13` |\n'
 
@@ -128,7 +128,7 @@ class RstTableTests(unittest.TestCase):
 
     columns_txt, rows_txt, cells, color_scale = self.CreateTableInputData()
     items_link = 'FittingMinimizersComparisonDetailedWithWeights'
-    first_col_len = len(rows_txt[0])
+    first_col_len = len(rows_txt[0])+20
     tbl_header_top, tbl_header_text, tbl_header_bottom = \
         self.PrepareTableHeader()
     tbl_footer = tbl_header_top + '\n'
@@ -220,7 +220,7 @@ class RstTableTests(unittest.TestCase):
                 "/dump/nist/VDPages/nist_lower_misra1a.html>`__"]
 
     first_col_len = calc_first_col_len(cell_len, rows_txt)
-    first_col_len_expected = len(rows_txt[0])
+    first_col_len_expected = len(rows_txt[0]) + 20
 
     self.assertEqual(first_col_len_expected, first_col_len)
 
@@ -231,7 +231,7 @@ class RstTableTests(unittest.TestCase):
                 "/dump/nist/VDPages/nist_lower_misra1a.html>`__",
                 "`Misra1a 2 <file:///" + current_dir +
                 "/dump/nist/VDPages/nist_lower_misra1a.html>`__"]
-    first_col_len = len(rows_txt[0])
+    first_col_len = len(rows_txt[0]) + 20
     cell_len = 21
     columns_txt = ['Minimizer1', 'Minimizer2', 'Minimizer3', 'Minimizer4',
                    'Minimizer5', 'Minimizer6', 'Minimizer7', 'Minimizer8',
