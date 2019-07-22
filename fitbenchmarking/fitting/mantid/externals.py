@@ -29,15 +29,17 @@ import mantid.simpleapi as msapi
 from utils.logging_setup import logger
 
 
-def gen_func_obj(function_name):
+def gen_func_obj(function_name, params_set):
     """
     Generates a mantid function object.
 
     @param function_name :: the name of the function to be generated
+    @params_set :: set of parameters per function extracted from the problem definition file
 
     @returns :: mantid function object that can be called in python
     """
-    exec "function_object = msapi." + function_name + "()"
+    params_set = (params_set.split(', ties'))[0]
+    exec "function_object = msapi." + function_name + "("+ params_set +")"
     return function_object
 
 

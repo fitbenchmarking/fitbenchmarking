@@ -46,8 +46,8 @@ def fitbenchmark_func_definitions(functions_string):
     function_params = get_all_fitbenchmark_func_params(functions_string)
     params, ties = get_fitbenchmark_initial_params_values(function_params)
     fit_function = None
-    for name in function_names:
-        fit_function = make_fitbenchmark_fit_function(name, fit_function)
+    for name, params_set in zip(function_names, function_params):
+        fit_function = make_fitbenchmark_fit_function(name, fit_function, params_set)
     fit_function = set_ties(fit_function, ties)
 
 
@@ -128,11 +128,11 @@ def get_fitbenchmark_initial_params_values(function_params):
     return params, ties
 
 
-def make_fitbenchmark_fit_function(func_name, fit_function):
+def make_fitbenchmark_fit_function(func_name, fit_function, params_set):
     """
     Create the fitbenchmark fit function object that is used by scipy.
     """
-    func_obj = gen_func_obj(func_name)
+    func_obj = gen_func_obj(func_name, params_set)
     if fit_function == None:
         fit_function = func_obj
     else:
