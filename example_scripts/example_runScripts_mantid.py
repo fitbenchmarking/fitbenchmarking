@@ -4,6 +4,7 @@ the performance of Mantid minimizers against various different problem definitio
 
 This example script can also be modified to benchmark against Scipy minimizers as well.
 To do that, simply change the variable "software" from "mantid" to "scipy".
+
 """
 
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
@@ -32,6 +33,7 @@ import os
 import sys
 import glob
 
+
 # Avoid reaching the maximum recursion depth by setting recursion limit
 # This is useful when running multiple data set benchmarking
 # Otherwise recursion limit is reached and the interpreter throws an error
@@ -53,6 +55,7 @@ except:
           'python setup.py install externals -s mantid\n'
           '******************************************')
     sys.exit()
+
 
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
@@ -114,6 +117,7 @@ for sub_dir in problem_sets:
 
   # Problem data directory
   data_dir = os.path.join(benchmark_probs_dir, sub_dir)
+
 
   test_data = glob.glob(data_dir + '/*.*')
 
