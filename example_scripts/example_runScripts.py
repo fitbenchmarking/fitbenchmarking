@@ -44,8 +44,7 @@ from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = 'mantid'
-# software = 'scipy'
+software = 'scipy'
 software_options = {'software': software}
 
 # User defined minimizers
@@ -95,7 +94,8 @@ color_scale = [(1.1, 'ranking-top-1'),
 # "Muon_data" works for mantid minimizers
 # problem_sets = ["Neutron_data", "NIST/average_difficulty"]
 # problem_sets = ["CUTEst", "Muon_data", "Neutron_data", "NIST/average_difficulty", "NIST/high_difficulty", "NIST/low_difficulty"]
-problem_sets = ["Neutron_data"]
+# problem_sets = ["CUTEst", "NIST/average_difficulty", "NIST/high_difficulty", "NIST/low_difficulty"]
+problem_sets = ['CUTEst']
 for sub_dir in problem_sets:
   # generate group label/name used for problem set
   label = sub_dir.replace('/', '_')

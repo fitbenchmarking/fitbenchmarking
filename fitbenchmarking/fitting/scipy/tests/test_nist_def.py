@@ -17,25 +17,9 @@ from fitting.scipy.nist_data_functions import get_nist_param_names_and_values
 from fitting.scipy.nist_data_functions import format_function_scipy
 
 from parsing.parse_nist_data import FittingProblem
+from mock_problem_files.get_problem_files import get_file
 
 class ScipyTests(unittest.TestCase):
-
-    def misra1a_file(self):
-        """
-        Helper function that returns the path to
-        /fitbenchmarking/benchmark_problems
-        """
-
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        parent_dir = os.path.dirname(os.path.normpath(test_dir))
-        main_dir = os.path.dirname(os.path.normpath(parent_dir))
-        root_dir = os.path.dirname(os.path.normpath(main_dir))
-        bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
-        bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
-        fname = os.path.join(bench_prob_dir, 'NIST', 'low_difficulty',
-                             'Misra1a.dat')
-
-        return fname
 
     def create_expected_function_definitions(self):
         function = "b1*(1-np.exp(-b2*x))"
@@ -48,7 +32,7 @@ class ScipyTests(unittest.TestCase):
 
     def test_FunctionDefinitions_nist_return_function_definitions(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
         prob.equation = "b1*(1-exp(-b2*x))"
         prob.starting_values = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]

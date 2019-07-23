@@ -26,9 +26,9 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 
-from parsing import parse_nist_data, parse_fitbenchmark_data
 from utils.logging_setup import logger
-
+from parsing import parse_nist_data
+from parsing import parse_fitbenchmark_data
 
 def parse_problem_file(prob_file):
     """
@@ -44,6 +44,7 @@ def parse_problem_file(prob_file):
                 "{2}".format(prob_type,os.path.basename(prob_file),prob_file[prob_file.find('fitbenchmarking'):]))
 
     if prob_type == "NIST":
+
         problem = parse_nist_data.FittingProblem(prob_file)
     elif prob_type == "FitBenchmark":
         problem = parse_fitbenchmark_data.FittingProblem(prob_file)
