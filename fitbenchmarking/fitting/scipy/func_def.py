@@ -26,7 +26,6 @@ from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
 import re
-from utils.logging_setup import logger
 
 def function_definitions(problem):
     """
