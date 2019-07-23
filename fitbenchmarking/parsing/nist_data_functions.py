@@ -43,6 +43,8 @@ def nist_func_definitions(function, startvals):
     param_names, all_values = get_nist_param_names_and_values(startvals)
     function = format_function_scipy(function)
     function_defs = []
+
+    #Create a function evaluation method
     for values in all_values:
         exec "def fitting_function(x, " + param_names + "): return " + function
         function_defs.append([fitting_function, values, function])

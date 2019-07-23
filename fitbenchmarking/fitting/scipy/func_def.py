@@ -35,20 +35,8 @@ def function_definitions(problem):
     """
     problem_type = extract_problem_type(problem)
 
-    if problem_type == 'NIST':
-        from fitting.scipy.nist_data_functions import nist_func_definitions
-        return nist_func_definitions(problem.equation,
-                                     problem.starting_values)
-    elif problem_type == 'FitBenchmark'.upper():
-        """
-        The following import is inserted here to allow fitbenchmarking 
-        to run independently of mantid when solving NIST problems.
-        FitBenchmark problems require mantid to generate problem function objects.
-        As mantid is imported in fitbenchmark_data_function, the script should be 
-        imported only in the case of solving FitBenchmark problems 
-        """
-        from fitting.scipy.fitbenchmark_data_functions import fitbenchmark_func_definitions
-        return fitbenchmark_func_definitions(problem.equation)
+    if problem_type == 'NIST' or problem_type == 'FitBenchmark'.upper():
+        return problem.function
     else:
         RuntimeError("Your problem type is not supported yet!")
 

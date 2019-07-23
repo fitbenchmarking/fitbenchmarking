@@ -25,6 +25,7 @@ from parsing import base_fitting_problem
 import numpy as np
 
 from utils.logging_setup import logger
+from parsing.fitbenchmark_data_functions import fitbenchmark_func_definitions
 
 
 class FittingProblem(base_fitting_problem.BaseFittingProblem):
@@ -54,7 +55,10 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._data_y = data_points[:,1]
         self._data_e = data_points[:,2]
         self._name = entries['name']
+
+        #String containing the function name(s) and the starting parameter values for each function
         self._equation = entries['function']
+        self._function = fitbenchmark_func_definitions(self._equation)
 
         self._starting_values = None
         if 'fit_parameters' in entries:

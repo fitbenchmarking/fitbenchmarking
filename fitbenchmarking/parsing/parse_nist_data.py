@@ -26,6 +26,7 @@ import re
 from parsing import base_fitting_problem
 
 from utils.logging_setup import logger
+from parsing.nist_data_functions import nist_func_definitions
 
 
 class FittingProblem(base_fitting_problem.BaseFittingProblem):
@@ -57,7 +58,10 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._data_e = self.get_data_e(data_pattern)
 
         self._name = os.path.basename(self.contents.name.split('.')[0])
+
+        #String containing a mathematical expression
         self._equation = self.parse_equation(equation_text)
+        self._function = nist_func_definitions(self._equation, starting_values)
 
         self._starting_values = starting_values
 
