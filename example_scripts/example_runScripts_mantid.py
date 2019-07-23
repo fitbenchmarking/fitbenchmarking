@@ -1,31 +1,15 @@
 """
-Script that runs the fitbenchmarking tool with various problems and minimizers.
+This example script is designed to demonstrate the features of fitbenchmarking to benchmark
+the performance of Mantid minimizers against various different problem definition files.
+
+This example script can also be modified to benchmark against Scipy minimizers as well.
+To do that, simply change the variable "software" from "mantid" to "scipy".
 """
-
-# Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
-# Oak Ridge National Laboratory & European Spallation Source
-#
-# This file is part of Mantid.
-# Mantid is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# Mantid is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# File change history is stored at: <https://github.com/mantidproject/mantid>.
-# Code Documentation is available at: <http://doxygen.mantidproject.org>
-
 
 from __future__ import (absolute_import, division, print_function)
 import os
 import sys
+import glob
 
 # Avoid reaching the maximum recursion depth by setting recursion limit
 # This is useful when running multiple data set benchmarking
@@ -39,9 +23,6 @@ fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
 sys.path.insert(0, scripts_folder)
 
-from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
-from results_output import save_results_tables as printTables
-
 try:
     import mantid.simpleapi as msapi
 except:
@@ -51,6 +32,9 @@ except:
           'python setup.py install externals -s mantid\n'
           '******************************************')
     sys.exit()
+
+from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
+from results_output import save_results_tables as printTables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
 software = 'mantid'
@@ -109,6 +93,12 @@ for sub_dir in problem_sets:
 
   # Problem data directory
   data_dir = os.path.join(benchmark_probs_dir, sub_dir)
+
+  test_data = glob.glob(data_dir + '/*.*')
+
+  if test_data == []:
+      print('Problem set {} not found'.format(sub_dir))
+      continue
 
   print('\nRunning the benchmarking on the {} problem set\n'.format(label))
   results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
