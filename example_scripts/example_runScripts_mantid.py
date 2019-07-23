@@ -30,6 +30,7 @@ To do that, simply change the variable "software" from "mantid" to "scipy".
 from __future__ import (absolute_import, division, print_function)
 import os
 import sys
+import glob
 
 # Avoid reaching the maximum recursion depth by setting recursion limit
 # This is useful when running multiple data set benchmarking

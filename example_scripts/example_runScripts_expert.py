@@ -28,6 +28,7 @@ at each stage to enable a user to customize their problem to their needs.
 from __future__ import (absolute_import, division, print_function)
 import os
 import sys
+import glob
 
 
 # Avoid reaching the maximum recursion depth by setting recursion limit
