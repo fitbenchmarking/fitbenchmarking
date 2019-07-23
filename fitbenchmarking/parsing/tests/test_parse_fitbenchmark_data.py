@@ -17,33 +17,15 @@ from parsing.parse import parse_problem_file
 from parsing.parse import check_problem_attributes
 from parsing.parse import determine_problem_type
 from parsing.parse_fitbenchmark_data import FittingProblem
+from mock_problem_files.get_problem_files import get_file
 
 
 class ParseFitbenchmarkTests(unittest.TestCase):
 
-    def neutron_peak_19_file(self):
-        """
-        Helper function that returns the path to
-        /fitbenchmarking/benchmark_problems
-        """
-
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        parent_dir = os.path.dirname(os.path.normpath(test_dir))
-        main_dir = os.path.dirname(os.path.normpath(parent_dir))
-        root_dir = os.path.dirname(os.path.normpath(main_dir))
-        bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
-        fname = os.path.join(bench_prob_dir, 'Neutron_data',
-                             'ENGINX193749_calibration_peak19.txt')
-
-        return fname
-
     def get_bench_prob_dir(self):
 
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        parent_dir = os.path.dirname(os.path.normpath(test_dir))
-        main_dir = os.path.dirname(os.path.normpath(parent_dir))
-        root_dir = os.path.dirname(os.path.normpath(main_dir))
-        bench_prob_dir = os.path.join((root_dir), 'benchmark_problems')
+        prob_path = get_file('FB_ENGINX193749_calibration_spec651.txt')
+        bench_prob_dir = os.path.dirname(prob_path)
 
         return bench_prob_dir
 
@@ -51,7 +33,7 @@ class ParseFitbenchmarkTests(unittest.TestCase):
 
         entries = {}
         entries['name'] = "ENGINX 193749 calibration, spectrum 651, peak 19"
-        entries['input_file'] = "ENGINX193749_calibration_spec651.txt"
+        entries['input_file'] = "FB_ENGINX193749_calibration_spec651.txt"
         entries['function'] = ("name=LinearBackground,A0=0,A1=0;"
                                "name=BackToBackExponential,"
                                "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
@@ -65,7 +47,7 @@ class ParseFitbenchmarkTests(unittest.TestCase):
 
         bench_prob_dir = self.get_bench_prob_dir()
         entries = self.expected_fitbenchmark_problem_entries()
-        fname = self.neutron_peak_19_file()
+        fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
         problem = FittingProblem(fname)
         problem.name = entries['name']
         problem.equation = entries['function']
@@ -73,15 +55,14 @@ class ParseFitbenchmarkTests(unittest.TestCase):
         if 'fit_parameters' in entries:
             problem.start_x = entries['fit_parameters']['StartX']
             problem.end_x = entries['fit_parameters']['EndX']
-        data_file = os.path.join(bench_prob_dir, 'Neutron_data',
-                                 'data_files', entries['input_file'])
+        data_file = os.path.join(bench_prob_dir, entries['input_file'])
         store_main_problem_data(data_file, problem)
 
         return problem
 
     def test_ParseProblemFileFitbenchmark_returns_correct_problem_object(self):
 
-        fname = self.neutron_peak_19_file()
+        fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
 
         problem = parse_problem_file(fname)
         problem_expected = self.expected_neutron_problem()
@@ -95,19 +76,18 @@ class ParseFitbenchmarkTests(unittest.TestCase):
 
     def test_getDataFilesDir_return_data_files_path(self):
 
-        fname = self.neutron_peak_19_file()
-        input_file = 'ENGINX193749_calibration_spec651.txt'
+        fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
+        input_file = 'FB_ENGINX193749_calibration_spec651.txt'
         bench_prob_dir = self.get_bench_prob_dir()
         prob = FittingProblem(fname)
         data_file = prob.get_data_file(fname, input_file)
-        data_file_expected = os.path.join(bench_prob_dir, 'Neutron_data',
-                                          'data_files', input_file)
-        
+        data_file_expected = os.path.join(bench_prob_dir, input_file)
+
         self.assertEqual(data_file_expected, data_file)
 
     def test_getFitbenchmarkDataProblemEntries_return_problem_entries(self):
 
-        fname = self.neutron_peak_19_file()
+        fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
         prob = FittingProblem(fname)
         with open(fname) as probf:
             entries = prob.get_fitbenchmark_data_problem_entries(probf)
@@ -122,7 +102,7 @@ class ParseFitbenchmarkTests(unittest.TestCase):
                          entries['description'])
 
     def test_storeMiscProbData(self):
-        fname = self.neutron_peak_19_file()
+        fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
         problem = FittingProblem(fname)
         entries = self.expected_fitbenchmark_problem_entries()
 
@@ -133,7 +113,7 @@ class ParseFitbenchmarkTests(unittest.TestCase):
         self.assertEqual(None, problem.starting_values)
 
     def test_checkingAttributesAssertion(self):
-        fname = self.neutron_peak_19_file()
+        fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
         prob = FittingProblem(fname)
     #     with self.assertRaises(ValueError):
         check_problem_attributes(prob)

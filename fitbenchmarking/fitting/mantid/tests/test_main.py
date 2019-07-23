@@ -20,26 +20,10 @@ from fitting.mantid.main import optimum
 from fitting.mantid.main import get_ignore_invalid
 
 from parsing.parse_nist_data import FittingProblem
+from mock_problem_files.get_problem_files import get_file
 
 
 class MantidTests(unittest.TestCase):
-
-    def misra1a_file(self):
-        """
-        Helper function that returns the path to
-        /fitbenchmarking/benchmark_problems
-        """
-
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        parent_dir = os.path.dirname(os.path.normpath(test_dir))
-        main_dir = os.path.dirname(os.path.normpath(parent_dir))
-        root_dir = os.path.dirname(os.path.normpath(main_dir))
-        bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
-        bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
-        fname = os.path.join(bench_prob_dir, 'NIST', 'low_difficulty',
-                             'Misra1a.dat')
-
-        return fname
 
     def NIST_problem(self):
         """
@@ -62,7 +46,7 @@ class MantidTests(unittest.TestCase):
                                  [75.47, 689.1],
                                  [81.78, 760.0]])
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
         prob.name = 'Misra1a'
         prob.type = 'NIST'
@@ -216,7 +200,7 @@ class MantidTests(unittest.TestCase):
 
     def test_ignoreInvalid_return_True(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
         prob.name = 'notWish'
         cost_function = 'Least squares'
@@ -228,7 +212,7 @@ class MantidTests(unittest.TestCase):
 
     def test_ignoreInvalid_return_False_because_of_WISH17701(self):
 
-        fname = self.misra1a_file()
+        fname = get_file('NIST_Misra1a.dat')
         prob = FittingProblem(fname)
         prob.name = 'WISH17701lol'
         cost_function = 'Least squares'
