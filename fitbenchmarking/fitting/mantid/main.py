@@ -28,15 +28,18 @@ import time
 import sys
 import numpy as np
 import mantid.simpleapi as msapi
+from mantid.fitfunctions import FunctionWrapper
 
 from utils.logging_setup import logger
 from fitting import misc
 from fitting.plotting import plot_helper
 
+from fitting.mantid.create_function_wrapper import *
+
 MAX_FLOAT = sys.float_info.max
 
 
-def benchmark(problem, wks_created, function, minimizers, cost_function):
+def benchmark(problem, wks_created, function, minimizers, cost_function, idx):
     """
     Fit benchmark one problem, with one function definition and all
     the selected minimizers, using the mantid fitting software.
@@ -54,9 +57,11 @@ def benchmark(problem, wks_created, function, minimizers, cost_function):
     min_chi_sq, best_fit = MAX_FLOAT, None
     results_problem = []
 
+    print(idx)
+
     for minimizer in minimizers:
         status, fit_wks, fin_function_def, runtime = \
-            fit(problem, wks_created, function, minimizer, cost_function)
+            fit(problem, wks_created, function, minimizer, idx, cost_function)
         chi_sq, min_chi_sq, best_fit = \
             chisq(status, fit_wks, min_chi_sq, best_fit, minimizer)
         individual_result = \
@@ -69,7 +74,7 @@ def benchmark(problem, wks_created, function, minimizers, cost_function):
 
 
 def fit(problem, wks_created, function, minimizer,
-        cost_function='Least squares'):
+        idx, cost_function='Least squares'):
     """
     The mantid fit software.
 
@@ -85,6 +90,32 @@ def fit(problem, wks_created, function, minimizer,
                 the final function definition
                 and how much time it took for the fit to finish (float)
     """
+    #
+    # start_val_str = ''
+    # for param in problem.starting_values:
+    #     start_val_str += ('{0}={1},'.format(param[0], param[1][idx]))
+    # start_val_str = start_val_str[:-1]
+    # func = problem.function[idx][0]
+    # func_obj = func(problem.data_x, )
+    # func_wrap = FunctionWrapper(func_obj.__call__, start_val_str)
+    # print(type(func_wrap))
+
+    # all_values = [row[1] for row in problem.starting_values]
+    # all_values = map(list, zip(*all_values))
+    # parm_list = all_values[idx]
+    #
+    # print(parm_list)
+    #
+    # func_wrap = fitFunction()
+    # func_wrap.getFunction(problem.function[0][0])
+    # results = func_wrap.function1D(problem.data_x, parm_list)
+    # print(type(fitFunction))
+
+    # func = problem.function[0][0]
+    # results = func(problem.data_x, parm_list[0], parm_list[1], parm_list[2])
+
+    # print(results)
+    # print(type(func_wrap.function1D(problem.function[idx][0], problem.data_x, parm_list)
 
     fit_result, t_start, t_end = None, None, None
     try:
