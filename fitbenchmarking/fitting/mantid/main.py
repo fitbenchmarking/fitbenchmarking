@@ -100,16 +100,20 @@ def fit(problem, wks_created, function, minimizer,
     # func_wrap = FunctionWrapper(func_obj.__call__, start_val_str)
     # print(type(func_wrap))
 
-    # all_values = [row[1] for row in problem.starting_values]
-    # all_values = map(list, zip(*all_values))
-    # parm_list = all_values[idx]
+    all_values = [row[1] for row in problem.starting_values]
+    all_values = map(list, zip(*all_values))
+    parm_list = all_values[idx]
     #
     # print(parm_list)
     #
-    # func_wrap = fitFunction()
-    # func_wrap.getFunction(problem.function[0][0])
-    # results = func_wrap.function1D(problem.data_x, parm_list)
-    # print(type(fitFunction))
+    # FunctionFactory.subscribe(fitFunction(problem.function[0][0]))
+    func_wrap = fitFunction()
+    func_wrap.getFunction(problem.function[0][0])
+    # func_wrap.function1D(problem.data_x, parm_list)
+    fin_func = FunctionWrapper(func_wrap)
+    print(type(fin_func))
+
+    # print(type(fitFunction().function1D))
 
     # func = problem.function[0][0]
     # results = func(problem.data_x, parm_list[0], parm_list[1], parm_list[2])
@@ -121,7 +125,7 @@ def fit(problem, wks_created, function, minimizer,
     try:
         ignore_invalid = get_ignore_invalid(problem, cost_function)
         t_start = time.clock()
-        fit_result = msapi.Fit(function, wks_created, Output='ws_fitting_test',
+        fit_result = msapi.Fit(fin_func, wks_created, Output='ws_fitting_test',
                                Minimizer=minimizer, CostFunction=cost_function,
                                IgnoreInvalidData=ignore_invalid,
                                StartX=problem.start_x, EndX=problem.end_x)

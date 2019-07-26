@@ -25,6 +25,7 @@ To be added
 from __future__ import (absolute_import, division, print_function)
 
 from mantid.api import *
+import numpy as np
 
 main_func = None
 class fitFunction(IFunction1D):
@@ -41,7 +42,6 @@ class fitFunction(IFunction1D):
         global main_func
 
         parm_string = ''
-        print(params)
         for parm in params:
             parm_string += ','+ str(parm)
 
@@ -51,8 +51,8 @@ class fitFunction(IFunction1D):
 
         return result
 
-
 FunctionFactory.subscribe(fitFunction)
+
 
 
 
