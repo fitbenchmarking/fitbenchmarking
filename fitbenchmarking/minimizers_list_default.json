@@ -5,5 +5,8 @@
                 "Levenberg-Marquardt", "Levenberg-MarquardtMD",
                 "Simplex","SteepestDescent",
                 "Trust Region"],
-    "scipy" : ["lm", "trf", "dogbox"]
+    "scipy" : ["lm", "trf", "dogbox"],
+    "sasview" : ["SimplexFit", "DEFit", "DreamFit", "BFGSFit",
+                "LevenbergMarquardtFit", "MPFit", "PSFit",
+                "PTFit", "RLFit", "SnobFit"]
 }

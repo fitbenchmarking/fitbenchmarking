@@ -69,6 +69,7 @@ def get_minimizers(software_options):
         return minimizers, software
 
     else:
+        print(minimizers[0])
         return minimizers[0], software[0]
 
 
