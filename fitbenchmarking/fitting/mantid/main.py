@@ -29,6 +29,7 @@ import sys
 import numpy as np
 import mantid.simpleapi as msapi
 from mantid.fitfunctions import FunctionWrapper
+from mantid.api import *
 
 from utils.logging_setup import logger
 from fitting import misc
@@ -90,42 +91,42 @@ def fit(problem, wks_created, function, minimizer,
                 the final function definition
                 and how much time it took for the fit to finish (float)
     """
-    #
-    # start_val_str = ''
-    # for param in problem.starting_values:
-    #     start_val_str += ('{0}={1},'.format(param[0], param[1][idx]))
-    # start_val_str = start_val_str[:-1]
-    # func = problem.function[idx][0]
-    # func_obj = func(problem.data_x, )
-    # func_wrap = FunctionWrapper(func_obj.__call__, start_val_str)
-    # print(type(func_wrap))
 
+    param_names = [row[0] for row in problem.starting_values]
     all_values = [row[1] for row in problem.starting_values]
     all_values = map(list, zip(*all_values))
     parm_list = all_values[idx]
-    #
-    # print(parm_list)
-    #
-    # FunctionFactory.subscribe(fitFunction(problem.function[0][0]))
-    func_wrap = fitFunction()
-    func_wrap.getFunction(problem.function[0][0])
-    # func_wrap.function1D(problem.data_x, parm_list)
-    fin_func = FunctionWrapper(func_wrap)
-    print(type(fin_func))
 
-    # print(type(fitFunction().function1D))
+    class fitFunction(IFunction1D):
+        def init(self):
+            for parm in param_names:
+                self.declareParameter(parm, parm_list[param_names.index(parm)])
 
-    # func = problem.function[0][0]
-    # results = func(problem.data_x, parm_list[0], parm_list[1], parm_list[2])
+        def function1D(self, x):
+            func = problem.function[idx][0]
+            parm_string = ''
+            i = 0
+            x = np.zeros(len(param_names))
+            x.setflags(write=1)
+            for parm in param_names:
+                x[i] = self.getParameterValue(parm)
+                parm_string += ',' + str(x[i])
+                i += 1
 
-    # print(results)
-    # print(type(func_wrap.function1D(problem.function[idx][0], problem.data_x, parm_list)
+            parm_string += ')'
+
+            result = eval('func(x' + parm_string)
+
+            return result
+
+    FunctionFactory.subscribe(fitFunction)
+# 'Function=fitFunction'
 
     fit_result, t_start, t_end = None, None, None
     try:
         ignore_invalid = get_ignore_invalid(problem, cost_function)
         t_start = time.clock()
-        fit_result = msapi.Fit(fin_func, wks_created, Output='ws_fitting_test',
+        fit_result = msapi.Fit(function, wks_created, Output='ws_fitting_test',
                                Minimizer=minimizer, CostFunction=cost_function,
                                IgnoreInvalidData=ignore_invalid,
                                StartX=problem.start_x, EndX=problem.end_x)
