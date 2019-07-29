@@ -28,19 +28,16 @@ import time
 import sys
 import numpy as np
 import mantid.simpleapi as msapi
-from mantid.fitfunctions import FunctionWrapper
-from mantid.api import *
 
 from utils.logging_setup import logger
 from fitting import misc
 from fitting.plotting import plot_helper
 
-from fitting.mantid.create_function_wrapper import *
 
 MAX_FLOAT = sys.float_info.max
 
 
-def benchmark(problem, wks_created, function, minimizers, cost_function, idx):
+def benchmark(problem, wks_created, function, minimizers, cost_function):
     """
     Fit benchmark one problem, with one function definition and all
     the selected minimizers, using the mantid fitting software.
@@ -58,11 +55,9 @@ def benchmark(problem, wks_created, function, minimizers, cost_function, idx):
     min_chi_sq, best_fit = MAX_FLOAT, None
     results_problem = []
 
-    print(idx)
-
     for minimizer in minimizers:
         status, fit_wks, fin_function_def, runtime = \
-            fit(problem, wks_created, function, minimizer, idx, cost_function)
+            fit(problem, wks_created, function, minimizer, cost_function)
         chi_sq, min_chi_sq, best_fit = \
             chisq(status, fit_wks, min_chi_sq, best_fit, minimizer)
         individual_result = \
@@ -73,9 +68,8 @@ def benchmark(problem, wks_created, function, minimizers, cost_function, idx):
 
     return results_problem, best_fit
 
-
 def fit(problem, wks_created, function, minimizer,
-        idx, cost_function='Least squares'):
+        cost_function='Least squares'):
     """
     The mantid fit software.
 
@@ -91,36 +85,6 @@ def fit(problem, wks_created, function, minimizer,
                 the final function definition
                 and how much time it took for the fit to finish (float)
     """
-
-    param_names = [row[0] for row in problem.starting_values]
-    all_values = [row[1] for row in problem.starting_values]
-    all_values = map(list, zip(*all_values))
-    parm_list = all_values[idx]
-
-    class fitFunction(IFunction1D):
-        def init(self):
-            for parm in param_names:
-                self.declareParameter(parm, parm_list[param_names.index(parm)])
-
-        def function1D(self, x):
-            func = problem.function[idx][0]
-            parm_string = ''
-            i = 0
-            x = np.zeros(len(param_names))
-            x.setflags(write=1)
-            for parm in param_names:
-                x[i] = self.getParameterValue(parm)
-                parm_string += ',' + str(x[i])
-                i += 1
-
-            parm_string += ')'
-
-            result = eval('func(x' + parm_string)
-
-            return result
-
-    FunctionFactory.subscribe(fitFunction)
-# 'Function=fitFunction'
 
     fit_result, t_start, t_end = None, None, None
     try:

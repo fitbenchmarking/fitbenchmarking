@@ -61,10 +61,9 @@ def fitbm_one_prob(user_input, problem):
         if 'GEM' in problem.name and user_input.software == 'scipy':
             break
 
-        idx = function_definitions.index(function)
         results_problem, best_fit = \
             fit_one_function_def(user_input.software, problem, data_struct,
-                                 function, user_input.minimizers, cost_function,idx)
+                                 function, user_input.minimizers, cost_function)
         count += 1
         if not best_fit is None:
             # Make the plot of the best fit
@@ -79,7 +78,7 @@ def fitbm_one_prob(user_input, problem):
 
 
 def fit_one_function_def(software, problem, data_struct, function, minimizers,
-                         cost_function, idx):
+                         cost_function):
     """
     Fits a given function definition (model) to the data in the workspace.
 
@@ -99,7 +98,7 @@ def fit_one_function_def(software, problem, data_struct, function, minimizers,
     if software == 'mantid':
         from fitting.mantid.main import benchmark
         return benchmark(problem, data_struct, function,
-                         minimizers, cost_function, idx)
+                         minimizers, cost_function)
     elif software == 'scipy':
         from fitting.scipy.main import benchmark
         return benchmark(problem, data_struct, function,
