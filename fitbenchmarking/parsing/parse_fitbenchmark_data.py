@@ -67,6 +67,25 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         super(FittingProblem, self).close_file()
 
+    def eval_f(self, x, param_list):
+        """
+        Function evaluation method
+
+        :param x: x data values
+        :param param_list:
+        :return: y data values
+        """
+
+        function = (fitbenchmark_func_definitions(self._equation))[0][0]
+
+        param_statements = param_list.split(',')
+        param_name_and_value = [param.split('=') for param in param_statements]
+
+        for param in param_name_and_value:
+            function[param[0]] = float(param[1])
+
+        return function(x)
+
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """
         Find/create the (full) path to a data_file specified in a FitBenchmark definition file, where

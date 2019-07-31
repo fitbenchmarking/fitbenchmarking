@@ -100,6 +100,26 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         return equation_text, data_pattern_text, starting_values
 
+    def eval_f(self, x, param_list):
+        """
+        Function evaluation method
+
+        :param x: x data values
+        :param param_list:
+        :return: y data values
+        """
+
+        param_string = ''
+        for param in param_list:
+            param_string += ',' + str(param)
+        param_string += ')'
+
+        func_def = nist_func_definitions(self._equation, self._starting_values)
+
+        function = func_def[0][0]
+
+        return eval('function(x'+ param_string)
+
     def get_nist_model(self, lines, idx):
         """
         Gets the model equation used in the fitting process from the
@@ -344,23 +364,3 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         if len(data_pattern[0, :]) > 2: data_e = data_pattern[:, 2]
 
         return data_e
-
-    def functionEval(self, x, param_list):
-        """
-        Function evaluation method
-
-        :param x: x data values
-        :param param_list:
-        :return: y data values
-        """
-
-        param_string = ''
-        for param in param_list:
-            param_string += ',' + str(param)
-        param_string += ')'
-
-        func_def = nist_func_definitions(self._equation, self._starting_values)
-
-        function = func_def[0][0]
-
-        return eval('function(x'+ param_string)

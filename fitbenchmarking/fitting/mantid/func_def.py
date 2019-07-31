@@ -49,8 +49,9 @@ def function_definitions(problem):
         function_defs = parse_nist_function_definitions(problem, nb_start_vals)
     elif problem_type == 'FitBenchmark'.upper():
         # Native FitBenchmark format does not require any processing
-        function_defs = []
-        function_defs.append(problem.equation)
+        # function_defs = []
+        # function_defs.append(problem.equation)
+        function_defs = parse_fitbenchmark_function_definition(problem)
     else:
         raise NameError('Currently data types supported are FitBenchmark'
                         ' and nist, data type supplied was {}'.format(problem_type))
@@ -95,11 +96,55 @@ def parse_nist_function_definitions(problem, nb_start_vals):
             for param in param_names:
                 fit_param[param_names.index(param)] = self.getParameterValue(param)
 
-            return problem.functionEval(xdata, fit_param)
+            return problem.eval_f(xdata, fit_param)
 
     FunctionFactory.subscribe(fitFunction)
 
     return function_defs
+
+def parse_fitbenchmark_function_definition(problem):
+    """
+
+    :param problem:
+    :return:
+    """
+
+    function_list = (problem.equation).split(';')
+    func_params_list = [(function.split(','))[1:] for function in function_list]
+    formatted_param_list = ['f'+str(func_params_list.index(func_params))+'.'+param for func_params in func_params_list for param in func_params]
+
+    param_names = [(param.split('='))[0] for param in formatted_param_list]
+    param_values = [(param.split('='))[1] for param in formatted_param_list]
+
+    class fitFunction(IFunction1D):
+        def init(self):
+
+            for param in param_names:
+                if not param.endswith('BinWidth'):
+                    self.declareParameter(param)
+
+        def function1D(self, xdata):
+
+            fit_param = ''
+            for param in param_names:
+                if not param.endswith('BinWidth'):
+                    fit_param += param + '=' + str(self.getParameterValue(param)) +','
+            fit_param = fit_param[:-1]
+
+            return problem.eval_f(xdata, fit_param)
+
+    FunctionFactory.subscribe(fitFunction)
+
+    function_defs = []
+    start_val_str = ''
+    for param, value in zip(param_names, param_values):
+        if not param.endswith('BinWidth'):
+            start_val_str += param + '=' + str(value) + ','
+    start_val_str = start_val_str[:-1]
+    function_defs.append("name=fitFunction,{}".format(start_val_str))
+
+    return function_defs
+
 
 def extract_problem_type(problem):
     """

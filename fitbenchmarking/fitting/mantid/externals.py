@@ -39,7 +39,16 @@ def gen_func_obj(function_name, params_set):
     @returns :: mantid function object that can be called in python
     """
     params_set = (params_set.split(', ties'))[0]
-    exec "function_object = msapi." + function_name + "("+ params_set +")"
+    params_set_list = params_set.split(',')
+    # attr_list = [parm for parm in params_set_list if params_set_list.startswith('BinWidth')]
+    attr_list = ''
+    for param in params_set_list:
+        if param.startswith('BinWidth'):
+            attr_list += param + ','
+        attr_list = attr_list[:-1]
+
+    # exec "function_object = msapi." + function_name + "("+ params_set +")"
+    exec "function_object = msapi." + function_name + "("+ attr_list +")"
     return function_object
 
 
