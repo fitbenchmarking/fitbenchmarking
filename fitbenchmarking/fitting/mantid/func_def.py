@@ -57,7 +57,6 @@ def function_definitions(problem):
     return function_defs
 
 
-#     """
 def parse_function_definitions(problem, nb_start_vals):
     """
     Helper function that parses the NIST function definitions and
