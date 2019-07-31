@@ -58,7 +58,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         #String containing the function name(s) and the starting parameter values for each function
         self._equation = entries['function']
-        self._function = fitbenchmark_func_definitions(self._equation)
 
         self._starting_values = None
         if 'fit_parameters' in entries:

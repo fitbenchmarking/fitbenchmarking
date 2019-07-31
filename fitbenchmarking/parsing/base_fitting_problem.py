@@ -44,8 +44,6 @@ class BaseFittingProblem(object):
         self._name = None
         # Equation (function or model) to fit against data
         self._equation = None
-        # Callable Function of the Equation to fit against data
-        self._function = None
         # Define range to fit model data over if different from entire range of data
         self._start_x = None
         self._end_x = None
@@ -90,14 +88,6 @@ class BaseFittingProblem(object):
     @equation.setter
     def equation(self, value):
         self._equation = value
-
-    @property
-    def function(self):
-        return self._function
-
-    @function.setter
-    def function(self, value):
-        self._function = value
 
     @property
     def start_x(self):

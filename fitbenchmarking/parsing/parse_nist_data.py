@@ -61,7 +61,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         #String containing a mathematical expression
         self._equation = self.parse_equation(equation_text)
-        self._function = nist_func_definitions(self._equation, starting_values)
 
         self._starting_values = starting_values
 
