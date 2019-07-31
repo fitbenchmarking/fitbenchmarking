@@ -49,7 +49,7 @@ def function_definitions(problem):
         function_defs = [problem.get_function()[0][0]]
     elif problem_type == 'NIST':
         nb_start_vals = len(problem.starting_values[0][1])
-        function_defs = parse_nist_function_definitions(problem, nb_start_vals)
+        function_defs = parse_function_definitions(problem, nb_start_vals)
     else:
         raise NameError('Currently data types supported are FitBenchmark'
                         ' and nist, data type supplied was {}'.format(problem_type))
@@ -57,7 +57,7 @@ def function_definitions(problem):
     return function_defs
 
 
-def parse_nist_function_definitions(problem, nb_start_vals):
+def parse_function_definitions(problem, nb_start_vals):
     """
     Helper function that parses the NIST function definitions and
     transforms them into a mantid-readable format.
