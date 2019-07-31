@@ -86,6 +86,12 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         return function(x)
 
+    def get_function(self):
+
+        function = fitbenchmark_func_definitions(self._equation)
+
+        return function
+
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """
         Find/create the (full) path to a data_file specified in a FitBenchmark definition file, where

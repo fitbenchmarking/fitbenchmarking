@@ -27,6 +27,7 @@ from __future__ import (absolute_import, division, print_function)
 
 from utils.logging_setup import logger
 from mantid.api import *
+from mantid.fitfunctions import *
 import numpy as np
 
 
@@ -43,15 +44,12 @@ def function_definitions(problem):
 
     problem_type = extract_problem_type(problem)
 
-    if problem_type == 'NIST':
-        # NIST data requires prior formatting
+
+    if isinstance((problem.get_function())[0][0], FunctionWrapper):
+        function_defs = [problem.get_function()[0][0]]
+    elif problem_type == 'NIST':
         nb_start_vals = len(problem.starting_values[0][1])
         function_defs = parse_nist_function_definitions(problem, nb_start_vals)
-    elif problem_type == 'FitBenchmark'.upper():
-        # Native FitBenchmark format does not require any processing
-        # function_defs = []
-        # function_defs.append(problem.equation)
-        function_defs = parse_fitbenchmark_function_definition(problem)
     else:
         raise NameError('Currently data types supported are FitBenchmark'
                         ' and nist, data type supplied was {}'.format(problem_type))

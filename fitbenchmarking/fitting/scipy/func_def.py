@@ -35,7 +35,7 @@ def function_definitions(problem):
     problem_type = extract_problem_type(problem)
 
     if problem_type == 'NIST' or problem_type == 'FitBenchmark'.upper():
-        return problem.function
+        return problem.get_function()
     else:
         RuntimeError("Your problem type is not supported yet!")
 

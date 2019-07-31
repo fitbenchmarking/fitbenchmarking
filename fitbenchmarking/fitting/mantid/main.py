@@ -86,6 +86,7 @@ def fit(problem, wks_created, function, minimizer,
                 and how much time it took for the fit to finish (float)
     """
 
+
     fit_result, t_start, t_end = None, None, None
     try:
         ignore_invalid = get_ignore_invalid(problem, cost_function)

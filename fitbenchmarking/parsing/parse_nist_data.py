@@ -120,6 +120,12 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         return eval('function(x'+ param_string)
 
+    def get_function(self):
+
+        function = nist_func_definitions(self._equation, self._starting_values)
+
+        return function
+
     def get_nist_model(self, lines, idx):
         """
         Gets the model equation used in the fitting process from the
