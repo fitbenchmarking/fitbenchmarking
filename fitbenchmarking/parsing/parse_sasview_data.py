@@ -4,6 +4,7 @@ import os
 import numpy as np
 import re
 from parsing import base_fitting_problem
+from sasmodels.data import load_data
 
 from utils.logging_setup import logger
 
@@ -24,22 +25,23 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         super(FittingProblem, self).__init__(fname)
         super(FittingProblem, self).read_file()
 
-        entries = self.get_fitbenchmark_data_problem_entries(self.contents)
+        entries = self.get_data_problem_entries(self.contents)
         data_file_path = self.get_data_file(self.fname, entries['input_file'])
 
-        data_points = self.get_data_points(data_file_path)
+        # data_points = self.get_data_points(data_file_path)
+        data = load_data(data_file_path)
 
-        self._data_x = data_points[:,0]
-        self._data_y = data_points[:,1]
-        self._data_e = data_points[:,2]
+        self._data_x = data.x
+        self._data_y = data.y
+        # self._data_e = data.e
 
         self._name = entries['name']
         self._equation = entries['function']
 
         self._starting_values = None
-        if 'fit_parameters' in entries:
-            self._start_x = entries['fit_parameters']['StartX']
-            self._end_x = entries['fit_parameters']['EndX']
+        # if 'fit_parameters' in entries:
+        #     self._start_x = entries['fit_parameters']['StartX']
+        #     self._end_x = entries['fit_parameters']['EndX']
 
         super(FittingProblem, self).close_file()
 
@@ -66,7 +68,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         return data_file
 
-    def get_fitbenchmark_data_problem_entries(self, fname):
+    def get_data_problem_entries(self, fname):
         """
         Get the problem entries from a fitbenchmark problem definition file.
 
@@ -88,25 +90,3 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         return entries
 
-    def get_data_points(self, data_file_path):
-        """
-        Get the data points of the problem from the data file.
-
-        @param data_file :: full path of the data file
-        @return :: array of data points
-        """
-
-        data_object = open(data_file_path, 'r')
-        data_text = data_object.readlines()
-
-        first_row = data_text[2].strip()
-        dim = len(first_row.split())
-        data_points = np.zeros((len(data_text) - 2, dim))
-
-        for idx, line in enumerate(data_text[2:]):
-            line = line.strip()
-            point_text = line.split()
-            point = [float(val) for val in point_text]
-            data_points[idx, :] = point
-
-        return data_points
