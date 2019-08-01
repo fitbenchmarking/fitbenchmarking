@@ -15,9 +15,6 @@ from fitting.scipy.func_def import function_definitions
 from fitting.scipy.func_def import get_fin_function_def
 from fitting.scipy.func_def import get_init_function_def
 
-from fitting.scipy.main import fit
-
-
 from parsing.parse_nist_data import FittingProblem as NISTFittingProblem
 from parsing.parse_fitbenchmark_data import FittingProblem as FBFittingProblem
 from mock_problem_files.get_problem_files import get_file
