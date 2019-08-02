@@ -29,10 +29,12 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         data_file_path = self.get_data_file(self.fname, entries['input_file'])
 
         # data_points = self.get_data_points(data_file_path)
-        data = load_data(data_file_path)
+        self.data = load_data(data_file_path)
 
-        self._data_x = data.x
-        self._data_y = data.y
+        self._data_x = self.data.x
+        self._data_y = self.data.y
+
+        self._start_x, self._end_x = self.get_start_x_and_end_x(self._data_x)
         # self._data_e = data.e
 
         self._name = entries['name']
@@ -89,4 +91,20 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
             entries[lhs.strip()] = eval(rhs.strip())
 
         return entries
+
+    def get_start_x_and_end_x(self, x_data):
+        """
+
+        Get the start and end value of x from the list of x values.
+
+        @param x_data :: list containing x values
+        @return :: the start and end values of the x data
+        """
+
+        sorted_x_data = sorted(x_data)
+
+        start_x = sorted_x_data[0]
+        end_x = sorted_x_data[-1]
+
+        return start_x, end_x
 

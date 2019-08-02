@@ -55,6 +55,8 @@ def fitbm_one_prob(user_input, problem):
         prereq.prepare_software_prerequisites(user_input.software, problem,
                                               user_input.use_errors)
 
+    print(function_definitions)
+
     for function in function_definitions:
         # Ad hoc exception for running the scipy script
         # scipy does not currently support the GEM problem
@@ -101,6 +103,10 @@ def fit_one_function_def(software, problem, data_struct, function, minimizers,
                          minimizers, cost_function)
     elif software == 'scipy':
         from fitting.scipy.main import benchmark
+        return benchmark(problem, data_struct, function,
+                         minimizers, cost_function)
+    elif software == 'sasview':
+        from fitting.sasview.main import benchmark
         return benchmark(problem, data_struct, function,
                          minimizers, cost_function)
     else:

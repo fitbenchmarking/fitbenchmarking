@@ -183,6 +183,8 @@ def get_start_guess_data(software, data_struct, function, problem):
         return get_mantid_starting_guess_data(data_struct, function, problem)
     elif software == 'scipy':
         return get_scipy_starting_guess_data(data_struct, function)
+    elif software == 'sasview':
+        return [0,0,0], [0,0,0]
     else:
         raise NameError("Sorry, that software is not supported.")
 
@@ -230,3 +232,5 @@ def get_mantid_starting_guess_data(wks_created, function, problem):
     yData = tmp.readY(1)
 
     return xData, yData
+
+# def get_sasview_starting_guess_data()

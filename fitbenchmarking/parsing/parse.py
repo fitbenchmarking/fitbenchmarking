@@ -28,6 +28,9 @@ import os
 
 from utils.logging_setup import logger
 from parsing import parse_nist_data
+from parsing import parse_fitbenchmark_data
+from parsing import parse_sasview_data
+
 
 def parse_problem_file(prob_file):
     """
@@ -52,6 +55,8 @@ def parse_problem_file(prob_file):
         """
         from parsing import parse_fitbenchmark_data
         problem = parse_fitbenchmark_data.FittingProblem(prob_file)
+    elif prob_type == 'SasView':
+        problem = parse_sasview_data.FittingProblem(prob_file)
 
     check_problem_attributes(problem)
 
@@ -84,7 +89,10 @@ def determine_problem_type(prob_file):
         prob_type = "NIST"
     elif "#" in fline:
         # Checking for a comment in the first line and from assume the format is:
-        prob_type = "FitBenchmark"
+        if "SasView" in fline:
+            prob_type = "SasView"
+        else:
+            prob_type = "FitBenchmark"
     else:
         raise RuntimeError("Data type supplied currently not supported")
 

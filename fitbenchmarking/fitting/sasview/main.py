@@ -29,8 +29,9 @@ import sys
 import time
 
 from fitting import misc
-from fitting.scipy.func_def import get_init_function_def
-from fitting.scipy.func_def import get_fin_function_def
+from sasmodels.bumps_model import Experiment
+from bumps.names import *
+from bumps.fitters import fit
 from fitting.plotting import plot_helper
 from utils.logging_setup import logger
 
@@ -51,61 +52,88 @@ def benchmark(problem, data, function, minimizers, cost_function):
     @returns :: nested array of result objects, per minimizer
                 and data object for the best fit
     """
-    min_chi_sq, best_fit = MAX_FLOAT, None
+    # min_chi_sq, best_fit = MAX_FLOAT, None
     results_problem = []
 
-    for minimizer in minimizers:
+    model = function[0]
 
-        init_function_def = get_init_function_def(function, problem.equation)
-        status, fitted_y, fin_function_def, runtime = \
-            fit(data, function, minimizer, cost_function, init_function_def)
-        chi_sq, min_chi_sq, best_fit = \
-            chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer)
+    # print(model)
 
-        individual_result = \
+    M = Experiment(data=problem.data, model=model)
+
+    fitProblem = FitProblem(M)
+
+    t_start = time.clock()
+    fitted_y = fit(fitProblem, method='amoeba')
+    t_end = time.clock()
+
+    status = 'success'
+
+    chi_sq = fitProblem.chisq_str()
+
+    runtime = t_end - t_start
+
+    minimizer = 'amoeba'
+
+    best_fit = plot_helper.data(minimizer, data.x, fitted_y)
+
+    init_function_def = problem.equation
+
+    fin_function_def = problem.equation
+
+
+
+    # for minimizer in minimizers:
+    #
+    #     init_function_def = get_init_function_def(function, problem.equation)
+    #     status, fitted_y, fin_function_def, runtime = \
+    #         fit(data, function, minimizer, cost_function, init_function_def)
+    #     chi_sq, min_chi_sq, best_fit = \
+    #         chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer)
+    individual_result = \
             misc.create_result_entry(problem, status, chi_sq, runtime, minimizer,
                                      init_function_def, fin_function_def)
 
-        results_problem.append(individual_result)
+    results_problem.append(individual_result)
 
     return results_problem, best_fit
 
 
-def fit(data, function, minimizer, cost_function, init_function_def):
-    """
-    Perform a fit for a single minimizer using the scipy fitting
-    software
-
-    @param data :: workspace holding the problem data
-    @param function :: the fitted function
-    @param minimizer :: the minimizer used in the fitting process
-    @param cost_function :: the type of cost function used in fitting
-    @param init_function_def :: string containing the initial function
-                                definition
-
-    @returns :: the status, either success or failure (str), the data
-                of the fit, the final function definition and the
-                runtime of the fitting software
-    """
-    popt, t_start, t_end = None, None, None
-    func_callable = function[0]
-    initial_params = function[1]
-
-    try:
-        t_start = time.clock()
-        popt = execute_fit(func_callable, data, initial_params,
-                           minimizer, cost_function)
-        t_end = time.clock()
-    except(RuntimeError, ValueError) as err:
-        logger.error("Warning, fit failed. Going on. Error: " + str(err))
-
-    fin_def = None
-    if not popt is None:
-        fin_def = get_fin_function_def(init_function_def, func_callable, popt)
-    status, fitted_y, runtime = \
-        parse_result(func_callable, popt, t_start, t_end, data[0])
-
-    return status, fitted_y, fin_def, runtime
+# def fit(data, function, minimizer, cost_function, init_function_def):
+#     """
+#     Perform a fit for a single minimizer using the scipy fitting
+#     software
+#
+#     @param data :: workspace holding the problem data
+#     @param function :: the fitted function
+#     @param minimizer :: the minimizer used in the fitting process
+#     @param cost_function :: the type of cost function used in fitting
+#     @param init_function_def :: string containing the initial function
+#                                 definition
+#
+#     @returns :: the status, either success or failure (str), the data
+#                 of the fit, the final function definition and the
+#                 runtime of the fitting software
+#     """
+#     popt, t_start, t_end = None, None, None
+#     func_callable = function[0]
+#     initial_params = function[1]
+#
+#     try:
+#         t_start = time.clock()
+#         popt = execute_fit(func_callable, data, initial_params,
+#                            minimizer, cost_function)
+#         t_end = time.clock()
+#     except(RuntimeError, ValueError) as err:
+#         logger.error("Warning, fit failed. Going on. Error: " + str(err))
+#
+#     fin_def = None
+#     if not popt is None:
+#         fin_def = get_fin_function_def(init_function_def, func_callable, popt)
+#     status, fitted_y, runtime = \
+#         parse_result(func_callable, popt, t_start, t_end, data[0])
+#
+#     return status, fitted_y, fin_def, runtime
 
 
 def chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer_name):

@@ -45,6 +45,8 @@ def prepare_software_prerequisites(software, problem, use_errors):
         return prepare_mantid(problem, use_errors)
     elif software == 'scipy':
         return prepare_scipy(problem, use_errors)
+    elif software == 'sasview':
+        return prepare_sasview(problem, use_errors)
     # elif software == 'your_software':
         # return prepare_your_software(problem, use_errors)
     else:
@@ -94,4 +96,15 @@ def prepare_scipy(problem, use_errors):
     if problem.start_x == None and problem.end_x == None:
         problem.start_x = - np.inf
         problem.end_x = np.inf
+    return data, cost_function, function_definitions
+
+def prepare_sasview(problem, use_errors):
+
+    from fitting.sasview.prepare_data import prepare_data
+    from fitting.sasview.func_def import function_definitions
+
+    data, cost_function = prepare_data(problem, use_errors)
+
+    function_definitions = function_definitions(problem)
+
     return data, cost_function, function_definitions
