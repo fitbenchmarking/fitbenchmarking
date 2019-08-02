@@ -39,7 +39,11 @@ from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
 
-software = 'mantid'
+# SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
+# SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
+software = 'scipy'
+software_options = {'software': software, 'minimizer_options': None}
+
 color_scale = [(1.1, 'ranking-top-1'),
                (1.33, 'ranking-top-2'),
                (1.75, 'ranking-med-3'),
@@ -47,35 +51,33 @@ color_scale = [(1.1, 'ranking-top-1'),
                (float('nan'), 'ranking-low-5')]
 
 
-benchmark_problems_dir = os.path.join(fitbenchmarking_path,
-                                      'benchmark_problems')
-
-nist_data_dir = os.path.join(benchmark_problems_dir,'NIST_nonlinear_regression')
-neutron_data_dir = os.path.join(benchmark_problems_dir, 'Neutron_data')
+benchmark_probs_dir = os.path.join(fitbenchmarking_path,
+                                   'benchmark_problems')
 
 results_dir = None
 use_errors = True
 
-for run_data in ["neutron", "nist"]:
+problem_sets = ["Neutron_data", "NIST/low_difficulty",
+                "NIST/average_difficulty", "NIST/high_difficulty"]
 
-    if run_data == "neutron":
-        group_suffix_names = ['neutron']
-        group_names = ["Neutron data"]
-        results_per_group, results_dir = \
-        fitBenchmarking(software=software, data_dir=neutron_data_dir,
-                        use_errors=use_errors, results_dir=results_dir)
-    elif run_data == "nist":
-        group_names = ['NIST, "lower" difficulty', 'NIST, "average" difficulty',
-                       'NIST, "higher" difficulty']
-        group_suffix_names = ['nist_lower', 'nist_average', 'nist_higher']
-        results_per_group, results_dir = \
-        fitBenchmarking(software=software, data_dir=nist_data_dir,
-                        use_errors=use_errors, results_dir=results_dir)
-    else:
-        raise RuntimeError("Invalid run_data, please check if the array"
-                           "contains the correct names!")
+for sub_dir in problem_sets:
+  # generate group label/name used for problem set
+  label = sub_dir.replace('/', '_')
 
-    for idx, group_results in enumerate(results_per_group):
-        printTables(software, group_results,
-                    group_name=group_suffix_names[idx], use_errors=use_errors,
-                    color_scale=color_scale, results_dir=results_dir)
+  results_dir = None
+
+  # Problem data directory
+  data_dir = os.path.join(benchmark_probs_dir, sub_dir)
+
+  # Running the benchmarking on problem set
+  results_per_group, results_dir = \
+      fitBenchmarking(group_name=label, software_options=software_options,
+                      data_dir=data_dir,
+                      use_errors=use_errors, results_dir=results_dir)
+
+  # Producing output for the problem set
+  for idx, group_results in enumerate(results_per_group):
+    # Display the runtime and accuracy results in a table
+    printTables(software_options, group_results,
+                group_name=label, use_errors=use_errors,
+                color_scale=color_scale, results_dir=results_dir)

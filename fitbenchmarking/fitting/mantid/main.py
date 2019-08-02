@@ -24,7 +24,8 @@ Benchmarking fitting and utility functions for the mantid software.
 
 from __future__ import (absolute_import, division, print_function)
 
-import time, sys
+import time
+import sys
 import numpy as np
 import mantid.simpleapi as msapi
 
@@ -55,12 +56,12 @@ def benchmark(problem, wks_created, function, minimizers, cost_function):
 
     for minimizer in minimizers:
         status, fit_wks, fin_function_def, runtime = \
-        fit(problem, wks_created, function, minimizer, cost_function)
+            fit(problem, wks_created, function, minimizer, cost_function)
         chi_sq, min_chi_sq, best_fit = \
-        chisq(status, fit_wks, min_chi_sq, best_fit, minimizer)
+            chisq(status, fit_wks, min_chi_sq, best_fit, minimizer)
         individual_result = \
-        misc.create_result_entry(problem, status, chi_sq, runtime, minimizer,
-                                 function, fin_function_def)
+            misc.create_result_entry(problem, status, chi_sq, runtime, minimizer,
+                                     function, fin_function_def)
 
         results_problem.append(individual_result)
 
@@ -98,14 +99,14 @@ def fit(problem, wks_created, function, minimizer,
         logger.error("Warning, fit failed. Going on. Error: " + str(err))
 
     status, fit_wks, fin_function_def, runtime = \
-    parse_result(fit_result, t_start, t_end)
+        parse_result(fit_result, t_start, t_end)
 
     return status, fit_wks, fin_function_def, runtime
 
 
 def chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
     """
-    Function that calcuates the chisq obtained through the
+    Function that calculates the chisq obtained through the
     mantid fitting software and find the best fit out of all
     the attempted minimizers.
 
@@ -169,7 +170,8 @@ def optimum(fit_wks, minimizer_name, best_fit):
     tmp = msapi.ConvertToPointData(fit_wks)
     best_fit = plot_helper.data(minimizer_name, tmp.readX(1), tmp.readY(1))
 
-    return  best_fit
+    return best_fit
+
 
 def get_ignore_invalid(problem, cost_function):
     """
@@ -185,7 +187,7 @@ def get_ignore_invalid(problem, cost_function):
     ignore_invalid = cost_function == 'Least squares'
 
     # The WISH data presents some issues
-    # For which this adhoc if must is present
+    # For which this ad-hoc if must is present
     if 'WISH17701' in problem.name:
         ignore_invalid = False
 

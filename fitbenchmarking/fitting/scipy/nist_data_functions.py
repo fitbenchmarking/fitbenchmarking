@@ -31,7 +31,7 @@ from utils.logging_setup import logger
 def nist_func_definitions(function, startvals):
     """
     Processing the nist function definitions into an appropriate format
-    for the scipy softwareto use.
+    for the scipy software to use.
 
     @param function :: function string as defined in the problem file
     @param startvals :: starting values for the function variables
@@ -69,6 +69,7 @@ def format_function_scipy(function):
     function = function.replace("^", "**")
     function = function.replace("cos", "np.cos")
     function = function.replace("sin", "np.sin")
+    function = function.replace("tan", "np.tan")
     function = function.replace("pi", "np.pi")
 
     return function

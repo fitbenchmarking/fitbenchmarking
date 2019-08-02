@@ -83,18 +83,17 @@ class SystemTest(unittest.TestCase):
     def get_results_paths_nist(self):
 
         results_dir = self.path_to_results()
-        nist_tables_dir = os.path.join(results_dir, "nist", "tables")
 
-        nist_low_dir = os.path.join(nist_tables_dir, "nist_lower")
-        nist_average_dir = os.path.join(nist_tables_dir, "nist_average")
-        nist_high_dir = os.path.join(nist_tables_dir, "nist_higher")
+        nist_low_dir = os.path.join(results_dir, "NIST_low_difficulty")
+        nist_average_dir = os.path.join(results_dir, "NIST_average_difficulty")
+        nist_high_dir = os.path.join(results_dir, "NIST_high_difficulty")
 
         nist_low_path = \
-        os.path.join(nist_low_dir, "nist_lower_acc_weighted_table.txt")
+        os.path.join(nist_low_dir, "NIST_low_difficulty_acc_weighted_table.txt")
         nist_average_path = \
-        os.path.join(nist_average_dir, "nist_average_acc_weighted_table.txt")
+        os.path.join(nist_average_dir, "NIST_average_difficulty_acc_weighted_table.txt")
         nist_high_path = \
-        os.path.join(nist_high_dir, "nist_higher_acc_weighted_table.txt")
+        os.path.join(nist_high_dir, "NIST_high_difficulty_acc_weighted_table.txt")
 
         return nist_low_path, nist_average_path, nist_high_path
 
@@ -116,9 +115,9 @@ class SystemTest(unittest.TestCase):
     def get_results_paths_neutron(self):
 
         results_dir = self.path_to_results()
-        neutron_tables_dir = os.path.join(results_dir, "neutron", "tables")
+        neutron_tables_dir = os.path.join(results_dir, "Neutron_data")
         neutron_path = \
-        os.path.join(neutron_tables_dir, "neutron_acc_weighted_table.txt")
+        os.path.join(neutron_tables_dir, "Neutron_data_acc_weighted_table.txt")
 
         return neutron_path
 

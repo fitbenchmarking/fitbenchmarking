@@ -23,6 +23,7 @@ the fitbenchmarking tool.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 from __future__ import (absolute_import, division, print_function)
 
+import os
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -66,7 +67,7 @@ class data:
 
     def order_data(self):
         """
-        Ensures that the data is in assending order in x.
+        Ensures that the data is in ascending order in x.
         Prevents line plots looping back on themselves.
         """
 
@@ -120,7 +121,7 @@ class plot(data):
 
     def set_plot_misc(self):
         """
-        Add the title, x/y lables and legend to the plot.
+        Add the title, x/y labels and legend to the plot.
         """
         plt.xlabel(self.labels["x"])
         plt.ylabel(self.labels["y"])
@@ -175,6 +176,8 @@ class plot(data):
             plt.show()
         else:
             output_file = save.replace(",", "")
-            logger.info("saving to " + output_file.replace(" ", "_"))
+            output_file = output_file.replace(" ","_")
+            logger.info("Saved " + os.path.basename(output_file) + " to "
+                        + output_file[output_file.find("fitbenchmarking"):])
         plt.savefig(output_file.replace(" ", "_"))
 

@@ -27,23 +27,26 @@ from __future__ import (absolute_import, division, print_function)
 import numpy as np
 import re
 
-from fitting.scipy.nist_def import nist_func_definitions
-from fitting.scipy.neutron_def import neutron_func_definitions
+from fitting.scipy.nist_data_functions import nist_func_definitions
+from fitting.scipy.fitbenchmark_data_functions import fitbenchmark_func_definitions
 from utils.logging_setup import logger
 
 
 def function_definitions(problem):
     """
     Processing the function definitions into an appropriate format for
-    the softwareto understand.
+    the software to understand.
     """
-    if problem.type == 'nist':
+    problem_type = extract_problem_type(problem)
+
+    if problem_type == 'NIST':
         return nist_func_definitions(problem.equation,
                                      problem.starting_values)
-    elif problem.type == 'neutron':
-        return neutron_func_definitions(problem.equation)
+    elif problem_type == 'FitBenchmark'.upper():
+        return fitbenchmark_func_definitions(problem.equation)
     else:
         RuntimeError("Your problem type is not supported yet!")
+
 
 def get_fin_function_def(init_function_def, func_callable, popt):
     """
@@ -67,6 +70,7 @@ def get_fin_function_def(init_function_def, func_callable, popt):
 
     return fin_function_def
 
+
 def get_init_function_def(function, mantid_definition):
     """
     Get the initial function definition string.
@@ -75,7 +79,7 @@ def get_init_function_def(function, mantid_definition):
     @param mantid_definition :: the string containing the function
                                 definition in mantid format
 
-    @returns :: the initial function defintion string
+    @returns :: the initial function definition string
     """
     if not 'name=' in str(function[0]):
         params = function[0].__code__.co_varnames[1:]
@@ -88,3 +92,17 @@ def get_init_function_def(function, mantid_definition):
         init_function_def = mantid_definition
 
     return init_function_def
+
+def extract_problem_type(problem):
+    """
+    This function gets the problem object and figure out the problem type
+    from the file name that the class that it has been sent from
+
+    @param problem :: object holding the problem information
+
+    @returns :: the type of the problem (e.g. NIST)
+    """
+    problem_file_name = problem.__class__.__module__
+    problem_type = (problem_file_name.split('_')[1]).upper()
+
+    return problem_type

@@ -26,7 +26,6 @@ problem, a best fit plot and a starting guess plot.
 from __future__ import (absolute_import, division, print_function)
 
 import os
-import numpy as np
 import mantid.simpleapi as msapi
 from fitting.plotting.plot_helper import *
 from utils import create_dirs
@@ -38,7 +37,7 @@ def make_plots(software, problem, data_struct, function, best_fit,
     Makes plots of the raw data, best fit and starting guess.
 
     @param prob :: object holding the problem information
-    @param data_struct :: a structre in which the data to be fitted is
+    @param data_struct :: a structure in which the data to be fitted is
                           stored, can be e.g. mantid workspace, np array etc.
     @param function :: the fitted function
     @param best_fit :: data of the best fit (defined by lowest chisq)
@@ -151,7 +150,7 @@ def make_starting_guess_plot(software, raw_data, function, data_struct,
     @param figures_dir :: dir where figures are stored
 
     @returns :: a figure of the raw data with the starting guess
-                superimosed, saved as a .png file.
+                superimposed, saved as a .png file.
     """
 
     xData, yData =\
@@ -184,12 +183,26 @@ def get_start_guess_data(software, data_struct, function, problem):
     if software == 'mantid':
         return get_mantid_starting_guess_data(data_struct, function, problem)
     elif software == 'scipy':
-        # This is just a placeholder
-        return [0,0,0], [0,0,0]
-    # elif software == 'scipy':
-        # return get_starting_guess_data(data_struct, function, problem)
+        return get_scipy_starting_guess_data(data_struct, function)
     else:
         raise NameError("Sorry, that software is not supported.")
+
+def get_scipy_starting_guess_data(data_struct, function):
+    """
+    Gets the scipy starting guess data
+
+    @param data_struct :: data structure containing data for the problem
+    @param function :: the fitted function
+
+    @returns :: data describing the starting guess obtained by passing
+                the x values to the fitted function
+    """
+
+    xData = data_struct[0]
+    initial_params = function[1]
+
+    yData = function[0](xData,*initial_params)
+    return xData, yData
 
 
 def get_mantid_starting_guess_data(wks_created, function, problem):
@@ -210,6 +223,7 @@ def get_mantid_starting_guess_data(wks_created, function, problem):
                             IgnoreInvalidData=True,
                             StartX=problem.start_x, EndX=problem.end_x,
                             MaxIterations=0)
+
     tmp = msapi.ConvertToPointData(fit_result.OutputWorkspace)
     xData = tmp.readX(1)
     yData = tmp.readY(1)

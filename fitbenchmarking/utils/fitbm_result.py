@@ -43,3 +43,6 @@ class FittingResult(object):
         self.minimizer = None
         self.ini_function_def = None
         self.fin_function_def = None
+
+    def __repr__(self):
+        return 'Fitting problem class: minimizer = {0}'.format(self.minimizer)

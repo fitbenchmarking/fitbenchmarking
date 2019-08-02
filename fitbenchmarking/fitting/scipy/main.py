@@ -25,7 +25,8 @@ from __future__ import (absolute_import, division, print_function)
 
 from scipy.optimize import curve_fit
 import numpy as np
-import sys, time
+import sys
+import time
 
 from fitting import misc
 from fitting.scipy.func_def import get_init_function_def
@@ -56,16 +57,17 @@ def benchmark(problem, data, function, minimizers, cost_function):
     for minimizer in minimizers:
         init_function_def = get_init_function_def(function, problem.equation)
         status, fitted_y, fin_function_def, runtime = \
-        fit(data, function, minimizer, cost_function, init_function_def)
+            fit(data, function, minimizer, cost_function, init_function_def)
         chi_sq, min_chi_sq, best_fit = \
-        chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer)
+            chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer)
         individual_result = \
-        misc.create_result_entry(problem, status, chi_sq, runtime, minimizer,
-                                 init_function_def, fin_function_def)
+            misc.create_result_entry(problem, status, chi_sq, runtime, minimizer,
+                                     init_function_def, fin_function_def)
 
         results_problem.append(individual_result)
 
     return results_problem, best_fit
+
 
 def fit(data, function, minimizer, cost_function, init_function_def):
     """
@@ -99,9 +101,10 @@ def fit(data, function, minimizer, cost_function, init_function_def):
     if not popt is None:
         fin_def = get_fin_function_def(init_function_def, func_callable, popt)
     status, fitted_y, runtime = \
-    parse_result(func_callable, popt, t_start, t_end, data[0])
+        parse_result(func_callable, popt, t_start, t_end, data[0])
 
     return status, fitted_y, fin_def, runtime
+
 
 def chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer_name):
     """
@@ -131,6 +134,7 @@ def chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer_name):
 
     return chi_sq, min_chi_sq, best_fit
 
+
 def execute_fit(function, data, initial_params, minimizer, cost_function):
     """
     Helper function that executes the fit depending on the type
@@ -142,15 +146,19 @@ def execute_fit(function, data, initial_params, minimizer, cost_function):
     @returns :: array of final variables after the fit was performed
     """
     popt, pcov = None, None
-    if cost_function == 'least squares':
-        popt, pcov = curve_fit(f=function.__call__,
-                               xdata=data[0], ydata=data[1], sigma=data[2],
-                               p0=initial_params, method=minimizer, maxfev=500)
-    elif cost_function == 'unweighted least squares':
-        popt, pcov = curve_fit(f=function.__call__,
-                               xdata=data[0], ydata=data[1],
-                               p0=initial_params, method=minimizer, maxfev=500)
+    try:
+        if cost_function == 'least squares':
+            popt, pcov = curve_fit(f=function.__call__,
+                                   xdata=data[0], ydata=data[1], p0=initial_params,
+                                   sigma=data[2], method=minimizer, maxfev=500)
+        elif cost_function == 'unweighted least squares':
+            popt, pcov = curve_fit(f=function.__call__,
+                                   xdata=data[0], ydata=data[1],
+                                   p0=initial_params, method=minimizer, maxfev=500)
+    except(IndexError) as err:
+        logger.error('Index out of bound. Going on.')
     return popt
+
 
 def parse_result(function, popt, t_start, t_end, data_x):
     """
@@ -165,6 +173,7 @@ def parse_result(function, popt, t_start, t_end, data_x):
         runtime = t_end - t_start
 
     return status, fitted_y, runtime
+
 
 def get_fittedy(function, data_x, popt):
     """

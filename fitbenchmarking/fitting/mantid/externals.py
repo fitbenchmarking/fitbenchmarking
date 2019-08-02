@@ -56,6 +56,7 @@ def set_ties(function_object, ties):
 
     return function_object
 
+
 def store_main_problem_data(fname, problem):
     """
     Stores the main problem data into the relevant attributes of the

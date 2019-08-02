@@ -24,35 +24,82 @@ Parse the problem file depending on the type of problem.
 
 from __future__ import (absolute_import, division, print_function)
 
-from parsing import parse_nist, parse_neutron
+import os
+
+from parsing import parse_nist_data, parse_fitbenchmark_data
 from utils.logging_setup import logger
 
 
-def parse_problem_file(group_name, prob_file):
+def parse_problem_file(prob_file):
     """
-    Helper function that does the parsing of a specified problem file.
-    This method needs group_name to inform how the prob_file should be
-    passed.
+    Helper function that loads the problem file and populates the fitting
+    problem.
 
-    @param group_name :: name of the group of problems
     @param prob_file :: path to the problem file
-
     @returns :: problem object with fitting information
     """
 
-    if group_name == 'nist':
-        prob = parse_nist.load_file(prob_file)
-        prob.type = 'nist'
-    elif group_name == 'neutron':
-        prob = parse_neutron.load_file(prob_file)
-        prob.type = 'neutron'
-    # elif ...
-    #    prob = call_parse_function_here
-    #    prob.type = ...
+    prob_type = determine_problem_type(prob_file)
+    logger.info("Loading {0} formatted problem definition file {1} | Path: "
+                "{2}".format(prob_type,os.path.basename(prob_file),prob_file[prob_file.find('fitbenchmarking'):]))
+
+    if prob_type == "NIST":
+        problem = parse_nist_data.FittingProblem(prob_file)
+    elif prob_type == "FitBenchmark":
+        problem = parse_fitbenchmark_data.FittingProblem(prob_file)
+
+    check_problem_attributes(problem)
+
+    logger.info("* Testing fitting of problem {0}".format(problem.name))
+
+    return problem
+
+
+def determine_problem_type(prob_file):
+    """
+    Helper function that determines the problem type from reading information
+    from the problem file. Two problem type formats are supported:
+
+      * "NIST": NIST Noninear Regression format:
+        https://www.itl.nist.gov/div898/strd/nls/data/LINKS/DATA/Misra1a.dat
+
+      * "FitBenchmark": Format native to FitBenchmarking
+
+    @param prob_file :: path to the problem file
+    @returns :: problem type: "NIST" or "FitBenchmark"
+    """
+
+    # In this first implementation determine the problem type by investigating
+    # the first line of the problem file
+    # Pulls out the first line of the problem file
+    fline = open(prob_file).readline().rstrip()
+
+    if "NIST" in fline:
+        # Checking for NIST in first line and from that assume the format is:
+        prob_type = "NIST"
+    elif "#" in fline:
+        # Checking for a comment in the first line and from assume the format is:
+        prob_type = "FitBenchmark"
     else:
-        raise NameError("Could not find group name! Please check if it was"
-                        "given correctly...")
+        raise RuntimeError("Data type supplied currently not supported")
 
-    logger.info("* Testing fitting of problem {0}".format(prob.name))
+    return prob_type
 
-    return prob
+
+def check_problem_attributes(problem):
+    """
+    Helper function that determines whether problem class has been required attributes
+
+    @param problem :: fitting problem
+    """
+
+    recAttr = ['_name', '_equation', '_data_x', '_data_y']
+
+    UnsetAttr = []
+    for r in recAttr:
+        if problem.__dict__[r] is None:
+            UnsetAttr.append(r)
+
+    if UnsetAttr != []:
+        raise ValueError('Attributes {} are not set correctly'.format(
+            UnsetAttr))

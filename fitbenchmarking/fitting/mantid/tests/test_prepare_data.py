@@ -5,7 +5,7 @@ import os
 import numpy as np
 import mantid.simpleapi as msapi
 
-# Delete four lines below when automated tests ar enabled
+# Delete four lines below when automated tests are enabled
 import sys
 test_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(os.path.normpath(test_dir))
@@ -17,10 +17,27 @@ from fitting.mantid.prepare_data import wks_cost_function
 from fitting.mantid.prepare_data import setup_errors
 from fitting.mantid.prepare_data import convert_back
 
-from utils import fitbm_problem
+from parsing.parse_nist_data import FittingProblem
 
 
 class MantidTests(unittest.TestCase):
+
+    def misra1a_file(self):
+        """
+        Helper function that returns the path to
+        /fitbenchmarking/benchmark_problems
+        """
+
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        parent_dir = os.path.dirname(os.path.normpath(test_dir))
+        main_dir = os.path.dirname(os.path.normpath(parent_dir))
+        root_dir = os.path.dirname(os.path.normpath(main_dir))
+        bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
+        bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
+        fname = os.path.join(bench_prob_dir, 'NIST', 'low_difficulty',
+                             'Misra1a.dat')
+
+        return fname
 
     def NIST_problem(self):
         """
@@ -28,27 +45,29 @@ class MantidTests(unittest.TestCase):
         Sets up the problem object for the nist problem file Misra1a.dat
         """
 
-        data_pattern = np.array([ [10.07, 77.6],
-                                  [14.73, 114.9],
-                                  [17.94, 141.1],
-                                  [23.93, 190.8],
-                                  [29.61, 239.9],
-                                  [35.18, 289.0],
-                                  [40.02, 332.8],
-                                  [44.82, 378.4],
-                                  [50.76, 434.8],
-                                  [55.05, 477.3],
-                                  [61.01, 536.8],
-                                  [66.40, 593.1],
-                                  [75.47, 689.1],
-                                  [81.78, 760.0] ])
+        data_pattern = np.array([[10.07, 77.6],
+                                 [14.73, 114.9],
+                                 [17.94, 141.1],
+                                 [23.93, 190.8],
+                                 [29.61, 239.9],
+                                 [35.18, 289.0],
+                                 [40.02, 332.8],
+                                 [44.82, 378.4],
+                                 [50.76, 434.8],
+                                 [55.05, 477.3],
+                                 [61.01, 536.8],
+                                 [66.40, 593.1],
+                                 [75.47, 689.1],
+                                 [81.78, 760.0]])
 
-        prob = fitbm_problem.FittingProblem()
+        fname = self.misra1a_file()
+        prob = FittingProblem(fname)
+
         prob.name = 'Misra1a'
-        prob.type = 'nist'
+        prob.type = 'NIST'
         prob.equation = 'b1*(1-exp(-b2*x))'
-        prob.starting_values = [['b1', [500.0,250.0]],
-                                ['b2', [0.0001,0.0005]]]
+        prob.starting_values = [['b1', [500.0, 250.0]],
+                                ['b2', [0.0001, 0.0005]]]
         prob.data_x = data_pattern[:, 1]
         prob.data_y = data_pattern[:, 0]
 
@@ -67,7 +86,6 @@ class MantidTests(unittest.TestCase):
                                         DataE=data_e)
         return wks_exp
 
-
     def create_wks_NIST_problem_without_errors(self):
         """
         Helper function.
@@ -78,7 +96,6 @@ class MantidTests(unittest.TestCase):
         prob = self.NIST_problem()
         wks_exp = msapi.CreateWorkspace(DataX=prob.data_x, DataY=prob.data_y)
         return wks_exp
-
 
     def test_wksCostFunction_return_with_errors(self):
 
@@ -92,7 +109,6 @@ class MantidTests(unittest.TestCase):
         self.assertEqual(cost_function_expected, cost_function)
         result, messages = msapi.CompareWorkspaces(wks_expected, wks)
         self.assertTrue(result)
-
 
     def test_wksCostFunction_return_without_errors(self):
 
@@ -119,12 +135,13 @@ class MantidTests(unittest.TestCase):
     def test_setupErrors_errors(self):
 
         prob = self.NIST_problem()
-        prob.data_e = [1,2,3]
+        prob.data_e = [1, 2, 3]
 
         errors = setup_errors(prob)
-        errors_expected = [1,2,3]
+        errors_expected = [1, 2, 3]
 
         self.assertListEqual(errors_expected, errors)
+
 
 if __name__ == "__main__":
     unittest.main()

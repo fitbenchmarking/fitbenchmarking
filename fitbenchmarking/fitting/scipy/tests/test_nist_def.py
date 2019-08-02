@@ -11,13 +11,31 @@ parent_dir = os.path.dirname(os.path.normpath(parent_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
-from fitting.scipy.nist_def import nist_func_definitions
-from fitting.scipy.nist_def import get_nist_param_names_and_values
-from fitting.scipy.nist_def import format_function_scipy
+from fitting.scipy.func_def import function_definitions
+from fitting.scipy.nist_data_functions import nist_func_definitions
+from fitting.scipy.nist_data_functions import get_nist_param_names_and_values
+from fitting.scipy.nist_data_functions import format_function_scipy
 
-from utils import fitbm_problem
+from parsing.parse_nist_data import FittingProblem
 
 class ScipyTests(unittest.TestCase):
+
+    def misra1a_file(self):
+        """
+        Helper function that returns the path to
+        /fitbenchmarking/benchmark_problems
+        """
+
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        parent_dir = os.path.dirname(os.path.normpath(test_dir))
+        main_dir = os.path.dirname(os.path.normpath(parent_dir))
+        root_dir = os.path.dirname(os.path.normpath(main_dir))
+        bench_prob_parent_dir = os.path.dirname(os.path.normpath(root_dir))
+        bench_prob_dir = os.path.join(bench_prob_parent_dir, 'benchmark_problems')
+        fname = os.path.join(bench_prob_dir, 'NIST', 'low_difficulty',
+                             'Misra1a.dat')
+
+        return fname
 
     def create_expected_function_definitions(self):
         function = "b1*(1-np.exp(-b2*x))"
@@ -28,10 +46,29 @@ class ScipyTests(unittest.TestCase):
 
         return function_defs
 
+    def test_FunctionDefinitions_nist_return_function_definitions(self):
+
+        fname = self.misra1a_file()
+        prob = FittingProblem(fname)
+        prob.equation = "b1*(1-exp(-b2*x))"
+        prob.starting_values = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
+
+        function_defs = function_definitions(prob)
+        expected_function_defs = self.create_expected_function_definitions()
+
+        self.assertListEqual(expected_function_defs[0][1], function_defs[0][1])
+        self.assertListEqual(expected_function_defs[1][1], function_defs[1][1])
+        self.assertEqual(expected_function_defs[0][2], function_defs[0][2])
+        self.assertEqual(expected_function_defs[1][2], function_defs[1][2])
+        np.testing.assert_equal(expected_function_defs[0][0](1, 2, 3),
+                                function_defs[0][0](1, 2, 3))
+        np.testing.assert_equal(expected_function_defs[1][0](1, 2, 3),
+                                function_defs[1][0](1, 2, 3))
+
     def test_nistFuncDefinitions_return_function_definitions(self):
 
         function = "b1*(1-exp(-b2*x))"
-        startvals = [['b1', [500.0,250.0]], ['b2', [0.0001,0.0005]]]
+        startvals = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
 
         function_defs = nist_func_definitions(function, startvals)
         expected_function_defs = self.create_expected_function_definitions()
@@ -40,14 +77,14 @@ class ScipyTests(unittest.TestCase):
         self.assertListEqual(expected_function_defs[1][1], function_defs[1][1])
         self.assertEqual(expected_function_defs[0][2], function_defs[0][2])
         self.assertEqual(expected_function_defs[1][2], function_defs[1][2])
-        np.testing.assert_equal(expected_function_defs[0][0](1,2,3),
-                                function_defs[0][0](1,2,3))
-        np.testing.assert_equal(expected_function_defs[1][0](1,2,3),
-                                function_defs[1][0](1,2,3))
+        np.testing.assert_equal(expected_function_defs[0][0](1, 2, 3),
+                                function_defs[0][0](1, 2, 3))
+        np.testing.assert_equal(expected_function_defs[1][0](1, 2, 3),
+                                function_defs[1][0](1, 2, 3))
 
     def test_getNistParamNamesAndValues_return_correct_output(self):
 
-        startvals = [['b1', [500.0,250.0]], ['b2', [0.0001,0.0005]]]
+        startvals = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
 
         param_names, all_values = get_nist_param_names_and_values(startvals)
         expected_param_names = "b1, b2"
