@@ -1,6 +1,6 @@
 # An example of tube calibration for the WISH instrument
 name = 'WISH17701 panel 103 tube 3 calibration, peak 4'
-input_file = 'WISH17701_calibration_panel103_tube3.nxs'
+input_file = 'WISH17701_calibration_panel103_tube3.txt'
 function = 'name=LinearBackground,A0=5096,A1=0;name=Gaussian,Height=26631,PeakCentre=203.792,Sigma=1'
 fit_parameters = {'StartX': 188.792258842, 'EndX': 218.792258842}
 description = ''

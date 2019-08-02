@@ -92,7 +92,11 @@ def create_table_body(cells, items_link, rows_txt, first_col_len, cell_len,
     tbl_body = ''
     for row in range(0, cells.shape[0]):
         link = items_link
-        tbl_body += '|' + rows_txt[row].ljust(first_col_len, ' ') + '|'
+        all_fit_failed_status = ''
+        if np.isnan(cells[row, :]).all():
+            all_fit_failed_status = '(all fit failed)'
+        tbl_body += '|' + rows_txt[row].ljust(first_col_len-len(all_fit_failed_status), ' ')\
+                    + all_fit_failed_status +'|'
         for col in range(0, cells.shape[1]):
             tbl_body += format_cell_value(cells[row, col], cell_len,
                                           color_scale, link)
@@ -161,6 +165,8 @@ def calc_first_col_len(cell_len, rows_txt):
         name_len = len(row_name)
         if name_len > first_col_len:
             first_col_len = name_len
+
+    first_col_len += 20
 
     return first_col_len
 

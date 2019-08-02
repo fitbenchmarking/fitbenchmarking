@@ -4,30 +4,11 @@ for an expert user. This script will show exactly what fitbenchmarking is doing
 at each stage to enable a user to customize their problem to their needs.
 """
 
-# Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
-# Oak Ridge National Laboratory & European Spallation Source
-#
-# This file is part of Mantid.
-# Mantid is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# Mantid is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# File change history is stored at: <https://github.com/mantidproject/mantid>.
-# Code Documentation is available at: <http://doxygen.mantidproject.org>
-
 
 from __future__ import (absolute_import, division, print_function)
 import os
 import sys
+import glob
 
 
 # Avoid reaching the maximum recursion depth by setting recursion limit
@@ -99,13 +80,19 @@ color_scale = [(1.1, 'ranking-top-1'),
 # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
 # "Muon_data" works for mantid minimizers
 # problem_sets = ["Neutron_data", "NIST/average_difficulty"]
-problem_sets = ["NIST/average_difficulty"]
+problem_sets = ["Neutron_data"]
 for sub_dir in problem_sets:
     # generate group group_name/name used for problem set
     group_name = sub_dir.replace('/', '_')
 
     # Problem data directory
     data_dir = os.path.join(benchmark_probs_dir, sub_dir)
+
+    test_data = glob.glob(data_dir + '/*.*')
+
+    if test_data == []:
+        print('Problem set {} not found'.format(sub_dir))
+        continue
 
     print('\nRunning the benchmarking on the {} problem set\n'.format(group_name))
 
