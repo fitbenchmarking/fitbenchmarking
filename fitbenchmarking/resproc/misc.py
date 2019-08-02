@@ -102,8 +102,8 @@ def build_items_links(comparison_type, comp_dim, using_errors):
 
 def find_ranking_strings(rst_table):
     """
-    Gets the intervals between which a table has ':ranking-number:' and
-    puts them in an array.
+    Selects the position of the string ':ranking-number:' from the output tables
+    and puts them in an array.
 
     @param rst_table :: the restructured text table containing the results.
 

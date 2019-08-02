@@ -99,14 +99,15 @@ class MiscTests(unittest.TestCase):
 
     self.assertEqual(items_link_expected, items_link)
 
-    def test_findRankingStrings_get_ranking_strings(self):
+  def test_findRankingStrings_get_ranking_strings(self):
 
-        rst_table = "something something :ranking-9 example: something"
+    rst_table = "something something :ranking-9 example: something"
 
-        matches = find_ranking_strings(rst_table)
-        expected_matches = [(20,39)]
+    matches = find_ranking_strings(rst_table)
+    # This is where the ':ranking-9 example:' start and end positions.
+    expected_matches = [(20,39)]
 
-        self.assertListEqual(expected_matches, matches)
+    self.assertListEqual(expected_matches, matches)
 
 
 if __name__ == "__main__":
