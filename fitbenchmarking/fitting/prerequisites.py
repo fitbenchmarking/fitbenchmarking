@@ -103,8 +103,8 @@ def prepare_sasview(problem, use_errors):
     from fitting.sasview.prepare_data import prepare_data
     from fitting.sasview.func_def import function_definitions
 
-    data, cost_function = prepare_data(problem, use_errors)
+    data_obj, cost_function = prepare_data(problem, use_errors)
 
-    function_definitions = function_definitions(problem)
+    function_definitions = function_definitions(problem, data_obj)
 
-    return data, cost_function, function_definitions
+    return data_obj, cost_function, function_definitions

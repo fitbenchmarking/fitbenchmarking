@@ -4,7 +4,9 @@ import os
 import numpy as np
 import re
 from parsing import base_fitting_problem
-from sasmodels.data import load_data
+from sasmodels.data import load_data, empty_data1D
+from sasmodels.core import load_model
+from sasmodels.bumps_model import Experiment, Model
 
 from utils.logging_setup import logger
 
@@ -28,24 +30,46 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         entries = self.get_data_problem_entries(self.contents)
         data_file_path = self.get_data_file(self.fname, entries['input_file'])
 
-        # data_points = self.get_data_points(data_file_path)
-        self.data = load_data(data_file_path)
+        self.data_obj = load_data(data_file_path)
 
-        self._data_x = self.data.x
-        self._data_y = self.data.y
+        self._data_x = self.data_obj.x
+        self._data_y = self.data_obj.y
 
         self._start_x, self._end_x = self.get_start_x_and_end_x(self._data_x)
-        # self._data_e = data.e
 
         self._name = entries['name']
-        self._equation = entries['function']
+        self._equation = (entries['function'].split(',', 1))[0]
 
-        self._starting_values = None
-        # if 'fit_parameters' in entries:
-        #     self._start_x = entries['fit_parameters']['StartX']
-        #     self._end_x = entries['fit_parameters']['EndX']
+        self._starting_values = (entries['function'].split(',', 1))[1]
+        self.starting_value_ranges = entries['parameter_ranges']
+
+        test_eval = self.eval_f(self._data_x, self._starting_values)
+
+        print(test_eval)
 
         super(FittingProblem, self).close_file()
+
+    def eval_f(self, x, param_list):
+        """
+
+        :param x:
+        :param param_list:
+        :return:
+        """
+        data = empty_data1D(x)
+        model = load_model((self._equation.split('='))[1])
+        exec ("params = dict(" + param_list + ")")
+        model_wrapper = Model(model, **params)
+        for range in self.starting_value_ranges.split(';'):
+            exec ('model_wrapper.' + range)
+        func_wrapper = Experiment(data=data, model=model_wrapper)
+
+        return func_wrapper.theory()
+
+    def get_function(self):
+
+        return self.eval_f
+
 
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """
@@ -107,4 +131,3 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         end_x = sorted_x_data[-1]
 
         return start_x, end_x
-

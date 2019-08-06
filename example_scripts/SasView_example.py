@@ -1,6 +1,9 @@
 from sasmodels.core import load_model
 from sasmodels.bumps_model import Model, Experiment
-from sasmodels.data import load_data, Data1D
+from sasmodels.data import load_data, empty_data1D
+from sas.sascalc.dataloader.data_info import Data1D
+
+from sasmodels.models.broad_peak import Iq
 
 from bumps.names import *
 from bumps.fitters import fit
@@ -16,15 +19,26 @@ main_dir = os.path.dirname(dir_path)
 oneD_data_dir = os.path.join(main_dir, 'benchmark_problems', '1D_data', 'data_files', 'cyl_400_20.txt')
 
 test_data = load_data(oneD_data_dir)
+test_data.dy = 0.2*test_data.y
 
-data_1D = Data1D(x=test_data.x, y=test_data.y)
+# data_1D = Data1D(x=test_data.x, y=test_data.y, dy=test_data.dy)
 
-print(data_1D.x)
+# print(test_data.y)
 
 kernel = load_model('cylinder')
 
+# model_test = load_model('sphere')
+
+# kernel = load_model('broad_peak')
+# print(type(test_load))
 #We set some errors for demonstration
-test_data.dy = 0.2*test_data.y
+
+x_data = empty_data1D(test_data.x)
+print(x_data.x)
+print(type(x_data))
+# print(test_data.qmin)
+# print(test_data.y)
+# print(type(data_1D))
 
 pars = dict(radius=35,
             length=350,
@@ -34,36 +48,39 @@ pars = dict(radius=35,
             sld_solvent=1.0)
 
 model = Model(kernel, **pars)
-print(model(data_1D.x))
+# print(model.parameters())
+# model = Model(kernel)
 
 # SET THE FITTING PARAMETERS
 model.radius.range(1, 50)
 model.length.range(1, 500)
 
+# M = Experiment(data=data_1D, model=model)
 M = Experiment(data=test_data, model=model)
 
-
-# def line(x, m, b=0):
-#     return m*x + b
-#
-# test_M = Curve(line,test_data.x,test_data.y,m=2,b=2)
-# print(type(test_M))
+param_initial = M.parameters()
+radius_initial = param_initial['radius']
 
 problem = FitProblem(M)
 
-print(type(problem))
 print("Initial chisq", problem.chisq_str())
-problem.plot()
-problem.summarize()
+# problem.plot()
+# problem.summarize()
 # pylab.show()
 # plt.show()
+result = fit(problem, method='dream')
 
-result = fit(problem, method='amoeba')
-print(test_data.x)
-print(result.x)
+# print(M.theory())
+#
+# print(test_data.y)
+
 print("Final chisq", problem.chisq_str())
 for k, v, dv in zip(problem.labels(), result.x, result.dx):
     print(k, ":", format_uncertainty(v, dv))
-problem.plot()
+
+
+# problem.plot()
+# print(model.state())
 # print(problem.y)
 # plt.show()
+# print((M.parameters()))

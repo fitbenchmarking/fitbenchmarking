@@ -27,7 +27,7 @@ software_options = {'software': software}
 # User defined minimizers
 custom_minimizers = {"mantid": ["BFGS", "Simplex"],
               "scipy": ["lm", "trf", "dogbox"],
-              "sasview": ["amoeba"]}
+              "sasview": ["amoeba", "lm", "newton", "dream", "de", "pt"]}
 # custom_minimizers = None
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
@@ -42,8 +42,6 @@ else:
   # fitbenchmarking/fitbenchmarking/minimizers_list_default.json
   software_options['minimizer_options'] = None
 
-
-print(software_options['minimizer_options'])
 
 # Benchmark problem directories
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder,

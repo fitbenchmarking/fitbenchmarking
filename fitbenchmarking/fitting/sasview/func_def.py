@@ -27,11 +27,10 @@ from __future__ import (absolute_import, division, print_function)
 
 from utils.logging_setup import logger
 from sasmodels.core import load_model
-from sasmodels.bumps_model import Model, Experiment
 import numpy as np
 
 
-def function_definitions(problem):
+def function_definitions(problem, data_obj):
     """
     Transforms the prob.equation field into a function that can be
     understood by the mantid fitting software.
@@ -45,30 +44,11 @@ def function_definitions(problem):
     problem_type = extract_problem_type(problem)
 
     if problem_type == 'SasView'.upper():
-        model_name_and_param_list = problem.equation.split(',')
-        model_name = ((model_name_and_param_list[0]).split('='))[1]
-        model_param = model_name_and_param_list[1:]
-        param_name = [(param.split('='))[0] for param in model_param]
-        param_val = [(param.split('='))[1] for param in model_param]
+        model_name = (problem.equation.split('='))[1]
 
         kernel = load_model(model_name)
 
-        zipParam = zip(param_name, param_val)
-
-        # pars = dict(zipParam)
-        pars = dict(radius=35,
-                    length=350,
-                    background=0.0,
-                    scale=1.0,
-                    sld=4.0,
-                    sld_solvent=1.0)
-
-        model = Model(kernel, **pars)
-
-        model.radius.range(1, 50)
-        model.length.range(1, 500)
-
-        function_defs = [[model, np.array(param_val)]]
+        function_defs = [[kernel]]
     # if isinstance((problem.get_function())[0][0], FunctionWrapper):
     #     function_defs = [problem.get_function()[0][0]]
     # elif problem_type == 'NIST':
@@ -79,50 +59,6 @@ def function_definitions(problem):
     #                     ' and nist, data type supplied was {}'.format(problem_type))
 
     return function_defs
-
-def parse_function_definition(problem):
-    """
-
-    :param problem:
-    :return:
-    """
-
-    function_list = (problem.equation).split(';')
-    func_params_list = [(function.split(','))[1:] for function in function_list]
-    formatted_param_list = ['f'+str(func_params_list.index(func_params))+'.'+param for func_params in func_params_list for param in func_params]
-
-    param_names = [(param.split('='))[0] for param in formatted_param_list]
-    param_values = [(param.split('='))[1] for param in formatted_param_list]
-
-    class fitFunction(IFunction1D):
-        def init(self):
-
-            for param in param_names:
-                if not param.endswith('BinWidth'):
-                    self.declareParameter(param)
-
-        def function1D(self, xdata):
-
-            fit_param = ''
-            for param in param_names:
-                if not param.endswith('BinWidth'):
-                    fit_param += param + '=' + str(self.getParameterValue(param)) +','
-            fit_param = fit_param[:-1]
-
-            return problem.eval_f(xdata, fit_param)
-
-    FunctionFactory.subscribe(fitFunction)
-
-    function_defs = []
-    start_val_str = ''
-    for param, value in zip(param_names, param_values):
-        if not param.endswith('BinWidth'):
-            start_val_str += param + '=' + str(value) + ','
-    start_val_str = start_val_str[:-1]
-    function_defs.append("name=fitFunction,{}".format(start_val_str))
-
-    return function_defs
-
 
 def extract_problem_type(problem):
     """
@@ -137,3 +73,24 @@ def extract_problem_type(problem):
     problem_type = (problem_file_name.split('_')[1]).upper()
 
     return problem_type
+
+def get_fin_function_def(model_wrapper, problem):
+    """
+
+    :param model_wrapper:
+    :param problem:
+    :return:
+    """
+
+    param_names = [(param.split('='))[0] for param in problem.starting_values.split(',')]
+
+    param_dict = model_wrapper.state()
+
+    fin_function_def = problem.equation+','
+    for name in param_names:
+        fin_function_def += name+ '=' + str(param_dict[name]) + ','
+
+    fin_function_def = fin_function_def[:-1]
+
+    return fin_function_def
+

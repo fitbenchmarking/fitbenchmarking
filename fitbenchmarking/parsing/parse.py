@@ -28,7 +28,6 @@ import os
 
 from utils.logging_setup import logger
 from parsing import parse_nist_data
-from parsing import parse_fitbenchmark_data
 from parsing import parse_sasview_data
 
 

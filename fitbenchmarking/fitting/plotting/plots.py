@@ -184,7 +184,8 @@ def get_start_guess_data(software, data_struct, function, problem):
     elif software == 'scipy':
         return get_scipy_starting_guess_data(data_struct, function)
     elif software == 'sasview':
-        return [0,0,0], [0,0,0]
+        return get_sasview_starting_guess_data(data_struct, problem, function)
+        # return [0,0,0], [0,0,0]
     else:
         raise NameError("Sorry, that software is not supported.")
 
@@ -233,4 +234,25 @@ def get_mantid_starting_guess_data(wks_created, function, problem):
 
     return xData, yData
 
-# def get_sasview_starting_guess_data()
+def get_sasview_starting_guess_data(data_struct, problem, function):
+    """
+
+    :param data_struct:
+    :param function:
+    :return:
+    """
+
+    from sasmodels.bumps_model import Experiment, Model
+
+    kernel = function[0]
+
+    exec("pars = dict(" + problem.starting_values + ")")
+
+    model_wrapper = Model(kernel, **pars)
+
+    for range in problem.starting_value_ranges.split(';'):
+        exec('model_wrapper.'+range)
+
+    M = Experiment(data=data_struct, model=model_wrapper)
+
+    return data_struct.x, M.theory()
