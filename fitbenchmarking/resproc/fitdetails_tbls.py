@@ -34,7 +34,8 @@ def create(functions_str):
 
     @returns :: rst table of the function string
     """
-    functions = functions_str.split(';')
+
+    functions = str(functions_str).split(';')
 
     for function in functions:
         names, params = generate_names_and_params(function)

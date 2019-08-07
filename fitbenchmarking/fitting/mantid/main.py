@@ -33,6 +33,7 @@ from utils.logging_setup import logger
 from fitting import misc
 from fitting.plotting import plot_helper
 
+
 MAX_FLOAT = sys.float_info.max
 
 
@@ -67,7 +68,6 @@ def benchmark(problem, wks_created, function, minimizers, cost_function):
 
     return results_problem, best_fit
 
-
 def fit(problem, wks_created, function, minimizer,
         cost_function='Least squares'):
     """
@@ -85,6 +85,7 @@ def fit(problem, wks_created, function, minimizer,
                 the final function definition
                 and how much time it took for the fit to finish (float)
     """
+
 
     fit_result, t_start, t_end = None, None, None
     try:

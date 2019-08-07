@@ -26,6 +26,9 @@ fitting software.
 from __future__ import (absolute_import, division, print_function)
 
 from utils.logging_setup import logger
+from mantid.api import *
+from mantid.fitfunctions import *
+import numpy as np
 
 
 def function_definitions(problem):
@@ -41,14 +44,12 @@ def function_definitions(problem):
 
     problem_type = extract_problem_type(problem)
 
-    if problem_type == 'NIST':
-        # NIST data requires prior formatting
+
+    if isinstance((problem.get_function())[0][0], FunctionWrapper):
+        function_defs = [problem.get_function()[0][0]]
+    elif problem_type == 'NIST':
         nb_start_vals = len(problem.starting_values[0][1])
-        function_defs = parse_nist_function_definitions(problem, nb_start_vals)
-    elif problem_type == 'FitBenchmark'.upper():
-        # Native FitBenchmark format does not require any processing
-        function_defs = []
-        function_defs.append(problem.equation)
+        function_defs = parse_function_definitions(problem, nb_start_vals)
     else:
         raise NameError('Currently data types supported are FitBenchmark'
                         ' and nist, data type supplied was {}'.format(problem_type))
@@ -56,7 +57,7 @@ def function_definitions(problem):
     return function_defs
 
 
-def parse_nist_function_definitions(problem, nb_start_vals):
+def parse_function_definitions(problem, nb_start_vals):
     """
     Helper function that parses the NIST function definitions and
     transforms them into a mantid-readable format.
@@ -75,8 +76,27 @@ def parse_nist_function_definitions(problem, nb_start_vals):
             start_val_str += ('{0}={1},'.format(param[0], param[1][start_idx]))
         # Eliminate trailing comma
         start_val_str = start_val_str[:-1]
-        function_defs.append("name=UserFunction,Formula={0},{1}".
-                             format(problem.equation, start_val_str))
+        function_defs.append("name=fitFunction,{}".
+                             format(start_val_str))
+
+    param_names = [row[0] for row in problem.starting_values]
+
+    class fitFunction(IFunction1D):
+        def init(self):
+
+            for param in param_names:
+                self.declareParameter(param)
+
+        def function1D(self, xdata):
+
+            fit_param = np.zeros(len(param_names))
+            fit_param.setflags(write=1)
+            for param in param_names:
+                fit_param[param_names.index(param)] = self.getParameterValue(param)
+
+            return problem.eval_f(xdata, fit_param)
+
+    FunctionFactory.subscribe(fitFunction)
 
     return function_defs
 

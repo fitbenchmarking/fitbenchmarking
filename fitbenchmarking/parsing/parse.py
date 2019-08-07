@@ -28,7 +28,6 @@ import os
 
 from utils.logging_setup import logger
 from parsing import parse_nist_data
-from parsing import parse_fitbenchmark_data
 
 def parse_problem_file(prob_file):
     """
@@ -47,6 +46,11 @@ def parse_problem_file(prob_file):
 
         problem = parse_nist_data.FittingProblem(prob_file)
     elif prob_type == "FitBenchmark":
+        """
+        The script parse_fitbenchmark_data contains a method which uses mantid packages.
+        To allow FitBenchmarking to analyse NIST problems independently of mantid, the import is purposely put here.
+        """
+        from parsing import parse_fitbenchmark_data
         problem = parse_fitbenchmark_data.FittingProblem(prob_file)
 
     check_problem_attributes(problem)

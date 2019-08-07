@@ -1,0 +1,151 @@
+from __future__ import (absolute_import, division, print_function)
+
+import unittest
+import os
+import numpy as np
+
+import sys
+test_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(os.path.normpath(test_dir))
+parent_dir = os.path.dirname(os.path.normpath(parent_dir))
+main_dir = os.path.dirname(os.path.normpath(parent_dir))
+sys.path.insert(0, main_dir)
+
+from fitting.scipy.func_def import function_definitions
+from fitting.scipy.func_def import get_fin_function_def
+from fitting.scipy.func_def import get_init_function_def
+
+from parsing.parse_nist_data import FittingProblem as NISTFittingProblem
+from parsing.parse_fitbenchmark_data import FittingProblem as FBFittingProblem
+from mock_problem_files.get_problem_files import get_file
+
+class ScipyTests(unittest.TestCase):
+
+    def NIST_problem(self):
+        """
+        Helper function.
+        Sets up the problem object for the nist problem file Misra1a.dat
+        """
+
+        data_pattern = np.array([[10.07, 77.6],
+                                 [14.73, 114.9],
+                                 [17.94, 141.1],
+                                 [23.93, 190.8],
+                                 [29.61, 239.9],
+                                 [35.18, 289.0],
+                                 [40.02, 332.8],
+                                 [44.82, 378.4],
+                                 [50.76, 434.8],
+                                 [55.05, 477.3],
+                                 [61.01, 536.8],
+                                 [66.40, 593.1],
+                                 [75.47, 689.1],
+                                 [81.78, 760.0]])
+
+        fname = get_file('NIST_Misra1a.dat')
+        prob = NISTFittingProblem(fname)
+        prob.name = 'Misra1a'
+        prob.equation = 'b1*(1-exp(-b2*x))'
+        prob.starting_values = [['b1', [500.0, 250.0]],
+                                ['b2', [0.0001, 0.0005]]]
+        prob.data_x = data_pattern[:, 1]
+        prob.data_y = data_pattern[:, 0]
+
+        return prob
+
+    def Neutron_problem(self):
+        """
+        Sets up the problem object for the neutron problem file:
+        ENGINX193749_calibration_peak19.txt
+        """
+
+        fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
+        prob = FBFittingProblem(fname)
+        prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
+        prob.equation = ("name=LinearBackground,A0=0,A1=0;"
+                         "name=BackToBackExponential,"
+                         "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
+        prob.starting_values = None
+        prob.start_x = 23919.5789114
+        prob.end_x = 24189.3183142
+
+        return prob
+
+    def test_functionDefinitions_return_NIST_functions(self):
+
+        prob = self.NIST_problem()
+
+        function_defs = function_definitions(prob)
+        function_defs_expected = prob.get_function()
+
+        function = function_defs[0][0]
+        function_expected = function_defs_expected[0][0]
+
+        np.testing.assert_array_equal(function(prob.data_x,500.0,250.0), function_expected(prob.data_x,500.0,250.0))
+        np.testing.assert_array_equal(function(prob.data_x,0.0001,0.0005), function_expected(prob.data_x,0.0001,0.0005))
+
+        self.assertListEqual(function_defs_expected[0][1:], function_defs[0][1:])
+
+    def test_functionDefinitions_return_neutron_functions(self):
+
+        prob = self.Neutron_problem()
+
+        function_defs = function_definitions(prob)
+        function_defs_expected = prob.get_function()
+
+        self.assertEqual(str(function_defs_expected[0][0]), str(function_defs[0][0]))
+
+        np.testing.assert_array_equal(function_defs_expected[0][1], function_defs[0][1])
+
+    def test_get_init_function_def_return_NIST_init_func_def(self):
+
+        prob = self.NIST_problem()
+
+        init_func_def = get_init_function_def((prob.get_function())[0],prob.equation)
+
+        init_func_def_expected = "b1*(1-np.exp(-b2*x)) | b1= 500.0, b2= 0.0001"
+
+        self.assertEqual(init_func_def_expected, init_func_def)
+
+    def test_get_init_function_def_return_neutron_init_func_def(self):
+
+        prob = self.Neutron_problem()
+
+        init_func_def = get_init_function_def((prob.get_function())[0],prob.equation)
+
+        init_func_def_expected  = "name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096"
+
+        self.assertEqual(init_func_def_expected, init_func_def)
+
+    def test_get_fin_function_def_return_NIST_fin_func_def(self):
+
+        prob = self.NIST_problem()
+
+        init_func_def = "b1*(1-np.exp(-b2*x)) | b1= 500.0, b2= 0.0001"
+
+        popt = np.array([2.4, 250.])
+
+        fin_func_def = get_fin_function_def(init_func_def,(prob.get_function())[0][0],popt)
+
+        fin_func_def_expected = "b1*(1-np.exp(-b2*x))  |  b1= 2.4, b2= 250.0"
+
+        self.assertEqual(fin_func_def_expected, fin_func_def)
+
+    def test_get_fin_function_def_return_neutron_fin_func_def(self):
+
+        prob = self.Neutron_problem()
+
+        init_func_def = "name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096"
+
+        popt = np.array([-2.28680098e+01, 9.80089245e-04, 7.10042119e+02, 3.58802084e+00,
+                        3.21533386e-02, 2.40053562e+04, 1.65148875e+01])
+
+        fin_func_def = get_fin_function_def(init_func_def,(prob.get_function())[0][0],popt)
+
+        fin_func_def_expected = "name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096"
+
+        self.assertEqual(fin_func_def_expected, fin_func_def)
+
+
+if __name__ == "__main__":
+  unittest.main()
