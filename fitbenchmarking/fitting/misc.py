@@ -58,6 +58,10 @@ def create_result_entry(problem, status, chi_sq, runtime, minimizer,
     @returns :: the result object
     """
 
+    if 'fitFunction' in ini_function_def:
+        ini_function_def = ini_function_def.replace('fitFunction',problem.equation)
+        fin_function_def = fin_function_def.replace('fitFunction',problem.equation)
+
     # Create empty fitting result object
     result = fitbm_result.FittingResult()
 
