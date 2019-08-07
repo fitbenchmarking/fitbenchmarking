@@ -51,42 +51,45 @@ def get_fin_function_def(init_function_def, func_callable, popt):
 
     @returns :: the final function definition string
     """
-    # if not 'name=' in str(func_callable):
-    #     popt = list(popt)
-    #     params = init_function_def.split("|")[1]
-    #     params = re.sub(r"[-+]?\d+\.\d+", lambda m, rep=iter(popt):
-    #                     str(round(next(rep), 3)), params)
-    #     fin_function_def = init_function_def.split("|")[0] + " | " + params
-    # else:
-    #     fin_function_def = str(func_callable)
-
-    fin_function_def = 'name=cylinder,radius=35,length=350,background=0.0,scale=1.0,sld=4.0,sld_solvent=1.0'
+    if not 'name=' in init_function_def:
+        popt = list(popt)
+        params = init_function_def.split("|")[1]
+        print('Before: {}'.format(params))
+        params = re.sub(r"[-+]?\d+(.\d+)?", lambda m, rep=iter(popt):
+                        str(round(next(rep), 3)), params)
+        print('After: {}'.format(params))
+        fin_function_def = init_function_def.split("|")[0] + " | " + params
+    else:
+        fin_function_def = re.sub(r"[-+]?\d+(.\d+)?", lambda m, rep=iter(popt):
+                        str(round(next(rep), 3)), init_function_def)
 
     return fin_function_def
 
 
-def get_init_function_def(function, mantid_definition):
+def get_init_function_def(function, problem):
     """
     Get the initial function definition string.
 
     @param function :: array containing the function information
-    @param mantid_definition :: the string containing the function
-                                definition in mantid format
+    @param equation :: the string containing the function
+                                definition in mantid/sasview format
 
     @returns :: the initial function definition string
     """
 
-    # if not 'name=' in str(function[0]):
-    #     params = function[0].__code__.co_varnames[1:]
-    #     param_string = ''
-    #     for idx in range(len(function[1])):
-    #         param_string += params[idx] + "= " + str(function[1][idx]) + ", "
-    #     param_string = param_string[:-2]
-    #     init_function_def = function[2] + " | " + param_string
-    # else:
-    #     init_function_def = mantid_definition
+    problem_type = extract_problem_type(problem)
 
-    init_function_def = 'name=cylinder,radius=35,length=350,background=0.0,scale=1.0,sld=4.0,sld_solvent=1.0'
+    if not 'name=' in str(problem.equation):
+        params = function[0].__code__.co_varnames[1:]
+        param_string = ''
+        for idx in range(len(function[1])):
+            param_string += params[idx] + "= " + str(function[1][idx]) + ", "
+        param_string = param_string[:-2]
+        init_function_def = function[2] + " | " + param_string
+    elif problem_type == 'SasView'.upper():
+        init_function_def = problem.equation + ',' + problem.starting_values
+    else:
+        init_function_def = problem.equation
 
     return init_function_def
 

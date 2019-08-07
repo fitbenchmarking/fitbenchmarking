@@ -62,7 +62,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         else:
             param_string = ''
             for name, value in zip(param_names, param_list):
-                param_string = name+'='+str(value)+','
+                param_string += name+'='+str(value)+','
             param_string = param_string[:-1]
             exec ("params = dict(" + param_string + ")")
 

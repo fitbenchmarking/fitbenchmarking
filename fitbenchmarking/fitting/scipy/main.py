@@ -56,7 +56,7 @@ def benchmark(problem, data, function, minimizers, cost_function):
 
     for minimizer in minimizers:
 
-        init_function_def = get_init_function_def(function, problem.equation)
+        init_function_def = get_init_function_def(function, problem)
         status, fitted_y, fin_function_def, runtime = \
             fit(data, function, minimizer, cost_function, init_function_def)
         chi_sq, min_chi_sq, best_fit = \
@@ -148,6 +148,7 @@ def execute_fit(function, data, initial_params, minimizer, cost_function):
     @returns :: array of final variables after the fit was performed
     """
     popt, pcov = None, None
+
     try:
         if cost_function == 'least squares':
             popt, pcov = curve_fit(f=function.__call__,
@@ -159,6 +160,7 @@ def execute_fit(function, data, initial_params, minimizer, cost_function):
                                    p0=initial_params, method=minimizer, maxfev=500)
     except(IndexError) as err:
         logger.error('Index out of bound. Going on.')
+
     return popt
 
 
@@ -182,8 +184,8 @@ def get_fittedy(function, data_x, popt):
     Gets the fitted y data corresponding to given x values.
     """
     try:
-        fitted_y = function.__call__(data_x)
-    except:
         fitted_y = function(data_x, *popt)
+    except:
+        fitted_y = function.__call__(data_x)
 
     return fitted_y
