@@ -34,7 +34,7 @@ def function_definitions(problem):
     """
     problem_type = extract_problem_type(problem)
 
-    if problem_type == 'NIST' or problem_type == 'FitBenchmark'.upper():
+    if problem_type == 'NIST' or problem_type == 'FitBenchmark'.upper() or problem_type == 'SasView'.upper():
         return problem.get_function()
     else:
         RuntimeError("Your problem type is not supported yet!")
@@ -51,14 +51,16 @@ def get_fin_function_def(init_function_def, func_callable, popt):
 
     @returns :: the final function definition string
     """
-    if not 'name=' in str(func_callable):
-        popt = list(popt)
-        params = init_function_def.split("|")[1]
-        params = re.sub(r"[-+]?\d+\.\d+", lambda m, rep=iter(popt):
-                        str(round(next(rep), 3)), params)
-        fin_function_def = init_function_def.split("|")[0] + " | " + params
-    else:
-        fin_function_def = str(func_callable)
+    # if not 'name=' in str(func_callable):
+    #     popt = list(popt)
+    #     params = init_function_def.split("|")[1]
+    #     params = re.sub(r"[-+]?\d+\.\d+", lambda m, rep=iter(popt):
+    #                     str(round(next(rep), 3)), params)
+    #     fin_function_def = init_function_def.split("|")[0] + " | " + params
+    # else:
+    #     fin_function_def = str(func_callable)
+
+    fin_function_def = 'name=cylinder,radius=35,length=350,background=0.0,scale=1.0,sld=4.0,sld_solvent=1.0'
 
     return fin_function_def
 
@@ -73,15 +75,18 @@ def get_init_function_def(function, mantid_definition):
 
     @returns :: the initial function definition string
     """
-    if not 'name=' in str(function[0]):
-        params = function[0].__code__.co_varnames[1:]
-        param_string = ''
-        for idx in range(len(function[1])):
-            param_string += params[idx] + "= " + str(function[1][idx]) + ", "
-        param_string = param_string[:-2]
-        init_function_def = function[2] + " | " + param_string
-    else:
-        init_function_def = mantid_definition
+
+    # if not 'name=' in str(function[0]):
+    #     params = function[0].__code__.co_varnames[1:]
+    #     param_string = ''
+    #     for idx in range(len(function[1])):
+    #         param_string += params[idx] + "= " + str(function[1][idx]) + ", "
+    #     param_string = param_string[:-2]
+    #     init_function_def = function[2] + " | " + param_string
+    # else:
+    #     init_function_def = mantid_definition
+
+    init_function_def = 'name=cylinder,radius=35,length=350,background=0.0,scale=1.0,sld=4.0,sld_solvent=1.0'
 
     return init_function_def
 

@@ -55,8 +55,6 @@ def fitbm_one_prob(user_input, problem):
         prereq.prepare_software_prerequisites(user_input.software, problem,
                                               user_input.use_errors)
 
-    print(function_definitions)
-
     for function in function_definitions:
         # Ad hoc exception for running the scipy script
         # scipy does not currently support the GEM problem

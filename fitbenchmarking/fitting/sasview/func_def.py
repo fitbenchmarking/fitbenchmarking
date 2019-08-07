@@ -48,7 +48,7 @@ def function_definitions(problem, data_obj):
 
         kernel = load_model(model_name)
 
-        function_defs = [[kernel]]
+        function_defs = [[kernel, problem.starting_values, problem.equation]]
     # if isinstance((problem.get_function())[0][0], FunctionWrapper):
     #     function_defs = [problem.get_function()[0][0]]
     # elif problem_type == 'NIST':

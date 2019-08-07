@@ -43,13 +43,9 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._starting_values = (entries['function'].split(',', 1))[1]
         self.starting_value_ranges = entries['parameter_ranges']
 
-        test_eval = self.eval_f(self._data_x, self._starting_values)
-
-        print(test_eval)
-
         super(FittingProblem, self).close_file()
 
-    def eval_f(self, x, param_list):
+    def eval_f(self, x, *param_list):
         """
 
         :param x:
@@ -58,7 +54,18 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         """
         data = empty_data1D(x)
         model = load_model((self._equation.split('='))[1])
-        exec ("params = dict(" + param_list + ")")
+
+        param_names = [(param.split('='))[0] for param in self.starting_values.split(',')]
+        if len(param_list) == 1:
+            if isinstance(param_list[0],basestring):
+                exec ("params = dict(" + param_list[0] + ")")
+        else:
+            param_string = ''
+            for name, value in zip(param_names, param_list):
+                param_string = name+'='+str(value)+','
+            param_string = param_string[:-1]
+            exec ("params = dict(" + param_string + ")")
+
         model_wrapper = Model(model, **params)
         for range in self.starting_value_ranges.split(';'):
             exec ('model_wrapper.' + range)
@@ -68,7 +75,16 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
     def get_function(self):
 
-        return self.eval_f
+        param_values = [(param.split('='))[1] for param in self.starting_values.split(',')]
+        param_values = np.array([param_values],dtype=np.float64)
+
+        function_defs = []
+
+        for param in param_values:
+
+            function_defs.append([self.eval_f, param])
+
+        return function_defs
 
 
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
