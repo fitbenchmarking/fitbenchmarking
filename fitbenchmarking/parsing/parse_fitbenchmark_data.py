@@ -25,6 +25,7 @@ from parsing import base_fitting_problem
 import numpy as np
 
 from utils.logging_setup import logger
+from parsing.fitbenchmark_data_functions import fitbenchmark_func_definitions
 
 
 class FittingProblem(base_fitting_problem.BaseFittingProblem):
@@ -54,6 +55,8 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._data_y = data_points[:,1]
         self._data_e = data_points[:,2]
         self._name = entries['name']
+
+        #String containing the function name(s) and the starting parameter values for each function
         self._equation = entries['function']
 
         self._starting_values = None
@@ -62,6 +65,31 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
             self._end_x = entries['fit_parameters']['EndX']
 
         super(FittingProblem, self).close_file()
+
+    def eval_f(self, x, param_list):
+        """
+        Function evaluation method
+
+        :param x: x data values
+        :param param_list:
+        :return: y data values
+        """
+
+        function = (fitbenchmark_func_definitions(self._equation))[0][0]
+
+        param_statements = param_list.split(',')
+        param_name_and_value = [param.split('=') for param in param_statements]
+
+        for param in param_name_and_value:
+            function[param[0]] = float(param[1])
+
+        return function(x)
+
+    def get_function(self):
+
+        function = fitbenchmark_func_definitions(self._equation)
+
+        return function
 
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """

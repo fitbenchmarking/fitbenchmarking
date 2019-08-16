@@ -65,6 +65,8 @@ def prepare_mantid(problem, use_errors):
 
     wks_mtd, cost_function = \
         wks_cost_function(problem, use_errors)
+
+    # String containing the function name(s) and the starting parameter values for each function
     function_definitions = \
         function_definitions(problem)
 
@@ -85,6 +87,8 @@ def prepare_scipy(problem, use_errors):
 
     data, cost_function = \
         prepare_data(problem, use_errors)
+
+    # String containing function evaluation methods and the starting values for each method
     function_definitions = function_definitions(problem)
     # For problems that have no specified boundaries, set -inf and +inf
     if problem.start_x == None and problem.end_x == None:

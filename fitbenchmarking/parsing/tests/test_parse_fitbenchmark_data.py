@@ -33,7 +33,9 @@ class ParseFitbenchmarkTests(unittest.TestCase):
 
         entries = {}
         entries['name'] = "ENGINX 193749 calibration, spectrum 651, peak 19"
+
         entries['input_file'] = "FB_ENGINX193749_calibration_spec651.txt"
+
         entries['function'] = ("name=LinearBackground,A0=0,A1=0;"
                                "name=BackToBackExponential,"
                                "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
@@ -60,6 +62,38 @@ class ParseFitbenchmarkTests(unittest.TestCase):
 
         return problem
 
+    def test_eval_f(self):
+
+        fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
+
+        problem = FittingProblem(fname)
+
+        y_values = problem.eval_f(problem.data_x[:10], 'f0.A1=100,f1.A=100')
+
+        y_values_expected = np.array([600059.4, 600178.1, 600296.9, 600415.6, 600534.4, 600653.1, 600771.9, 600890.6, 601009.4, 601128.1])
+
+        np.testing.assert_array_equal(y_values_expected, y_values)
+
+    def test_getFunction_returns_correct_function(self):
+
+        fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
+
+        problem = FittingProblem(fname)
+
+        function = problem.get_function()
+
+        function_obj_str = str(function[0][0])
+
+        function_obj_str_expected = "name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096"
+
+        param_array = function[0][1]
+
+        param_array_expeacted = np.array([0.00000e+00, 0.00000e+00, 5.97076e+02, 1.00000e+00, 5.00000e-02,
+                                2.40275e+04, 2.29096e+01])
+
+        self.assertEqual(function_obj_str_expected, function_obj_str)
+        np.testing.assert_array_equal(param_array_expeacted, param_array)
+
     def test_ParseProblemFileFitbenchmark_returns_correct_problem_object(self):
 
         fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
@@ -78,6 +112,7 @@ class ParseFitbenchmarkTests(unittest.TestCase):
 
         fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
         input_file = 'FB_ENGINX193749_calibration_spec651.txt'
+
         bench_prob_dir = self.get_bench_prob_dir()
         prob = FittingProblem(fname)
         data_file = prob.get_data_file(fname, input_file)

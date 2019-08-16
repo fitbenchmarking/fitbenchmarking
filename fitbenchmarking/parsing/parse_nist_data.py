@@ -26,6 +26,7 @@ import re
 from parsing import base_fitting_problem
 
 from utils.logging_setup import logger
+from parsing.nist_data_functions import nist_func_definitions
 
 
 class FittingProblem(base_fitting_problem.BaseFittingProblem):
@@ -57,6 +58,8 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._data_e = self.get_data_e(data_pattern)
 
         self._name = os.path.basename(self.contents.name.split('.')[0])
+
+        #String containing a mathematical expression
         self._equation = self.parse_equation(equation_text)
 
         self._starting_values = starting_values
@@ -95,6 +98,32 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         logger.info("{0} lines were ignored in this problem file".format(ignored_lines))
 
         return equation_text, data_pattern_text, starting_values
+
+    def eval_f(self, x, param_list):
+        """
+        Function evaluation method
+
+        :param x: x data values
+        :param param_list:
+        :return: y data values
+        """
+
+        param_string = ''
+        for param in param_list:
+            param_string += ',' + str(param)
+        param_string += ')'
+
+        func_def = nist_func_definitions(self._equation, self._starting_values)
+
+        function = func_def[0][0]
+
+        return eval('function(x'+ param_string)
+
+    def get_function(self):
+
+        function = nist_func_definitions(self._equation, self._starting_values)
+
+        return function
 
     def get_nist_model(self, lines, idx):
         """

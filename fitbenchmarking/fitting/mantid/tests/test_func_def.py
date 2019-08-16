@@ -13,7 +13,7 @@ main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
 from fitting.mantid.func_def import function_definitions
-from fitting.mantid.func_def import parse_nist_function_definitions
+from fitting.mantid.func_def import parse_function_definitions
 
 from parsing.parse_nist_data import FittingProblem as NISTFittingProblem
 from parsing.parse_fitbenchmark_data import FittingProblem as FBFittingProblem
@@ -101,8 +101,8 @@ class MantidTests(unittest.TestCase):
 
     function_defs = function_definitions(prob)
     function_defs_expected = \
-        ["name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=500.0,b2=0.0001",
-         "name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=250.0,b2=0.0005"]
+        ["name=fitFunction,b1=500.0,b2=0.0001",
+         "name=fitFunction,b1=250.0,b2=0.0005"]
 
     self.assertListEqual(function_defs_expected, function_defs)
 
@@ -111,6 +111,7 @@ class MantidTests(unittest.TestCase):
     prob = self.Neutron_problem()
 
     function_defs = function_definitions(prob)
+    function_defs = [str(function_defs[0])]
     function_defs_expected = \
         [("name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,"
           "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")]
@@ -122,10 +123,10 @@ class MantidTests(unittest.TestCase):
     prob = self.NIST_problem()
     nb_start_vals = 2
 
-    function_defs = parse_nist_function_definitions(prob, nb_start_vals)
+    function_defs = parse_function_definitions(prob, nb_start_vals)
     function_defs_expected = \
-        ["name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=500.0,b2=0.0001",
-         "name=UserFunction,Formula=b1*(1-exp(-b2*x)),b1=250.0,b2=0.0005"]
+        ["name=fitFunction,b1=500.0,b2=0.0001",
+         "name=fitFunction,b1=250.0,b2=0.0005"]
 
     self.assertListEqual(function_defs_expected, function_defs)
 

@@ -60,6 +60,7 @@ def fitbm_one_prob(user_input, problem):
         # scipy does not currently support the GEM problem
         if 'GEM' in problem.name and user_input.software == 'scipy':
             break
+
         results_problem, best_fit = \
             fit_one_function_def(user_input.software, problem, data_struct,
                                  function, user_input.minimizers, cost_function)

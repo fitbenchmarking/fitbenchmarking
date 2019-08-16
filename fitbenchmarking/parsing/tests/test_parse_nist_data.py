@@ -129,6 +129,43 @@ class ParseNistTests(unittest.TestCase):
 
         return prob
 
+    def test_eval_f(self):
+
+        fname = get_file('NIST_Misra1a.dat')
+        problem = FittingProblem(fname)
+
+        y_values = problem.eval_f(problem.data_x,[0.0001,0.0005])
+
+        y_values_expected = np.array([3.80569215e-06, 5.58309023e-06, 6.81188557e-06, 9.09907420e-06,
+                            1.13035216e-05, 1.34545088e-05, 1.53292517e-05, 1.72379034e-05,
+                            1.95391938e-05, 2.12309474e-05, 2.35398121e-05, 2.56621543e-05,
+                            2.91460876e-05, 3.16138591e-05])
+
+        np.testing.assert_allclose(y_values_expected, y_values, rtol=1e-5, atol=0)
+
+    def test_getFunction_returns_correct_function(self):
+
+        fname = get_file('NIST_Misra1a.dat')
+        problem = FittingProblem(fname)
+
+        function = problem.get_function()
+
+        function_obj = function[0][0]
+
+        y_values = function_obj(problem.data_x,0.0001,0.0005)
+
+        y_values_expected = np.array([3.80569215e-06, 5.58309023e-06, 6.81188557e-06, 9.09907420e-06,
+                            1.13035216e-05, 1.34545088e-05, 1.53292517e-05, 1.72379034e-05,
+                            1.95391938e-05, 2.12309474e-05, 2.35398121e-05, 2.56621543e-05,
+                            2.91460876e-05, 3.16138591e-05])
+
+        param_array = function[0][1:]
+
+        param_array_expeacted = [[500.0, 0.0001], 'b1*(1-np.exp(-b2*x))']
+
+        np.testing.assert_allclose(y_values_expected, y_values, rtol=1e-5, atol=0)
+        self.assertListEqual(param_array_expeacted, param_array)
+
     def test_ParseProblemFileNIST_returns_correct_problem_object(self):
 
         fname = get_file('NIST_Misra1a.dat')
