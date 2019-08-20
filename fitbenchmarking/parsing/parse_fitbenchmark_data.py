@@ -25,7 +25,7 @@ from parsing import base_fitting_problem
 import numpy as np
 
 from utils.logging_setup import logger
-from parsing.fitbenchmark_data_functions import fitbenchmark_func_definitions
+from parsing.fitbenchmark_data_functions import fitbenchmark_func_definitions, get_fit_function_without_kwargs
 
 
 class FittingProblem(base_fitting_problem.BaseFittingProblem):
@@ -59,7 +59,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         #String containing the function name(s) and the starting parameter values for each function
         self._equation = entries['function']
 
-        self._starting_values = None
+        self._starting_values = (entries['function'].split(',', 1))[1]
         if 'fit_parameters' in entries:
             self._start_x = entries['fit_parameters']['StartX']
             self._end_x = entries['fit_parameters']['EndX']
@@ -70,26 +70,44 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         """
         Function evaluation method
 
-        :param x: x data values
-        :param param_list:
-        :return: y data values
+        @param x :: x data values
+        @param param_list :: parameter values
+        @returns :: y data values evaluated from the function used in the problem
         """
 
         function = (fitbenchmark_func_definitions(self._equation))[0][0]
 
-        param_statements = param_list.split(',')
-        param_name_and_value = [param.split('=') for param in param_statements]
+        param_values_string = ''
+        for param in param_list:
+            param_values_string += ',' + str(param)
 
-        for param in param_name_and_value:
-            function[param[0]] = float(param[1])
+        y_values = eval('function(x'+param_values_string+')')
 
-        return function(x)
+        return y_values
 
     def get_function(self):
+        """
+
+        @returns :: function definition list containing the function and its starting parameter values
+        """
 
         function = fitbenchmark_func_definitions(self._equation)
 
         return function
+
+    def get_bumps_function(self):
+        """
+        Prepare a function definition list that is acceptable by Bumps fitting module.
+        The function to be used in Bumps fitting must not have *args or **kwargs in declaration
+
+        @returns :: function definition list containing the function without
+        any *args or *kwargs and its starting parameter values
+        """
+
+        function = fitbenchmark_func_definitions(self._equation)[0][0]
+
+        bumps_function_def = get_fit_function_without_kwargs(function, self._equation)
+        return bumps_function_def
 
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """

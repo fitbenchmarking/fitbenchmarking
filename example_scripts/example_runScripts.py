@@ -51,6 +51,7 @@ else:
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
                                    'benchmark_problems')
 
+
 """
 Modify results_dir to specify where the results of the fit should be saved
 If left as None, they will be saved in a "results" folder in the working dir
@@ -77,7 +78,7 @@ color_scale = [(1.1, 'ranking-top-1'),
 # problem_sets = ["Neutron_data", "NIST/average_difficulty"]
 # problem_sets = ["CUTEst", "Muon_data", "Neutron_data", "NIST/average_difficulty", "NIST/high_difficulty", "NIST/low_difficulty"]
 
-problem_sets = ["NIST/low_difficulty"]
+problem_sets = ["Muon_data"]
 
 for sub_dir in problem_sets:
     # generate group label/name used for problem set

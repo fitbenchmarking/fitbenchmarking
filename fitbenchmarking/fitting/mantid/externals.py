@@ -61,9 +61,15 @@ def set_ties(function_object, ties):
 
     @returns :: mantid function object with ties
     """
+
     for idx, ties_per_func in enumerate(ties):
         for tie in ties_per_func:
-            exec "function_object.tie({'f" + str(idx) + "." + tie + "})"
+            exec("param_dict = {'f" + str(idx) + "." + tie + "}")
+            param_str = 'f'+str(idx)+'.'+(tie.split("'"))[0]
+            # function_object.tie(param_dict)
+            function_object.fix(param_str)
+            # exec "function_object.tie({'f" + str(idx) + "." + tie + "})"
+            # exec "function_object.tie(f" + str(idx) + "." + tie + ")"
 
     return function_object
 

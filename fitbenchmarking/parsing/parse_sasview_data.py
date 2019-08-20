@@ -30,10 +30,10 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         entries = self.get_data_problem_entries(self.contents)
         data_file_path = self.get_data_file(self.fname, entries['input_file'])
 
-        self.data_obj = load_data(data_file_path)
+        data_obj = load_data(data_file_path)
 
-        self._data_x = self.data_obj.x
-        self._data_y = self.data_obj.y
+        self._data_x = data_obj.x
+        self._data_y = data_obj.y
 
         self._start_x, self._end_x = self.get_start_x_and_end_x(self._data_x)
 
@@ -47,10 +47,12 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
     def eval_f(self, x, *param_list):
         """
+        Function Evaluation Method
 
-        :param x:
-        :param param_list:
-        :return:
+        @param x :: x data values
+        @param *param_list :: parameter value(s)
+
+        @ returns :: the y data values evaluated from the model
         """
         data = empty_data1D(x)
         model = load_model((self._equation.split('='))[1])
@@ -74,6 +76,10 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         return func_wrapper.theory()
 
     def get_function(self):
+        """
+
+        @returns :: function definition list containing the model and its starting parameter values
+        """
 
         param_values = [(param.split('='))[1] for param in self.starting_values.split(',')]
         param_values = np.array([param_values],dtype=np.float64)

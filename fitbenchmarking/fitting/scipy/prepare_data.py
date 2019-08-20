@@ -77,7 +77,7 @@ def apply_x_data_range(problem):
     """
     Crop the data to fit within specified start_x and end_x values if these are provided otherwise
     return unalternated problem object.
-    Scipy don't take start_x and end_x, meaning Scipy can on fit over the entire data array.
+    Scipy don't take start_x and end_x, meaning SasView can on fit over the entire data array.
     
     @return :: Modified problem object where data have been cropped
     """

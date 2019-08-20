@@ -27,12 +27,13 @@ from scipy.optimize import curve_fit
 import numpy as np
 import sys
 import time
+import re
 
 from fitting import misc
 from sasmodels.bumps_model import Experiment, Model
 from bumps.names import *
 from bumps.fitters import fit as bumpsFit
-from fitting.sasview.func_def import get_fin_function_def
+from fitting.sasview.func_def import get_init_function_def, get_fin_function_def
 from fitting.plotting import plot_helper
 from utils.logging_setup import logger
 
@@ -42,11 +43,11 @@ MAX_FLOAT = sys.float_info.max
 def benchmark(problem, data, function, minimizers, cost_function):
     """
     Fit benchmark one problem, with one function definition and all
-    the selected minimizers, using the scipy fitting software.
+    the selected minimizers, using the SasView fitting software.
 
     @param problem :: a problem object containing information used in fitting
-    @param data :: workspace holding the problem data
-    @param function :: the fitted function
+    @param data :: object holding the problem data
+    @param function :: the fitted function (model for SasView problems)
     @param minimizers :: array of minimizers used in fitting
     @param cost_function :: the cost function used for fitting
 
@@ -55,12 +56,12 @@ def benchmark(problem, data, function, minimizers, cost_function):
     """
     min_chi_sq, best_fit = MAX_FLOAT, None
     results_problem = []
+
     for minimizer in minimizers:
 
-        model = function[0]
-        init_func_def = problem.equation +','+ problem.starting_values
+        init_func_def = get_init_function_def(function, problem)
         status, fitted_y, fin_func_def, runtime = \
-            fit(problem, data, model, minimizer)
+            fit(problem, data, function, minimizer, init_func_def)
         chi_sq, min_chi_sq, best_fit = \
             chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer)
 
@@ -72,22 +73,53 @@ def benchmark(problem, data, function, minimizers, cost_function):
 
     return results_problem, best_fit
 
-def fit(problem, data, model, minimizer):
+def fit(problem, data, function, minimizer, init_func_def):
     """
 
-    :param problem:
-    :param model:
-    :param minimizer:
-    :return:
+    @param problem :: a problem object containing information used in fitting
+    @param model :: the fitted function (model for SasView problems)
+    @param minimizer :: the minimizer used in the fitting
+    @param init_func_def :: the initial function definition
+
+    @returns ::  the status, either success or failure (str), the data
+                of the fit, the final function definition and the
+                runtime of the fitting software
     """
 
     t_start, t_end = None, None
-    exec ("params = dict(" + problem.starting_values + ")")
+    model = function[0]
 
-    model_wrapper = Model(model, **params)
-    for range in problem.starting_value_ranges.split(';'):
-        exec ('model_wrapper.' + range)
-    func_wrapper = Experiment(data=data, model=model_wrapper)
+    if hasattr(model, '__call__'):
+        if isinstance(problem.starting_values, basestring):
+            function_without_ties = re.sub(r",(\s+)?ties=[(][A-Za-z0-9=.,\s+]+[)]", '', problem.equation)
+            function_list = (function_without_ties).split(';')
+            func_params_list = [(func.split(','))[1:] for func in function_list]
+            formatted_param_list = ['f'+str(func_params_list.index(func_params))+'.'+param.strip() for func_params in func_params_list for param in func_params]
+            param_names = [(param.split('='))[0] for param in formatted_param_list if not 'BinWidth' in param]
+            formatted_param_names = [param.replace('.', '_') for param in param_names]
+        else:
+            formatted_param_names = [param[0] for param in problem.starting_values]
+
+        param_values = function[1]
+        param_string = ''
+        for name, value in zip(formatted_param_names, param_values):
+            if not name.endswith('BinWidth'):
+                param_string += "," + name + "=" + str(value)
+
+        exec ('func_wrapper = Curve(model, x=data.x, y=data.y, dy=data.dy' + param_string + ')')
+
+        for name, value in zip(formatted_param_names, param_values):
+            minVal = -np.inf
+            maxVal = np.inf
+            if not name.endswith('BinWidth'):
+                exec ('func_wrapper.' + name + '.range(' + str(minVal) + ',' + str(maxVal) + ')')
+    else:
+        exec ("params = dict(" + problem.starting_values + ")") in locals()
+
+        model_wrapper = Model(model, **params)
+        for range in problem.starting_value_ranges.split(';'):
+            exec ('model_wrapper.' + range)
+        func_wrapper = Experiment(data=data, model=model_wrapper)
 
     fitProblem = FitProblem(func_wrapper)
 
@@ -102,7 +134,7 @@ def fit(problem, data, model, minimizer):
 
     fitted_y = func_wrapper.theory()
 
-    fin_func_def = get_fin_function_def(model_wrapper, problem)
+    fin_func_def = get_fin_function_def(result, problem, model, init_func_def)
 
     runtime = t_end - t_start
 

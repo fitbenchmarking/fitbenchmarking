@@ -24,7 +24,7 @@ Functions that prepare the data to be in the right format.
 from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
-from sasmodels.data import load_data, Data1D
+from sasmodels.data import empty_data1D, Data1D
 
 from utils.logging_setup import logger
 
@@ -32,9 +32,14 @@ def prepare_data(problem, use_errors):
 
     problem = misc_preparations(problem)
 
-    cost_function = 'Unweighted least squares'
+    if use_errors:
+        data_obj = Data1D(x=problem.data_x, y=problem.data_y, dy=problem.data_e)
+        cost_function = 'least squares'
+    else:
+        data_obj = Data1D(x=problem.data_x, y=problem.data_y)
+        cost_function = 'unweighted least squares'
 
-    return problem.data_obj, cost_function
+    return data_obj, cost_function
 
 def misc_preparations(problem):
     """
@@ -47,9 +52,7 @@ def misc_preparations(problem):
     """
 
     if problem.data_e is None:
-        # problem.data_obj.dy = 0.2 * problem.data_obj.y
-        problem.data_obj.dy = np.sqrt(abs(problem.data_obj.y))
-        problem.data_e = problem.data_obj.dy
+        problem.data_e = np.sqrt(abs(problem.data_y))
 
     if problem.start_x is None and problem.end_x is None:
         pass
@@ -73,15 +76,15 @@ def apply_x_data_range(problem):
     if problem.start_x is None or problem.end_x is None:
         return problem
 
-    start_x_diff = problem.data_obj.x - problem.start_x
-    end_x_diff = problem.data_obj.x - problem.end_x
+    start_x_diff = problem.data_x - problem.start_x
+    end_x_diff = problem.data_x - problem.end_x
     start_idx = np.where(start_x_diff >= 0, start_x_diff, np.inf).argmin()
     end_idx = np.where(end_x_diff <= 0, end_x_diff, -np.inf).argmax()
 
-    problem.data_obj.x = np.array(problem.data_obj.x)[start_idx:end_idx + 1]
-    problem.data_obj.y = np.array(problem.data_obj.y)[start_idx:end_idx + 1]
-    problem.data_obj.dy = np.array(problem.data_obj.dy)[start_idx:end_idx + 1]
-    problem.data_obj.dy[problem.data_obj.dy == 0] = 0.00000001
+    problem.data_x = np.array(problem.data_x)[start_idx:end_idx + 1]
+    problem.data_y = np.array(problem.data_y)[start_idx:end_idx + 1]
+    problem.data_e = np.array(problem.data_e)[start_idx:end_idx + 1]
+    problem.data_e[problem.data_e == 0] = 0.00000001
     return problem
 
 

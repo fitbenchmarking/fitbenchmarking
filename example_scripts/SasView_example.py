@@ -1,7 +1,6 @@
 from sasmodels.core import load_model
 from sasmodels.bumps_model import Model, Experiment
-from sasmodels.data import load_data, empty_data1D
-from sas.sascalc.dataloader.data_info import Data1D
+from sasmodels.data import load_data, empty_data1D, Data1D
 
 from sasmodels.models.broad_peak import Iq
 
@@ -21,9 +20,11 @@ oneD_data_dir = os.path.join(main_dir, 'benchmark_problems', '1D_data', 'data_fi
 test_data = load_data(oneD_data_dir)
 test_data.dy = 0.2*test_data.y
 
-# data_1D = Data1D(x=test_data.x, y=test_data.y, dy=test_data.dy)
+# print(type(test_data))
 
-# print(test_data.y)
+data_1D = Data1D(x=test_data.x, y=test_data.y, dy=test_data.dy)
+
+print(type(data_1D.x))
 
 kernel = load_model('cylinder')
 
@@ -33,9 +34,9 @@ kernel = load_model('cylinder')
 # print(type(test_load))
 #We set some errors for demonstration
 
-x_data = empty_data1D(test_data.x)
-print(x_data.x)
-print(type(x_data))
+# x_data = empty_data1D(test_data.x)
+# print(x_data.x)
+# print(type(x_data))
 # print(test_data.qmin)
 # print(test_data.y)
 # print(type(data_1D))

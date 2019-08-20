@@ -28,6 +28,7 @@ from __future__ import (absolute_import, division, print_function)
 from utils.logging_setup import logger
 from sasmodels.core import load_model
 import numpy as np
+import re
 
 
 def function_definitions(problem, data_obj):
@@ -45,18 +46,15 @@ def function_definitions(problem, data_obj):
 
     if problem_type == 'SasView'.upper():
         model_name = (problem.equation.split('='))[1]
-
         kernel = load_model(model_name)
-
         function_defs = [[kernel, problem.starting_values, problem.equation]]
-    # if isinstance((problem.get_function())[0][0], FunctionWrapper):
-    #     function_defs = [problem.get_function()[0][0]]
-    # elif problem_type == 'NIST':
-    #     nb_start_vals = len(problem.starting_values[0][1])
-    #     function_defs = parse_function_definitions(problem, nb_start_vals)
-    # else:
-    #     raise NameError('Currently data types supported are FitBenchmark'
-    #                     ' and nist, data type supplied was {}'.format(problem_type))
+    elif problem_type == 'FitBenchmark'.upper():
+        function_defs = problem.get_bumps_function()
+    elif problem_type == 'NIST':
+        function_defs = problem.get_function()
+    else:
+        raise NameError('Currently data types supported are FitBenchmark'
+                        ' and nist, data type supplied was {}'.format(problem_type))
 
     return function_defs
 
@@ -74,7 +72,7 @@ def extract_problem_type(problem):
 
     return problem_type
 
-def get_fin_function_def(model_wrapper, problem):
+def get_fin_function_def(result, problem, func_callable, init_func_def):
     """
 
     :param model_wrapper:
@@ -82,15 +80,61 @@ def get_fin_function_def(model_wrapper, problem):
     :return:
     """
 
-    param_names = [(param.split('='))[0] for param in problem.starting_values.split(',')]
+    problem_type = extract_problem_type(problem)
+    param_values = result.x
 
-    param_dict = model_wrapper.state()
-
-    fin_function_def = problem.equation+','
-    for name in param_names:
-        fin_function_def += name+ '=' + str(param_dict[name]) + ','
-
-    fin_function_def = fin_function_def[:-1]
+    if not 'name=' in init_func_def:
+        param_values = list(param_values)
+        params = init_func_def.split("|")[1]
+        params = re.sub(r"[-+]?\d+.\d+", lambda m, rep=iter(param_values):
+        str(round(next(rep), 3)), params)
+        fin_function_def = init_func_def.split("|")[0] + " | " + params
+    elif problem_type == 'SasView'.upper():
+        param_names = [(param.split('='))[0] for param in problem.starting_values.split(',')]
+        fin_function_def = problem.equation+','
+        for name, value in zip(param_names, param_values):
+            fin_function_def += name+ '=' + str(value) + ','
+        fin_function_def = fin_function_def[:-1]
+    else:
+        param_values = list(param_values)
+        all_attributes = re.findall(r"BinWidth=\d+[.]\d+", init_func_def)
+        if len(all_attributes) != 0:
+            init_func_def = [init_func_def.replace(attr, '+') for attr in all_attributes][0]
+        fin_function_def = re.sub(r"[-+]?\d+[.]\d+", lambda m, rep=iter(param_values):
+        str(round(next(rep), 3)), init_func_def)
+        if len(all_attributes) != 0:
+            fin_function_def = [fin_function_def.replace('+', attr) for attr in all_attributes]
 
     return fin_function_def
+
+
+def get_init_function_def(function, problem):
+    """
+    Get the initial function definition string.
+
+    @param function :: array containing the function information
+    @param equation :: the string containing the function
+                                definition in mantid/sasview format
+
+    @returns :: the initial function definition string
+    """
+
+    problem_type = extract_problem_type(problem)
+
+    if not 'name=' in str(problem.equation):
+        params = function[0].__code__.co_varnames[1:]
+        param_string = ''
+        for idx in range(len(function[1])):
+            param_string += params[idx] + "= " + str(function[1][idx]) + ", "
+        param_string = param_string[:-2]
+        init_function_def = function[2] + " | " + param_string
+    elif problem_type == 'SasView'.upper():
+        init_function_def = problem.equation + ',' + problem.starting_values
+        init_function_def = re.sub(r"(=)([-+]?\d+)([^.\d])", r"\g<1>\g<2>.0\g<3>", init_function_def)
+    else:
+        init_function_def = problem.equation
+        init_function_def = re.sub(r",(\s+)?ties=[(][A-Za-z0-9=.,\s+]+[)]", '', init_function_def)
+        init_function_def = re.sub(r"(=)([-+]?\d+)([^.\d])", r"\g<1>\g<2>.0\g<3>", init_function_def)
+
+    return init_function_def
 

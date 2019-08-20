@@ -242,17 +242,20 @@ def get_sasview_starting_guess_data(data_struct, problem, function):
     :return:
     """
 
-    from sasmodels.bumps_model import Experiment, Model
+    # yData = function[0](data_struct.x)
 
-    kernel = function[0]
+    yData = problem.eval_f(data_struct.x, function[1])
+    # from sasmodels.bumps_model import Experiment, Model
+    #
+    # kernel = function[0]
+    #
+    # exec("pars = dict(" + problem.starting_values + ")")
+    #
+    # model_wrapper = Model(kernel, **pars)
+    #
+    # for range in problem.starting_value_ranges.split(';'):
+    #     exec('model_wrapper.'+range)
+    #
+    # M = Experiment(data=data_struct, model=model_wrapper)
 
-    exec("pars = dict(" + problem.starting_values + ")")
-
-    model_wrapper = Model(kernel, **pars)
-
-    for range in problem.starting_value_ranges.split(';'):
-        exec('model_wrapper.'+range)
-
-    M = Experiment(data=data_struct, model=model_wrapper)
-
-    return data_struct.x, M.theory()
+    return data_struct.x, yData

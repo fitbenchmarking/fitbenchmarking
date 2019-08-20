@@ -58,8 +58,11 @@ def fitbm_one_prob(user_input, problem):
     for function in function_definitions:
         # Ad hoc exception for running the scipy script
         # scipy does not currently support the GEM problem
-        if 'GEM' in problem.name and user_input.software == 'scipy':
-            break
+        # if 'GEM' in problem.name and user_input.software == 'scipy':
+        #     break
+
+        # if 'GEM' in problem.name and user_input.software == 'sasview':
+        #     break
 
         results_problem, best_fit = \
             fit_one_function_def(user_input.software, problem, data_struct,

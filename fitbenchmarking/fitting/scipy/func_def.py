@@ -54,14 +54,17 @@ def get_fin_function_def(init_function_def, func_callable, popt):
     if not 'name=' in init_function_def:
         popt = list(popt)
         params = init_function_def.split("|")[1]
-        print('Before: {}'.format(params))
-        params = re.sub(r"[-+]?\d+(.\d+)?", lambda m, rep=iter(popt):
+        params = re.sub(r"[-+]?\d+[.]\d+", lambda m, rep=iter(popt):
                         str(round(next(rep), 3)), params)
-        print('After: {}'.format(params))
         fin_function_def = init_function_def.split("|")[0] + " | " + params
     else:
-        fin_function_def = re.sub(r"[-+]?\d+(.\d+)?", lambda m, rep=iter(popt):
+        all_attributes = re.findall(r",[\s+]?ties=[(][A-Za-z0-9=.,\s+]+[)]", init_function_def)
+        if len(all_attributes) != 0:
+            init_function_def = [init_function_def.replace(attr, '+') for attr in all_attributes][0]
+        fin_function_def = re.sub(r"[-+]?\d+[.]\d+", lambda m, rep=iter(popt):
                         str(round(next(rep), 3)), init_function_def)
+        if len(all_attributes) != 0:
+            fin_function_def = [fin_function_def.replace('+', attr) for attr in all_attributes]
 
     return fin_function_def
 
@@ -88,8 +91,10 @@ def get_init_function_def(function, problem):
         init_function_def = function[2] + " | " + param_string
     elif problem_type == 'SasView'.upper():
         init_function_def = problem.equation + ',' + problem.starting_values
+        init_function_def = re.sub(r"(=)([-+]?\d+)([^.\d])", r"\g<1>\g<2>.0\g<3>", init_function_def)
     else:
         init_function_def = problem.equation
+        init_function_def = re.sub(r"(=)([-+]?\d+)([^.\d])", r"\g<1>\g<2>.0\g<3>", init_function_def)
 
     return init_function_def
 

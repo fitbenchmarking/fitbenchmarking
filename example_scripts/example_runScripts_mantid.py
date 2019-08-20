@@ -37,13 +37,15 @@ from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = 'mantid'
+# software = 'mantid'
+software = "mantid"
 software_options = {'software': software}
 
 # User defined minimizers
-# custom_minimizers = {"mantid": ["BFGS", "Simplex"],
-              # "scipy": ["lm", "trf", "dogbox"]}
-custom_minimizers = None
+custom_minimizers = {"mantid": ["Simplex"],
+              "scipy": ["lm", "trf", "dogbox"]}
+# custom_minimizers = None
+# "BFGS",
 
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
@@ -86,7 +88,7 @@ color_scale = [(1.1, 'ranking-top-1'),
 # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
 # "Muon_data" works for mantid minimizers
 # problem_sets = ["CUTEst", "Muon_data", "Neutron_data", "NIST/average_difficulty", "NIST/high_difficulty", "NIST/low_difficulty"]
-problem_sets = ['Muon_data', 'CUTEst']
+problem_sets = ['1D_data']
 
 for sub_dir in problem_sets:
   # generate group label/name used for problem set

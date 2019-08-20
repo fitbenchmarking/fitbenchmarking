@@ -25,7 +25,7 @@ in the right format.
 from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
-
+import re
 from fitting.mantid.externals import gen_func_obj, set_ties
 from utils.logging_setup import logger
 
@@ -50,11 +50,37 @@ def fitbenchmark_func_definitions(functions_string):
         fit_function = make_fitbenchmark_fit_function(name, fit_function, params_set)
     fit_function = set_ties(fit_function, ties)
 
-
     function_defs = [[fit_function, params]]
 
     return function_defs
 
+def get_fit_function_without_kwargs(fit_function, functions_string):
+    """
+
+    :param fit_function:
+    :param functions_string:
+    :return:
+    """
+
+    functions_string = re.sub(r",(\s+)?ties=[(][A-Za-z0-9=.,\s+]+[)]", '', functions_string)
+    function_list = (functions_string).split(';')
+    func_params_list = [((func.split(','))[1:]) for func in function_list]
+    print(func_params_list)
+    formatted_param_list = ['f' + str(func_params_list.index(func_params)) + '.' + param.strip() for func_params in
+                            func_params_list for param in func_params]
+    param_names = [(param.split('='))[0] for param in formatted_param_list]
+    param_values = [(param.split('='))[1] for param in formatted_param_list if
+                    not (param.split('='))[0].endswith('BinWidth')]
+    new_param_names = [param.replace('.', '_') for param in param_names]
+
+    param_names_string = ''
+    for param in new_param_names:
+        if not param.endswith('BinWidth'):
+            param_names_string += ',' + param
+
+    exec ('def bumps_function(x' + param_names_string + '):\n    return fit_function.__call__(x' + param_names_string + ')') in locals()
+
+    return [[bumps_function, param_values]]
 
 def get_all_fitbenchmark_func_names(functions_string):
     """
@@ -179,6 +205,7 @@ def get_fitbenchmark_ties(param_set, ties):
         else:
             tie = param_set[start + 1:comma]
         ties_per_function.append(tie.replace("=", "': "))
+        # ties_per_function.append(tie)
         if comma == -1:
             break
         start = comma + 1

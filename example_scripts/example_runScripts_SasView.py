@@ -27,8 +27,9 @@ software_options = {'software': software}
 # User defined minimizers
 custom_minimizers = {"mantid": ["BFGS", "Simplex"],
               "scipy": ["lm", "trf", "dogbox"],
-              "sasview": ["amoeba", "lm", "newton", "dream", "de", "pt"]}
+              "sasview": ["amoeba"]}
 # custom_minimizers = None
+# , "lm", "newton", "de", "pt", "mp"
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
