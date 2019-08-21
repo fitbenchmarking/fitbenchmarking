@@ -72,12 +72,14 @@ def extract_problem_type(problem):
 
     return problem_type
 
-def get_fin_function_def(result, problem, func_callable, init_func_def):
+def get_fin_function_def(result, problem, init_func_def):
     """
 
-    :param model_wrapper:
-    :param problem:
-    :return:
+    @param result :: the result object created by Bumps fitting
+    @param problem :: object holding the problem information
+    @param init_func_def :: the initial function definition string
+
+    @returns :: the final function definition string
     """
 
     problem_type = extract_problem_type(problem)
@@ -113,8 +115,7 @@ def get_init_function_def(function, problem):
     Get the initial function definition string.
 
     @param function :: array containing the function information
-    @param equation :: the string containing the function
-                                definition in mantid/sasview format
+    @param problem :: object holding the problem information
 
     @returns :: the initial function definition string
     """

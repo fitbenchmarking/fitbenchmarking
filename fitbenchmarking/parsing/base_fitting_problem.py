@@ -58,6 +58,7 @@ class BaseFittingProblem(object):
         # Initialize contents of file. Here included to reduce I/O, i.e.
         # read file content once and then process as needed
         self._contents = None
+        self._starting_value_ranges = None
 
     def read_file(self):
         self._contents = open(self.fname, "r")
@@ -144,6 +145,14 @@ class BaseFittingProblem(object):
     @contents.setter
     def contents(self, value):
         self._contents = value
+
+    @property
+    def starting_value_ranges(self):
+        return self._starting_value_ranges
+
+    @starting_value_ranges.setter
+    def starting_value_ranges(self, value):
+        self._starting_value_ranges = value
 
     def __new__(cls, *args, **kwargs):
         if cls is BaseFittingProblem:

@@ -41,7 +41,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._equation = (entries['function'].split(',', 1))[0]
 
         self._starting_values = (entries['function'].split(',', 1))[1]
-        self.starting_value_ranges = entries['parameter_ranges']
+        self._starting_value_ranges = entries['parameter_ranges']
 
         super(FittingProblem, self).close_file()
 
