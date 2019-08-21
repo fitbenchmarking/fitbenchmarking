@@ -15,6 +15,37 @@ current_path = os.path.dirname(os.path.realpath(__file__))
 fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
 sys.path.insert(0, scripts_folder)
+sys.path.insert(1, fitbenchmarking_folder)
+
+try:
+    import bumps
+except:
+    print('******************************************\n'
+          'Bumps is not yet installed on your computer\n'
+          'To install, type the following command:\n'
+          'python -m pip install bumps\n'
+          '******************************************')
+    sys.exit()
+
+try:
+    import sasmodels.data
+except:
+    print('******************************************\n'
+          'sasmodels is not yet installed on your computer\n'
+          'To install, type the following command:\n'
+          'python -m pip install sasmodels\n'
+          '******************************************')
+    sys.exit()
+
+try:
+    import sas
+except:
+    print('******************************************\n'
+          'sas is not yet installed on your computer\n'
+          'To install, clone a version of SasView from https://github.com/SasView/sasview\n'
+          'After that, copy a folder called "sas" inside the sub-folder sasview/src to the fitbenchmarking directory\n'
+          '******************************************')
+    sys.exit()
 
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
@@ -29,7 +60,7 @@ custom_minimizers = {"mantid": ["BFGS", "Simplex"],
               "scipy": ["lm", "trf", "dogbox"],
               "sasview": ["amoeba"]}
 # custom_minimizers = None
-# , "lm", "newton", "de", "pt", "mp"
+# "amoeba", "lm", "newton", "de", "pt", "mp"
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:

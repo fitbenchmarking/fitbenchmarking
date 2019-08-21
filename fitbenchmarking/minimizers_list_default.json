@@ -6,7 +6,5 @@
                 "Simplex","SteepestDescent",
                 "Trust Region"],
     "scipy" : ["lm", "trf", "dogbox"],
-    "sasview" : ["SimplexFit", "DEFit", "DreamFit", "BFGSFit",
-                "LevenbergMarquardtFit", "MPFit", "PSFit",
-                "PTFit", "RLFit", "SnobFit"]
+    "sasview" : ["amoeba", "lm", "newton", "de", "pt", "mp"]
 }

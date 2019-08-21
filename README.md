@@ -28,10 +28,10 @@ For help of how to use the command line/terminal, click the hyperlink correspond
 
 The above step is done to ensure that the compatible version of docutils packages (version 0.12) is installed. 
 
-7. Finally, in this terminal, run `example_scripts/example_runScript.py`, located in the fitbenchmarking folder. This example script fit benchmarks Mantid using all the available minimizers. The resulting tables can be found in `example_scripts/results`.
+7. Finally, in this terminal, run `example_scripts/example_runScript_mantid.py`, located in the fitbenchmarking folder. This example script fit benchmarks Mantid using all the available minimizers. The resulting tables can be found in `example_scripts/results`.
 
 ## FitBenchmarking Scipy
-The `example_runScripts.py` file can be changed such that it benchmarks minimizers supported by scipy instead of mantid (details provided in the file itself).
+The `example_runScripts.py` file is designed to benchmark minimizers supported by scipy instead of mantid (details provided in the file itself).
 
 For this to work scipy version 0.17 or higher is needed (which includes needed [curve_fit](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html) support). **The Linux distributions we have tested against so far have all included scipy 0.17+ (0.17 is from Feb 2016).**
 
@@ -53,6 +53,15 @@ After installing Mantid on Windows please do the following:
 Mantid on Windows is shipped with Python. The above steps can also be done from a standard command
 terminal, in which case please ensure that you are upgrading against Python
 installed with Mantid, which by default is located in `C:\MantidInstall\bin`.
+
+## FitBenchmarking SasView
+The `example_runScripts_SasView.py` file is designed to benchmark minimizers supported by SasView (Bumps).
+
+In order to do so, Bumps, sasmodels and sascalc need to be installed. Note that Bumps and sasmodels can be installed via `pip` commands. However, as of this writing, sascalc is not an independent package yet and, therefore, cannot be installed via `pip`. Thus, sascalc is now included in FitBenchmarking under the folder `fitbenchmarking/sas`.
+
+To install Bumps and sasmodels, run the following command on console:
+1. `python -m pip install bumps`
+2. `python -m pip install sasmodels`
 
 ## Description
 The tool creates a table/tables that shows a comparison between the different minimizers available in a fitting software (e.g. scipy or mantid), based on their accuracy and/or runtimes.
