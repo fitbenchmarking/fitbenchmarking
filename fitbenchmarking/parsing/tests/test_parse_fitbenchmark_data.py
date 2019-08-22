@@ -68,9 +68,9 @@ class ParseFitbenchmarkTests(unittest.TestCase):
 
         problem = FittingProblem(fname)
 
-        y_values = problem.eval_f(problem.data_x[:10], 'f0.A1=100,f1.A=100')
+        y_values = problem.eval_f(problem.data_x[:10], [10,100,597.076,1.0,0.05,24027.5,22.9096])
 
-        y_values_expected = np.array([600059.4, 600178.1, 600296.9, 600415.6, 600534.4, 600653.1, 600771.9, 600890.6, 601009.4, 601128.1])
+        y_values_expected = np.array([600069.4, 600188.1, 600306.9, 600425.6, 600544.4, 600663.1, 600781.9, 600900.6, 601019.4, 601138.1])
 
         np.testing.assert_array_equal(y_values_expected, y_values)
 
