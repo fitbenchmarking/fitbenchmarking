@@ -54,6 +54,7 @@ def parse_problem_file(prob_file):
         from parsing import parse_fitbenchmark_data
         problem = parse_fitbenchmark_data.FittingProblem(prob_file)
     elif prob_type == 'SasView':
+        
         from parsing import parse_sasview_data
         problem = parse_sasview_data.FittingProblem(prob_file)
 
