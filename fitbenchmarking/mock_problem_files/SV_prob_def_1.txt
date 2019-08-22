@@ -1,0 +1,6 @@
+# An example data set for SasView 1D data
+name = 'Problem Def 1'
+input_file = 'SV_cyl_400_20.txt'
+function ='name=cylinder,radius=35.0,length=350.0,background=0.0,scale=1.0,sld=4.0,sld_solvent=1.0'
+parameter_ranges = 'radius.range(1,50);length.range(1,500)'
+description = ''
