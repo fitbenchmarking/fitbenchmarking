@@ -59,7 +59,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         #String containing the function name(s) and the starting parameter values for each function
         self._equation = entries['function']
 
-        self._starting_values = (entries['function'].split(',', 1))[1]
+        # self._starting_values = (entries['function'].split(',', 1))[1]
         if 'fit_parameters' in entries:
             self._start_x = entries['fit_parameters']['StartX']
             self._end_x = entries['fit_parameters']['EndX']
