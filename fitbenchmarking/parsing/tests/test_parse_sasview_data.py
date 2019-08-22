@@ -14,6 +14,16 @@ fb_dir = os.path.dirname(os.path.normpath(main_dir))
 sys.path.insert(0, main_dir)
 sys.path.insert(1,fb_dir)
 
+try:
+    import sasmodels.data
+except:
+    print('******************************************\n'
+          'sasmodels is not yet installed on your computer\n'
+          'To install, type the following command:\n'
+          'python -m pip install sasmodels\n'
+          '******************************************')
+    sys.exit()
+
 from fitting.mantid.externals import store_main_problem_data
 from parsing.parse import parse_problem_file
 from parsing.parse import check_problem_attributes
