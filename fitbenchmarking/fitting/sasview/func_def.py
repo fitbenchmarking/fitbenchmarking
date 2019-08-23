@@ -61,7 +61,7 @@ def function_definitions(problem):
 def extract_problem_type(problem):
     """
     This function gets the problem object and figures out the problem type
-    from the file name that the class that it has been sent from
+    from the file name of the derived class
 
     @param problem :: object holding the problem information
 
