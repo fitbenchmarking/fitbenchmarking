@@ -128,7 +128,7 @@ def fit(problem, data, function, minimizer, init_func_def):
         result = bumpsFit(fitProblem, method=minimizer)
         t_end = time.clock()
     except (RuntimeError, ValueError) as err:
-        logger.error("Warning, fit failed. Going on. Error: " + str(err))
+        logger.warning("Fit failed: " + str(err))
 
     status = 'success' if result.success is True else 'failed'
 

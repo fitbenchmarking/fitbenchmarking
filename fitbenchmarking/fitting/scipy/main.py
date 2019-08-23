@@ -97,7 +97,7 @@ def fit(data, function, minimizer, cost_function, init_function_def):
                            minimizer, cost_function)
         t_end = time.clock()
     except(RuntimeError, ValueError) as err:
-        logger.error("Warning, fit failed. Going on. Error: " + str(err))
+        logger.warning("Fit failed: " + str(err))
 
     fin_def = None
     if not popt is None:
