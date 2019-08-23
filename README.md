@@ -57,11 +57,12 @@ installed with Mantid, which by default is located in `C:\MantidInstall\bin`.
 ## FitBenchmarking SasView
 The `example_runScripts_SasView.py` file is designed to benchmark minimizers supported by SasView (Bumps).
 
-In order to do so, Bumps, sasmodels and sascalc need to be installed. Note that Bumps and sasmodels can be installed via `pip` commands. However, as of this writing, sascalc is not an independent package yet and, therefore, cannot be installed via `pip`. Thus, sascalc is now included in FitBenchmarking under the folder `fitbenchmarking/sas`.
+In order to do so, Bumps, sasmodels, lxml and sascalc need to be installed. Note that Bumps, sasmodels and lxml can be installed via `pip` commands. However, as of this writing, sascalc is not an independent package yet and, therefore, cannot be installed via `pip`. Thus, sascalc is now included in FitBenchmarking under the folder `fitbenchmarking/sas`.
 
-To install Bumps and sasmodels, run the following command on console:
+To install Bumps, sasmodels and lxml, run the following command on console:
 1. `python -m pip install bumps`
 2. `python -m pip install sasmodels`
+3. `python -m pip install lxml`
 
 ## Description
 The tool creates a table/tables that shows a comparison between the different minimizers available in a fitting software (e.g. scipy or mantid), based on their accuracy and/or runtimes.
