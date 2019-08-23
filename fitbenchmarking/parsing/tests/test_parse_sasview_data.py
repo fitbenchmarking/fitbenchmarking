@@ -54,7 +54,7 @@ class ParseSasViewTests(unittest.TestCase):
 
         return entries
 
-    def expected_neutron_problem(self):
+    def expected_SAS_modelling_1D_problem(self):
 
         bench_prob_dir = self.get_bench_prob_dir()
         entries = self.expected_SAS_modelling_1D_problem_entries()
@@ -109,7 +109,7 @@ class ParseSasViewTests(unittest.TestCase):
         fname = get_file('SV_prob_def_1.txt')
 
         problem = parse_problem_file(fname)
-        problem_expected = self.expected_neutron_problem()
+        problem_expected = self.expected_SAS_modelling_1D_problem()
 
         self.assertEqual(problem_expected.name, problem.name)
         self.assertEqual(problem_expected.equation, problem.equation)
