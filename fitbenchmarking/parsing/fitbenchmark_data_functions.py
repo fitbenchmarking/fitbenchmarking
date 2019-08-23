@@ -65,7 +65,6 @@ def get_fit_function_without_kwargs(fit_function, functions_string):
     functions_string = re.sub(r",(\s+)?ties=[(][A-Za-z0-9=.,\s+]+[)]", '', functions_string)
     function_list = (functions_string).split(';')
     func_params_list = [((func.split(','))[1:]) for func in function_list]
-    print(func_params_list)
     formatted_param_list = ['f' + str(func_params_list.index(func_params)) + '.' + param.strip() for func_params in
                             func_params_list for param in func_params]
     param_names = [(param.split('='))[0] for param in formatted_param_list]
