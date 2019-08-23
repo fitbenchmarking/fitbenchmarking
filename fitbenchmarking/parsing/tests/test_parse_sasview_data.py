@@ -24,7 +24,6 @@ except:
           '******************************************')
     sys.exit()
 
-from fitting.mantid.externals import store_main_problem_data
 from parsing.parse import parse_problem_file
 from parsing.parse import check_problem_attributes
 from parsing.parse import determine_problem_type
@@ -56,7 +55,6 @@ class ParseSasViewTests(unittest.TestCase):
 
     def expected_SAS_modelling_1D_problem(self):
 
-        bench_prob_dir = self.get_bench_prob_dir()
         entries = self.expected_SAS_modelling_1D_problem_entries()
         fname = get_file('SV_prob_def_1.txt')
         problem = FittingProblem(fname)
@@ -64,8 +62,6 @@ class ParseSasViewTests(unittest.TestCase):
         problem.equation = (entries['function'].split(',', 1))[0]
         problem.starting_values = (entries['function'].split(',', 1))[1]
         self._starting_value_ranges = entries['parameter_ranges']
-        data_file = os.path.join(bench_prob_dir, entries['input_file'])
-        store_main_problem_data(data_file, problem)
 
         return problem
 
