@@ -184,7 +184,7 @@ class CreateDirsTests(unittest.TestCase):
 
   def test_setupFittingProblems_get_correct_neutron_probs(self):
 
-    data_dir = os.path.join(self.base_path(), 'Neutron_data')
+    data_dir = os.path.join(self.base_path(), 'Neutron')
     neutron_problems = self.all_neutron_problems()
 
     problem_groups = setup_fitting_problems(data_dir, 'Neutron')
@@ -194,7 +194,7 @@ class CreateDirsTests(unittest.TestCase):
 
   def test_getProblemFiles_return_expected_neutron_paths(self):
 
-    base_path_neutron = os.path.join(self.base_path(), 'Neutron_data')
+    base_path_neutron = os.path.join(self.base_path(), 'Neutron')
     neutron_problems = self.all_neutron_problems()
 
     paths_to_neutron_problems = \
