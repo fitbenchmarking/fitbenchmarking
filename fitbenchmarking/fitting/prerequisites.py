@@ -105,6 +105,6 @@ def prepare_sasview(problem, use_errors):
 
     data_obj, cost_function = prepare_data(problem, use_errors)
 
-    function_definitions = function_definitions(problem, data_obj)
+    function_definitions = function_definitions(problem)
 
     return data_obj, cost_function, function_definitions

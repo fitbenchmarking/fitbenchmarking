@@ -31,7 +31,7 @@ import numpy as np
 import re
 
 
-def function_definitions(problem, data_obj):
+def function_definitions(problem):
     """
     Transforms the prob.equation field into a function that can be
     understood by the mantid fitting software.
@@ -72,7 +72,7 @@ def extract_problem_type(problem):
 
     return problem_type
 
-def get_fin_function_def(result, problem, init_func_def):
+def get_fin_function_def(final_param_values, problem, init_func_def):
     """
 
     @param result :: the result object created by Bumps fitting
@@ -83,26 +83,25 @@ def get_fin_function_def(result, problem, init_func_def):
     """
 
     problem_type = extract_problem_type(problem)
-    param_values = result.x
 
     if not 'name=' in init_func_def:
-        param_values = list(param_values)
+        final_param_values = list(final_param_values)
         params = init_func_def.split("|")[1]
-        params = re.sub(r"[-+]?\d+.\d+", lambda m, rep=iter(param_values):
+        params = re.sub(r"[-+]?\d+.\d+", lambda m, rep=iter(final_param_values):
         str(round(next(rep), 3)), params)
         fin_function_def = init_func_def.split("|")[0] + " | " + params
     elif problem_type == 'SasView'.upper():
         param_names = [(param.split('='))[0] for param in problem.starting_values.split(',')]
         fin_function_def = problem.equation+','
-        for name, value in zip(param_names, param_values):
+        for name, value in zip(param_names, final_param_values):
             fin_function_def += name+ '=' + str(value) + ','
         fin_function_def = fin_function_def[:-1]
     else:
-        param_values = list(param_values)
+        final_param_values = list(final_param_values)
         all_attributes = re.findall(r"BinWidth=\d+[.]\d+", init_func_def)
         if len(all_attributes) != 0:
             init_func_def = [init_func_def.replace(attr, '+') for attr in all_attributes][0]
-        fin_function_def = re.sub(r"[-+]?\d+[.]\d+", lambda m, rep=iter(param_values):
+        fin_function_def = re.sub(r"[-+]?\d+[.]\d+", lambda m, rep=iter(final_param_values):
         str(round(next(rep), 3)), init_func_def)
         if len(all_attributes) != 0:
             fin_function_def = [fin_function_def.replace('+', attr) for attr in all_attributes]

@@ -134,7 +134,9 @@ def fit(problem, data, function, minimizer, init_func_def):
 
     fitted_y = func_wrapper.theory()
 
-    fin_func_def = get_fin_function_def(result, problem, init_func_def)
+    final_param_values = result.x
+
+    fin_func_def = get_fin_function_def(final_param_values, problem, init_func_def)
 
     runtime = t_end - t_start
 
