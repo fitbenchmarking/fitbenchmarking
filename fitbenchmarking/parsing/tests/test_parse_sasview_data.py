@@ -41,7 +41,7 @@ class ParseSasViewTests(unittest.TestCase):
 
         return bench_prob_dir
 
-    def expected_SasView_problem_entries(self):
+    def expected_SAS_modelling_1D_problem_entries(self):
 
         entries = {}
         entries['name'] = "Problem Def 1"
@@ -57,7 +57,7 @@ class ParseSasViewTests(unittest.TestCase):
     def expected_neutron_problem(self):
 
         bench_prob_dir = self.get_bench_prob_dir()
-        entries = self.expected_SasView_problem_entries()
+        entries = self.expected_SAS_modelling_1D_problem_entries()
         fname = get_file('SV_prob_def_1.txt')
         problem = FittingProblem(fname)
         problem.name = entries['name']
@@ -136,7 +136,7 @@ class ParseSasViewTests(unittest.TestCase):
         prob = FittingProblem(fname)
         with open(fname) as probf:
             entries = prob.get_data_problem_entries(probf)
-        entries_expected = self.expected_SasView_problem_entries()
+        entries_expected = self.expected_SAS_modelling_1D_problem_entries()
 
         self.assertEqual(entries_expected['name'], entries['name'])
         self.assertEqual(entries_expected['input_file'], entries['input_file'])
@@ -149,7 +149,7 @@ class ParseSasViewTests(unittest.TestCase):
     def test_storeMiscProbData(self):
         fname = get_file('SV_prob_def_1.txt')
         problem = FittingProblem(fname)
-        entries = self.expected_SasView_problem_entries()
+        entries = self.expected_SAS_modelling_1D_problem_entries()
 
         self.assertEqual(entries['name'], problem.name)
         self.assertEqual((entries['function'].split(',', 1))[0], problem.equation)
