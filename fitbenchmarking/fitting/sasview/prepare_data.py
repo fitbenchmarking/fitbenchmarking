@@ -29,6 +29,10 @@ from sasmodels.data import empty_data1D, Data1D
 from utils.logging_setup import logger
 
 def prepare_data(problem, use_errors):
+    """
+    Prepares the data to be used in the fitting process.
+    The acceptable data type is sasmodels.data.Data1D
+    """
 
     problem = misc_preparations(problem)
 

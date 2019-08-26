@@ -39,16 +39,9 @@ def gen_func_obj(function_name, params_set):
     @returns :: mantid function object that can be called in python
     """
     params_set = (params_set.split(', ties'))[0]
-    params_set_list = params_set.split(',')
-
-    # attr_list = ''
-    # for param in params_set_list:
-    #     if param.startswith('BinWidth'):
-    #         attr_list += param + ','
-    #     attr_list = attr_list[:-1]
 
     exec "function_object = msapi." + function_name + "("+ params_set +")"
-    # exec "function_object = msapi." + function_name + "("+ attr_list +")"
+
     return function_object
 
 
@@ -64,12 +57,15 @@ def set_ties(function_object, ties):
 
     for idx, ties_per_func in enumerate(ties):
         for tie in ties_per_func:
-            exec("param_dict = {'f" + str(idx) + "." + tie + "}")
+            """
+            param_str is a string of the parameter name in the mantid format
+            For a Mantid Composite Function, a formatted parameter name would 
+            start with the function number and end with the parameter name.
+            For instance, f0.A would refer to a parameter A of the first 
+            function is a Composite Function.
+            """
             param_str = 'f'+str(idx)+'.'+(tie.split("'"))[0]
-            # function_object.tie(param_dict)
             function_object.fix(param_str)
-            # exec "function_object.tie({'f" + str(idx) + "." + tie + "})"
-            # exec "function_object.tie(f" + str(idx) + "." + tie + ")"
 
     return function_object
 

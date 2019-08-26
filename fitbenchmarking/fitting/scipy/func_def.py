@@ -42,7 +42,7 @@ def function_definitions(problem):
 
 def get_fin_function_def(init_function_def, func_callable, popt):
     """
-    Produces the final function definition.
+    Get the final function definition string to be passed on when result pages are created.
 
     @param init_function_def :: the initial function definition string
     @param func_callable :: callable function object
@@ -52,17 +52,26 @@ def get_fin_function_def(init_function_def, func_callable, popt):
     @returns :: the final function definition string
     """
     if not 'name=' in init_function_def:
+        # Problem type is NIST
         popt = list(popt)
         params = init_function_def.split("|")[1]
+
+        # Replace the initial paramter values with the final parameter values
         params = re.sub(r"[-+]?\d+[.]\d+", lambda m, rep=iter(popt):
                         str(round(next(rep), 3)), params)
         fin_function_def = init_function_def.split("|")[0] + " | " + params
     else:
+        # Problem type is FitBenchmark or SasView
+        # Remove ties from the function definiton string
         all_attributes = re.findall(r",[\s+]?ties=[(][A-Za-z0-9=.,\s+]+[)]", init_function_def)
         if len(all_attributes) != 0:
             init_function_def = [init_function_def.replace(attr, '+') for attr in all_attributes][0]
+
+        # Replace the initial paramter values with the final parameter values
         fin_function_def = re.sub(r"[-+]?\d+[.]\d+", lambda m, rep=iter(popt):
                         str(round(next(rep), 3)), init_function_def)
+
+        # Add any previously removed ties to the function definiton string
         if len(all_attributes) != 0:
             fin_function_def = [fin_function_def.replace('+', attr) for attr in all_attributes]
 
@@ -71,7 +80,7 @@ def get_fin_function_def(init_function_def, func_callable, popt):
 
 def get_init_function_def(function, problem):
     """
-    Get the initial function definition string.
+    Get the initial function definition string to be passed on when result pages are created.
 
     @param function :: array containing the function information
     @param equation :: the string containing the function
@@ -83,6 +92,7 @@ def get_init_function_def(function, problem):
     problem_type = extract_problem_type(problem)
 
     if not 'name=' in str(problem.equation):
+        # Problem type is NIST
         params = function[0].__code__.co_varnames[1:]
         param_string = ''
         for idx in range(len(function[1])):
@@ -90,10 +100,16 @@ def get_init_function_def(function, problem):
         param_string = param_string[:-2]
         init_function_def = function[2] + " | " + param_string
     elif problem_type == 'SasView'.upper():
+        # Problem type is SasView
         init_function_def = problem.equation + ',' + problem.starting_values
+
+        # Add a decimal place for each parameter without it
         init_function_def = re.sub(r"(=)([-+]?\d+)([^.\d])", r"\g<1>\g<2>.0\g<3>", init_function_def)
     else:
+        # Problem type is FitBenchmark
         init_function_def = problem.equation
+
+        # Add a decimal place for each parameter without it
         init_function_def = re.sub(r"(=)([-+]?\d+)([^.\d])", r"\g<1>\g<2>.0\g<3>", init_function_def)
 
     return init_function_def

@@ -152,7 +152,6 @@ def parse_result(fit_result, t_start, t_end):
         fit_wks = fit_result.OutputWorkspace
         fin_function_def = str(fit_result.Function)
         runtime = t_end - t_start
-    print(fin_function_def)
     return status, fit_wks, fin_function_def, runtime
 
 

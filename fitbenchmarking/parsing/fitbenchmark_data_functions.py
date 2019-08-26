@@ -56,10 +56,14 @@ def fitbenchmark_func_definitions(functions_string):
 
 def get_fit_function_without_kwargs(fit_function, functions_string):
     """
+    Create a function evaluation method that does not take any Keyword Arguments.
+    This function is created from a Mantid function.
 
-    :param fit_function:
-    :param functions_string:
-    :return:
+    @param fit_function :: a Mantid function
+    @param functions_string :: a function definition string in the Mantid format
+
+    @return :: an array containing a function evaluation method without Keyword Arguments
+               and a list of initialparameter values
     """
 
     functions_string = re.sub(r",(\s+)?ties=[(][A-Za-z0-9=.,\s+]+[)]", '', functions_string)
@@ -204,7 +208,6 @@ def get_fitbenchmark_ties(param_set, ties):
         else:
             tie = param_set[start + 1:comma]
         ties_per_function.append(tie.replace("=", "': "))
-        # ties_per_function.append(tie)
         if comma == -1:
             break
         start = comma + 1

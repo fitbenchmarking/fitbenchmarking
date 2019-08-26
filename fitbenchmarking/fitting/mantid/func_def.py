@@ -62,13 +62,14 @@ def function_definitions(problem):
 def parse_function_definitions(problem, nb_start_vals):
     """
     Helper function that parses the NIST function definitions and
-    transforms them into a mantid-readable format.
+    transforms them into a mantid-readable format
 
-    @param problem :: object holding the problem information
+    @param problem :: object holding the problem information created from
+                      Mantid problem definition file
     @param nb_start_vals :: the number of starting points for a given
                             function definition
 
-    @returns :: the formatted function definition (str)
+    @returns :: Mantid formatted function definition (str)
     """
 
     function_defs = []
@@ -105,11 +106,12 @@ def parse_function_definitions(problem, nb_start_vals):
 def parse_sasview_function_definitions(problem):
     """
     Helper function that parses the SasView function definitions and
-    transforms them into a mantid-readable format.
+    transforms them into a mantid-readable format
 
-    @param problem :: object holding the problem information
+    @param problem :: object holding the problem information created from SasView
+                      problem definition file
 
-    @returns :: the formatted function definition (str)
+    @returns :: Mantid formatted function definition (str)
     """
 
     function_defs = []
