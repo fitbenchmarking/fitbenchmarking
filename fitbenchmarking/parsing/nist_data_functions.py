@@ -1,6 +1,6 @@
 """
-Functions that prepare the nist problem function definitions to be in
-the right format.
+Functions that prepare the function specified in NIST problem definition file into
+the right format for SciPy.
 """
 # Copyright &copy; 2016 ISIS Rutherford Appleton Laboratory, NScD
 # Oak Ridge National Laboratory & European Spallation Source
@@ -24,32 +24,30 @@ the right format.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 from __future__ import (absolute_import, division, print_function)
 
-import numpy as np
-from utils.logging_setup import logger
-
 
 def nist_func_definitions(function, startvals):
     """
-    Processing the nist function definitions into an appropriate format
-    for the scipy software to use.
+    Processing a function plus different set of starting values as specified in the NIST problem definition file
+    into function definitions appropriate for the SciPy software.
 
-    @param function :: function string as defined in the problem file
+    @param function :: function string as defined in a NIST problem definition file
     @param startvals :: starting values for the function variables
-                        provided in the problem definition file
+                        provided in the definition file
 
-    @returns :: array containing the fitting_function callable by scipy,
-                values of the parameters and the function string
+    @returns :: array where each element contains function callable by SciPy,
+                one set of starting parameter values and copy of the function string
     """
     param_names, all_values = get_nist_param_names_and_values(startvals)
-    function = format_function_scipy(function)
+    function_scipy_format = format_function_scipy(function)
     function_defs = []
 
-    #Create a function evaluation method
+    # Create a function def for each starting set in startvals
     for values in all_values:
-        exec "def fitting_function(x, " + param_names + "): return " + function
-        function_defs.append([fitting_function, values, function])
+        exec "def fitting_function(x, " + param_names + "): return " + function_scipy_format
+        function_defs.append([fitting_function, values, function_scipy_format])
 
     return function_defs
+
 
 def get_nist_param_names_and_values(startvals):
     """
@@ -61,6 +59,7 @@ def get_nist_param_names_and_values(startvals):
     all_values = map(list, zip(*all_values))
 
     return param_names, all_values
+
 
 def format_function_scipy(function):
     """
