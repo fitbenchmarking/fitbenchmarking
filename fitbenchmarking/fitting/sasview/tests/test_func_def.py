@@ -19,9 +19,9 @@ from fitting.sasview.func_def import get_init_function_def
 
 from parsing.parse_nist_data import FittingProblem as NISTFittingProblem
 from parsing.parse_fitbenchmark_data import FittingProblem as FBFittingProblem
-from parsing.parse_sasview_data import FittingProblem as SVFittingProblem
 
 from mock_problem_files.get_problem_files import get_file
+
 
 class SasViewTests(unittest.TestCase):
 
