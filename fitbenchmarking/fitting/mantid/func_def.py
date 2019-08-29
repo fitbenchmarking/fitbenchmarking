@@ -25,7 +25,6 @@ fitting software.
 
 from __future__ import (absolute_import, division, print_function)
 
-from utils.logging_setup import logger
 from mantid.api import *
 from mantid.fitfunctions import *
 import numpy as np
@@ -43,7 +42,6 @@ def function_definitions(problem):
     """
 
     problem_type = extract_problem_type(problem)
-
 
     if isinstance((problem.get_function())[0][0], FunctionWrapper):
         function_defs = [problem.get_function()[0][0]]
@@ -102,6 +100,7 @@ def parse_function_definitions(problem, nb_start_vals):
     FunctionFactory.subscribe(fitFunction)
 
     return function_defs
+
 
 def parse_sasview_function_definitions(problem):
     """

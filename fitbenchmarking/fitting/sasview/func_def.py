@@ -25,9 +25,7 @@ fitting software.
 
 from __future__ import (absolute_import, division, print_function)
 
-from utils.logging_setup import logger
 from sasmodels.core import load_model
-import numpy as np
 import re
 
 
