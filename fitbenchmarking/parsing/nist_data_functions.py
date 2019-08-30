@@ -24,6 +24,9 @@ the right format for SciPy.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 from __future__ import (absolute_import, division, print_function)
 
+# This import is needed for inline scipy function def
+import numpy as np
+
 
 def nist_func_definitions(function, startvals):
     """
