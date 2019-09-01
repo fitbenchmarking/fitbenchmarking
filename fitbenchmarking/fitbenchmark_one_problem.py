@@ -79,10 +79,10 @@ def fit_one_function_def(software, problem, data_struct, function, minimizers,
     Fits a given function definition (model) to the data in the workspace.
 
     @param software :: software used in fitting the problem, can be
-                        e.g. mantid, numpy etc.
+                        e.g. Mantid, SciPy etc.
     @param problem :: a problem object containing information used in fitting
     @param data_struct :: a structure in which the data to be fitted is
-                          stored, can be e.g. mantid workspace, np array etc.
+                          stored, can be e.g. Mantid workspace, np array etc.
     @param function :: analytical function string that is fitted
     @param minimizers :: array of minimizers used in fitting
     @param cost_function :: the cost function used for fitting

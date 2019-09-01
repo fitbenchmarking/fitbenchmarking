@@ -107,7 +107,7 @@ for sub_dir in problem_sets:
   # generate group label/name used for problem set
   label = sub_dir.replace('/', '_')
 
-  # Problem data directory
+  # Create full path for the directory that holds a group of problem definition files
   data_dir = os.path.join(benchmark_probs_dir, sub_dir)
 
   print('\nRunning the benchmarking on the {} problem set\n'.format(label))
