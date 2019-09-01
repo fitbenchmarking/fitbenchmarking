@@ -25,7 +25,6 @@ fitting software.
 
 from __future__ import (absolute_import, division, print_function)
 
-from utils.logging_setup import logger
 from mantid.api import *
 from mantid.fitfunctions import *
 import numpy as np
@@ -44,12 +43,13 @@ def function_definitions(problem):
 
     problem_type = extract_problem_type(problem)
 
-
     if isinstance((problem.get_function())[0][0], FunctionWrapper):
         function_defs = [problem.get_function()[0][0]]
     elif problem_type == 'NIST':
         nb_start_vals = len(problem.starting_values[0][1])
         function_defs = parse_function_definitions(problem, nb_start_vals)
+    elif problem_type == 'SasView'.upper():
+        function_defs = parse_sasview_function_definitions(problem)
     else:
         raise NameError('Currently data types supported are FitBenchmark'
                         ' and nist, data type supplied was {}'.format(problem_type))
@@ -60,13 +60,14 @@ def function_definitions(problem):
 def parse_function_definitions(problem, nb_start_vals):
     """
     Helper function that parses the NIST function definitions and
-    transforms them into a mantid-readable format.
+    transforms them into a mantid-readable format
 
-    @param prob :: object holding the problem information
+    @param problem :: object holding the problem information created from
+                      Mantid problem definition file
     @param nb_start_vals :: the number of starting points for a given
                             function definition
 
-    @returns :: the formatted function definition (str)
+    @returns :: Mantid formatted function definition (str)
     """
 
     function_defs = []
@@ -94,6 +95,49 @@ def parse_function_definitions(problem, nb_start_vals):
             for param in param_names:
                 fit_param[param_names.index(param)] = self.getParameterValue(param)
 
+            return problem.eval_f(xdata, fit_param)
+
+    FunctionFactory.subscribe(fitFunction)
+
+    return function_defs
+
+
+def parse_sasview_function_definitions(problem):
+    """
+    Helper function that parses the SasView function definitions and
+    transforms them into a mantid-readable format
+
+    @param problem :: object holding the problem information created from SasView
+                      problem definition file
+
+    @returns :: Mantid formatted function definition (str)
+    """
+
+    function_defs = []
+
+    start_val_str = ''
+
+    param_names = [(param.split('='))[0] for param in problem.starting_values.split(',')]
+    param_values = [(param.split('='))[1] for param in problem.starting_values.split(',')]
+    for name, value in zip(param_names, param_values):
+        start_val_str += ('{0}={1},'.format(name, value))
+    # Eliminate trailing comma
+    start_val_str = start_val_str[:-1]
+    function_defs.append("name=fitFunction,{}".
+                            format(start_val_str))
+
+    class fitFunction(IFunction1D):
+        def init(self):
+
+            for param in param_names:
+                self.declareParameter(param)
+
+        def function1D(self, xdata):
+
+            fit_param = ''
+            for param in param_names:
+                fit_param += param + '=' + str(self.getParameterValue(param)) +','
+            fit_param = fit_param[:-1]
             return problem.eval_f(xdata, fit_param)
 
     FunctionFactory.subscribe(fitFunction)

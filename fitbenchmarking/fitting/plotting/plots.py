@@ -183,6 +183,9 @@ def get_start_guess_data(software, data_struct, function, problem):
         return get_mantid_starting_guess_data(data_struct, function, problem)
     elif software == 'scipy':
         return get_scipy_starting_guess_data(data_struct, function)
+    elif software == 'sasview':
+        return get_sasview_starting_guess_data(data_struct, problem, function)
+        # return [0,0,0], [0,0,0]
     else:
         raise NameError("Sorry, that software is not supported.")
 
@@ -230,3 +233,19 @@ def get_mantid_starting_guess_data(wks_created, function, problem):
     yData = tmp.readY(1)
 
     return xData, yData
+
+def get_sasview_starting_guess_data(data_struct, problem, function):
+    """
+    Gets the SasView starting guess data.
+
+    @param data_struct :: data structure containing data for the problem
+                          in the SasView 1D data format (sasmodels.data.Data1D)
+    @param function :: the fitted function
+
+    @return :: data describing the starting guess obtained by passing
+               the x values to the fitted function
+    """
+
+    yData = problem.eval_f(data_struct.x, function[1])
+
+    return data_struct.x, yData

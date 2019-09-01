@@ -161,10 +161,10 @@ class ParseNistTests(unittest.TestCase):
 
         param_array = function[0][1:]
 
-        param_array_expeacted = [[500.0, 0.0001], 'b1*(1-np.exp(-b2*x))']
+        param_array_expected = [[500.0, 0.0001], 'b1*(1-np.exp(-b2*x))']
 
         np.testing.assert_allclose(y_values_expected, y_values, rtol=1e-5, atol=0)
-        self.assertListEqual(param_array_expeacted, param_array)
+        self.assertListEqual(param_array_expected, param_array)
 
     def test_ParseProblemFileNIST_returns_correct_problem_object(self):
 

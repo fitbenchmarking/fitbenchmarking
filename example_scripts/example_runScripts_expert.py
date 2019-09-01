@@ -31,7 +31,7 @@ from results_output import save_tables, generate_tables, \
 from resproc import visual_pages
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = ['mantid', 'scipy']
+software = ['scipy']
 software_options = {'software': software}
 
 # User defined minimizers
@@ -80,12 +80,12 @@ color_scale = [(1.1, 'ranking-top-1'),
 # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
 # "Muon_data" works for mantid minimizers
 # problem_sets = ["Neutron_data", "NIST/average_difficulty"]
-problem_sets = ["Neutron_data"]
+problem_sets = ["CUTEst"]
 for sub_dir in problem_sets:
     # generate group group_name/name used for problem set
     group_name = sub_dir.replace('/', '_')
 
-    # Problem data directory
+    # Create full path for the directory that holds a group of problem definition files
     data_dir = os.path.join(benchmark_probs_dir, sub_dir)
 
     test_data = glob.glob(data_dir + '/*.*')

@@ -74,16 +74,18 @@ def get_minimizers(software_options):
 
 def setup_fitting_problems(data_dir, group_name):
     """
-    Sets up the problem groups specified by the user by providing
+    Sets up a problem group specified by the user by providing
     a respective data directory.
 
-    @param data_dir :: directory holding the problem data used to test
-    @returns :: the problem groups dictionary
+    @param group_name :: is the name (label) for a group. E.g. the name for the group of problems in
+                       "NIST/low_difficulty" may be picked to be NIST_low_difficulty
+    @param data_dir :: full path of a directory that holds a group of problem definition files
+    @returns :: the problem group dictionary
     """
-    problem_groups = {}
-    problem_groups[group_name] = get_problem_files(data_dir)
+    problem_group = {}
+    problem_group[group_name] = get_problem_files(data_dir)
 
-    return problem_groups
+    return problem_group
 
 
 def save_user_input(software, minimizers, group_name, results_dir, use_errors):
@@ -104,6 +106,7 @@ def save_user_input(software, minimizers, group_name, results_dir, use_errors):
     else:
         raise TypeError('Software input required to be a string or list')
     return uinput
+
 
 def get_problem_files(data_dir):
     """

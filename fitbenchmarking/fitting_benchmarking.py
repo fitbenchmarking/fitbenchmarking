@@ -42,8 +42,11 @@ def do_fitting_benchmark(group_name, software_options, data_dir,
   This function does the fitting benchmarking for a
   specified group of problems.
 
-  @param software_options :: dictionary containing software used in fitting the problem, list of minimizers and location of json file contain minimizers
-  @param data_dir :: directory that holds the problem group data
+  @param group_name :: is the name (label) for a group. E.g. the name for the group of problems in
+                       "NIST/low_difficulty" may be picked to be NIST_low_difficulty
+  @param software_options :: dictionary containing software used in fitting the problem, list of minimizers and
+                             location of json file contain minimizers
+  @param data_dir :: full path of a directory that holds a group of problem definition files
   @param use_errors :: whether to use errors on the data or not
   @param results_dir :: directory in which to put the results. None
                       means results directory is created for you
@@ -54,7 +57,8 @@ def do_fitting_benchmark(group_name, software_options, data_dir,
 
   logger.info("Loading minimizers from {0}".format(software_options['software']))
   minimizers, software = misc.get_minimizers(software_options)
-  problem_groups = misc.setup_fitting_problems(data_dir, group_name)
+  # create dir with paths to all problem definitions in data_dir
+  problem_group = misc.setup_fitting_problems(data_dir, group_name)
 
   results_dir = create_dirs.results(results_dir)
   group_results_dir = create_dirs.group_results(results_dir, group_name)
@@ -62,7 +66,7 @@ def do_fitting_benchmark(group_name, software_options, data_dir,
   user_input = misc.save_user_input(software, minimizers, group_name,
                                     group_results_dir, use_errors)
 
-  prob_results = do_benchmarking(user_input, problem_groups, group_name)
+  prob_results = do_benchmarking(user_input, problem_group, group_name)
 
   return prob_results, results_dir
 
@@ -73,8 +77,9 @@ def do_benchmarking(user_input, problem_groups, group_name):
   group.
 
   @param user_input :: all the information specified by the user
-  @param problem_block :: array of paths to problem files in the group
-  @param problem_name :: name of group to be benchmarked
+  @param problem_groups :: dictionary containing the paths to problem files in the group
+  @param group_name :: is the name (label) for a group. E.g. the name for the group of problems in
+                       "NIST/low_difficulty" may be picked to be NIST_low_difficulty
 
   @returns :: array of result objects, per problem
   """

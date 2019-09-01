@@ -45,8 +45,8 @@ def prepare_software_prerequisites(software, problem, use_errors):
         return prepare_mantid(problem, use_errors)
     elif software == 'scipy':
         return prepare_scipy(problem, use_errors)
-    # elif software == 'your_software':
-        # return prepare_your_software(problem, use_errors)
+    elif software == 'sasview':
+        return prepare_sasview(problem, use_errors)
     else:
         raise NameError("Sorry, the specified software is not supported yet.")
 
@@ -95,3 +95,22 @@ def prepare_scipy(problem, use_errors):
         problem.start_x = - np.inf
         problem.end_x = np.inf
     return data, cost_function, function_definitions
+
+def prepare_sasview(problem, use_errors):
+    """
+    Does the things specified in the above description for benchmarking
+    the SasView software.
+
+    @returns :: SasView data structure (sasmodels.data.Data1D)
+                SasView cost function
+                SasView function definitions
+    """
+
+    from fitting.sasview.prepare_data import prepare_data
+    from fitting.sasview.func_def import function_definitions
+
+    data_obj, cost_function = prepare_data(problem, use_errors)
+
+    function_definitions = function_definitions(problem)
+
+    return data_obj, cost_function, function_definitions

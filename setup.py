@@ -11,7 +11,7 @@ setup(name='FitBenchmarking',
       url='http://github.com/fitbenchmarking/fitbenchmarking',
       license='GPL-3.0',
       packages=find_packages(),
-      install_requires=['docutils', 'scipy>=0.17,<1.3'],
+      install_requires=['docutils', 'scipy>=0.17,<1.3', 'bumps', 'sasmodels', 'lxml'],
       zip_safe=False,
       cmdclass={
           'externals': InstallExternals,

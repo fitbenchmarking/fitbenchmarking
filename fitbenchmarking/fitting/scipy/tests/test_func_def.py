@@ -101,7 +101,7 @@ class ScipyTests(unittest.TestCase):
 
         prob = self.NIST_problem()
 
-        init_func_def = get_init_function_def((prob.get_function())[0],prob.equation)
+        init_func_def = get_init_function_def((prob.get_function())[0],prob)
 
         init_func_def_expected = "b1*(1-np.exp(-b2*x)) | b1= 500.0, b2= 0.0001"
 
@@ -111,9 +111,9 @@ class ScipyTests(unittest.TestCase):
 
         prob = self.Neutron_problem()
 
-        init_func_def = get_init_function_def((prob.get_function())[0],prob.equation)
+        init_func_def = get_init_function_def((prob.get_function())[0],prob)
 
-        init_func_def_expected  = "name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096"
+        init_func_def_expected  = "name=LinearBackground,A0=0.0,A1=0.0;name=BackToBackExponential,I=597.076,A=1.0,B=0.05,X0=24027.5,S=22.9096"
 
         self.assertEqual(init_func_def_expected, init_func_def)
 
@@ -135,14 +135,14 @@ class ScipyTests(unittest.TestCase):
 
         prob = self.Neutron_problem()
 
-        init_func_def = "name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096"
+        init_func_def = "name=LinearBackground,A0=0.0,A1=0.0;name=BackToBackExponential,I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096"
 
-        popt = np.array([-2.28680098e+01, 9.80089245e-04, 7.10042119e+02, 3.58802084e+00,
+        popt = np.array([0.0,0.0,-2.28680098e+01, 9.80089245e-04, 7.10042119e+02, 3.58802084e+00,
                         3.21533386e-02, 2.40053562e+04, 1.65148875e+01])
 
         fin_func_def = get_fin_function_def(init_func_def,(prob.get_function())[0][0],popt)
 
-        fin_func_def_expected = "name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096"
+        fin_func_def_expected = "name=LinearBackground,A0=0.0,A1=0.0;name=BackToBackExponential,I=-22.868,A=1,B=0.001,X0=710.042,S=3.588"
 
         self.assertEqual(fin_func_def_expected, fin_func_def)
 

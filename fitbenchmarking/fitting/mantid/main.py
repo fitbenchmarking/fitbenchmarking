@@ -97,7 +97,7 @@ def fit(problem, wks_created, function, minimizer,
                                StartX=problem.start_x, EndX=problem.end_x)
         t_end = time.clock()
     except (RuntimeError, ValueError) as err:
-        logger.error("Warning, fit failed. Going on. Error: " + str(err))
+        logger.warning("Fit failed: " + str(err))
 
     status, fit_wks, fin_function_def, runtime = \
         parse_result(fit_result, t_start, t_end)
@@ -152,7 +152,6 @@ def parse_result(fit_result, t_start, t_end):
         fit_wks = fit_result.OutputWorkspace
         fin_function_def = str(fit_result.Function)
         runtime = t_end - t_start
-
     return status, fit_wks, fin_function_def, runtime
 
 

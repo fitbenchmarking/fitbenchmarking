@@ -24,8 +24,8 @@ right format.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 from __future__ import (absolute_import, division, print_function)
 
-import numpy as np
 import re
+
 
 def function_definitions(problem):
     """
@@ -34,7 +34,7 @@ def function_definitions(problem):
     """
     problem_type = extract_problem_type(problem)
 
-    if problem_type == 'NIST' or problem_type == 'FitBenchmark'.upper():
+    if problem_type == 'NIST' or problem_type == 'FitBenchmark'.upper() or problem_type == 'SasView'.upper():
         return problem.get_function()
     else:
         RuntimeError("Your problem type is not supported yet!")
@@ -42,7 +42,7 @@ def function_definitions(problem):
 
 def get_fin_function_def(init_function_def, func_callable, popt):
     """
-    Produces the final function definition.
+    Get the final function definition string to be passed on when result pages are created.
 
     @param init_function_def :: the initial function definition string
     @param func_callable :: callable function object
@@ -51,37 +51,66 @@ def get_fin_function_def(init_function_def, func_callable, popt):
 
     @returns :: the final function definition string
     """
-    if not 'name=' in str(func_callable):
+    if not 'name=' in init_function_def:
+        # Problem type is NIST
         popt = list(popt)
         params = init_function_def.split("|")[1]
-        params = re.sub(r"[-+]?\d+\.\d+", lambda m, rep=iter(popt):
+
+        # Replace the initial paramter values with the final parameter values
+        params = re.sub(r"[-+]?\d+[.]\d+", lambda m, rep=iter(popt):
                         str(round(next(rep), 3)), params)
         fin_function_def = init_function_def.split("|")[0] + " | " + params
     else:
-        fin_function_def = str(func_callable)
+        # Problem type is FitBenchmark or SasView
+        # Remove ties from the function definiton string
+        all_attributes = re.findall(r",[\s+]?ties=[(][A-Za-z0-9=.,\s+]+[)]", init_function_def)
+        if len(all_attributes) != 0:
+            init_function_def = [init_function_def.replace(attr, '+') for attr in all_attributes][0]
+
+        # Replace the initial paramter values with the final parameter values
+        fin_function_def = re.sub(r"[-+]?\d+[.]\d+", lambda m, rep=iter(popt):
+                        str(round(next(rep), 3)), init_function_def)
+
+        # Add any previously removed ties to the function definiton string
+        if len(all_attributes) != 0:
+            fin_function_def = [fin_function_def.replace('+', attr) for attr in all_attributes]
 
     return fin_function_def
 
 
-def get_init_function_def(function, mantid_definition):
+def get_init_function_def(function, problem):
     """
-    Get the initial function definition string.
+    Get the initial function definition string to be passed on when result pages are created.
 
     @param function :: array containing the function information
-    @param mantid_definition :: the string containing the function
-                                definition in mantid format
+    @param equation :: the string containing the function
+                                definition in mantid/sasview format
 
     @returns :: the initial function definition string
     """
-    if not 'name=' in str(function[0]):
+
+    problem_type = extract_problem_type(problem)
+
+    if not 'name=' in str(problem.equation):
+        # Problem type is NIST
         params = function[0].__code__.co_varnames[1:]
         param_string = ''
         for idx in range(len(function[1])):
             param_string += params[idx] + "= " + str(function[1][idx]) + ", "
         param_string = param_string[:-2]
         init_function_def = function[2] + " | " + param_string
+    elif problem_type == 'SasView'.upper():
+        # Problem type is SasView
+        init_function_def = problem.equation + ',' + problem.starting_values
+
+        # Add a decimal place for each parameter without it
+        init_function_def = re.sub(r"(=)([-+]?\d+)([^.\d])", r"\g<1>\g<2>.0\g<3>", init_function_def)
     else:
-        init_function_def = mantid_definition
+        # Problem type is FitBenchmark
+        init_function_def = problem.equation
+
+        # Add a decimal place for each parameter without it
+        init_function_def = re.sub(r"(=)([-+]?\d+)([^.\d])", r"\g<1>\g<2>.0\g<3>", init_function_def)
 
     return init_function_def
 

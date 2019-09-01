@@ -66,7 +66,6 @@ class ScipyTests(unittest.TestCase):
 
         problem = self.NIST_problem()
         use_errors = True
-        print(type(problem.data_x))
 
         data, cost_function = prepare_data(problem, use_errors)
         expected_data = self.get_expected_data()
@@ -92,7 +91,7 @@ class ScipyTests(unittest.TestCase):
 
         problem = \
             misc_preparations(problem, problem.data_x, problem.data_y, problem.data_e)
-        # print(problem.data_x)
+
         expected_data = self.get_expected_data()
 
         np.testing.assert_equal(expected_data[0], problem.data_x)
@@ -128,7 +127,6 @@ class ScipyTests(unittest.TestCase):
         expected_data = self.get_expected_data()
         expected = [ [ None ] * 3 ] * 10
         expected[0] = np.array(expected_data[0])[2:11]
-        # print(expected[0])
         expected[1] = np.array(expected_data[1])[2:11]
         expected[2] = np.array(expected_data[2])[2:11]
 

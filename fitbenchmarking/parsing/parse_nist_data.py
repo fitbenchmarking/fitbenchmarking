@@ -104,8 +104,9 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         Function evaluation method
 
         :param x: x data values
-        :param param_list:
-        :return: y data values
+        :param param_list: parameter value(s)
+
+        :return: y data values evaluated from the function of the problem
         """
 
         param_string = ''
