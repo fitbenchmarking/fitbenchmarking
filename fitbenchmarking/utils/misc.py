@@ -51,7 +51,7 @@ def get_minimizers(software_options):
                 current_path = os.path.dirname(os.path.realpath(__file__))
                 fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
                 minimizer_file = os.path.join(fitbm_path,
-                                              "minimizers_list_default.json")
+                                              "fitbenchmarking_default_options.json")
                 minimizers_list = json.load(open(minimizer_file))
             elif isinstance(minimizer_options, str):
                 minimizers_list = json.load(open(minimizer_options))
