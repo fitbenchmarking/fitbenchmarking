@@ -74,7 +74,7 @@ class CreateDirsTests(unittest.TestCase):
     utils_path = os.path.abspath(os.path.join(current_path, os.pardir))
     fitbm_path = os.path.abspath(os.path.join(utils_path, os.pardir))
     minimizer_json = os.path.join(fitbm_path,
-                                  "minimizers_list_default.json")
+                                  "fitbenchmarking_default_options.json")
     return str(minimizer_json)
 
   def test_getMinimizers_load_correct_minimizers_mantid_default(self):

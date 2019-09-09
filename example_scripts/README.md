@@ -8,7 +8,7 @@ Here is the list of all the example scripts and the difference between them:
 3. `example_runScripts_expert.py` is designed to be run once Mantid and SasView (future development) are installed. This script will benchmark all the minimizers from different softwares against various type of problem definition files.
 ### Example usage
 
-For default minimizers use (which loads minimizers_list_defaults.json):
+For default minimizers use (which loads fitbenchmarking_default_options.json):
 `mantidpython example_runScripts.py`
 
 Can also change the `minimizers` variable within `example_runScripts.py` to customize the minimization (see example script)

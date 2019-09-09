@@ -1,0 +1,12 @@
+{
+    "minimizers": {
+        "mantid" : ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
+                    "Conjugate gradient (Polak-Ribiere imp.)",
+                    "Damped GaussNewton",
+                    "Levenberg-Marquardt", "Levenberg-MarquardtMD",
+                    "Simplex","SteepestDescent",
+                    "Trust Region"],
+        "scipy" : ["lm", "trf", "dogbox"],
+        "sasview" : ["amoeba", "lm", "newton", "de", "pt", "mp"]
+        }
+}

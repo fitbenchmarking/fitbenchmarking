@@ -44,7 +44,7 @@ elif custom_minimizers:
   software_options['minimizer_options'] = custom_minimizers
 else:
   # Using default minimizers from
-  # fitbenchmarking/fitbenchmarking/minimizers_list_default.json
+  # fitbenchmarking/fitbenchmarking/fitbenchmarking_default_options.json
   software_options['minimizer_options'] = None
 
 # Benchmark problem directories

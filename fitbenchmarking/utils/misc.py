@@ -22,54 +22,52 @@ Miscellaneous functions and utilities used in fitting benchmarking.
 # <https://github.com/mantidproject/fitbenchmarking>.
 # Code Documentation is available at: <http://doxygen.mantidproject.org>
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
 
-import os
-import json
 import glob
+import os
 
-from utils.logging_setup import logger
-from utils import user_input
+from fitbenchmarking.utils import options, user_input
+from fitbenchmarking.utils.logging_setup import logger
 
 
 def get_minimizers(software_options):
     """
     Gets an array of minimizers to fitbenchmark from the json file depending
     on which software is used.
-    @param software_options :: dictionary containing software used in fitting the problem and list of minimizers or location of json file contain minimizers
+    @param software_options :: dictionary containing software used in fitting
+                               the problem and list of minimizers or location
+                               of json file contain minimizers
     @returns :: an array of strings containing minimizer names and software used
     """
-    try:
+    if not isinstance(software_options, dict):
+        raise ValueError('software_options must be a dictionary')
 
+    try:
         software = software_options['software']
         minimizer_options = software_options['minimizer_options']
-        if not isinstance(software, list):
-            software = [software]
-        minimizers = []
-        for x in software:
-            if not minimizer_options:
-                current_path = os.path.dirname(os.path.realpath(__file__))
-                fitbm_path = os.path.abspath(os.path.join(current_path, os.pardir))
-                minimizer_file = os.path.join(fitbm_path,
-                                              "minimizers_list_default.json")
-                minimizers_list = json.load(open(minimizer_file))
-            elif isinstance(minimizer_options, str):
-                minimizers_list = json.load(open(minimizer_options))
-            elif isinstance(minimizer_options, dict):
-                minimizers_list = minimizer_options
-            else:
-                raise ValueError('minimizer_options required to be None, string '
-                                 'or dictionary, type(minimizer_options) '
-                                 '= {}'.format(type(minimizer_options)))
-            minimizers.append(minimizers_list[x])
-    except:
+    except KeyError:
         raise ValueError('software_options required to be a dictionary with '
                          'keys software and minimizer_options')
-    if len(software) > 1:
-        return minimizers, software
 
+    if minimizer_options is None:
+        minimizers_list = options.get_option(option='minimizers')
+    elif isinstance(minimizer_options, str):
+        minimizers_list = options.get_option(options_file=minimizer_options, option='minimizers')
+    elif isinstance(minimizer_options, dict):
+        minimizers_list = minimizer_options
     else:
-        return minimizers[0], software[0]
+        raise ValueError('minimizer_options required to be None, string '
+                         'or dictionary, type(minimizer_options) '
+                         '= {}'.format(type(minimizer_options)))
+
+    if not isinstance(software, list):
+        return minimizers_list.get(software, []), software
+    else:
+        minimizers = []
+        for x in software:
+            minimizers.append(minimizers_list.get(x, []))
+        return minimizers, software
 
 
 def setup_fitting_problems(data_dir, group_name):
