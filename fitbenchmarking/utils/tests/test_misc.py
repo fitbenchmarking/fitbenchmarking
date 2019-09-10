@@ -121,7 +121,8 @@ class CreateDirsTests(unittest.TestCase):
 
   def test_getMinimizers_load_correct_minimizers_scipy_read_file(self):
     software_options = {'software': 'scipy',
-                        'minimizer_options': self.get_minimizers_file()}
+                        'minimizer_options': None,
+                        'options_file': self.get_minimizers_file()}
 
     minimizers, _ = get_minimizers(software_options)
     minmizers_expected = ["lm", "trf", "dogbox"]
@@ -131,7 +132,8 @@ class CreateDirsTests(unittest.TestCase):
   def test_getMinimizers_load_correct_minimizers_mantid_read_file(self):
 
     software_options = {'software': 'mantid',
-                        'minimizer_options': self.get_minimizers_file()}
+                        'minimizer_options': None,
+                        'options_file': self.get_minimizers_file()}
 
     minimizers, _ = get_minimizers(software_options)
     minmizers_expected = ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
@@ -146,7 +148,8 @@ class CreateDirsTests(unittest.TestCase):
   def test_getMinimizers_load_correct_compare_minimizers_mantid_read_file(self):
 
     software_options = {'software': ['mantid', 'scipy'],
-                        'minimizer_options': self.get_minimizers_file()}
+                        'minimizer_options': None,
+                        'options_file': self.get_minimizers_file()}
 
     minimizers, _ = get_minimizers(software_options)
     minmizers_expected = [["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",

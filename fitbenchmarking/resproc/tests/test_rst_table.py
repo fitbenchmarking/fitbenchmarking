@@ -83,8 +83,8 @@ class RstTableTests(unittest.TestCase):
                    'Minimizer5', 'Minimizer6', 'Minimizer7', 'Minimizer8',
                    'Minimizer9', 'Trust Region']
     items_link = 'FittingMinimizersComparisonDetailedWithWeights'
-    cells = np.array([[1, 2, 3],
-                      [5, 10, 13]])
+    cells = np.array([[[0.1, 1], [0.2, 2], [0.3, 3]],
+                      [[0.5, 5], [1, 10], [13, 13]]])
     color_scale = [(1.1, 'ranking-top-1'),
                    (1.33, 'ranking-top-2'),
                    (1.75, 'ranking-med-3'),
@@ -103,8 +103,8 @@ class RstTableTests(unittest.TestCase):
                 "/dump/nist/VDPages/nist_lower_misra1a.html>`__",
                 "`Misra1a 2 <file:///" + current_dir +
                 "/dump/nist/VDPages/nist_lower_misra1a.html>`__"]
-    cells = np.array([[1, 2, 3],
-                      [5, 10, 13]])
+    cells = np.array([[[2, 1], [4, 2], [6, 3]],
+                      [[10, 5], [20, 10], [26, 13]]])
 
     color_scale = [(1.1, 'ranking-top-1'),
                    (1.33, 'ranking-top-2'),
@@ -119,7 +119,7 @@ class RstTableTests(unittest.TestCase):
     columns_txt, rows_txt, cells, color_scale = self.CreateTableInputData()
 
     table = create(columns_txt, rows_txt, cells, 'accuracy', '',
-                   True, color_scale)
+                   True, color_scale, comparison_mode='rel')
     table_expected = self.GenerateExpectedTable()
 
     self.assertEqual(table_expected, table)
@@ -134,7 +134,7 @@ class RstTableTests(unittest.TestCase):
     tbl_footer = tbl_header_top + '\n'
 
     tbl_body = create_table_body(cells, items_link, rows_txt, first_col_len,
-                                 21, color_scale, tbl_footer)
+                                 21, color_scale, tbl_footer, mode='rel')
     tbl_body_expected = self.GenerateTableBody() + tbl_footer
 
     self.assertEqual(tbl_body_expected, tbl_body)
@@ -144,7 +144,7 @@ class RstTableTests(unittest.TestCase):
     columns_txt, items_link, cells, color_scale = \
         self.CalcCellLenParameters()
 
-    cell_len = calc_cell_len(columns_txt, items_link, cells, color_scale)
+    cell_len = calc_cell_len(columns_txt, items_link, cells, color_scale, mode='rel')
     cell_len_expected = 21
 
     self.assertEqual(cell_len_expected, cell_len)
@@ -162,24 +162,37 @@ class RstTableTests(unittest.TestCase):
 
   def test_FormatCellValue_no_colorscale_and_itemslink_return_valuetxt(self):
 
-    value_text = format_cell_value(value=180, color_scale=0,
-                                   items_link=0)
-    self.assertEqual(' 180', value_text)
+    value = [180, 10]
+    expected = [' 180', ' 10', ' 180 (10)']
+    mode = ['abs', 'rel', 'both']
+
+    for e, m in zip(expected, mode):
+      value_text = format_cell_value(value=value,
+                                     color_scale=0,
+                                     items_link=0,
+                                     mode=m)
+      self.assertEqual(e, value_text)
 
   def test_FormatCellValue_no_color_scale_return_value_text(self):
 
     items_link = 'FittingMinimizersComparisonDetailedWithWeights'
+    value = [10, 180]
+    mode = ['abs', 'rel', 'both']
+    expected = [' :ref:`10 <FittingMinimizersComparisonDetailedWithWeights>`',
+                ' :ref:`180 <FittingMinimizersComparisonDetailedWithWeights>`',
+                ' :ref:`10 (180) <FittingMinimizersComparisonDetailedWithWeights>`']
 
-    value_text = format_cell_value(value=180, color_scale=0,
-                                   items_link=items_link)
-    value_text_expected = \
-        ' :ref:`180 <FittingMinimizersComparisonDetailedWithWeights>`'
+    for e, m in zip(expected, mode):
+      value_text = format_cell_value(value=value,
+                                     color_scale=0,
+                                     items_link=items_link,
+                                     mode=m)
+      self.assertEqual(e, value_text)
 
-    self.assertEqual(value_text_expected, value_text)
 
   def test_FormatCellValueRST_all_options_no_width_return_value_text(self):
 
-    value = 2
+    value = [1, 2]
     color_scale = [(1.1, 'ranking-top-1'),
                    (1.33, 'ranking-top-2'),
                    (1.75, 'ranking-med-3'),
@@ -189,13 +202,13 @@ class RstTableTests(unittest.TestCase):
 
     value_text = format_cell_value(value=value, color_scale=color_scale,
                                    items_link=items_link)
-    value_text_expected = " :ranking-low-4:`2`"
+    value_text_expected = " :ranking-low-4:`1`"
 
     self.assertEqual(value_text_expected, value_text)
 
   def test_FormatCellValueRST_all_options_with_width_return_value_text(self):
 
-    value = 180
+    value = [180, 300]
     color_scale = [(1.1, 'ranking-top-1'),
                    (1.33, 'ranking-top-2'),
                    (1.75, 'ranking-med-3'),
