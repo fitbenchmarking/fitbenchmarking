@@ -77,29 +77,62 @@ def create_norm_tbls(accuracy_tbl, time_tbl):
     return norm_acc_rankings, norm_runtimes,
 
 
-def create_summary_tbls(norm_acc_rankings, norm_runtimes):
+def create_summary_tbls(acc_rankings, runtimes):
     """
     Creates summary tables of the obtained results, i.e. the minimum
     maximum, mean and median of each column in the normalised numpy
     arrays.
 
-    @param norm_acc_rankings :: the normalised accuracy results numpy array
-    @param norm_runtimes :: the normalised runtime results numpy array
+    @param acc_rankings :: the combined accuracy results numpy array
+    @param runtimes :: the combined runtime results numpy array
 
     @returns :: the summary tables for both runtime and accuracy
     """
+    acc_rankings = acc_rankings[:, :, 1]
+    runtimes = runtimes[:, :, 1]
 
-    summary_cells_acc = np.array([np.nanmin(norm_acc_rankings, 0),
-                                  np.nanmax(norm_acc_rankings, 0),
-                                  nanmean(norm_acc_rankings, 0),
-                                  nanmedian(norm_acc_rankings, 0)])
+    summary_cells_acc = np.array([np.nanmin(acc_rankings, 0),
+                                  np.nanmax(acc_rankings, 0),
+                                  nanmean(acc_rankings, 0),
+                                  nanmedian(acc_rankings, 0)])
 
-    summary_cells_runtime = np.array([np.nanmin(norm_runtimes, 0),
-                                      np.nanmax(norm_runtimes, 0),
-                                      nanmean(norm_runtimes, 0),
-                                      nanmedian(norm_runtimes, 0)])
+    summary_cells_runtime = np.array([np.nanmin(runtimes, 0),
+                                      np.nanmax(runtimes, 0),
+                                      nanmean(runtimes, 0),
+                                      nanmedian(runtimes, 0)])
 
     return summary_cells_acc, summary_cells_runtime
+
+
+def create_combined_tbls(abs_accuracy, rel_accuracy, abs_runtime, rel_runtime):
+    """
+    Create a table that holds both absolute and relative information on
+    each result.
+
+    @param abs_accuracy :: The table with the absolute accuracy reported
+    @param rel_accuracy :: The table with the relative accuracy reported
+    @param abs_runtime :: The table with the absolute runtime reported
+    @param rel_runtime :: The table with the relative runtime reported
+
+    @returns :: combined_accuracy and combined_runtime tables with both
+                values present in each cell.
+                e.g. combined_accuracy[2,3,0] == rel_accuracy[2,3]
+                     combined_accuracy[2,3,1] == abs_accuracy[2,3]
+    """
+
+    accuracy_shape = (abs_accuracy.shape[0], abs_accuracy.shape[1], 2)
+    runtime_shape = (abs_runtime.shape[0], abs_runtime.shape[1], 2)
+
+    combined_accuracy = np.zeros(accuracy_shape)
+    combined_runtime = np.zeros(runtime_shape)
+
+    combined_accuracy[:, :, 0] = abs_accuracy
+    combined_accuracy[:, :, 1] = rel_accuracy
+
+    combined_runtime[:, :, 0] = abs_runtime
+    combined_runtime[:, :, 1] = rel_runtime
+
+    return combined_accuracy, combined_runtime
 
 
 def init_numpy_tbls(results_per_test, minimizers):

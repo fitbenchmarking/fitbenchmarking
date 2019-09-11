@@ -37,15 +37,16 @@ custom_minimizers = None
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
-  # Read custom minimizer options from file
-  software_options['minimizer_options'] = current_path + sys.argv[1]
+    # Read custom minimizer options from file
+    software_options['minimizer_options'] = None
+    software_options['options_file'] = current_path + sys.argv[1]
 elif custom_minimizers:
-  # Custom minimizer options:
-  software_options['minimizer_options'] = custom_minimizers
+    # Custom minimizer options:
+    software_options['minimizer_options'] = custom_minimizers
 else:
-  # Using default minimizers from
-  # fitbenchmarking/fitbenchmarking/fitbenchmarking_default_options.json
-  software_options['minimizer_options'] = None
+    # Using default minimizers from
+    # fitbenchmarking/fitbenchmarking/fitbenchmarking_default_options.json
+    software_options['minimizer_options'] = None
 
 # Benchmark problem directories
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
@@ -94,14 +95,14 @@ for sub_dir in problem_sets:
 
     print('\nRunning the benchmarking on the {} problem set\n'.format(label))
     results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
-                                                   data_dir=data_dir,
-                                                   use_errors=use_errors, results_dir=results_dir)
+                                                     data_dir=data_dir,
+                                                     use_errors=use_errors, results_dir=results_dir)
 
     print('\nProducing output for the {} problem set\n'.format(label))
     for idx, group_results in enumerate(results_per_group):
         # Display the runtime and accuracy results in a table
         printTables(software_options, group_results,
-                group_name=label, use_errors=use_errors,
-                color_scale=color_scale, results_dir=results_dir)
+                    group_name=label, use_errors=use_errors,
+                    color_scale=color_scale, results_dir=results_dir)
 
     print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))

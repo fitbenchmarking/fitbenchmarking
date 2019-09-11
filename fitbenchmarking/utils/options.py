@@ -23,4 +23,4 @@ def get_option(options_file='fitbenchmarking/fitbenchmarking_default_options.jso
         try:
             return options[option]
         except KeyError:
-            raise ValueError('Option not found in file: {}'.format(options_file))
+            raise ValueError('Option "{}" not found in file: {}'.format(option, options_file))

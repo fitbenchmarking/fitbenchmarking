@@ -49,7 +49,8 @@ custom_minimizers = {"mantid": ["Simplex"],
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
   # Read custom minimizer options from file
-  software_options['minimizer_options'] = current_path + sys.argv[1]
+  software_options['minimizer_options'] = None
+  software_options['options_file'] = current_path + sys.argv[1]
 elif custom_minimizers:
   # Custom minimizer options:
   software_options['minimizer_options'] = custom_minimizers

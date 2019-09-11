@@ -1,4 +1,4 @@
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
 
 import unittest
 import os
@@ -11,9 +11,9 @@ parent_dir = os.path.dirname(os.path.normpath(test_dir))
 main_dir = os.path.dirname(os.path.normpath(parent_dir))
 sys.path.insert(0, main_dir)
 
-from resproc.numpy_restables import create_accuracy_runtime_tbls
-from resproc.numpy_restables import create_norm_tbls
-from resproc.numpy_restables import create_summary_tbls
+from resproc.numpy_restables import (create_accuracy_runtime_tbls,
+                                     create_combined_tbls, create_norm_tbls,
+                                     create_summary_tbls)
 from utils import fitbm_result
 
 
@@ -55,6 +55,16 @@ class NumpyRestablesTests(unittest.TestCase):
                               [5, 1, 180]])
 
     return norm_acc_rankings, norm_runtimes
+  
+  def expected_combined_mock_tables(self):
+
+    combined_acc = np.array([[[1, 1], [2, 2], [3, 3]],
+                             [[20, 5], [4, 1], [720, 180]]])
+
+    combined_run = np.array([[[1, 1], [2, 2], [3, 3]],
+                             [[20, 5], [4, 1], [720, 180]]])
+                            
+    return combined_acc, combined_run
 
   def expected_summary_mock_tables(self):
 
@@ -97,13 +107,29 @@ class NumpyRestablesTests(unittest.TestCase):
                                   norm_acc_rankings)
     np.testing.assert_array_equal(norm_runtimes_expected, norm_runtimes)
 
-  def test_createSummaryTbls_return_normalised_tables_given_mock_tables(self):
+  def test_createCombinedTbls_return_combined_tables_given_mock_tables(self):
+
+    accuracy_tbl, time_tbl = self.accuracy_and_runtime_mock_tables()
 
     norm_acc_rankings, norm_runtimes = \
         self.expected_normalised_mock_tables()
 
+    combined_acc, combined_run = create_combined_tbls(abs_accuracy=accuracy_tbl,
+                                                      rel_accuracy=norm_acc_rankings,
+                                                      abs_runtime=time_tbl,
+                                                      rel_runtime=norm_runtimes)
+
+    combined_acc_expected, combined_run_expected = self.expected_combined_mock_tables()
+
+    np.testing.assert_array_equal(combined_acc_expected, combined_acc)
+    np.testing.assert_array_equal(combined_run_expected, combined_run)
+
+  def test_createSummaryTbls_return_normalised_tables_given_mock_tables(self):
+
+    combined_acc, combined_run = self.expected_combined_mock_tables()
+
     summary_cells_acc, summary_cells_runtime = \
-        create_summary_tbls(norm_acc_rankings, norm_runtimes)
+        create_summary_tbls(combined_acc, combined_run)
     summary_cells_acc_expected, summary_cells_runtime_expected = \
         self.expected_summary_mock_tables()
 
