@@ -56,23 +56,23 @@ software_options = {'software': software}
 
 # User defined minimizers
 custom_minimizers = {"mantid": ["BFGS", "Simplex"],
-              "scipy": ["lm", "trf", "dogbox"],
-              "sasview": ["amoeba"]}
+                     "scipy": ["lm", "trf", "dogbox"],
+                     "sasview": ["amoeba"]}
 # custom_minimizers = None
 # "amoeba", "lm", "newton", "de", "pt", "mp"
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
-  # Read custom minimizer options from file
-  software_options['minimizer_options'] = None
-  software_options['options_file'] = current_path + sys.argv[1]
+    # Read custom minimizer options from file
+    software_options['minimizer_options'] = None
+    software_options['options_file'] = current_path + sys.argv[1]
 elif custom_minimizers:
-  # Custom minimizer options:
-  software_options['minimizer_options'] = custom_minimizers
+    # Custom minimizer options:
+    software_options['minimizer_options'] = custom_minimizers
 else:
-  # Using default minimizers from
-  # fitbenchmarking/fitbenchmarking/fitbenchmarking_default_options.json
-  software_options['minimizer_options'] = None
+    # Using default minimizers from
+    # fitbenchmarking/fitbenchmarking/fitbenchmarking_default_options.json
+    software_options['minimizer_options'] = None
 
 # Benchmark problem directories
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
@@ -104,22 +104,22 @@ color_scale = [(1.1, 'ranking-top-1'),
 problem_sets = ["SAS_modelling/1D"]
 
 for sub_dir in problem_sets:
-  # generate group label/name used for problem set
-  label = sub_dir.replace('/', '_')
+    # generate group label/name used for problem set
+    label = sub_dir.replace('/', '_')
 
-  # Create full path for the directory that holds a group of problem definition files
-  data_dir = os.path.join(benchmark_probs_dir, sub_dir)
+    # Create full path for the directory that holds a group of problem definition files
+    data_dir = os.path.join(benchmark_probs_dir, sub_dir)
 
-  print('\nRunning the benchmarking on the {} problem set\n'.format(label))
-  results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
-                                                   data_dir=data_dir,
-                                                   use_errors=use_errors, results_dir=results_dir)
+    print('\nRunning the benchmarking on the {} problem set\n'.format(label))
+    results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
+                                                     data_dir=data_dir,
+                                                     use_errors=use_errors, results_dir=results_dir)
 
-  print('\nProducing output for the {} problem set\n'.format(label))
-  for idx, group_results in enumerate(results_per_group):
-    # Display the runtime and accuracy results in a table
-    printTables(software_options, group_results,
-                group_name=label, use_errors=use_errors,
-                color_scale=color_scale, results_dir=results_dir)
+    print('\nProducing output for the {} problem set\n'.format(label))
+    for idx, group_results in enumerate(results_per_group):
+        # Display the runtime and accuracy results in a table
+        printTables(software_options, group_results,
+                    group_name=label, use_errors=use_errors,
+                    color_scale=color_scale, results_dir=results_dir)
 
-  print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
+    print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
