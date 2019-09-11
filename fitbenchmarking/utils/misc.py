@@ -7,8 +7,8 @@ from __future__ import absolute_import, division, print_function
 import glob
 import os
 
-from fitbenchmarking.utils import options, user_input
-from fitbenchmarking.utils.logging_setup import logger
+from utils import options, user_input
+from utils.logging_setup import logger
 
 
 def get_minimizers(software_options):
@@ -31,13 +31,15 @@ def get_minimizers(software_options):
                          'keys software and minimizer_options')
 
     if minimizer_options is None:
-        minimizers_list = options.get_option(option='minimizers')
-    elif isinstance(minimizer_options, str):
-        minimizers_list = options.get_option(options_file=minimizer_options, option='minimizers')
+        options_file = software_options.get('options_file', None)
+        if options_file is None:
+            minimizers_list = options.get_option(option='minimizers')
+        else:
+            minimizers_list = options.get_option(options_file=options_file, option='minimizers')
     elif isinstance(minimizer_options, dict):
         minimizers_list = minimizer_options
     else:
-        raise ValueError('minimizer_options required to be None, string '
+        raise ValueError('minimizer_options required to be None '
                          'or dictionary, type(minimizer_options) '
                          '= {}'.format(type(minimizer_options)))
 

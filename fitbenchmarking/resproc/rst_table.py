@@ -18,7 +18,7 @@ SCRIPT_DIR = os.path.dirname(__file__)
 
 
 def create(columns_txt, rows_txt, cells, comparison_type, comparison_dim,
-           using_errors, color_scale=None):
+           using_errors, color_scale=None, comparison_mode='abs'):
     """
     Creates a rst table of accuracy and runtime tables obtained
     through fitting a certain problem set by using various
@@ -31,6 +31,8 @@ def create(columns_txt, rows_txt, cells, comparison_type, comparison_dim,
     @param comparison_dim :: the comparison dimension, either acc or runtime
     @param using_errors :: boolean whether to use errors or not
     @param color_scale :: color scale for coloring the cells
+    @param comparison_mode :: str to select between 'abs', 'rel', 'both' for
+                              the style of comparison returned
 
     @returns :: rst table of the results
     """
@@ -38,7 +40,8 @@ def create(columns_txt, rows_txt, cells, comparison_type, comparison_dim,
     columns_txt = display_name_for_minimizers(columns_txt)
     items_link = \
         build_items_links(comparison_type, comparison_dim, using_errors)
-    cell_len = calc_cell_len(columns_txt, items_link, cells, color_scale)
+
+    cell_len = calc_cell_len(columns_txt, items_link, cells, color_scale, mode=comparison_mode)
 
     # The first column tends to be disproportionately long if it has a link
     first_col_len = calc_first_col_len(cell_len, rows_txt)
@@ -48,13 +51,13 @@ def create(columns_txt, rows_txt, cells, comparison_type, comparison_dim,
     tbl_header = tbl_htop + '\n' + tbl_htext + '\n' + tbl_hbottom + '\n'
     tbl_footer = tbl_htop + '\n'
     tbl_body = create_table_body(cells, items_link, rows_txt, first_col_len,
-                                 cell_len, color_scale, tbl_footer)
+                                 cell_len, color_scale, tbl_footer, mode=comparison_mode)
 
     return tbl_header + tbl_body
 
 
 def create_table_body(cells, items_link, rows_txt, first_col_len, cell_len,
-                      color_scale, tbl_footer):
+                      color_scale, tbl_footer, mode):
     """
     Creates the body of the rst table that holds all the fitting results.
 
@@ -66,21 +69,28 @@ def create_table_body(cells, items_link, rows_txt, first_col_len, cell_len,
     @param cell_len :: the length of the cells in the table
     @param color_scale :: color scale for coloring the cells
     @param tbl_footer :: the rst footer of the table
+    @param mode :: str to select between 'abs', 'rel', 'both' for
+                   the style of comparison returned
 
     @returns :: the rst table body
     """
 
     tbl_body = ''
     for row in range(0, cells.shape[0]):
-        link = items_link
+
         all_fit_failed_status = ''
-        if np.isnan(cells[row, :]).all():
+        if np.isnan(cells[row, :, 0]).all():
             all_fit_failed_status = '(all fit failed)'
+
         tbl_body += '|' + rows_txt[row].ljust(first_col_len-len(all_fit_failed_status), ' ')\
-                    + all_fit_failed_status +'|'
+                    + all_fit_failed_status + '|'
+
         for col in range(0, cells.shape[1]):
-            tbl_body += format_cell_value(cells[row, col], cell_len,
-                                          color_scale, link)
+            tbl_body += format_cell_value(value=cells[row, col],
+                                          width=cell_len,
+                                          color_scale=color_scale,
+                                          items_link=items_link,
+                                          mode=mode)
             tbl_body += '|'
 
         tbl_body += '\n' + tbl_footer
@@ -88,7 +98,7 @@ def create_table_body(cells, items_link, rows_txt, first_col_len, cell_len,
     return tbl_body
 
 
-def calc_cell_len(columns_txt, items_link, cells, color_scale=None):
+def calc_cell_len(columns_txt, items_link, cells, color_scale=None, mode='abs'):
     """
     Calculates the cell length of the rst table.
 
@@ -96,16 +106,19 @@ def calc_cell_len(columns_txt, items_link, cells, color_scale=None):
     @param items_link :: link to the items
     @param cells :: numpy array of the results (either runtime or accuracy)
     @param color_scale :: color scale for coloring the cells
+    @param mode :: str to select between 'abs', 'rel', 'both' for
+                   the style of comparison returned
 
     @returns :: the cell length of the rest table
     """
 
     max_header = len(max((col for col in columns_txt), key=len))
-    max_value = max(("%.4g" % cell for cell in np.nditer(cells)), key=len)
+    max_value = max(cells.reshape((-1, 2)), key=lambda x: len(cell_to_string(x, mode)))
     max_item = determine_max_item(items_link)
-    cell_len = len(format_cell_value(value=float(max_value),
+    cell_len = len(format_cell_value(value=max_value,
                                      color_scale=color_scale,
-                                     items_link=max_item).strip()) + 2
+                                     items_link=max_item,
+                                     mode=mode).strip()) + 2
     if cell_len < max_header:
         cell_len = max_header
 
@@ -180,7 +193,7 @@ def build_header_chunks(first_col_len, cell_len, columns_txt):
     return tbl_header_top, tbl_header_text, tbl_header_bottom
 
 
-def format_cell_value(value, width=None, color_scale=None, items_link=None):
+def format_cell_value(value, width=None, color_scale=None, items_link=None, mode='abs'):
     """
     Formats the cell values and adds color if a color scale is provided.
 
@@ -188,13 +201,18 @@ def format_cell_value(value, width=None, color_scale=None, items_link=None):
     @param width :: the width of the cell if it is given
     @param color_scale :: color scale for coloring the cells
     @param items_links :: items_link string or array
+    @param mode :: str to select between 'abs', 'rel', 'both' for
+                   the style of comparison returned
 
     @returns :: the correct value text string
     """
+
+    value_text = cell_to_string(value, mode)
+
     if not color_scale:
-        value_text = no_color_scale_cv(items_link, value)
+        value_text = no_color_scale_cv(items_link, value_text)
     else:
-        value_text = color_scale_cv(color_scale, value)
+        value_text = color_scale_cv(color_scale, value[1], value_text)
 
     if width is not None:
         value_text = value_text.ljust(width, ' ')
@@ -202,30 +220,32 @@ def format_cell_value(value, width=None, color_scale=None, items_link=None):
     return value_text
 
 
-def no_color_scale_cv(items_link, value):
+def no_color_scale_cv(items_link, value_text):
     """
     Creates the values text if no color scale is provided.
 
     @param items_links :: items_link string or array
+    @param value_text :: text representing the value for the cell
 
     @returns :: the no coloring value text string, containing
                 the items_links
     """
 
     if not items_link:
-        value_text = ' {0:.4g}'.format(value)
+        value_text = ' {}'.format(value_text)
     else:
-        value_text = ' :ref:`{0:.4g} <{1}>`'.format(value, items_link)
+        value_text = ' :ref:`{0} <{1}>`'.format(value_text, items_link)
 
     return value_text
 
 
-def color_scale_cv(color_scale, value):
+def color_scale_cv(color_scale, value, text):
     """
     Creates the values text if a color scale is provided.
 
     @param color_scale :: color scale for coloring the cells
     @param value :: the values of the color if it is added
+    @param text :: the cell text
 
     @returns :: the value text with added color values
     """
@@ -238,7 +258,7 @@ def color_scale_cv(color_scale, value):
     if not color:
         color = color_scale[-1][1]
 
-    value_text = " :{0}:`{1:.4g}`".format(color, value)
+    value_text = " :{0}:`{1}`".format(color, text)
 
     return value_text
 
@@ -306,3 +326,27 @@ def convert_rst_to_html(table_data):
     table_data = publish_string(rst_content, writer_name='html')
 
     return table_data
+
+
+def cell_to_string(value, mode='abs'):
+    """
+    Utility function to choose display mode. Options for mode are:
+     'abs' - The value as it was returned
+     'rel' - The value relative to other values (smallest is 1)
+     'both' - The 'abs' result followed by the 'rel' result in brackets
+
+    @param value :: The value to convert
+    @param mode :: The display mode
+
+    @returns :: String with the correct formatting 
+    """
+
+    if mode not in ['abs', 'rel', 'both']:
+        raise ValueError('Could not decifer mode "{}". Please select from "abs", "rel", or "both"'.format(mode))
+
+    if mode == 'both':
+        return '{:.4g} ({:.4g})'.format(value[0], value[1])  # NOQA
+    elif mode == 'rel':
+        return '{:.4g}'.format(value[1])  # NOQA
+    else:
+        return '{:.4g}'.format(value[0])  # NOQA

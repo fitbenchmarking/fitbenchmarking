@@ -11,7 +11,7 @@ from utils.logging_setup import logger
 from resproc import numpy_restables
 from resproc import rst_table
 from resproc import visual_pages
-from utils import create_dirs
+from utils import create_dirs, options
 
 # Some naming conventions for the output files
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -37,6 +37,19 @@ def save_results_tables(software_options, results_per_test, group_name,
     """
 
     minimizers, software = utils.misc.get_minimizers(software_options)
+    comparison_type = software_options.get('comparison_type', None)
+
+    if comparison_type is None:
+        if 'options_file' in software_options:
+            options_file = software_options['options_file']
+            comparison_mode = options.get_option(options_file=options_file,
+                                                 option='comparison_mode')
+        else:
+            comparison_mode = options.get_option(option='comparison_mode')
+
+        if comparison_mode is None:
+            comparison_mode = 'both'
+
     if isinstance(software, list):
         minimizers = sum(minimizers, [])
 
@@ -44,13 +57,25 @@ def save_results_tables(software_options, results_per_test, group_name,
     linked_problems = \
         visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
 
-    norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = \
-        generate_tables(results_per_test, minimizers)
+    acc_rankings, runtimes, _, _ = generate_tables(results_per_test, minimizers)
 
-    acc_tbl = create_acc_tbl(minimizers, linked_problems, norm_acc_rankings,
-                             use_errors, color_scale)
-    runtime_tbl = create_runtime_tbl(minimizers, linked_problems, norm_runtimes,
-                                     use_errors, color_scale)
+    acc_tbl = rst_table.create(columns_txt=minimizers,
+                               rows_txt=linked_problems,
+                               cells=acc_rankings,
+                               comparison_type='accuracy',
+                               comparison_dim='',
+                               using_errors=use_errors,
+                               color_scale=color_scale,
+                               comparison_mode=comparison_mode)
+
+    runtime_tbl = rst_table.create(columns_txt=minimizers,
+                                   rows_txt=linked_problems,
+                                   cells=runtimes,
+                                   comparison_type='runtime',
+                                   comparison_dim='',
+                                   using_errors=use_errors,
+                                   color_scale=color_scale,
+                                   comparison_mode=comparison_mode)
 
     save_tables(tables_dir, acc_tbl, use_errors, group_name,
                 FILENAME_SUFFIX_ACCURACY)
@@ -63,53 +88,29 @@ def save_results_tables(software_options, results_per_test, group_name,
 
 def generate_tables(results_per_test, minimizers):
     """
-    Generates accuracy and runtime normalised tables and summary tables.
+    Generates accuracy and runtime tables, with both normalised and absolute results, and summary tables.
 
     @param results_per_test :: results nested array of objects
     @param minimizers :: array with minimizer names
 
-    @returns :: normalised and summary tables of the results as np arrays
+    @returns :: data and summary tables of the results as np arrays
     """
 
     accuracy_tbl, runtime_tbl = \
         numpy_restables.create_accuracy_runtime_tbls(results_per_test, minimizers)
+
     norm_acc_rankings, norm_runtimes = \
         numpy_restables.create_norm_tbls(accuracy_tbl, runtime_tbl)
+
+    accuracy_tbl, runtime_tbl = numpy_restables.create_combined_tbls(abs_accuracy=accuracy_tbl,
+                                                                     rel_accuracy=norm_acc_rankings,
+                                                                     abs_runtime=runtime_tbl,
+                                                                     rel_runtime=norm_runtimes)
+
     sum_cells_acc, sum_cells_runtime = \
-        numpy_restables.create_summary_tbls(norm_acc_rankings, norm_runtimes)
+        numpy_restables.create_summary_tbls(accuracy_tbl, runtime_tbl)
 
-    return norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime
-
-
-def create_acc_tbl(minimizers, linked_problems, norm_acc_rankings, use_errors,
-                   color_scale):
-    """
-    Creates an accuracy table using the given parameters.
-    """
-    # Save accuracy table for this group of fit problems
-    tbl_acc_indiv = rst_table.create(minimizers, linked_problems,
-                                     norm_acc_rankings,
-                                     comparison_type='accuracy',
-                                     comparison_dim='',
-                                     using_errors=use_errors,
-                                     color_scale=color_scale)
-
-    return tbl_acc_indiv
-
-
-def create_runtime_tbl(minimizers, linked_problems, norm_runtimes, use_errors,
-                       color_scale):
-    """
-    Creates a runtime table using the given paramters.
-    """
-    tbl_runtime_indiv = rst_table.create(minimizers, linked_problems,
-                                         norm_runtimes,
-                                         comparison_type='runtime',
-                                         comparison_dim='',
-                                         using_errors=use_errors,
-                                         color_scale=color_scale)
-
-    return tbl_runtime_indiv
+    return accuracy_tbl, runtime_tbl, sum_cells_acc, sum_cells_runtime
 
 
 def save_tables(tables_dir, table_data, use_errors, group_name, metric):
