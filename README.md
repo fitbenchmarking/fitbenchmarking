@@ -68,11 +68,11 @@ To install lxml, Bumps and sasmodels, run the following command on console:
 The tool creates a table/tables that shows a comparison between the different minimizers available in a fitting software (e.g. scipy or mantid), based on their accuracy and/or runtimes.
 An example of a table is:
 
-![Example Table](docs/example_table.png)
+![Example Table](docs/images/example_table.png)
 
 This is the result of fitbenchmarking mantid on a set of neutron data. The results are normalised with respect to the best minimizer per problem. The problem names link to html pages that display plots of the data and the fit that was performed, together with initial and final values of the parameters. Here is an example of the final plot fit.
 
-![Example Plot](docs/example_plot.png)
+![Example Plot](docs/images/example_plot.png)
 
 ## Currently Benchmarking
 <div style="text-align: center">
