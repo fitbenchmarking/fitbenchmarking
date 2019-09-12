@@ -22,6 +22,7 @@ current_path = os.path.dirname(os.path.realpath(__file__))
 fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
 sys.path.insert(0, scripts_folder)
+sys.path.insert(1, fitbenchmarking_folder)
 
 try:
     import mantid.simpleapi as msapi
