@@ -14,10 +14,3 @@ Welcome to FitBenchmarking's documentation!
    Contributors <contributors/index>
 
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
