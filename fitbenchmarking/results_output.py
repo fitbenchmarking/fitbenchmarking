@@ -106,6 +106,62 @@ def save_results_tables(software_options, results_per_test, group_name,
     logging.shutdown()
 
 
+def create_acc_tbl(minimizers, linked_problems, accuracy_tbl, use_errors,
+                   color_scale, comparison_mode='abs'):
+    """
+    API function to create an accuracy table using the given parameters.
+    For usage, see the expert example script.
+
+    @param minimizers :: array of minimizers used in fitting
+    @param linked_problems :: array of the problems that were fitted
+    @param accuracy_tbl :: numpy array of the accuracy results
+    @param using_errors :: boolean whether to use errors or not
+    @param color_scale :: color scale for coloring the cells
+    @param comparison_mode :: str to select between 'abs', 'rel', 'both' for
+                              the style of comparison returned
+
+    @returns :: rst table of the results
+    """
+    # Save accuracy table for this group of fit problems
+    tbl_acc_indiv = rst_table.create(minimizers, linked_problems,
+                                     accuracy_tbl,
+                                     comparison_type='accuracy',
+                                     comparison_dim='',
+                                     using_errors=use_errors,
+                                     color_scale=color_scale,
+                                     comparison_mode=comparison_mode)
+
+    return tbl_acc_indiv
+
+
+def create_runtime_tbl(minimizers, linked_problems, runtime_tbl, use_errors,
+                       color_scale, comparison_mode='abs'):
+    """
+    API function to create a runtime table using the given parameters.
+    For usage, see the expert example script.
+
+    @param minimizers :: array of minimizers used in fitting
+    @param linked_problems :: array of the problems that were fitted
+    @param runtime_tbl :: numpy array of the runtime results
+    @param using_errors :: boolean whether to use errors or not
+    @param color_scale :: color scale for coloring the cells
+    @param comparison_mode :: str to select between 'abs', 'rel', 'both' for
+                              the style of comparison returned
+
+    @returns :: rst table of the results
+    """
+    # Save runtime table for this group of fit problems
+    tbl_runtime_indiv = rst_table.create(minimizers, linked_problems,
+                                         runtime_tbl,
+                                         comparison_type='runtime',
+                                         comparison_dim='',
+                                         using_errors=use_errors,
+                                         color_scale=color_scale,
+                                         comparison_mode=comparison_mode)
+
+    return tbl_runtime_indiv
+
+
 def generate_tables(results_per_test, minimizers):
     """
     Generates accuracy and runtime tables, with both normalised and absolute results, and summary tables.
