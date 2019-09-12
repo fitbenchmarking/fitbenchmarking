@@ -49,7 +49,7 @@ def do_fitting_benchmark(group_name, software_options, data_dir,
     @param data_dir :: full path of a directory that holds a group of problem definition files
     @param use_errors :: whether to use errors on the data or not
     @param results_dir :: directory in which to put the results. None
-                        means results directory is created for you
+                          means results directory is created for you
 
     @returns :: array of fitting results for the problem group and
                 the path to the results directory
@@ -58,8 +58,9 @@ def do_fitting_benchmark(group_name, software_options, data_dir,
     logger.info("Loading minimizers from {0}".format(
         software_options['software']))
     minimizers, software = misc.get_minimizers(software_options)
-    # create dir with paths to all problem definitions in data_dir
-    problem_group = misc.setup_fitting_problems(data_dir, group_name)
+
+    # create list with blocks of paths to all problem definitions in data_dir
+    problem_group = misc.setup_fitting_problems(data_dir)
 
     results_dir = create_dirs.results(results_dir)
     group_results_dir = create_dirs.group_results(results_dir, group_name)
@@ -67,53 +68,51 @@ def do_fitting_benchmark(group_name, software_options, data_dir,
     user_input = misc.save_user_input(software, minimizers, group_name,
                                       group_results_dir, use_errors)
 
-    prob_results = do_benchmarking(user_input, problem_group, group_name)
+    prob_results = do_benchmarking(user_input, problem_group)
 
     return prob_results, results_dir
 
 
-def do_benchmarking(user_input, problem_groups, group_name):
+def do_benchmarking(user_input, problem_group):
     """
     Loops through software and benchmarks each problem within the problem
     group.
 
     @param user_input :: all the information specified by the user
-    @param problem_groups :: dictionary containing the paths to problem files in the group
-    @param group_name :: is the name (label) for a group. E.g. the name for the group of problems in
-                         "NIST/low_difficulty" may be picked to be NIST_low_difficulty
+    @param problem_group :: list blocks of paths to problem files in the group
+                            e.g. [['NIST/low_difficulty/file1.dat',
+                                   'NIST/low_difficulty/file2.dat',
+                                   ...],
+                                  ['NIST/average_difficulty/file1.dat',
+                                   'NIST/average_difficulty/file2.dat',
+                                   ...],
+                                  ...]
 
-    @returns :: array of result objects, per problem
+    @returns :: array of result objects, per problem per user_input
     """
 
     if not isinstance(user_input, list):
-        prob_results = []
-        for block in problem_groups[group_name]:
-            prob_results.append(do_fitbm_group(user_input, block))
+        list_block_results = [do_fitbm_block(user_input, p) for p in problem_group]
+
     else:
-        list_prob_results = []
-        for user in user_input:
-            for block in problem_groups[group_name]:
-                list_prob_results.append(do_fitbm_group(user, block))
-        prob_results = []
-        tuple_prob_results = zip(*list_prob_results)
-        for tup in tuple_prob_results:
-            min_results = []
-            for i in tup:
-                min_results += i
-            prob_results.append(min_results)
-        prob_results = [prob_results]
+        list_block_results = [do_fitbm_block(u, p)
+                              for u in user_input
+                              for p in problem_group]
 
-    return prob_results
+    # Flatten blocks into single list
+    list_prob_results = [result for block in list_block_results for result in block]
+
+    return list_prob_results
 
 
-def do_fitbm_group(user_input, problem_block):
+def do_fitbm_block(user_input, problem_block):
     """
-    Fit benchmark a specific group of problems.
+    Fit benchmark a block of problems.
 
     @param user_input :: all the information specified by the user
-    @param problem_block :: array of paths to problem files in the group
+    @param problem_block :: array of paths to problem files in the block
 
-    @returns :: array of result objects, per problem
+    @returns :: array of result objects
     """
 
     results_per_problem = []

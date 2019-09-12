@@ -103,15 +103,15 @@ for sub_dir in problem_sets:
         continue
 
     print('\nRunning the benchmarking on the {} problem set\n'.format(label))
-    results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
-                                                     data_dir=data_dir,
-                                                     use_errors=use_errors, results_dir=results_dir)
+    results, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
+                                           data_dir=data_dir,
+                                           use_errors=use_errors, results_dir=results_dir)
 
     print('\nProducing output for the {} problem set\n'.format(label))
-    for idx, group_results in enumerate(results_per_group):
-        # Display the runtime and accuracy results in a table
-        printTables(software_options, group_results,
-                    group_name=label, use_errors=use_errors,
-                    color_scale=color_scale, results_dir=results_dir)
+
+    # Display the runtime and accuracy results in a table
+    printTables(software_options, results,
+                group_name=label, use_errors=use_errors,
+                color_scale=color_scale, results_dir=results_dir)
 
     print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))

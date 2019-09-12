@@ -57,9 +57,9 @@ def save_results_tables(software_options, results_per_test, group_name,
     """
 
     minimizers, software = utils.misc.get_minimizers(software_options)
-    comparison_type = software_options.get('comparison_type', None)
+    comparison_mode = software_options.get('comparison_mode', None)
 
-    if comparison_type is None:
+    if comparison_mode is None:
         if 'options_file' in software_options:
             options_file = software_options['options_file']
             comparison_mode = options.get_option(options_file=options_file,

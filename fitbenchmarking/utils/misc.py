@@ -72,20 +72,18 @@ def get_minimizers(software_options):
         return minimizers, software
 
 
-def setup_fitting_problems(data_dir, group_name):
+def setup_fitting_problems(data_dir):
     """
     Sets up a problem group specified by the user by providing
     a respective data directory.
 
-    @param group_name :: is the name (label) for a group. E.g. the name for the group of problems in
-                       "NIST/low_difficulty" may be picked to be NIST_low_difficulty
     @param data_dir :: full path of a directory that holds a group of problem definition files
-    @returns :: the problem group dictionary
+    @returns :: array containing blocks of paths to the problems
+                e.g. In NIST we would have
+                [[low_difficulty/..., ...], [average_difficulty/..., ...], ...]
     """
-    problem_group = {}
-    problem_group[group_name] = get_problem_files(data_dir)
 
-    return problem_group
+    return get_problem_files(data_dir)
 
 
 def save_user_input(software, minimizers, group_name, results_dir, use_errors):
@@ -112,9 +110,11 @@ def get_problem_files(data_dir):
     """
     Gets all the problem definition files from the specified problem set directory.
 
-    @param dirs :: array of directories that contain the problems
+    @param data_dir :: directory containing the problems
 
-    @returns :: array containing paths to all the problems
+    @returns :: array containing blocks of paths to the problems
+                e.g. In NIST we would have
+                [[low_difficulty/..., ...], [average_difficulty/..., ...], ...]
     """
     probs_all = []
     dirs = filter(os.path.isdir, os.listdir(data_dir))

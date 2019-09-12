@@ -180,8 +180,8 @@ class CreateDirsTests(unittest.TestCase):
     data_dir = os.path.join(self.base_path(), 'NIST', 'low_difficulty')
     nist_problems = self.all_nist_problems()
 
-    problem_groups = setup_fitting_problems(data_dir, 'NIST_low_diff')
-    problem_groups_expected = {'NIST_low_diff': nist_problems}
+    problem_groups = setup_fitting_problems(data_dir)
+    problem_groups_expected = nist_problems
 
     self.assertTrue(problem_groups_expected, problem_groups)
 
@@ -190,8 +190,8 @@ class CreateDirsTests(unittest.TestCase):
     data_dir = os.path.join(self.base_path(), 'Neutron')
     neutron_problems = self.all_neutron_problems()
 
-    problem_groups = setup_fitting_problems(data_dir, 'Neutron')
-    problem_groups_expected = {'nist': neutron_problems}
+    problem_groups = setup_fitting_problems(data_dir)
+    problem_groups_expected = neutron_problems
 
     self.assertTrue(problem_groups_expected, problem_groups)
 

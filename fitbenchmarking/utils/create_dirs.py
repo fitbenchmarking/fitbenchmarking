@@ -29,8 +29,7 @@ import shutil
 
 def results(results_dir):
     """
-    Creates the results folder where the script that is run in the
-    console and eventually calls this is located.
+    Creates the results folder in the working directory.
 
     @param results_dir :: path to the results directory, results dir
                           name or None
