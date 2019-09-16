@@ -24,46 +24,11 @@ scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
 sys.path.insert(0, scripts_folder)
 sys.path.insert(1, fitbenchmarking_folder)
 
-sas_enabled = True
-try:
-    import bumps
-except:
-    print('******************************************\n'
-          'Bumps is not yet installed on your computer\n'
-          'To install, type the following command:\n'
-          'python -m pip install bumps\n'
-          '******************************************')
-    sas_enabled = False
-
-try:
-    import sasmodels.data
-except:
-    print('******************************************\n'
-          'sasmodels is not yet installed on your computer\n'
-          'To install, type the following command:\n'
-          'python -m pip install sasmodels\n'
-          '******************************************')
-    sas_enabled = False
-
-try:
-    import sas
-except:
-    print('******************************************\n'
-          'sas is not yet installed on your computer\n'
-          'To install, clone a version of SasView from https://github.com/SasView/sasview\n'
-          'After that, copy a folder called "sas" inside the sub-folder sasview/src to the fitbenchmarking directory\n'
-          '******************************************')
-    sas_enabled = False
-
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = ['scipy']
-if sas_enabled:
-    software += ['sasview']
-else:
-    print('WARNING: SasView requirements not met. Proceeding without SasView.')
+software = ['scipy', 'sasview']
 
 software_options = {'software': software}
 
