@@ -2,7 +2,7 @@
 name: Documentation
 about: Suggest a improvement to user, developer or other documentation
 title: ''
-labels: documentation
+labels: Documentation
 
 ---
 
