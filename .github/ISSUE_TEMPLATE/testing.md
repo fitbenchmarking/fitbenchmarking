@@ -3,7 +3,6 @@ name: Test
 about: Specify a test that needs to be implemented
 title: ''
 labels: testing
-assignees: TOFarmer
 
 ---
 

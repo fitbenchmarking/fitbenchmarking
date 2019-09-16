@@ -3,7 +3,6 @@ name: Tutorials/Documentation
 about: Suggest a topic which requires a tutorial or additional documentation
 title: ''
 labels: documentation
-assignees: TOFarmer
 
 ---
 
