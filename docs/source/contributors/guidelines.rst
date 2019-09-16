@@ -14,3 +14,8 @@ Documentation:
 
 Any new code will be accepted only if there is relevent documentation for it in the corresponding pull request.
 
+
+Git:
+^^^^
+
+Branches should be created from master, and by convention follow the pattern "nnn_description" where nnn is the issue number.
