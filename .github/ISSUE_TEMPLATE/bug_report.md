@@ -7,7 +7,7 @@ labels: bug
 ---
 
 **Description of the error**
-A clear and concise description of what the problem is, including steps to reproduce it and the environment you are running MDMC in.
+A clear and concise description of what the problem is, including steps to reproduce it and the environment you are running FitBenchmarking in.
 
 **Describe the expected result**
 What is the result you expect from running the steps described above?
