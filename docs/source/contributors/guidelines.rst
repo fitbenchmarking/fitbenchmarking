@@ -19,3 +19,11 @@ Git:
 ^^^^
 
 Branches should be created from master, and by convention follow the pattern "nnn_description" where nnn is the issue number.
+
+
+Testing:
+^^^^^^^^
+
+All tests should pass before submitting code.
+Tests are written using unittests and the suggestion is to run it with pytest.
+
