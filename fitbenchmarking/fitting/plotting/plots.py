@@ -6,8 +6,8 @@ problem, a best fit plot and a starting guess plot.
 from __future__ import (absolute_import, division, print_function)
 
 import os
-from fitting.plotting.plot_helper import *
-from utils import create_dirs
+from fitbenchmarking.fitting.plotting.plot_helper import data, plot
+from fitbenchmarking.utils import create_dirs
 
 
 def make_plots(software, problem, data_struct, function, best_fit,
@@ -71,14 +71,14 @@ def make_data_plot(name, raw_data, count, figures_dir):
     @returns :: a figure of the raw data saved as a .png file
     """
 
-    data_fig=plot()
+    data_fig = plot()
     data_fig.add_data(raw_data)
     data_fig.labels['y'] = "Arbitrary units"
     data_fig.labels['x'] = "Time ($\mu s$)"
     data_fig.labels['title'] = name + " " + str(count)
-    data_fig.title_size=10
+    data_fig.title_size = 10
     data_fig.make_scatter_plot(figures_dir + os.sep + "Data Plot " + name +
-                               " " + str(count)+".png")
+                               " " + str(count) + ".png")
 
 
 def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
@@ -96,7 +96,7 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
                 superimposed, saved as a .png file
     """
 
-    fig=plot()
+    fig = plot()
     fig.add_data(raw_data)
     best_fit.markers = ''
     best_fit.linestyle = '-'
@@ -108,7 +108,7 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     fig.labels['y'] = "Arbitrary units"
     fig.labels['x'] = "Time ($\mu s$)"
     fig.labels['title'] = name + " " + str(count)
-    fig.title_size=10
+    fig.title_size = 10
     figure_name = (figures_dir + os.sep + "Fit for " + name + " " +
                    str(count) + ".png")
     fig.make_scatter_plot(figure_name)
@@ -158,7 +158,6 @@ def get_start_guess_data(software, data_struct, function, problem):
 
     @param software ::
     """
-
     if software == 'mantid':
         return get_mantid_starting_guess_data(data_struct, function, problem)
     elif software == 'scipy':
@@ -183,7 +182,7 @@ def get_scipy_starting_guess_data(data_struct, function):
     xData = data_struct[0]
     initial_params = function[1]
 
-    yData = function[0](xData,*initial_params)
+    yData = function[0](xData, *initial_params)
     return xData, yData
 
 
@@ -202,17 +201,18 @@ def get_mantid_starting_guess_data(wks_created, function, problem):
     import mantid.simpleapi as msapi
 
     fit_result = msapi.Fit(function, wks_created, Output='ws_fitting_test',
-                            Minimizer='Levenberg-Marquardt',
-                            CostFunction='Least squares',
-                            IgnoreInvalidData=True,
-                            StartX=problem.start_x, EndX=problem.end_x,
-                            MaxIterations=0)
+                           Minimizer='Levenberg-Marquardt',
+                           CostFunction='Least squares',
+                           IgnoreInvalidData=True,
+                           StartX=problem.start_x, EndX=problem.end_x,
+                           MaxIterations=0)
 
     tmp = msapi.ConvertToPointData(fit_result.OutputWorkspace)
     xData = tmp.readX(1)
     yData = tmp.readY(1)
 
     return xData, yData
+
 
 def get_sasview_starting_guess_data(data_struct, problem, function):
     """
@@ -225,7 +225,6 @@ def get_sasview_starting_guess_data(data_struct, problem, function):
     @return :: data describing the starting guess obtained by passing
                the x values to the fitted function
     """
-
     yData = problem.eval_f(data_struct.x, function[1])
 
     return data_struct.x, yData

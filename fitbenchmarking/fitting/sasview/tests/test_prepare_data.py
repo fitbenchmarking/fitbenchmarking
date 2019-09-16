@@ -1,15 +1,8 @@
 from __future__ import (absolute_import, division, print_function)
 
 import unittest
-import os
 import numpy as np
-
 import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-parent_dir = os.path.dirname(os.path.normpath(parent_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
 
 try:
     import sasmodels.data
@@ -21,12 +14,12 @@ except:
           '******************************************')
     sys.exit()
 
-from fitting.sasview.prepare_data import prepare_data
-from fitting.sasview.prepare_data import misc_preparations
-from fitting.sasview.prepare_data import apply_x_data_range
+from fitbenchmarking.fitting.sasview.prepare_data import prepare_data
+from fitbenchmarking.fitting.sasview.prepare_data import misc_preparations
+from fitbenchmarking.fitting.sasview.prepare_data import apply_x_data_range
 
-from parsing.parse_nist_data import FittingProblem
-from mock_problem_files.get_problem_files import get_file
+from fitbenchmarking.parsing.parse_nist_data import FittingProblem
+from fitbenchmarking.mock_problem_files.get_problem_files import get_file
 
 
 class SasViewTests(unittest.TestCase):
