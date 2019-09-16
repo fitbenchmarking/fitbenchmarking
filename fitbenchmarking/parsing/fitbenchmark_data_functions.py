@@ -7,8 +7,8 @@ from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
 import re
-from fitting.mantid.externals import gen_func_obj, set_ties
-from utils.logging_setup import logger
+from fitbenchmarking.fitting.mantid.externals import gen_func_obj, set_ties
+from fitbenchmarking.utils.logging_setup import logger
 
 
 def fitbenchmark_func_definitions(functions_string):

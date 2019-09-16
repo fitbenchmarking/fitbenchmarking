@@ -1,11 +1,13 @@
 from __future__ import (absolute_import, division, print_function)
 
 import os
-from parsing import base_fitting_problem
+from fitbenchmarking.parsing import base_fitting_problem
 import numpy as np
 
-from utils.logging_setup import logger
-from parsing.fitbenchmark_data_functions import fitbenchmark_func_definitions, get_fit_function_without_kwargs
+from fitbenchmarking.utils.logging_setup import logger
+from fitbenchmarking.parsing.fitbenchmark_data_functions import (
+    fitbenchmark_func_definitions, get_fit_function_without_kwargs
+)
 
 
 class FittingProblem(base_fitting_problem.BaseFittingProblem):
@@ -91,7 +93,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """
         Find/create the (full) path to a data_file specified in a FitBenchmark definition file, where
-        the data_file is search for in the directory of the definition file and subfolders of this 
+        the data_file is search for in the directory of the definition file and subfolders of this
         file
 
         @param full_path_of_fitting_def_file :: (full) path of a FitBenchmark definition file
@@ -155,8 +157,3 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
             data_points[idx, :] = point
 
         return data_points
-
-
-
-
-

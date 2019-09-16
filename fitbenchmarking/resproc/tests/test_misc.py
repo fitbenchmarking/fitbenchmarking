@@ -1,18 +1,10 @@
 from __future__ import (absolute_import, division, print_function)
 
 import unittest
-import os
 
-# Delete four lines below when automated tests are enabled
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
-
-from resproc.misc import display_name_for_minimizers
-from resproc.misc import weighted_suffix_string
-from resproc.misc import build_items_links
+from fitbenchmarking.resproc.misc import display_name_for_minimizers
+from fitbenchmarking.resproc.misc import weighted_suffix_string
+from fitbenchmarking.resproc.misc import build_items_links
 
 
 class MiscTests(unittest.TestCase):

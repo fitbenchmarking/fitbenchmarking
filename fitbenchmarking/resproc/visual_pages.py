@@ -8,8 +8,8 @@ import numpy as np
 import os
 import re
 from docutils.core import publish_string
-from resproc import fitdetails_tbls
-from utils.logging_setup import logger
+from fitbenchmarking.resproc import fitdetails_tbls
+from fitbenchmarking.utils.logging_setup import logger
 
 # Some naming conventions for the output files
 FILENAME_EXT_TXT = 'txt'
@@ -332,4 +332,3 @@ def save_page(rst_text, prob_name, file_path):
         logger.info('Saved {prob_name}.{extension} to {working_directory}'.
                     format(prob_name=prob_name, extension=FILENAME_EXT_HTML,
                            working_directory=file_path[file_path.find('fitbenchmarking'):]))
-

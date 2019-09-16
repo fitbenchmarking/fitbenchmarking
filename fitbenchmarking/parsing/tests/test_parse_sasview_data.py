@@ -7,12 +7,6 @@ import json
 
 # Delete four lines below when automated tests are enabled
 import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-fb_dir = os.path.dirname(os.path.normpath(main_dir))
-sys.path.insert(0, main_dir)
-sys.path.insert(1,fb_dir)
 
 try:
     import sasmodels.data
@@ -24,11 +18,11 @@ except:
           '******************************************')
     sys.exit()
 
-from parsing.parse import parse_problem_file
-from parsing.parse import check_problem_attributes
-from parsing.parse import determine_problem_type
-from parsing.parse_sasview_data import FittingProblem
-from mock_problem_files.get_problem_files import get_file
+from fitbenchmarking.parsing.parse import parse_problem_file
+from fitbenchmarking.parsing.parse import check_problem_attributes
+from fitbenchmarking.parsing.parse import determine_problem_type
+from fitbenchmarking.parsing.parse_sasview_data import FittingProblem
+from fitbenchmarking.mock_problem_files.get_problem_files import get_file
 
 
 class ParseSasViewTests(unittest.TestCase):
