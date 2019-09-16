@@ -2,7 +2,7 @@
 name: Bug report
 about: Report an error which requires fixing
 title: ''
-labels: bug
+labels: Bug
 
 ---
 
