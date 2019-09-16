@@ -40,9 +40,9 @@ Try it out with:
 FitBenchmarking also works with [Mantid](https://www.mantidproject.org/Main_Page), however this is not installed by default.
 To enable using Mantid, you should install it as follows:
 
-#### Linux/MacOS ####
+#### Linux ####
 Install mantid with:
-    `python externals setup -s mantid`
+    `python setup.py externals -s mantid`
 #### Windows ####
 Follow the instructions on the Mantid download page, found [here](https://download.mantidproject.org/windows.html).
 
