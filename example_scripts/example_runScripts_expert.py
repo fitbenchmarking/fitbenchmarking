@@ -91,9 +91,6 @@ for sub_dir in problem_sets:
 
     test_data = glob.glob(data_dir + '/*.*')
 
-    if test_data == []:
-        print('Problem set {} not found'.format(sub_dir))
-        continue
 
     print('\nRunning the benchmarking on the {} problem set\n'.format(group_name))
 

@@ -201,14 +201,15 @@ class CreateDirsTests(unittest.TestCase):
     neutron_problems = self.all_neutron_problems()
 
     paths_to_neutron_problems = \
-        get_problem_files(base_path_neutron)[0]
+        get_problem_files(base_path_neutron)
     # Please see the above for loop comments for
     # a description of this one
     paths_to_neutron_problems_expected = []
     for neutron_level_group in neutron_problems:
         paths_to_level_group = \
             [os.path.join(base_path_neutron, neutron_prob_name)
-            for neutron_prob_name in neutron_level_group]
+             for neutron_prob_name in neutron_level_group]
+
         paths_to_neutron_problems_expected.append(paths_to_level_group)
 
     self.assertListEqual(paths_to_neutron_problems_expected[0],

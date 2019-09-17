@@ -57,46 +57,28 @@ def _benchmark(user_input, problem_group):
     group.
 
     @param user_input :: all the information specified by the user
-    @param problem_group :: list blocks of paths to problem files in the group
-                            e.g. [['NIST/low_difficulty/file1.dat',
-                                   'NIST/low_difficulty/file2.dat',
-                                   ...],
-                                  ['NIST/average_difficulty/file1.dat',
-                                   'NIST/average_difficulty/file2.dat',
-                                   ...],
+    @param problem_group :: list of paths to problem files in the group
+                            e.g. ['NIST/low_difficulty/file1.dat',
+                                  'NIST/low_difficulty/file2.dat',
                                   ...]
 
     @returns :: array of result objects, per problem per user_input
     """
 
+    parsed_problems = [parse.parse_problem_file(p) for p in problem_group]
+
     if not isinstance(user_input, list):
-        list_block_results = [do_fitbm_block(user_input, p) for p in problem_group]
+        list_prob_results = [fitbm_one_prob(user_input, p) for p in parsed_problems]
 
     else:
-        list_block_results = [do_fitbm_block(u, p)
-                              for u in user_input
-                              for p in problem_group]
+        list_prob_results = [fitbm_one_prob(u, p)
+                             for u in user_input
+                             for p in parsed_problems]
 
-    # Flatten blocks into single list
-    list_prob_results = [result for block in list_block_results for result in block]
+    # Flatten
+    list_prob_results = [res
+                         for tmp_list in list_prob_results
+                         for res in tmp_list]
 
     return list_prob_results
 
-
-def do_fitbm_block(user_input, problem_block):
-    """
-    Fit benchmark a block of problems.
-
-    @param user_input :: all the information specified by the user
-    @param problem_block :: array of paths to problem files in the block
-
-    @returns :: array of result objects
-    """
-
-    results_per_problem = []
-    for prob_file in problem_block:
-        problem = parse.parse_problem_file(prob_file)
-        results_prob = fitbm_one_prob(user_input, problem)
-        results_per_problem.extend(results_prob)
-
-    return results_per_problem

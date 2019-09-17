@@ -92,20 +92,18 @@ def get_problem_files(data_dir):
 
     @param data_dir :: directory containing the problems
 
-    @returns :: array containing blocks of paths to the problems
+    @returns :: array containing of paths to the problems
                 e.g. In NIST we would have
-                [[low_difficulty/..., ...], [average_difficulty/..., ...], ...]
+                [low_difficulty/file1.txt, ..., ...]
     """
-    probs_all = []
-    dirs = filter(os.path.isdir, os.listdir(data_dir))
-    if dirs == [] or dirs == ['data_files']:
-        dirs.insert(0, data_dir)
-    for directory in dirs:
-        test_data = glob.glob(directory + '/*.*')
-        problems = [os.path.join(directory, data) for data in test_data]
-        problems.sort()
-        for problem in problems:
-            logger.info(problem)
-        probs_all.append(problems)
 
-    return probs_all
+    test_data = glob.glob(data_dir + '/*.*')
+    if test_data == []:
+        raise ValueError('"{}" not recognised as a dataset.'.format(data_dir) +
+                         'Check that it contains problem files and try again.') 
+    problems = [os.path.join(data_dir, data) for data in test_data]
+    problems.sort()
+    for problem in problems:
+        logger.info(problem)
+
+    return problems
