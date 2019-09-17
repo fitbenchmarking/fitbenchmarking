@@ -9,8 +9,8 @@ from fitbenchmarking.fitting.mantid.main import chisq
 from fitbenchmarking.fitting.mantid.main import parse_result
 from fitbenchmarking.fitting.mantid.main import get_ignore_invalid
 
-from parsing.parse_nist_data import FittingProblem
-from mock_problem_files.get_problem_files import get_file
+from fitbenchmarking.parsing.parse_nist_data import FittingProblem
+from fitbenchmarking.mock_problem_files.get_problem_files import get_file
 
 
 class MantidTests(unittest.TestCase):

@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import mantid.simpleapi as msapi
 
-from fitbenchmarking.fitbenchmarking.fitting.mantid.func_def import (
+from fitbenchmarking.fitting.mantid.func_def import (
     function_definitions
 )
 from fitbenchmarking.fitting.mantid.func_def import (

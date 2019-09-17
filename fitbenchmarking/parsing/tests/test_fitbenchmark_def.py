@@ -16,7 +16,7 @@ from fitbenchmarking.parsing.fitbenchmark_data_functions import get_fitbenchmark
 from fitbenchmarking.mock_problem_files.get_problem_files import get_file
 
 
-from parsing.parse_fitbenchmark_data import FittingProblem
+from fitbenchmarking.parsing.parse_fitbenchmark_data import FittingProblem
 
 class ScipyTests(unittest.TestCase):
 
