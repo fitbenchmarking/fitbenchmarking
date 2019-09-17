@@ -23,7 +23,7 @@ fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
 sys.path.insert(0, scripts_folder)
 
-from fitting_benchmarking import do_benchmarking
+from fitting_benchmarking import _benchmark
 from utils import misc
 from utils import create_dirs
 from results_output import save_tables, generate_tables, \
@@ -113,7 +113,7 @@ for sub_dir in problem_sets:
                                       group_results_dir, use_errors)
 
     # Loops through group of problems and benchmark them
-    prob_results = do_benchmarking(user_input, problem_group)
+    prob_results = _benchmark(user_input, problem_group)
 
     print('\nProducing output for the {} problem set\n'.format(group_name))
 

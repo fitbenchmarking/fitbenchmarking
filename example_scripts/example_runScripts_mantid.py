@@ -34,8 +34,8 @@ except:
           '******************************************')
     sys.exit()
 
-from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
-from results_output import save_results_tables as printTables
+from fitting_benchmarking import fitbenchmark_group
+from results_output import save_results_tables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
 software = ["mantid"]
@@ -103,15 +103,20 @@ for sub_dir in problem_sets:
         continue
 
     print('\nRunning the benchmarking on the {} problem set\n'.format(label))
-    results, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
-                                           data_dir=data_dir,
-                                           use_errors=use_errors, results_dir=results_dir)
+    results, results_dir = fitbenchmark_group(group_name=label,
+                                              software_options=software_options,
+                                              data_dir=data_dir,
+                                              use_errors=use_errors,
+                                              results_dir=results_dir)
 
     print('\nProducing output for the {} problem set\n'.format(label))
 
     # Display the runtime and accuracy results in a table
-    printTables(software_options, results,
-                group_name=label, use_errors=use_errors,
-                color_scale=color_scale, results_dir=results_dir)
+    save_results_tables(software_options=software_options,
+                        results_per_test=results,
+                        group_name=label,
+                        use_errors=use_errors,
+                        color_scale=color_scale,
+                        results_dir=results_dir)
 
     print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))

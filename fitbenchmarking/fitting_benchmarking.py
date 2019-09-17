@@ -15,11 +15,10 @@ from utils import create_dirs, misc
 from fitbenchmark_one_problem import fitbm_one_prob
 
 
-def do_fitting_benchmark(group_name, software_options, data_dir,
-                         use_errors=True, results_dir=None):
+def fitbenchmark_group(group_name, software_options, data_dir,
+                       use_errors=True, results_dir=None):
     """
-    This function does the fitting benchmarking for a
-    specified group of problems.
+    Gather the user input and list of paths. Call benchmarking on these.
 
     @param group_name :: is the name (label) for a group. E.g. the name for the group of problems in
                          "NIST/low_difficulty" may be picked to be NIST_low_difficulty
@@ -47,12 +46,12 @@ def do_fitting_benchmark(group_name, software_options, data_dir,
     user_input = misc.save_user_input(software, minimizers, group_name,
                                       group_results_dir, use_errors)
 
-    prob_results = do_benchmarking(user_input, problem_group)
+    prob_results = _benchmark(user_input, problem_group)
 
     return prob_results, results_dir
 
 
-def do_benchmarking(user_input, problem_group):
+def _benchmark(user_input, problem_group):
     """
     Loops through software and benchmarks each problem within the problem
     group.
