@@ -125,14 +125,14 @@ for sub_dir in problem_sets:
     linked_problems = visual_pages.create_linked_probs(prob_results,
                                                        group_name, results_dir)
 
-    # Generates accuracy and runtime normalised tables and summary tables
-    norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = generate_tables(prob_results, minimizers)
+    # Generates accuracy and runtime tables and summary tables
+    acc_rankings, runtimes, sum_cells_acc, sum_cells_runtime = generate_tables(prob_results, minimizers)
 
     # Creates an accuracy table
-    acc_tbl = create_acc_tbl(minimizers, linked_problems, norm_acc_rankings, use_errors, color_scale)
+    acc_tbl = create_acc_tbl(minimizers, linked_problems, acc_rankings, use_errors, color_scale)
 
     # Creates an runtime table
-    runtime_tbl = create_runtime_tbl(minimizers, linked_problems, norm_runtimes, use_errors, color_scale)
+    runtime_tbl = create_runtime_tbl(minimizers, linked_problems, runtimes, use_errors, color_scale)
 
     # Saves accuracy minimizer results
     save_tables(tables_dir, acc_tbl, use_errors, group_name, 'acc')
