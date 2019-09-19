@@ -3,9 +3,6 @@ from __future__ import (absolute_import, division, print_function)
 import unittest
 import os
 import numpy as np
-import json
-
-# Delete four lines below when automated tests are enabled
 import sys
 
 try:
