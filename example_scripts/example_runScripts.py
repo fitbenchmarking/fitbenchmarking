@@ -1,6 +1,7 @@
 """
 This example script is designed to demonstrate the features of fitbenchmarking to benchmark
-the performance of Scipy minimizers against NIST-type problem definition files.
+the performance of Scipy and SasView minimizers against the NIST-type problem definition files
+and the SAS_modelling problems.
 """
 
 
@@ -21,19 +22,21 @@ current_path = os.path.dirname(os.path.realpath(__file__))
 fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
 sys.path.insert(0, scripts_folder)
+sys.path.insert(1, fitbenchmarking_folder)
 
 from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from results_output import save_results_tables as printTables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-software = ['scipy']
+software = ['scipy', 'sasview']
+
 software_options = {'software': software}
 
 # User defined minimizers
-# custom_minimizers = {"mantid": ["BFGS", "Simplex"],
-#               "scipy": ["lm", "trf", "dogbox"]}
+# e.g. custom_minimizers = {"scipy": ["lm", "trf", "dogbox"],
+#                           "sasview": ["amoeba", "lm", "newton", "de", "pt", "mp"]}
+# None will default to the list on the options file
 custom_minimizers = None
-
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
 if len(sys.argv) > 1:
@@ -78,7 +81,7 @@ color_scale = [(1.1, 'ranking-top-1'),
 # problem_sets = ["CUTEst", "Muon", "Neutron", "NIST/average_difficulty", "NIST/high_difficulty", "NIST/low_difficulty",
 #                "SAS_modelling/1D"]
 
-problem_sets = ["NIST/low_difficulty"]
+problem_sets = ["NIST/low_difficulty", "SAS_modelling/1D"]
 
 for sub_dir in problem_sets:
     # generate group label/name used for problem set
