@@ -1,24 +1,13 @@
 from __future__ import (absolute_import, division, print_function)
 
 import unittest
-import os
 import numpy as np
 import mantid.simpleapi as msapi
 
-# Delete four lines below when automated tests are enabled
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-parent_dir = os.path.dirname(os.path.normpath(parent_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
-
-from fitting.mantid.prepare_data import wks_cost_function
-from fitting.mantid.prepare_data import setup_errors
-from fitting.mantid.prepare_data import convert_back
-
-from parsing.parse_nist_data import FittingProblem
-from mock_problem_files.get_problem_files import get_file
+from fitbenchmarking.fitting.mantid.prepare_data import wks_cost_function
+from fitbenchmarking.fitting.mantid.prepare_data import setup_errors
+from fitbenchmarking.parsing.parse_nist_data import FittingProblem
+from fitbenchmarking.mock_problem_files.get_problem_files import get_file
 
 
 class MantidTests(unittest.TestCase):

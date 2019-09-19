@@ -4,11 +4,8 @@ Methods that prepare the data to be used by the mantid fitting software.
 
 from __future__ import (absolute_import, division, print_function)
 
-import copy
 import numpy as np
 import mantid.simpleapi as msapi
-
-from utils.logging_setup import logger
 
 
 def wks_cost_function(problem, use_errors=True):
@@ -38,6 +35,7 @@ def wks_cost_function(problem, use_errors=True):
 
     return wks_created, cost_function
 
+
 def setup_errors(problem):
     """
     Gets errors on the data points from the problem object if there are
@@ -56,6 +54,7 @@ def setup_errors(problem):
     else:
         # True errors
         return problem.data_e
+
 
 def convert_back(wks_used, problem, use_errors):
     """

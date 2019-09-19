@@ -4,20 +4,12 @@ import unittest
 import os
 import numpy as np
 
-# Delete four lines below when automated tests are enabled
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-parent_dir = os.path.dirname(os.path.normpath(parent_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
-
-from fitting.scipy.main import benchmark
-from fitting.scipy.main import fit
-from fitting.scipy.main import execute_fit
-from fitting.scipy.main import chisq
-from fitting.scipy.main import parse_result
-from fitting.scipy.main import get_fittedy
+from fitbenchmarking.fitting.scipy.main import benchmark
+from fitbenchmarking.fitting.scipy.main import fit
+from fitbenchmarking.fitting.scipy.main import execute_fit
+from fitbenchmarking.fitting.scipy.main import chisq
+from fitbenchmarking.fitting.scipy.main import parse_result
+from fitbenchmarking.fitting.scipy.main import get_fittedy
 
 
 class ScipyTests(unittest.TestCase):

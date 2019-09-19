@@ -1,26 +1,22 @@
 from __future__ import (absolute_import, division, print_function)
 
 import unittest
-import os
 import numpy as np
 
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-parent_dir = os.path.dirname(os.path.normpath(parent_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
+from fitbenchmarking.fitting.scipy.func_def import function_definitions
+from fitbenchmarking.fitting.scipy.func_def import get_fin_function_def
+from fitbenchmarking.fitting.scipy.func_def import get_init_function_def
 
-from fitting.scipy.func_def import function_definitions
-from fitting.scipy.func_def import get_fin_function_def
-from fitting.scipy.func_def import get_init_function_def
+from fitbenchmarking.parsing.parse_nist_data import (
+    FittingProblem as NISTFittingProblem
+)
+from fitbenchmarking.parsing.parse_fitbenchmark_data import (
+    FittingProblem as FBFittingProblem
+)
+from fitbenchmarking.mock_problem_files.get_problem_files import get_file
 
-from parsing.parse_nist_data import FittingProblem as NISTFittingProblem
-from parsing.parse_fitbenchmark_data import FittingProblem as FBFittingProblem
-from mock_problem_files.get_problem_files import get_file
 
 class ScipyTests(unittest.TestCase):
-
     def NIST_problem(self):
         """
         Helper function.
