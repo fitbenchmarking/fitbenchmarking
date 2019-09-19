@@ -7,7 +7,8 @@ Here you will find all you need in order to get started.
 .. toctree::
     :maxdepth: 2
     :caption: Contents:
-
+    
+    guidelines
     getting_started
     examples
 
