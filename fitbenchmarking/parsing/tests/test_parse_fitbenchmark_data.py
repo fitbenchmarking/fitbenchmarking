@@ -5,19 +5,12 @@ import os
 import numpy as np
 import json
 
-# Delete four lines below when automated tests are enabled
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
-
-from fitting.mantid.externals import store_main_problem_data
-from parsing.parse import parse_problem_file
-from parsing.parse import check_problem_attributes
-from parsing.parse import determine_problem_type
-from parsing.parse_fitbenchmark_data import FittingProblem
-from mock_problem_files.get_problem_files import get_file
+from fitbenchmarking.fitting.mantid.externals import store_main_problem_data
+from fitbenchmarking.parsing.parse import parse_problem_file
+from fitbenchmarking.parsing.parse import check_problem_attributes
+from fitbenchmarking.parsing.parse import determine_problem_type
+from fitbenchmarking.parsing.parse_fitbenchmark_data import FittingProblem
+from fitbenchmarking.mock_problem_files.get_problem_files import get_file
 
 
 class ParseFitbenchmarkTests(unittest.TestCase):

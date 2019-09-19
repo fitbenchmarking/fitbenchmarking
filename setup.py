@@ -14,6 +14,15 @@ setup(name='FitBenchmarking',
       install_requires=['docutils', 'numpy<1.17', 'matplotlib<3.0',
                         'scipy>=0.17,<1.3', 'bumps', 'sasmodels', 'lxml', 'h5py'],
       zip_safe=False,
-      cmdclass={'externals': InstallExternals,
-                'help': Help}
-      )
+      cmdclass={
+          'externals': InstallExternals,
+          'help': Help,
+      },
+      package_data={'fitbenchmarking': ['resproc/color_definitions.txt',
+                                        'mock_problem_files/*.txt',
+                                        'mock_problem_files/*.dat',
+                                        'mock_problem_files/*.nxs',
+                                        'fitbenchmarking_default_options.json'],
+                    'benchmark_problems': ['NIST/low_difficulty/*',
+                                           'Neutron/*']},
+     )

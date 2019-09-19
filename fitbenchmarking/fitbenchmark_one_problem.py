@@ -7,11 +7,11 @@ from __future__ import (absolute_import, division, print_function)
 import sys
 import numpy as np
 
-from fitting import prerequisites as prereq
-from fitting import misc
-from fitting.plotting import plots
+from fitbenchmarking.fitting import prerequisites as prereq
+from fitbenchmarking.fitting import misc
+from fitbenchmarking.fitting.plotting import plots
 
-from utils.logging_setup import logger
+from fitbenchmarking.utils.logging_setup import logger
 
 
 def fitbm_one_prob(user_input, problem):

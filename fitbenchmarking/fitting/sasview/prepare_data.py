@@ -7,8 +7,6 @@ from __future__ import (absolute_import, division, print_function)
 import numpy as np
 from sasmodels.data import empty_data1D, Data1D
 
-from utils.logging_setup import logger
-
 def prepare_data(problem, use_errors):
     """
     Prepares the data to be used in the fitting process.
@@ -71,6 +69,3 @@ def apply_x_data_range(problem):
     problem.data_e = np.array(problem.data_e)[start_idx:end_idx + 1]
     problem.data_e[problem.data_e == 0] = 0.00000001
     return problem
-
-
-

@@ -3,10 +3,10 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import numpy as np
 import re
-from parsing import base_fitting_problem
+from fitbenchmarking.parsing import base_fitting_problem
 
-from utils.logging_setup import logger
-from parsing.nist_data_functions import nist_func_definitions
+from fitbenchmarking.utils.logging_setup import logger
+from fitbenchmarking.parsing.nist_data_functions import nist_func_definitions
 
 
 class FittingProblem(base_fitting_problem.BaseFittingProblem):
@@ -331,7 +331,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         @param x_data :: list containing x values
         @return :: the start and end values of the x data
         """
-        
+
         sorted_x_data = sorted(x_data)
 
         start_x = sorted_x_data[0]
