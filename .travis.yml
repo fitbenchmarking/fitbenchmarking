@@ -22,6 +22,7 @@ before_install:
     h5py yaml ipython
 install:
   - pip install -r requirements.txt
+  - python setup.py build
   - python setup.py install
   - python setup.py externals
   - python -m easy_install --upgrade pyOpenSSL
