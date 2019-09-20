@@ -16,13 +16,6 @@ import glob
 # Otherwise recursion limit is reached and the interpreter throws an error
 sys.setrecursionlimit(10000)
 
-# Insert path to where the scripts are located, relative to
-# the example_scripts folder
-current_path = os.path.dirname(os.path.realpath(__file__))
-fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
-scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
-sys.path.insert(0, scripts_folder)
-
 try:
     import mantid.simpleapi as msapi
 except:
@@ -33,8 +26,9 @@ except:
           '******************************************')
     sys.exit()
 
-from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
-from results_output import save_results_tables as printTables
+from fitbenchmarking.fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
+from fitbenchmarking.results_output import save_results_tables as printTables
+
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
 software = ["mantid"]
@@ -42,24 +36,27 @@ software_options = {'software': software}
 
 # User defined minimizers
 custom_minimizers = {"mantid": ["Simplex"],
-              "scipy": ["lm", "trf", "dogbox"]}
+                     "scipy": ["lm", "trf", "dogbox"]}
 # custom_minimizers = None
 
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
+current_path = os.path.dirname(os.path.realpath(__file__))
 if len(sys.argv) > 1:
-  # Read custom minimizer options from file
-  software_options['minimizer_options'] = None
-  software_options['options_file'] = current_path + sys.argv[1]
+    # Read custom minimizer options from file
+    software_options['minimizer_options'] = None
+    software_options['options_file'] = current_path + sys.argv[1]
 elif custom_minimizers:
-  # Custom minimizer options:
-  software_options['minimizer_options'] = custom_minimizers
+    # Custom minimizer options:
+    software_options['minimizer_options'] = custom_minimizers
 else:
-  # Using default minimizers from
-  # fitbenchmarking/fitbenchmarking/fitbenchmarking_default_options.json
-  software_options['minimizer_options'] = None
+    # Using default minimizers from
+    # fitbenchmarking/fitbenchmarking/fitbenchmarking_default_options.json
+    software_options['minimizer_options'] = None
+
 
 # Benchmark problem directories
+fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
                                    'benchmark_problems')
 
@@ -89,28 +86,28 @@ problem_sets = ["CUTEst", "Muon", "Neutron", "NIST/average_difficulty", "NIST/hi
                 "SAS_modelling/1D"]
 
 for sub_dir in problem_sets:
-  # generate group label/name used for problem set
-  label = sub_dir.replace('/', '_')
+    # generate group label/name used for problem set
+    label = sub_dir.replace('/', '_')
 
-  # Create full path for the directory that holds a group of problem definition files
-  data_dir = os.path.join(benchmark_probs_dir, sub_dir)
+    # Create full path for the directory that holds a group of problem definition files
+    data_dir = os.path.join(benchmark_probs_dir, sub_dir)
 
-  test_data = glob.glob(data_dir + '/*.*')
+    test_data = glob.glob(data_dir + '/*.*')
 
-  if test_data == []:
-      print('Problem set {} not found'.format(sub_dir))
-      continue
+    if test_data == []:
+        print('Problem set {} not found'.format(sub_dir))
+        continue
 
-  print('\nRunning the benchmarking on the {} problem set\n'.format(label))
-  results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
-                                                   data_dir=data_dir,
-                                                   use_errors=use_errors, results_dir=results_dir)
+    print('\nRunning the benchmarking on the {} problem set\n'.format(label))
+    results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
+                                                     data_dir=data_dir,
+                                                     use_errors=use_errors, results_dir=results_dir)
 
-  print('\nProducing output for the {} problem set\n'.format(label))
-  for idx, group_results in enumerate(results_per_group):
-    # Display the runtime and accuracy results in a table
-    printTables(software_options, group_results,
-                group_name=label, use_errors=use_errors,
-                color_scale=color_scale, results_dir=results_dir)
+    print('\nProducing output for the {} problem set\n'.format(label))
+    for idx, group_results in enumerate(results_per_group):
+        # Display the runtime and accuracy results in a table
+        printTables(software_options, group_results,
+                    group_name=label, use_errors=use_errors,
+                    color_scale=color_scale, results_dir=results_dir)
 
-  print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
+    print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))

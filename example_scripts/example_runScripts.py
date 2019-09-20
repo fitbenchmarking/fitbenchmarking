@@ -15,15 +15,8 @@ import glob
 # Otherwise recursion limit is reached and the interpreter throws an error
 sys.setrecursionlimit(10000)
 
-# Insert path to where the scripts are located, relative to
-# the example_scripts folder
-current_path = os.path.dirname(os.path.realpath(__file__))
-fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
-scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
-sys.path.insert(0, scripts_folder)
-
-from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
-from results_output import save_results_tables as printTables
+from fitbenchmarking.fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
+from fitbenchmarking.results_output import save_results_tables as printTables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
 software = ['scipy']
@@ -36,6 +29,7 @@ custom_minimizers = None
 
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
+current_path = os.path.dirname(os.path.realpath(__file__))
 if len(sys.argv) > 1:
     # Read custom minimizer options from file
     software_options['minimizer_options'] = None
@@ -49,6 +43,7 @@ else:
     software_options['minimizer_options'] = None
 
 # Benchmark problem directories
+fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
                                    'benchmark_problems')
 

@@ -16,19 +16,12 @@ import glob
 # Otherwise recursion limit is reached and the interpreter throws an error
 sys.setrecursionlimit(10000)
 
-# Insert path to where the scripts are located, relative to
-# the example_scripts folder
-current_path = os.path.dirname(os.path.realpath(__file__))
-fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
-scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
-sys.path.insert(0, scripts_folder)
-
-from fitting_benchmarking import do_benchmarking
-from utils import misc
-from utils import create_dirs
-from results_output import save_tables, generate_tables, \
+from fitbenchmarking.fitting_benchmarking import do_benchmarking
+from fitbenchmarking.utils import misc
+from fitbenchmarking.utils import create_dirs
+from fitbenchmarking.results_output import save_tables, generate_tables, \
     create_acc_tbl, create_runtime_tbl
-from resproc import visual_pages
+from fitbenchmarking.resproc import visual_pages
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
 software = ['scipy']
@@ -54,6 +47,8 @@ else:
     software_options['minimizer_options'] = None
 
 # Benchmark problem directories
+current_path = os.path.dirname(os.path.realpath(__file__))
+fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
                                    'benchmark_problems')
 
@@ -128,13 +123,16 @@ for sub_dir in problem_sets:
                                                            group_name, results_dir)
 
         # Generates accuracy and runtime normalised tables and summary tables
-        norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = generate_tables(group_results, minimizers)
+        norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = generate_tables(
+            group_results, minimizers)
 
         # Creates an accuracy table
-        acc_tbl = create_acc_tbl(minimizers, linked_problems, norm_acc_rankings, use_errors, color_scale)
+        acc_tbl = create_acc_tbl(
+            minimizers, linked_problems, norm_acc_rankings, use_errors, color_scale)
 
         # Creates an runtime table
-        runtime_tbl = create_runtime_tbl(minimizers, linked_problems, norm_runtimes, use_errors, color_scale)
+        runtime_tbl = create_runtime_tbl(
+            minimizers, linked_problems, norm_runtimes, use_errors, color_scale)
 
         # Saves accuracy minimizer results
         save_tables(tables_dir, acc_tbl, use_errors, group_name, 'acc')
