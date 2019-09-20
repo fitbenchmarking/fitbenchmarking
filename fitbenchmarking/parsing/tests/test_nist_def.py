@@ -5,18 +5,14 @@ import os
 import numpy as np
 
 import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
 
-from fitting.scipy.func_def import function_definitions
-from parsing.nist_data_functions import nist_func_definitions
-from parsing.nist_data_functions import get_nist_param_names_and_values
-from parsing.nist_data_functions import format_function_scipy
+from fitbenchmarking.fitting.scipy.func_def import function_definitions
+from fitbenchmarking.parsing.nist_data_functions import nist_func_definitions
+from fitbenchmarking.parsing.nist_data_functions import get_nist_param_names_and_values
+from fitbenchmarking.parsing.nist_data_functions import format_function_scipy
 
-from parsing.parse_nist_data import FittingProblem
-from mock_problem_files.get_problem_files import get_file
+from fitbenchmarking.parsing.parse_nist_data import FittingProblem
+from fitbenchmarking.mock_problem_files.get_problem_files import get_file
 
 class ScipyTests(unittest.TestCase):
 

@@ -6,8 +6,8 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 
-from utils.logging_setup import logger
-from parsing import parse_nist_data
+from fitbenchmarking.utils.logging_setup import logger
+from fitbenchmarking.parsing import parse_nist_data
 
 
 def parse_problem_file(prob_file):
@@ -31,11 +31,10 @@ def parse_problem_file(prob_file):
         The script parse_fitbenchmark_data contains a method which uses mantid packages.
         To allow FitBenchmarking to analyse NIST problems independently of mantid, the import is purposely put here.
         """
-        from parsing import parse_fitbenchmark_data
+        from fitbenchmarking.parsing import parse_fitbenchmark_data
         problem = parse_fitbenchmark_data.FittingProblem(prob_file)
     elif prob_type == 'SasView':
-        
-        from parsing import parse_sasview_data
+        from fitbenchmarking.parsing import parse_sasview_data
         problem = parse_sasview_data.FittingProblem(prob_file)
 
     check_problem_attributes(problem)

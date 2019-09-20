@@ -7,7 +7,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import logging
-from utils import create_dirs
+from fitbenchmarking.utils import create_dirs
 
 current_path = os.path.dirname(os.path.realpath(__file__))
 fitbm_main_dir = os.path.abspath(os.path.join(current_path, os.pardir))
@@ -35,4 +35,3 @@ console = logging.StreamHandler()
 console.setLevel(logging.WARNING)
 console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
-

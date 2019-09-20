@@ -1,20 +1,14 @@
 from __future__ import absolute_import, division, print_function
 
 import unittest
-import os
 import numpy as np
 
-# Delete four lines below when automated tests are enabled
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
-
-from resproc.numpy_restables import (create_accuracy_runtime_tbls,
-                                     create_combined_tbls, create_norm_tbls,
-                                     create_summary_tbls)
-from utils import fitbm_result
+from fitbenchmarking.resproc.numpy_restables import (
+    create_accuracy_runtime_tbls,
+    create_combined_tbls, create_norm_tbls,
+    create_summary_tbls
+)
+from fitbenchmarking.utils import fitbm_result
 
 
 class NumpyRestablesTests(unittest.TestCase):
@@ -55,7 +49,7 @@ class NumpyRestablesTests(unittest.TestCase):
                               [5, 1, 180]])
 
     return norm_acc_rankings, norm_runtimes
-  
+
   def expected_combined_mock_tables(self):
 
     combined_acc = np.array([[[1, 1], [2, 2], [3, 3]],
@@ -63,7 +57,7 @@ class NumpyRestablesTests(unittest.TestCase):
 
     combined_run = np.array([[[1, 1], [2, 2], [3, 3]],
                              [[20, 5], [4, 1], [720, 180]]])
-                            
+
     return combined_acc, combined_run
 
   def expected_summary_mock_tables(self):

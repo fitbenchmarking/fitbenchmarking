@@ -3,12 +3,13 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import numpy as np
 import re
-from parsing import base_fitting_problem
+from fitbenchmarking.parsing import base_fitting_problem
 from sasmodels.data import load_data, empty_data1D
 from sasmodels.core import load_model
 from sasmodels.bumps_model import Experiment, Model
 
-from utils.logging_setup import logger
+from fitbenchmarking.utils.logging_setup import logger
+
 
 class FittingProblem(base_fitting_problem.BaseFittingProblem):
     """
@@ -59,7 +60,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         param_names = [(param.split('='))[0] for param in self.starting_values.split(',')]
         if len(param_list) == 1:
-            if isinstance(param_list[0],basestring):
+            if isinstance(param_list[0], basestring):
                 exec ("params = dict(" + param_list[0] + ")")
         else:
             param_string = ''
