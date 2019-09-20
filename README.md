@@ -24,7 +24,7 @@ For help of how to use the command line/terminal, click the hyperlink correspond
     * macOS: in a normal terminal run `/Applications/MantidPlot.app/Contents/MacOS/mantidpython`
 #### For macOS only ####
 6. On the mantidpython terminal, run the following IPython command:
-    - `!/usr/bin/python -m pip install docutils==0.12 --user`
+    - `!pip install docutils==0.12 --user`
 
 The above step is done to ensure that the compatible version of docutils packages (version 0.12) is installed. 
 
