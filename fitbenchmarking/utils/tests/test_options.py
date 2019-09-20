@@ -7,7 +7,7 @@ import json
 import os
 import unittest
 
-import fitbenchmarking.utils.options as options
+from fitbenchmarking.utils.options import get_option
 
 try:
     FileNotFoundError
@@ -37,22 +37,23 @@ class OptionsTests(unittest.TestCase):
 
     def testGetOption(self):
         # Test whole options dict
-        opts = options.get_option(options_file=self.options_file)
+        opts = get_option(options_file=self.options_file)
         self.assertEqual(opts, self.options)
 
         # Test individual options
         for k in self.options:
-            val = options.get_option(options_file=self.options_file, option=k)
+            val = get_option(options_file=self.options_file, option=k)
             self.assertEqual(val, self.options[k])
 
         # Test missing options
         with self.assertRaises(ValueError):
-            options.get_option(options_file=self.options_file, option='not_real')
+            get_option(options_file=self.options_file,
+                               option='not_real')
 
         # Test missing file
         with self.assertRaises(FileNotFoundError):
             fake_file = 'fake_{}'.format(self.options_file)
-            options.get_option(options_file=fake_file)
+            get_option(options_file=fake_file)
 
 
 if __name__ == '__main__':

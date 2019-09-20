@@ -4,18 +4,11 @@ import unittest
 import os
 import numpy as np
 
-# Delete four lines below when automated tests are enabled
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
+from fitbenchmarking.utils import fitbm_result
+from fitbenchmarking.parsing.parse_nist_data import FittingProblem
 
-from utils import fitbm_result
-from parsing.parse_nist_data import FittingProblem
-
-from fitting.misc import compute_chisq
-from fitting.misc import create_result_entry
+from fitbenchmarking.fitting.misc import compute_chisq
+from fitbenchmarking.fitting.misc import create_result_entry
 
 
 class FitMiscTests(unittest.TestCase):
@@ -26,8 +19,8 @@ class FitMiscTests(unittest.TestCase):
         /fitbenchmarking/benchmark_problems
         """
 
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        parent_dir = os.path.dirname(os.path.normpath(test_dir))
+        current_dir = os.path.dirname(__file__)
+        parent_dir = os.path.dirname(os.path.normpath(current_dir))
         main_dir = os.path.dirname(os.path.normpath(parent_dir))
         root_dir = os.path.dirname(os.path.normpath(main_dir))
         bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')

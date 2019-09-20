@@ -1,6 +1,5 @@
 from __future__ import (absolute_import, division, print_function)
-
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 
 
 class BaseFittingProblem(object):
@@ -42,7 +41,7 @@ class BaseFittingProblem(object):
         self._starting_value_ranges = None
 
     def read_file(self):
-        self._contents = open(self.fname, "r")
+        self._contents = open(self._fname, "r")
 
     def close_file(self):
         self._contents.close()
@@ -139,4 +138,3 @@ class BaseFittingProblem(object):
         if cls is BaseFittingProblem:
             raise TypeError("Base class {} may not be instantiated".format(cls))
         return object.__new__(cls, *args, **kwargs)
-

@@ -6,7 +6,7 @@ Functions that are dependent on mantid api and are used by external methods
 from __future__ import (absolute_import, division, print_function)
 
 import mantid.simpleapi as msapi
-from utils.logging_setup import logger
+from fitbenchmarking.utils.logging_setup import logger
 
 
 def gen_func_obj(function_name, params_set):
@@ -14,13 +14,14 @@ def gen_func_obj(function_name, params_set):
     Generates a mantid function object.
 
     @param function_name :: the name of the function to be generated
-    @params_set :: set of parameters per function extracted from the problem definition file
+    @params_set :: set of parameters per function extracted from the
+        problem definition file
 
     @returns :: mantid function object that can be called in python
     """
     params_set = (params_set.split(', ties'))[0]
 
-    exec "function_object = msapi." + function_name + "("+ params_set +")"
+    exec "function_object = msapi." + function_name + "(" + params_set + ")"
 
     return function_object
 
@@ -39,12 +40,12 @@ def set_ties(function_object, ties):
         for tie in ties_per_func:
             """
             param_str is a string of the parameter name in the mantid format
-            For a Mantid Composite Function, a formatted parameter name would 
+            For a Mantid Composite Function, a formatted parameter name would
             start with the function number and end with the parameter name.
-            For instance, f0.A would refer to a parameter A of the first 
+            For instance, f0.A would refer to a parameter A of the first
             function is a Composite Function.
             """
-            param_str = 'f'+str(idx)+'.'+(tie.split("'"))[0]
+            param_str = 'f' + str(idx) + '.' + (tie.split("'"))[0]
             function_object.fix(param_str)
 
     return function_object

@@ -1,19 +1,11 @@
 from __future__ import (absolute_import, division, print_function)
 
 import unittest
-import os
 import numpy as np
 
-# Delete four lines below when automated tests are enabled
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
-
-from parsing.parse import parse_problem_file
-from parsing.parse_nist_data import FittingProblem
-from mock_problem_files.get_problem_files import get_file
+from fitbenchmarking.parsing.parse import parse_problem_file
+from fitbenchmarking.parsing.parse_nist_data import FittingProblem
+from fitbenchmarking.mock_problem_files.get_problem_files import get_file
 
 
 class ParseNistTests(unittest.TestCase):
