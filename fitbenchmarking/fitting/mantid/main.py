@@ -9,9 +9,9 @@ import sys
 import numpy as np
 import mantid.simpleapi as msapi
 
-from utils.logging_setup import logger
-from fitting import misc
-from fitting.plotting import plot_helper
+from fitbenchmarking.utils.logging_setup import logger
+from fitbenchmarking.fitting import misc
+from fitbenchmarking.fitting.plotting import plot_helper
 
 
 MAX_FLOAT = sys.float_info.max
@@ -41,12 +41,13 @@ def benchmark(problem, wks_created, function, minimizers, cost_function):
         chi_sq, min_chi_sq, best_fit = \
             chisq(status, fit_wks, min_chi_sq, best_fit, minimizer)
         individual_result = \
-            misc.create_result_entry(problem, status, chi_sq, runtime, minimizer,
-                                     function, fin_function_def)
+            misc.create_result_entry(problem, status, chi_sq, runtime,
+                                     minimizer, function, fin_function_def)
 
         results_problem.append(individual_result)
 
     return results_problem, best_fit
+
 
 def fit(problem, wks_created, function, minimizer,
         cost_function='Least squares'):
@@ -65,8 +66,6 @@ def fit(problem, wks_created, function, minimizer,
                 the final function definition
                 and how much time it took for the fit to finish (float)
     """
-
-
     fit_result, t_start, t_end = None, None, None
     try:
         ignore_invalid = get_ignore_invalid(problem, cost_function)
@@ -127,7 +126,7 @@ def parse_result(fit_result, t_start, t_end):
 
     status = 'failed'
     fit_wks, fin_function_def, runtime = None, None, np.nan
-    if not fit_result is None:
+    if fit_result is not None:
         status = fit_result.OutputStatus
         fit_wks = fit_result.OutputWorkspace
         fin_function_def = str(fit_result.Function)

@@ -7,8 +7,8 @@ from __future__ import absolute_import, division, print_function
 import glob
 import os
 
-from utils import options, user_input
-from utils.logging_setup import logger
+from fitbenchmarking.utils import options, user_input
+from fitbenchmarking.utils.logging_setup import logger
 
 
 def get_minimizers(software_options):

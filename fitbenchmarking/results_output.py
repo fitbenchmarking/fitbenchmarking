@@ -7,11 +7,11 @@ from __future__ import (absolute_import, division, print_function)
 import logging
 import utils.misc
 
-from utils.logging_setup import logger
-from resproc import numpy_restables
-from resproc import rst_table
-from resproc import visual_pages
-from utils import create_dirs, options
+from fitbenchmarking.utils.logging_setup import logger
+from fitbenchmarking.resproc import numpy_restables
+from fitbenchmarking.resproc import rst_table
+from fitbenchmarking.resproc import visual_pages
+from fitbenchmarking.utils import create_dirs, options
 
 # Some naming conventions for the output files
 FILENAME_SUFFIX_ACCURACY = 'acc'

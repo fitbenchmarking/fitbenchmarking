@@ -8,11 +8,11 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import json
-from utils.logging_setup import logger
+from fitbenchmarking.utils.logging_setup import logger
 
-from parsing import parse
-from utils import create_dirs, misc
-from fitbenchmark_one_problem import fitbm_one_prob
+from fitbenchmarking.parsing import parse
+from fitbenchmarking.utils import create_dirs, misc
+from fitbenchmarking.fitbenchmark_one_problem import fitbm_one_prob
 
 
 def fitbenchmark_group(group_name, software_options, data_dir,

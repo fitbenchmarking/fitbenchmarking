@@ -4,7 +4,7 @@ General utility functions for calculating some attributes of the fit.
 
 from __future__ import (absolute_import, division, print_function)
 import numpy as np
-from utils import fitbm_result
+from fitbenchmarking.utils import fitbm_result
 
 
 def compute_chisq(differences):

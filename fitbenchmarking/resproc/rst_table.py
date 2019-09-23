@@ -7,10 +7,10 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import numpy as np
 from docutils.core import publish_string
-from resproc.misc import build_items_links
-from resproc.misc import display_name_for_minimizers
-from resproc.misc import weighted_suffix_string
-from utils.logging_setup import logger
+from fitbenchmarking.resproc.misc import build_items_links
+from fitbenchmarking.resproc.misc import display_name_for_minimizers
+from fitbenchmarking.resproc.misc import weighted_suffix_string
+from fitbenchmarking.utils.logging_setup import logger
 
 
 # Directory of this script (e.g. in source)
@@ -338,7 +338,7 @@ def cell_to_string(value, mode='abs'):
     @param value :: The value to convert
     @param mode :: The display mode
 
-    @returns :: String with the correct formatting 
+    @returns :: String with the correct formatting
     """
 
     if mode not in ['abs', 'rel', 'both']:

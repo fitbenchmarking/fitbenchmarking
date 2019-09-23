@@ -6,9 +6,6 @@ from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
 
-from utils.logging_setup import logger
-
-
 def prepare_data(problem, use_errors):
     """
     Prepares the data to be used in the fitting process.
@@ -34,7 +31,7 @@ def misc_preparations(problem, data_x, data_y, data_e):
     It calculates the errors if they are not presented in problem file
     itself by assuming a Poisson distribution. Additionally, it applies
     constraints to the data if such constraints are provided.
-    
+
     @return :: returns problem object with updated data
     """
     if len(data_x) != len(data_y):
@@ -59,13 +56,13 @@ def apply_x_data_range(problem):
     Crop the data to fit within specified start_x and end_x values if these are provided otherwise
     return unalternated problem object.
     Scipy don't take start_x and end_x, meaning SasView can on fit over the entire data array.
-    
+
     @return :: Modified problem object where data have been cropped
     """
 
-    if problem.start_x is None or problem.end_x is None: 
+    if problem.start_x is None or problem.end_x is None:
         return problem
-    
+
     start_x_diff = problem.data_x - problem.start_x
     end_x_diff = problem.data_x - problem.end_x
     start_idx = np.where(start_x_diff >= 0, start_x_diff, np.inf).argmin()

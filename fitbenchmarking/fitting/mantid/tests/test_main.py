@@ -1,30 +1,19 @@
 from __future__ import (absolute_import, division, print_function)
 
 import unittest
-import os
 import numpy as np
 import mantid.simpleapi as msapi
 
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-parent_dir = os.path.dirname(os.path.normpath(parent_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
+from fitbenchmarking.fitting.mantid.main import fit
+from fitbenchmarking.fitting.mantid.main import chisq
+from fitbenchmarking.fitting.mantid.main import parse_result
+from fitbenchmarking.fitting.mantid.main import get_ignore_invalid
 
-from fitting.mantid.main import benchmark
-from fitting.mantid.main import fit
-from fitting.mantid.main import chisq
-from fitting.mantid.main import parse_result
-from fitting.mantid.main import optimum
-from fitting.mantid.main import get_ignore_invalid
-
-from parsing.parse_nist_data import FittingProblem
-from mock_problem_files.get_problem_files import get_file
+from fitbenchmarking.parsing.parse_nist_data import FittingProblem
+from fitbenchmarking.mock_problem_files.get_problem_files import get_file
 
 
 class MantidTests(unittest.TestCase):
-
     def NIST_problem(self):
         """
         Helper function.
@@ -102,7 +91,8 @@ class MantidTests(unittest.TestCase):
 
         fit_status = 'success'
         fin_function_def = \
-            "name=UserFunction,Formula=b1*(1-exp( -b2*x)),b1=234.534,b2=0.00056228"
+            "name=UserFunction,Formula=b1*(1-exp( -b2*x))" \
+            ",b1=234.534,b2=0.00056228"
 
         return fit_status, fin_function_def
 
@@ -165,7 +155,8 @@ class MantidTests(unittest.TestCase):
         status = 'success'
         wks = msapi.CreateWorkspace(DataX=np.array([1, 2, 3, 4, 5, 6]),
                                     DataY=np.array([1, 2, 3, 4, 5, 6]),
-                                    DataE=np.sqrt(np.array([1, 2, 3, 4, 5, 6])),
+                                    DataE=np.sqrt(np.array([1, 2, 3,
+                                                            4, 5, 6])),
                                     NSpec=3)
         minimizer = 'Levenberg-Marquardt'
         min_chi_sq = 1000000

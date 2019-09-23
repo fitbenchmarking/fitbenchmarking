@@ -5,17 +5,9 @@ import os
 import shutil
 import json
 
-# Delete four lines below when automated tests are enabled
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
-sys.path.insert(0, parent_dir)
-
-from misc import get_minimizers
-from misc import setup_fitting_problems
-from misc import get_problem_files
+from fitbenchmarking.utils.misc import get_minimizers
+from fitbenchmarking.utils.misc import setup_fitting_problems
+from fitbenchmarking.utils.misc import get_problem_files
 
 
 class CreateDirsTests(unittest.TestCase):
@@ -27,7 +19,7 @@ class CreateDirsTests(unittest.TestCase):
     """
 
     current_dir = os.path.dirname(os.path.realpath(__file__))
-    parent_dir = os.path.dirname(os.path.normpath(test_dir))
+    parent_dir = os.path.dirname(os.path.normpath(current_dir))
     main_dir = os.path.dirname(os.path.normpath(parent_dir))
     root_dir = os.path.dirname(os.path.normpath(main_dir))
     bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
