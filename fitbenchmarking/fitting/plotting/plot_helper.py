@@ -18,6 +18,7 @@ class data:
     """
     Holds all the data that is used in the plotting process.
     """
+
     def __init__(self, name=None, x=[], y=[], E=[]):
         """
         Creates a data object.
@@ -55,12 +56,10 @@ class data:
         yData = self.y
         eData = self.E
 
-        for j in range(0, len(yData)):
-            for k in range(0, len(xData) - 1):
-                if xData[k] > xData[k + 1]:
-                    xData[k + 1], xData[k] = xData[k], xData[k + 1]
-                    yData[k + 1], yData[k] = yData[k], yData[k + 1]
-                    eData[k + 1], eData[k] = eData[k], eData[k + 1]
+        index = np.argsort(xData)
+        xData = xData[index]
+        yData = yData[index]
+        eData = eData[index]
 
 
 class plot(data):
