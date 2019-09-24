@@ -4,11 +4,6 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import sys
 
-# Avoid reaching the maximum recursion depth by setting recursion limit
-# This is useful when running multiple data set benchmarking
-# Otherwise recursion limit is reached and the interpreter throws an error
-sys.setrecursionlimit(10000)
-
 # Insert path to where the scripts are located, relative to
 # the example_scripts folder
 current_path = os.path.dirname(os.path.realpath(__file__))
