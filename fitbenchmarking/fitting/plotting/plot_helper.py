@@ -22,9 +22,14 @@ class data:
     def __init__(self, name=None, x=[], y=[], E=[]):
         """
         Creates a data object.
-        @param x :: the x data
-        @param y :: the y data
-        @param E :: the (y) errors
+        :param name: The name for the data
+        :type name: string
+        :param x: The x data
+        :type x: list of float
+        :param y: The y data
+        :type y: list of float
+        :param E: The (y) errors
+        :type E: list of float
         """
 
         if name is not None:
@@ -78,15 +83,17 @@ class plot(data):
     def add_data(self, inputData):
         """
         Adds the data to the main plot.
-        @param inputData :: the data to add to the plot
+        :param inputData: The data to add to the plot
+        :type inputData: data
         """
         self.data.append(inputData)
 
     def make_scatter_plot(self, save=""):
         """
         Creates a scatter plot.
-        @param save:: the name of the file to save to
-                      the default is not to save
+        :param save: The name of the file to save to
+                     the default is not to save
+        :type save: string
         """
 
         plt.figure()
@@ -113,7 +120,8 @@ class plot(data):
         Check if the data used for plotting is legitimate and
         do the plotting.
 
-        @param data :: object that holds all the relevant data
+        :param data: Object that holds all the relevant data
+        :type data: data
         """
         if len(data.x) == len(data.y):
             self.make_plot(data)
@@ -127,7 +135,8 @@ class plot(data):
         Make a plot of the data, with or without errors,
         as specified.
 
-        @param data :: object that holds all the relevant data
+        :param data: Object that holds all the relevant data
+        :type data: data
         """
 
         if data.showError:

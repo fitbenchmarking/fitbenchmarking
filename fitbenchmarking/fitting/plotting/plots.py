@@ -15,18 +15,25 @@ def make_plots(software, problem, data_struct, function, best_fit,
     """
     Makes plots of the raw data, best fit and starting guess.
 
-    @param prob :: object holding the problem information
-    @param data_struct :: a structure in which the data to be fitted is
-                          stored, can be e.g. mantid workspace, np array etc.
-    @param function :: the fitted function
-    @param best_fit :: data of the best fit (defined by lowest chisq)
-    @param previous_name :: name of the previous problem
-    @param count :: number of times prob problem was passed through
-    @param group_results_dir :: dir where results for the current group
-                                are stored
+    :param prob: Object holding the problem information
+    :type problem: object
+    :param data_struct: A structure in which the data to be fitted is
+                        stored, can be e.g. mantid workspace, np array etc.
+    :type data_struct: object
+    :param function: The fitted function
+    :type function: string
+    :param best_fit: Data of the best fit (defined by lowest chisq)
+    :type best_fit: object
+    :param previous_name: Name of the previous problem
+    :type previous_name: string
+    :param count: Number of times prob problem was passed through
+    :type count: int
+    :param group_results_dir: Dir where results for the current group
+                              are stored
+    :type group_results_dir: string
 
-    @returns :: the previous_name (str) and the count (int), plots are
-                saved to /group_results_dir/support_pages/figures
+    :return: The previous_name (plots are saved to /group_results_dir/support_pages/figures)
+    :rtype: string
     """
 
     figures_dir = create_dirs.figures(group_results_dir)
@@ -44,9 +51,11 @@ def get_data_points(problem):
     """
     Reads a mantid workspace and creates arrays of the x,y and error data.
 
-    @param problem :: object holding the problem information
+    :param problem: Object holding the problem information
+    :type problem: object
 
-    @returns :: data object for plotting
+    :return: Data object for plotting
+    :rtype: plot_helper.data
     """
 
     xData = problem.data_x
@@ -63,12 +72,14 @@ def make_data_plot(name, raw_data, count, figures_dir):
     """
     Creates a scatter plot of the raw data.
 
-    @param name :: name of the problem related to the data
-    @param raw_data :: the raw data stored into an object
-    @param count :: number of times same name was passed through
-    @param figures_dir :: dir where figures are stored
-
-    @returns :: a figure of the raw data saved as a .png file
+    :param name: Name of the problem related to the data
+    :type name: string
+    :param raw_data: The raw data stored into an object
+    :type raw_data: plot_helper.data
+    :param count: Number of times same name was passed through
+    :type count: int
+    :param figures_dir: Dir where figures are stored
+    :type figures_dir: string
     """
 
     data_fig = plot()
@@ -86,14 +97,16 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     Creates a scatter plot of the raw data with the best fit
     superimposed.
 
-    @param name :: name of the problem related to the data
-    @param raw_data :: the raw data stored into an object
-    @best_fit :: the best_fit data stored into a matrix
-    @param count :: number of times same name was passed through
-    @param figures_dir :: dir where figures are stored
-
-    @returns :: a figure of the raw data with the best fit
-                superimposed, saved as a .png file
+    :param name: Name of the problem related to the data
+    :type name: string
+    :param raw_data: The raw data stored into an object
+    :type raw_data: plot_helper.data
+    :param best_fit: The best_fit data stored into a matrix
+    :type best_fit: plot_helper.data
+    :param count: Number of times same name was passed through
+    :type count: int
+    :param figures_dir: Dir where figures are stored
+    :type figures_dir: string
     """
 
     fig = plot()
@@ -121,15 +134,21 @@ def make_starting_guess_plot(software, raw_data, function, data_struct,
     superimposed. The starting guess is obtained by setting the
     MaxIterations option of the mantid fit software to 0.
 
-    @param raw_data :: the raw data stored into an object
-    @param function :: string holding the function that was fitted
-    @param data_struct :: mantid workspace containing problem data
-    @param problem :: object holding the problem information
-    @param count :: number of times same name was passed through
-    @param figures_dir :: dir where figures are stored
-
-    @returns :: a figure of the raw data with the starting guess
-                superimposed, saved as a .png file.
+    :param software: The software used in the fit
+    :type software: string
+    :param raw_data: The raw data stored into an object
+    :type raw_data: plot_helper.data
+    :param function: The function that was fitted
+    :type function: string
+    :param data_struct: Structure containing problem data 
+                        (e.g. mantid workspace/np array)
+    :type data_struct: object
+    :param problem: Object holding the problem information
+    :type problem: object
+    :param count: Number of times same name was passed through
+    :type count: int
+    :param figures_dir: Dir where figures are stored
+    :type figures_dir: string
     """
 
     xData, yData =\
@@ -156,7 +175,18 @@ def get_start_guess_data(software, data_struct, function, problem):
     """
     Gets the starting guess data for various softwares.
 
-    @param software ::
+    :param software: The software used in fitting
+    :type software: string
+    :param data_struct: Structure containing problem data 
+                        (e.g. mantid workspace/np array)
+    :type data_struct: object
+    :param function: The function that was fitted
+    :type function: string
+    :param problem: Object holding the problem information
+    :type problem: object
+
+    :return: Data describing the starting guess
+    :rtype: plot_helper.data
     """
     if software == 'mantid':
         return get_mantid_starting_guess_data(data_struct, function, problem)
@@ -172,11 +202,14 @@ def get_scipy_starting_guess_data(data_struct, function):
     """
     Gets the scipy starting guess data
 
-    @param data_struct :: data structure containing data for the problem
-    @param function :: the fitted function
+    :param data_struct: Data structure containing data for the problem
+    :type data_struct: plot_helper.data
+    :param function: The fitted function
+    :type function: string
 
-    @returns :: data describing the starting guess obtained by passing
-                the x values to the fitted function
+    :return: x and y data for the starting guess from scipy
+    :rtype: 1D np.array
+    
     """
 
     xData = data_struct[0]
@@ -190,12 +223,15 @@ def get_mantid_starting_guess_data(wks_created, function, problem):
     """
     Gets the mantid starting guess data.
 
-    @param wks_created :: mantid workspace that holds the data for the problem
-    @param function :: the fitted function
-    @param problem :: object holding the problem information
+    :param wks_created: Mantid workspace that holds the data for the problem
+    :type wks_created: mantid workspace
+    :param function: The fitted function
+    :type function: string
+    :param problem: Object holding the problem information
+    :type problem: object
 
-    @returns :: data describing the starting guess obtained by using the
-                fitting software inside mantid
+    :return: x and y data for the starting guess from mantid
+    :rtype: 1D np.array
     """
 
     import mantid.simpleapi as msapi
@@ -218,12 +254,14 @@ def get_sasview_starting_guess_data(data_struct, problem, function):
     """
     Gets the SasView starting guess data.
 
-    @param data_struct :: data structure containing data for the problem
-                          in the SasView 1D data format (sasmodels.data.Data1D)
-    @param function :: the fitted function
+    :param data_struct: Data structure containing data for the problem
+                        in the SasView 1D data format (sasmodels.data.Data1D)
+    :type data_struct: object
+    :param function: The fitted function
+    :type function: string
 
-    @return :: data describing the starting guess obtained by passing
-               the x values to the fitted function
+    :return: x and y data for the starting guess from sasview
+    :rtype: 1D np.array
     """
     yData = problem.eval_f(data_struct.x, function[1])
 

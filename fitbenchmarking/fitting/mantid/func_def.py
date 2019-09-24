@@ -15,10 +15,12 @@ def function_definitions(problem):
     Transforms the prob.equation field into a function that can be
     understood by the mantid fitting software.
 
-    @param problem :: object holding the problem information
+    :param problem: Object holding the problem information
+    :type problem: object
 
-    @returns :: a function definitions string with functions that
-                mantid understands
+    :return: A function definitions string with functions that
+             mantid understands
+    :rtype: string
     """
 
     problem_type = extract_problem_type(problem)
@@ -42,12 +44,15 @@ def parse_function_definitions(problem, nb_start_vals):
     Helper function that parses the NIST function definitions and
     transforms them into a mantid-readable format
 
-    @param problem :: object holding the problem information created from
-                      Mantid problem definition file
-    @param nb_start_vals :: the number of starting points for a given
-                            function definition
+    :param problem: Object holding the problem information created from
+                    Mantid problem definition file
+    :type problem: object
+    :param nb_start_vals: The number of starting points for a given
+                          function definition
+    :type nb_start_vals: int
 
-    @returns :: Mantid formatted function definition (str)
+    :return: Mantid formatted function definition
+    :rtype: string
     """
 
     function_defs = []
@@ -87,10 +92,12 @@ def parse_sasview_function_definitions(problem):
     Helper function that parses the SasView function definitions and
     transforms them into a mantid-readable format
 
-    @param problem :: object holding the problem information created from SasView
+    :param problem :: Object holding the problem information created from SasView
                       problem definition file
+    :type problem: object
 
-    @returns :: Mantid formatted function definition (str)
+    :return: Mantid formatted function definition
+    :rtype: string
     """
 
     function_defs = []
@@ -129,9 +136,11 @@ def extract_problem_type(problem):
     This function gets the problem object and figures out the problem type
     from the file name that the class that it has been sent from
 
-    @param problem :: object holding the problem information
+    :param problem: Object holding the problem information
+    :type problem: object
 
-    @returns :: the type of the problem in capital letters (e.g. NIST)
+    :return: The type of the problem in capital letters (e.g. NIST)
+    :rtype: string
     """
     problem_file_name = problem.__class__.__module__
     problem_type = (problem_file_name.split('_')[1]).upper()

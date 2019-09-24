@@ -13,11 +13,14 @@ def wks_cost_function(problem, use_errors=True):
     Helper function that prepares the data workspace used by mantid
     for fitting.
 
-    @param problem :: object holding the problem information
-    @param use_errors :: whether to use errors or not
+    :param problem: Object holding the problem information
+    :type problem: object
+    :param use_errors: whether to use errors or not
+    :type use_errors: bool
 
-    @returns :: the fitting data in workspace format and the
-                cost function used in fitting
+    :return: the fitting data in workspace format and the
+             cost function used in fitting
+    :rtype: mantid workspace, string
     """
     data_x = problem.data_x
     data_y = problem.data_y
@@ -43,9 +46,11 @@ def setup_errors(problem):
     of the absolute y-value, since we cannot know how the data was
     obtained and this is a reasonable approximation.
 
-    @param problem :: object holding the problem information
+    :param problem: Object holding the problem information
+    :type problem: object
 
-    @returns :: array of errors of particular problem
+    :return: Array of errors of particular problem
+    :rtype: list
     """
 
     if problem.data_e is None:
@@ -60,8 +65,10 @@ def convert_back(wks_used, problem, use_errors):
     """
     Convert back so data is of equal lengths.
 
-    @param wks_used :: mantid workspace that hold the data
-    @param problem :: problem object holding the problem data
+    :param wks_used: Mantid workspace that hold the data
+    :type wks_used: mantid workspace
+    :param problem: Problem object holding the problem data
+    :type problem: object
     """
     tmp = msapi.ConvertToPointData(wks_used)
     problem.data_x = np.copy(tmp.readX(0))

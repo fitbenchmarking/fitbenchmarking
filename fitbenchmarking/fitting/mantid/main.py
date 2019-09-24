@@ -22,14 +22,19 @@ def benchmark(problem, wks_created, function, minimizers, cost_function):
     Fit benchmark one problem, with one function definition and all
     the selected minimizers, using the mantid fitting software.
 
-    @param problem :: a problem object containing information used in fitting
-    @param wks_created :: workspace holding the problem data
-    @param function :: the fitted function
-    @param minimizers :: array of minimizers used in fitting
-    @param cost_function :: the cost function used for fitting
+    :param problem: A problem object containing information used in fitting
+    :type problem: object
+    :param wks_created: Workspace holding the problem data
+    :type wks_created: mantid workspace
+    :param function: The fitted function
+    :type function: string
+    :param minimizers: Array of minimizers used in fitting
+    :type minimizers: list of string
+    :param cost_function: The cost function used for fitting
+    :type cost_function: string
 
-    @returns :: nested array of result objects, per minimizer
-                and data object for the best fit
+    :return: Results per minimizer and data object for the best fit
+    :rtype: nested list of results objects
     """
 
     min_chi_sq, best_fit = MAX_FLOAT, None
@@ -54,17 +59,23 @@ def fit(problem, wks_created, function, minimizer,
     """
     The mantid fit software.
 
-    @param problem :: object holding the problem information
-    @param wks_created :: workspace holding the problem data
-    @param function :: the fitted function
-    @param minimizer :: the minimizer used in the fitting process
-    @param cost_function :: the type of cost function used in fitting
+    :param problem: Object holding the problem information
+    :type problem: object
+    :param wks_created: Workspace holding the problem data
+    :type wks_created: mantid workspace
+    :param function: The fitted function
+    :type function: string
+    :param minimizer: The minimizer used in the fitting process
+    :type minimizer: string
+    :param cost_function: The type of cost function used in fitting
+    :type cost_function: string
 
-    @returns :: the status, either success or failure (str), the fit
-                workspace (mantid wks_created), containing the
-                differences between the fit data and actual data,
-                the final function definition
-                and how much time it took for the fit to finish (float)
+    :return: the status, either success or failure,
+             the fit workspace, containing the
+                 differences between the fit data and actual data,
+             the final function definition
+             runtime of the fitting
+    :rtype: string, mantid workspace, string, float
     """
     fit_result, t_start, t_end = None, None, None
     try:
@@ -90,14 +101,20 @@ def chisq(status, fit_wks, min_chi_sq, best_fit, minimizer):
     mantid fitting software and find the best fit out of all
     the attempted minimizers.
 
-    @param status :: the status of the fit, i.e. success or failure
-    @param fit_wks :: the fit workspace
-    @param min_chi_sq :: the minimium chisq (at the moment)
-    @param best_fit :: the best fit (at the moment)
-    @param minimizer :: minimizer with which the fit_wks was obtained
+    :param status: The status of the fit, i.e. success or failure
+    :type status: string
+    :param fit_wks: The fit workspace
+    :type fit_ws: mantid workspace
+    :param min_chi_sq: The minimium chisq (at the moment)
+    :type min_chi_sq: float
+    :param best_fit: The best fit (at the moment)
+    :type best_fit: object
+    :param minimizer: Minimizer with which the fit_wks was obtained
+    :type minimizer: string
 
-    @returns :: the chi squared, the new/unaltered minimum chi squared
-                and the new/unaltered best fit data object
+    :return: the chi squared, the new/unaltered minimum chi squared
+             and the new/unaltered best fit data object
+    :rtype: float, float, object
     """
 
     if status != 'failed':
@@ -116,12 +133,16 @@ def parse_result(fit_result, t_start, t_end):
     Function that takes the raw result from the mantid fitting software
     and refines it.
 
-    @param fit_result :: result object from the mantid fitting software
-    @param t_start :: time the fitting started
-    @param t_end :: time the fitting completed
+    :param fit_result: Result object from the mantid fitting software
+    :type fit_result: object
+    :param t_start: Time the fitting started
+    :type t_start: float
+    :param t_end: Time the fitting completed
+    :type t_end: float
 
-    @returns :: the processed status (str), fit workspace (mantid wks),
-                parameters, errors on them [arrays] and runtime (float).
+    :return: The processed status (str), fit workspace (mantid wks),
+             the final function def (str), and runtime (float).
+    :rtype: string, mantid workspace, string, runtime
     """
 
     status = 'failed'
@@ -139,11 +160,15 @@ def optimum(fit_wks, minimizer_name, best_fit):
     Function that stores the best fit of the given data into
     a object ready for plotting.
 
-    @param fit_wks :: mantid workspace holding the fit data
-    @param minimizer_name :: name of the minimizer used in fitting
-    @param best_fit :: the previous best_fit object
+    :param fit_wks: Mantid workspace holding the fit data
+    :type fit_ws: mantid workspace
+    :param minimizer_name: Name of the minimizer used in fitting
+    :type minimizer_name: string
+    :param best_fit: The previous best_fit object
+    :type best_fit: object
 
-    @returns :: the new best_fit object
+    :return: The new best_fit object
+    :rtype: object
     """
 
     tmp = msapi.ConvertToPointData(fit_wks)
@@ -157,10 +182,13 @@ def get_ignore_invalid(problem, cost_function):
     Helper function that sets the whether the mantid fitting software
     ignores invalid data or not. This depends on the cost function.
 
-    @param prob :: object holding the problem information
-    @param const_function :: cost function used in fitting
+    :param prob: Object holding the problem information
+    :type prob: object
+    :param const_function: Cost function used in fitting
+    :type const_function: string
 
-    @returns :: boolean depending on whether to ignore invalid data or not
+    :return: Boolean depending on whether to ignore invalid data or not
+    :rtype: bool
     """
 
     ignore_invalid = cost_function == 'Least squares'

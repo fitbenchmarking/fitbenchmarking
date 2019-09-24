@@ -13,11 +13,14 @@ def gen_func_obj(function_name, params_set):
     """
     Generates a mantid function object.
 
-    @param function_name :: the name of the function to be generated
-    @params_set :: set of parameters per function extracted from the
+    :param function_name: The name of the function to be generated
+    :type function_name: string
+    :param params_set: Set of parameters per function extracted from the
         problem definition file
+    :type params_set: string
 
-    @returns :: mantid function object that can be called in python
+    :return: Mantid function object that can be called in python
+    :rtype: Mantid function
     """
     params_set = (params_set.split(', ties'))[0]
 
@@ -30,10 +33,13 @@ def set_ties(function_object, ties):
     """
     Sets the ties for a function/composite function object.
 
-    @param function_object :: mantid function object
-    @param ties :: array of strings containing the ties
+    :param function_object: The function object
+    :type function_object: Mantid function object
+    :param ties: Array of strings containing the ties
+    :type ties: list of string
 
-    @returns :: mantid function object with ties
+    :return: Modified mantid function object with ties
+    :rtype: Mantid function
     """
 
     for idx, ties_per_func in enumerate(ties):
@@ -56,8 +62,10 @@ def store_main_problem_data(fname, problem):
     Stores the main problem data into the relevant attributes of the
     problem object.
 
-    @param fname :: path to the neutron problem definition file
-    @param problem :: object holding the problem information
+    :param fname: Path to the neutron problem definition file
+    :type fname: string
+    :param problem: Object holding the problem information
+    :type problem: object
     """
 
     wks_imported = msapi.Load(Filename=fname)
