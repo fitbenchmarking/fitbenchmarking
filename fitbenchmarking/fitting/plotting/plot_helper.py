@@ -90,10 +90,10 @@ class plot(data):
         """
 
         plt.figure()
-        self.set_plot_misc()
         for data in self.data:
             self.check_and_make_plot(data)
 
+        self.set_plot_misc()
         self.save_plot(save)
 
     def set_plot_misc(self):
