@@ -1,29 +1,22 @@
 from __future__ import (absolute_import, division, print_function)
 
 import unittest
-import os
 import numpy as np
 
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
-
-from fitting.scipy.func_def import function_definitions
-from parsing.fitbenchmark_data_functions import fitbenchmark_func_definitions
-from parsing.fitbenchmark_data_functions import get_all_fitbenchmark_func_names
-from parsing.fitbenchmark_data_functions import get_all_fitbenchmark_func_params
-from parsing.fitbenchmark_data_functions import get_fitbenchmark_func_names
-from parsing.fitbenchmark_data_functions import get_fitbenchmark_func_params
-from parsing.fitbenchmark_data_functions import get_fitbenchmark_initial_params_values
-from parsing.fitbenchmark_data_functions import make_fitbenchmark_fit_function
-from parsing.fitbenchmark_data_functions import get_fitbenchmark_params
-from parsing.fitbenchmark_data_functions import get_fitbenchmark_ties
-from mock_problem_files.get_problem_files import get_file
+from fitbenchmarking.fitting.scipy.func_def import function_definitions
+from fitbenchmarking.parsing.fitbenchmark_data_functions import fitbenchmark_func_definitions
+from fitbenchmarking.parsing.fitbenchmark_data_functions import get_all_fitbenchmark_func_names
+from fitbenchmarking.parsing.fitbenchmark_data_functions import get_all_fitbenchmark_func_params
+from fitbenchmarking.parsing.fitbenchmark_data_functions import get_fitbenchmark_func_names
+from fitbenchmarking.parsing.fitbenchmark_data_functions import get_fitbenchmark_func_params
+from fitbenchmarking.parsing.fitbenchmark_data_functions import get_fitbenchmark_initial_params_values
+from fitbenchmarking.parsing.fitbenchmark_data_functions import make_fitbenchmark_fit_function
+from fitbenchmarking.parsing.fitbenchmark_data_functions import get_fitbenchmark_params
+from fitbenchmarking.parsing.fitbenchmark_data_functions import get_fitbenchmark_ties
+from fitbenchmarking.mock_problem_files.get_problem_files import get_file
 
 
-from parsing.parse_fitbenchmark_data import FittingProblem
+from fitbenchmarking.parsing.parse_fitbenchmark_data import FittingProblem
 
 class ScipyTests(unittest.TestCase):
 

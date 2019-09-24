@@ -1,22 +1,16 @@
 from __future__ import (absolute_import, division, print_function)
 
 import unittest
-import os
 
-# Delete four lines below when automated tests are enabled
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
-
-from resproc.fitdetails_tbls import create
-from resproc.fitdetails_tbls import generate_names_and_params
-from resproc.fitdetails_tbls import parse_dat_mantid_function_def
-from resproc.fitdetails_tbls import parse_txt_function_def
-from resproc.fitdetails_tbls import fit_details_table_hdims
-from resproc.fitdetails_tbls import generate_fit_det_header
-from resproc.fitdetails_tbls import generate_fit_det_body
+from fitbenchmarking.resproc.fitdetails_tbls import create
+from fitbenchmarking.resproc.fitdetails_tbls import generate_names_and_params
+from fitbenchmarking.resproc.fitdetails_tbls import (
+    parse_dat_mantid_function_def
+)
+from fitbenchmarking.resproc.fitdetails_tbls import parse_txt_function_def
+from fitbenchmarking.resproc.fitdetails_tbls import fit_details_table_hdims
+from fitbenchmarking.resproc.fitdetails_tbls import generate_fit_det_header
+from fitbenchmarking.resproc.fitdetails_tbls import generate_fit_det_body
 
 
 class FitDetailsTblsTests(unittest.TestCase):

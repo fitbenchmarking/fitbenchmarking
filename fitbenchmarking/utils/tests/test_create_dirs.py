@@ -4,16 +4,10 @@ import unittest
 import os
 import shutil
 
-# Delete four lines below when automated tests are enabled
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-sys.path.insert(0, parent_dir)
-
-from create_dirs import results
-from create_dirs import group_results
-from create_dirs import restables_dir
-from create_dirs import figures
+from fitbenchmarking.utils.create_dirs import results
+from fitbenchmarking.utils.create_dirs import group_results
+from fitbenchmarking.utils.create_dirs import restables_dir
+from fitbenchmarking.utils.create_dirs import figures
 
 
 class CreateDirsTests(unittest.TestCase):

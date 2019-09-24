@@ -11,7 +11,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import copy
-from utils.logging_setup import logger
+from fitbenchmarking.utils.logging_setup import logger
 
 
 class data:
@@ -32,9 +32,9 @@ class data:
             self.x = copy.copy(x)
             self.y = copy.copy(y)
         else:
-            self.name ='none'
-            self.x = [0.0,0.0,0.0]
-            self.y = [0.0,0.0,0.0]
+            self.name = 'none'
+            self.x = [0.0, 0.0, 0.0]
+            self.y = [0.0, 0.0, 0.0]
         if(len(E) == 0):
             self.E = np.zeros(len(self.x))
         else:
@@ -46,23 +46,20 @@ class data:
         self.z_order = 1
         self.linewidth = 1
 
-
     def order_data(self):
         """
         Ensures that the data is in ascending order in x.
         Prevents line plots looping back on themselves.
         """
 
-        xData=self.x
-        yData=self.y
-        eData=self.E
+        xData = self.x
+        yData = self.y
+        eData = self.E
 
-        for j in range(0,len(yData)):
-            for k in range(0,len(xData)-1):
-                if xData[k] > xData[k+1]:
-                    xData[k+1], xData[k] = xData[k], xData[k+1]
-                    yData[k+1], yData[k] = yData[k], yData[k+1]
-                    eData[k+1], eData[k] = eData[k], eData[k+1]
+        index = np.argsort(xData)
+        xData = xData[index]
+        yData = yData[index]
+        eData = eData[index]
 
 
 class plot(data):
@@ -73,21 +70,19 @@ class plot(data):
 
     def __init__(self):
         self.data = []
-        self.labels = {'x':"xlabel", 'y':'ylabel', "title":"title"}
+        self.labels = {"x": "xlabel", "y": "ylabel", "title": "title"}
         self.legend = "upper left"
         self.insert = None
-        self.title_size=20
+        self.title_size = 20
 
-
-    def add_data(self,inputData):
+    def add_data(self, inputData):
         """
         Adds the data to the main plot.
         @param inputData :: the data to add to the plot
         """
         self.data.append(inputData)
 
-
-    def make_scatter_plot(self,save=""):
+    def make_scatter_plot(self, save=""):
         """
         Creates a scatter plot.
         @param save:: the name of the file to save to
@@ -154,12 +149,11 @@ class plot(data):
         Save the plot to a .png file or just display it in the
         console if that option is available.
         """
-        if save=="":
+        if save == "":
             plt.show()
         else:
             output_file = save.replace(",", "")
-            output_file = output_file.replace(" ","_")
-            logger.info("Saved " + os.path.basename(output_file) + " to "
-                        + output_file[output_file.find("fitbenchmarking"):])
+            output_file = output_file.replace(" ", "_")
+            logger.info("Saved " + os.path.basename(output_file) + " to " +
+                        output_file[output_file.find("fitbenchmarking"):])
         plt.savefig(output_file.replace(" ", "_"))
-

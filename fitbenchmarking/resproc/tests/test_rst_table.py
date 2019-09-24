@@ -4,20 +4,13 @@ import unittest
 import os
 import numpy as np
 
-# Delete four lines below when automated tests are enabled
-import sys
-test_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.dirname(os.path.normpath(test_dir))
-main_dir = os.path.dirname(os.path.normpath(parent_dir))
-sys.path.insert(0, main_dir)
-
-from resproc.rst_table import create
-from resproc.rst_table import create_table_body
-from resproc.rst_table import calc_cell_len
-from resproc.rst_table import format_cell_value
-from resproc.rst_table import calc_first_col_len
-from resproc.rst_table import build_header_chunks
-from resproc.rst_table import set_file_name
+from fitbenchmarking.resproc.rst_table import create
+from fitbenchmarking.resproc.rst_table import create_table_body
+from fitbenchmarking.resproc.rst_table import calc_cell_len
+from fitbenchmarking.resproc.rst_table import format_cell_value
+from fitbenchmarking.resproc.rst_table import calc_first_col_len
+from fitbenchmarking.resproc.rst_table import build_header_chunks
+from fitbenchmarking.resproc.rst_table import set_file_name
 
 
 class RstTableTests(unittest.TestCase):

@@ -9,11 +9,11 @@ import numpy as np
 import sys
 import time
 
-from fitting import misc
-from fitting.scipy.func_def import get_init_function_def
-from fitting.scipy.func_def import get_fin_function_def
-from fitting.plotting import plot_helper
-from utils.logging_setup import logger
+from fitbenchmarking.fitting import misc
+from fitbenchmarking.fitting.scipy.func_def import get_init_function_def
+from fitbenchmarking.fitting.scipy.func_def import get_fin_function_def
+from fitbenchmarking.fitting.plotting import plot_helper
+from fitbenchmarking.utils.logging_setup import logger
 
 MAX_FLOAT = sys.float_info.max
 

@@ -14,9 +14,11 @@ from fitting import misc
 from sasmodels.bumps_model import Experiment, Model
 from bumps.names import *
 from bumps.fitters import fit as bumpsFit
-from fitting.sasview.func_def import get_init_function_def, get_fin_function_def
-from fitting.plotting import plot_helper
-from utils.logging_setup import logger
+from fitbenchmarking.fitting.sasview.func_def import (
+    get_init_function_def, get_fin_function_def
+)
+from fitbenchmarking.fitting.plotting import plot_helper
+from fitbenchmarking.utils.logging_setup import logger
 
 MAX_FLOAT = sys.float_info.max
 

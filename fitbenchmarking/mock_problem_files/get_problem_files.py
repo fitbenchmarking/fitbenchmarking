@@ -3,9 +3,8 @@ import os
 
 def get_file(file_name):
     """
-    
-    @param file_name :: the name the wanted file 
-    @return :: the full path of the wanted file 
+    @param file_name :: the name the wanted file
+    @return :: the full path of the wanted file
     """
 
     mock_prob_dir = os.path.dirname(os.path.realpath(__file__))
