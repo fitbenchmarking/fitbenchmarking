@@ -107,5 +107,5 @@ def main(args):
         print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
     main(sys.argv)
