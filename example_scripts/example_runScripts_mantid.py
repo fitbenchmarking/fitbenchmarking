@@ -43,7 +43,7 @@ def main(argv):
     software_options = {'software': software}
 
     # User defined minimizers
-    custom_minimizers = {"mantid": ["Simplex"],
+    custom_minimizers = {"mantid": ["Levenberg-Marquardt"],
                          "scipy": ["lm", "trf", "dogbox"]}
     # custom_minimizers = None
 
