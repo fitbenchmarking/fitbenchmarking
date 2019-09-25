@@ -65,6 +65,3 @@ Currently Benchmarking
    :height: 100px
    :target: https://www.scipy.org/
 
-
-.. container::
-	     
