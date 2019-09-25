@@ -17,7 +17,6 @@ For help on how to use the command line/terminal, click the hyperlink correspond
 [Ubuntu](https://hackingpress.com/basic-linux-commands/)
 
 ### Installing
-
 1. Download this repository or clone it using [git](https://git-scm.com/): \
     `git clone https://github.com/fitbenchmarking/fitbenchmarking.git`
 2. Open up a terminal (command prompt) and go into the `fitbenchmarking` directory.
@@ -35,6 +34,7 @@ If you have issues with any of these please contact us so that we can update the
 
 Try it out with:
   `python example_scripts/example_runScripts.py`
+
 
 ## FitBenchmarking Mantid
 FitBenchmarking also works with [Mantid](https://www.mantidproject.org/Main_Page), however this is not installed by default.

@@ -81,7 +81,7 @@ color_scale = [(1.1, 'ranking-top-1'),
 # problem_sets = ["CUTEst", "Muon", "Neutron", "NIST/average_difficulty", "NIST/high_difficulty", "NIST/low_difficulty",
 #                "SAS_modelling/1D"]
 
-problem_sets = ["NIST/low_difficulty", "SAS_modelling/1D"]
+problem_sets = ["simple_tests"]
 
 for sub_dir in problem_sets:
     # generate group label/name used for problem set
