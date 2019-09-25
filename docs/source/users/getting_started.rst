@@ -26,7 +26,7 @@ for setting up python are available
    :target: https://www.python.org/downloads/release/python-2715/
 
 ******************
-Settting up Python
+Setting up Python
 ******************
 
 Windows
