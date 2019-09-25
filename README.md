@@ -22,7 +22,7 @@ For help on how to use the command line/terminal, click the hyperlink correspond
     `git clone https://github.com/fitbenchmarking/fitbenchmarking.git`
 2. Open up a terminal (command prompt) and go into the `fitbenchmarking` directory.
 3. Once you are in the right directory, start the install with:\
-    `python setup.py install`
+    `python setup.py install --user`
 
 You should now have all you need to use FitBenchmarking.
 To try it out, you can run one of the example scripts as below.
@@ -43,8 +43,9 @@ To enable using Mantid, you should install it as follows:
 #### Linux ####
 Install mantid with:
     `python setup.py externals -s mantid`
-#### Windows ####
-Follow the instructions on the Mantid download page, found [here](https://download.mantidproject.org/windows.html).
+#### Mac/Windows ####
+Follow the instructions on the Mantid download page, found [here](https://download.mantidproject.org).
+
 
 
 To test the installation, you can run the example script for Mantid `example_scripts/example_runScript_mantid.py`, located in the fitbenchmarking folder.
