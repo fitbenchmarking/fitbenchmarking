@@ -26,7 +26,7 @@ on setting up python see :ref:`setting-up-python`.
 .. _setting-up-python:
       
 ******************
-Settting up Python
+Setting up Python
 ******************
 
 Windows
