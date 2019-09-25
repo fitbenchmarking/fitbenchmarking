@@ -8,8 +8,6 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import sys
 
-
-sys.setrecursionlimit(10000)
 current_path = os.path.dirname(os.path.realpath(__file__))
 fitbenchmarking_path = os.path.abspath(os.path.join(current_path, os.pardir))
 scripts_path = os.path.join(fitbenchmarking_path, 'fitbenchmarking')

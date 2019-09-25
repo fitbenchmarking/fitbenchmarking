@@ -96,6 +96,9 @@ class plot(data):
         self.set_plot_misc()
         self.save_plot(save)
 
+        
+        plt.close()
+
     def set_plot_misc(self):
         """
         Add the title, x/y labels and legend to the plot.
