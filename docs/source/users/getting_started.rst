@@ -4,9 +4,8 @@
 Getting Started
 ###############
 
-|Python 2.7| will be needed for running/installing this. Instructions
-for setting up python are available
-`here <https://github.com/mantidproject/fitbenchmarking/wiki/Setting-up-Python>`__.
+|Python 2.7| will be needed for running/installing this. For instructions
+on setting up python see :ref:`setting-up-python`.
 
 1. Download this repository or clone it using
    `git <https://git-scm.com/>`__:
@@ -15,8 +14,7 @@ for setting up python are available
    ``fitbenchmarking`` directory.
 3. Once you are in the right directory, type
    ``python setup.py install``.
-4. Install mantid, platform specific instructions
-   `here <https://github.com/mantidproject/fitbenchmarking/wiki/Installing-Mantid>`__.
+4. Install mantid, for platform specific instructions see :ref:`setting-up-mantid`.
 5. Finally run ``fitbenchmarking/example_scripts/example_runScript.py``,
    located in the example\_scripts folder. This example script fit
    benchmarks Mantid using all the available minimizers. The result
@@ -25,6 +23,8 @@ for setting up python are available
 .. |Python 2.7| image:: https://img.shields.io/badge/python-2.7-blue.svg
    :target: https://www.python.org/downloads/release/python-2715/
 
+.. _setting-up-python:
+      
 ******************
 Settting up Python
 ******************
@@ -108,6 +108,8 @@ Following this, to get the setuptools package run
 ``sudo pip install python-setuptools``
 
 This concludes the python installation guide for Ubuntu 16.04/18.04.
+
+.. _setting-up-mantid:
 
 *****************
 Installing Mantid
