@@ -9,6 +9,6 @@ Here you will find all you need in order to get started.
     :caption: Contents:
     
     guidelines
-    getting_started
-    examples
+    extending_fitbenchmarking
+    logging
 

@@ -1,11 +1,13 @@
 [![Build Status](https://img.shields.io/travis/fitbenchmarking/fitbenchmarking.svg?style=flat-square)](https://travis-ci.org/fitbenchmarking/fitbenchmarking)
+[![Documentation Status](https://readthedocs.org/projects/fitbenchmarking/badge/?version=latest)](https://fitbenchmarking.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://img.shields.io/coveralls/github/fitbenchmarking/fitbenchmarking.svg?style=flat-square)](https://coveralls.io/github/fitbenchmarking/fitbenchmarking)
 ![Windows Supported](https://img.shields.io/badge/win10-support-blue.svg?style=flat-square&logo=windows)
 ![Ubuntu Supported](https://img.shields.io/badge/16.04-support-orange.svg?style=flat-square&logo=ubuntu)
 [![email](https://img.shields.io/badge/gmail-fitbenchmarking.supp-red.svg?style=flat-square&logo=gmail)](mailto:fitbenchmarking.supp@gmail.com)
 [![Chat](https://img.shields.io/badge/chat-CompareFitMinimizers-lightgrey.svg?style=flat-square&logo=slack)](https://slack.com/)
 # FitBenchmarking
-FitBenchmarking is a tool for comparing different minimizers/fitting software based on their accuracy and runtimes. For further documentation on FitBenchmarking see also [Wiki](https://github.com/fitbenchmarking/fitbenchmarking/wiki).
+FitBenchmarking is a tool for comparing different minimizers/fitting software based on their accuracy and runtimes. For further documentation on FitBenchmarking see also the [documentation](fitbenchmarking.readthedocs.io)
+
 
 
 ## Quick Start
