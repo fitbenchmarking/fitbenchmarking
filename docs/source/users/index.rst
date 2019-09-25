@@ -8,5 +8,5 @@ Welcome to the documentation for the FitBenchmarking software.
     :caption: Contents:
 
     getting_started
-    run_scripts
+    examples
 

@@ -1,7 +1,7 @@
-.. _run-scripts:
+.. _examples:
 
-Run Scripts
-===========
+Examples
+========
 
 The file ``example_runScript.py`` can be found in the
 ``fitbenchmarking/example_scripts/`` directory. It was written to provide
