@@ -10,19 +10,12 @@ import os
 import sys
 import glob
 
-# Insert path to where the scripts are located, relative to
-# the example_scripts folder
-current_path = os.path.dirname(os.path.realpath(__file__))
-fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
-scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
-sys.path.insert(0, scripts_folder)
-
-from fitting_benchmarking import do_benchmarking
-from utils import misc
-from utils import create_dirs
-from results_output import save_tables, generate_tables, \
+from fitbenchmarking.fitting_benchmarking import do_benchmarking
+from fitbenchmarking.utils import misc
+from fitbenchmarking.utils import create_dirs
+from fitbenchmarking.results_output import save_tables, generate_tables, \
     create_acc_tbl, create_runtime_tbl
-from resproc import visual_pages
+from fitbenchmarking.resproc import visual_pages
 
 
 def main(argv):
@@ -37,6 +30,7 @@ def main(argv):
     custom_minimizers = None
 
     # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
+    current_path = os.path.dirname(os.path.realpath(__file__))
     if len(argv) > 1:
         # Read custom minimizer options from file
         software_options['minimizer_options'] = None
@@ -50,6 +44,7 @@ def main(argv):
         software_options['minimizer_options'] = None
 
     # Benchmark problem directories
+    fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
     benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
                                        'benchmark_problems')
 

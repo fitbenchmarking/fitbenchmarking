@@ -11,12 +11,6 @@ import os
 import sys
 import glob
 
-# Insert path to where the scripts are located, relative to
-# the example_scripts folder
-current_path = os.path.dirname(os.path.realpath(__file__))
-fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
-scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
-sys.path.insert(0, scripts_folder)
 
 try:
     import mantid.simpleapi as msapi
@@ -28,8 +22,8 @@ except:
           '******************************************')
     sys.exit()
 
-from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
-from results_output import save_results_tables as printTables
+from fitbenchmarking.fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
+from fitbenchmarking.results_output import save_results_tables as printTables
 
 
 def main(argv):
@@ -39,11 +33,11 @@ def main(argv):
 
     # User defined minimizers
     custom_minimizers = {"mantid": ["Levenberg-Marquardt"],
-                         "scipy": ["lm", "trf", "dogbox"]}
+                        "scipy": ["lm", "trf", "dogbox"]}
     # custom_minimizers = None
 
-
     # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
+    current_path = os.path.dirname(os.path.realpath(__file__))
     if len(argv) > 1:
         # Read custom minimizer options from file
         software_options['minimizer_options'] = None
@@ -57,8 +51,9 @@ def main(argv):
         software_options['minimizer_options'] = None
 
     # Benchmark problem directories
+    fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
     benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
-                                       'benchmark_problems')
+                                    'benchmark_problems')
 
     """
     Modify results_dir to specify where the results of the fit should be saved
@@ -74,10 +69,10 @@ def main(argv):
     # e.g. lower that 1.1 -> light yellow, higher than 3 -> dark red
     # Change these values to suit your needs
     color_scale = [(1.1, 'ranking-top-1'),
-                   (1.33, 'ranking-top-2'),
-                   (1.75, 'ranking-med-3'),
-                   (3, 'ranking-low-4'),
-                   (float('nan'), 'ranking-low-5')]
+                (1.33, 'ranking-top-2'),
+                (1.75, 'ranking-med-3'),
+                (3, 'ranking-low-4'),
+                (float('nan'), 'ranking-low-5')]
 
     # ADD WHICH PROBLEM SETS TO TEST AGAINST HERE
     # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
@@ -99,8 +94,8 @@ def main(argv):
 
         print('\nRunning the benchmarking on the {} problem set\n'.format(label))
         results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
-                                                         data_dir=data_dir,
-                                                         use_errors=use_errors, results_dir=results_dir)
+                                                        data_dir=data_dir,
+                                                        use_errors=use_errors, results_dir=results_dir)
 
         print('\nProducing output for the {} problem set\n'.format(label))
         for idx, group_results in enumerate(results_per_group):
