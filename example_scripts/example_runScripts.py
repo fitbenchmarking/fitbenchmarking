@@ -10,16 +10,8 @@ import os
 import sys
 import glob
 
-# Insert path to where the scripts are located, relative to
-# the example_scripts folder
-current_path = os.path.dirname(os.path.realpath(__file__))
-fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
-scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
-sys.path.insert(0, scripts_folder)
-sys.path.insert(1, fitbenchmarking_folder)
-
-from fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
-from results_output import save_results_tables as printTables
+from fitbenchmarking.fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
+from fitbenchmarking.results_output import save_results_tables as printTables
 
 
 def main(args):
@@ -34,6 +26,7 @@ def main(args):
     custom_minimizers = None
 
     # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
+    current_path = os.path.dirname(os.path.realpath(__file__))
     if len(args) > 1:
         # Read custom minimizer options from file
         software_options['minimizer_options'] = None
@@ -47,6 +40,7 @@ def main(args):
         software_options['minimizer_options'] = None
 
     # Benchmark problem directories
+    fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
     benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
                                        'benchmark_problems')
 
@@ -64,10 +58,10 @@ def main(args):
     # e.g. lower that 1.1 -> light yellow, higher than 3 -> dark red
     # Change these values to suit your needs
     color_scale = [(1.1, 'ranking-top-1'),
-                   (1.33, 'ranking-top-2'),
-                   (1.75, 'ranking-med-3'),
-                   (3, 'ranking-low-4'),
-                   (float('nan'), 'ranking-low-5')]
+                (1.33, 'ranking-top-2'),
+                (1.75, 'ranking-med-3'),
+                (3, 'ranking-low-4'),
+                (float('nan'), 'ranking-low-5')]
 
     # ADD WHICH PROBLEM SETS TO TEST AGAINST HERE
     # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir

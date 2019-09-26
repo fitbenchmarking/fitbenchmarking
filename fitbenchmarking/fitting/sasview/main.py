@@ -10,7 +10,7 @@ import sys
 import time
 import re
 
-from fitting import misc
+from fitbenchmarking.fitting import misc
 from sasmodels.bumps_model import Experiment, Model
 from bumps.names import *
 from bumps.fitters import fit as bumpsFit
