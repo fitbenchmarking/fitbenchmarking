@@ -4,19 +4,6 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import sys
 
-# Avoid reaching the maximum recursion depth by setting recursion limit
-# This is useful when running multiple data set benchmarking
-# Otherwise recursion limit is reached and the interpreter throws an error
-sys.setrecursionlimit(10000)
-
-# Insert path to where the scripts are located, relative to
-# the example_scripts folder
-current_path = os.path.dirname(os.path.realpath(__file__))
-fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
-scripts_folder = os.path.join(fitbenchmarking_folder, 'fitbenchmarking')
-sys.path.insert(0, scripts_folder)
-sys.path.insert(1, fitbenchmarking_folder)
-
 try:
     import bumps
 except:
@@ -47,8 +34,8 @@ except:
           '******************************************')
     sys.exit()
 
-from fitting_benchmarking import fitbenchmark_group
-from results_output import save_results_tables
+from fitbenchmarking.fitting_benchmarking import fitbenchmark_group
+from fitbenchmarking.results_output import save_results_tables
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
 software = ['sasview']
@@ -62,6 +49,7 @@ custom_minimizers = {"mantid": ["BFGS", "Simplex"],
 # "amoeba", "lm", "newton", "de", "pt", "mp"
 
 # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
+current_path = os.path.dirname(os.path.realpath(__file__))
 if len(sys.argv) > 1:
     # Read custom minimizer options from file
     software_options['minimizer_options'] = None
@@ -75,6 +63,7 @@ else:
     software_options['minimizer_options'] = None
 
 # Benchmark problem directories
+fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
 benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
                                    'benchmark_problems')
 

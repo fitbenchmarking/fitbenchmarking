@@ -71,15 +71,15 @@ def fit_one_function_def(software, problem, data_struct, function, minimizers,
     """
 
     if software == 'mantid':
-        from fitting.mantid.main import benchmark
+        from fitbenchmarking.fitting.mantid.main import benchmark
         return benchmark(problem, data_struct, function,
                          minimizers, cost_function)
     elif software == 'scipy':
-        from fitting.scipy.main import benchmark
+        from fitbenchmarking.fitting.scipy.main import benchmark
         return benchmark(problem, data_struct, function,
                          minimizers, cost_function)
     elif software == 'sasview':
-        from fitting.sasview.main import benchmark
+        from fitbenchmarking.fitting.sasview.main import benchmark
         return benchmark(problem, data_struct, function,
                          minimizers, cost_function)
     else:

@@ -40,8 +40,8 @@ def prepare_mantid(problem, use_errors):
                 mantid cost funtion
                 mantid function definitions
     """
-    from fitting.mantid.prepare_data import wks_cost_function
-    from fitting.mantid.func_def import function_definitions
+    from fitbenchmarking.fitting.mantid.prepare_data import wks_cost_function
+    from fitbenchmarking.fitting.mantid.func_def import function_definitions
 
     wks_mtd, cost_function = \
         wks_cost_function(problem, use_errors)
@@ -62,8 +62,8 @@ def prepare_scipy(problem, use_errors):
                 scipy cost function
                 scipy function definitions
     """
-    from fitting.scipy.prepare_data import prepare_data
-    from fitting.scipy.func_def import function_definitions
+    from fitbenchmarking.fitting.scipy.prepare_data import prepare_data
+    from fitbenchmarking.fitting.scipy.func_def import function_definitions
 
     data, cost_function = \
         prepare_data(problem, use_errors)
@@ -86,8 +86,8 @@ def prepare_sasview(problem, use_errors):
                 SasView function definitions
     """
 
-    from fitting.sasview.prepare_data import prepare_data
-    from fitting.sasview.func_def import function_definitions
+    from fitbenchmarking.fitting.sasview.prepare_data import prepare_data
+    from fitbenchmarking.fitting.sasview.func_def import function_definitions
 
     data_obj, cost_function = prepare_data(problem, use_errors)
 

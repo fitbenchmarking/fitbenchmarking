@@ -5,13 +5,12 @@ Functions that creates the tables and the visual display pages.
 from __future__ import (absolute_import, division, print_function)
 
 import logging
-import utils.misc
 
 from fitbenchmarking.utils.logging_setup import logger
 from fitbenchmarking.resproc import numpy_restables
 from fitbenchmarking.resproc import rst_table
 from fitbenchmarking.resproc import visual_pages
-from fitbenchmarking.utils import create_dirs, options
+from fitbenchmarking.utils import create_dirs, options, misc
 
 # Some naming conventions for the output files
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -36,7 +35,7 @@ def save_results_tables(software_options, results_per_test, group_name,
     @returns :: html/rst tables with the fitting results
     """
 
-    minimizers, software = utils.misc.get_minimizers(software_options)
+    minimizers, software = misc.get_minimizers(software_options)
     comparison_mode = software_options.get('comparison_mode', None)
 
     if comparison_mode is None:
