@@ -1,11 +1,13 @@
 [![Build Status](https://img.shields.io/travis/fitbenchmarking/fitbenchmarking.svg?style=flat-square)](https://travis-ci.org/fitbenchmarking/fitbenchmarking)
+[![Documentation Status](https://readthedocs.org/projects/fitbenchmarking/badge/?version=latest)](https://fitbenchmarking.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://img.shields.io/coveralls/github/fitbenchmarking/fitbenchmarking.svg?style=flat-square)](https://coveralls.io/github/fitbenchmarking/fitbenchmarking)
 ![Windows Supported](https://img.shields.io/badge/win10-support-blue.svg?style=flat-square&logo=windows)
 ![Ubuntu Supported](https://img.shields.io/badge/16.04-support-orange.svg?style=flat-square&logo=ubuntu)
 [![email](https://img.shields.io/badge/gmail-fitbenchmarking.supp-red.svg?style=flat-square&logo=gmail)](mailto:fitbenchmarking.supp@gmail.com)
 [![Chat](https://img.shields.io/badge/chat-CompareFitMinimizers-lightgrey.svg?style=flat-square&logo=slack)](https://slack.com/)
 # FitBenchmarking
-FitBenchmarking is a tool for comparing different minimizers/fitting software based on their accuracy and runtimes. For further documentation on FitBenchmarking see also [Wiki](https://github.com/fitbenchmarking/fitbenchmarking/wiki).
+FitBenchmarking is a tool for comparing different minimizers/fitting software based on their accuracy and runtimes. For further documentation on FitBenchmarking see also the [documentation](fitbenchmarking.readthedocs.io)
+
 
 
 ## Quick Start
@@ -16,7 +18,26 @@ For help on how to use the command line/terminal, click the hyperlink correspond
 [macOS](http://newsourcemedia.com/blog/basic-terminal-commands/) and
 [Ubuntu](https://hackingpress.com/basic-linux-commands/)
 
+<<<<<<< HEAD
 ### Installing
+=======
+1. Download this repository or clone it using [git](https://git-scm.com/):
+`git clone https://github.com/mantidproject/fitbenchmarking.git`
+2. Open up a terminal (command prompt) and go into the `fitbenchmarking` directory.
+3. Once you are in the right directory, type `python setup.py install`.
+4. Install mantid, platform specific instructions [here](https://github.com/mantidproject/fitbenchmarking/wiki/Installing-Mantid).
+5. Open the mantidpython terminal
+    * Ubuntu: in a normal terminal cd to /opt/Mantid/bin and run `./mantidpython`
+    * Windows: go to where you installed Mantid and search for a file called `mantidpython`
+    * macOS: in a normal terminal run `/Applications/MantidPlot.app/Contents/MacOS/mantidpython`
+#### For macOS only ####
+6. On the mantidpython terminal, run the following IPython command:
+    - `!pip install docutils==0.12 --user`
+
+The above step is done to ensure that the compatible version of docutils packages (version 0.12) is installed. 
+
+7. Finally, in this terminal, run `example_scripts/example_runScript_mantid.py`, located in the fitbenchmarking folder. This example script fit benchmarks Mantid using all the available minimizers. The resulting tables can be found in `example_scripts/results`.
+>>>>>>> upstream/master
 
 1. Download this repository or clone it using [git](https://git-scm.com/): \
     `git clone https://github.com/fitbenchmarking/fitbenchmarking.git`
