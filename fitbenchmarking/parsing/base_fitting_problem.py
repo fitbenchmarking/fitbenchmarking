@@ -40,6 +40,9 @@ class BaseFittingProblem(object):
         self._contents = None
         self._starting_value_ranges = None
 
+        # Attribute which will pre-sort the data when True
+        self._sort = True
+
     def read_file(self):
         self._contents = open(self._fname, "r")
 
@@ -125,6 +128,14 @@ class BaseFittingProblem(object):
     @contents.setter
     def contents(self, value):
         self._contents = value
+
+    @property
+    def sort(self):
+        return self._sort
+
+    @sort.setter
+    def sort(self, value):
+        self._sort = value
 
     @property
     def starting_value_ranges(self):

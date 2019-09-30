@@ -103,7 +103,6 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     best_fit.colour = 'lime'
     best_fit.zorder = 2
     best_fit.linewidth = 1.5
-    best_fit.order_data()
     fig.add_data(best_fit)
     fig.labels['y'] = "Arbitrary units"
     fig.labels['x'] = "Time ($\mu s$)"
@@ -135,7 +134,6 @@ def make_starting_guess_plot(software, raw_data, function, data_struct,
     xData, yData =\
     get_start_guess_data(software, data_struct, function, problem)
     startData = data("Start Guess", xData, yData)
-    startData.order_data()
     startData.colour = "red"
     startData.markers = ''
     startData.linestyle = "-"

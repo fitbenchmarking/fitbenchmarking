@@ -46,21 +46,6 @@ class data:
         self.z_order = 1
         self.linewidth = 1
 
-    def order_data(self):
-        """
-        Ensures that the data is in ascending order in x.
-        Prevents line plots looping back on themselves.
-        """
-
-        xData = self.x
-        yData = self.y
-        eData = self.E
-
-        index = np.argsort(xData)
-        xData = xData[index]
-        yData = yData[index]
-        eData = eData[index]
-
 
 class plot(data):
     """
@@ -96,7 +81,7 @@ class plot(data):
         self.set_plot_misc()
         self.save_plot(save)
 
-        
+
         plt.close()
 
     def set_plot_misc(self):
