@@ -5,7 +5,7 @@ Parse the problem file depending on the type of problem.
 from __future__ import (absolute_import, division, print_function)
 
 import os
-from numpy import argsort, ndarray, sqrt
+from numpy import argsort, ndarray
 
 from fitbenchmarking.utils.logging_setup import logger
 from fitbenchmarking.parsing import parse_nist_data
