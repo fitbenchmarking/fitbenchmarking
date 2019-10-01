@@ -1,6 +1,8 @@
 
 from abc import ABCMeta, abstractmethod
 
+import numpy as np
+
 
 class BaseSoftwareController():
 
@@ -21,9 +23,10 @@ class BaseSoftwareController():
 
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)
-        self.data_x = None
-        self.data_y = None
-        self.data_e = None
+        self.data_x = problem.data_x
+        self.data_y = problem.data_y
+        self.data_e = problem.data_e
+        self._correct_data()
 
         # Initial Params: The starting values for params when fitting
         self.initial_params = None
@@ -39,6 +42,36 @@ class BaseSoftwareController():
         self.results = None
         # Success: Bool for flagging issues
         self.success = None
+
+    def _correct_data(self):
+        xdata = self.data_x
+        ydata = self.data_y
+        sigma = self.data_e
+
+        # fix sigma
+        if self.use_errors:
+            if sigma is None:
+                sigma = np.sqrt(abs(ydata))
+
+            sigma[sigma == 0] = 1e-8
+        else:
+            sigma = None
+
+        # impose x ranges
+        start_x = self.problem.start_x
+        end_x = self.problem.end_x
+
+        if start_x is not None and end_x is not None:
+            mask = np.logical_and(xdata >= start_x, xdata <= end_x)
+            xdata = xdata[mask]
+            ydata = ydata[mask]
+            if sigma is not None:
+                sigma = sigma[mask]
+
+        # store
+        self.data_x = xdata
+        self.data_y = ydata
+        self.data_e = sigma
 
     def prepare(self, minimizer=None, function_id=None):
         if minimizer is not None:
