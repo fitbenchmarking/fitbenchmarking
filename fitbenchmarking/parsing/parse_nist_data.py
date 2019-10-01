@@ -39,12 +39,60 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         self._name = os.path.basename(self.contents.name.split('.')[0])
 
-        #String containing a mathematical expression
+        # String containing a mathematical expression
         self._equation = self.parse_equation(equation_text)
 
         self._starting_values = starting_values
 
+        self.function = None
+
         super(FittingProblem, self).close_file()
+
+    def eval_f(self, x, params, function_id):
+        """
+        Function evaluation method
+
+        :param x: x data values
+        :param params: parameter value(s)
+        :param function_id: The index of the function in get_function
+
+        :return: y data values evaluated from the function of the problem
+        """
+
+        func_def = nist_func_definitions(self._equation, self._starting_values)
+
+        function = func_def[function_id][0]
+
+        return function(x, *params)
+
+    def get_function(self):
+        """
+        Return the function definitions.
+
+        @returns :: list of callable-parameter pairs
+        """
+        if self.function is None:
+            self.function = nist_func_definitions(self._equation, self._starting_values)
+
+        return self.function
+
+    def get_function_def(self, params, function_id):
+        """
+        Return the function definition in a string format for output
+
+        @param params :: The list of parameters to use in the function string
+        @param function_id :: The index of the function in get_function
+
+        @returns :: A string with a representation of the function
+                    example format: 'b1 * (b2+x) | b1=-2.0, b2=50.0'
+        """
+        names = [s[0] for s in self._starting_values]
+        params = ['{}={}'.format(n, p) for n, p in zip(names, params)]
+        param_string = ', '.join(params)
+
+        func_name = self.get_function()[function_id][2]
+        return '{} | {}'.format(func_name, param_string)
+
 
     def parse_line_by_line(self, contents):
         """
@@ -78,33 +126,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         logger.info("{0} lines were ignored in this problem file".format(ignored_lines))
 
         return equation_text, data_pattern_text, starting_values
-
-    def eval_f(self, x, param_list):
-        """
-        Function evaluation method
-
-        :param x: x data values
-        :param param_list: parameter value(s)
-
-        :return: y data values evaluated from the function of the problem
-        """
-
-        param_string = ''
-        for param in param_list:
-            param_string += ',' + str(param)
-        param_string += ')'
-
-        func_def = nist_func_definitions(self._equation, self._starting_values)
-
-        function = func_def[0][0]
-
-        return eval('function(x'+ param_string)
-
-    def get_function(self):
-
-        function = nist_func_definitions(self._equation, self._starting_values)
-
-        return function
 
     def get_nist_model(self, lines, idx):
         """

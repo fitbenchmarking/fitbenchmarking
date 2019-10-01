@@ -1,5 +1,5 @@
 from __future__ import (absolute_import, division, print_function)
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
 
 class BaseFittingProblem(object):
@@ -45,6 +45,47 @@ class BaseFittingProblem(object):
 
     def close_file(self):
         self._contents.close()
+
+    @abstractmethod
+    def eval_f(self, x, params, function_id):
+        """
+        Evaluate problem with given params.
+
+        @param x :: The x values to evaluate at
+        @param params :: The parameters to use for the evaluation
+
+        @returns :: A numpy array of results from evaluation
+        """
+        pass
+
+    @abstractmethod
+    def get_function(self):
+        """
+        Return the function definitions.
+
+        @returns :: list of callable-parameter pairs
+        """
+        pass
+
+    def eval_starting_params(self):
+        """
+        Evaluate the function using the starting parameters.
+
+        @returns :: A numpy array of results from evaluation
+        """
+
+        function_params = [f[1] for f in self.get_function()]
+        return self.eval_f(self.data_x, function_params[0], 0)
+
+    @abstractmethod
+    def get_function_def(self, params, function_id):
+        """
+        Return the function definition in a string format for output
+
+        @param params :: The list of parameters to use in the function string
+
+        @returns :: A string with a representation of the function
+        """
 
     @property
     def fname(self):

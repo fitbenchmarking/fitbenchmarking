@@ -20,41 +20,6 @@ from fitbenchmarking.fitting.sasview.func_def import (
 from fitbenchmarking.fitting.plotting import plot_helper
 from fitbenchmarking.utils.logging_setup import logger
 
-MAX_FLOAT = sys.float_info.max
-
-
-def benchmark(problem, data, function, minimizers, cost_function):
-    """
-    Fit benchmark one problem, with one function definition and all
-    the selected minimizers, using the SasView fitting software.
-
-    @param problem :: a problem object containing information used in fitting
-    @param data :: object holding the problem data
-    @param function :: the fitted function (model for SasView problems)
-    @param minimizers :: array of minimizers used in fitting
-    @param cost_function :: the cost function used for fitting
-
-    @returns :: nested array of result objects, per minimizer
-                and data object for the best fit
-    """
-    min_chi_sq, best_fit = MAX_FLOAT, None
-    results_problem = []
-
-    for minimizer in minimizers:
-
-        init_func_def = get_init_function_def(function, problem)
-        status, fitted_y, fin_func_def, runtime = \
-            fit(problem, data, function, minimizer, init_func_def)
-        chi_sq, min_chi_sq, best_fit = \
-            chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer)
-
-        individual_result = \
-                misc.create_result_entry(problem, status, chi_sq, runtime, minimizer,
-                                     init_func_def, fin_func_def)
-
-        results_problem.append(individual_result)
-
-    return results_problem, best_fit
 
 def fit(problem, data, function, minimizer, init_func_def):
     """
@@ -149,31 +114,3 @@ def fit(problem, data, function, minimizer, init_func_def):
     runtime = t_end - t_start
 
     return status, fitted_y, fin_func_def, runtime
-
-def chisq(status, data, fitted_y, min_chi_sq, best_fit, minimizer_name):
-    """
-    Calculates the chi squared and compares it to the minimum chi squared
-    found until now. If the current chi_squared is lower than the minimum,
-    the new values becomes the minimum and the data of the fit is stored
-    in the variable best_fit.
-
-    @param status :: the status of the fit, either success or failure
-    @param fitted_y :: the y-data of the fit
-    @param min_chi_sq :: the minimum chi_squared value
-    @param best_fit :: object where the best fit data is stored
-    @param minimizer_name :: name of the minimizer used in storing the
-                             best_fit data
-
-    @returns :: The chi-squared values, the minimum chi-squared found
-                until now and the best fit data object
-    """
-    if status != 'failed':
-        differences = fitted_y - data.y
-        chi_sq = misc.compute_chisq(differences)
-        if chi_sq < min_chi_sq and not chi_sq == np.nan:
-            best_fit = plot_helper.data(minimizer_name, data.x, fitted_y)
-            min_chi_sq = chi_sq
-    else:
-        chi_sq = np.nan
-
-    return chi_sq, min_chi_sq, best_fit

@@ -7,17 +7,17 @@ import numpy as np
 from fitbenchmarking.utils import fitbm_result
 
 
-def compute_chisq(differences):
+def compute_chisq(actual, fitted):
     """
     Simple function that calculates the sum of the differences squared
     between the data and the fit.
 
-    @param differences :: differences between the actual data and the
-                          fit points.
+    @param actual :: The values from the known data
+    @param fitted :: The values from the fitted data
 
     @returns :: the sum of the square of each element in differences
     """
-    chi_sq = np.sum(np.square(differences))
+    chi_sq = np.sum(np.square(fitted - actual))
 
     return chi_sq
 

@@ -10,23 +10,17 @@ from fitbenchmarking.fitting.plotting.plot_helper import data, plot
 from fitbenchmarking.utils import create_dirs
 
 
-def make_plots(software, problem, data_struct, function, best_fit,
-               previous_name, count, group_results_dir):
+def make_plots(problem, best_fit, count, group_results_dir):
     """
     Makes plots of the raw data, best fit and starting guess.
 
     @param prob :: object holding the problem information
-    @param data_struct :: a structure in which the data to be fitted is
-                          stored, can be e.g. mantid workspace, np array etc.
-    @param function :: the fitted function
     @param best_fit :: data of the best fit (defined by lowest chisq)
-    @param previous_name :: name of the previous problem
     @param count :: number of times prob problem was passed through
     @param group_results_dir :: dir where results for the current group
                                 are stored
 
-    @returns :: the previous_name (str) and the count (int), plots are
-                saved to /group_results_dir/support_pages/figures
+    @returns :: None, plots are saved to /group_results_dir/support_pages/figures
     """
 
     figures_dir = create_dirs.figures(group_results_dir)
@@ -34,10 +28,11 @@ def make_plots(software, problem, data_struct, function, best_fit,
     raw_data = get_data_points(problem)
     make_data_plot(problem.name, raw_data, count, figures_dir)
     make_best_fit_plot(problem.name, raw_data, best_fit, count, figures_dir)
-    make_starting_guess_plot(software, raw_data, function, data_struct,
-                             problem, count, figures_dir)
+    make_starting_guess_plot(raw_data=raw_data,
+                             problem=problem,
+                             count=count,
+                             figures_dir=figures_dir)
 
-    return previous_name
 
 
 def get_data_points(problem):
@@ -114,16 +109,13 @@ def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
     fig.make_scatter_plot(figure_name)
 
 
-def make_starting_guess_plot(software, raw_data, function, data_struct,
-                             problem, count, figures_dir):
+def make_starting_guess_plot(raw_data, problem, count, figures_dir):
     """
     Creates a scatter plot of the raw data with the starting guess
     superimposed. The starting guess is obtained by setting the
     MaxIterations option of the mantid fit software to 0.
 
     @param raw_data :: the raw data stored into an object
-    @param function :: string holding the function that was fitted
-    @param data_struct :: mantid workspace containing problem data
     @param problem :: object holding the problem information
     @param count :: number of times same name was passed through
     @param figures_dir :: dir where figures are stored
@@ -131,9 +123,8 @@ def make_starting_guess_plot(software, raw_data, function, data_struct,
     @returns :: a figure of the raw data with the starting guess
                 superimposed, saved as a .png file.
     """
-
-    xData, yData =\
-    get_start_guess_data(software, data_struct, function, problem)
+    xData = problem.data_x
+    yData = problem.eval_starting_params()
     startData = data("Start Guess", xData, yData)
     startData.order_data()
     startData.colour = "red"
@@ -150,81 +141,3 @@ def make_starting_guess_plot(software, raw_data, function, data_struct,
     start_figure_name = (figures_dir + os.sep + "start for " + problem.name +
                          " " + str(count) + ".png")
     start_fig.make_scatter_plot(start_figure_name)
-
-
-def get_start_guess_data(software, data_struct, function, problem):
-    """
-    Gets the starting guess data for various softwares.
-
-    @param software ::
-    """
-    if software == 'mantid':
-        return get_mantid_starting_guess_data(data_struct, function, problem)
-    elif software == 'scipy':
-        return get_scipy_starting_guess_data(data_struct, function)
-    elif software == 'sasview':
-        return get_sasview_starting_guess_data(data_struct, problem, function)
-        # return [0,0,0], [0,0,0]
-    else:
-        raise NameError("Sorry, that software is not supported.")
-
-def get_scipy_starting_guess_data(data_struct, function):
-    """
-    Gets the scipy starting guess data
-
-    @param data_struct :: data structure containing data for the problem
-    @param function :: the fitted function
-
-    @returns :: data describing the starting guess obtained by passing
-                the x values to the fitted function
-    """
-
-    xData = data_struct[0]
-    initial_params = function[1]
-
-    yData = function[0](xData, *initial_params)
-    return xData, yData
-
-
-def get_mantid_starting_guess_data(wks_created, function, problem):
-    """
-    Gets the mantid starting guess data.
-
-    @param wks_created :: mantid workspace that holds the data for the problem
-    @param function :: the fitted function
-    @param problem :: object holding the problem information
-
-    @returns :: data describing the starting guess obtained by using the
-                fitting software inside mantid
-    """
-
-    import mantid.simpleapi as msapi
-
-    fit_result = msapi.Fit(function, wks_created, Output='ws_fitting_test',
-                           Minimizer='Levenberg-Marquardt',
-                           CostFunction='Least squares',
-                           IgnoreInvalidData=True,
-                           StartX=problem.start_x, EndX=problem.end_x,
-                           MaxIterations=0)
-
-    tmp = msapi.ConvertToPointData(fit_result.OutputWorkspace)
-    xData = tmp.readX(1)
-    yData = tmp.readY(1)
-
-    return xData, yData
-
-
-def get_sasview_starting_guess_data(data_struct, problem, function):
-    """
-    Gets the SasView starting guess data.
-
-    @param data_struct :: data structure containing data for the problem
-                          in the SasView 1D data format (sasmodels.data.Data1D)
-    @param function :: the fitted function
-
-    @return :: data describing the starting guess obtained by passing
-               the x values to the fitted function
-    """
-    yData = problem.eval_f(data_struct.x, function[1])
-
-    return data_struct.x, yData
