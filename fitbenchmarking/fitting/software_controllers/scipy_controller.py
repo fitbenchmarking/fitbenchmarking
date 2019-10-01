@@ -31,7 +31,7 @@ class ScipyController(BaseSoftwareController):
         end_x = problem.end_x
 
         if start_x is not None and end_x is not None:
-            mask = np.logical_and(xdata > start_x, xdata < end_x)
+            mask = np.logical_and(xdata >= start_x, xdata <= end_x)
             xdata = xdata[mask]
             ydata = ydata[mask]
             if sigma is not None:
