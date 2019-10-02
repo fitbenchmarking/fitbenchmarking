@@ -127,14 +127,6 @@ class BaseFittingProblem(object):
         self._contents = value
 
     @property
-    def sort(self):
-        return self._sort
-
-    @sort.setter
-    def sort(self, value):
-        self._sort = value
-
-    @property
     def starting_value_ranges(self):
         return self._starting_value_ranges
 
