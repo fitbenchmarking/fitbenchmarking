@@ -10,7 +10,8 @@ import numpy as np
 
 from fitbenchmarking.fitting import misc
 from fitbenchmarking.fitting.plotting import plot_helper, plots
-from fitbenchmarking.fitting.software_controllers import (sasview_controller,
+from fitbenchmarking.fitting.software_controllers import (mantid_controller,
+                                                          sasview_controller,
                                                           scipy_controller)
 
 
@@ -29,10 +30,14 @@ def fitbm_one_prob(user_input, problem):
 
     results_fit_problem = []
 
-    if user_input.software.lower() == 'scipy':
-        controller = scipy_controller.ScipyController(problem, user_input.use_errors)
-    elif user_input.software.lower() == 'sasview':
-        controller = sasview_controller.SasviewController(problem, user_input.use_errors)
+    software = user_input.software.lower()
+
+    controllers = {'mantid': mantid_controller.MantidController,
+                   'sasview': sasview_controller.SasviewController,
+                   'scipy': scipy_controller.ScipyController}
+
+    if software in controllers:
+        controller = controllers[software](problem, user_input.use_errors)
     else:
         raise NotImplementedError('The chosen software is not implemented yet: {}'.format(user_input.software))
 
@@ -82,7 +87,8 @@ def benchmark(controller, minimizers):
             start_time = time.time()
             controller.fit()
             end_time = time.time()
-        except:
+        except Exception as e:
+            print(e.message)
             controller.success = False
             end_time = np.inf
 
