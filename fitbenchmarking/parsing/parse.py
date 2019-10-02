@@ -22,7 +22,7 @@ def parse_problem_file(prob_file):
 
     prob_type = determine_problem_type(prob_file)
     logger.info("Loading {0} formatted problem definition file {1} | Path: "
-                "{2}".format(prob_type,os.path.basename(prob_file),prob_file[prob_file.find('fitbenchmarking'):]))
+                "{2}".format(prob_type, os.path.basename(prob_file), prob_file[prob_file.find('fitbenchmarking'):]))
 
     if prob_type == "NIST":
 
@@ -42,13 +42,11 @@ def parse_problem_file(prob_file):
 
     logger.info("* Testing fitting of problem {0}".format(problem.name))
 
-    if problem.sort == True:
-        index = argsort(problem.data_x)
-        problem.data_x = problem.data_x[index]
-        problem.data_y = problem.data_y[index]
-        if isinstance(problem.data_e, ndarray):
-            problem.data_e = problem.data_e[index]
-
+    index = argsort(problem.data_x)
+    problem.data_x = problem.data_x[index]
+    problem.data_y = problem.data_y[index]
+    if isinstance(problem.data_e, ndarray):
+        problem.data_e = problem.data_e[index]
 
     return problem
 
