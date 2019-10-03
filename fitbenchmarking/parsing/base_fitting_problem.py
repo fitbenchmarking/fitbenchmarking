@@ -46,17 +46,32 @@ class BaseFittingProblem(object):
     def close_file(self):
         self._contents.close()
 
-    @abstractmethod
     def eval_f(self, x, params, function_id):
         """
-        Evaluate problem with given params.
+        Function evaluation method
 
-        @param x :: The x values to evaluate at
-        @param params :: The parameters to use for the evaluation
+        :param x: x data values
+        :param params: parameter value(s)
+        :param function_id: The index of the function in get_function
+
+        :return: y data values evaluated from the function of the problem
+        """
+
+        func_def = self.get_function()
+        function = func_def[function_id][0]
+        return function(x, *params)
+
+    def eval_starting_params(self, function_id):
+        """
+        Evaluate the function using the starting parameters.
 
         @returns :: A numpy array of results from evaluation
         """
-        pass
+
+        function_params = self.get_function()[function_id][1]
+        return self.eval_f(x=self.data_x,
+                           params=function_params,
+                           function_id=function_id)
 
     @abstractmethod
     def get_function(self):
@@ -67,25 +82,24 @@ class BaseFittingProblem(object):
         """
         pass
 
-    def eval_starting_params(self):
-        """
-        Evaluate the function using the starting parameters.
-
-        @returns :: A numpy array of results from evaluation
-        """
-
-        function_params = [f[1] for f in self.get_function()]
-        return self.eval_f(self.data_x, function_params[0], 0)
-
-    @abstractmethod
     def get_function_def(self, params, function_id):
         """
         Return the function definition in a string format for output
 
         @param params :: The list of parameters to use in the function string
+        @param function_id :: The index of the function in get_function
 
         @returns :: A string with a representation of the function
+                    example format: 'b1 * (b2+x) | b1=-2.0, b2=50.0'
         """
+        names = [s[0] for s in self._starting_values]
+        if params is None:
+            params = (None for _ in names)
+        params = ['{}={}'.format(n, p) for n, p in zip(names, params)]
+        param_string = ', '.join(params)
+
+        func_name = self._equation  # self.get_function()[function_id][2]
+        return '{} | {}'.format(func_name, param_string)
 
     @property
     def fname(self):

@@ -43,5 +43,6 @@ class ScipyController(BaseSoftwareController):
         """
         Convert the result to a numpy array and store it.
         """
-        self.results = self.function(self.data_x, *self.popt)
-        self.final_params = self.popt
+        if self.success:
+            self.results = self.function(self.data_x, *self.popt)
+            self.final_params = self.popt

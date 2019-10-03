@@ -124,7 +124,7 @@ def make_starting_guess_plot(raw_data, problem, count, figures_dir):
                 superimposed, saved as a .png file.
     """
     xData = problem.data_x
-    yData = problem.eval_starting_params()
+    yData = problem.eval_starting_params(0)
     startData = data("Start Guess", xData, yData)
     startData.order_data()
     startData.colour = "red"
