@@ -23,12 +23,18 @@ class SasviewController(BaseSoftwareController):
         """
         Setup problem ready to run with SasView.
         """
-        model = self.function
+        # Bumps fails with the *args notation
+        wrapper = "def fitFunction(x, {}):\n".format(', '.join(self.param_names))
+        wrapper += "    return func(x, {})".format(', '.join(self.param_names))
+
+        exec_dict = {'func': self.function}
+        exec(wrapper, exec_dict)
+
+        model = exec_dict['fitFunction']
 
         # Remove any function attribute. BinWidth is the only attribute in all FitBenchmark (Mantid) problems.
         param_dict = {name: value
-                      for name, value in zip(self.param_names, self.initial_params)
-                      if not name.endswith('BinWidth')}
+                      for name, value in zip(self.param_names, self.initial_params)}
 
         # Create a Function Wrapper for the problem function. The type of the Function Wrapper is acceptable by Bumps.
         func_wrapper = Curve(model, x=self.data_x, y=self.data_y, dy=self.data_e, **param_dict)
@@ -37,8 +43,7 @@ class SasviewController(BaseSoftwareController):
         for name in self.param_names:
             minVal = -np.inf
             maxVal = np.inf
-            if not name.endswith('BinWidth'):
-                func_wrapper.__dict__[name].range(minVal, maxVal)
+            func_wrapper.__dict__[name].range(minVal, maxVal)
 
         # Create a Problem Wrapper. The type of the Problem Wrapper is acceptable by Bumps fitting.
         self.func_wrapper = func_wrapper

@@ -74,7 +74,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
                 param_names = [params[0] for params in self._starting_values]
                 
-                def tmp(x, *tmp_params):
+                def fitFunction(x, *tmp_params):
 
                     model = load_model(self._equation)
 
@@ -90,16 +90,9 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
                     return func_wrapper.theory()
 
-                # Bumps fails with the *args notation
-                wrapper = "def fitFunction(x, {}):\n".format(','.join(param_names))
-                wrapper += "    return tmp(x, {})".format(','.join(param_names))
-
-                exec_dict = {'tmp': tmp}
-                exec(wrapper, exec_dict)
-
                 param_values = [params[1][i] for params in self._starting_values]
 
-                functions.append([exec_dict['fitFunction'], param_values, self._equation])
+                functions.append([fitFunction, param_values, self._equation])
 
             self.function = functions
 
