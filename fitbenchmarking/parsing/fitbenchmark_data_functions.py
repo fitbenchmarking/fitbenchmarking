@@ -3,13 +3,57 @@ Functions that prepare the function specified in FitBenchmark problem definition
 the right format for SciPy.
 """
 
-from __future__ import (absolute_import, division, print_function)
+
+from __future__ import absolute_import, division, print_function
+
+import re
 
 import numpy as np
-import re
-from fitbenchmarking.fitting.mantid.externals import gen_func_obj, set_ties
+
+import mantid.simpleapi as msapi
 from fitbenchmarking.utils.logging_setup import logger
 
+
+def gen_func_obj(function_name, params_set):
+    """
+    Generates a mantid function object.
+
+    @param function_name :: the name of the function to be generated
+    @params_set :: set of parameters per function extracted from the
+        problem definition file
+
+    @returns :: mantid function object that can be called in python
+    """
+    params_set = (params_set.split(', ties'))[0]
+
+    exec "function_object = msapi." + function_name + "(" + params_set + ")"
+
+    return function_object
+
+
+def set_ties(function_object, ties):
+    """
+    Sets the ties for a function/composite function object.
+
+    @param function_object :: mantid function object
+    @param ties :: array of strings containing the ties
+
+    @returns :: mantid function object with ties
+    """
+
+    for idx, ties_per_func in enumerate(ties):
+        for tie in ties_per_func:
+            """
+            param_str is a string of the parameter name in the mantid format
+            For a Mantid Composite Function, a formatted parameter name would
+            start with the function number and end with the parameter name.
+            For instance, f0.A would refer to a parameter A of the first
+            function is a Composite Function.
+            """
+            param_str = 'f' + str(idx) + '.' + (tie.split("'"))[0]
+            function_object.fix(param_str)
+
+    return function_object
 
 def fitbenchmark_func_definitions(functions_string):
     """
@@ -34,38 +78,6 @@ def fitbenchmark_func_definitions(functions_string):
     function_def = [[fit_function, params]]
 
     return function_def
-
-
-def get_fit_function_without_kwargs(fit_function, functions_string):
-    """
-    Create a function evaluation method that does not take any Keyword Arguments.
-    This function is created from a Mantid function.
-
-    @param fit_function :: a Mantid function
-    @param functions_string :: a function definition string in the Mantid format
-
-    @return :: an array containing a function evaluation method without Keyword Arguments
-               and a list of initial parameter values
-    """
-
-    functions_string = re.sub(r",(\s+)?ties=[(][A-Za-z0-9=.,\s+]+[)]", '', functions_string)
-    function_list = (functions_string).split(';')
-    func_params_list = [((func.split(','))[1:]) for func in function_list]
-    formatted_param_list = ['f' + str(func_params_list.index(func_params)) + '.' + param.strip() for func_params in
-                            func_params_list for param in func_params]
-    param_names = [(param.split('='))[0] for param in formatted_param_list]
-    param_values = [(param.split('='))[1] for param in formatted_param_list if
-                    not (param.split('='))[0].endswith('BinWidth')]
-    new_param_names = [param.replace('.', '_') for param in param_names]
-
-    param_names_string = ''
-    for param in new_param_names:
-        if not param.endswith('BinWidth'):
-            param_names_string += ',' + param
-
-    exec ('def bumps_function(x' + param_names_string + '):\n    return fit_function.__call__(x' + param_names_string + ')') in locals()
-
-    return [[bumps_function, param_values]]
 
 
 def get_all_fitbenchmark_func_names(functions_string):
@@ -133,7 +145,7 @@ def get_fitbenchmark_initial_params_values(function_params):
     params = []
     ties = []
     for param_set in function_params:
-        get_fitbenchmark_params(param_set, params)
+        params += get_fitbenchmark_params(param_set)
         get_fitbenchmark_ties(param_set, ties)
 
     params = np.array(params)
@@ -153,25 +165,20 @@ def make_fitbenchmark_fit_function(func_name, fit_function, params_set):
     return fit_function
 
 
-def get_fitbenchmark_params(param_set, params):
+def get_fitbenchmark_params(param_set):
     """
     Get the FitBenchmark param values from the param_set string array which
     may contain multiple parameter sets (for each function).
     """
-    start = 0
-    while True:
-        comma = param_set.find(',', start)
-        equal = param_set.find('=', start)
-        if param_set[equal - 4:equal] == 'ties':
-            break
-        if comma == -1:
-            parameter = float(param_set[equal + 1:])
-        else:
-            parameter = float(param_set[equal + 1:comma])
-        params.append(parameter)
-        if comma == -1:
-            break
-        start = comma + 1
+    params_str = param_set.split('ties=', 1)[0]
+    params_list = (ps
+                   for ps in params_str.split(',')
+                   if ps.strip() != '')
+
+    param_strs = (p.split('=') for p in params_list)
+    params = [float(p[1].strip())
+              for p in param_strs
+              if p[0].strip() != 'BinWidth']
 
     return params
 

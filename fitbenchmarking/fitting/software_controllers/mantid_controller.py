@@ -26,6 +26,7 @@ class MantidController(BaseSoftwareController):
 
         self.mantid_data = data_obj
         self.mantid_function = None
+        self.mantid_results = None
 
     def setup(self):
         """
