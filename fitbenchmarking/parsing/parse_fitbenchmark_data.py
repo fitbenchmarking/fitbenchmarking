@@ -6,7 +6,7 @@ import numpy as np
 
 from fitbenchmarking.utils.logging_setup import logger
 from fitbenchmarking.parsing.fitbenchmark_data_functions import (
-    fitbenchmark_func_definitions, get_fit_function_without_kwargs
+    fitbenchmark_func_definitions
 )
 
 

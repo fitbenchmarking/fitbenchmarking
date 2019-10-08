@@ -39,7 +39,7 @@ class ParseSasViewTests(unittest.TestCase):
         entries['input_file'] = "SV_cyl_400_20.txt"
 
         entries['function'] = ("name=cylinder,radius=35.0,length=350.0,background=0.0,scale=1.0,sld=4.0,sld_solvent=1.0")
-        entries['parameter_ranges'] = {'radius': [1, 50], 'length' : [1, 500]}
+        entries['parameter_ranges'] = 'radius.range(1,50);length.range(1,500)'
         entries['description'] = ''
 
         return entries
@@ -144,6 +144,7 @@ class ParseSasViewTests(unittest.TestCase):
         fname = get_file('SV_prob_def_1.txt')
         problem = FittingProblem(fname)
         entries = self.expected_SAS_modelling_1D_problem_entries()
+        expected_problem = self.expected_SAS_modelling_1D_problem()
 
         self.assertEqual(entries['name'], problem.name)
         self.assertEqual((entries['function'].split(',', 1))[0][5:], problem.equation)
@@ -154,7 +155,7 @@ class ParseSasViewTests(unittest.TestCase):
                           ['sld', [4.0]],
                           ['sld_solvent', [1.0]]],
                          problem.starting_values)
-        self.assertEqual(entries['parameter_ranges'], problem.starting_value_ranges)
+        self.assertEqual(expected_problem.starting_value_ranges, problem.starting_value_ranges)
     #
     def test_checkingAttributesAssertion(self):
         fname = get_file('SV_prob_def_1.txt')
