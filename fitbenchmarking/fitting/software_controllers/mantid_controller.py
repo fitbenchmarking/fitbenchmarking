@@ -80,6 +80,7 @@ class MantidController(BaseSoftwareController):
         if self.mantid_results is not None:
             ws = self.mantid_results.OutputWorkspace
             self.results = ws.readY(1)
-            self.final_params = self.mantid_results.OutputParameters.column(1)
+            final_params = self.mantid_results.OutputParameters.column(1)
+            self.final_params = final_params[:len(self.initial_params)]
         else:
             self.success = False

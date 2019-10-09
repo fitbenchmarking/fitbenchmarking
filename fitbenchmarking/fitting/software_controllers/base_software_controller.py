@@ -32,6 +32,7 @@ class BaseSoftwareController():
         self.initial_params = None
         # Function: The current function to fit (from functions)
         self.function = None
+        self.function_id = None
         # Minimizer: The current minimizer to use
         self.minimizer = None
 
