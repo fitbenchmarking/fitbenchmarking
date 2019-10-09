@@ -7,18 +7,21 @@ from fitbenchmarking.fitting.software_controllers.base_software_controller impor
 
 
 class ScipyController(BaseSoftwareController):
+    """
+    Controller for the Scipy fitting software.
+    """
 
     def __init__(self, problem, use_errors):
+        """
+        Initialises variable used for temporary storage.
+        """
         super(ScipyController, self).__init__(problem, use_errors)
 
         self.popt = None
 
     def setup(self):
         """
-        Setup specifics for problem ready to run with Scipy.
-
-        :returns: None
-        :rtype: None
+        No setup needed for scipy, so this is a no-op.
         """
         pass
 
@@ -41,7 +44,8 @@ class ScipyController(BaseSoftwareController):
 
     def cleanup(self):
         """
-        Convert the result to a numpy array and store it.
+        Convert the result to a numpy array and populate the variables results
+        will be read from.
         """
         if self.success:
             self.results = self.function(self.data_x, *self.popt)

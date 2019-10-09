@@ -51,10 +51,14 @@ class BaseFittingProblem(object):
         Function evaluation method
 
         :param x: x data values
+        :type x: numpy array
         :param params: parameter value(s)
+        :type params: list
         :param function_id: The index of the function in get_function
+        :type function_id: int
 
         :return: y data values evaluated from the function of the problem
+        :rtype: numpy array 
         """
 
         func_def = self.get_function()
@@ -65,6 +69,7 @@ class BaseFittingProblem(object):
         """
         Evaluate the function using the starting parameters.
 
+        @param function_id :: The index of the function in get_function
         @returns :: A numpy array of results from evaluation
         """
 

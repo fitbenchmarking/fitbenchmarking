@@ -5,12 +5,20 @@ import numpy as np
 
 
 class BaseSoftwareController():
+    """
+    Base class for all fitting software controllers.
+    These controllers are intended to be the only interface into the fitting
+    software, and should do so by implementing the abstract classes defined
+    here.
+    """
 
     __metaclass__ = ABCMeta
 
     def __init__(self, problem, use_errors):
         """
         Initialise the class.
+        Sets up data as defined by the problem and use_errors variables,
+        and initialises variables that will be used in other methods.
         """
 
         # Problem: The problem object from parsing
@@ -38,13 +46,18 @@ class BaseSoftwareController():
 
         # Final Params: The final values for the params from the minimizer
         self.final_params = None
-        # Results: Stores output results using the final parameters in 
+        # Results: Stores output results using the final parameters in
         #          numpy array
         self.results = None
         # Success: Bool for flagging issues
         self.success = None
 
     def _correct_data(self):
+        """
+        Strip data that overruns the start and end x_range,
+        and approximate errors if not given.
+        Modifications happen on member variables.
+        """
         xdata = self.data_x
         ydata = self.data_y
         sigma = self.data_e
@@ -75,6 +88,15 @@ class BaseSoftwareController():
         self.data_e = sigma
 
     def prepare(self, minimizer=None, function_id=None):
+        """
+        Set the minimizer, function_id, or both.
+        If both have been set, run self.setup().
+
+        :param minimizer: The name of the minimizer to use
+        :type minimizer: String
+        :param function_id: The index of the function to fit
+        :type function_id: Int
+        """
         if minimizer is not None:
             self.minimizer = minimizer
         if function_id is not None:
@@ -89,6 +111,7 @@ class BaseSoftwareController():
     @abstractmethod
     def setup(self):
         """
+        ABSTRACT METHOD
         Setup the specifics of the fitting
 
         Anything needed for "fit" should be saved to self.
@@ -101,6 +124,7 @@ class BaseSoftwareController():
     @abstractmethod
     def fit(self):
         """
+        ABSTRACT METHOD
         Run the fitting.
         """
         pass
@@ -108,6 +132,7 @@ class BaseSoftwareController():
     @abstractmethod
     def cleanup(self):
         """
+        ABSTRACT METHOD
         Retrieve the result as a numpy array and store in self.results
         """
         pass

@@ -64,8 +64,12 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
     def get_function(self):
         """
+        Creates list of functions alongside the starting parameters.
+        Functions are saved to the instance so that this is only generated
+        once.
 
-        @returns :: function definition list containing the model and its starting parameter values
+        @returns :: function definition list containing the model and its
+                    starting parameter values
         """
         if self.function is None:
 
@@ -73,7 +77,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
             for i in range(len(self._starting_values[0][1])):
 
                 param_names = [params[0] for params in self._starting_values]
-                
+
                 def fitFunction(x, *tmp_params):
 
                     model = load_model(self._equation)

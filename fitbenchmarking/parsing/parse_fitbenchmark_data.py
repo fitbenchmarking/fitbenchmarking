@@ -41,10 +41,12 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         # String containing the function name(s) and the starting parameter values for each function
         self._mantid_equation = entries['function']
 
+        # Readable equation for output to user
         equation = entries['function'].split(';', 1)[-1]
         equation = equation.split(',', 1)[0]
         self._equation = equation.split('=', 1)[1].strip()
 
+        # list of starting values in format [[name, [value1, value2, ...]], ...]
         tmp_starting_values = entries['function'].split(';')
         tmp_starting_values = (tmp.split('ties=')[0] for tmp in tmp_starting_values)
         tmp_starting_values = ('f{}_{}'.format(i, sv)
@@ -55,6 +57,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
                                   [float(f.split('=')[1].strip())]]
                                  for f in tmp_starting_values]
 
+        # start and end values in x range
         if 'fit_parameters' in entries:
             self._start_x = entries['fit_parameters']['StartX']
             self._end_x = entries['fit_parameters']['EndX']
@@ -64,7 +67,8 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
     def get_function(self):
         """
 
-        @returns :: function definition list containing the function and its starting parameter values
+        @returns :: function definition list containing the function and its
+                    starting parameter values
         """
 
         function = fitbenchmark_func_definitions(self._mantid_equation)

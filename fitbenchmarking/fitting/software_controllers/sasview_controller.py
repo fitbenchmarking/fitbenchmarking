@@ -9,19 +9,23 @@ from fitbenchmarking.fitting.software_controllers.base_software_controller impor
 
 
 class SasviewController(BaseSoftwareController):
+    """
+    Controller for the Sasview fitting software.
+    """
 
     def __init__(self, problem, use_errors):
+        """
+        Extract param names for function setup
+        """
         super(SasviewController, self).__init__(problem, use_errors)
 
         self.param_names = [param[0] for param in problem.starting_values]
 
-        data_obj = Data1D(x=self.data_x, y=self.data_y, dy=self.data_e)
-
-        self.sas_data = data_obj
-
     def setup(self):
         """
         Setup problem ready to run with SasView.
+
+        Creates a Sasview FitProblem for calling in fit()
         """
         # Bumps fails with the *args notation
         wrapper = "def fitFunction(x, {}):\n".format(', '.join(self.param_names))
@@ -60,7 +64,8 @@ class SasviewController(BaseSoftwareController):
 
     def cleanup(self):
         """
-        Convert the result to a numpy array and return it.
+        Convert the result to a numpy array and populate the variables results
+        will be read from.
         """
         
         self.final_params = self.bumps_result.x

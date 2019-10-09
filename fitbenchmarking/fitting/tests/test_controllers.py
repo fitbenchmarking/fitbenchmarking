@@ -30,6 +30,9 @@ def misra1a_file():
 
 
 class DummyController(BaseSoftwareController):
+    """
+    Minimal instantiatable subclass of BaseSoftwareClass for testing
+    """
     def setup(self):
         self.setup_result = 53
 
@@ -41,10 +44,16 @@ class DummyController(BaseSoftwareController):
 
 
 class BaseSoftwareControllerTests(unittest.TestCase):
+    """
+    Tests for base software controller class methods.
+    """
     def setUp(self):
         self.problem = FittingProblem(misra1a_file())
 
     def test_data(self):
+        """
+        BaseSoftwareController: Test data is read into controller correctly
+        """
         controller = DummyController(self.problem, True)
         assert(min(controller.data_x) >= self.problem.start_x)
         assert(max(controller.data_x) <= self.problem.end_x)
@@ -65,10 +74,16 @@ class BaseSoftwareControllerTests(unittest.TestCase):
                and (e_is_subset or e_is_default))
 
     def test_no_use_errors(self):
+        """
+        BaseSoftwareController: Test errors are not set when not requested
+        """
         controller = DummyController(self.problem, False)
         assert(controller.data_e is None)
 
     def test_prepare(self):
+        """
+        BaseSoftwareController: Test prepare function
+        """
         controller = DummyController(self.problem, True)
         controller.prepare(minimizer='test')
         assert(controller.minimizer == 'test')
@@ -78,32 +93,49 @@ class BaseSoftwareControllerTests(unittest.TestCase):
 
 
 class ControllerTests(unittest.TestCase):
+    """
+    Tests for each controller class
+    """
     def setUp(self):
         self.problem = FittingProblem(misra1a_file())
 
     def test_mantid(self):
+        """
+        MantidController: Test for output shape
+        """
         controller = MantidController(self.problem, True)
         controller.prepare(function_id=0)
         controller.prepare(minimizer='SteepestDescent')
         self.shared_testing(controller)
 
     def test_sasview(self):
+        """
+        SasviewController: Test for output shape
+        """
         controller = SasviewController(self.problem, True)
         controller.prepare(function_id=0)
         controller.prepare(minimizer='amoeba')
         self.shared_testing(controller)
 
     def test_scipy(self):
+        """
+        ScipyController: Test for output shape
+        """
         controller = ScipyController(self.problem, True)
         controller.prepare(function_id=0)
         controller.prepare(minimizer='lm')
         self.shared_testing(controller)
 
     def shared_testing(self, controller):
+        """
+        Utility function to run controller and check output is in generic form
+
+        :param controller: Controller to test, with setup already completed
+        :type contrller: Object derived from BaseSoftwareController
+        """
         controller.fit()
         controller.cleanup()
 
         assert(controller.success)
         assert(len(controller.results) == len(controller.data_y))
         assert(len(controller.final_params) == len(controller.initial_params))
-    

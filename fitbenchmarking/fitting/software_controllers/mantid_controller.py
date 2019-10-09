@@ -1,14 +1,23 @@
 
+import numpy as np
+
 from fitbenchmarking.fitting.software_controllers.base_software_controller import \
     BaseSoftwareController
 from mantid import simpleapi as msapi
 from mantid.api import *
 from mantid.fitfunctions import *
-import numpy as np
+
 
 class MantidController(BaseSoftwareController):
+    """
+    Controller for the Mantid fitting software.
+    """
 
     def __init__(self, problem, use_errors):
+        """
+        Setup workspace, cost_function, ignore_invalid, and initialise vars
+        used for temporary storage within the mantid controller
+        """
         super(MantidController, self).__init__(problem, use_errors)
 
         self.param_names = [row[0] for row in problem.starting_values]
@@ -31,6 +40,8 @@ class MantidController(BaseSoftwareController):
     def setup(self):
         """
         Setup problem ready to run with Mantid.
+
+        Adds a custom function to Mantid for calling in fit().
         """
         start_val_list = ['{0}={1}'.format(name, value)
                           for name, value
@@ -74,7 +85,8 @@ class MantidController(BaseSoftwareController):
 
     def cleanup(self):
         """
-        Convert the result to a numpy array and return it.
+        Convert the result to a numpy array and populate the variables results
+        will be read from.
         """
 
         if self.mantid_results is not None:
