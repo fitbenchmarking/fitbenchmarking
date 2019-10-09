@@ -10,9 +10,18 @@ import numpy as np
 
 from fitbenchmarking.fitting import misc
 from fitbenchmarking.fitting.plotting import plot_helper, plots
-from fitbenchmarking.fitting.software_controllers import (mantid_controller,
-                                                          sasview_controller,
-                                                          scipy_controller)
+try:
+    from fitbenchmarking.fitting.software_controllers.mantid_controller import MantidController
+except ImportError:
+    MantidController = None
+try:
+    from fitbenchmarking.fitting.software_controllers.sasview_controller import SasviewController
+except ImportError:
+    SasviewController = None
+try:
+    from fitbenchmarking.fitting.software_controllers.scipy_controller import ScipyController
+except ImportError:
+    ScipyController = None
 
 
 def fitbm_one_prob(user_input, problem):
@@ -32,9 +41,9 @@ def fitbm_one_prob(user_input, problem):
 
     software = user_input.software.lower()
 
-    controllers = {'mantid': mantid_controller.MantidController,
-                   'sasview': sasview_controller.SasviewController,
-                   'scipy': scipy_controller.ScipyController}
+    controllers = {'mantid': MantidController,
+                   'sasview': SasviewController,
+                   'scipy': ScipyController}
 
     if software in controllers:
         controller = controllers[software](problem, user_input.use_errors)
