@@ -12,7 +12,7 @@ setup(name='FitBenchmarking',
       license='GPL-3.0',
       packages=find_packages(),
       install_requires=['docutils', 'numpy<1.17', 'matplotlib<3.0',
-                        'scipy>=0.18,<1.3', 'bumps', 'sasmodels', 'lxml', 'h5py'],
+                        'scipy>=0.18,<1.3', 'bumps', 'sasmodels', 'lxml'],
       zip_safe=False,
 
       cmdclass={
