@@ -52,20 +52,6 @@ def get_minimizers(software_options):
         return minimizers, software
 
 
-def setup_fitting_problems(data_dir):
-    """
-    Sets up a problem group specified by the user by providing
-    a respective data directory.
-
-    @param data_dir :: full path of a directory that holds a group of problem definition files
-    @returns :: array containing blocks of paths to the problems
-                e.g. In NIST we would have
-                [[low_difficulty/..., ...], [average_difficulty/..., ...], ...]
-    """
-
-    return get_problem_files(data_dir)
-
-
 def save_user_input(software, minimizers, group_name, results_dir, use_errors):
     """
     All parameters inputed by the user are stored in an object.

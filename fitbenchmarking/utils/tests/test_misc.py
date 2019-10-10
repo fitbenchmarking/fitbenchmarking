@@ -6,7 +6,6 @@ import shutil
 import json
 
 from fitbenchmarking.utils.misc import get_minimizers
-from fitbenchmarking.utils.misc import setup_fitting_problems
 from fitbenchmarking.utils.misc import get_problem_files
 
 
@@ -167,23 +166,13 @@ class CreateDirsTests(unittest.TestCase):
 
     self.assertRaises(ValueError, get_minimizers, software_options)
 
-  def test_setupFittingProblems_get_correct_nist_probs(self):
+  def test_getProblemFiles_get_correct_nist_probs(self):
 
     data_dir = os.path.join(self.base_path(), 'NIST', 'low_difficulty')
     nist_problems = self.all_nist_problems()
 
-    problem_groups = setup_fitting_problems(data_dir)
+    problem_groups = get_problem_files(data_dir)
     problem_groups_expected = nist_problems
-
-    self.assertTrue(problem_groups_expected, problem_groups)
-
-  def test_setupFittingProblems_get_correct_neutron_probs(self):
-
-    data_dir = os.path.join(self.base_path(), 'Neutron')
-    neutron_problems = self.all_neutron_problems()
-
-    problem_groups = setup_fitting_problems(data_dir)
-    problem_groups_expected = neutron_problems
 
     self.assertTrue(problem_groups_expected, problem_groups)
 
