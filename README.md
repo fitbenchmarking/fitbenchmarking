@@ -22,8 +22,10 @@ For help on how to use the command line/terminal, click the hyperlink correspond
 1. Download this repository or clone it using [git](https://git-scm.com/): \
     `git clone https://github.com/fitbenchmarking/fitbenchmarking.git`
 2. Open up a terminal (command prompt) and go into the `fitbenchmarking` directory.
-3. Once you are in the right directory, start the install with:\
-    `python setup.py install --user`
+3. Once you are in the right directory, start the install with the following depending on your environment:
+   
+   -  No virtual environment: `python setup.py install --user`
+   -  Virtual Environment: `python setup.py install`
 
 You should now have all you need to use FitBenchmarking.
 To try it out, you can run one of the example scripts as below.
