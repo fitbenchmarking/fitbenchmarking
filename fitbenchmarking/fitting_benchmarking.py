@@ -37,7 +37,7 @@ def fitbenchmark_group(group_name, software_options, data_dir,
         software_options['software']))
     minimizers, software = misc.get_minimizers(software_options)
 
-    # create list with blocks of paths to all problem definitions in data_dir
+    # create list of paths to all problem definitions in data_dir
     problem_group = misc.setup_fitting_problems(data_dir)
 
     results_dir = create_dirs.results(results_dir)
