@@ -6,7 +6,6 @@ import shutil
 import json
 
 from fitbenchmarking.utils.misc import get_minimizers
-from fitbenchmarking.utils.misc import setup_fitting_problems
 from fitbenchmarking.utils.misc import get_problem_files
 
 
@@ -167,23 +166,13 @@ class CreateDirsTests(unittest.TestCase):
 
     self.assertRaises(ValueError, get_minimizers, software_options)
 
-  def test_setupFittingProblems_get_correct_nist_probs(self):
+  def test_getProblemFiles_get_correct_nist_probs(self):
 
     data_dir = os.path.join(self.base_path(), 'NIST', 'low_difficulty')
     nist_problems = self.all_nist_problems()
 
-    problem_groups = setup_fitting_problems(data_dir, 'NIST_low_diff')
-    problem_groups_expected = {'NIST_low_diff': nist_problems}
-
-    self.assertTrue(problem_groups_expected, problem_groups)
-
-  def test_setupFittingProblems_get_correct_neutron_probs(self):
-
-    data_dir = os.path.join(self.base_path(), 'Neutron')
-    neutron_problems = self.all_neutron_problems()
-
-    problem_groups = setup_fitting_problems(data_dir, 'Neutron')
-    problem_groups_expected = {'nist': neutron_problems}
+    problem_groups = get_problem_files(data_dir)
+    problem_groups_expected = nist_problems
 
     self.assertTrue(problem_groups_expected, problem_groups)
 
@@ -193,14 +182,15 @@ class CreateDirsTests(unittest.TestCase):
     neutron_problems = self.all_neutron_problems()
 
     paths_to_neutron_problems = \
-        get_problem_files(base_path_neutron)[0]
+        get_problem_files(base_path_neutron)
     # Please see the above for loop comments for
     # a description of this one
     paths_to_neutron_problems_expected = []
     for neutron_level_group in neutron_problems:
         paths_to_level_group = \
             [os.path.join(base_path_neutron, neutron_prob_name)
-            for neutron_prob_name in neutron_level_group]
+             for neutron_prob_name in neutron_level_group]
+
         paths_to_neutron_problems_expected.append(paths_to_level_group)
 
     self.assertListEqual(paths_to_neutron_problems_expected[0],
