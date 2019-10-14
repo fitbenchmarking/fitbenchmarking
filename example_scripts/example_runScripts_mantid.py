@@ -17,7 +17,7 @@ try:
 except ImportError:
     print('******************************************\n'
           'Mantid is not yet installed on your computer\n'
-          'To install, go to the directory where setup.py is located and simply type:\n'
+          'To install, on Linux, go to the directory where setup.py is located and type:\n'
           'python setup.py install externals -s mantid\n'
           '******************************************')
     sys.exit()

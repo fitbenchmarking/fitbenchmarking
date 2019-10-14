@@ -1,6 +1,7 @@
 """
 This example script is designed to demonstrate the features of fitbenchmarking to benchmark
-the performance of Scipy minimizers against NIST-type problem definition files.
+the performance of Scipy and SasView minimizers against the NIST-type problem definition files
+and the SAS_modelling problems.
 """
 
 
@@ -15,12 +16,13 @@ from fitbenchmarking.results_output import save_results_tables
 
 def main(args):
     # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-    software = ['scipy']
+    software = ['scipy', 'sasview']
     software_options = {'software': software}
 
     # User defined minimizers
-    # custom_minimizers = {"mantid": ["BFGS", "Simplex"],
-    #               "scipy": ["lm", "trf", "dogbox"]}
+    # custom_minimizers = {"scipy": ["lm", "trf", "dogbox"],
+    #                      "sasview": ["amoeba", "lm", "newton", "de", "pt", "mp"]}
+    # None will default to the list on the options file
     custom_minimizers = None
 
     # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE

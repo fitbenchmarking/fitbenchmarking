@@ -92,7 +92,7 @@ def main(argv):
 
         # Sets up the problem group specified by the user by providing
         # a respective data directory.
-        problem_group = misc.setup_fitting_problems(data_dir)
+        problem_group = misc.get_problem_files(data_dir)
 
         # Create output dirs
         results_dir = create_dirs.results(results_dir)
