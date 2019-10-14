@@ -36,8 +36,8 @@ jobs:
         #- travis_wait pytest example_scripts/ --cov=example_scripts/
         #  --cov-report term-missing
         # ======= Fitting Tests =============== #
-        - pytest fitbenchmarking/fitting/ --cov=fitbenchmarking/fitting/
-          --cov-report term-missing
+        #- pytest fitbenchmarking/fitting/ --cov=fitbenchmarking/fitting/
+        #  --cov-report term-missing
         # ======= Parsing Tests =============== #
         #- pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
         #  --cov-report term-missing --cov-append
@@ -46,8 +46,8 @@ jobs:
         #  --cov=fitbenchmarking/resproc --cov-report term-missing
         #  --cov-append
         # ======= Utils Tests =============== #
-        #- pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
-        #  --cov-report term-missing --cov-append
+        - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
+          --cov-report term-missing --cov-append
       after_success:
         - coveralls
     - stage: SysTests
