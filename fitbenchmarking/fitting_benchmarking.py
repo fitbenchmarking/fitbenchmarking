@@ -68,17 +68,25 @@ def _benchmark(user_input, problem_group):
     parsed_problems = [parse.parse_problem_file(p) for p in problem_group]
 
     if not isinstance(user_input, list):
-        list_prob_results = [fitbm_one_prob(user_input, p) for p in parsed_problems]
+        list_prob_results = [per_func
+                             for p in parsed_problems
+                             for per_func in fitbm_one_prob(user_input, p)]
 
     else:
-        list_prob_results = [fitbm_one_prob(u, p)
-                             for u in user_input
+        list_prob_results = [[fitbm_one_prob(u, p)
+                              for u in user_input]
                              for p in parsed_problems]
 
-    # Flatten
-    list_prob_results = [res
-                         for tmp_list in list_prob_results
-                         for res in tmp_list]
+        # reorganise loop structure from:
+        # [[[val per minimizer] per function] per input] per problem]
+        # to:
+        # [[val per input per minimizer] per function per problem]
+        list_prob_results = \
+            [[list_prob_results[prob_idx][input_idx][func_idx][minim_idx]
+              for input_idx in range(len(user_input))
+              for minim_idx in range(len(list_prob_results[prob_idx][input_idx][func_idx]))]
+             for prob_idx in range(len(parsed_problems))
+             for func_idx in range(len(list_prob_results[prob_idx][0]))]
 
     return list_prob_results
 

@@ -13,66 +13,64 @@ FitBenchmarking is a tool for comparing different minimizers/fitting software ba
 ## Quick Start
 [![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)](https://www.python.org/downloads/release/python-2715/) is (currently) the Python version needed for running/installing FitBenchmarking. Instructions for setting up python are available [here](https://github.com/mantidproject/fitbenchmarking/wiki/Setting-up-Python).
 
-For help of how to use the command line/terminal, click the hyperlink corresponding to your operating system: [Windows](https://red-dot-geek.com/basic-windows-command-prompt-commands/), [macOS](http://newsourcemedia.com/blog/basic-terminal-commands/) and [Ubuntu](https://hackingpress.com/basic-linux-commands/)
+For help on how to use the command line/terminal, click the hyperlink corresponding to your operating system: 
+[Windows](https://red-dot-geek.com/basic-windows-command-prompt-commands/),
+[macOS](http://newsourcemedia.com/blog/basic-terminal-commands/) and
+[Ubuntu](https://hackingpress.com/basic-linux-commands/)
 
-1. Download this repository or clone it using [git](https://git-scm.com/):
-`git clone https://github.com/mantidproject/fitbenchmarking.git`
-2. Open up a terminal (command prompt) and go into the `fitbenchmarking` directory.
-3. Once you are in the right directory, type `python setup.py install`.
-4. Install mantid, platform specific instructions [here](https://github.com/mantidproject/fitbenchmarking/wiki/Installing-Mantid).
-5. Open the mantidpython terminal
-    * Ubuntu: in a normal terminal cd to /opt/Mantid/bin and run `./mantidpython`
-    * Windows: go to where you installed Mantid and search for a file called `mantidpython`
-    * macOS: in a normal terminal run `/Applications/MantidPlot.app/Contents/MacOS/mantidpython`
-#### For macOS only ####
-6. On the mantidpython terminal, run the following IPython command:
-    - `!pip install docutils==0.12 --user`
+### Installing
+1. Download this repository or clone it using [git](https://git-scm.com/): \
+    `git clone https://github.com/fitbenchmarking/fitbenchmarking.git`
+2. Within a terminal (command prompt) go into the `fitbenchmarking` directory.
+3. Within this directory, start the install with the following depending on your environment:
+   
+   -  No virtual environment: `python setup.py install --user`
+   -  Virtual Environment: `python setup.py install`
 
-The above step is done to ensure that the compatible version of docutils packages (version 0.12) is installed. 
+You should now have all you need to use FitBenchmarking.
+To try it out, you can run one of the example scripts as below.
 
-7. Finally, in this terminal, run `example_scripts/example_runScript_mantid.py`, located in the fitbenchmarking folder. This example script fit benchmarks Mantid using all the available minimizers. The resulting tables can be found in `example_scripts/results`.
+## FitBenchmarking
+The `example_scripts/example_runScripts.py` file is designed to benchmark minimizers supported by software/libraries that provide straightforward cross-platform Python install; as of now this means SciPy and SasView (more details provided in the file itself).
 
-## FitBenchmarking Scipy
-The `example_runScripts.py` file is designed to benchmark minimizers supported by software/libraries that provide straightforward cross-platform Python install; as of know this mean SciPy (more details provided in the file itself).
+The required software packages should have been installed in step 3 above (scipy, numpy, lxml, bumps, sasmodels).
+If you have issues with any of these please contact us so that we can update the installer.
 
-For this to work scipy version 0.17 or higher is needed (which includes needed [curve_fit](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html) support). **The Linux distributions we have tested against so far have all included scipy 0.17+ (0.17 is from Feb 2016).**
+Try it out on Linux and Mac with: `python example_scripts/example_runScripts.py` and on Windows with: `python example_scripts\example_runScripts.py`
 
-To check your version of scipy, type `python -m pip show scipy` in the terminal(command line).
+The resulting tables can be found in the folder `results`.
 
-However, as of this writing, the Mantid installer on Windows is shipped with an older version of scipy
-and a manual workaround is currently needed.
+## FitBenchmarking Mantid
+FitBenchmarking also works with [Mantid](https://www.mantidproject.org/Main_Page), however this is not installed by default.
+To enable using Mantid, you should install it as follows:
 
-#### Windows workaround ####
-After installing Mantid on Windows please do the following:
-
-1. Start the mantidpython (IPython) console as admin.
-2. Run the following IPython commands:
-    - `!python -m pip install --upgrade pip`
-    - `!python -m pip install scipy --upgrade`
-    - `!python -m pip install numpy --upgrade`
-3. Restart the mantidpython terminal.
-
-Mantid on Windows is shipped with Python. The above steps can also be done from a standard command
-terminal, in which case please ensure that you are upgrading against Python
-installed with Mantid, which by default is located in `C:\MantidInstall\bin`.
-
-## FitBenchmarking SasView
-The `example_runScripts_SasView.py` file is designed to benchmark minimizers supported by SasView (Bumps).
-
-In order to do so, lxml, Bumps and sasmodels and sascalc need to be installed. Note that lxml, Bumps and sasmodels can be installed via `pip` commands. However, as of this writing, sascalc is not an independent package yet and, therefore, cannot be installed via `pip`. Thus, sascalc is now included in FitBenchmarking under the folder `fitbenchmarking/sas`.
-
-To install lxml, Bumps and sasmodels, run the following command on console:
-1. `python -m pip install lxml`
-2. `python -m pip install bumps`
-3. `python -m pip install sasmodels`
+#### Linux ####
+Install mantid with:
+    `python setup.py externals -s mantid`
+#### Windows ####
+For Windows, Mantid ships Python 2.7 with it. Although it is possible,
+for now, we suggest to run FitBenchmarking, on Windows, through the
+Python executable Mantid includes.
+* Follow the instructions on the Mantid download page, found [here](https://download.mantidproject.org).
+* This will create a Desktop icon called MantidPython
+* Double click on this icon to open an IPython session
+* Go into the `fitbenchmarking` directory
+#### Mac ####
+Follow the instructions on the Mantid download page, found [here](https://download.mantidproject.org).
+#### To test the installation of Mantid ####
+On Mac/Linux run the example script: `example_scripts/example_runScript_mantid.py`.
+And on Windows `example_scripts\example_runScript_mantid.py`
 
 ## Description
-The tool creates a table/tables that shows a comparison between the different minimizers available in a fitting software (e.g. scipy or mantid), based on their accuracy and/or runtimes.
-An example of a table is:
+The tool creates a table/tables that shows a comparison between the different minimizers available in a fitting software (e.g. SciPy or Mantid), based on their accuracy and/or runtimes.
+An example of one of the results tables is:
 
 ![Example Table](docs/images/example_table.png)
 
-This is the result of fitbenchmarking mantid on a set of neutron data. The results are normalised with respect to the best minimizer per problem. The problem names link to html pages that display plots of the data and the fit that was performed, together with initial and final values of the parameters. Here is an example of the final plot fit.
+This is the result of fitbenchmarking Mantid on a set of neutron data.
+The results are normalised with respect to the best minimizer per problem.
+The problem names link to html pages that display plots of the data and the fit that was performed, together with initial and final values of the parameters.
+Here is an example of the final plot fit.
 
 ![Example Plot](docs/images/example_plot.png)
 
