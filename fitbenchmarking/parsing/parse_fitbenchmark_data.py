@@ -37,6 +37,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._data_y = data_points[:, 1]
         self._data_e = data_points[:, 2]
         self._name = entries['name']
+        self.function = None
 
         # String containing the function name(s) and the starting parameter values for each function
         self._mantid_equation = entries['function']
@@ -70,10 +71,10 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         @returns :: function definition list containing the function and its
                     starting parameter values
         """
-
-        function = fitbenchmark_func_definitions(self._mantid_equation)
-
-        return function
+        if self.function is None:
+            self.function = fitbenchmark_func_definitions(self._mantid_equation)
+            
+        return self.function
 
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """
