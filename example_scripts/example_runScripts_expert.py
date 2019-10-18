@@ -10,7 +10,7 @@ import os
 import sys
 import glob
 
-from fitbenchmarking.fitting_benchmarking import do_benchmarking
+from fitbenchmarking.fitting_benchmarking import _benchmark
 from fitbenchmarking.utils import misc
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.results_output import save_tables, generate_tables, \
@@ -90,10 +90,11 @@ def main(argv):
         # Processes software_options dictionary into Fitbenchmarking format
         minimizers, software = misc.get_minimizers(software_options)
 
-        # Sets up the problem groups specified by the user by providing
+        # Sets up the problem group specified by the user by providing
         # a respective data directory.
-        problem_groups = misc.setup_fitting_problems(data_dir, group_name)
+        problem_group = misc.get_problem_files(data_dir)
 
+        # Create output dirs
         results_dir = create_dirs.results(results_dir)
         group_results_dir = create_dirs.group_results(results_dir, group_name)
 
@@ -102,35 +103,35 @@ def main(argv):
                                           group_results_dir, use_errors)
 
         # Loops through group of problems and benchmark them
-        prob_results = do_benchmarking(user_input, problem_groups, group_name)
+        prob_results = _benchmark(user_input, problem_group)
 
         print('\nProducing output for the {} problem set\n'.format(group_name))
-        for idx, group_results in enumerate(prob_results):
-            # Creates the results directory where the tables are located
-            tables_dir = create_dirs.restables_dir(results_dir, group_name)
 
-            if isinstance(software, list):
-                minimizers = sum(minimizers, [])
+        # Creates the results directory where the tables are located
+        tables_dir = create_dirs.restables_dir(results_dir, group_name)
 
-            # Creates the problem names with links to the visual display pages
-            # in rst
-            linked_problems = visual_pages.create_linked_probs(group_results,
-                                                               group_name, results_dir)
+        if isinstance(software, list):
+            minimizers = sum(minimizers, [])
 
-            # Generates accuracy and runtime normalised tables and summary tables
-            norm_acc_rankings, norm_runtimes, sum_cells_acc, sum_cells_runtime = generate_tables(group_results, minimizers)
+        # Creates the problem names with links to the visual display pages
+        # in rst
+        linked_problems = visual_pages.create_linked_probs(prob_results,
+                                                           group_name, results_dir)
 
-            # Creates an accuracy table
-            acc_tbl = create_acc_tbl(minimizers, linked_problems, norm_acc_rankings, use_errors, color_scale)
+        # Generates accuracy and runtime tables and summary tables
+        acc_rankings, runtimes, sum_cells_acc, sum_cells_runtime = generate_tables(prob_results, minimizers)
 
-            # Creates an runtime table
-            runtime_tbl = create_runtime_tbl(minimizers, linked_problems, norm_runtimes, use_errors, color_scale)
+        # Creates an accuracy table
+        acc_tbl = create_acc_tbl(minimizers, linked_problems, acc_rankings, use_errors, color_scale)
 
-            # Saves accuracy minimizer results
-            save_tables(tables_dir, acc_tbl, use_errors, group_name, 'acc')
+        # Creates an runtime table
+        runtime_tbl = create_runtime_tbl(minimizers, linked_problems, runtimes, use_errors, color_scale)
 
-            # Saves runtime minimizer results
-            save_tables(tables_dir, runtime_tbl, use_errors, group_name, 'runtime')
+        # Saves accuracy minimizer results
+        save_tables(tables_dir, acc_tbl, use_errors, group_name, 'acc')
+
+        # Saves runtime minimizer results
+        save_tables(tables_dir, runtime_tbl, use_errors, group_name, 'runtime')
 
         print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
 
