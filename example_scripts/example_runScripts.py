@@ -11,6 +11,7 @@ import sys
 import glob
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 # Avoid reaching the maximum recursion depth by setting recursion limit
 # This is useful when running multiple data set benchmarking
@@ -113,16 +114,21 @@ for sub_dir in problem_sets:
 =======
 from fitbenchmarking.fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
 from fitbenchmarking.results_output import save_results_tables as printTables
+=======
+from fitbenchmarking.fitting_benchmarking import fitbenchmark_group
+from fitbenchmarking.results_output import save_results_tables
+>>>>>>> upstream/master
 
 
 def main(args):
     # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
-    software = ['scipy']
+    software = ['scipy', 'sasview']
     software_options = {'software': software}
 
     # User defined minimizers
-    # custom_minimizers = {"mantid": ["BFGS", "Simplex"],
-    #               "scipy": ["lm", "trf", "dogbox"]}
+    # custom_minimizers = {"scipy": ["lm", "trf", "dogbox"],
+    #                      "sasview": ["amoeba", "lm", "newton", "de", "pt", "mp"]}
+    # None will default to the list on the options file
     custom_minimizers = None
 
     # SPECIFY THE MINIMIZERS YOU WANT TO BENCHMARK, AND AS A MINIMUM FOR THE SOFTWARE YOU SPECIFIED ABOVE
@@ -158,10 +164,10 @@ def main(args):
     # e.g. lower that 1.1 -> light yellow, higher than 3 -> dark red
     # Change these values to suit your needs
     color_scale = [(1.1, 'ranking-top-1'),
-                (1.33, 'ranking-top-2'),
-                (1.75, 'ranking-med-3'),
-                (3, 'ranking-low-4'),
-                (float('nan'), 'ranking-low-5')]
+                   (1.33, 'ranking-top-2'),
+                   (1.75, 'ranking-med-3'),
+                   (3, 'ranking-low-4'),
+                   (float('nan'), 'ranking-low-5')]
 
     # ADD WHICH PROBLEM SETS TO TEST AGAINST HERE
     # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
@@ -184,20 +190,28 @@ def main(args):
             continue
 
         print('\nRunning the benchmarking on the {} problem set\n'.format(label))
-        results_per_group, results_dir = fitBenchmarking(group_name=label, software_options=software_options,
-                                                         data_dir=data_dir,
-                                                         use_errors=use_errors, results_dir=results_dir)
+        results, results_dir = \
+            fitbenchmark_group(group_name=label,
+                               software_options=software_options,
+                               data_dir=data_dir,
+                               use_errors=use_errors,
+                               results_dir=results_dir)
 
         print('\nProducing output for the {} problem set\n'.format(label))
-        for _, group_results in enumerate(results_per_group):
-            # Display the runtime and accuracy results in a table
-            printTables(software_options, group_results,
-                        group_name=label, use_errors=use_errors,
-                        color_scale=color_scale, results_dir=results_dir)
+        # Display the runtime and accuracy results in a table
+        save_results_tables(software_options=software_options,
+                            results_per_test=results,
+                            group_name=label,
+                            use_errors=use_errors,
+                            color_scale=color_scale,
+                            results_dir=results_dir)
 
         print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
 
 
 if __name__ == '__main__':
     main(sys.argv)
+<<<<<<< HEAD
+>>>>>>> upstream/master
+=======
 >>>>>>> upstream/master

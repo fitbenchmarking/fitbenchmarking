@@ -52,22 +52,6 @@ def get_minimizers(software_options):
         return minimizers, software
 
 
-def setup_fitting_problems(data_dir, group_name):
-    """
-    Sets up a problem group specified by the user by providing
-    a respective data directory.
-
-    @param group_name :: is the name (label) for a group. E.g. the name for the group of problems in
-                       "NIST/low_difficulty" may be picked to be NIST_low_difficulty
-    @param data_dir :: full path of a directory that holds a group of problem definition files
-    @returns :: the problem group dictionary
-    """
-    problem_group = {}
-    problem_group[group_name] = get_problem_files(data_dir)
-
-    return problem_group
-
-
 def save_user_input(software, minimizers, group_name, results_dir, use_errors):
     """
     All parameters inputed by the user are stored in an object.
@@ -92,20 +76,20 @@ def get_problem_files(data_dir):
     """
     Gets all the problem definition files from the specified problem set directory.
 
-    @param dirs :: array of directories that contain the problems
+    @param data_dir :: directory containing the problems
 
-    @returns :: array containing paths to all the problems
+    @returns :: array containing of paths to the problems
+                e.g. In NIST we would have
+                [low_difficulty/file1.txt, ..., ...]
     """
-    probs_all = []
-    dirs = filter(os.path.isdir, os.listdir(data_dir))
-    if dirs == [] or dirs == ['data_files']:
-        dirs.insert(0, data_dir)
-    for directory in dirs:
-        test_data = glob.glob(directory + '/*.*')
-        problems = [os.path.join(directory, data) for data in test_data]
-        problems.sort()
-        for problem in problems:
-            logger.info(problem)
-        probs_all.append(problems)
 
-    return probs_all
+    test_data = glob.glob(data_dir + '/*.*')
+    if test_data == []:
+        raise ValueError('"{}" not recognised as a dataset.'.format(data_dir) +
+                         'Check that it contains problem files and try again.') 
+    problems = [os.path.join(data_dir, data) for data in test_data]
+    problems.sort()
+    for problem in problems:
+        logger.info(problem)
+
+    return problems

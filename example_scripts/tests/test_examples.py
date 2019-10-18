@@ -2,7 +2,8 @@ import os
 import unittest
 
 from example_scripts import (example_runScripts,
-                             example_runScripts_mantid)
+                             example_runScripts_mantid,
+                             example_runScripts_expert)
 
 
 class TestExampleScripts(unittest.TestCase):
@@ -31,7 +32,5 @@ class TestExampleScripts(unittest.TestCase):
     def test_examplescript_mantid(self):
         example_runScripts_mantid.main(self.args)
 
-
-## Uncomment when expert script works again
-#    def test_examplescript_expert(self):
-#        example_runScripts_expert.main(self.args)
+    def test_examplescript_expert(self):
+        example_runScripts_expert.main(self.args)
