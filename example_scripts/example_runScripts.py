@@ -10,9 +10,6 @@ import os
 import sys
 import glob
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
 # Avoid reaching the maximum recursion depth by setting recursion limit
 # This is useful when running multiple data set benchmarking
 # Otherwise recursion limit is reached and the interpreter throws an error
