@@ -18,8 +18,6 @@ For help on how to use the command line/terminal, click the hyperlink correspond
 [macOS](http://newsourcemedia.com/blog/basic-terminal-commands/) and
 [Ubuntu](https://hackingpress.com/basic-linux-commands/)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 ### Installing
 =======
 1. Download this repository or clone it using [git](https://git-scm.com/):
