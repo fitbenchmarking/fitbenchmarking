@@ -1,10 +1,23 @@
-#sudo: required
+#matrix:
+#  include:
+#    - python: 2.7
+#      env: TO_TEST=WITHOUT_EXTERNALS
+#    - python: 2.7
+#      env: TO_TEST=MANTID
+#  fast_finish: true
+
+#install:
+#  - if [ "$TO_TEST" = "BACKEND" ]; then some_backend_command; fi
+#  - if [ "$TO_TEST" = "FRONTEND" ]; then some_frontend_command; fi
+
+
 language: python
 python:
   - "2.7"
 dist: xenial
-#virtualenv:
-#  system_site_packages: true
+sudo: required
+virtualenv:
+  system_site_packages: true
 
 
 stages:
