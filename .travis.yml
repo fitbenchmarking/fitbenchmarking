@@ -1,10 +1,10 @@
-sudo: required
+#sudo: required
 language: python
 python:
   - "2.7"
 dist: xenial
-virtualenv:
-  system_site_packages: true
+#virtualenv:
+#  system_site_packages: true
 
 
 stages:
