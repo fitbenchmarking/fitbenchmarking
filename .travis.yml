@@ -1,29 +1,27 @@
-#matrix:
-#  include:
-#    - python: 2.7
-#      env: TO_TEST=WITHOUT_EXTERNALS
-#    - python: 2.7
-#      env: TO_TEST=MANTID
-#  fast_finish: true
+language: python
+matrix:
+  include:
+    - python: 2.7
+      env: TO_TEST=WITHOUT_EXTERNALS
+      dist: xenial
+      sudo: required
+      virtualenv:
+        system_site_packages: true      
+    - python: 2.7
+      env: TO_TEST=MANTID
+      dist: xenial
+  fast_finish: true
 
 #install:
 #  - if [ "$TO_TEST" = "BACKEND" ]; then some_backend_command; fi
 #  - if [ "$TO_TEST" = "FRONTEND" ]; then some_frontend_command; fi
 
 
-language: python
-python:
-  - "2.7"
-dist: xenial
-sudo: required
-virtualenv:
-  system_site_packages: true
 
-
-stages:
-  - name: Tests
-  - name: SysTests
-    if: type = cron
+#stages:
+#  - name: Tests
+#  - name: SysTests
+#    if: type = cron
 
 #before_install:
 #  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O
@@ -36,16 +34,22 @@ stages:
 install:
   - pip install -r requirements.txt
   - python setup.py install
-  - python setup.py externals -s mantid
+  - if [ "$TO_TEST" = "MANTID" ]; python setup.py externals -s mantid; fi
 #  - python -m easy_install --upgrade pyOpenSSL
 
+#  - if [ $PYTHON == "2.7" ]; then
+#    export PYTHONHTTPSVERIFY=0;
+#    fi
 
 jobs:
   include:
     - stage: Tests
       # First time mantid.simpleapi is run it appears to cause a Segmentation fault (core dumped)
       # Hence do this once first to avoid this seg fault in tests
-      before_script: mantidpython -m mantid.simpleapi || true
+      #- if [ "$TO_TEST" = "MANTID" ]; python setup.py externals -s mantid; fi
+      #before_script: mantidpython -m mantid.simpleapi || true
+      before_script:
+        - if [ "$TO_TEST" = "MANTID" ]; mantidpython -m mantid.simpleapi || true; fi
       script:
         # ======= Examples Tests =============== #
         #- travis_wait pytest example_scripts/ --cov=example_scripts/
@@ -54,8 +58,10 @@ jobs:
         #- pytest fitbenchmarking/fitting/ --cov=fitbenchmarking/fitting/
         #  --cov-report term-missing
         # ======= Parsing Tests =============== #
-        - pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
-          --cov-report term-missing --cov-append
+        - if [ "$TO_TEST" = "MANTID" ]; then
+          pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
+            --cov-report term-missing --cov-append;
+          fi
         # ======= Result Processing Tests =============== #
         #- pytest fitbenchmarking/resproc/tests/
         #  --cov=fitbenchmarking/resproc --cov-report term-missing
@@ -63,12 +69,12 @@ jobs:
         # ======= Utils Tests =============== #
         - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
           --cov-report term-missing --cov-append
-      after_success:
-        - coveralls
-    - stage: SysTests
-      #before_script: mantidpython -m mantid.simpleapi || true
-      script:
-        # ======= System Test =============== #
-        - cd systests
+#      after_success:
+#        - coveralls
+#    - stage: SysTests
+#      #before_script: mantidpython -m mantid.simpleapi || true
+#      script:
+#        # ======= System Test =============== #
+#        - cd systests
         #- mantidpython generate_current_results.py
         #- mantidpython tbl_comparison.py
