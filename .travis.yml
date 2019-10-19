@@ -1,14 +1,16 @@
 language: python
+python:
+  - "2.7"
 matrix:
   include:
-    - python: 2.7
-      env: TO_TEST=WITHOUT_EXTERNALS
+    #- python: 2.7
+    - env: TO_TEST=WITHOUT_EXTERNALS
       dist: xenial
       sudo: required
       virtualenv:
         system_site_packages: true      
-    - python: 2.7
-      env: TO_TEST=MANTID
+    #- python: 2.7
+    - env: TO_TEST=MANTID
       dist: xenial
   fast_finish: true
 
