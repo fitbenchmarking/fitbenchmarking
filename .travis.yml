@@ -30,7 +30,7 @@ install:
 jobs:
   include:
     - stage: Tests
-      before_script: mantidpython -m mantid.simpleapi || true
+      # before_script: mantidpython -m mantid.simpleapi || true
       script:
         # ======= Examples Tests =============== #
         #- travis_wait pytest example_scripts/ --cov=example_scripts/
