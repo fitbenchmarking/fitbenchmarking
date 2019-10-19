@@ -1,10 +1,10 @@
-sudo: required
+#sudo: required
 language: python
 python:
   - "2.7"
-dist: xenial
-virtualenv:
-  system_site_packages: true
+#dist: xenial
+#virtualenv:
+#  system_site_packages: true
 
 
 stages:
@@ -51,9 +51,9 @@ jobs:
       after_success:
         - coveralls
     - stage: SysTests
-      before_script: mantidpython -m mantid.simpleapi || true
+      #before_script: mantidpython -m mantid.simpleapi || true
       script:
         # ======= System Test =============== #
         - cd systests
-        - mantidpython generate_current_results.py
-        - mantidpython tbl_comparison.py
+        #- mantidpython generate_current_results.py
+        #- mantidpython tbl_comparison.py
