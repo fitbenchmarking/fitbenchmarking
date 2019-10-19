@@ -4,13 +4,15 @@ python:
 matrix:
   include:
     #- python: 2.7
-    - env: TO_TEST=WITHOUT_EXTERNALS
+    - name: "Tests which needs Mantid"
+      env: TO_TEST=MANTID
       dist: xenial
       sudo: required
       virtualenv:
         system_site_packages: true      
     #- python: 2.7
-    - env: TO_TEST=MANTID
+    - name: "Tests that can run without any externals"    
+      env: TO_TEST=WITHOUT_EXTERNALS
       dist: xenial
   fast_finish: true
 
@@ -36,7 +38,7 @@ matrix:
 install:
   - pip install -r requirements.txt
   - python setup.py install
-  - if [ "$TO_TEST" = "MANTID" ]; python setup.py externals -s mantid; fi
+  - if [ "$TO_TEST" = "MANTID" ]; then python setup.py externals -s mantid; fi
 #  - python -m easy_install --upgrade pyOpenSSL
 
 #  - if [ $PYTHON == "2.7" ]; then
