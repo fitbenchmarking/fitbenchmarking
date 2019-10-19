@@ -23,7 +23,7 @@ stages:
 install:
   - pip install -r requirements.txt
   - python setup.py install
-  - python setup.py externals
+  - python setup.py externals -s mantid
 #  - python -m easy_install --upgrade pyOpenSSL
 
 
