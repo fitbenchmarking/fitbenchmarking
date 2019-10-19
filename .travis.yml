@@ -53,7 +53,7 @@ jobs:
       #- if [ "$TO_TEST" = "MANTID" ]; python setup.py externals -s mantid; fi
       #before_script: mantidpython -m mantid.simpleapi || true
       before_script:
-        - if [ "$TO_TEST" = "MANTID" ]; then mantidpython -m mantid.simpleapi || true; fi
+        - if [ "$TO_TEST" = "WITHOUT_EXTERNALS" ]; then mantidpython -m mantid.simpleapi || true; fi
       script:
         # ======= Examples Tests =============== #
         #- travis_wait pytest example_scripts/ --cov=example_scripts/
