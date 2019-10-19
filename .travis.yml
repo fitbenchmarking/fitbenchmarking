@@ -30,7 +30,9 @@ install:
 jobs:
   include:
     - stage: Tests
-      # before_script: mantidpython -m mantid.simpleapi || true
+      # First time mantid.simpleapi is run it appears to cause a Segmentation fault (core dumped)
+      # Hence do this once first to avoid this seg fault in tests
+      before_script: mantidpython -m mantid.simpleapi || true
       script:
         # ======= Examples Tests =============== #
         #- travis_wait pytest example_scripts/ --cov=example_scripts/
