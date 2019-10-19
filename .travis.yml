@@ -33,14 +33,14 @@ jobs:
       before_script: mantidpython -m mantid.simpleapi || true
       script:
         # ======= Examples Tests =============== #
-        - travis_wait pytest example_scripts/ --cov=example_scripts/
-          --cov-report term-missing
+        #- travis_wait pytest example_scripts/ --cov=example_scripts/
+        #  --cov-report term-missing
         # ======= Fitting Tests =============== #
         #- pytest fitbenchmarking/fitting/ --cov=fitbenchmarking/fitting/
         #  --cov-report term-missing
         # ======= Parsing Tests =============== #
-        #- pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
-        #  --cov-report term-missing --cov-append
+        - pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
+          --cov-report term-missing --cov-append
         # ======= Result Processing Tests =============== #
         #- pytest fitbenchmarking/resproc/tests/
         #  --cov=fitbenchmarking/resproc --cov-report term-missing
