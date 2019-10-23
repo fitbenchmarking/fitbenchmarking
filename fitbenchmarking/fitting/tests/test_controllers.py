@@ -1,13 +1,13 @@
 import os
 import unittest
 
-from fitbenchmarking.fitting.software_controllers.base_software_controller import \
-    BaseSoftwareController
-from fitbenchmarking.fitting.software_controllers.mantid_controller import \
+from fitbenchmarking.fitting.controllers.base_controller import \
+    Controller
+from fitbenchmarking.fitting.controllers.mantid_controller import \
     MantidController
-from fitbenchmarking.fitting.software_controllers.sasview_controller import \
+from fitbenchmarking.fitting.controllers.sasview_controller import \
     SasviewController
-from fitbenchmarking.fitting.software_controllers.scipy_controller import \
+from fitbenchmarking.fitting.controllers.scipy_controller import \
     ScipyController
 from fitbenchmarking.parsing.parse_nist_data import FittingProblem
 
@@ -29,9 +29,9 @@ def misra1a_file():
     return fname
 
 
-class DummyController(BaseSoftwareController):
+class DummyController(Controller):
     """
-    Minimal instantiatable subclass of BaseSoftwareClass for testing
+    Minimal instantiatable subclass of Controller class for testing
     """
     def setup(self):
         self.setup_result = 53
@@ -43,7 +43,7 @@ class DummyController(BaseSoftwareController):
         raise NotImplementedError
 
 
-class BaseSoftwareControllerTests(unittest.TestCase):
+class BaseControllerTests(unittest.TestCase):
     """
     Tests for base software controller class methods.
     """
@@ -85,10 +85,11 @@ class BaseSoftwareControllerTests(unittest.TestCase):
         BaseSoftwareController: Test prepare function
         """
         controller = DummyController(self.problem, True)
-        controller.prepare(minimizer='test')
+        controller.minimizer = 'test'
         assert(controller.minimizer == 'test')
-        controller.prepare(function_id=0)
+        controller.function_id = 0
         assert(controller.function_id == 0)
+        controller.prepare()
         assert(controller.setup_result == 53)
 
 
@@ -104,8 +105,7 @@ class ControllerTests(unittest.TestCase):
         MantidController: Test for output shape
         """
         controller = MantidController(self.problem, True)
-        controller.prepare(function_id=0)
-        controller.prepare(minimizer='SteepestDescent')
+        controller.minimizer = 'SteepestDescent'
         self.shared_testing(controller)
 
     def test_sasview(self):
@@ -113,8 +113,7 @@ class ControllerTests(unittest.TestCase):
         SasviewController: Test for output shape
         """
         controller = SasviewController(self.problem, True)
-        controller.prepare(function_id=0)
-        controller.prepare(minimizer='amoeba')
+        controller.minimizer = 'amoeba'
         self.shared_testing(controller)
 
     def test_scipy(self):
@@ -122,8 +121,7 @@ class ControllerTests(unittest.TestCase):
         ScipyController: Test for output shape
         """
         controller = ScipyController(self.problem, True)
-        controller.prepare(function_id=0)
-        controller.prepare(minimizer='lm')
+        controller.minimizer = 'lm'
         self.shared_testing(controller)
 
     def shared_testing(self, controller):
@@ -133,6 +131,8 @@ class ControllerTests(unittest.TestCase):
         :param controller: Controller to test, with setup already completed
         :type contrller: Object derived from BaseSoftwareController
         """
+        controller.function_id = 0
+        controller.prepare()
         controller.fit()
         controller.cleanup()
 
