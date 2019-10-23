@@ -1,12 +1,13 @@
+"""
+Implements a controller for the scipy fitting software.
+"""
 
-import numpy as np
 from scipy.optimize import curve_fit
 
-from fitbenchmarking.fitting.software_controllers.base_software_controller import \
-    BaseSoftwareController
+from fitbenchmarking.fitting.controllers.base_controller import Controller
 
 
-class ScipyController(BaseSoftwareController):
+class ScipyController(Controller):
     """
     Controller for the Scipy fitting software.
     """
@@ -17,7 +18,7 @@ class ScipyController(BaseSoftwareController):
         """
         super(ScipyController, self).__init__(problem, use_errors)
 
-        self.popt = None
+        self._popt = None
 
     def setup(self):
         """
@@ -31,7 +32,7 @@ class ScipyController(BaseSoftwareController):
         """
         popt = None
 
-        popt, _ = curve_fit(f=self.function.__call__,
+        popt, _ = curve_fit(f=self.functions[self.function_id][0].__call__,
                             xdata=self.data_x,
                             ydata=self.data_y,
                             p0=self.initial_params,
@@ -40,7 +41,7 @@ class ScipyController(BaseSoftwareController):
                             maxfev=500)
 
         self.success = (popt is not None)
-        self.popt = popt
+        self._popt = popt
 
     def cleanup(self):
         """
@@ -48,5 +49,7 @@ class ScipyController(BaseSoftwareController):
         will be read from.
         """
         if self.success:
-            self.results = self.function(self.data_x, *self.popt)
-            self.final_params = self.popt
+            self.results = self.problem.eval_f(x=self.data_x,
+                                               params=self._popt,
+                                               function_id=self.function_id)
+            self.final_params = self._popt

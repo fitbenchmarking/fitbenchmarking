@@ -6,11 +6,9 @@ the right format for SciPy.
 
 from __future__ import absolute_import, division, print_function
 
-import re
-
+import mantid.simpleapi as msapi
 import numpy as np
 
-import mantid.simpleapi as msapi
 from fitbenchmarking.utils.logging_setup import logger
 
 

@@ -11,15 +11,15 @@ import numpy as np
 from fitbenchmarking.fitting import misc
 from fitbenchmarking.fitting.plotting import plot_helper, plots
 try:
-    from fitbenchmarking.fitting.software_controllers.mantid_controller import MantidController
+    from fitbenchmarking.fitting.controllers.mantid_controller import MantidController
 except ImportError:
     MantidController = None
 try:
-    from fitbenchmarking.fitting.software_controllers.sasview_controller import SasviewController
+    from fitbenchmarking.fitting.controllers.sasview_controller import SasviewController
 except ImportError:
     SasviewController = None
 try:
-    from fitbenchmarking.fitting.software_controllers.scipy_controller import ScipyController
+    from fitbenchmarking.fitting.controllers.scipy_controller import ScipyController
 except ImportError:
     ScipyController = None
 
@@ -55,7 +55,7 @@ def fitbm_one_prob(user_input, problem):
     problem.data_e = controller.data_e
 
     for i in range(len(controller.functions)):
-        controller.prepare(function_id=i)
+        controller.function_id = i
 
         results_problem, best_fit = benchmark(controller=controller,
                                               minimizers=user_input.minimizers)
@@ -90,7 +90,9 @@ def benchmark(controller, minimizers):
                                                             function_id=controller.function_id)
 
     for minimizer in minimizers:
-        controller.prepare(minimizer=minimizer)
+        controller.minimizer = minimizer
+
+        controller.prepare()
 
         try:
             start_time = time.time()

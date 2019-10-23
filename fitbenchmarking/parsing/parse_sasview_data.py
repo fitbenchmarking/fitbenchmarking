@@ -46,17 +46,17 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._starting_values = [[f.split('=')[0], [float(f.split('=')[1])]]
                                  for f in tmp_starting_values]
 
-        tmp_starting_value_ranges = entries['parameter_ranges'].split(';')
-        tmp_names = (val_range_txt.split('.', 1)[0]
-                     for val_range_txt in tmp_starting_value_ranges)
-        tmp_values = (tmp_range.split('(')[1]
-                      for tmp_range in tmp_starting_value_ranges)
-        tmp_values = (tmp_range.strip(')') for tmp_range in tmp_values)
-        tmp_values = ([float(val) for val in tmp_range.split(',')]
-                      for tmp_range in tmp_values)
+        starting_value_ranges = entries['parameter_ranges'].split(';')
+        names = (val_range_txt.split('.', 1)[0]
+                 for val_range_txt in starting_value_ranges)
+        values = (tmp_range.split('(')[1]
+                  for tmp_range in starting_value_ranges)
+        values = (tmp_range.strip(')') for tmp_range in values)
+        values = ([float(val) for val in tmp_range.split(',')]
+                  for tmp_range in values)
         self._starting_value_ranges = {name: values
                                        for name, values
-                                       in zip(tmp_names, tmp_values)}
+                                       in zip(names, values)}
 
         self.function = None
 
@@ -74,25 +74,26 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         if self.function is None:
 
             functions = []
+
+            param_names = [params[0] for params in self._starting_values]
+
+            def fitFunction(x, *tmp_params):
+
+                model = load_model(self._equation)
+
+                data = empty_data1D(x)
+                param_dict = {name: value
+                              for name, value
+                              in zip(param_names, tmp_params)}
+
+                model_wrapper = Model(model, **param_dict)
+                for name, values in self.starting_value_ranges.items():
+                    model_wrapper.__dict__[name].range(values[0], values[1])
+                func_wrapper = Experiment(data=data, model=model_wrapper)
+
+                return func_wrapper.theory()
+
             for i in range(len(self._starting_values[0][1])):
-
-                param_names = [params[0] for params in self._starting_values]
-
-                def fitFunction(x, *tmp_params):
-
-                    model = load_model(self._equation)
-
-                    data = empty_data1D(x)
-                    param_dict = {name: value
-                                  for name, value
-                                  in zip(param_names, tmp_params)}
-
-                    model_wrapper = Model(model, **param_dict)
-                    for name, values in self.starting_value_ranges.items():
-                        model_wrapper.__dict__[name].range(values[0], values[1])
-                    func_wrapper = Experiment(data=data, model=model_wrapper)
-
-                    return func_wrapper.theory()
 
                 param_values = [params[1][i] for params in self._starting_values]
 

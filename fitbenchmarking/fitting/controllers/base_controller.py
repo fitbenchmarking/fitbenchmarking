@@ -1,10 +1,13 @@
+"""
+Implements the base class for the fitting software controllers.
+"""
 
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
 
 
-class BaseSoftwareController():
+class Controller:
     """
     Base class for all fitting software controllers.
     These controllers are intended to be the only interface into the fitting
@@ -19,6 +22,11 @@ class BaseSoftwareController():
         Initialise the class.
         Sets up data as defined by the problem and use_errors variables,
         and initialises variables that will be used in other methods.
+
+        :param problem: The parsed problem
+        :type problem: fitting_problem (see fitbenchmarking.parsers)
+        :param use_errors: Flag to enable errors in the fitting
+        :type use_errors: Bool
         """
 
         # Problem: The problem object from parsing
@@ -39,7 +47,6 @@ class BaseSoftwareController():
         # Initial Params: The starting values for params when fitting
         self.initial_params = None
         # Function: The current function to fit (from functions)
-        self.function = None
         self.function_id = None
         # Minimizer: The current minimizer to use
         self.minimizer = None
@@ -58,60 +65,46 @@ class BaseSoftwareController():
         and approximate errors if not given.
         Modifications happen on member variables.
         """
-        xdata = self.data_x
-        ydata = self.data_y
-        sigma = self.data_e
 
-        # fix sigma
+        # fix self.data_e
         if self.use_errors:
-            if sigma is None:
-                sigma = np.sqrt(abs(ydata))
+            if self.data_e is None:
+                self.data_e = np.sqrt(abs(self.data_y))
 
-            sigma[sigma == 0] = 1e-8
+            self.data_e[self.data_e == 0] = \
+                np.min(self.data_e[self.data_e != 0]) * 1e-8
         else:
-            sigma = None
+            self.data_e = None
 
         # impose x ranges
         start_x = self.problem.start_x
         end_x = self.problem.end_x
 
         if start_x is not None and end_x is not None:
-            mask = np.logical_and(xdata >= start_x, xdata <= end_x)
-            xdata = xdata[mask]
-            ydata = ydata[mask]
-            if sigma is not None:
-                sigma = sigma[mask]
+            mask = np.logical_and(self.data_x >= start_x, self.data_x <= end_x)
+            self.data_x = self.data_x[mask]
+            self.data_y = self.data_y[mask]
+            if self.data_e is not None:
+                self.data_e = self.data_e[mask]
 
         # store
-        self.data_x = xdata
-        self.data_y = ydata
-        self.data_e = sigma
+        self.data_x = self.data_x
 
-    def prepare(self, minimizer=None, function_id=None):
+    def prepare(self):
         """
-        Set the minimizer, function_id, or both.
+        Check that function and minimizer have been set.
         If both have been set, run self.setup().
-
-        :param minimizer: The name of the minimizer to use
-        :type minimizer: String
-        :param function_id: The index of the function to fit
-        :type function_id: Int
         """
-        if minimizer is not None:
-            self.minimizer = minimizer
-        if function_id is not None:
-            func = self.functions[function_id]
-            self.function_id = function_id
-            self.function = func[0]
-            self.initial_params = func[1]
 
         if (self.minimizer is not None) and (self.function_id is not None):
+            self.initial_params = self.functions[self.function_id][1]
             self.setup()
+        else:
+            raise RuntimeError('Either minimizer or function_id is set to None.')
 
     @abstractmethod
     def setup(self):
         """
-        ABSTRACT METHOD
         Setup the specifics of the fitting
 
         Anything needed for "fit" should be saved to self.
@@ -119,20 +112,18 @@ class BaseSoftwareController():
         :returns: None
         :rtype: None
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def fit(self):
         """
-        ABSTRACT METHOD
         Run the fitting.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def cleanup(self):
         """
-        ABSTRACT METHOD
         Retrieve the result as a numpy array and store in self.results
         """
-        pass
+        raise NotImplementedError
