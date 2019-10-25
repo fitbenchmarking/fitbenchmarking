@@ -27,8 +27,6 @@ class MantidController(Controller):
         self._cost_function = 'Least squares' if use_errors \
             else 'Unweighted least squares'
 
-        self._ignore_invalid = use_errors & ('WISH17701' not in problem.name)
-
         data_obj = msapi.CreateWorkspace(DataX=self.data_x,
                                          DataY=self.data_y,
                                          DataE=self.data_e)
@@ -78,7 +76,7 @@ class MantidController(Controller):
                                Output='ws_fitting_test',
                                Minimizer=self.minimizer,
                                CostFunction=self._cost_function,
-                               IgnoreInvalidData=self._ignore_invalid)
+                               IgnoreInvalidData=self.use_errors)
 
         self._mantid_results = fit_result
         self.success = (self._mantid_results.OutputStatus != 'failed')
