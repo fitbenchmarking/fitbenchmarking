@@ -27,3 +27,7 @@ Testing:
 All tests should pass before submitting code.
 Tests are written using unittests and the suggestion is to run it with pytest.
 
+Function: Does the change do what it's supposed to?
+Tests: Does it pass? Is there adequate coverage for new code?
+Style: Is the coding style consistent? Is anything overly confusing?
+Documentation: Is there a suitable change to documentation for this change?
