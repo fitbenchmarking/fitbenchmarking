@@ -87,9 +87,6 @@ class Controller:
             if self.data_e is not None:
                 self.data_e = self.data_e[mask]
 
-        # store
-        self.data_x = self.data_x
-
     def prepare(self):
         """
         Check that function and minimizer have been set.

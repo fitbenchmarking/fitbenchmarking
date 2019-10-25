@@ -75,8 +75,7 @@ class MantidController(Controller):
                                InputWorkspace=self._mantid_data,
                                Output='ws_fitting_test',
                                Minimizer=self.minimizer,
-                               CostFunction=self._cost_function,
-                               IgnoreInvalidData=self.use_errors)
+                               CostFunction=self._cost_function)
 
         self._mantid_results = fit_result
         self.success = (self._mantid_results.OutputStatus != 'failed')
