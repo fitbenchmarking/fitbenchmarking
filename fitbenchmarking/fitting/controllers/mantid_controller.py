@@ -41,37 +41,42 @@ class MantidController(Controller):
 
         Adds a custom function to Mantid for calling in fit().
         """
-        start_val_list = ['{0}={1}'.format(name, value)
-                          for name, value
-                          in zip(self._param_names, self.initial_params)]
+        if isinstance(self.functions[self.function_id][0], FunctionWrapper):
+            function_def = self.functions[self.function_id][0]
+        else:
+            start_val_list = ['{0}={1}'.format(name, value)
+                              for name, value
+                              in zip(self._param_names, self.initial_params)]
 
-        start_val_str = ', '.join(start_val_list)
-        function_def = "name=fitFunction, " + start_val_str
+            start_val_str = ', '.join(start_val_list)
+            function_def = "name=fitFunction, " + start_val_str
 
-        class fitFunction(IFunction1D):
-            def init(ff_self):
+            class fitFunction(IFunction1D):
+                def init(ff_self):
 
-                for param in self._param_names:
-                    ff_self.declareParameter(param)
+                    for param in self._param_names:
+                        ff_self.declareParameter(param)
 
-            def function1D(ff_self, xdata):
+                def function1D(ff_self, xdata):
 
-                fit_param = np.zeros(len(self._param_names))
-                fit_param.setflags(write=1)
-                for i, param in enumerate(self._param_names):
-                    fit_param[i] = ff_self.getParameterValue(param)
+                    fit_param = np.zeros(len(self._param_names))
+                    fit_param.setflags(write=1)
+                    for i, param in enumerate(self._param_names):
+                        fit_param[i] = ff_self.getParameterValue(param)
 
-                return self.problem.eval_f(xdata, fit_param, self.function_id)
+                    return self.problem.eval_f(x=xdata,
+                                               params=fit_param,
+                                               function_id=self.function_id)
 
-        FunctionFactory.subscribe(fitFunction)
+            FunctionFactory.subscribe(fitFunction)
 
-        self.mantid_function = function_def
+        self._mantid_function = function_def
 
     def fit(self):
         """
         Run problem with Mantid.
         """
-        fit_result = msapi.Fit(Function=self.mantid_function,
+        fit_result = msapi.Fit(Function=self._mantid_function,
                                InputWorkspace=self._mantid_data,
                                Output='ws_fitting_test',
                                Minimizer=self.minimizer,

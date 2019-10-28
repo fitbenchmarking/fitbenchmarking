@@ -50,10 +50,10 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         # list of starting values in format [[name, [value1, value2, ...]], ...]
         tmp_starting_values = entries['function'].split(';')
         tmp_starting_values = (tmp.split('ties=')[0] for tmp in tmp_starting_values)
-        tmp_starting_values = ('f{}_{}'.format(i, sv)
+        tmp_starting_values = ('f{}_{}'.format(i, sv.strip())
                                for i, tmp in enumerate(tmp_starting_values)
                                for sv in tmp.split(',')[1:]
-                               if sv != '' and not sv.startswith('BinWidth'))
+                               if sv.strip() != '' and not sv.startswith('BinWidth'))
         self._starting_values = [[f.split('=')[0].strip(),
                                   [float(f.split('=')[1].strip())]]
                                  for f in tmp_starting_values]
