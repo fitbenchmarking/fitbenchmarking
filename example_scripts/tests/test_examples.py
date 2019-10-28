@@ -10,8 +10,8 @@ class TestExampleScripts(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        # inputs
-        self.args = ['tests', '/../fitbenchmarking/fitbenchmarking_default_options.json']
+        # inputs. If empty run example scripts without arguments
+        self.args = []
 
         # get curdir and store for teardown
         self.cwd = os.getcwd()
