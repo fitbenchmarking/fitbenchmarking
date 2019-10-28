@@ -89,14 +89,13 @@ def benchmark(controller, minimizers):
     min_chi_sq, best_fit = None, None
     results_problem = []
 
-    init_function_def = controller.problem.get_function_def(params=controller.initial_params,
-                                                            function_id=controller.function_id)
-
     for minimizer in minimizers:
         controller.minimizer = minimizer
 
         controller.prepare()
 
+        init_function_def = controller.problem.get_function_def(params=controller.initial_params,
+                                                                function_id=controller.function_id)
         try:
             start_time = time.time()
             controller.fit()
