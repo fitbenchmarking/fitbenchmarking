@@ -76,8 +76,7 @@ def main(argv):
 
     # ADD WHICH PROBLEM SETS TO TEST AGAINST HERE
     # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
-    problem_sets = ["CUTEst", "Muon", "Neutron", "NIST/average_difficulty", "NIST/high_difficulty", "NIST/low_difficulty",
-                    "SAS_modelling/1D"]
+    problem_sets = ['Neutron', 'NIST/low_difficulty', 'SAS_modelling/ID']
 
     for sub_dir in problem_sets:
         # generate group label/name used for problem set

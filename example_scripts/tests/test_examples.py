@@ -29,9 +29,8 @@ class TestExampleScripts(unittest.TestCase):
     def test_examplescript(self):
         example_runScripts.main(self.args)
 
-## Commented out as pytest freezes when running the mantid script...
-#    def test_examplescript_mantid(self):
-#        example_runScripts_mantid.main(self.args)
+    def test_examplescript_mantid(self):
+        example_runScripts_mantid.main(self.args)
 
     def test_examplescript_expert(self):
         example_runScripts_expert.main(self.args)
