@@ -67,7 +67,7 @@ def fitbm_one_prob(user_input, problem):
             # Make the plot of the best fit
             plots.make_plots(problem=problem,
                              best_fit=best_fit,
-                             count=i,
+                             count=i+1,
                              group_results_dir=user_input.group_results_dir)
 
         results_fit_problem.append(results_problem)
