@@ -10,7 +10,7 @@ class TestExampleScripts(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        # inputs
+        # inputs. Include at least one test with inputs
         self.args = ['tests', '/../fitbenchmarking/fitbenchmarking_default_options.json']
 
         # get curdir and store for teardown
@@ -27,10 +27,13 @@ class TestExampleScripts(unittest.TestCase):
         os.chdir(self.cwd)
 
     def test_examplescript(self):
+        example_runScripts.main([])
+
+    def test_examplescript_with_inputs(self):
         example_runScripts.main(self.args)
 
     def test_examplescript_mantid(self):
-        example_runScripts_mantid.main(self.args)
+        example_runScripts_mantid.main([])
 
     def test_examplescript_expert(self):
-        example_runScripts_expert.main(self.args)
+        example_runScripts_expert.main([])

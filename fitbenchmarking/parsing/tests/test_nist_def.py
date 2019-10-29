@@ -6,7 +6,6 @@ import numpy as np
 
 import sys
 
-from fitbenchmarking.fitting.scipy.func_def import function_definitions
 from fitbenchmarking.parsing.nist_data_functions import nist_func_definitions
 from fitbenchmarking.parsing.nist_data_functions import get_nist_param_names_and_values
 from fitbenchmarking.parsing.nist_data_functions import format_function_scipy
@@ -32,7 +31,7 @@ class ScipyTests(unittest.TestCase):
         prob.equation = "b1*(1-exp(-b2*x))"
         prob.starting_values = [['b1', [500.0, 250.0]], ['b2', [0.0001, 0.0005]]]
 
-        function_defs = function_definitions(prob)
+        function_defs = prob.get_function()
         expected_function_defs = self.create_expected_function_definitions()
 
         self.assertListEqual(expected_function_defs[0][1], function_defs[0][1])

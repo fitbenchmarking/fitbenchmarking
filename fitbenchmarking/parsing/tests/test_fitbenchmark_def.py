@@ -3,39 +3,20 @@ from __future__ import (absolute_import, division, print_function)
 import unittest
 import numpy as np
 
-from fitbenchmarking.fitting.scipy.func_def import function_definitions
 from fitbenchmarking.parsing.fitbenchmark_data_functions import fitbenchmark_func_definitions
 from fitbenchmarking.parsing.fitbenchmark_data_functions import get_all_fitbenchmark_func_names
 from fitbenchmarking.parsing.fitbenchmark_data_functions import get_all_fitbenchmark_func_params
 from fitbenchmarking.parsing.fitbenchmark_data_functions import get_fitbenchmark_func_names
 from fitbenchmarking.parsing.fitbenchmark_data_functions import get_fitbenchmark_func_params
 from fitbenchmarking.parsing.fitbenchmark_data_functions import get_fitbenchmark_initial_params_values
-from fitbenchmarking.parsing.fitbenchmark_data_functions import make_fitbenchmark_fit_function
 from fitbenchmarking.parsing.fitbenchmark_data_functions import get_fitbenchmark_params
-from fitbenchmarking.parsing.fitbenchmark_data_functions import get_fitbenchmark_ties
 from fitbenchmarking.mock_problem_files.get_problem_files import get_file
 
 
 from fitbenchmarking.parsing.parse_fitbenchmark_data import FittingProblem
 
+
 class ScipyTests(unittest.TestCase):
-
-    def Neutron_problem(self):
-        """
-        Sets up the problem object for the neutron problem file:
-        ENGINX193749_calibration_peak19.txt
-        """
-
-        fname = get_file('FB_ENGINX193749_calibration_peak19.txt')
-        prob.name = 'ENGINX 193749 calibration, spectrum 651, peak 19'
-        prob.equation = ("name=LinearBackground,A0=0,A1=0;"
-                         "name=BackToBackExponential,"
-                         "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
-        prob.starting_values = None
-        prob.start_x = 23919.5789114
-        prob.end_x = 24189.3183142
-
-        return prob
 
     def test_txtFuncDefinitions_create_function_definitions(self):
 
@@ -56,7 +37,7 @@ class ScipyTests(unittest.TestCase):
                          "name=BackToBackExponential,"
                          "I=597.076,A=1,B=0.05,X0=24027.5,S=22.9096")
 
-        function_defs = function_definitions(prob)
+        function_defs = prob.get_function()
         expected_params_array = np.array([0, 0, 597.076, 1, 0.05, 24027.5, 22.9096])
 
         np.testing.assert_equal(expected_params_array, function_defs[0][1])
@@ -138,9 +119,8 @@ class ScipyTests(unittest.TestCase):
     def test_getNeutronParams_return_params(self):
 
         param_set = 'A0=0, A1=0'
-        params = []
 
-        params = get_fitbenchmark_params(param_set, params)
+        params = get_fitbenchmark_params(param_set)
         expected_params = [0, 0]
 
         self.assertListEqual(expected_params, params)
