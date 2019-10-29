@@ -5,13 +5,12 @@ Functions that creates the tables and the visual display pages.
 from __future__ import (absolute_import, division, print_function)
 
 import logging
-import utils.misc
 
 from fitbenchmarking.utils.logging_setup import logger
 from fitbenchmarking.resproc import numpy_restables
 from fitbenchmarking.resproc import rst_table
 from fitbenchmarking.resproc import visual_pages
-from fitbenchmarking.utils import create_dirs, options
+from fitbenchmarking.utils import create_dirs, options, misc
 
 # Some naming conventions for the output files
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -36,10 +35,10 @@ def save_results_tables(software_options, results_per_test, group_name,
     @returns :: html/rst tables with the fitting results
     """
 
-    minimizers, software = utils.misc.get_minimizers(software_options)
-    comparison_type = software_options.get('comparison_type', None)
+    minimizers, software = misc.get_minimizers(software_options)
+    comparison_mode = software_options.get('comparison_mode', None)
 
-    if comparison_type is None:
+    if comparison_mode is None:
         if 'options_file' in software_options:
             options_file = software_options['options_file']
             comparison_mode = options.get_option(options_file=options_file,
@@ -84,6 +83,62 @@ def save_results_tables(software_options, results_per_test, group_name,
 
     # Shut down logging at end of run
     logging.shutdown()
+
+
+def create_acc_tbl(minimizers, linked_problems, accuracy_tbl, use_errors,
+                   color_scale, comparison_mode='abs'):
+    """
+    API function to create an accuracy table using the given parameters.
+    For usage, see the expert example script.
+
+    @param minimizers :: array of minimizers used in fitting
+    @param linked_problems :: array of the problems that were fitted
+    @param accuracy_tbl :: numpy array of the accuracy results
+    @param using_errors :: boolean whether to use errors or not
+    @param color_scale :: color scale for coloring the cells
+    @param comparison_mode :: str to select between 'abs', 'rel', 'both' for
+                              the style of comparison returned
+
+    @returns :: rst table of the results
+    """
+    # Save accuracy table for this group of fit problems
+    tbl_acc_indiv = rst_table.create(minimizers, linked_problems,
+                                     accuracy_tbl,
+                                     comparison_type='accuracy',
+                                     comparison_dim='',
+                                     using_errors=use_errors,
+                                     color_scale=color_scale,
+                                     comparison_mode=comparison_mode)
+
+    return tbl_acc_indiv
+
+
+def create_runtime_tbl(minimizers, linked_problems, runtime_tbl, use_errors,
+                       color_scale, comparison_mode='abs'):
+    """
+    API function to create a runtime table using the given parameters.
+    For usage, see the expert example script.
+
+    @param minimizers :: array of minimizers used in fitting
+    @param linked_problems :: array of the problems that were fitted
+    @param runtime_tbl :: numpy array of the runtime results
+    @param using_errors :: boolean whether to use errors or not
+    @param color_scale :: color scale for coloring the cells
+    @param comparison_mode :: str to select between 'abs', 'rel', 'both' for
+                              the style of comparison returned
+
+    @returns :: rst table of the results
+    """
+    # Save runtime table for this group of fit problems
+    tbl_runtime_indiv = rst_table.create(minimizers, linked_problems,
+                                         runtime_tbl,
+                                         comparison_type='runtime',
+                                         comparison_dim='',
+                                         using_errors=use_errors,
+                                         color_scale=color_scale,
+                                         comparison_mode=comparison_mode)
+
+    return tbl_runtime_indiv
 
 
 def generate_tables(results_per_test, minimizers):
