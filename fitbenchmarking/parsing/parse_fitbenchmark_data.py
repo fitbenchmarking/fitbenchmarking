@@ -42,10 +42,14 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         # String containing the function name(s) and the starting parameter values for each function
         self._mantid_equation = entries['function']
 
+        ##### Print number of equations until better way of doing this is looked at.
         # Readable equation for output to user
-        equation = entries['function'].split(';', 1)[-1]
-        equation = equation.split(',', 1)[0]
-        self._equation = equation.split('=', 1)[1].strip()
+        #equation = entries['function'].split(';', 1)[-1]
+        #equation = equation.split(',', 1)[0]
+
+        #self._equation = equation.split('=', 1)[1].strip()
+        equation_count = entries['function'].count(';') + 1
+        self._equation = '{} Functions'.format(equation_count)
 
         # list of starting values in format [[name, [value1, value2, ...]], ...]
         tmp_starting_values = entries['function'].split(';')
