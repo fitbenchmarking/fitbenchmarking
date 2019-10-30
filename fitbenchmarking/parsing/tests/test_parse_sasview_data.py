@@ -39,7 +39,7 @@ class ParseSasViewTests(unittest.TestCase):
         entries['input_file'] = "SV_cyl_400_20.txt"
 
         entries['function'] = ("name=cylinder,radius=35.0,length=350.0,background=0.0,scale=1.0,sld=4.0,sld_solvent=1.0")
-        entries['parameter_ranges'] = ("radius.range(1,50);length.range(1,500)")
+        entries['parameter_ranges'] = 'radius.range(1,50);length.range(1,500)'
         entries['description'] = ''
 
         return entries
@@ -50,8 +50,13 @@ class ParseSasViewTests(unittest.TestCase):
         fname = get_file('SV_prob_def_1.txt')
         problem = FittingProblem(fname)
         problem.name = entries['name']
-        problem.equation = (entries['function'].split(',', 1))[0]
-        problem.starting_values = (entries['function'].split(',', 1))[1]
+        problem.equation = (entries['function'].split(',', 1))[0][5:]
+        problem.starting_values = [['radius', [35.0]],
+                                   ['length', [350.0]],
+                                   ['background', [0.0]],
+                                   ['scale', [1.0]],
+                                   ['sld', [4.0]],
+                                   ['sld_solvent', [1.0]]]
         self._starting_value_ranges = entries['parameter_ranges']
 
         return problem
@@ -62,7 +67,9 @@ class ParseSasViewTests(unittest.TestCase):
 
         problem = FittingProblem(fname)
 
-        y_values = problem.eval_f(problem.data_x[:10], 'radius=35,length=350,background=0.0,scale=1.0,sld=4.0,sld_solvent=1.0')
+        y_values = problem.eval_f(x=problem.data_x[:10],
+                                  params=[35.0, 350.0, 0.0, 1.0, 4.0, 1.0],
+                                  function_id=0)
 
         y_values_expected = np.array([3.34929172e+02, 9.61325700e+01, 1.92262557e+01, 1.21868330e+00, 7.96766671e-01, 1.27924690e+00, 4.70120551e-01, 1.96891429e-02, 1.54944490e-01, 1.69598579e-01])
 
@@ -78,7 +85,7 @@ class ParseSasViewTests(unittest.TestCase):
 
         function_obj_str = function[0][0]
 
-        y_values = function_obj_str(problem.data_x[:10], 'radius=35,length=350,background=0.0,scale=1.0,sld=4.0,sld_solvent=1.0')
+        y_values = function_obj_str(problem.data_x[:10], 35, 350, 0.0, 1.0, 4.0, 1.0)
 
         y_values_expected = np.array(
             [3.34929172e+02, 9.61325700e+01, 1.92262557e+01, 1.21868330e+00, 7.96766671e-01, 1.27924690e+00,
@@ -137,11 +144,18 @@ class ParseSasViewTests(unittest.TestCase):
         fname = get_file('SV_prob_def_1.txt')
         problem = FittingProblem(fname)
         entries = self.expected_SAS_modelling_1D_problem_entries()
+        expected_problem = self.expected_SAS_modelling_1D_problem()
 
         self.assertEqual(entries['name'], problem.name)
-        self.assertEqual((entries['function'].split(',', 1))[0], problem.equation)
-        self.assertEqual((entries['function'].split(',', 1))[1], problem.starting_values)
-        self.assertEqual(entries['parameter_ranges'], problem.starting_value_ranges)
+        self.assertEqual((entries['function'].split(',', 1))[0][5:], problem.equation)
+        self.assertEqual([['radius', [35.0]],
+                          ['length', [350.0]],
+                          ['background', [0.0]],
+                          ['scale', [1.0]],
+                          ['sld', [4.0]],
+                          ['sld_solvent', [1.0]]],
+                         problem.starting_values)
+        self.assertEqual(expected_problem.starting_value_ranges, problem.starting_value_ranges)
     #
     def test_checkingAttributesAssertion(self):
         fname = get_file('SV_prob_def_1.txt')

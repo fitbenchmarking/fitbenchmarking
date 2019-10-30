@@ -5,7 +5,6 @@ import os
 import numpy as np
 import json
 
-from fitbenchmarking.fitting.mantid.externals import store_main_problem_data
 from fitbenchmarking.parsing.parse import parse_problem_file
 from fitbenchmarking.parsing.parse import check_problem_attributes
 from fitbenchmarking.parsing.parse import determine_problem_type
@@ -50,10 +49,21 @@ class ParseFitbenchmarkTests(unittest.TestCase):
         if 'fit_parameters' in entries:
             problem.start_x = entries['fit_parameters']['StartX']
             problem.end_x = entries['fit_parameters']['EndX']
-        data_file = os.path.join(bench_prob_dir, entries['input_file'])
-        store_main_problem_data(data_file, problem)
-
         return problem
+
+def get_problem_data(fname):
+    """
+    Stores the main problem data into the relevant attributes of the
+    problem object.
+
+    @param fname :: path to the neutron problem definition file
+    @param problem :: object holding the problem information
+    """
+    wks_imported = msapi.Load(Filename=fname)
+    x = wks_imported.readX(0)
+    y = wks_imported.readY(0)
+    e = wks_imported.readE(0)
+    return x, y ,e
 
     def test_eval_f(self):
 
