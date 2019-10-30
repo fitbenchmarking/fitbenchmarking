@@ -19,7 +19,7 @@ def compute_chisq(actual, fitted, errors):
     @returns :: the sum of the square of each element in differences
     """
     r = fitted - actual
-    if errors in not None:
+    if errors is not None:
         weigthed_r = np.multiply(errors, r)
         chi_sq = np.dot(r, weigthed_r)
     else:
