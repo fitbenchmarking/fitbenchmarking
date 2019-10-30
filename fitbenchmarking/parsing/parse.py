@@ -5,7 +5,6 @@ Parse the problem file depending on the type of problem.
 from __future__ import (absolute_import, division, print_function)
 
 import os
-from numpy import argsort, ndarray
 
 from fitbenchmarking.utils.logging_setup import logger
 from fitbenchmarking.parsing import parse_nist_data
@@ -41,12 +40,6 @@ def parse_problem_file(prob_file):
     check_problem_attributes(problem)
 
     logger.info("* Testing fitting of problem {0}".format(problem.name))
-
-    index = argsort(problem.data_x)
-    problem.data_x = problem.data_x[index]
-    problem.data_y = problem.data_y[index]
-    if isinstance(problem.data_e, ndarray):
-        problem.data_e = problem.data_e[index]
 
     return problem
 

@@ -67,7 +67,7 @@ def fitbm_one_prob(user_input, problem):
             # Make the plot of the best fit
             plots.make_plots(problem=problem,
                              best_fit=best_fit,
-                             count=i+1,
+                             count=i + 1,
                              group_results_dir=user_input.group_results_dir)
 
         results_fit_problem.append(results_problem)
@@ -125,10 +125,11 @@ def benchmark(controller, minimizers):
 
         if chi_sq < min_chi_sq:
             min_chi_sq = chi_sq
+            index = controller.sorted_index
             best_fit = plot_helper.data(name=minimizer,
-                                        x=controller.data_x,
-                                        y=controller.results,
-                                        E=controller.data_e)
+                                        x=controller.data_x[index],
+                                        y=controller.results[index],
+                                        E=controller.data_e[index])
 
         individual_result = \
             misc.create_result_entry(problem=controller.problem,
