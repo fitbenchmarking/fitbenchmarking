@@ -22,6 +22,10 @@ try:
     from fitbenchmarking.fitting.controllers.scipy_controller import ScipyController
 except ImportError:
     ScipyController = None
+try:
+    from fitbenchmarking.fitting.controllers.dfogn_controller import DFOGNController
+except ImportError:
+    DFOGNController = None
 
 
 def fitbm_one_prob(user_input, problem):
@@ -43,7 +47,8 @@ def fitbm_one_prob(user_input, problem):
 
     controllers = {'mantid': MantidController,
                    'sasview': SasviewController,
-                   'scipy': ScipyController}
+                   'scipy': ScipyController,
+                   'dfogn': DFOGNController}
 
     if software in controllers:
         controller = controllers[software](problem, user_input.use_errors)

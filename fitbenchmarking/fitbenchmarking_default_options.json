@@ -7,7 +7,8 @@
                     "Simplex","SteepestDescent",
                     "Trust Region"],
         "scipy" : ["lm", "trf", "dogbox"],
-        "sasview" : ["amoeba", "lm", "newton", "de", "pt", "mp"]
+        "sasview" : ["amoeba", "lm", "newton", "de", "pt", "mp"],
+	"dfogn" : ["dfogn"]
         },
 
     "comparison_mode" : "both" 
