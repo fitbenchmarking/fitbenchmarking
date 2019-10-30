@@ -22,6 +22,7 @@ class DFOGNController(Controller):
         self._soln = None
         self._popt = None
         self._pinit = None
+        self._use_errors = use_errors
         
     def setup(self):
         """
@@ -32,7 +33,10 @@ class DFOGNController(Controller):
     def _prediction_error(self,p):
         f = self.data_y - self.problem.eval_f(x=self.data_x,
                                               params=p, 
-                                              function_id=self.function_id)       
+                                              function_id=self.function_id)
+        if self._use_errors:
+            f = f/self.data_e
+            
         return f
     
     def fit(self):
