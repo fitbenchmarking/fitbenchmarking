@@ -118,7 +118,7 @@ def benchmark(controller, minimizers):
         else:
             chi_sq = misc.compute_chisq(fitted=controller.results,
                                         actual=controller.data_y,
-                                        errors=controller.date_e)
+                                        errors=controller.data_e)
             status = 'success'
 
         if min_chi_sq is None:
