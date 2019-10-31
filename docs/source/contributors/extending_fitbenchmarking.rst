@@ -72,12 +72,12 @@ that the fitting software can use, and converting the result back to a
 standardised format (numpy arrays). As well as this, the controller must be
 written so that the fitting is separated from the preparation wherever possible
 in order to give accurate timings for the fitting. Examples of these
-controllers can be found in ``fitbenchmarking/fitting/software_controllers``.
+controllers can be found in ``fitbenchmarking/fitting/controllers``.
 
 In order to add a new controller, you will need to:
 
 1. Create a new subclass of BaseSoftwareController in
-   ``fitbenchmarking/fitting/software_controllers``.
+   ``fitbenchmarking/fitting/controllers``.
    This should implement 4 functions:
 
    -  ``__init__()``: Initialise anything that is needed specifically for the
