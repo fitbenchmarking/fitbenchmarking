@@ -10,7 +10,8 @@ Adding additional problem groups
 
 *This section describes how to add a problem group to the fit benchmarking
 software. The default problem groups that come with this software are,
-at the moment of writing this, neutron, NIST, CUTEst and Muon.*
+at the moment of writing this, CUTEst, Muon, Neutron, NIST, SAS_modelling,
+and simple_tests.*
 
 1. Add your problem file directory in
    ``fitbenchmarking/benchmark_problems/``. Some examples of how this
@@ -32,9 +33,12 @@ are:
 
   - Native (Fitbenchmark)
   - NIST
+  - Sasview
 
-An example of the native and NIST formats can be seen in
-``benchmark_problems/Neutron_data/`` and ``benchmark_problems/NIST/``,
+An example of these formats can be seen in
+``benchmark_problems/Neutron_data/``,
+``benchmark_problems/NIST/``,
+and ``benchmark_problems/SAS_modelling/``
 respectively.
 
 **Adding new fitting problem definition types**
@@ -45,7 +49,9 @@ Follow the following steps
    contains a child class of ``BaseFittingProblem`` in
    ``parsing/base_fitting_problem.py`` that processes the type (format) and
    initialise the class with appropriate attributes (examples can be found
-   in ``parse_{nist/fitbenchmark}_data.py``)
+   in ``parse_{nist/fitbenchmark/sasview}_data.py``).
+   As a minimum this must implement the abstract get_function method which
+   returns a list of callable-initial parameter pairs.
 2. In ``parsing/parse.py``
    alter the function ``determine_problem_type()`` such that it determines
    the new type
@@ -58,19 +64,41 @@ Follow the following steps
 Adding additional fitting software
 ----------------------------------
 *This section describes how to add additional software to benchmark against
-the available problems. The steps below should be used as orientation as
-there is no straight forward way to adding a software to fitBenchmarking
-at the moment.*
+the available problems.*
 
-1. In the ``fitbenchmarking/fitbenchmarking/`` folder, add an extra
-   ``elif`` for your software in the following functions:
+In FitBenchmarking, controllers are used to interface into the various fitting
+softwares. Controllers are responsible for converting the problem into a format
+that the fitting software can use, and converting the result back to a
+standardised format (numpy arrays). As well as this, the controller must be
+written so that the fitting is separated from the preparation wherever possible
+in order to give accurate timings for the fitting. Examples of these
+controllers can be found in ``fitbenchmarking/fitting/software_controllers``.
 
-   -  fitbenchmarking_one_problem.py -> fit_one_function_def
-   -  fitting/plotting/plots.py -> get_start_guess_data
-   -  fitting/prerequisites.py -> prepare_software_prerequisites
+In order to add a new controller, you will need to:
 
-2. In the folder ``fitbenchmarking/fitbenchmarking/fitting/`` create a
-   python script that deals with the specifics of your algorithm. There
-   are examples for the scipy and mantid fitting algorithms.
+1. Create a new subclass of BaseSoftwareController in
+   ``fitbenchmarking/fitting/software_controllers``.
+   This should implement 4 functions:
 
-3. For additional support please see :ref:`getting-started`.
+   -  ``__init__()``: Initialise anything that is needed specifically for the
+      software, do any work that can be done without knowledge of the
+      minimizer to use, or function to fit, and call ``super().__init__()``.
+   -  ``setup()``: Do any work that must be done only after knowing the
+      minimizer to use and the function to fit. E.g. creating function wrappers
+      around a callable.
+   -  ``fit()``: Run the fitting. This will be timed so should include only
+      what is needed to fit the data.
+   -  ``cleanup()``: Convert the results into the expected numpy arrays and
+      store them in the results variables
+      (``self.results``, ``self.final_params``, ``self.success``)
+
+2. Import your controller and add it to the dictionary 'controllers' in
+   ``fitbenchmarking/fitbenchmark_one_problem.py``
+
+3. Document the available minimizers (currently done by adding to
+   ``fitbenchmarking/fitbenchmarking_default_options.json``)
+
+4. Create tests for the software in
+   ``fitbenchmarking/fitting/tests/test_controllers.py``.
+   Unless the new controller is more complicated than the currently available
+   controllers, this can be done by following the example of the others.

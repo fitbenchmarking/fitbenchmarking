@@ -6,7 +6,7 @@ import numpy as np
 
 from fitbenchmarking.utils.logging_setup import logger
 from fitbenchmarking.parsing.fitbenchmark_data_functions import (
-    fitbenchmark_func_definitions, get_fit_function_without_kwargs
+    fitbenchmark_func_definitions
 )
 
 
@@ -33,62 +33,52 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         data_points = self.get_data_points(data_file_path)
 
-        self._data_x = data_points[:,0]
-        self._data_y = data_points[:,1]
-        self._data_e = data_points[:,2]
+        self._data_x = data_points[:, 0]
+        self._data_y = data_points[:, 1]
+        self._data_e = data_points[:, 2]
         self._name = entries['name']
+        self.function = None
 
-        #String containing the function name(s) and the starting parameter values for each function
-        self._equation = entries['function']
+        # String containing the function name(s) and the starting parameter values for each function
+        self._mantid_equation = entries['function']
 
+        ##### Print number of equations until better way of doing this is looked at.
+        # Readable equation for output to user
+        #equation = entries['function'].split(';', 1)[-1]
+        #equation = equation.split(',', 1)[0]
+
+        #self._equation = equation.split('=', 1)[1].strip()
+        equation_count = entries['function'].count(';') + 1
+        self._equation = '{} Functions'.format(equation_count)
+
+        # list of starting values in format [[name, [value1, value2, ...]], ...]
+        tmp_starting_values = entries['function'].split(';')
+        tmp_starting_values = (tmp.split('ties=')[0] for tmp in tmp_starting_values)
+        tmp_starting_values = ('f{}_{}'.format(i, sv.strip())
+                               for i, tmp in enumerate(tmp_starting_values)
+                               for sv in tmp.split(',')[1:]
+                               if sv.strip() != '' and not sv.startswith('BinWidth'))
+        self._starting_values = [[f.split('=')[0].strip(),
+                                  [float(f.split('=')[1].strip())]]
+                                 for f in tmp_starting_values]
+
+        # start and end values in x range
         if 'fit_parameters' in entries:
             self._start_x = entries['fit_parameters']['StartX']
             self._end_x = entries['fit_parameters']['EndX']
 
         super(FittingProblem, self).close_file()
 
-    def eval_f(self, x, param_list):
-        """
-        Function evaluation method
-
-        @param x :: x data values
-        @param param_list :: parameter values
-        @returns :: y data values evaluated from the function used in the problem
-        """
-
-        function = (fitbenchmark_func_definitions(self._equation))[0][0]
-
-        param_values_string = ''
-        for param in param_list:
-            param_values_string += ',' + str(param)
-
-        y_values = eval('function(x'+param_values_string+')')
-
-        return y_values
-
     def get_function(self):
         """
 
-        @returns :: function definition list containing the function and its starting parameter values
+        @returns :: function definition list containing the function and its
+                    starting parameter values
         """
-
-        function = fitbenchmark_func_definitions(self._equation)
-
-        return function
-
-    def get_bumps_function(self):
-        """
-        Prepare a function definition list that is acceptable by Bumps fitting module.
-        The function to be used in Bumps fitting must not have *args or **kwargs in declaration
-
-        @returns :: function definition list containing the function without
-        any *args or *kwargs and its starting parameter values
-        """
-
-        function = fitbenchmark_func_definitions(self._equation)[0][0]
-
-        bumps_function_def = get_fit_function_without_kwargs(function, self._equation)
-        return bumps_function_def
+        if self.function is None:
+            self.function = fitbenchmark_func_definitions(self._mantid_equation)
+            
+        return self.function
 
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """

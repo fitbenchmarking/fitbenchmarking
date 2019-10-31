@@ -35,7 +35,7 @@ class data:
             self.name = 'none'
             self.x = [0.0, 0.0, 0.0]
             self.y = [0.0, 0.0, 0.0]
-        if(len(E) == 0):
+        if E is None or len(E) == 0:
             self.E = np.zeros(len(self.x))
         else:
             self.E = copy.copy(E)

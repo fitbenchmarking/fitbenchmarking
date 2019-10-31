@@ -39,60 +39,69 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._start_x, self._end_x = self.get_start_x_and_end_x(self._data_x)
 
         self._name = entries['name']
-        self._equation = (entries['function'].split(',', 1))[0]
+        tmp_equation = entries['function'].split(',', 1)[0]
+        self._equation = tmp_equation.split('=')[1]
 
-        self._starting_values = (entries['function'].split(',', 1))[1]
-        self._starting_value_ranges = entries['parameter_ranges']
+        tmp_starting_values = entries['function'].split(',')[1:]
+        self._starting_values = [[f.split('=')[0], [float(f.split('=')[1])]]
+                                 for f in tmp_starting_values]
+
+        starting_value_ranges = entries['parameter_ranges'].split(';')
+        names = (val_range_txt.split('.', 1)[0]
+                 for val_range_txt in starting_value_ranges)
+        values = (tmp_range.split('(')[1]
+                  for tmp_range in starting_value_ranges)
+        values = (tmp_range.strip(')') for tmp_range in values)
+        values = ([float(val) for val in tmp_range.split(',')]
+                  for tmp_range in values)
+        self._starting_value_ranges = {name: values
+                                       for name, values
+                                       in zip(names, values)}
+
+        self.function = None
 
         super(FittingProblem, self).close_file()
 
-    def eval_f(self, x, *param_list):
-        """
-        Function Evaluation Method
-
-        @param x :: x data values
-        @param *param_list :: parameter value(s)
-
-        @ returns :: the y data values evaluated from the model
-        """
-        data = empty_data1D(x)
-        model = load_model((self._equation.split('='))[1])
-
-        param_names = [(param.split('='))[0] for param in self.starting_values.split(',')]
-        if len(param_list) == 1:
-            if isinstance(param_list[0], basestring):
-                exec ("params = dict(" + param_list[0] + ")")
-        else:
-            param_string = ''
-            for name, value in zip(param_names, param_list):
-                param_string += name+'='+str(value)+','
-            param_string = param_string[:-1]
-            exec ("params = dict(" + param_string + ")")
-
-        model_wrapper = Model(model, **params)
-        for range in self.starting_value_ranges.split(';'):
-            exec ('model_wrapper.' + range)
-        func_wrapper = Experiment(data=data, model=model_wrapper)
-
-        return func_wrapper.theory()
-
     def get_function(self):
         """
+        Creates list of functions alongside the starting parameters.
+        Functions are saved to the instance so that this is only generated
+        once.
 
-        @returns :: function definition list containing the model and its starting parameter values
+        @returns :: function definition list containing the model and its
+                    starting parameter values
         """
+        if self.function is None:
 
-        param_values = [(param.split('='))[1] for param in self.starting_values.split(',')]
-        param_values = np.array([param_values],dtype=np.float64)
+            functions = []
 
-        function_defs = []
+            param_names = [params[0] for params in self._starting_values]
 
-        for param in param_values:
+            def fitFunction(x, *tmp_params):
 
-            function_defs.append([self.eval_f, param])
+                model = load_model(self._equation)
 
-        return function_defs
+                data = empty_data1D(x)
+                param_dict = {name: value
+                              for name, value
+                              in zip(param_names, tmp_params)}
 
+                model_wrapper = Model(model, **param_dict)
+                for name, values in self.starting_value_ranges.items():
+                    model_wrapper.__dict__[name].range(values[0], values[1])
+                func_wrapper = Experiment(data=data, model=model_wrapper)
+
+                return func_wrapper.theory()
+
+            for i in range(len(self._starting_values[0][1])):
+
+                param_values = [params[1][i] for params in self._starting_values]
+
+                functions.append([fitFunction, param_values, self._equation])
+
+            self.function = functions
+
+        return self.function
 
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """

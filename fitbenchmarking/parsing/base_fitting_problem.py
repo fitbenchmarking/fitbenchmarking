@@ -1,8 +1,13 @@
 from __future__ import (absolute_import, division, print_function)
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
+try:
+    from itertools import izip_longest
+except ImportError:
+    # python3
+    from itertools import zip_longest as izip_longest
 
-class BaseFittingProblem(object):
+class BaseFittingProblem:
     """
     Definition of a base class implementation of the fitting test problem,
     normally loaded from a problem definition file.
@@ -24,7 +29,8 @@ class BaseFittingProblem(object):
         self._name = None
         # Equation (function or model) to fit against data
         self._equation = None
-        # Define range to fit model data over if different from entire range of data
+        # Define range to fit model data over if different from entire range
+        # of data
         self._start_x = None
         self._end_x = None
 
@@ -45,6 +51,72 @@ class BaseFittingProblem(object):
 
     def close_file(self):
         self._contents.close()
+
+    def eval_f(self, x, params, function_id):
+        """
+        Function evaluation method
+
+        :param x: x data values
+        :type x: numpy array
+        :param params: parameter value(s)
+        :type params: list
+        :param function_id: The index of the function in get_function
+        :type function_id: int
+
+        :return: y data values evaluated from the function of the problem
+        :rtype: numpy array
+        """
+
+        func_def = self.get_function()
+        function = func_def[function_id][0]
+        return function(x, *params)
+
+    def eval_starting_params(self, function_id):
+        """
+        Evaluate the function using the starting parameters.
+
+        :param function_id: The index of the function in get_function
+        :type function_id: int
+
+        :return: Results from evaluation
+        :rtype: numpy array
+        """
+
+        function_params = self.get_function()[function_id][1]
+        return self.eval_f(x=self.data_x,
+                           params=function_params,
+                           function_id=function_id)
+
+    @abstractmethod
+    def get_function(self):
+        """
+        Return the function definitions.
+
+        :return: callable-parameter pairs
+        :rtype: list
+        """
+        raise NotImplementedError
+
+    def get_function_def(self, params, function_id):
+        """
+        Return the function definition in a string format for output
+
+        :param params: The parameters to use in the function string
+        :type params: list
+        :param function_id: The index of the function in get_function
+        :type function_id: int
+
+        :return: Representation of the function
+                 example format: 'b1 * (b2+x) | b1=-2.0, b2=50.0'
+        :rtype: string
+        """
+        params = ['{}={}'.format(s[0], p) for s, p
+                  in izip_longest(self._starting_values,
+                                  params if params is not None else [])]
+        param_string = ', '.join(params)
+
+        func_name = self._equation  # self.get_function()[function_id][2]
+        return '{} | {}'.format(func_name, param_string)
 
     @property
     def fname(self):

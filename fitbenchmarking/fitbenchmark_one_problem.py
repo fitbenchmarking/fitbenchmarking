@@ -2,24 +2,33 @@
 Fit benchmark one problem functions.
 """
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
 
-import sys
+import time
+
 import numpy as np
 
-from fitbenchmarking.fitting import prerequisites as prereq
 from fitbenchmarking.fitting import misc
-from fitbenchmarking.fitting.plotting import plots
-
-from fitbenchmarking.utils.logging_setup import logger
+from fitbenchmarking.fitting.plotting import plot_helper, plots
+try:
+    from fitbenchmarking.fitting.controllers.mantid_controller import MantidController
+except ImportError:
+    MantidController = None
+try:
+    from fitbenchmarking.fitting.controllers.sasview_controller import SasviewController
+except ImportError:
+    SasviewController = None
+try:
+    from fitbenchmarking.fitting.controllers.scipy_controller import ScipyController
+except ImportError:
+    ScipyController = None
 
 
 def fitbm_one_prob(user_input, problem):
     """
-    Sets up the workspace, cost function and function definitions for
-    a particular problem and fits the models provided in the problem
-    object. The best fit, along with the data and a starting guess
-    is then plotted on a visual display page.
+    Sets up the controller for a particular problem and fits the models
+    provided in the problem object. The best fit, along with the data and a
+    starting guess is then plotted on a visual display page.
 
     @param user_input :: all the information specified by the user
     @param problem :: a problem object containing information used in fitting
@@ -28,59 +37,109 @@ def fitbm_one_prob(user_input, problem):
                 containing the fit information
     """
 
-    previous_name, count = None, 0
     results_fit_problem = []
-    data_struct, cost_function, function_definitions = \
-        prereq.prepare_software_prerequisites(user_input.software, problem,
-                                              user_input.use_errors)
 
-    for function in function_definitions:
+    software = user_input.software.lower()
 
-        results_problem, best_fit = \
-            fit_one_function_def(user_input.software, problem, data_struct,
-                                 function, user_input.minimizers, cost_function)
-        count += 1
-        if not best_fit is None:
+    controllers = {'mantid': MantidController,
+                   'sasview': SasviewController,
+                   'scipy': ScipyController}
+
+    if software in controllers:
+        controller = controllers[software](problem, user_input.use_errors)
+    else:
+        raise NotImplementedError('The chosen software is not implemented yet: {}'.format(user_input.software))
+
+    # The controller reformats the data to fit within a start- and end-x bound
+    # It also estimates errors if not provided.
+    # Copy this back to the problem as it is used in plotting.
+    problem.data_x = controller.data_x
+    problem.data_y = controller.data_y
+    problem.data_e = controller.data_e
+
+    for i in range(len(controller.functions)):
+        controller.function_id = i
+
+        results_problem, best_fit = benchmark(controller=controller,
+                                              minimizers=user_input.minimizers)
+
+        if best_fit is not None:
             # Make the plot of the best fit
-            previous_name = \
-                plots.make_plots(user_input.software, problem, data_struct,
-                                 function, best_fit, previous_name, count,
-                                 user_input.group_results_dir)
+            plots.make_plots(problem=problem,
+                             best_fit=best_fit,
+                             count=i + 1,
+                             group_results_dir=user_input.group_results_dir)
 
         results_fit_problem.append(results_problem)
 
     return results_fit_problem
 
 
-def fit_one_function_def(software, problem, data_struct, function, minimizers,
-                         cost_function):
+def benchmark(controller, minimizers):
     """
-    Fits a given function definition (model) to the data in the workspace.
+    Fit benchmark one problem, with one function definition and all
+    the selected minimizers, using the chosen fitting software.
 
-    @param software :: software used in fitting the problem, can be
-                        e.g. Mantid, SciPy etc.
-    @param problem :: a problem object containing information used in fitting
-    @param data_struct :: a structure in which the data to be fitted is
-                          stored, can be e.g. Mantid workspace, np array etc.
-    @param function :: analytical function string that is fitted
+    @param controller :: The software controller for the fitting
     @param minimizers :: array of minimizers used in fitting
-    @param cost_function :: the cost function used for fitting
 
     @returns :: nested array of result objects, per minimizer
-                and data object for the best fit
+                and data object for the best fit data
     """
+    min_chi_sq, best_fit = None, None
+    results_problem = []
 
-    if software == 'mantid':
-        from fitbenchmarking.fitting.mantid.main import benchmark
-        return benchmark(problem, data_struct, function,
-                         minimizers, cost_function)
-    elif software == 'scipy':
-        from fitbenchmarking.fitting.scipy.main import benchmark
-        return benchmark(problem, data_struct, function,
-                         minimizers, cost_function)
-    elif software == 'sasview':
-        from fitbenchmarking.fitting.sasview.main import benchmark
-        return benchmark(problem, data_struct, function,
-                         minimizers, cost_function)
-    else:
-        raise NameError("Sorry, that software is not supported.")
+    for minimizer in minimizers:
+        controller.minimizer = minimizer
+
+        controller.prepare()
+
+        init_function_def = controller.problem.get_function_def(params=controller.initial_params,
+                                                                function_id=controller.function_id)
+        try:
+            start_time = time.time()
+            controller.fit()
+            end_time = time.time()
+        except Exception as e:
+            print(e.message)
+            controller.success = False
+            end_time = np.inf
+
+        runtime = end_time - start_time
+
+        controller.cleanup()
+
+        fin_function_def = controller.problem.get_function_def(params=controller.final_params,
+                                                               function_id=controller.function_id)
+
+        if not controller.success:
+            chi_sq = np.nan
+            status = 'failed'
+        else:
+            chi_sq = misc.compute_chisq(fitted=controller.results,
+                                        actual=controller.data_y,
+                                        errors=controller.data_e)
+            status = 'success'
+
+        if min_chi_sq is None:
+            min_chi_sq = chi_sq + 1
+
+        if chi_sq < min_chi_sq:
+            min_chi_sq = chi_sq
+            best_fit = plot_helper.data(name=minimizer,
+                                        x=controller.data_x,
+                                        y=controller.results,
+                                        E=controller.data_e)
+
+        individual_result = \
+            misc.create_result_entry(problem=controller.problem,
+                                     status=status,
+                                     chi_sq=chi_sq,
+                                     runtime=runtime,
+                                     minimizer=minimizer,
+                                     ini_function_def=init_function_def,
+                                     fin_function_def=fin_function_def)
+
+        results_problem.append(individual_result)
+
+    return results_problem, best_fit
