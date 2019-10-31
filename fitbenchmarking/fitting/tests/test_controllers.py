@@ -27,8 +27,8 @@ def misra1a_file():
     main_dir = os.path.dirname(os.path.normpath(parent_dir))
     root_dir = os.path.dirname(os.path.normpath(main_dir))
     bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
-    fname = os.path.join(bench_prob_dir, 'NIST', 'low_difficulty',
-                         'Misra1a.dat')
+    fname = os.path.join(bench_prob_dir, 'simple_tests',
+                         'cubic.dat')
 
     return fname
 
@@ -133,7 +133,7 @@ class ControllerTests(unittest.TestCase):
         DFOGNController: Tests for output shape
         """
         controller = DFOGNController(self.problem, True)
-        controller.minimizer = "dfogn"
+        controller.minimizer = 'dfogn'
         self.shared_testing(controller)
 
     def shared_testing(self, controller):
