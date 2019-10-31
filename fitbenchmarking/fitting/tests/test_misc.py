@@ -78,13 +78,25 @@ class FitMiscTests(unittest.TestCase):
 
         return result
 
-    def test_compute_chisq(self):
+    def test_compute_chisq_no_errors(self):
 
         actual = np.array([1, 2, 3])
         calculated = np.array([2, 4, 6])
+        errors = None
 
-        chi_sq = compute_chisq(actual, calculated)
+        chi_sq = compute_chisq(actual, calculated, errors)
         chi_sq_expected = 14
+
+        self.assertEqual(chi_sq_expected, chi_sq)
+
+    def test_compute_chisq_errors(self):
+
+        actual = np.array([1, 2, 3])
+        calculated = np.array([2, 4, 6])
+        errors = np.array([5, 0.1, 0.5])
+
+        chi_sq = compute_chisq(actual, calculated, errors)
+        chi_sq_expected = 9.9
 
         self.assertEqual(chi_sq_expected, chi_sq)
 
