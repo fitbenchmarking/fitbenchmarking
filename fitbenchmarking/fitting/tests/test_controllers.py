@@ -9,6 +9,10 @@ from fitbenchmarking.fitting.controllers.sasview_controller import \
     SasviewController
 from fitbenchmarking.fitting.controllers.scipy_controller import \
     ScipyController
+from fitbenchmarking.fitting.controllers.scipy_controller import \
+    ScipyController
+from fitbenchmarking.fitting.controllers.dfogn_controller import \
+    DFOGNController
 from fitbenchmarking.parsing.parse_nist_data import FittingProblem
 
 
@@ -122,6 +126,14 @@ class ControllerTests(unittest.TestCase):
         """
         controller = ScipyController(self.problem, True)
         controller.minimizer = 'lm'
+        self.shared_testing(controller)
+
+    def test_dfogn(self):
+        """
+        DFOGNController: Tests for output shape
+        """
+        controller = DFOGNController(self.problme, True)
+        controller.minimizer = "dfogn"
         self.shared_testing(controller)
 
     def shared_testing(self, controller):
