@@ -18,7 +18,7 @@ These include:
 The software to use in fitting as a string or list of strings.
 Selected softwares will be benchmarked.
 
-Available options are ``mantid``, ``sasview``, and ``scipy``.
+Available options are ``"mantid"``, ``"sasview"``, and ``"scipy"``.
 
 ``results_dir``
 ---------------
@@ -38,18 +38,18 @@ where the first value in each 2-tuple is a threshold value (float)
 and the second value is a ranking (string) linked to definitions in the
 ``color_definitions.txt`` file.
 
-Available rankings are: ``ranking-top-1``, ``ranking-top-2``,
-``ranking-med-3``, ``ranking-low-4``, and ``ranking-low-5``.
+Available rankings are: ``"ranking-top-1"``, ``"ranking-top-2"``,
+``"ranking-med-3"``, ``"ranking-low-4"``, and ``"ranking-low-5"``.
 
 e.g.
 
 .. code-block:: python
 
-  [(1.1, 'ranking-top-1'),
-   (1.33, 'ranking-top-2'),
-   (1.75, 'ranking-med-3'),
-   (3, 'ranking-low-4'),
-   (float('nan'), 'ranking-low-5')]
+  [(1.1, "ranking-top-1"),
+   (1.33, "ranking-top-2"),
+   (1.75, "ranking-med-3"),
+   (3, "ranking-low-4"),
+   (float("nan"), "ranking-low-5")]
 
 
 ``problem_sets``
@@ -79,22 +79,22 @@ e.g.
 
 .. code-block:: python
 
-    {'scipy': ['dogbox' ,'lm', 'trf'],
-     'sasview': ['amoeba', ...]
+    {"scipy": ["dogbox", "lm", "trf"],
+     "sasview": ["amoeba", ...]
     }
 
 Available minimizers are:
 
 Mantid:
-  - ``BFGS``
-  - ``Conjugate gradient (Fletcher-Reeves imp.)``
-  - ``Conjugate gradient (Polak-Ribiere imp.)``
-  - ``Damped GaussNewton``
-  - ``Levenberg-Marquardt``
-  - ``Levenberg-MarquardtMD``
-  - ``Simplex``
-  - ``SteepestDescent``
-  - and ``Trust Region``
+  - ``"BFGS"``
+  - ``"Conjugate gradient (Fletcher-Reeves imp.)"``
+  - ``"Conjugate gradient (Polak-Ribiere imp.)"``
+  - ``"Damped GaussNewton"``
+  - ``"Levenberg-Marquardt"``
+  - ``"Levenberg-MarquardtMD"``
+  - ``"Simplex"``
+  - ``"SteepestDescent"``
+  - and ``"Trust Region"``
 
   Information about these can be found on the
   `Mantid documentation
@@ -102,12 +102,12 @@ Mantid:
 
 
 SasView (bumps):
-  - ``amoeba``
-  - ``de``
-  - ``lm``
-  - ``mp``
-  - ``newton``
-  - and ``pt``
+  - ``"amoeba"``
+  - ``"de"``
+  - ``"lm"``
+  - ``"mp"``
+  - ``"newton"``
+  - and ``"pt"``
 
   Information about these can be found on the
   `Bumps documentation
@@ -115,9 +115,9 @@ SasView (bumps):
 
 
 Scipy:
-  - ``dogbox``
-  - ``lm``
-  - and ``trf``
+  - ``"dogbox"``
+  - ``"lm"``
+  - and ``"trf"``
 
   Information about these can be found on the
   `Scipy documentation
@@ -128,19 +128,19 @@ Scipy:
 The comparison mode is used when displaying results to select the value
 displayed in the tables.
 
-Available options are ``abs``, ``rel``, or ``both``.
+Available options are ``"abs"``, ``"rel"``, or ``"both"``.
 
-abs
+``"abs"``
   Return absolute values.
   This is the result you would expect from running the fitting independently.
 
-rel
+``"rel"``
   Return relative values.
   All results are scaled so that the best performing has a value of 1,
   i.e. results indicate the factor difference between the best performing
   minimizer and each of the other minimizers.
 
-both
+``"both"``
   Return both absolute and relative values.
   Values will be shown as an absolute value followed by a relative value in
   parentheses.
