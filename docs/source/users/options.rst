@@ -132,7 +132,7 @@ Available options are "abs", "rel", or "both".
 
 abs
   Return absolute values.
-  This is the result you would expect from running the fitting independantly.
+  This is the result you would expect from running the fitting independently.
 
 rel
   Return relative values.
