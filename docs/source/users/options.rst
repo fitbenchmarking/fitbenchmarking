@@ -13,23 +13,23 @@ The first set of options are set in the example scripts and used as arguments
 for the software.
 These include:
 
-:py:`software`
+``software``
 ------------
 The software to use in fitting as a string or list of strings.
 Selected softwares will be benchmarked.
 
-Available options are :py:`mantid`, :py:`sasview`, and :py:`scipy`.
+Available options are ``mantid``, ``sasview``, and ``scipy``.
 
-:py:`results_dir`
+``results_dir``
 ---------------
 A path to the directory where the results should be stored.
-If :py:`None`, a results directory will be created at ``./results``.
+If ``None``, a results directory will be created at ``./results``.
 
-:py:`use_errors`
+``use_errors``
 --------------
 Bool to select whether to use errors in the fitting process or not.
 
-:py:`color_scale`
+``color_scale``
 --------------
 The mapping from relative value to colour in the results table.
 
@@ -38,8 +38,8 @@ where the first value in each 2-tuple is a threshold value (float)
 and the second value is a ranking (string) linked to definitions in the
 ``color_definitions.txt`` file.
 
-Available rankings are: :py:`ranking-top-1`, :py:`ranking-top-2`,
-:py:`ranking-med-3`, :py:`ranking-low-4`, and :py:`ranking-low-5`.
+Available rankings are: ``ranking-top-1``, ``ranking-top-2``,
+``ranking-med-3``, ``ranking-low-4``, and ``ranking-low-5``.
 
 e.g.
 
@@ -52,7 +52,7 @@ e.g.
    (float('nan'), 'ranking-low-5')]
 
 
-:py:`problem_sets`
+``problem_sets``
 ----------------
 The dataset(s) to use as a list of strings.
 This is used in the example script to get the data directory,
@@ -61,16 +61,16 @@ which is then in turn used in the software.
 Software Options
 ================
 The second set of options is controlled by the software_options argument.
-These can be set in either the :py:`software_options` dictionary,
-or an options file (with the filename in the :py:`software_options` dictionary).
+These can be set in either the ``software_options`` dictionary,
+or an options file (with the filename in the ``software_options`` dictionary).
 
 Note: If you are using the example script,
 the options filename can be passed in as the first argument.
 
 The options that can be used with the options file are:
 
-:py:`minimizers`
-----------------
+``minimizers``
+--------------
 Minimizers to be used with the software can be specified.
 This should be a dictionary with key value as the software,
 and value as a list of minimizers.
@@ -86,15 +86,15 @@ e.g.
 Available minimizers are:
 
 Mantid:
-  - :py:`BFGS`
-  - :py:`Conjugate gradient (Fletcher-Reeves imp.)`
-  - :py:`Conjugate gradient (Polak-Ribiere imp.)`
-  - :py:`Damped GaussNewton`
-  - :py:`Levenberg-Marquardt`
-  - :py:`Levenberg-MarquardtMD`
-  - :py:`Simplex`
-  - :py:`SteepestDescent`
-  - and :py:`Trust Region`
+  - ``BFGS``
+  - ``Conjugate gradient (Fletcher-Reeves imp.)``
+  - ``Conjugate gradient (Polak-Ribiere imp.)``
+  - ``Damped GaussNewton``
+  - ``Levenberg-Marquardt``
+  - ``Levenberg-MarquardtMD``
+  - ``Simplex``
+  - ``SteepestDescent``
+  - and ``Trust Region``
 
   Information about these can be found on the
   `Mantid documentation
@@ -102,12 +102,12 @@ Mantid:
 
 
 SasView (bumps):
-  - :py:`amoeba`
-  - :py:`de`
-  - :py:`lm`
-  - :py:`mp`
-  - :py:`newton`
-  - and :py:`pt`
+  - ``amoeba``
+  - ``de``
+  - ``lm``
+  - ``mp``
+  - ``newton``
+  - and ``pt``
 
   Information about these can be found on the
   `Bumps documentation
@@ -115,32 +115,32 @@ SasView (bumps):
 
 
 Scipy:
-  - :py:`dogbox`
-  - :py:`lm`
-  - and :py:`trf`
+  - ``dogbox``
+  - ``lm``
+  - and ``trf``
 
   Information about these can be found on the
   `Scipy documentation
   <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html>`__
 
-:py:`comparison_mode`
----------------------
+``comparison_mode``
+-------------------
 The comparison mode is used when displaying results to select the value
 displayed in the tables.
 
-Available options are :py:`abs`, :py:`rel`, or :py:`both`.
+Available options are ``abs``, ``rel``, or ``both``.
 
-:py:`abs`
+abs
   Return absolute values.
   This is the result you would expect from running the fitting independently.
 
-:py:`rel`
+rel
   Return relative values.
   All results are scaled so that the best performing has a value of 1,
   i.e. results indicate the factor difference between the best performing
   minimizer and each of the other minimizers.
 
-:py:`both`
+both
   Return both absolute and relative values.
   Values will be shown as an absolute value followed by a relative value in
   parentheses.
