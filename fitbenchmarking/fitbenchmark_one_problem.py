@@ -67,7 +67,7 @@ def fitbm_one_prob(user_input, problem):
             # Make the plot of the best fit
             plots.make_plots(problem=problem,
                              best_fit=best_fit,
-                             count=i+1,
+                             count=i + 1,
                              group_results_dir=user_input.group_results_dir)
 
         results_fit_problem.append(results_problem)
@@ -117,7 +117,8 @@ def benchmark(controller, minimizers):
             status = 'failed'
         else:
             chi_sq = misc.compute_chisq(fitted=controller.results,
-                                        actual=controller.data_y)
+                                        actual=controller.data_y,
+                                        errors=controller.data_e)
             status = 'success'
 
         if min_chi_sq is None:
