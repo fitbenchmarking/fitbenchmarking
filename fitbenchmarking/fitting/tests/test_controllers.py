@@ -132,7 +132,7 @@ class ControllerTests(unittest.TestCase):
         """
         DFOGNController: Tests for output shape
         """
-        controller = DFOGNController(self.problme, True)
+        controller = DFOGNController(self.problem, True)
         controller.minimizer = "dfogn"
         self.shared_testing(controller)
 
