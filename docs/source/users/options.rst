@@ -13,33 +13,33 @@ The first set of options are set in the example scripts and used as arguments
 for the software.
 These include:
 
-software
---------
+``software``
+------------
 The software to use in fitting as a string or list of strings.
 Selected softwares will be benchmarked.
 
-Available options are "mantid", "sasview", and "scipy".
+Available options are ``mantid``, ``sasview``, and ``scipy``.
 
-results_dir
------------
+``results_dir``
+---------------
 A path to the directory where the results should be stored.
-If `None`, a results directory will be created at "./results".
+If ``None``, a results directory will be created at ``./results``.
 
-use_errors
-----------
+``use_errors``
+--------------
 Bool to select whether to use errors in the fitting process or not.
 
-color_scale
------------
+``color_scale``
+--------------
 The mapping from relative value to colour in the results table.
 
 This should be in the form of a list of 2-tuples,
 where the first value in each 2-tuple is a threshold value (float)
 and the second value is a ranking (string) linked to definitions in the
-`color_definitions.txt` file.
+``color_definitions.txt`` file.
 
-Available rankings are: "ranking-top-1", "ranking-top-2",
-"ranking-med-3", "ranking-low-4", and "ranking-low-5".
+Available rankings are: ``ranking-top-1``, ``ranking-top-2``,
+``ranking-med-3``, ``ranking-low-4``, and ``ranking-low-5``.
 
 e.g.
 
@@ -52,8 +52,8 @@ e.g.
    (float('nan'), 'ranking-low-5')]
 
 
-problem_sets
-------------
+``problem_sets``
+----------------
 The dataset(s) to use as a list of strings.
 This is used in the example script to get the data directory,
 which is then in turn used in the software.
@@ -61,16 +61,16 @@ which is then in turn used in the software.
 Software Options
 ================
 The second set of options is controlled by the software_options argument.
-These can be set in either the software_options dictionary,
-or an options file (with the filename in the software_options dictionary).
+These can be set in either the ``software_options`` dictionary,
+or an options file (with the filename in the ``software_options`` dictionary).
 
 Note: If you are using the example script,
 the options filename can be passed in as the first argument.
 
 The options that can be used with the options file are:
 
-minimizers
-----------
+``minimizers``
+--------------
 Minimizers to be used with the software can be specified.
 This should be a dictionary with key value as the software,
 and value as a list of minimizers.
@@ -86,15 +86,15 @@ e.g.
 Available minimizers are:
 
 Mantid:
-  - "BFGS"
-  - "Conjugate gradient (Fletcher-Reeves imp.)"
-  - "Conjugate gradient (Polak-Ribiere imp.)"
-  - "Damped GaussNewton"
-  - "Levenberg-Marquardt"
-  - "Levenberg-MarquardtMD"
-  - "Simplex"
-  - "SteepestDescent"
-  - and "Trust Region"
+  - ``BFGS``
+  - ``Conjugate gradient (Fletcher-Reeves imp.)``
+  - ``Conjugate gradient (Polak-Ribiere imp.)``
+  - ``Damped GaussNewton``
+  - ``Levenberg-Marquardt``
+  - ``Levenberg-MarquardtMD``
+  - ``Simplex``
+  - ``SteepestDescent``
+  - and ``Trust Region``
 
   Information about these can be found on the
   `Mantid documentation
@@ -102,12 +102,12 @@ Mantid:
 
 
 SasView (bumps):
-  - "amoeba"
-  - "de"
-  - "lm"
-  - "mp"
-  - "newton"
-  - and "pt"
+  - ``amoeba``
+  - ``de``
+  - ``lm``
+  - ``mp``
+  - ``newton``
+  - and ``pt``
 
   Information about these can be found on the
   `Bumps documentation
@@ -115,20 +115,20 @@ SasView (bumps):
 
 
 Scipy:
-  - "dogbox"
-  - "lm"
-  - and "trf"
+  - ``dogbox``
+  - ``lm``
+  - and ``trf``
 
   Information about these can be found on the
   `Scipy documentation
   <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html>`__
 
-comparison_mode
----------------
+``comparison_mode``
+-------------------
 The comparison mode is used when displaying results to select the value
 displayed in the tables.
 
-Available options are "abs", "rel", or "both".
+Available options are ``abs``, ``rel``, or ``both``.
 
 abs
   Return absolute values.
