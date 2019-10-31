@@ -18,7 +18,7 @@ These include:
 The software to use in fitting as a string or list of strings.
 Selected softwares will be benchmarked.
 
-Available options are ``"mantid"``, ``"sasview"``, and ``"scipy"``.
+Available options are ``"mantid"``, ``"sasview"``, ``"scipy"`` and ``"dfogn"``.
 
 ``results_dir``
 ---------------
@@ -118,11 +118,19 @@ Scipy:
   - ``"dogbox"``
   - ``"lm"``
   - and ``"trf"``
+ 
 
   Information about these can be found on the
   `Scipy documentation
   <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html>`__
 
+DFO-GN:
+  - ``"dfogn"``
+  Information about this can be found on the
+  `DFO-GN documentation
+  <http://people.maths.ox.ac.uk/robertsl/dfogn/>`__  
+  
+  
 ``comparison_mode``
 -------------------
 The comparison mode is used when displaying results to select the value
