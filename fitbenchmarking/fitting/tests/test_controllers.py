@@ -3,14 +3,14 @@ import unittest
 
 from fitbenchmarking.fitting.controllers.base_controller import \
     Controller
+from fitbenchmarking.fitting.controllers.dfogn_controller import \
+    DFOGNController
 from fitbenchmarking.fitting.controllers.mantid_controller import \
     MantidController
 from fitbenchmarking.fitting.controllers.sasview_controller import \
     SasviewController
 from fitbenchmarking.fitting.controllers.scipy_controller import \
     ScipyController
-from fitbenchmarking.fitting.controllers.dfogn_controller import \
-    DFOGNController
 from fitbenchmarking.parsing.parse_nist_data import FittingProblem
 
 

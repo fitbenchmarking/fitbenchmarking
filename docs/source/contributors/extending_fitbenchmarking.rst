@@ -93,12 +93,16 @@ In order to add a new controller, you will need to:
       (``self.results``, ``self.final_params``, ``self.success``)
 
 2. Import your controller and add it to the dictionary 'controllers' in
-   ``fitbenchmarking/fitbenchmark_one_problem.py``
+   ``fitbenchmarking/fitbenchmark_one_problem.py``.
+   For ease of maintainance, please add new controllers in alphabetical order.
 
 3. Document the available minimizers (currently done by adding to
    ``fitbenchmarking/fitbenchmarking_default_options.json``)
 
 4. Create tests for the software in
    ``fitbenchmarking/fitting/tests/test_controllers.py``.
+   Again, for ease of maintainance, please add new controllers in alphabetical order.
    Unless the new controller is more complicated than the currently available
    controllers, this can be done by following the example of the others.
+
+
