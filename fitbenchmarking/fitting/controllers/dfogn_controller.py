@@ -43,7 +43,6 @@ class DFOGNController(Controller):
         """
         Run problem with Scipy.
         """
-        popt = None
         self.success = False
 
         self._soln = dfogn.solve(self._prediction_error,
