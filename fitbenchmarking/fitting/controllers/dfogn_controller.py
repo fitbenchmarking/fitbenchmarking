@@ -41,7 +41,7 @@ class DFOGNController(Controller):
     
     def fit(self):
         """
-        Run problem with Scipy.
+        Run problem with DFO-GN.
         """
         popt = None
         self.success = False
