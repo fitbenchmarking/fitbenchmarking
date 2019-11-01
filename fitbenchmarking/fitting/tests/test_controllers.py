@@ -3,6 +3,8 @@ import unittest
 
 from fitbenchmarking.fitting.controllers.base_controller import \
     Controller
+from fitbenchmarking.fitting.controllers.dfogn_controller import \
+    DFOGNController
 from fitbenchmarking.fitting.controllers.mantid_controller import \
     MantidController
 from fitbenchmarking.fitting.controllers.sasview_controller import \
@@ -23,8 +25,8 @@ def misra1a_file():
     main_dir = os.path.dirname(os.path.normpath(parent_dir))
     root_dir = os.path.dirname(os.path.normpath(main_dir))
     bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
-    fname = os.path.join(bench_prob_dir, 'NIST', 'low_difficulty',
-                         'Misra1a.dat')
+    fname = os.path.join(bench_prob_dir, 'simple_tests',
+                         'cubic.dat')
 
     return fname
 
@@ -122,6 +124,14 @@ class ControllerTests(unittest.TestCase):
         """
         controller = ScipyController(self.problem, True)
         controller.minimizer = 'lm'
+        self.shared_testing(controller)
+
+    def test_dfogn(self):
+        """
+        DFOGNController: Tests for output shape
+        """
+        controller = DFOGNController(self.problem, True)
+        controller.minimizer = 'dfogn'
         self.shared_testing(controller)
 
     def shared_testing(self, controller):
