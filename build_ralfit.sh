@@ -12,6 +12,4 @@ make
 python setup.py build_ext
 python setup.py install
 
-export LD_LIBRARY_PATH=$SCRIPTPATH/RALFit/libRALFit/build:$LD_LIBRARY_PATH
-
 cd $SCRIPTPATH
