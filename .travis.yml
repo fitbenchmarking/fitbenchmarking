@@ -1,69 +1,96 @@
-sudo: required
-language: python, c
-python:
-  - "2.7"
-dist: xenial
-virtualenv:
-  system_site_packages: true
-
-
-stages:
-  - name: Tests
-  - name: SysTests
-    if: type = cron
-
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install gfortran
-  - sudo apt-get install lcov
-  - sudo apt-get install libblas-dev
-  - sudo apt-get install liblapack-dev
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O
-    miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - conda update --yes conda
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib
-    h5py yaml ipython
-
-install:
-  - pip install -r requirements.txt
-  - python setup.py install
-  - python setup.py externals
-  - python -m easy_install --upgrade pyOpenSSL
-
-script:
-  - python --version
-  - ./makebuild.sh
-  - ./makecov.sh
-
-jobs:
+matrix:
   include:
-    - stage: Tests
-      before_script: mantidpython -m mantid.simpleapi || true
+    - language: python
+      sudo: required
+      python:
+        - "2.7"
+      dist: xenial
+      virtualenv:
+        system_site_packages: true
+
+
+      stages:
+        - name: Tests
+        - name: SysTests
+          if: type = cron
+
+      before_install:
+        - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O
+          miniconda.sh
+        - chmod +x miniconda.sh
+        - ./miniconda.sh -b
+        - conda update --yes conda
+        - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib
+          h5py yaml ipython
+      install:
+        - pip install -r requirements.txt
+        - python setup.py install
+        - python setup.py externals
+        - python -m easy_install --upgrade pyOpenSSL
+
+      jobs:
+        include:
+          - stage: Tests
+            before_script: mantidpython -m mantid.simpleapi || true
+            script:
+              # ======= Examples Tests =============== #
+              - pytest example_scripts/ --cov=example_scripts/
+                --cov-report term-missing
+              # ======= Fitting Tests =============== #
+              - pytest fitbenchmarking/fitting/ --cov=fitbenchmarking/fitting/
+                --cov-report term-missing
+              # ======= Parsing Tests =============== #
+              - pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
+                --cov-report term-missing --cov-append
+              # ======= Result Processing Tests =============== #
+              - pytest fitbenchmarking/resproc/tests/
+                --cov=fitbenchmarking/resproc --cov-report term-missing
+                --cov-append
+              # ======= Utils Tests =============== #
+              - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
+                --cov-report term-missing --cov-append
+            after_success:
+              - coveralls
+          - stage: SysTests
+            before_script: mantidpython -m mantid.simpleapi || true
+            script:
+              # ======= System Test =============== #
+              - cd systests
+              - mantidpython generate_current_results.py
+              - mantidpython tbl_comparison.py
+  include:
+    - language: c
+      sudo: required
+
+      before_install:
+        - sudo apt-get update
+        - sudo apt-get install gfortran
+        - sudo apt-get install lcov
+        - sudo apt-get install libblas-dev
+        - sudo apt-get install liblapack-dev
+        # We do this conditionally because it saves us some downloading if the
+        # version is the same.
+        #  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+        #     wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
+        #    else
+        - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+        #    fi
+        - bash miniconda.sh -b -p $HOME/miniconda
+        - export PATH="$HOME/miniconda/bin:$PATH"
+        - hash -r
+        - conda config --set always_yes yes --set changeps1 no
+        - conda update -q conda
+        # Useful for debugging any issues with conda
+        - conda info -a
+        - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
+        - source activate test-environment
+
+      # Install packages
       script:
-        # ======= Examples Tests =============== #
-        - pytest example_scripts/ --cov=example_scripts/
-          --cov-report term-missing
-        # ======= Fitting Tests =============== #
-        - pytest fitbenchmarking/fitting/ --cov=fitbenchmarking/fitting/
-          --cov-report term-missing
-        # ======= Parsing Tests =============== #
-        - pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
-          --cov-report term-missing --cov-append
-        # ======= Result Processing Tests =============== #
-        - pytest fitbenchmarking/resproc/tests/
-          --cov=fitbenchmarking/resproc --cov-report term-missing
-          --cov-append
-        # ======= Utils Tests =============== #
-        - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
-          --cov-report term-missing --cov-append
+        - python --version
+        - ./makebuild.sh
+        - ./makecov.sh
+
+      # send data to codecov:
       after_success:
-        - coveralls
-    - stage: SysTests
-      before_script: mantidpython -m mantid.simpleapi || true
-      script:
-        # ======= System Test =============== #
-        - cd systests
-        - mantidpython generate_current_results.py
-        - mantidpython tbl_comparison.py
+        - bash <(curl -s https://codecov.io/bash)
