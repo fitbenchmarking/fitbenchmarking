@@ -2,9 +2,12 @@
 
 git clone https://github.com/ralna/RALFit
 
-cd RALFit
+cd $SCRIPTPATH/RALFit/libRALFit/
+mkdir build
+cd build
+cmake ..
+make
+python setup.py build_ext --inplace
+export PYTHONPATH=$SCRIPTPATH/libRALFit/build/:${PYTHONPATH}
 
-./makebuild.sh
-./makecov.sh
-
-cd ..
+cd $SCRIPTPATH
