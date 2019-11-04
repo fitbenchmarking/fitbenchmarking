@@ -1,5 +1,5 @@
 sudo: required
-language: python
+language: python, c
 python:
   - "2.7"
 dist: xenial
@@ -13,6 +13,11 @@ stages:
     if: type = cron
 
 before_install:
+  - sudo apt-get update
+  - sudo apt-get install gfortran
+  - sudo apt-get install lcov
+  - sudo apt-get install libblas-dev
+  - sudo apt-get install liblapack-dev
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O
     miniconda.sh
   - chmod +x miniconda.sh
@@ -20,11 +25,17 @@ before_install:
   - conda update --yes conda
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib
     h5py yaml ipython
+
 install:
   - pip install -r requirements.txt
   - python setup.py install
   - python setup.py externals
   - python -m easy_install --upgrade pyOpenSSL
+
+script:
+  - python --version
+  - ./makebuild.sh
+  - ./makecov.sh
 
 jobs:
   include:
