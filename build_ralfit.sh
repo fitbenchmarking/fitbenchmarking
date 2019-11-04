@@ -9,7 +9,7 @@ mkdir build
 cd build
 cmake ..
 make
-python setup.py build
+python setup.py build_ext
 python setup.py install
 
 cd $SCRIPTPATH
