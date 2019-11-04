@@ -141,7 +141,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_ralfit(self):
         """
-        DFOGNController: Tests for output shape
+        RALfitController: Tests for output shape
         """
         controller = RALfitController(self.problem, True)
         controller.minimizer = 'ralfit'

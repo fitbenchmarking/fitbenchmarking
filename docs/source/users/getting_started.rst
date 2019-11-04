@@ -24,7 +24,7 @@ on setting up python see :ref:`setting-up-python`.
    :target: https://www.python.org/downloads/release/python-2715/
 
 .. _setting-up-python:
-      
+
 ******************
 Setting up Python
 ******************
@@ -193,3 +193,14 @@ manually, first install gdebi: ``sudo apt-get install gdebi`` then
 install mantid using: ``sudo gdebi pkgname.deb`` while you are in the
 folder from where you downloaded mantid and replace pckgname with the
 name of the downloaded file.
+
+
+.. _setting-up-ralfit:
+
+*****************
+Installing RAlfit
+*****************
+
+The fitbenchmarking setup does not currently support installing RALfit
+through it. RALfit can be downloaded and installed from
+`here https://github.com/ralna/RALFit>`__.
