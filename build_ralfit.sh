@@ -9,7 +9,7 @@ mkdir build
 cd build
 cmake ..
 make
-python setup.py build_ext --inplace
-export PYTHONPATH=$SCRIPTPATH/libRALFit/build/:${PYTHONPATH}
+python setup.py build
+python setup.py install
 
 cd $SCRIPTPATH
