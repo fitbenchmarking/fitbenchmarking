@@ -7,6 +7,8 @@ from fitbenchmarking.fitting.controllers.dfogn_controller import \
     DFOGNController
 from fitbenchmarking.fitting.controllers.mantid_controller import \
     MantidController
+from fitbenchmarking.fitting.controllers.ralfit_controller import \
+    RALfitController
 from fitbenchmarking.fitting.controllers.sasview_controller import \
     SasviewController
 from fitbenchmarking.fitting.controllers.scipy_controller import \
@@ -35,6 +37,7 @@ class DummyController(Controller):
     """
     Minimal instantiatable subclass of Controller class for testing
     """
+
     def setup(self):
         self.setup_result = 53
 
@@ -49,6 +52,7 @@ class BaseControllerTests(unittest.TestCase):
     """
     Tests for base software controller class methods.
     """
+
     def setUp(self):
         self.problem = FittingProblem(misra1a_file())
 
@@ -99,6 +103,7 @@ class ControllerTests(unittest.TestCase):
     """
     Tests for each controller class
     """
+
     def setUp(self):
         self.problem = FittingProblem(misra1a_file())
 
@@ -132,6 +137,14 @@ class ControllerTests(unittest.TestCase):
         """
         controller = DFOGNController(self.problem, True)
         controller.minimizer = 'dfogn'
+        self.shared_testing(controller)
+
+    def test_ralfit(self):
+        """
+        DFOGNController: Tests for output shape
+        """
+        controller = RALfitController(self.problem, True)
+        controller.minimizer = 'ralfit'
         self.shared_testing(controller)
 
     def shared_testing(self, controller):
