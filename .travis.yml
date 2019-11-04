@@ -27,11 +27,9 @@ before_install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib
     h5py yaml ipython
 
-# Building RALfit for testing
-script:
-  - ./build_ralfit.sh
-
 install:
+  # Builds RALfit
+  - ./build_ralfit.sh
   - pip install -r requirements.txt
   - python setup.py install
   - python setup.py externals
