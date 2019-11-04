@@ -1,5 +1,6 @@
 from __future__ import (absolute_import, division, print_function)
 
+from collections import OrderedDict
 import os
 import mantid.simpleapi as msapi
 import numpy as np
@@ -43,7 +44,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self.function = self.fitbenchmark_func_definitions()
 
         # Print number of equations until better way of doing this is looked at.
-        equation_count = self._entries['function'].count(';') + 1
+        equation_count = len(self._parsed_func)
         self._equation = '{} Functions'.format(equation_count)
 
         self.starting_values = self.get_starting_values()
@@ -118,7 +119,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         functions = self._entries['function'].split(';')
 
         for f in functions:
-            params_dict = {}
+            params_dict = OrderedDict()
             params_list = f.split(',')
             pop_stack = False
             stack = [params_dict]
@@ -128,7 +129,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
                 val = val.strip()
 
                 if val[0] == '(':
-                    stack += [{}]
+                    stack += [OrderedDict()]
                     val = val[1:]
                 if val[-1] == ')':
                     if len(stack) == 1:

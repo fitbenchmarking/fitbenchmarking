@@ -119,7 +119,7 @@ class ParseSasViewTests(unittest.TestCase):
 
         bench_prob_dir = self.get_bench_prob_dir()
         prob = FittingProblem(fname)
-        data_file = prob.get_data_file(fname, input_file)
+        data_file = prob.get_data_file()
         data_file_expected = os.path.join(bench_prob_dir, input_file)
 
         self.assertEqual(data_file_expected, data_file)
@@ -128,8 +128,7 @@ class ParseSasViewTests(unittest.TestCase):
 
         fname = get_file('SV_prob_def_1.txt')
         prob = FittingProblem(fname)
-        with open(fname) as probf:
-            entries = prob.get_data_problem_entries(probf)
+        entries = prob._entries
         entries_expected = self.expected_SAS_modelling_1D_problem_entries()
 
         self.assertEqual(entries_expected['name'], entries['name'])
@@ -156,7 +155,7 @@ class ParseSasViewTests(unittest.TestCase):
                           ['sld_solvent', [1.0]]],
                          problem.starting_values)
         self.assertEqual(expected_problem.starting_value_ranges, problem.starting_value_ranges)
-    #
+
     def test_checkingAttributesAssertion(self):
         fname = get_file('SV_prob_def_1.txt')
         prob = FittingProblem(fname)
@@ -171,21 +170,6 @@ class ParseSasViewTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             determine_problem_type("RandomData.txt")
         os.remove("RandomData.txt")
-
-    def test_get_start_x_and_end_x(self):
-
-        fname = get_file('SV_prob_def_1.txt')
-        prob = FittingProblem(fname)
-
-        x_data = prob.data_x
-
-        expected_start_x = 0.025
-        expected_end_x = 0.5
-
-        start_x, end_x = prob.get_start_x_and_end_x(x_data)
-
-        self.assertEqual(expected_start_x, start_x)
-        self.assertEqual(expected_end_x, end_x)
 
 
 if __name__ == "__main__":
