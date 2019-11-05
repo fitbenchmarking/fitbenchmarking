@@ -55,7 +55,8 @@ def fitbm_one_prob(user_input, problem, num_runs):
     if software in controllers:
         controller = controllers[software](problem, user_input.use_errors)
     else:
-        raise NotImplementedError('The chosen software is not implemented yet: {}'.format(user_input.software))
+        raise NotImplementedError('The chosen software is not implemented yet:'
+                                  '{}'.format(user_input.software))
 
     # The controller reformats the data to fit within a start- and end-x bound
     # It also estimates errors if not provided.
@@ -104,8 +105,9 @@ def benchmark(controller, minimizers, num_runs):
 
         controller.prepare()
 
-        init_function_def = controller.problem.get_function_def(params=controller.initial_params,
-                                                                function_id=controller.function_id)
+        init_function_def = controller.problem.get_function_def(
+            params=controller.initial_params,
+            function_id=controller.function_id)
         try:
             runtime = timeit.timeit(controller.fit, number=num_runs) / num_runs
         except Exception as e:
@@ -115,8 +117,9 @@ def benchmark(controller, minimizers, num_runs):
 
         controller.cleanup()
 
-        fin_function_def = controller.problem.get_function_def(params=controller.final_params,
-                                                               function_id=controller.function_id)
+        fin_function_def = controller.problem.get_function_def(
+            params=controller.final_params,
+            function_id=controller.function_id)
 
         if not controller.success:
             chi_sq = np.nan
