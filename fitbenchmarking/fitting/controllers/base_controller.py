@@ -87,6 +87,9 @@ class Controller:
             if self.data_e is not None:
                 self.data_e = self.data_e[mask]
 
+        # Stores the indices of the sorted data
+        self.sorted_index = np.argsort(self.data_x)
+
     def prepare(self):
         """
         Check that function and minimizer have been set.
