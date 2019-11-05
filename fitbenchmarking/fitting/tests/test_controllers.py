@@ -8,7 +8,7 @@ from fitbenchmarking.fitting.controllers.dfogn_controller import \
 from fitbenchmarking.fitting.controllers.mantid_controller import \
     MantidController
 from fitbenchmarking.fitting.controllers.ralfit_controller import \
-    RALfitController
+    RALFitController
 from fitbenchmarking.fitting.controllers.sasview_controller import \
     SasviewController
 from fitbenchmarking.fitting.controllers.scipy_controller import \
@@ -141,9 +141,9 @@ class ControllerTests(unittest.TestCase):
 
     def test_ralfit(self):
         """
-        RALfitController: Tests for output shape
+        RALFitController: Tests for output shape
         """
-        controller = RALfitController(self.problem, True)
+        controller = RALFitController(self.problem, True)
         controller.minimizer = 'ralfit'
         self.shared_testing(controller)
 

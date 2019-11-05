@@ -1,5 +1,5 @@
 """
-Implements a controller for RALfit
+Implements a controller for RALFit
 https://github.com/ralna/RALFit
 """
 
@@ -9,23 +9,23 @@ from scipy.optimize._numdiff import approx_derivative
 from fitbenchmarking.fitting.controllers.base_controller import Controller
 
 
-class RALfitController(Controller):
+class RALFitController(Controller):
     """
-    Controller for the RALfit fitting software.
+    Controller for the RALFit fitting software.
     """
 
     def __init__(self, problem, use_errors):
         """
         Initialises variable used for temporary storage.
         """
-        super(RALfitController, self).__init__(problem, use_errors)
+        super(RALFitController, self).__init__(problem, use_errors)
 
         self._x = None
         self._inform = None
 
     def setup(self):
         """
-        Setup for RALfit
+        Setup for RALFit
         """
         pass
 
@@ -44,7 +44,7 @@ class RALfitController(Controller):
 
     def fit(self):
         """
-        Run problem with RALfit.
+        Run problem with RALFit.
         """
         self.success = False
         try:

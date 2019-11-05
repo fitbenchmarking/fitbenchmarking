@@ -18,10 +18,10 @@ try:
     from fitbenchmarking.fitting.controllers.mantid_controller import MantidController
 except ImportError:
     MantidController = None
-# try:
-from fitbenchmarking.fitting.controllers.ralfit_controller import RALfitController
-# except ImportError:
-#     RALfitController = None
+try:
+from fitbenchmarking.fitting.controllers.ralfit_controller import RALFitController
+except ImportError:
+    RALFitController = None
 try:
     from fitbenchmarking.fitting.controllers.sasview_controller import SasviewController
 except ImportError:
@@ -51,7 +51,7 @@ def fitbm_one_prob(user_input, problem):
 
     controllers = {'dfogn': DFOGNController,
                    'mantid': MantidController,
-                   'ralfit': RALfitController,
+                   'ralfit': RALFitController,
                    'sasview': SasviewController,
                    'scipy': ScipyController}
 
