@@ -19,6 +19,10 @@ try:
 except ImportError:
     MantidController = None
 try:
+    from fitbenchmarking.fitting.controllers.ralfit_controller import RALFitController
+except ImportError:
+    RALFitController = None
+try:
     from fitbenchmarking.fitting.controllers.sasview_controller import SasviewController
 except ImportError:
     SasviewController = None
@@ -47,6 +51,7 @@ def fitbm_one_prob(user_input, problem):
 
     controllers = {'dfogn': DFOGNController,
                    'mantid': MantidController,
+                   'ralfit': RALFitController,
                    'sasview': SasviewController,
                    'scipy': ScipyController}
 
