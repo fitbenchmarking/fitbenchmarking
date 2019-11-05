@@ -133,9 +133,10 @@ def benchmark(controller, minimizers):
             min_chi_sq = chi_sq
             index = controller.sorted_index
             best_fit = plot_helper.data(name=minimizer,
-                                        x=controller.data_x[index],
-                                        y=controller.results[index],
-                                        E=controller.data_e[index])
+                                        x=controller.data_x,
+                                        y=controller.results,
+                                        E=controller.data_e,
+                                        sorted_index=index)
 
         individual_result = \
             misc.create_result_entry(problem=controller.problem,

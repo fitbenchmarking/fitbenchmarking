@@ -19,18 +19,19 @@ class data:
     Holds all the data that is used in the plotting process.
     """
 
-    def __init__(self, name=None, x=[], y=[], E=[]):
+    def __init__(self, name=None, x=[], y=[], E=[], sorted_index=None):
         """
         Creates a data object.
         @param x :: the x data
         @param y :: the y data
         @param E :: the (y) errors
+        @param sorted_index :: the sorted indices from the x data
         """
 
         if name is not None:
             self.name = name
-            self.x = copy.copy(x)
-            self.y = copy.copy(y)
+            self.x = copy.copy(x[sorted_index])
+            self.y = copy.copy(y[sorted_index])
         else:
             self.name = 'none'
             self.x = [0.0, 0.0, 0.0]
@@ -38,7 +39,13 @@ class data:
         if E is None or len(E) == 0:
             self.E = np.zeros(len(self.x))
         else:
-            self.E = copy.copy(E)
+            self.E = copy.copy(E[sorted_index])
+
+        if sorted_index is not None:
+            self.x = self.x[sorted_index]
+            self.y = self.y[sorted_index]
+            self.z = self.E[sorted_index]
+
         self.showError = False
         self.markers = "x"
         self.colour = "k"
@@ -80,7 +87,6 @@ class plot(data):
 
         self.set_plot_misc()
         self.save_plot(save)
-
 
         plt.close()
 
