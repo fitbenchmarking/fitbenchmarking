@@ -30,8 +30,8 @@ class data:
 
         if name is not None:
             self.name = name
-            self.x = copy.copy(x[sorted_index])
-            self.y = copy.copy(y[sorted_index])
+            self.x = copy.copy(x)
+            self.y = copy.copy(y)
         else:
             self.name = 'none'
             self.x = [0.0, 0.0, 0.0]
