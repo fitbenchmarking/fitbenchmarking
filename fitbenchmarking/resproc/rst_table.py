@@ -321,8 +321,12 @@ def convert_rst_to_html(table_data):
     """
 
     rst_content = '.. include:: ' + \
-                  str(os.path.join(SCRIPT_DIR, 'color_definitions.txt'))
-    rst_content += '\n' + table_data
+                  str(os.path.join(SCRIPT_DIR, 'color_definitions.txt')) \
+                  + '\n\n'
+    rst_content += '.. table:: FitBenchmarking Results\n'
+    rst_content += '   :widths: auto\n\n'
+    table_str = '   ' + table_data.replace('\n', '\n   ')
+    rst_content += table_str + '\n\n'
     table_data = publish_string(rst_content, writer_name='html')
 
     return table_data
