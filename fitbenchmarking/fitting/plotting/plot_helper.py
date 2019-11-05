@@ -39,7 +39,7 @@ class data:
         if E is None or len(E) == 0:
             self.E = np.zeros(len(self.x))
         else:
-            self.E = copy.copy(E[sorted_index])
+            self.E = copy.copy(E)
 
         if sorted_index is not None:
             self.x = self.x[sorted_index]
