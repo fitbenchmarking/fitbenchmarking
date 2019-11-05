@@ -11,6 +11,10 @@ import numpy as np
 from fitbenchmarking.fitting import misc
 from fitbenchmarking.fitting.plotting import plot_helper, plots
 try:
+    from fitbenchmarking.fitting.controllers.dfogn_controller import DFOGNController
+except ImportError:
+    DFOGNController = None
+try:
     from fitbenchmarking.fitting.controllers.mantid_controller import MantidController
 except ImportError:
     MantidController = None
@@ -41,7 +45,8 @@ def fitbm_one_prob(user_input, problem):
 
     software = user_input.software.lower()
 
-    controllers = {'mantid': MantidController,
+    controllers = {'dfogn': DFOGNController,
+                   'mantid': MantidController,
                    'sasview': SasviewController,
                    'scipy': ScipyController}
 
