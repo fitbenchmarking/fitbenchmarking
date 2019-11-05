@@ -157,6 +157,6 @@ Available options are ``"abs"``, ``"rel"``, or ``"both"``.
 ``num_runs``
 -------------------
 
-Number of runs is used to define how many times FitBenchmarking calls a minimizer and thus calculates an average elapsed time using `timeit`.
+Number of runs is used to define how many times FitBenchmarking calls a minimizer and thus calculates an average elapsed time using ``timeit``.
 
-Default set as `5`.
+Default set as ``5``.
