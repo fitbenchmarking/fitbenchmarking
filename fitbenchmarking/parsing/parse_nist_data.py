@@ -30,8 +30,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         equation_text, data_pattern_text, starting_values = self.parse_line_by_line(self.contents)
         data_pattern = self.parse_data_pattern(data_pattern_text)
 
-        self._start_x, self._end_x = self.get_start_x_and_end_x(data_pattern[:, 1])
-
         self._data_x = data_pattern[:, 1]
         self._data_y = data_pattern[:, 0]
 
@@ -44,7 +42,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         self._starting_values = starting_values
 
-        self.function = None
+        self.function = nist_func_definitions(self._equation, self._starting_values)
 
         super(FittingProblem, self).close_file()
 
@@ -54,9 +52,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         @returns :: list of callable-parameter pairs
         """
-        if self.function is None:
-            self.function = nist_func_definitions(self._equation, self._starting_values)
-
         return self.function
 
     def parse_line_by_line(self, contents):
@@ -70,7 +65,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
                     values and the reference residual sum from the file
         """
         lines = contents.readlines()
-        idx, ignored_lines, residual_sum_sq = 0, 0, 0
+        idx, ignored_lines = 0, 0
 
         while idx < len(lines):
             line = lines[idx].strip()
@@ -111,7 +106,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
                     and idx < len(lines):
 
                 idx += 1
-        except IndexError as err:
+        except IndexError:
             logger.error("Could not find equation, index went out of bounds!")
             idxerr = True
 
@@ -309,22 +304,6 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
         return alt_values
 
-    def get_start_x_and_end_x(self, x_data):
-        """
-
-        Get the start and end value of x from the list of x values.
-
-        @param x_data :: list containing x values
-        @return :: the start and end values of the x data
-        """
-
-        sorted_x_data = sorted(x_data)
-
-        start_x = sorted_x_data[0]
-        end_x = sorted_x_data[-1]
-
-        return start_x, end_x
-
     def get_data_e(self, data_pattern):
         """
 
@@ -333,6 +312,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         """
 
         data_e = None
-        if len(data_pattern[0, :]) > 2: data_e = data_pattern[:, 2]
+        if len(data_pattern[0, :]) > 2:
+            data_e = data_pattern[:, 2]
 
         return data_e

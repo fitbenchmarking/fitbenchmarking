@@ -26,8 +26,10 @@ def nist_func_definitions(function, startvals):
     function_defs = []
 
     # Create a function def for each starting set in startvals
+    if not is_safe(function_scipy_format):
+        raise ValueError('Error while sanitizing input')
+    exec("def fitting_function(x, " + param_names + "): return " + function_scipy_format)
     for values in all_values:
-        exec "def fitting_function(x, " + param_names + "): return " + function_scipy_format
         function_defs.append([fitting_function, values, function_scipy_format])
 
     return function_defs
@@ -58,3 +60,105 @@ def format_function_scipy(function):
     function = function.replace("pi", "np.pi")
 
     return function
+
+
+def is_safe(func_str):
+    """
+    Verifies that a string is safe to be passed to exec in the context of an
+    equation.
+
+    :param func_str: The function to be checked
+    :type func_str: string
+    """
+    # Remove whitespace
+    while ' ' in func_str:
+        func_str = func_str.replace(' ', '')
+
+    # Empty string is safe
+    if func_str == '':
+        return True
+
+    # These are all safe and can be stripped out
+    if 'np' in func_str:
+        np_funcs = ['np.exp', 'np.cos', 'np.sin', 'np.tan', 'np.pi']
+        for s in np_funcs:
+            func_str = func_str.replace(s, '')
+
+    # Store valid symbols for later
+    symbols = ['**', '/', '*', '+', '-']
+
+    # Partition on outer brackets
+    if '(' in func_str:
+        if ')' not in func_str:
+            # Number of brackets don't match
+            return False
+
+        # Split string "left(centre)right"
+        left, remainder = func_str.split('(', 1)
+        centre, right = remainder.split(')', 1)
+        # Handle nested brackets
+        while centre.count('(') != centre.count(')'):
+            tmp, right = right.split(')', 1)
+            centre = centre + ')' + tmp
+
+        # If left is non-empty it should end with a symbol
+        if left != '':
+            left_ends_with_symbol = False
+            for sym in symbols:
+                if left.endswith(sym):
+                    left = left.strip(sym)
+                    left_ends_with_symbol = True
+                    break
+            if left_ends_with_symbol is False:
+                return False
+
+        # If right is non-empty it should start with a symbol
+        if right != '':
+            right_starts_with_symbol = False
+            for sym in symbols:
+                if right.startswith(sym):
+                    right = right.strip(sym)
+                    right_starts_with_symbol = True
+                    break
+            if right_starts_with_symbol is False:
+                return False
+
+        # Centre should not be empty
+        if centre == '':
+            return False
+
+        # Return True if all sub parts are safe
+        return is_safe(left) and is_safe(centre) and is_safe(right)
+
+    # Split on a symbol and recurse
+    for sym in symbols:
+        if sym in func_str:
+            left, right = func_str.split(sym, 1)
+
+            # Symbol should not be at start or end of string (unless it's a -)
+            if (left == '' and sym != '-') or right == '':
+                return False
+
+            # Return True if both sub parts are safe
+            return is_safe(left) and is_safe(right)
+
+    # Floating points are acceptable
+    try:
+        float(func_str)
+        return True
+    except ValueError:
+        pass
+
+    # Ints are acceptable
+    try:
+        int(func_str)
+        return True
+    except ValueError:
+        pass
+
+    # Only remaining acceptable strings are variables
+    if func_str[0].isalpha() and func_str.isalnum():
+        return True
+
+    # Unparsed output remains
+    return False
