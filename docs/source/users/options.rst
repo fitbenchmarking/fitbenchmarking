@@ -118,7 +118,7 @@ Scipy:
   - ``"dogbox"``
   - ``"lm"``
   - and ``"trf"``
- 
+
 
   Information about these can be found on the
   `Scipy documentation
@@ -128,9 +128,9 @@ DFO-GN:
   - ``"dfogn"``
   Information about this can be found on the
   `DFO-GN documentation
-  <http://people.maths.ox.ac.uk/robertsl/dfogn/>`__  
-  
-  
+  <http://people.maths.ox.ac.uk/robertsl/dfogn/>`__
+
+
 ``comparison_mode``
 -------------------
 The comparison mode is used when displaying results to select the value
@@ -152,3 +152,11 @@ Available options are ``"abs"``, ``"rel"``, or ``"both"``.
   Return both absolute and relative values.
   Values will be shown as an absolute value followed by a relative value in
   parentheses.
+
+
+``num_runs``
+-------------------
+
+Number of runs is used to define how many times FitBenchmarking calls a minimizer and thus calculates an average elapsed time using `timeit`.
+
+Default set as `5`.

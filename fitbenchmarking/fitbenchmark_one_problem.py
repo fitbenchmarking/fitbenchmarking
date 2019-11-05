@@ -4,7 +4,7 @@ Fit benchmark one problem functions.
 
 from __future__ import absolute_import, division, print_function
 
-import time
+import timeit
 
 import numpy as np
 
@@ -28,7 +28,7 @@ except ImportError:
     ScipyController = None
 
 
-def fitbm_one_prob(user_input, problem):
+def fitbm_one_prob(user_input, problem, num_runs):
     """
     Sets up the controller for a particular problem and fits the models
     provided in the problem object. The best fit, along with the data and a
@@ -36,6 +36,8 @@ def fitbm_one_prob(user_input, problem):
 
     @param user_input :: all the information specified by the user
     @param problem :: a problem object containing information used in fitting
+    @param num_runs :: number of times controller.fit() is run to
+                       generate an average runtime
 
     @returns :: nested array of result objects, per function definition
                 containing the fit information
@@ -66,7 +68,8 @@ def fitbm_one_prob(user_input, problem):
         controller.function_id = i
 
         results_problem, best_fit = benchmark(controller=controller,
-                                              minimizers=user_input.minimizers)
+                                              minimizers=user_input.minimizers,
+                                              num_runs=num_runs)
 
         if best_fit is not None:
             # Make the plot of the best fit
@@ -80,13 +83,15 @@ def fitbm_one_prob(user_input, problem):
     return results_fit_problem
 
 
-def benchmark(controller, minimizers):
+def benchmark(controller, minimizers, num_runs):
     """
     Fit benchmark one problem, with one function definition and all
     the selected minimizers, using the chosen fitting software.
 
     @param controller :: The software controller for the fitting
     @param minimizers :: array of minimizers used in fitting
+    @param num_runs :: number of times controller.fit() is run to
+                       generate an average runtime
 
     @returns :: nested array of result objects, per minimizer
                 and data object for the best fit data
@@ -102,15 +107,11 @@ def benchmark(controller, minimizers):
         init_function_def = controller.problem.get_function_def(params=controller.initial_params,
                                                                 function_id=controller.function_id)
         try:
-            start_time = time.time()
-            controller.fit()
-            end_time = time.time()
+            runtime = timeit.timeit(controller.fit, number=num_runs) / num_runs
         except Exception as e:
             print(e.message)
             controller.success = False
-            end_time = np.inf
-
-        runtime = end_time - start_time
+            runtime = np.inf
 
         controller.cleanup()
 
