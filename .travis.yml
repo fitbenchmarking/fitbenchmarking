@@ -1,84 +1,19 @@
-language: python
-python:
-  - "2.7"
-matrix:
-  include:
-    #- python: 2.7
-    - name: "Tests which needs Mantid"
-      env: TO_TEST=MANTID
-      dist: xenial
-      sudo: required
-      virtualenv:
-        system_site_packages: true      
-    #- python: 2.7
-    - name: "Tests that can run without any externals"    
-      env: TO_TEST=WITHOUT_EXTERNALS
-      dist: xenial
-  fast_finish: true
-
-#install:
-#  - if [ "$TO_TEST" = "BACKEND" ]; then some_backend_command; fi
-#  - if [ "$TO_TEST" = "FRONTEND" ]; then some_frontend_command; fi
-
-
-
-#stages:
-#  - name: Tests
-#  - name: SysTests
-#    if: type = cron
-
-#before_install:
-#  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O
-#    miniconda.sh
-#  - chmod +x miniconda.sh
-#  - ./miniconda.sh -b
-#  - conda update --yes conda
-#  - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib
-#    h5py yaml ipython
-install:
-  - pip install -r requirements.txt
-  - python setup.py install
-  - if [ "$TO_TEST" = "MANTID" ]; then python setup.py externals -s mantid; fi
-#  - python -m easy_install --upgrade pyOpenSSL
-
-#  - if [ $PYTHON == "2.7" ]; then
-#    export PYTHONHTTPSVERIFY=0;
-#    fi
-
+language: python            # this works for Linux but is an error on macOS or Windows
 jobs:
   include:
-    - stage: Tests
-      # First time mantid.simpleapi is run it appears to cause a Segmentation fault (core dumped)
-      # Hence do this once first to avoid this seg fault in tests
-      #- if [ "$TO_TEST" = "MANTID" ]; python setup.py externals -s mantid; fi
-      #before_script: mantidpython -m mantid.simpleapi || true
-      before_script:
-        - if [ "$TO_TEST" = "WITHOUT_EXTERNALS" ]; then mantidpython -m mantid.simpleapi || true; fi
-      script:
-        # ======= Examples Tests =============== #
-        #- travis_wait pytest example_scripts/ --cov=example_scripts/
-        #  --cov-report term-missing
-        # ======= Fitting Tests =============== #
-        #- pytest fitbenchmarking/fitting/ --cov=fitbenchmarking/fitting/
-        #  --cov-report term-missing
-        # ======= Parsing Tests =============== #
-        - if [ "$TO_TEST" = "MANTID" ]; then
-          pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
-            --cov-report term-missing --cov-append;
-          fi
-        # ======= Result Processing Tests =============== #
-        #- pytest fitbenchmarking/resproc/tests/
-        #  --cov=fitbenchmarking/resproc --cov-report term-missing
-        #  --cov-append
-        # ======= Utils Tests =============== #
-        - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
-          --cov-report term-missing --cov-append
-#      after_success:
-#        - coveralls
-#    - stage: SysTests
-#      #before_script: mantidpython -m mantid.simpleapi || true
-#      script:
-#        # ======= System Test =============== #
-#        - cd systests
-        #- mantidpython generate_current_results.py
-        #- mantidpython tbl_comparison.py
+    - name: "Python 3.8.0 on Xenial Linux"
+      python: 3.8           # this works for Linux but is ignored on macOS or Windows
+    - name: "Python 3.7.4 on macOS"
+      os: osx
+      osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
+      language: shell       # 'language: python' is an error on Travis CI macOS
+    - name: "Python 3.7.4 on Windows"
+      os: windows           # Windows 10.0.17134 N/A Build 17134
+      language: shell       # 'language: python' is an error on Travis CI Windows
+      before_install:
+        - choco install python --version 3.8.0
+        - python -m pip install --upgrade pip
+      env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
+# 'python' points to Python 2.7 on macOS but points to Python 3.8 on Linux and Windows
+# 'python3' is a 'command not found' error on Windows but 'py' works on Windows only
+# script: python3 test_travis.py || python test_travis.py
