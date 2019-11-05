@@ -19,7 +19,7 @@ try:
 except ImportError:
     MantidController = None
 try:
-from fitbenchmarking.fitting.controllers.ralfit_controller import RALFitController
+    from fitbenchmarking.fitting.controllers.ralfit_controller import RALFitController
 except ImportError:
     RALFitController = None
 try:
