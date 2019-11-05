@@ -7,6 +7,7 @@ except ImportError:
     # python3
     from itertools import zip_longest as izip_longest
 
+
 class BaseFittingProblem:
     """
     Definition of a base class implementation of the fitting test problem,

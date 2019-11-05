@@ -19,6 +19,10 @@ try:
 except ImportError:
     MantidController = None
 try:
+    from fitbenchmarking.fitting.controllers.ralfit_controller import RALFitController
+except ImportError:
+    RALFitController = None
+try:
     from fitbenchmarking.fitting.controllers.sasview_controller import SasviewController
 except ImportError:
     SasviewController = None
@@ -49,6 +53,7 @@ def fitbm_one_prob(user_input, problem, num_runs):
 
     controllers = {'dfogn': DFOGNController,
                    'mantid': MantidController,
+                   'ralfit': RALFitController,
                    'sasview': SasviewController,
                    'scipy': ScipyController}
 
@@ -135,10 +140,12 @@ def benchmark(controller, minimizers, num_runs):
 
         if chi_sq < min_chi_sq:
             min_chi_sq = chi_sq
+            index = controller.sorted_index
             best_fit = plot_helper.data(name=minimizer,
                                         x=controller.data_x,
                                         y=controller.results,
-                                        E=controller.data_e)
+                                        E=controller.data_e,
+                                        sorted_index=index)
 
         individual_result = \
             misc.create_result_entry(problem=controller.problem,

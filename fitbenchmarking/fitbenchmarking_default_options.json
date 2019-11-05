@@ -8,7 +8,8 @@
                     "Trust Region"],
         "scipy" : ["lm", "trf", "dogbox"],
         "sasview" : ["amoeba", "lm", "newton", "de", "pt", "mp"],
-        "dfogn" : ["dfogn"]
+        "dfogn" : ["dfogn"],
+        "ralfit" : ["ralfit"]
         },
 
     "comparison_mode" : "both",

@@ -131,6 +131,13 @@ DFO-GN:
   <http://people.maths.ox.ac.uk/robertsl/dfogn/>`__
 
 
+RALfit:
+  - ``"ralfit"``
+  Information about this can be found on the
+  `RALfit documentation
+  <https://github.com/ralna/RALFit>`__
+
+
 ``comparison_mode``
 -------------------
 The comparison mode is used when displaying results to select the value
