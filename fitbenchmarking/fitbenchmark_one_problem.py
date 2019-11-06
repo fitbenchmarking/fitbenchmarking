@@ -118,13 +118,16 @@ def benchmark(controller, minimizers, num_runs):
     for minimizer in minimizers:
         controller.minimizer = minimizer
 
-        controller.prepare()
-
         init_function_def = controller.problem.get_function_def(
             params=controller.initial_params,
             function_id=controller.function_id)
         try:
-            runtime = timeit.timeit(controller.fit, number=num_runs) / num_runs
+            # Calls timeit repeat with repeat = num_runs and number = 1
+            runtime_list = \
+                timeit.Timer(setup=controller.prepare,
+                             stmt=controller.fit).repeat(num_runs, 1)
+            runtime = sum(runtime_list) / num_runs
+
         except Exception as e:
             print(e.message)
             controller.success = False
