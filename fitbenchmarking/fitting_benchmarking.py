@@ -20,20 +20,26 @@ def fitbenchmark_group(group_name, software_options, data_dir,
     """
     Gather the user input and list of paths. Call benchmarking on these.
 
-    @param group_name :: is the name (label) for a group. E.g. the name for the
+    :param group_name :: is the name (label) for a group. E.g. the name for the
                          group of problems in "NIST/low_difficulty" may be
                          picked to be NIST_low_difficulty
-    @param software_options :: dictionary containing software used in fitting
+    :type group_name :: str
+    :param software_options :: dictionary containing software used in fitting
                                the problem, list of minimizers and location of
                                json file contain minimizers
-    @param data_dir :: full path of a directory that holds a group of problem
+    :type software_options :: dict
+    :param data_dir :: full path of a directory that holds a group of problem
                        definition files
-    @param use_errors :: whether to use errors on the data or not
-    @param results_dir :: directory in which to put the results. None means
+    :type date_dir :: str
+    :param use_errors :: whether to use errors on the data or not
+    :type use_errors :: bool
+    :param results_dir :: directory in which to put the results. None means
                           results directory is created for you
+    :type results_dir :: str/NoneType
 
-    @returns :: array of fitting results for the problem group and the path to
-                the results directory
+    :return :: tuple(prob_results, results_dir) array of fitting results for
+                the problem group and the path to the results directory
+    :rtype :: list of FittingResult, str
     """
 
     logger.info("Loading minimizers from %s", software_options['software'])
@@ -47,9 +53,6 @@ def fitbenchmark_group(group_name, software_options, data_dir,
                                           option='num_runs')
         else:
             num_runs = options.get_option(option='num_runs')
-
-        if num_runs is None:
-            num_runs = 5
 
     # create list of paths to all problem definitions in data_dir
     problem_group = misc.get_problem_files(data_dir)
@@ -65,21 +68,26 @@ def fitbenchmark_group(group_name, software_options, data_dir,
     return prob_results, results_dir
 
 
-def _benchmark(user_input, problem_group, num_runs=5):
+def _benchmark(user_input, problem_group, num_runs):
     """
     Loops through software and benchmarks each problem within the problem
     group.
 
-    @param user_input :: all the information specified by the user
-    @param problem_group :: list of paths to problem files in the group
+    :param user_input :: all the information specified by the user
+    :type user_input :: UserInput
+    :param problem_group :: list of paths to problem files in the group
                           e.g. ['NIST/low_difficulty/file1.dat',
                                 'NIST/low_difficulty/file2.dat',
                                 ...]
-    @param num_runs :: number of times controller.fit() is run to
+    :type problem_group :: list
+    :param num_runs :: number of times controller.fit() is run to
                      generate an average runtime
+    :type num_runs :: str
 
 
-    @returns :: array of result objects, per problem per user_input
+    :return :: array of result objects, per problem per user_input
+    :rtype :: list of FittingResult
+
     """
 
     parsed_problems = [parse.parse_problem_file(p) for p in problem_group]
