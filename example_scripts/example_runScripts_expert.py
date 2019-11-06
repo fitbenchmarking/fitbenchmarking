@@ -89,7 +89,15 @@ def main(argv):
 
         # Processes software_options dictionary into Fitbenchmarking format
         minimizers, software = misc.get_minimizers(software_options)
+        num_runs = software_options.get('num_runs', None)
 
+        if num_runs is None:
+            if 'num_runs' in software_options:
+                options_file = software_options['num_runs']
+                num_runs = options.get_option(options_file=options_file,
+                                              option='num_runs')
+            else:
+                num_runs = options.get_option(option='num_runs')
         # Sets up the problem group specified by the user by providing
         # a respective data directory.
         problem_group = misc.get_problem_files(data_dir)
@@ -103,7 +111,7 @@ def main(argv):
                                           group_results_dir, use_errors)
 
         # Loops through group of problems and benchmark them
-        prob_results = _benchmark(user_input, problem_group)
+        prob_results = _benchmark(user_input, problem_group, num_runs)
 
         print('\nProducing output for the {} problem set\n'.format(group_name))
 
