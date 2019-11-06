@@ -10,8 +10,7 @@ Adding additional problem groups
 
 *This section describes how to add a problem group to the fit benchmarking
 software. The default problem groups that come with this software are,
-at the moment of writing this, CUTEst, Muon, Neutron, NIST, SAS_modelling,
-and simple_tests.*
+CUTEst, Muon, Neutron, NIST, SAS_modelling, and simple_tests.*
 
 1. Add your problem file directory in
    ``fitbenchmarking/benchmark_problems/``. Some examples of how this
@@ -28,7 +27,7 @@ Adding additional fitting problem definition types
 
 **Fitting problem definition types currently supported**
 
-At the time of writing, the types (formats) that are currently supported
+The types (formats) that are currently supported
 are:
 
   - Native (Fitbenchmark)
@@ -43,21 +42,33 @@ respectively.
 
 **Adding new fitting problem definition types**
 
-Follow the following steps
+To add a new fitting problem type, it is a requirement that the parser name
+can be derived from the file to be parsed.
+This is done for all current file formats by including it as the first line
+in the file. e.g ``# Fitbenchmark Format`` or ``NIST/ITL StRD``.
 
-1. Create ``parse_{type}_data.py`` which
-   contains a child class of ``BaseFittingProblem`` in
-   ``parsing/base_fitting_problem.py`` that processes the type (format) and
-   initialise the class with appropriate attributes (examples can be found
-   in ``parse_{nist/fitbenchmark/sasview}_data.py``).
-   As a minimum this must implement the abstract get_function method which
-   returns a list of callable-initial parameter pairs.
-2. In ``parsing/parse.py``
-   alter the function ``determine_problem_type()`` such that it determines
-   the new type
-3. In ``parsing/parse.py`` add a new if statement to
-   ``parse_problem_file()`` to call the user defined
-   ``parse_{type}_data.py`` class
+To add a new fitting problem definition type, complete the following steps:
+
+1. Give the format a name (``<format_name>``).
+   This should be a single word or string of alphanumeric characters,
+   and must be unique ignoring case.
+2. Create a parser in the ``fitbenchmarking/parsing`` directory.
+   This parser must satisfy the following:
+
+   - Name of file should be of the form ``"<format_name>_parser.py"``
+   - Parser must be a subclass of ``base_parser.Parser``
+   - Parser must implement ``parse(self)`` method which takes only ``self``
+     and returns a populated ``fitting_problem.FittingProblem``
+
+   Note: File opening and closing is handled automatically.
+
+3. If the format is unable to to accomodate the current convention of
+   starting with the ``<format_name>``, you will need to edit
+   ``parser_factory.ParserFactory``.
+   This should be done in such a way that the type is inferred from the file.
+   e.g. If the type has a specific extension, the ``<format_name>`` could be
+   made to match this, which future types could exploit.
+
 
 .. _fitting_software:
 
