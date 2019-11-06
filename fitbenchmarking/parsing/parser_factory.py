@@ -48,7 +48,8 @@ class ParserFactory:
 
         classes = getmembers(module, lambda m: (isclass(m)
                                                 and not isabstract(m)
-                                                and issubclass(m, Parser)))
+                                                and issubclass(m, Parser)
+                                                and m is not Parser))
 
         return classes[0][1]
 

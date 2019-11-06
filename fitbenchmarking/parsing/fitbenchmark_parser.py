@@ -19,7 +19,7 @@ class FitbenchmarkParser(Parser):
     def parse(self):
         """
         Parse the Fitbenchmark problem file into a Fitting Problem.
-                
+
         :return: The fully parsed fitting problem
         :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
         """
