@@ -1,3 +1,4 @@
+# FitBenchmark Problem
 # Test example from the GEM instrument, fit Ikeda-Carpender peaks
 name = 'GEM peak 1'
 input_file = 'GEM63437_focused_bank3.txt'

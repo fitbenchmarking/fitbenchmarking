@@ -1,3 +1,4 @@
+# FitBenchmark Problem
 # An example of two Gaussian peaks from the instrument VESUVIO, good initial values
 name = 'EVS14188-90_processed Gaussian peaks 2'
 input_file = 'EVS14188-90_peaks.txt'

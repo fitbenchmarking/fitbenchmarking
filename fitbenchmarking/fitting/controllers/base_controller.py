@@ -35,7 +35,7 @@ class Controller:
         self.use_errors = use_errors
 
         # Functions: The functions to fit
-        self.functions = problem.get_function()
+        self.functions = problem.functions
 
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)

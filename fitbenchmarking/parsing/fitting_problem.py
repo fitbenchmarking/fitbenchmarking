@@ -10,6 +10,8 @@ try:
 except ImportError:
     # python3
     from itertools import zip_longest as izip_longest
+import numpy as np
+from warnings import warn
 
 
 class FittingProblem:
@@ -107,3 +109,31 @@ class FittingProblem:
 
         func_name = self.equation
         return '{} | {}'.format(func_name, param_string)
+
+    def verify(self):
+        """
+        Basic check that minimal set of attributes have been set.
+
+        Raise RuntimeWarning if object is not properly initialised.
+
+        :returns: True if minimal set of attributes are set, else False
+        :rtype: bool
+        """
+
+        values = {'data_x': np.ndarray,
+                  'data_y': np.ndarray,
+                  'starting_values': list,
+                  'functions': list}
+
+        is_correct = True
+        for attr, attr_type in values.items():
+            if not isinstance(getattr(self, attr), attr_type):
+                warning = 'Attribute "{}" is not the expected type.'
+                warning += 'Expected "{}", got {}.'
+                warning = warning.format(attr,
+                                         attr_type,
+                                         type(getattr(self, attr)))
+                warn(warning, RuntimeWarning)
+                is_correct = False
+
+        return is_correct

@@ -28,6 +28,7 @@ class Parser:
         Opens the file ready for parsing.
         """
         self.file = open(self._filename, 'r')
+        return self
 
     def __exit__(self, type, value, traceback):
         """
