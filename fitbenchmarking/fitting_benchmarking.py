@@ -39,7 +39,7 @@ def fitbenchmark_group(group_name, software_options, data_dir,
 
     :return :: tuple(prob_results, results_dir) array of fitting results for
                 the problem group and the path to the results directory
-    :rtype :: list of FittingResult, str
+    :rtype :: (list of FittingResult, str)
     """
 
     logger.info("Loading minimizers from %s", software_options['software'])

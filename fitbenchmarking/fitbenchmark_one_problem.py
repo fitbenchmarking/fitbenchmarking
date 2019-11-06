@@ -110,7 +110,7 @@ def benchmark(controller, minimizers, num_runs):
     :return :: tuple(results_problem, best_fit) nested array of
                result objects, per minimizer and data object for
                the best fit data
-    :rtype :: list of FittingResult, plot_helper.data instance
+    :rtype :: (list of FittingResult, plot_helper.data instance)
     """
     min_chi_sq, best_fit = None, None
     results_problem = []
