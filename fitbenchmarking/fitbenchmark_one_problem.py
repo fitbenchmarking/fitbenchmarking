@@ -38,13 +38,17 @@ def fitbm_one_prob(user_input, problem, num_runs):
     provided in the problem object. The best fit, along with the data and a
     starting guess is then plotted on a visual display page.
 
-    @param user_input :: all the information specified by the user
-    @param problem :: a problem object containing information used in fitting
-    @param num_runs :: number of times controller.fit() is run to
+    :param user_input :: all the information specified by the user
+    :type user_input :: UserInput
+    :param problem :: a problem object containing information used in fitting
+    :type problem :: FittingProblem
+    :param num_runs :: number of times controller.fit() is run to
                        generate an average runtime
+    :type num_runs :: int
 
-    @returns :: nested array of result objects, per function definition
-                containing the fit information
+    :return :: nested array of result objects, per function definition
+               containing the fit information
+    :rtype :: list
     """
 
     results_fit_problem = []
@@ -94,13 +98,19 @@ def benchmark(controller, minimizers, num_runs):
     Fit benchmark one problem, with one function definition and all
     the selected minimizers, using the chosen fitting software.
 
-    @param controller :: The software controller for the fitting
+    :param controller :: The software controller for the fitting
+    :type controller :: Object derived from BaseSoftwareController
     @param minimizers :: array of minimizers used in fitting
+    :type minimizers :: list
     @param num_runs :: number of times controller.fit() is run to
                        generate an average runtime
+    :type num_runs :: int
 
-    @returns :: nested array of result objects, per minimizer
-                and data object for the best fit data
+
+    :return :: tuple(results_problem, best_fit) nested array of
+               result objects, per minimizer and data object for
+               the best fit data
+    :rtype :: list of FittingResult, plot_helper.data instance
     """
     min_chi_sq, best_fit = None, None
     results_problem = []
