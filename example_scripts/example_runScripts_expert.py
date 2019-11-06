@@ -11,8 +11,7 @@ import sys
 import glob
 
 from fitbenchmarking.fitting_benchmarking import _benchmark
-from fitbenchmarking.utils import misc
-from fitbenchmarking.utils import create_dirs
+from fitbenchmarking.utils import create_dirs, misc, options
 from fitbenchmarking.results_output import save_tables, generate_tables, \
     create_acc_tbl, create_runtime_tbl
 from fitbenchmarking.resproc import visual_pages
