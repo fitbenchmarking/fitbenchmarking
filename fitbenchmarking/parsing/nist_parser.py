@@ -1,0 +1,290 @@
+from __future__ import (absolute_import, division, print_function)
+
+import os
+import numpy as np
+import re
+
+from fitbenchmarking.parsing.base_parser import Parser
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.parsing.nist_data_functions import nist_func_definitions
+from fitbenchmarking.utils.logging_setup import logger
+
+
+class NISTParser(Parser):
+    """
+    Parser for the NIST problem definition file.
+    """
+
+    def parse(self):
+
+        fitting_problem = FittingProblem()
+
+        equation, data, starting_values = self._parse_line_by_line()
+        data = self._parse_data(data)
+
+        fitting_problem.data_x = data[:, 1]
+        fitting_problem.data_y = data[:, 0]
+        if len(data[0, :]) > 2:
+            fitting_problem.data_e = data[:, 2]
+
+        fitting_problem.name = os.path.basename(self._filename.split('.')[0])
+
+        # String containing a mathematical expression
+        fitting_problem.equation = self._parse_equation(equation)
+
+        fitting_problem.starting_values = starting_values
+
+        fitting_problem.functions = \
+            nist_func_definitions(function=fitting_problem.equation,
+                                  startvals=fitting_problem.starting_values)
+
+        return fitting_problem
+
+    def _parse_line_by_line(self):
+        """
+        Parses the NIST file one line at the time. Very unstable parser
+        but gets the job done.
+
+        @param lines :: array of all the lines in the imported nist file
+
+        @returns :: strings of the equation, data pattern, array of starting
+                    values and the reference residual sum from the file
+        """
+        lines = self.file.readlines()
+        idx, ignored_lines = 0, 0
+
+        while idx < len(lines):
+            line = lines[idx].strip()
+            idx += 1
+            if not line:
+                continue
+
+            if line.startswith('Model:'):
+                equation_text, idx = self._get_nist_model(lines, idx)
+            elif 'Starting values' in line or 'Starting Values' in line:
+                starting_values, idx = self._get_nist_starting_values(lines, idx)
+            elif line.startswith("Data:"):
+                if " x" in line and " y " in line:
+                    data_pattern_text, idx = self._get_data_txt(lines, idx)
+            else:
+                ignored_lines += 1
+
+        logger.info("{0} lines were ignored in this problem file".format(ignored_lines))
+
+        return equation_text, data_pattern_text, starting_values
+
+    def _get_nist_model(self, lines, idx):
+        """
+        Gets the model equation used in the fitting process from the
+        NIST file.
+
+        @param lines :: array of all the lines in the imported nist file
+        @param idx :: the line at which the parser is at
+
+        @returns :: string of the equation from the NIST file and the
+                    new index
+        """
+
+        equation_text, idxerr = None, False
+        try:
+            while (not re.match(r'\s*y\s*=(.+)', lines[idx])
+                   and not re.match(r'\s*log\[y\]\s*=(.+)', lines[idx]))\
+                    and idx < len(lines):
+
+                idx += 1
+        except IndexError:
+            logger.error("Could not find equation, index went out of bounds!")
+            idxerr = True
+
+        equation_text, idx = self._get_equation_text(lines, idxerr, idx)
+
+        return equation_text, idx
+
+    def _get_equation_text(self, lines, idxerr, idx):
+        """
+        Gets the equation text from the NIST file.
+
+        @param lines :: array of all the lines in the imported nist file
+        @param idxerr :: boolean that points out if there were any problems
+                         in finding the equation in the file
+        @param idx :: the line at which the parser is at
+
+        @returns :: string of the equation from the NIST file and the
+                    new index
+        """
+
+        # Next non-empty lines are assumed to continue the equation
+        equation_text = ''
+        if idxerr is False:
+            while lines[idx].strip():
+                equation_text += lines[idx].strip()
+                idx += 1
+
+        if not equation_text:
+            raise RuntimeError("Could not find the equation!")
+
+        return equation_text, idx
+
+    def _get_data_txt(self, lines, idx):
+        """
+        Gets the data pattern from the NIST problem file.
+
+        @param lines :: array of all the lines in the imported nist file
+        @param idx :: the line at which the parser is at
+
+        @returns :: string of the data pattern and the new index
+        """
+
+        data_text = None
+        data_text = lines[idx:]
+        idx = len(lines)
+
+        if not data_text:
+            raise RuntimeError("Could not find the data!")
+
+        return data_text, idx
+
+    def _parse_data(self, data_text):
+        """
+        Parses the data string and returns a numpy array of the
+        data points of the problem.
+
+        @param data_text :: string of the data from the NIST problem file
+
+        @returns :: numpy array of the data points of the problem
+        """
+
+        if not data_text:
+            return None
+
+        first = data_text[0].strip()
+        dim = len(first.split())
+        data_points = np.zeros((len(data_text), dim))
+
+        for idx, line in enumerate(data_text):
+            line = line.strip()
+            point_text = line.split()
+            point = [float(val) for val in point_text]
+            data_points[idx, :] = point
+
+        data_points = self._sort_data_from_x_data(data_points)
+
+        return data_points
+
+    def _sort_data_from_x_data(self, data_points):
+        """
+        Sort the numpy array of the data points of the problem
+        using its x data.
+
+        @param data_points :: unsorted numpy array of the data points of the problem
+        @returns :: sorted numpy array of the data points of the problem
+        """
+
+        sorted_data_points = sorted(data_points, key=lambda x: x[1])
+
+        return np.asarray(sorted_data_points)
+
+    def _parse_equation(self, eq_text):
+        """
+        Parses the equation and converts it to the right format.
+
+        @param eq_text :: string of the equation
+
+        @returns :: formatted equation string
+        """
+
+        start_normal = r'\s*y\s*=(.+)'
+        if re.match(start_normal, eq_text):
+            match = re.search(r'y\s*=(.+)\s*\+\s*e', eq_text)
+            equation = match.group(1).strip()
+        else:
+            raise RuntimeError("Unrecognized equation syntax when trying to parse "
+                               "a NIST equation: " + eq_text)
+
+        equation = self._convert_nist_to_muparser(equation)
+        return equation
+
+    def _convert_nist_to_muparser(self, equation):
+        """
+        Converts the raw equation from the NIST file into muparser format.
+
+        @param equation :: string of the raw equation
+
+        @returns :: formatted muparser equation
+        """
+
+        # 'NIST equation syntax' => muparser syntax
+        equation = equation.replace('[', '(')
+        equation = equation.replace(']', ')')
+        equation = equation.replace('arctan', 'atan')
+        equation = equation.replace('**', '^')
+        return equation
+
+    def _get_nist_starting_values(self, lines, idx):
+        """
+        Gets the function starting values from the NIST problem file.
+
+        @param lines :: array of all the lines in the imported nist file
+        @param idx :: the line at which the parser is at
+
+        @returns :: an array of the starting values and the new index
+        """
+
+        starting_values = None
+        idx += 2
+        starting_values = self._parse_starting_values(lines[idx:])
+        idx += len(starting_values)
+
+        return starting_values, idx
+
+    def _parse_starting_values(self, lines):
+        """
+        Parses the starting values of a NIST file and converts them into an
+        array.
+
+        @param lines :: array of all the lines in the imported nist file
+
+        @returns :: array of the starting values used in NIST problem
+        """
+        starting_vals = []
+        for line in lines:
+            if not line.strip() or line.startswith('Residual'):
+                break
+
+            startval_str = line.split()
+            self._check_startval_validity(startval_str, line)
+            alt_values = self._get_startvals_floats(startval_str)
+            starting_vals.append([startval_str[0], alt_values])
+
+        return starting_vals
+
+    def _check_startval_validity(self, startval_str, line):
+        """
+        Checks the validity of the starting value raw string.
+        There can only be 2 cases when parsing nist files
+        i.e. line can only have 6 or 7 strings separated by white space.
+
+        @param startval_str :: raw string of the starting values
+        """
+
+        if 6 != len(startval_str) and 5 != len(startval_str):
+            raise RuntimeError("Failed to parse this line as starting "
+                               "values information: {0}".format(line))
+
+    def _get_startvals_floats(self, startval_str):
+        """
+        Converts the starting values into floats.
+
+        @param startval_str :: string of raw starting values
+
+        @returns :: starting values array of floats
+        """
+
+        # A bit weak/lax parsing, if there is one less column,
+        # assume only one start point
+        if 6 == len(startval_str):
+            alt_values = [float(startval_str[2]), float(startval_str[3])]
+        elif 5 == len(startval_str):
+            alt_values = [float(startval_str[2])]
+
+        return alt_values
