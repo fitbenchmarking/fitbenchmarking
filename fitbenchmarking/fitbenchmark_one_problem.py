@@ -143,6 +143,12 @@ def benchmark(controller, minimizers, num_runs):
             chi_sq = np.nan
             status = 'failed'
         else:
+            cv = np.std(runtime_list) / np.mean(runtime_list)
+            if cv > 0.2:
+                raise Warning('The ratio of the standard deviation and mean'
+                              ' is larger than {}, this may indicate caching'
+                              ' is used in the timing results.'.format())
+
             chi_sq = misc.compute_chisq(fitted=controller.results,
                                         actual=controller.data_y,
                                         errors=controller.data_e)
