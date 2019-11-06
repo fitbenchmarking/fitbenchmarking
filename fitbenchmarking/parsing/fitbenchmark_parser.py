@@ -230,9 +230,10 @@ class FitbenchmarkParser(Parser):
 
         for f in self._parsed_func:
             name = f['name']
-            params = {key: f[key]
-                      for key in f
-                      if key not in ['name', 'BinWidth', 'ties']}
+            params = f.copy()
+            for key in ['name', 'BinWidth', 'ties']:
+                if key in params:
+                    params.pop(key)
             param_vals.extend(params.values())
             tmp_function = msapi.__dict__[name](**params)
             if fit_function is None:
