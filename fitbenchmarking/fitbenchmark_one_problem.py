@@ -128,8 +128,10 @@ def benchmark(controller, minimizers, num_runs):
                              stmt=controller.fit).repeat(num_runs, 1)
             runtime = sum(runtime_list) / num_runs
 
-        except Exception as e:
-            print(e.message)
+        # Catching all exceptions as this means runtime cannot be calculated
+        # pylint: disable=broad-except
+        except Exception as excp:
+            print(str(excp))
             controller.success = False
             runtime = np.inf
 
