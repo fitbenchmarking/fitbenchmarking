@@ -6,7 +6,6 @@ dist: xenial
 virtualenv:
   system_site_packages: true
 
-
 stages:
   - name: Tests
   - name: SysTests
