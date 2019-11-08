@@ -14,6 +14,11 @@ from fitbenchmarking.parsing.parser_factory import ParserFactory
 
 
 def pytest_generate_tests(metafunc):
+    """
+    Function used by pytest to parametrize tests.
+    This will create a set of tests for each function in the class where
+    the parameters are given in a 'params' dict in the class.
+    """
     # called once per each test function
     funcarglist = metafunc.cls.params[metafunc.function.__name__]
     argnames = sorted(funcarglist[0])
@@ -25,6 +30,13 @@ def pytest_generate_tests(metafunc):
 
 
 def generate_test_cases():
+    """
+    Utility function to create the params dict for parametrising the tests.
+
+    :return: params dictionary with a function name as a key, and a list of
+             parameter dictionaries for the value
+    :rtype: dict
+    """
     params = {'test_parsers': [],
               'test_factory': [],
               'test_function_evaluation': []}
@@ -66,22 +78,13 @@ def generate_test_cases():
             test_factory['test_file'] = test_file
             params['test_factory'].append(test_factory)
 
-            func_eval_dir = os.path.join(test_dir,
-                                         file_format,
-                                         'function_evaluations')
-            func_eval_with_ext = [f for f in os.listdir(func_eval_dir)
-                                  if f.startswith(test_name)]
-            if len(func_eval_with_ext) == 0:
-                func_eval = None
-            elif len(func_eval_with_ext) == 1:
-                func_eval = os.path.join(test_dir,
-                                         file_format,
-                                         'function_evaluations',
-                                         func_eval_with_ext[0])
-            test_func_eval = {}
-            test_func_eval['test_file'] = test_file
-            test_func_eval['expected_file'] = func_eval
-            params['test_function_evaluation'].append(test_func_eval)
+        func_eval = os.path.join(test_dir,
+                                 file_format,
+                                 'function_evaluations.json')
+        test_func_eval = {}
+        test_func_eval['file_format'] = file_format
+        test_func_eval['evaluations_file'] = func_eval
+        params['test_function_evaluation'].append(test_func_eval)
 
     return params
 
@@ -115,6 +118,9 @@ def load_expectation(filename):
 
 
 class TestParsers:
+    """
+    A class to hold the tests for parametrized testing of parsers.
+    """
 
     params = generate_test_cases()
 
@@ -174,34 +180,45 @@ class TestParsers:
         assert (len(fitting_problem.functions) == len(expected.functions)), \
             'functions were parsed incorrectly.'
 
-    def test_function_evaluation(self, test_file, expected_file):
+    def test_function_evaluation(self, file_format, evaluations_file):
         """
         Tests that the function evaluation is consistent with what would be
         expected by comparing to some precomputed values with fixed params and
         x values.
 
-        :param test_file: Path to the file to parse and test against
-        :type test_file: string
-        :param expected_file: Path to a file containing a list of results in
-                              json form.
-                              [[x1, params1, results1],
-                               [x2, params2, results2],
-                               ...]
-        :type expected_file: string
+        :param file_format: The name of the file format
+        :type file_format: string
+        :param evaluations_file: Path to a json file containing tests and results
+                              in the following format:
+                              {"test_file1": [[x1, params1, results1],
+                                             [x2, params2, results2],
+                                             ...],
+                               "test_file2": ...}
+        :type evaluations_file: string
         """
-        parser = ParserFactory.create_parser(test_file)
-        with parser(test_file) as p:
-            fitting_problem = p.parse()
 
-        with open(expected_file, 'r') as ef:
+        assert (evaluations_file is not None), \
+            'No function evaluations provided to test against for {}'.format(
+                file_format)
+
+        with open(evaluations_file, 'r') as ef:
             results = load(ef)
 
-        for r in results:
-            for i in range(len(fitting_problem.functions)):
-                actual = fitting_problem.eval_f(x=np.array(r[0]),
-                                                params=r[1],
-                                                function_id=i)
-                assert (np.isclose(actual, r[2]).all())
+        format_dir = os.path.dirname(evaluations_file)
+
+        for f, tests in results.items():
+            f = os.path.join(format_dir, f)
+
+            parser = ParserFactory.create_parser(f)
+            with parser(f) as p:
+                fitting_problem = p.parse()
+
+            for r in tests:
+                for i in range(len(fitting_problem.functions)):
+                    actual = fitting_problem.eval_f(x=np.array(r[0]),
+                                                    params=r[1],
+                                                    function_id=i)
+                    assert (np.isclose(actual, r[2]).all())
 
     def test_factory(self, file_format, test_file):
         """

@@ -62,13 +62,38 @@ To add a new fitting problem definition type, complete the following steps:
 
    Note: File opening and closing is handled automatically.
 
-3. If the format is unable to to accomodate the current convention of
+3. If the format is unable to accomodate the current convention of
    starting with the ``<format_name>``, you will need to edit
    ``parser_factory.ParserFactory``.
    This should be done in such a way that the type is inferred from the file.
    e.g. If the type has a specific extension, the ``<format_name>`` could be
    made to match this, which future types could exploit.
 
+4. Create the files to test the new parser.
+   Automated tests are run against all parsers in FitBenchmarking,
+   these work by using test files in
+   ``fitbenchmarking/parsing/tests/<format_name>``.
+   There are 2 types of test files needed:
+
+   - **Generic tests**: 1 file must be provided in the directory for each file
+     in ``fitbenchmarking/parsing/tests/expected/``.
+     This file must be in the new file format and will be parsed using the new
+     parser to check that the entries in the generated fitting problem match
+     the values in the ``expected`` file.
+
+   - **Function tests**: 1 file must be provided in the directory to test that
+     function evaluation is as expected. This file must be in json format and
+     contain a string of the form::
+
+       {"file_name1": [[x1, [param11, param21], result1],
+                       [x2, [param12, param22], result2],
+                       ...],
+       {"file_name2": [...],
+        ...}``
+
+     The test will then load the files in turn and run it against each item in
+     the list, raising an issue if the result is not suitably close to the
+     specified value.
 
 .. _fitting_software:
 
