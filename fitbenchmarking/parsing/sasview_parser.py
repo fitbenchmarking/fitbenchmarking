@@ -45,7 +45,7 @@ class SasViewParser(Parser):
             fitting_problem.start_x = start_x
             fitting_problem.end_x = end_x
 
-        fitting_problem.starting_value_ranges = self._get_value_ranges()
+        fitting_problem.value_ranges = self._get_value_ranges()
 
         fitting_problem.functions = self._create_sasview_functions()
 
@@ -195,13 +195,15 @@ class SasViewParser(Parser):
         :return: Value ranges
         :rtype: dict {name: [min, max]}
         """
-        value_ranges = {}
+        value_ranges = None
+        if 'parameter_ranges' in self._entries:
+            value_ranges = {}
 
-        for param in self._entries['parameter_ranges'].split(';'):
-            name, value_txt = param.split('.range', 1)
-            value_txt = value_txt.strip('(').strip(')')
-            value_range = [float(val) for val in value_txt.split(',')]
-            value_ranges[name] = value_range
+            for param in self._entries['parameter_ranges'].split(';'):
+                name, value_txt = param.split('.range', 1)
+                value_txt = value_txt.strip('(').strip(')')
+                value_range = [float(val) for val in value_txt.split(',')]
+                value_ranges[name] = value_range
 
         return value_ranges
 
@@ -229,8 +231,9 @@ class SasViewParser(Parser):
                           in zip(param_names, tmp_params)}
 
             model_wrapper = Model(model, **param_dict)
-            for name, values in value_ranges.items():
-                model_wrapper.__dict__[name].range(values[0], values[1])
+            if value_ranges is not None:
+                for name, values in value_ranges.items():
+                    model_wrapper.__dict__[name].range(values[0], values[1])
             func_wrapper = Experiment(data=data, model=model_wrapper)
 
             return func_wrapper.theory()

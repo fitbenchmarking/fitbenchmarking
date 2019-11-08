@@ -34,7 +34,8 @@ class FitbenchmarkParser(Parser):
 
         fitting_problem.data_x = data_points[:, 0]
         fitting_problem.data_y = data_points[:, 1]
-        fitting_problem.data_e = data_points[:, 2]
+        if (data_points.shape[1] > 2):
+            fitting_problem.data_e = data_points[:, 2]
 
         # String containing the function name(s) and the starting parameter values for each function
         self._mantid_equation = self._entries['function']
@@ -182,7 +183,7 @@ class FitbenchmarkParser(Parser):
         """
         ignore = ['name', 'BinWidth', 'ties']
 
-        starting_values = [['f{}_{}'.format(i, name), f[name]]
+        starting_values = [['f{}_{}'.format(i, name), [f[name]]]
                            for i, f in enumerate(self._parsed_func)
                            for name in f.keys()
                            if name not in ignore]
