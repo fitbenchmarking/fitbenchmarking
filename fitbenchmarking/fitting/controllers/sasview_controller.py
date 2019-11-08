@@ -58,7 +58,7 @@ class SasviewController(Controller):
                              **param_dict)
 
         # Set a range for each parameter
-        val_ranges = self.problem.starting_value_ranges
+        val_ranges = self.problem.value_ranges
         for name in self._param_names:
             min_val = -np.inf
             max_val = np.inf

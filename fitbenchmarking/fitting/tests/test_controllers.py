@@ -13,13 +13,13 @@ from fitbenchmarking.fitting.controllers.sasview_controller import \
     SasviewController
 from fitbenchmarking.fitting.controllers.scipy_controller import \
     ScipyController
-from fitbenchmarking.parsing.parse_nist_data import FittingProblem
+
+from fitbenchmarking.parsing.parser_factory import parse_problem_file
 
 
-def misra1a_file():
+def make_fitting_problem():
     """
-    Helper function that returns the path to
-    /fitbenchmarking/benchmark_problems
+    Helper function that returns a simple fitting problem
     """
 
     current_dir = os.path.dirname(__file__)
@@ -30,7 +30,8 @@ def misra1a_file():
     fname = os.path.join(bench_prob_dir, 'simple_tests',
                          'cubic.dat')
 
-    return fname
+    fitting_problem = parse_problem_file(fname)
+    return fitting_problem
 
 
 class DummyController(Controller):
@@ -54,26 +55,31 @@ class BaseControllerTests(unittest.TestCase):
     """
 
     def setUp(self):
-        self.problem = FittingProblem(misra1a_file())
+        self.problem = make_fitting_problem()
 
     def test_data(self):
         """
         BaseSoftwareController: Test data is read into controller correctly
         """
+        if self.problem.start_x is None:
+            self.problem.start_x = self.problem.data_x[1]
+        if self.problem.end_x is None:
+            self.problem.end_x = self.problem.data_x[-2]
+
         controller = DummyController(self.problem, True)
         assert(min(controller.data_x) >= self.problem.start_x)
         assert(max(controller.data_x) <= self.problem.end_x)
         assert(len(controller.data_e) == len(controller.data_x))
         assert(len(controller.data_e) == len(controller.data_y))
-        x_is_subset = all(x in self.problem._data_x
+        x_is_subset = all(x in self.problem.data_x
                           for x in controller.data_x)
-        y_is_subset = all(y in self.problem._data_y
+        y_is_subset = all(y in self.problem.data_y
                           for y in controller.data_y)
 
         e_is_default = self.problem.data_e is None
         e_is_subset = False
         if not e_is_default:
-            e_is_subset = all(e in self.problem._data_e
+            e_is_subset = all(e in self.problem.data_e
                               for e in controller.data_e)
         assert(x_is_subset
                and y_is_subset
@@ -105,7 +111,7 @@ class ControllerTests(unittest.TestCase):
     """
 
     def setUp(self):
-        self.problem = FittingProblem(misra1a_file())
+        self.problem = make_fitting_problem()
 
     def test_mantid(self):
         """
