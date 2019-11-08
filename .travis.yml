@@ -22,10 +22,12 @@ before_install:
 install:
   # Builds RALfit
   - ./build_ralfit.sh
+  
   - pip install -r requirements.txt
   - python setup.py install
   - python setup.py externals
-  - python -m easy_install --upgrade pyOpenSSL
+  
+  # To access RALfit
   - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
 
 
