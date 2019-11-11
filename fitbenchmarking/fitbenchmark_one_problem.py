@@ -104,8 +104,7 @@ def benchmark(controller, minimizers):
 
         controller.prepare()
 
-        init_function_def = controller.problem.get_function_def(params=controller.initial_params,
-                                                                function_id=controller.function_id)
+        init_function_def = controller.problem.get_function_def(params=controller.initial_params)
         try:
             start_time = time.time()
             controller.fit()
@@ -119,8 +118,7 @@ def benchmark(controller, minimizers):
 
         controller.cleanup()
 
-        fin_function_def = controller.problem.get_function_def(params=controller.final_params,
-                                                               function_id=controller.function_id)
+        fin_function_def = controller.problem.get_function_def(params=controller.final_params)
 
         if not controller.success:
             chi_sq = np.nan

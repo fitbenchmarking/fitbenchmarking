@@ -20,10 +20,10 @@ class FittingProblem:
     problem definition file.
 
     Types of data:
-        - strings: name, type, equation
-        - floats: start_x, end_x, ref_residual_sum_sq
+        - strings: name, equation
+        - floats: start_x, end_x
         - numpy arrays: data_x, data_y, data_e
-        - arrays: starting_values
+        - arrays: starting_values, value_ranges, functions
     """
 
     def __init__(self):
@@ -59,7 +59,7 @@ class FittingProblem:
         :type x: numpy array
         :param params: parameter value(s)
         :type params: list
-        :param function_id: The index of the function in get_function
+        :param function_id: The index of the function in functions
         :type function_id: int
 
         :return: y data values evaluated from the function of the problem
@@ -75,7 +75,7 @@ class FittingProblem:
         """
         Evaluate the function using the starting parameters.
 
-        :param function_id: The index of the function in get_function
+        :param function_id: The index of the function in functions
         :type function_id: int
 
         :return: Results from evaluation
@@ -89,14 +89,12 @@ class FittingProblem:
                            params=function_params,
                            function_id=function_id)
 
-    def get_function_def(self, params, function_id):
+    def get_function_def(self, params):
         """
         Return the function definition in a string format for output
 
         :param params: The parameters to use in the function string
         :type params: list
-        :param function_id: The index of the function in get_function
-        :type function_id: int
 
         :return: Representation of the function
                  example format: 'b1 * (b2+x) | b1=-2.0, b2=50.0'
