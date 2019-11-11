@@ -48,11 +48,14 @@ def fitbenchmark_group(group_name, software_options, data_dir,
 
     if num_runs is None:
         if 'num_runs' in software_options:
-            options_file = software_options['num_runs']
+            options_file = software_options['options_file']
             num_runs = options.get_option(options_file=options_file,
                                           option='num_runs')
         else:
             num_runs = options.get_option(option='num_runs')
+
+        if num_runs is None:
+            num_runs = 5
 
     # create list of paths to all problem definitions in data_dir
     problem_group = misc.get_problem_files(data_dir)
