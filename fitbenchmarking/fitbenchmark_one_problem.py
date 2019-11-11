@@ -146,12 +146,12 @@ def benchmark(controller, minimizers, num_runs):
             status = 'failed'
         else:
             ratio = np.max(runtime_list) / np.min(runtime_list)
-            if ratio > 4:
+            tol = 4
+            if ratio > tol:
                 warnings.warn('The ratio of the max time to the min is {0}'
                               ' which is  larger than the tolerance of {1},'
                               ' which may indicate that caching has occurred'
-                              ' in the timing results'.format(ratio, 4))
-
+                              ' in the timing results'.format(ratio, tol))
             chi_sq = misc.compute_chisq(fitted=controller.results,
                                         actual=controller.data_y,
                                         errors=controller.data_e)
