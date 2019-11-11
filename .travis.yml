@@ -6,7 +6,6 @@ dist: xenial
 virtualenv:
   system_site_packages: true
 
-
 stages:
   - name: Tests
   - name: SysTests
@@ -19,21 +18,16 @@ before_install:
   - sudo apt-get install lcov
   - sudo apt-get install libblas-dev
   - sudo apt-get install liblapack-dev
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O
-    miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - conda update --yes conda
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib
-    h5py yaml ipython
 
 install:
   # Builds RALfit
   - ./build_ralfit.sh
+  
   - pip install -r requirements.txt
   - python setup.py install
   - python setup.py externals
-  - python -m easy_install --upgrade pyOpenSSL
+  
+  # To access RALfit
   - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
 
 
