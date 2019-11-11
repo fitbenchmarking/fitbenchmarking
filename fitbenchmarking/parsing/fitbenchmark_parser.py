@@ -1,3 +1,7 @@
+"""
+This file implements a parser for the Fitbenchmark data format.
+"""
+
 from __future__ import (absolute_import, division, print_function)
 
 from collections import OrderedDict
@@ -62,7 +66,8 @@ class FitbenchmarkParser(Parser):
         the data_file is search for in the directory of the definition file and subfolders of this
         file
 
-        @returns :: (full) path to a data file (str). Return None if not found
+        :returns: (full) path to a data file. Return None if not found
+        :rtype: str or None
         """
         data_file = None
         data_file_name = self._entries['input_file']
@@ -155,7 +160,8 @@ class FitbenchmarkParser(Parser):
         """
         Get the data points of the problem from the data file.
 
-        @return :: array of data points
+        :returns: data points
+        :rtype: np.ndarray
         """
 
         data_file_path = self._get_data_file()

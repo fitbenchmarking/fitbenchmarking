@@ -1,3 +1,7 @@
+"""
+This file implements a parser for the SasView data format
+"""
+
 from __future__ import (absolute_import, division, print_function)
 
 from collections import OrderedDict
@@ -57,7 +61,8 @@ class SasViewParser(Parser):
         the data_file is search for in the directory of the definition file and subfolders of this
         file
 
-        @returns :: (full) path to a data file (str). Return None if not found
+        :returns: (full) path to a data file. Return None if not found
+        :rtype: str or None
         """
         data_file = None
         data_file_name = self._entries['input_file']

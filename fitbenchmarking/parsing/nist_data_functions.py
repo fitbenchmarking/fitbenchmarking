@@ -69,6 +69,9 @@ def is_safe(func_str):
 
     :param func_str: The function to be checked
     :type func_str: string
+
+    :returns: Whether the string is of the expected format for an equation
+    :rtype: bool
     """
     # Remove whitespace
     while ' ' in func_str:
