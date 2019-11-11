@@ -5,7 +5,7 @@ Fit benchmark one problem functions.
 from __future__ import absolute_import, division, print_function
 
 import timeit
-
+import warnings
 import numpy as np
 
 from fitbenchmarking.fitting import misc
@@ -145,11 +145,12 @@ def benchmark(controller, minimizers, num_runs):
             chi_sq = np.nan
             status = 'failed'
         else:
-            cv = np.std(runtime_list) / np.mean(runtime_list)
-            if cv > 0.2:
-                raise Warning('The ratio of the standard deviation and mean'
-                              ' is larger than {}, this may indicate caching'
-                              ' is used in the timing results.'.format())
+            ratio = np.max(runtime_list) / np.min(runtime_list)
+            if ratio > 4:
+                warnings.warn('The ratio of the max time to the min is {0}'
+                              ' which is  larger than the tolerance of {1},'
+                              ' which may indicate that caching has occurred'
+                              ' in the timing results'.format(ratio, 4))
 
             chi_sq = misc.compute_chisq(fitted=controller.results,
                                         actual=controller.data_y,
