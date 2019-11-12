@@ -26,7 +26,6 @@ color_scale = [(1.1, 'ranking-top-1'),
                (float('nan'), 'ranking-low-5')]
 
 
-sys.setrecursionlimit(10000)
 current_path = os.path.dirname(os.path.realpath(__file__))
 fitbenchmarking_path = os.path.abspath(os.path.join(current_path, os.pardir))
 benchmark_probs_dir = os.path.join(fitbenchmarking_path,
