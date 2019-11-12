@@ -12,5 +12,7 @@
         "ralfit" : ["ralfit"]
         },
 
-    "comparison_mode" : "both"
+    "comparison_mode" : "both",
+
+    "num_runs" : 5
 }
