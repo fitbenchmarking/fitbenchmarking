@@ -111,8 +111,11 @@ controllers can be found in ``fitbenchmarking/fitting/controllers``.
 
 In order to add a new controller, you will need to:
 
-1. Create a new subclass of BaseSoftwareController in
-   ``fitbenchmarking/fitting/controllers``.
+1. Give the software a name `<software_name>` this will be used by users when
+   selecting this software.
+2. Create ``fitbenchmarking/fitting/controllers/<software_name>_controller.py``
+   which contains a new subclass of ``BaseSoftwareController``
+   (from ``base_controller.py``).
    This should implement 4 functions:
 
    -  ``__init__()``: Initialise anything that is needed specifically for the
@@ -127,15 +130,13 @@ In order to add a new controller, you will need to:
       store them in the results variables
       (``self.results``, ``self.final_params``, ``self.success``)
 
-2. Import your controller and add it to the dictionary 'controllers' in
-   ``fitbenchmarking/fitbenchmark_one_problem.py``.
-   For ease of maintainance, please add new controllers in alphabetical order.
-
 3. Document the available minimizers (currently done by adding to
-   ``fitbenchmarking/fitbenchmarking_default_options.json``)
+   ``fitbenchmarking/fitbenchmarking_default_options.json`` and the
+   ``users/options.rst`` file)
 
 4. Create tests for the software in
    ``fitbenchmarking/fitting/tests/test_controllers.py``.
-   Again, for ease of maintainance, please add new controllers in alphabetical order.
+   For ease of maintainance, please add new controllers in alphabetical
+   order.
    Unless the new controller is more complicated than the currently available
    controllers, this can be done by following the example of the others.
