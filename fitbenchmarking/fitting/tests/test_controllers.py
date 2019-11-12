@@ -1,8 +1,10 @@
 import os
-import unittest
+from unittest import TestCase
 
 from fitbenchmarking.fitting.controllers.base_controller import \
     Controller
+from fitbenchmarking.fitting.controllers.controller_factory import \
+    ControllerFactory
 from fitbenchmarking.fitting.controllers.dfogn_controller import \
     DFOGNController
 from fitbenchmarking.fitting.controllers.mantid_controller import \
@@ -48,7 +50,7 @@ class DummyController(Controller):
         raise NotImplementedError
 
 
-class BaseControllerTests(unittest.TestCase):
+class BaseControllerTests(TestCase):
     """
     Tests for base software controller class methods.
     """
@@ -99,7 +101,7 @@ class BaseControllerTests(unittest.TestCase):
         assert(controller.setup_result == 53)
 
 
-class ControllerTests(unittest.TestCase):
+class ControllerTests(TestCase):
     """
     Tests for each controller class
     """
@@ -162,3 +164,33 @@ class ControllerTests(unittest.TestCase):
         assert(controller.success)
         assert(len(controller.results) == len(controller.data_y))
         assert(len(controller.final_params) == len(controller.initial_params))
+
+
+class FactoryTests(TestCase):
+    """
+    Tests for the ControllerFactory
+    """
+
+    def test_imports(self):
+        """
+        Test that the factory returns the correct class for inputs
+        """
+
+        # What are the inputs....
+        # Collect dynamically?
+        # is there a better way?
+
+        # test only a few?
+        # and test some invalid?
+
+        valid = ['scipy', 'mantid', 'sasview', 'ralfit']
+        invalid = ['foo', 'bar', 'hello', 'r2d2']
+
+        for software in valid:
+            controller = ControllerFactory.create_controller(software)
+            self.assertTrue(controller.__name__.lower().startswith(software))
+
+        for software in invalid:
+            self.assertRaises(ValueError,
+                              ControllerFactory.create_controller,
+                              software)
