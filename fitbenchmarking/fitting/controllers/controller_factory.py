@@ -11,7 +11,7 @@ from fitbenchmarking.fitting.controllers.base_controller import Controller
 
 class ControllerFactory:
     """
-    A factory for creating controllers.
+    A factory for creating software controllers.
     This has the capability to select the correct controller, import it, and
     generate an instance of it.
     Controllers generated from this must be a subclass of
