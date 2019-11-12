@@ -30,7 +30,7 @@ If ``None``, a results directory will be created at ``./results``.
 Bool to select whether to use errors in the fitting process or not.
 
 ``color_scale``
---------------
+---------------
 The mapping from relative value to colour in the results table.
 
 This should be in the form of a list of 2-tuples,
@@ -126,6 +126,7 @@ Scipy:
 
 DFO-GN:
   - ``"dfogn"``
+
   Information about this can be found on the
   `DFO-GN documentation
   <http://people.maths.ox.ac.uk/robertsl/dfogn/>`__
@@ -133,6 +134,7 @@ DFO-GN:
 
 RALfit:
   - ``"ralfit"``
+
   Information about this can be found on the
   `RALfit documentation
   <https://github.com/ralna/RALFit>`__
@@ -164,6 +166,7 @@ Available options are ``"abs"``, ``"rel"``, or ``"both"``.
 ``num_runs``
 -------------------
 
-Number of runs is defines how many times FitBenchmarking calls a minimizer and thus calculates an average elapsed time using ``timeit``.
+Number of runs defines how many times FitBenchmarking calls a minimizer and
+calculates an average elapsed time using ``timeit``.
 
 Default set as ``5``.
