@@ -4,8 +4,8 @@ Fit benchmark one problem functions.
 
 from __future__ import absolute_import, division, print_function
 
-import time
-
+import timeit
+import warnings
 import numpy as np
 
 from fitbenchmarking.fitting import misc
@@ -14,24 +14,30 @@ from fitbenchmarking.fitting.controllers.controller_factory \
 from fitbenchmarking.fitting.plotting import plot_helper, plots
 
 
-def fitbm_one_prob(user_input, problem):
+def fitbm_one_prob(user_input, problem, num_runs):
     """
     Sets up the controller for a particular problem and fits the models
     provided in the problem object. The best fit, along with the data and a
     starting guess is then plotted on a visual display page.
 
-    @param user_input :: all the information specified by the user
-    @param problem :: a problem object containing information used in fitting
+    :param user_input :: all the information specified by the user
+    :type user_input :: UserInput
+    :param problem :: a problem object containing information used in fitting
+    :type problem :: FittingProblem
+    :param num_runs :: number of times controller.fit() is run to
+                       generate an average runtime
+    :type num_runs :: int
 
-    @returns :: nested array of result objects, per function definition
-                containing the fit information
+    :return :: nested array of result objects, per function definition
+               containing the fit information
+    :rtype :: list
     """
 
     results_fit_problem = []
 
     software = user_input.software
-    controller_cls = ControllerFactory.create_controller(software)
 
+    controller_cls = ControllerFactory.create_controller(software)
     controller = controller_cls(problem, user_input.use_errors)
 
     # The controller reformats the data to fit within a start- and end-x bound
@@ -45,7 +51,8 @@ def fitbm_one_prob(user_input, problem):
         controller.function_id = i
 
         results_problem, best_fit = benchmark(controller=controller,
-                                              minimizers=user_input.minimizers)
+                                              minimizers=user_input.minimizers,
+                                              num_runs=num_runs)
 
         if best_fit is not None:
             # Make the plot of the best fit
@@ -59,16 +66,24 @@ def fitbm_one_prob(user_input, problem):
     return results_fit_problem
 
 
-def benchmark(controller, minimizers):
+def benchmark(controller, minimizers, num_runs):
     """
     Fit benchmark one problem, with one function definition and all
     the selected minimizers, using the chosen fitting software.
 
-    @param controller :: The software controller for the fitting
+    :param controller :: The software controller for the fitting
+    :type controller :: Object derived from BaseSoftwareController
     @param minimizers :: array of minimizers used in fitting
+    :type minimizers :: list
+    @param num_runs :: number of times controller.fit() is run to
+                       generate an average runtime
+    :type num_runs :: int
 
-    @returns :: nested array of result objects, per minimizer
-                and data object for the best fit data
+
+    :return :: tuple(results_problem, best_fit) nested array of
+               result objects, per minimizer and data object for
+               the best fit data
+    :rtype :: (list of FittingResult, plot_helper.data instance)
     """
     min_chi_sq, best_fit = None, None
     results_problem = []
@@ -76,30 +91,40 @@ def benchmark(controller, minimizers):
     for minimizer in minimizers:
         controller.minimizer = minimizer
 
-        controller.prepare()
-
-        init_function_def = controller.problem.get_function_def(params=controller.initial_params,
-                                                                function_id=controller.function_id)
+        init_function_def = controller.problem.get_function_def(
+            params=controller.initial_params,
+            function_id=controller.function_id)
         try:
-            start_time = time.time()
-            controller.fit()
-            end_time = time.time()
-        except Exception as e:
-            print(e.message)
-            controller.success = False
-            end_time = np.inf
+            # Calls timeit repeat with repeat = num_runs and number = 1
+            runtime_list = \
+                timeit.Timer(setup=controller.prepare,
+                             stmt=controller.fit).repeat(num_runs, 1)
+            runtime = sum(runtime_list) / num_runs
 
-        runtime = end_time - start_time
+        # Catching all exceptions as this means runtime cannot be calculated
+        # pylint: disable=broad-except
+        except Exception as excp:
+            print(str(excp))
+            controller.success = False
+            runtime = np.inf
 
         controller.cleanup()
 
-        fin_function_def = controller.problem.get_function_def(params=controller.final_params,
-                                                               function_id=controller.function_id)
+        fin_function_def = controller.problem.get_function_def(
+            params=controller.final_params,
+            function_id=controller.function_id)
 
         if not controller.success:
             chi_sq = np.nan
             status = 'failed'
         else:
+            ratio = np.max(runtime_list) / np.min(runtime_list)
+            tol = 4
+            if ratio > tol:
+                warnings.warn('The ratio of the max time to the min is {0}'
+                              ' which is  larger than the tolerance of {1},'
+                              ' which may indicate that caching has occurred'
+                              ' in the timing results'.format(ratio, tol))
             chi_sq = misc.compute_chisq(fitted=controller.results,
                                         actual=controller.data_y,
                                         errors=controller.data_e)

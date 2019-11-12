@@ -159,3 +159,11 @@ Available options are ``"abs"``, ``"rel"``, or ``"both"``.
   Return both absolute and relative values.
   Values will be shown as an absolute value followed by a relative value in
   parentheses.
+
+
+``num_runs``
+-------------------
+
+Number of runs is defines how many times FitBenchmarking calls a minimizer and thus calculates an average elapsed time using ``timeit``.
+
+Default set as ``5``.
