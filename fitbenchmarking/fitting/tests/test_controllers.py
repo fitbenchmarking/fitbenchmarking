@@ -176,13 +176,6 @@ class FactoryTests(TestCase):
         Test that the factory returns the correct class for inputs
         """
 
-        # What are the inputs....
-        # Collect dynamically?
-        # is there a better way?
-
-        # test only a few?
-        # and test some invalid?
-
         valid = ['scipy', 'mantid', 'sasview', 'ralfit']
         invalid = ['foo', 'bar', 'hello', 'r2d2']
 
