@@ -38,15 +38,16 @@ class FitbenchmarkParser(Parser):
 
         fitting_problem.data_x = data_points[:, 0]
         fitting_problem.data_y = data_points[:, 1]
-        if (data_points.shape[1] > 2):
+        if data_points.shape[1] > 2:
             fitting_problem.data_e = data_points[:, 2]
 
-        # String containing the function name(s) and the starting parameter values for each function
+        # String containing the function name(s) and the starting parameter
+        # values for each function
         self._mantid_equation = self._entries['function']
 
         fitting_problem.functions = self._fitbenchmark_func_definitions()
 
-        # Print number of equations until better way of doing this is looked at.
+        # Print number of equations until better way of doing this is looked at
         equation_count = len(self._parsed_func)
         fitting_problem.equation = '{} Functions'.format(equation_count)
 
@@ -62,9 +63,9 @@ class FitbenchmarkParser(Parser):
 
     def _get_data_file(self):
         """
-        Find/create the (full) path to a data_file specified in a FitBenchmark definition file, where
-        the data_file is search for in the directory of the definition file and subfolders of this
-        file
+        Find/create the (full) path to a data_file specified in a FitBenchmark
+        definition file, where the data_file is searched for in the directory
+        of the definition file and subfolders of this file
 
         :returns: (full) path to a data file. Return None if not found
         :rtype: str or None
@@ -78,13 +79,14 @@ class FitbenchmarkParser(Parser):
                     data_file = os.path.join(root, data_file_name)
 
         if data_file is None:
-            logger.error("Data file {} not found".format(data_file_name))
+            logger.error("Data file %s not found", data_file_name)
 
         return data_file
 
     def _get_fitbenchmark_data_problem_entries(self):
         """
-        Get the problem self._entries from a fitbenchmark problem definition file.
+        Get the problem self._entries from a fitbenchmark problem definition
+        file.
 
         :returns: The entries from the file with string values
         :rtype: dict
@@ -225,8 +227,8 @@ class FitbenchmarkParser(Parser):
 
     def _fitbenchmark_func_definitions(self):
         """
-        Processing the function in the FitBenchmark problem definition into a python
-        callable.
+        Processing the function in the FitBenchmark problem definition into a
+        python callable.
 
         :returns: A function definition array of one element which contains a
                 callable Mantid function and the function parameter values.

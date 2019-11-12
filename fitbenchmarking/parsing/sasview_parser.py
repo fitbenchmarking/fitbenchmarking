@@ -57,9 +57,9 @@ class SasViewParser(Parser):
 
     def _get_data_file(self):
         """
-        Find/create the (full) path to a data_file specified in a SasView definition file, where
-        the data_file is search for in the directory of the definition file and subfolders of this
-        file
+        Find/create the (full) path to a data_file specified in a SasView
+        definition file, where the data_file is searched for in the directory
+        of the definition file and subfolders of this file
 
         :returns: (full) path to a data file. Return None if not found
         :rtype: str or None

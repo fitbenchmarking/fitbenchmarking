@@ -9,7 +9,7 @@ Adding additional problem groups
 --------------------------------
 
 *This section describes how to add a problem group to the fit benchmarking
-software. The default problem groups that come with this software are,
+software. The default problem groups that come with this software are:
 CUTEst, Muon, Neutron, NIST, SAS_modelling, and simple_tests.*
 
 1. Add your problem file directory in
@@ -27,8 +27,7 @@ Adding additional fitting problem definition types
 
 **Fitting problem definition types currently supported**
 
-The types (formats) that are currently supported
-are:
+The types (formats) that are currently supported are:
 
   - Native (Fitbenchmark)
   - NIST
@@ -62,7 +61,7 @@ To add a new fitting problem definition type, complete the following steps:
 
    Note: File opening and closing is handled automatically.
 
-3. If the format is unable to accomodate the current convention of
+3. If the format is unable to accommodate the current convention of
    starting with the ``<format_name>``, you will need to edit
    ``parser_factory.ParserFactory``.
    This should be done in such a way that the type is inferred from the file.
@@ -140,5 +139,3 @@ In order to add a new controller, you will need to:
    Again, for ease of maintainance, please add new controllers in alphabetical order.
    Unless the new controller is more complicated than the currently available
    controllers, this can be done by following the example of the others.
-
-

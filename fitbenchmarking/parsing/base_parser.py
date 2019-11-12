@@ -37,9 +37,11 @@ class Parser:
 
         :param type: Used if an exception occurs. Contains the exception type.
         :type type: string?
-        :param value: Used if an exception occurs. Contains the exception value.
+        :param value: Used if an exception occurs. Contains the exception
+                      value.
         :type value: ?
-        :param traceback: Used if an exception occurs. Contains the exception traceback.
+        :param traceback: Used if an exception occurs. Contains the exception
+                          traceback.
         :type traceback: string?
         """
         if self.file is not None:

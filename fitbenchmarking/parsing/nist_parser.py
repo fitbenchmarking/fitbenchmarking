@@ -4,9 +4,10 @@ This file implements a parser for the NIST style data format.
 
 from __future__ import (absolute_import, division, print_function)
 
+import re
+
 import os
 import numpy as np
-import re
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -110,7 +111,7 @@ class NISTParser(Parser):
         Gets the equation text from the NIST file.
 
         :param lines: All lines in the imported nist file
-        :type lines: list of str 
+        :type lines: list of str
         :param idxerr: boolean that points out if there were any problems
                        in finding the equation in the file
         :type idxerr: bool
