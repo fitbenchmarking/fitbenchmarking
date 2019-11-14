@@ -35,7 +35,11 @@ class RALFitController(Controller):
                                    function_id=self.function_id)
 
     def _prediction_error(self, params, x, y):
-        return self._eval_f_arg_swap(params, x) - y
+        f = self._eval_f_arg_swap(params, x) - y
+        if self.use_errors:
+            f = f / self.data_e
+
+        return f
 
     def _jac(self, params, x, y):
         return approx_derivative(self._eval_f_arg_swap,
