@@ -4,6 +4,7 @@ https://github.com/ralna/RALFit
 """
 
 import ral_nlls
+import sys
 from scipy.optimize._numdiff import approx_derivative
 
 from fitbenchmarking.fitting.controllers.base_controller import Controller
@@ -42,9 +43,14 @@ class RALFitController(Controller):
         return f
 
     def _jac(self, params, x, y):
-        return approx_derivative(self._eval_f_arg_swap,
-                                 params,
-                                 args=tuple([x]))
+        try:
+            j = approx_derivative(self._prediction_error,
+                                  params,
+                                  args=(self.data_x,self.data_y))
+        except Exception as err:
+            print(err)
+            
+        return j
 
     def fit(self):
         """
@@ -56,10 +62,14 @@ class RALFitController(Controller):
                                                      self._prediction_error,
                                                      self._jac,
                                                      params=(self.data_x,
-                                                             self.data_y))
-            self.success = True
-        except:
-            self.success = False
+                                                             self.data_y),
+                                                     options=options)
+        except Exception as err:
+            # clear the exception
+            sys.exc_clear()
+            pass
+        
+        self.success = (self._x is not None)
 
     def cleanup(self):
         """
