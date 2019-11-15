@@ -12,9 +12,7 @@ within the software.
 Problem-Format/Software Combinations
 ************************************
 
-Some of the pairings of problem types and software exhibit behavour which may
-be unexpected.
-These are listed in the below table.
+When comparing the minimizers of a particular software against a particular type of problem-format files we are not aware of any issues. However, the general problem of comparising minimizers from different software and with different problem-formats - all on truely equal terms - is harder to achieve. In the table below, the cells with a value different from None, show the cases, that we are aware off, where this is still not achieved.
 
 .. list-table::
    :widths: 1 1 3 1 3 1
@@ -53,8 +51,7 @@ These are listed in the below table.
 
 The stopping criterion of each minimizer is set to the default value. An experienced user can change this.
 
-**************************
-SASView Problem Definition
-**************************
-Due to the physical expectation for problems in the SASView data format, all
-data with an x value of 0 will be removed from the dataset before fitting.
+************************************
+A note on SASView Problem Definition
+************************************
+In line with Sasview, for problems in the SasView data format, all data with an x value of 0 will be removed from the dataset before fitting. 'x' for SAS data are q (momentum) and q=0 cannot be measured in SAS experiments.
