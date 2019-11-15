@@ -18,7 +18,8 @@ These include:
 The software to use in fitting as a string or list of strings.
 Selected softwares will be benchmarked.
 
-Available options are ``"mantid"``, ``"sasview"``, ``"scipy"`` and ``"dfogn"``.
+Available options are ``"dfogn"``, ``"mantid"``, ``""ralfit""``, ``"sasview"``,
+and ``"scipy"``.
 
 ``results_dir``
 ---------------
