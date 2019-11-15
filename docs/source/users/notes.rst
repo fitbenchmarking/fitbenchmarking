@@ -51,7 +51,7 @@ When comparing the minimizers of a particular software against a particular type
 
 The stopping criterion of each minimizer is set to the default value. An experienced user can change this.
 
-************************************
-A note on SASView Problem Definition
-************************************
+********************************
+SasView Problem Definition files
+********************************
 In line with Sasview, for problems in the SasView data format, all data with an x value of 0 will be removed from the dataset before fitting. 'x' for SAS data are q (momentum) and q=0 cannot be measured in SAS experiments.
