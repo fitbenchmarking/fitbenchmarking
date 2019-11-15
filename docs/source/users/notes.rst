@@ -51,6 +51,7 @@ These are listed in the below table.
      - None
      - None
 
+The stopping criterion of each minimizer is set to the default value. An experienced user can change this.
 
 **************************
 SASView Problem Definition
