@@ -58,6 +58,7 @@ class RALFitController(Controller):
         """
         self.success = False
         try:
+            options = {"model" : 1}
             (self._x, self._inform) = ral_nlls.solve(self.initial_params,
                                                      self._prediction_error,
                                                      self._jac,
