@@ -30,26 +30,19 @@ class RALFitController(Controller):
         """
         pass
 
-    def _eval_f_arg_swap(self, params, x):
-        return self.problem.eval_f(x=x,
-                                   params=params,
-                                   function_id=self.function_id)
-
-    def _prediction_error(self, params, x, y):
-        f = self._eval_f_arg_swap(params, x) - y
+    def _prediction_error(self, p):
+        f = self.problem.eval_f(x=self.data_x,
+                                params=p,
+                                function_id=self.function_id)
+        f = f - self.data_y
         if self.use_errors:
             f = f / self.data_e
 
         return f
 
-    def _jac(self, params, x, y):
-        try:
-            j = approx_derivative(self._prediction_error,
-                                  params,
-                                  args=(self.data_x,self.data_y))
-        except Exception as err:
-            print(err)
-            
+    def _jac(self, p):
+        j = approx_derivative(self._prediction_error,
+                              p)
         return j
 
     def fit(self):
@@ -62,11 +55,10 @@ class RALFitController(Controller):
             (self._popt, self._inform) = ral_nlls.solve(self.initial_params,
                                                         self._prediction_error,
                                                         self._jac,
-                                                        params=(self.data_x,
-                                                                self.data_y),
                                                         options=options)
         except Exception as err:
-            # clear the exception
+            # clear the exception to allow best result of failed
+            # calls to be returned
             sys.exc_clear()
             pass
         
