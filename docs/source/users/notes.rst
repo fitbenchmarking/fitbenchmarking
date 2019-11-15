@@ -50,3 +50,10 @@ These are listed in the below table.
      - None
      - None
      - None
+
+
+**************************
+SASView Problem Definition
+**************************
+Due to the physical expectation for problems in the SASView data format, all
+data with an x value of 0 will be removed from the dataset before fitting.
