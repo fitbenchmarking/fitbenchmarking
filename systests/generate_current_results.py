@@ -47,19 +47,18 @@ for sub_dir in problem_sets:
     data_dir = os.path.join(benchmark_probs_dir, sub_dir)
 
     # Running the benchmarking on problem set
-    results_per_group, results_dir = \
+    results, results_dir = \
         fitbenchmark_group(group_name=label,
                            software_options=software_options,
                            data_dir=data_dir,
                            use_errors=use_errors,
                            results_dir=results_dir)
 
-    # Producing output for the problem set
-    for idx, group_results in enumerate(results_per_group):
-        # Display the runtime and accuracy results in a table
-        save_results_tables(software_options=software_options,
-                            results_per_test=group_results,
-                            group_name=label,
-                            use_errors=use_errors,
-                            color_scale=color_scale,
-                            results_dir=results_dir)
+    print('\nProducing output for the {} problem set\n'.format(label))
+    # Display the runtime and accuracy results in a table
+    save_results_tables(software_options=software_options,
+                        results_per_test=results,
+                        group_name=label,
+                        use_errors=use_errors,
+                        color_scale=color_scale,
+                        results_dir=results_dir)
