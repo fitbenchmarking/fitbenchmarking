@@ -22,7 +22,6 @@ class RALFitController(Controller):
         super(RALFitController, self).__init__(problem, use_errors)
 
         self._popt = None
-        self._inform = None
 
     def setup(self):
         """
@@ -52,10 +51,10 @@ class RALFitController(Controller):
         self.success = False
         try:
             options = {"model" : 1}
-            (self._popt, self._inform) = ral_nlls.solve(self.initial_params,
-                                                        self._prediction_error,
-                                                        self._jac,
-                                                        options=options)
+            self._popt = ral_nlls.solve(self.initial_params,
+                                        self._prediction_error,
+                                        self._jac,
+                                        options=options)[0]
         except Exception as err:
             # clear the exception to allow best result of failed
             # calls to be returned
