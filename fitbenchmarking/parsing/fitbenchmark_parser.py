@@ -105,10 +105,11 @@ class FitbenchmarkParser(Parser):
 
     def _parse_function(self):
         """
-        Get the params from the function as a list of dicts from the data file
+        Get the params from the function as a list of dicts from the data
+        file.
 
-        :returns: Fucntion definition in format:
-                  [{name: [value1, value2, ...], ...]
+        :returns: Function definition in format:
+                  [{name1: value1, name2: value2, ...}, ...]
         :rtype: list of dict
         """
         function_def = []
@@ -117,7 +118,21 @@ class FitbenchmarkParser(Parser):
 
         for f in functions:
             params_dict = OrderedDict()
-            params_list = f.split(',')
+            # To handle brackets, must split on comma or split after an
+            # opening backet
+            tmp_params_list = f.split(',')
+            if '(' in f:
+                params_list = []
+                for p in tmp_params_list:
+                    if '(' in p:
+                        vals = [v+'(' for v in p.split('(', 1)]
+                        vals[-1] = vals[-1][:-1]
+                        params_list.extend(vals)
+                    else:
+                        params_list.append(p)
+            else:
+                params_list = tmp_params_list
+
             pop_stack = False
             stack = [params_dict]
             for p in params_list:
@@ -125,15 +140,18 @@ class FitbenchmarkParser(Parser):
                 name = name.strip()
                 val = val.strip()
 
-                if val[0] == '(':
-                    stack += [OrderedDict()]
-                    val = val[1:]
-                if val[-1] == ')':
-                    if len(stack) == 1:
+                if val == '(':
+                    val = OrderedDict()
+                    stack[-1][name] = val
+                    stack += [val]
+                    continue
+
+                elif val[-1] == ')':
+                    pop_stack = val.count(')')
+                    if len(stack) <= pop_stack:
                         raise ValueError('Could not parse.'
                                          + 'Check parentheses in input')
-                    val = val[:-1]
-                    pop_stack = True
+                    val = val.strip(')')
 
                 # Parse to an int/float if possible else assume string
                 tmp_val = None
@@ -149,8 +167,9 @@ class FitbenchmarkParser(Parser):
 
                 stack[-1][name] = val
 
-                if pop_stack:
-                    stack = stack[:-1]
+                if pop_stack > 0:
+                    stack = stack[:-pop_stack]
+                    pop_stack = 0
 
             function_def.append(params_dict)
 
@@ -250,9 +269,9 @@ class FitbenchmarkParser(Parser):
 
         for i, f in enumerate(self._parsed_func):
             if 'ties' in f:
-                for tie, val in f['ties']:
-                    fit_function.tie(name='f{}.{}'.format(i, tie),
-                                     expr=val)
+                ties = {'f{}.{}'.format(i, tie): val
+                        for tie, val in f['ties'].items()}
+                fit_function.tie(ties)
 
         function_def = [[fit_function, param_vals]]
 
