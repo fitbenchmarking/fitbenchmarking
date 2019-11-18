@@ -9,13 +9,15 @@ import os
 import sys
 
 
-from fitbenchmarking.fitting_benchmarking import do_fitting_benchmark as fitBenchmarking
-from fitbenchmarking.results_output import save_results_tables as printTables
+from fitbenchmarking.fitting_benchmarking import fitbenchmark_group
+from fitbenchmarking.results_output import save_results_tables
 
 
 # SPECIFY THE SOFTWARE/PACKAGE CONTAINING THE MINIMIZERS YOU WANT TO BENCHMARK
 software = 'scipy'
-software_options = {'software': software, 'minimizer_options': None}
+software_options = {'software': software,
+                    'minimizer_options': None,
+                    'options_file': '../fitbenchmarking/fitbenchmarking_default_options.json'}
 
 color_scale = [(1.1, 'ranking-top-1'),
                (1.33, 'ranking-top-2'),
@@ -24,7 +26,6 @@ color_scale = [(1.1, 'ranking-top-1'),
                (float('nan'), 'ranking-low-5')]
 
 
-sys.setrecursionlimit(10000)
 current_path = os.path.dirname(os.path.realpath(__file__))
 fitbenchmarking_path = os.path.abspath(os.path.join(current_path, os.pardir))
 benchmark_probs_dir = os.path.join(fitbenchmarking_path,
@@ -33,7 +34,7 @@ benchmark_probs_dir = os.path.join(fitbenchmarking_path,
 results_dir = None
 use_errors = True
 
-problem_sets = ["Neutron_data", "NIST/low_difficulty",
+problem_sets = ["Neutron", "NIST/low_difficulty",
                 "NIST/average_difficulty", "NIST/high_difficulty"]
 
 for sub_dir in problem_sets:
@@ -46,14 +47,18 @@ for sub_dir in problem_sets:
     data_dir = os.path.join(benchmark_probs_dir, sub_dir)
 
     # Running the benchmarking on problem set
-    results_per_group, results_dir = \
-        fitBenchmarking(group_name=label, software_options=software_options,
-                        data_dir=data_dir,
-                        use_errors=use_errors, results_dir=results_dir)
+    results, results_dir = \
+        fitbenchmark_group(group_name=label,
+                           software_options=software_options,
+                           data_dir=data_dir,
+                           use_errors=use_errors,
+                           results_dir=results_dir)
 
-    # Producing output for the problem set
-    for idx, group_results in enumerate(results_per_group):
-        # Display the runtime and accuracy results in a table
-        printTables(software_options, group_results,
-                    group_name=label, use_errors=use_errors,
-                    color_scale=color_scale, results_dir=results_dir)
+    print('\nProducing output for the {} problem set\n'.format(label))
+    # Display the runtime and accuracy results in a table
+    save_results_tables(software_options=software_options,
+                        results_per_test=results,
+                        group_name=label,
+                        use_errors=use_errors,
+                        color_scale=color_scale,
+                        results_dir=results_dir)
