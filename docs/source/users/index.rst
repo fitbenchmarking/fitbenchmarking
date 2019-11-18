@@ -10,4 +10,5 @@ Welcome to the documentation for the FitBenchmarking software.
     getting_started
     examples
     options
+    notes
 
