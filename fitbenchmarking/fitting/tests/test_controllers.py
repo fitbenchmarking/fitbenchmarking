@@ -146,7 +146,7 @@ class ControllerTests(TestCase):
         RALFitController: Tests for output shape
         """
         controller = RALFitController(self.problem, True)
-        controller.minimizer = 'ralfit'
+        controller.minimizer = 'gn'
         self.shared_testing(controller)
 
     def shared_testing(self, controller):
