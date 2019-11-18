@@ -66,17 +66,11 @@ class RALFitController(Controller):
         Run problem with RALFit.
         """
         self.success = False
-        try:
-            self._popt = ral_nlls.solve(self.initial_params,
-                                        self._prediction_error,
-                                        self._jac,
-                                        options=self._options)[0]
-        except Exception as err:
-            # clear the exception to allow best result of failed
-            # calls to be returned
-            sys.exc_clear()
-            pass
-        
+        self._popt = ral_nlls.solve(self.initial_params,
+                                    self._prediction_error,
+                                    self._jac,
+                                    options=self._options)[0]
+            
         self.success = (self._popt is not None)
 
     def cleanup(self):
