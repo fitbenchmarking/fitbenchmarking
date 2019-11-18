@@ -132,7 +132,10 @@ DFO-GN:
 
 
 RALfit:
-  - ``"ralfit"``
+  - ``"gn"`` (Gauss-Newton within a trust region)
+- ``"gn_reg"`` (Gauss-Newton with regularization)
+- ``"hybrid"`` (Hybrid method within a trust region)
+  - ``hybrid_reg"`` (Hybrid method with regularization)
   Information about this can be found on the
   `RALfit documentation
   <https://github.com/ralna/RALFit>`__

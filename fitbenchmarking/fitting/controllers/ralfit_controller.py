@@ -22,12 +22,29 @@ class RALFitController(Controller):
         super(RALFitController, self).__init__(problem, use_errors)
 
         self._popt = None
+        self._options = {}
+
 
     def setup(self):
         """
         Setup for RALFit
         """
-        pass
+        self._options["maxit"] = 500
+        if self.minimizer=="gn":
+            self._options["model"] = 1
+            self._options["nlls_method"] = 4
+        elif self.minimizer=="gn_reg":
+            self._options["model"] = 1
+            self._options["type_of_method"] = 2
+        elif self.minimizer=="hybrid":
+            self._options["model"] = 3
+            self._options["nlls_method"] = 4
+        elif self.minimizer=="hybrid_reg":
+            self._options["model"] = 3
+            self._options["type_of_method"] = 2
+        else:
+            raise RuntimeError("An undefined RALFit minmizer was selected")
+        
 
     def _prediction_error(self, p):
         f = self.problem.eval_f(x=self.data_x,
@@ -50,11 +67,10 @@ class RALFitController(Controller):
         """
         self.success = False
         try:
-            options = {"model" : 1}
             self._popt = ral_nlls.solve(self.initial_params,
                                         self._prediction_error,
                                         self._jac,
-                                        options=options)[0]
+                                        options=self._options)[0]
         except Exception as err:
             # clear the exception to allow best result of failed
             # calls to be returned
