@@ -18,7 +18,7 @@ These include:
 The software to use in fitting as a string or list of strings.
 Selected softwares will be benchmarked.
 
-Available options are ``"mantid"``, ``"sasview"``, ``"scipy"`` and ``"dfogn"``.
+Available options are ``"mantid"``,  ``"sasview"``, ``"scipy"``, ``"dfogn"`` and ``"ralfit"``.
 
 ``results_dir``
 ---------------
@@ -138,7 +138,7 @@ RALfit:
   - ``hybrid_reg"`` (Hybrid method with regularization)
   Information about this can be found on the
   `RALfit documentation
-  <https://github.com/ralna/RALFit>`__
+  <https://ralfit.readthedocs.io/projects/Python/en/latest/>`__
 
 
 ``comparison_mode``
