@@ -1,9 +1,9 @@
 import os
 import unittest
 
-from example_scripts import (example_runScripts,
-                             example_runScripts_mantid,
-                             example_runScripts_expert)
+from example_scripts import example_runScripts
+                             #example_runScripts_mantid,
+                             #example_runScripts_expert)
 
 
 class TestExampleScripts(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestExampleScripts(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         # inputs. Include at least one test with inputs
-        self.args = ['tests', '/../fitbenchmarking/fitbenchmarking_default_options.json']
+        self.args = ['tests', '/../fitbenchmarking/fitbenchmarking_default_options.ini']
 
         # get curdir and store for teardown
         self.cwd = os.getcwd()
@@ -32,8 +32,8 @@ class TestExampleScripts(unittest.TestCase):
     def test_examplescript_with_inputs(self):
         example_runScripts.main(self.args)
 
-    def test_examplescript_mantid(self):
-        example_runScripts_mantid.main([])
+#    def test_examplescript_mantid(self):
+#        example_runScripts_mantid.main([])
 
-    def test_examplescript_expert(self):
-        example_runScripts_expert.main([])
+#    def test_examplescript_expert(self):
+#        example_runScripts_expert.main([])
