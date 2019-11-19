@@ -14,56 +14,69 @@ from fitbenchmarking.fitting.controllers.controller_factory \
 from fitbenchmarking.fitting.plotting import plot_helper, plots
 
 
-def fitbm_one_prob(user_input, problem, num_runs):
+def fitbm_one_prob(problem, options, directory):
     """
     Sets up the controller for a particular problem and fits the models
     provided in the problem object. The best fit, along with the data and a
     starting guess is then plotted on a visual display page.
 
-    :param user_input :: all the information specified by the user
-    :type user_input :: UserInput
-    :param problem :: a problem object containing information used in fitting
-    :type problem :: FittingProblem
-    :param num_runs :: number of times controller.fit() is run to
-                       generate an average runtime
-    :type num_runs :: int
+    :param problem: a problem object containing information used in fitting
+    :type problem: FittingProblem
+    :param options: all the information specified by the user
+    :type options: fitbenchmarking.utils.options.Options
+    :param directory: The directory to store the results in
+    :type directory: string
 
-    :return :: nested array of result objects, per function definition
+    :returns: nested array of result objects, per function definition
                containing the fit information
-    :rtype :: list
+    :rtype: list
     """
 
-    results_fit_problem = []
+    results = []
 
-    software = user_input.software
+    software = options.software
+    if not isinstance(software, list):
+        software = [software]
 
-    controller_cls = ControllerFactory.create_controller(software)
-    controller = controller_cls(problem, user_input.use_errors)
+    for s in software:
+        try:
+            minimizers = options.minimizers[s]
+        except KeyError:
+            raise ValueError(
+                'Minimizers could not be found for software: {}'.format(s))
 
-    # The controller reformats the data to fit within a start- and end-x bound
-    # It also estimates errors if not provided.
-    # Copy this back to the problem as it is used in plotting.
-    problem.data_x = controller.data_x
-    problem.data_y = controller.data_y
-    problem.data_e = controller.data_e
+        controller_cls = ControllerFactory.create_controller(software=s)
+        controller = controller_cls(problem=problem,
+                                    use_errors=options.use_errors)
 
-    for i in range(len(controller.functions)):
-        controller.function_id = i
+        # The controller reformats the data to fit within a start- and end-x
+        # bound
+        # It also estimates errors if not provided.
+        # Copy this back to the problem as it is used in plotting.
+        problem.data_x = controller.data_x
+        problem.data_y = controller.data_y
+        problem.data_e = controller.data_e
 
-        results_problem, best_fit = benchmark(controller=controller,
-                                              minimizers=user_input.minimizers,
-                                              num_runs=num_runs)
+        for i in range(len(controller.functions)):
+            if len(results) <= i:
+                results.append({})
 
-        if best_fit is not None:
-            # Make the plot of the best fit
-            plots.make_plots(problem=problem,
-                             best_fit=best_fit,
-                             count=i + 1,
-                             group_results_dir=user_input.group_results_dir)
+            controller.function_id = i
 
-        results_fit_problem.append(results_problem)
+            problem_result, best_fit = benchmark(controller=controller,
+                                                 minimizers=minimizers,
+                                                 num_runs=options.num_runs)
 
-    return results_fit_problem
+            if best_fit is not None:
+                # Make the plot of the best fit
+                plots.make_plots(problem=problem,
+                                 best_fit=best_fit,
+                                 count=i + 1,
+                                 group_results_dir=directory)
+
+            results[i][s] = problem_result
+
+    return results
 
 
 def benchmark(controller, minimizers, num_runs):
@@ -71,19 +84,18 @@ def benchmark(controller, minimizers, num_runs):
     Fit benchmark one problem, with one function definition and all
     the selected minimizers, using the chosen fitting software.
 
-    :param controller :: The software controller for the fitting
-    :type controller :: Object derived from BaseSoftwareController
-    @param minimizers :: array of minimizers used in fitting
-    :type minimizers :: list
-    @param num_runs :: number of times controller.fit() is run to
-                       generate an average runtime
-    :type num_runs :: int
+    :param controller: The software controller for the fitting
+    :type controller: Object derived from BaseSoftwareController
+    :param minimizers: array of minimizers used in fitting
+    :type minimizers: list
+    :param num_runs: number of times controller.fit() is run to
+                     generate an average runtime
+    :type num_runs: int
 
-
-    :return :: tuple(results_problem, best_fit) nested array of
-               result objects, per minimizer and data object for
-               the best fit data
-    :rtype :: (list of FittingResult, plot_helper.data instance)
+    :returns: tuple(results_problem, best_fit) nested array of
+              result objects, per minimizer and data object for
+              the best fit data
+    :rtype: (list of FittingResult, plot_helper.data instance)
     """
     min_chi_sq, best_fit = None, None
     results_problem = []

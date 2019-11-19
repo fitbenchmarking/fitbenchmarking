@@ -10,7 +10,7 @@ from fitbenchmarking.utils.logging_setup import logger
 from fitbenchmarking.resproc import numpy_restables
 from fitbenchmarking.resproc import rst_table
 from fitbenchmarking.resproc import visual_pages
-from fitbenchmarking.utils import create_dirs, options, misc
+from fitbenchmarking.utils import create_dirs
 
 # Some naming conventions for the output files
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -19,44 +19,34 @@ FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
 
-def save_results_tables(software_options, results_per_test, group_name,
-                        use_errors, color_scale=None, results_dir=None):
+def save_results_tables(options, results, group_name):
     """
     Saves the results of the fitting to html/rst tables.
 
-    @param software_options :: dictionary containing software used in fitting the problem, list of minimizers and location of json file contain minimizers
-    @param minimizers :: array with minimizer names
+    @param options :: options used in fitting
     @param results_per_test :: results nested array of objects
     @param group_name :: name of the problem group
-    @param use_errors :: bool whether to use errors or not
-    @param color_scale :: color the html table
-    @param results_dir :: directory in which the results are saved
 
     @returns :: html/rst tables with the fitting results
     """
 
-    minimizers, software = misc.get_minimizers(software_options)
-    comparison_mode = software_options.get('comparison_mode', None)
+    software = options.software
+    if not isinstance(software, list):
+        software = [software]
+    minimizers = [options.minimizers[s] for s in software]
+    minimizers = sum(minimizers, [])
 
-    if comparison_mode is None:
-        if 'options_file' in software_options:
-            options_file = software_options['options_file']
-            comparison_mode = options.get_option(options_file=options_file,
-                                                 option='comparison_mode')
-        else:
-            comparison_mode = options.get_option(option='comparison_mode')
+    comparison_mode = options.comparison_mode
 
-        if comparison_mode is None:
-            comparison_mode = 'both'
-
-    if isinstance(software, list):
-        minimizers = sum(minimizers, [])
+    results_dir = options.results_dir
+    use_errors = options.use_errors
+    colour_scale = options.colour_scale
 
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
-        visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
+        visual_pages.create_linked_probs(results, group_name, results_dir)
 
-    acc_rankings, runtimes, _, _ = generate_tables(results_per_test, minimizers)
+    acc_rankings, runtimes, _, _ = generate_tables(results, minimizers)
 
     acc_tbl = rst_table.create(columns_txt=minimizers,
                                rows_txt=linked_problems,
@@ -64,7 +54,7 @@ def save_results_tables(software_options, results_per_test, group_name,
                                comparison_type='accuracy',
                                comparison_dim='',
                                using_errors=use_errors,
-                               color_scale=color_scale,
+                               color_scale=colour_scale,
                                comparison_mode=comparison_mode)
 
     runtime_tbl = rst_table.create(columns_txt=minimizers,
@@ -73,7 +63,7 @@ def save_results_tables(software_options, results_per_test, group_name,
                                    comparison_type='runtime',
                                    comparison_dim='',
                                    using_errors=use_errors,
-                                   color_scale=color_scale,
+                                   color_scale=colour_scale,
                                    comparison_mode=comparison_mode)
 
     save_tables(tables_dir, acc_tbl, use_errors, group_name,

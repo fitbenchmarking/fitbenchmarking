@@ -2,10 +2,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import unittest
 import os
-import shutil
-import json
 
-from fitbenchmarking.utils.misc import get_minimizers
 from fitbenchmarking.utils.misc import get_problem_files
 
 
@@ -67,104 +64,6 @@ class CreateDirsTests(unittest.TestCase):
     minimizer_json = os.path.join(fitbm_path,
                                   "fitbenchmarking_default_options.json")
     return str(minimizer_json)
-
-  def test_getMinimizers_load_correct_minimizers_mantid_default(self):
-
-    software_options = {'software': 'mantid', 'minimizer_options': None}
-
-    minimizers, _ = get_minimizers(software_options)
-    minmizers_expected = \
-        ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
-         "Conjugate gradient (Polak-Ribiere imp.)", "Damped GaussNewton",
-         "Levenberg-Marquardt", "Levenberg-MarquardtMD", "Simplex",
-         "SteepestDescent", "Trust Region"]
-
-    self.assertListEqual(minmizers_expected, minimizers)
-
-  def test_getMinimizers_load_correct_minimizers_scipy_default(self):
-
-    software_options = {'software': 'scipy', 'minimizer_options': None}
-
-    minimizers, _ = get_minimizers(software_options)
-    minmizers_expected = ["lm", "trf", "dogbox"]
-
-    self.assertListEqual(minmizers_expected, minimizers)
-
-  def test_getMinimizers_load_correct_minimizers_scipy_min_list(self):
-
-    software_options = {'software': 'scipy',
-                        'minimizer_options': {"scipy": ["lm", "trf"]}}
-
-    minimizers, _ = get_minimizers(software_options)
-    minmizers_expected = ["lm", "trf"]
-
-    self.assertListEqual(minmizers_expected, minimizers)
-
-  def test_getMinimizers_load_correct_minimizers_mantid_min_list(self):
-
-    software_options = {'software': 'mantid',
-                        'minimizer_options': {"mantid": ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]}}
-
-    minimizers, _ = get_minimizers(software_options)
-    minmizers_expected = ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)", "Conjugate gradient (Polak-Ribiere imp.)"]
-
-    self.assertListEqual(minmizers_expected, minimizers)
-
-  def test_getMinimizers_load_correct_minimizers_scipy_read_file(self):
-    software_options = {'software': 'scipy',
-                        'minimizer_options': None,
-                        'options_file': self.get_minimizers_file()}
-
-    minimizers, _ = get_minimizers(software_options)
-    minmizers_expected = ["lm", "trf", "dogbox"]
-
-    self.assertListEqual(minmizers_expected, minimizers)
-
-  def test_getMinimizers_load_correct_minimizers_mantid_read_file(self):
-
-    software_options = {'software': 'mantid',
-                        'minimizer_options': None,
-                        'options_file': self.get_minimizers_file()}
-
-    minimizers, _ = get_minimizers(software_options)
-    minmizers_expected = ["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
-                          "Conjugate gradient (Polak-Ribiere imp.)",
-                          "Damped GaussNewton",
-                          "Levenberg-Marquardt", "Levenberg-MarquardtMD",
-                          "Simplex", "SteepestDescent",
-                          "Trust Region"]
-
-    self.assertListEqual(minmizers_expected, minimizers)
-
-  def test_getMinimizers_load_correct_compare_minimizers_mantid_read_file(self):
-
-    software_options = {'software': ['mantid', 'scipy'],
-                        'minimizer_options': None,
-                        'options_file': self.get_minimizers_file()}
-
-    minimizers, _ = get_minimizers(software_options)
-    minmizers_expected = [["BFGS", "Conjugate gradient (Fletcher-Reeves imp.)",
-                           "Conjugate gradient (Polak-Ribiere imp.)",
-                           "Damped GaussNewton",
-                           "Levenberg-Marquardt", "Levenberg-MarquardtMD",
-                           "Simplex", "SteepestDescent",
-                           "Trust Region"],
-                          ["lm", "trf", "dogbox"]]
-
-    self.assertListEqual(minmizers_expected, minimizers)
-
-  def test_getMinimizers_value_error_incorrect_input_software_options(self):
-
-    software_options = 2
-
-    self.assertRaises(ValueError, get_minimizers, software_options)
-
-  def test_getMinimizers_value_error_incorrect_input_minimizer_options(self):
-
-    software_options = {'software': 'mantid',
-                        'minimizer_options': 1}
-
-    self.assertRaises(ValueError, get_minimizers, software_options)
 
   def test_getProblemFiles_get_correct_nist_probs(self):
 

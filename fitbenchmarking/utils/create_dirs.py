@@ -12,17 +12,15 @@ def results(results_dir):
     Creates the results folder in the working directory.
 
     @param results_dir :: path to the results directory, results dir
-                          name or None
+                          name
 
     @returns :: proper path to the results directory
     """
 
     working_dir = os.getcwd()
-    if results_dir is None:
-        results_dir = os.path.join(working_dir, "results")
-    elif not isinstance(results_dir, str):
+    if not isinstance(results_dir, str):
         raise TypeError("results_dir must be a string!")
-    elif not os.sep in results_dir:
+    elif os.sep not in results_dir:
         results_dir = os.path.join(working_dir, results_dir)
 
     if not os.path.exists(results_dir):
