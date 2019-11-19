@@ -4,9 +4,10 @@ This file will handle all interaction with the options configuration file.
 
 import configparser
 from json import loads
+import os
 
 
-class Options:
+class Options(object):
     """
     An options class to store and handle all options for fitbenchmarking
     """
@@ -62,6 +63,8 @@ class Options:
         :param file_name: The options file to load
         :type file_name: str
         """
+        self._results_dir = ''
+
         config = configparser.ConfigParser(converters={'list': read_list, 'str': str})
 
         config.read_string(self.DEFAULTS)
@@ -85,6 +88,14 @@ class Options:
                              for cs in self.colour_scale]
         self.comparison_mode = plotting.getstr('comparison_mode')
         self.results_dir = plotting.getstr('results_dir')
+
+    @property
+    def results_dir(self):
+        return self._results_dir
+
+    @results_dir.setter
+    def results_dir(self, value):
+        self._results_dir = os.path.abspath(value)
 
 
 def read_list(s):
