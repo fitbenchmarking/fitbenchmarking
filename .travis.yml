@@ -6,6 +6,13 @@ dist: xenial
 virtualenv:
   system_site_packages: true
 
+notifications:
+  email:
+    recipients:
+      - support@fitbenchmarking.com
+    on_success: never
+    on_failure: always
+
 stages:
   - name: Tests
   - name: SysTests
@@ -54,6 +61,7 @@ jobs:
           --cov-report term-missing --cov-append
       after_success:
         - coveralls
+  allow_failures:
     - stage: SysTests
       before_script: mantidpython -m mantid.simpleapi || true
       script:
