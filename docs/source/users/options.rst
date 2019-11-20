@@ -102,7 +102,7 @@ Mantid:
   <https://docs.mantidproject.org/nightly/fitting/fitminimizers/>`__
 
 Minuit: 
-  - ``"Minuit"``
+  - ``"minuit"``
 
   Information about this can be found on the 
   `Minuit documentation
