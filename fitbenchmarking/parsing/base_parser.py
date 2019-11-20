@@ -30,7 +30,7 @@ class Parser:
         self.file = open(self._filename, 'r')
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_value, traceback):
         """
         Called when used as a context manager.
         Closes the file.
