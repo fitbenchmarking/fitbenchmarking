@@ -56,7 +56,7 @@ class BaseControllerTests(TestCase):
     Tests for base software controller class methods.
     """
 
-    def setup(self):
+    def setUp(self):
         self.problem = make_fitting_problem()
 
     def test_data(self):
@@ -110,7 +110,7 @@ class ControllerTests(TestCase):
     Tests for each controller class
     """
 
-    def setup(self):
+    def setUp(self):
         self.problem = make_fitting_problem()
 
     def test_mantid(self):

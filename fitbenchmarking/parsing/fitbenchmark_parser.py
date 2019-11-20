@@ -109,7 +109,7 @@ class FitbenchmarkParser(Parser):
         """
         Get the params from the function as a list of dicts from the data file
 
-        :returns: Fucntion definition in format:
+        :return: Function definition in format:
                   [{name: [value1, value2, ...], ...]
         :rtype: list of dict
         """
@@ -162,7 +162,7 @@ class FitbenchmarkParser(Parser):
         """
         Get the data points of the problem from the data file.
 
-        :returns: data points
+        :return: data points
         :rtype: np.ndarray
         """
 

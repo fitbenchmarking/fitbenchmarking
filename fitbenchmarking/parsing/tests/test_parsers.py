@@ -151,7 +151,7 @@ class TestParsers:
 
         # Allow for problems not supporting certain test cases
         # (e.g. value_ranges)
-        if (fitting_problem.name == 'NA'):
+        if fitting_problem.name == 'NA':
             return
 
         # Check against expected
@@ -188,12 +188,13 @@ class TestParsers:
 
         :param file_format: The name of the file format
         :type file_format: string
-        :param evaluations_file: Path to a json file containing tests and results
-                              in the following format:
-                              {"test_file1": [[x1, params1, results1],
-                                             [x2, params2, results2],
-                                             ...],
-                               "test_file2": ...}
+        :param evaluations_file: Path to a json file containing tests and
+                                 results
+                                 in the following format:
+                                 {"test_file1": [[x1, params1, results1],
+                                                 [x2, params2, results2],
+                                                  ...],
+                                  "test_file2": ...}
         :type evaluations_file: string
         """
 
@@ -218,7 +219,7 @@ class TestParsers:
                     actual = fitting_problem.eval_f(x=np.array(r[0]),
                                                     params=r[1],
                                                     function_id=i)
-                    assert (np.isclose(actual, r[2]).all())
+                    assert np.isclose(actual, r[2]).all()
 
     def test_factory(self, file_format, test_file):
         """

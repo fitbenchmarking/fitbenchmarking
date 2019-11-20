@@ -65,14 +65,16 @@ class NISTParser(Parser):
             if line.startswith('Model:'):
                 equation_text, idx = self._get_nist_model(lines, idx)
             elif 'Starting values' in line or 'Starting Values' in line:
-                starting_values, idx = self._get_nist_starting_values(lines, idx)
+                starting_values, idx = self._get_nist_starting_values(lines,
+                                                                      idx)
             elif line.startswith("Data:"):
                 if " x" in line and " y " in line:
                     data_pattern_text, idx = self._get_data_txt(lines, idx)
             else:
                 ignored_lines += 1
 
-        logger.info("{0} lines were ignored in this problem file".format(ignored_lines))
+        logger.info("%s lines were ignored in this problem file",
+                    ignored_lines)
 
         return equation_text, data_pattern_text, starting_values
 
@@ -217,8 +219,8 @@ class NISTParser(Parser):
             match = re.search(r'y\s*=(.+)\s*\+\s*e', eq_text)
             equation = match.group(1).strip()
         else:
-            raise RuntimeError("Unrecognized equation syntax when trying to parse "
-                               "a NIST equation: " + eq_text)
+            raise RuntimeError("Unrecognized equation syntax when trying to "
+                               "parse a NIST equation: " + eq_text)
 
         equation = self._convert_nist_to_muparser(equation)
         return equation
@@ -296,7 +298,7 @@ class NISTParser(Parser):
         :type line: str
         """
 
-        if 6 != len(startval_str) and 5 != len(startval_str):
+        if len(startval_str) != 6 and len(startval_str) != 5:
             raise RuntimeError("Failed to parse this line as starting "
                                "values information: {0}".format(line))
 
@@ -313,9 +315,9 @@ class NISTParser(Parser):
 
         # A bit weak/lax parsing, if there is one less column,
         # assume only one start point
-        if 6 == len(startval_str):
+        if len(startval_str) == 6:
             alt_values = [float(startval_str[2]), float(startval_str[3])]
-        elif 5 == len(startval_str):
+        elif len(startval_str) == 5:
             alt_values = [float(startval_str[2])]
 
         return alt_values
