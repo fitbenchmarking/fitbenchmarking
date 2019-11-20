@@ -56,15 +56,6 @@ class CreateDirsTests(unittest.TestCase):
 
         return nist_ld_problems
 
-    def get_minimizers_file(self):
-
-        current_path = os.path.dirname(os.path.realpath(__file__))
-        utils_path = os.path.abspath(os.path.join(current_path, os.pardir))
-        fitbm_path = os.path.abspath(os.path.join(utils_path, os.pardir))
-        minimizer_json = os.path.join(fitbm_path,
-                                      "fitbenchmarking_default_options.json")
-        return str(minimizer_json)
-
     def test_getProblemFiles_get_correct_nist_probs(self):
 
         data_dir = os.path.join(self.base_path(), 'NIST', 'low_difficulty')

@@ -12,33 +12,15 @@ from fitbenchmarking.utils.create_dirs import figures
 
 class CreateDirsTests(unittest.TestCase):
 
-    def test_results_create_correct_None_dir(self):
-
-        results_dir = None
-        results_dir = results(results_dir)
-        results_dir_expected = os.path.join(os.getcwd(), "results")
-
-        self.assertEqual(results_dir_expected, results_dir)
-
-        shutil.rmtree(results_dir_expected)
+    def setUp(self):
+        self.results_dir = os.path.join(os.getcwd(), 'results')
 
     def test_results_throw_correct_error(self):
 
-        results_dir = 123
+        self.assertRaises(TypeError, results, 123)
+        self.assertRaises(TypeError, results, None)
 
-        self.assertRaises(TypeError, results, results_dir)
-
-    def test_results_create_correct_custom_dir(self):
-
-        results_dir = "TestResult"
-        results_dir = results(results_dir)
-        results_dir_expected = os.path.join(os.getcwd(), "TestResult")
-
-        self.assertEqual(results_dir_expected, results_dir)
-
-        shutil.rmtree(results_dir_expected)
-
-    def test_results_create_correct_fullPath_dir(self):
+    def test_results_create_correct_dir(self):
 
         results_dir = os.path.join(os.getcwd(), "full_path", "test")
         results_dir = results(results_dir)
@@ -51,7 +33,7 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_groupResults_create_correct_group_results(self):
 
-        results_dir = results(None)
+        results_dir = results(self.results_dir)
         group_results_dir = group_results(results_dir, "test_group")
         group_results_dir_expected = os.path.join(results_dir, "test_group")
 
@@ -62,7 +44,7 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_restablesDir_create_correct_random_dir(self):
 
-        results_dir = results(None)
+        results_dir = results(self.results_dir)
         group_name = 'random'
 
         tables_dir = restables_dir(results_dir, group_name)
@@ -75,7 +57,7 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_figures_create_correct_dir(self):
 
-        results_dir = results(None)
+        results_dir = results(self.results_dir)
         group_results_dir = group_results(results_dir, "test_group")
 
         figures_dir = figures(group_results_dir)

@@ -2,8 +2,8 @@
 Test the options.py file
 '''
 
+import configparser
 import datetime
-import json
 import os
 import unittest
 
@@ -20,14 +20,23 @@ class OptionsTests(unittest.TestCase):
         '''
         Create an options file and store input
         '''
+        config_str = """
+            [MINIMIZERS]
+            scipy: nonesense
+                   another_fake_minimizer
+            dfogn: test
 
-        opts = {'option1': True,
-                'option2': [0, 1, 2, 3, 4, 5],
-                'option3': {'foo': 1, 'bar': 2}}
+            [FITTING]
+            use_errors: no
+            """
+        opts = {'MINIMIZERS': {'scipy': ['nonesense', 'another_fake_minimizer'],
+                               'dfogn': ['test']},
+                'FITTING': {'use_errors': False}
+                }
 
         opts_file = 'test_options_tests_{}.txt'.format(datetime.datetime.now())
         with open(opts_file, 'w') as f:
-            f.write(json.dumps(opts))
+            f.write(config_str)
 
         self.options = opts
         self.options_file = opts_file
@@ -35,6 +44,13 @@ class OptionsTests(unittest.TestCase):
     def tearDown(self):
         os.remove(self.options_file)
 
+    def test_minimizers(self):
+        ...
+
+    def test_use_errors(self):
+        ...
+    
+    ...
 
 if __name__ == '__main__':
     unittest.main()
