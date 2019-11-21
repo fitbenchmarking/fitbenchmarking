@@ -6,7 +6,6 @@ into the right format for SciPy.
 from __future__ import (absolute_import, division, print_function)
 
 # This import is needed for dynamic scipy function def
-#pylint: disable=unused-import
 import numpy as np
 
 
@@ -34,13 +33,13 @@ def nist_func_definitions(function, startvals):
         raise ValueError('Error while sanitizing input')
     # Sanitizing of function_scipy_format is done so exec use is valid
     # Param_names is sanitized in get_nist_param_names_and_values
-    #pylint: disable=exec-used
+    # pylint: disable=exec-used
 
     exec("def fitting_function(x, " + param_names + "): return "
-         + function_scipy_format, {}, {'np': np})
+         + function_scipy_format, {'__builtins__': {}}, {'np': np})
     for values in all_values:
         # fitting function is created dynamically used exec
-        #pylint: disable=undefined-variable
+        # pylint: disable=undefined-variable
         function_defs.append([fitting_function, values, function_scipy_format])
 
     return function_defs
