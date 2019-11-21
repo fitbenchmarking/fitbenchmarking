@@ -85,7 +85,7 @@ class FitbenchmarkParser(Parser):
 
     def _get_fitbenchmark_data_problem_entries(self):
         """
-        Get the problem self._entries from a fitbenchmark problem definition
+        Get the problem entries from a fitbenchmark problem definition
         file.
 
         :returns: The entries from the file with string values
@@ -96,8 +96,7 @@ class FitbenchmarkParser(Parser):
         for line in self.file.readlines():
             # Discard comments
             line = line.split('#', 1)[0]
-            line = line.rstrip()
-            if not line:
+            if line.strip() == '':
                 continue
 
             lhs, rhs = line.split("=", 1)
@@ -186,15 +185,15 @@ class FitbenchmarkParser(Parser):
         """
 
         data_file_path = self._get_data_file()
-        data_object = open(data_file_path, 'r')
-        data_text = data_object.readlines()
+
+        with open(data_file_path, 'r') as f:
+            data_text = f.readlines()
 
         first_row = data_text[2].strip()
         dim = len(first_row.split())
         data_points = np.zeros((len(data_text)-2, dim))
 
         for idx, line in enumerate(data_text[2:]):
-            line = line.strip()
             point_text = line.split()
             point = [float(val) for val in point_text]
             data_points[idx, :] = point
