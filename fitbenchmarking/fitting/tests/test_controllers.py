@@ -63,29 +63,26 @@ class BaseControllerTests(TestCase):
         """
         BaseSoftwareController: Test data is read into controller correctly
         """
-        if self.problem.start_x is None:
-            self.problem.start_x = self.problem.data_x[1]
-        if self.problem.end_x is None:
-            self.problem.end_x = self.problem.data_x[-2]
 
         controller = DummyController(self.problem, True)
-        assert min(controller.data_x) >= self.problem.start_x
-        assert max(controller.data_x) <= self.problem.end_x
+
+        if self.problem.start_x is None:
+            assert min(controller.data_x) >= self.problem.start_x
+        if self.problem.end_x is None:
+            assert max(controller.data_x) <= self.problem.end_x
+
         assert len(controller.data_e) == len(controller.data_x)
         assert len(controller.data_e) == len(controller.data_y)
-        x_is_subset = all(x in self.problem.data_x
-                          for x in controller.data_x)
-        y_is_subset = all(y in self.problem.data_y
-                          for y in controller.data_y)
+
+        self.assertTrue(all(x in self.problem.data_x
+                            for x in controller.data_x))
+        self.assertTrue(all(y in self.problem.data_y
+                            for y in controller.data_y))
 
         e_is_default = self.problem.data_e is None
-        e_is_subset = False
         if not e_is_default:
-            e_is_subset = all(e in self.problem.data_e
-                              for e in controller.data_e)
-        assert(x_is_subset
-               and y_is_subset
-               and (e_is_subset or e_is_default))
+            self.assertTrue(all(e in self.problem.data_e
+                                for e in controller.data_e))
 
     def test_no_use_errors(self):
         """
