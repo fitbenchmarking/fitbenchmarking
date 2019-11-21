@@ -28,13 +28,30 @@ class OptionsTests(unittest.TestCase):
 
             [FITTING]
             use_errors: no
+            num_runs: 2
+            software: foo
+                      bar
+
+            [PLOTTING]
+            colour_scale: 17.1, a_string?
+                          nan, another_string
+            comparison_mode: abs
+            results_dir: new_results
             """
-        opts = {'MINIMIZERS': {'scipy': ['nonesense', 'another_fake_minimizer'],
+        opts = {'MINIMIZERS': {'scipy': ['nonesense',
+                                         'another_fake_minimizer'],
                                'dfogn': ['test']},
-                'FITTING': {'use_errors': False}
+                'FITTING': {'use_errors': False,
+                            'num_runs': 2,
+                            'software': ['foo', 'bar']},
+                'PLOTTING': {'colour_scale': [(17.1, 'a_string?'),
+                                              (float(nan), 'another_string')],
+                             'comparison_mode': 'abs',
+                             'results_dir': 'new_results'}
                 }
 
-        opts_file = 'test_options_tests_{}.txt'.format(datetime.datetime.now())
+        opts_file = 'test_options_tests_{}.txt'.format(
+            datetime.datetime.now())
         with open(opts_file, 'w') as f:
             f.write(config_str)
 
@@ -44,13 +61,17 @@ class OptionsTests(unittest.TestCase):
     def tearDown(self):
         os.remove(self.options_file)
 
-    def test_minimizers(self):
+    def test_from_file(self):
+        options = Options(file_name=self.options_file)
+        for key in self.options['MINIMIZERS']:
+            self.assertEqual(self.options['MINIMIZERS'][key],
+                             options.minimizers[key])
+
+        self.assertEqual(self.options['FITTING']['use_errors'],
+                         options.use_errors)
+
         ...
 
-    def test_use_errors(self):
-        ...
-    
-    ...
 
 if __name__ == '__main__':
     unittest.main()
