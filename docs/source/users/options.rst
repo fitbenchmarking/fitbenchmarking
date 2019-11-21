@@ -18,7 +18,7 @@ These include:
 The software to use in fitting as a string or list of strings.
 Selected softwares will be benchmarked.
 
-Available options are ``"dfogn"``, ``"mantid"``, ``""ralfit""``, ``"sasview"``,
+Available options are ``"dfogn"``, ``"mantid"``, ``"minuit"``, ``""ralfit""``, ``"sasview"``,
 and ``"scipy"``.
 
 ``results_dir``
@@ -101,6 +101,12 @@ Mantid:
   `Mantid documentation
   <https://docs.mantidproject.org/nightly/fitting/fitminimizers/>`__
 
+Minuit: 
+  - ``"minuit"``
+
+  Information about this can be found on the 
+  `Minuit documentation
+  <http://iminuit.readthedocs.org>`__
 
 SasView (bumps):
   - ``"amoeba"``
