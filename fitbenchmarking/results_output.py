@@ -21,6 +21,8 @@ FILENAME_SUFFIX_RUNTIME = 'runtime'
 FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
+html_color_scale = ['#fef0d9', '#fdcc8a', '#fc8d59', '#e34a33', '#b30000']
+
 
 def save_results_tables(software_options, results_per_test, group_name,
                         use_errors, color_scale=None, results_dir=None):
@@ -82,9 +84,9 @@ def generate_tables(results_per_test, minimizers,
     create_pandas_rst(acc_dict[FILENAME_EXT_TXT],
                       time_dict[FILENAME_EXT_TXT],
                       minimizers, colour_scale)
-    # create_pandas_html(acc_dict[FILENAME_EXT_HTML],
-    #                    time_dict[FILENAME_EXT_HTML],
-    #                    minimizers)
+    create_pandas_html(acc_dict[FILENAME_EXT_HTML],
+                       time_dict[FILENAME_EXT_HTML],
+                       minimizers, colour_scale)
 
 
 def create_results_dict(results_per_test, linked_problems):
@@ -127,7 +129,7 @@ def create_results_dict(results_per_test, linked_problems):
     return acc_results, time_results
 
 
-def create_pandas_html(acc_dict, time_dict, minimizers):
+def create_pandas_html(acc_dict, time_dict, minimizers, colour_scale):
     """
     Generates a pandas data frame used to create the html tables.
 
@@ -137,10 +139,36 @@ def create_pandas_html(acc_dict, time_dict, minimizers):
 
     @returns :: data and summary tables of the results as np arrays
     """
-    runtime_tbl, runtime_tbl_norm, runtime_tbl_combined = \
-        create_tables(time_dict, minimizers)
-    acc_tbl, acc_tbl_norm, acc_tbl_combined = \
+    acc_tbl = \
         create_tables(acc_dict, minimizers)
+    runtime_tbl = \
+        create_tables(time_dict, minimizers)
+
+    def highlight_max(data, color='yellow'):
+        '''
+        highlight the maximum in a Series or DataFrame
+        '''
+        data_numpy = data.array.to_numpy()
+        data = []
+        for x in data_numpy:
+            norm_stripped = re.findall('\(([^)]+)', x)
+            if norm_stripped == []:
+                data.append(float(x))
+            else:
+                data.append(float(norm_stripped[0]))
+        data = data / np.min(data)
+        data = np.select(
+            [data <= 1.1, data <= 1.33, data <= 1.75, data <= 3, data > 3],
+            html_color_scale)
+
+        return ['background-color: {0}'.format(i) for i in data]
+
+    for i, table in enumerate(acc_tbl + runtime_tbl):
+        acc_style = table.style.apply(highlight_max, axis=1)
+
+        f = open("test{0}.html".format(i), "w")
+        f.write(acc_style.render())  # df is the styled dataframe
+        f.close()
     return 1
 
 
@@ -163,7 +191,7 @@ def create_pandas_rst(acc_dict, time_dict, minimizers, colour_scale):
         writer = pytablewriter.RstGridTableWriter()
         writer.table_name = "example_table"
         writer.from_dataframe(table, add_index_column=True)
-        table = writer.write_table()
+        # table = writer.write_table()
 
     return 1
 
@@ -222,12 +250,10 @@ def create_tables_rst(table_data, minimizers, colour_scale):
 
             table_data[key] = [template.format(data) for data in value]
 
-            normalised_table_dict[key] = \
-                [template.format(data) for data in normalised]
+            normalised_table_dict[key] = [template.format(data) for data in normalised]
 
-            combined_table_dict[key] = \
-                [combined_template.format(v1, v2)
-                 for v1, v2 in zip(value, normalised)]
+            combined_table_dict[key] = [combined_template.format(v1, v2)
+                                        for v1, v2 in zip(value, normalised)]
 
     tbl = pd.DataFrame.from_dict(table_data, orient='index')
     tbl.columns = minimizers
