@@ -1,6 +1,8 @@
+import inspect
 import os
 from unittest import TestCase
 
+import benchmark_problems
 from fitbenchmarking.fitting.controllers.base_controller import \
     Controller
 from fitbenchmarking.fitting.controllers.controller_factory import \
@@ -24,11 +26,7 @@ def make_fitting_problem():
     Helper function that returns a simple fitting problem
     """
 
-    current_dir = os.path.dirname(__file__)
-    parent_dir = os.path.dirname(os.path.normpath(current_dir))
-    main_dir = os.path.dirname(os.path.normpath(parent_dir))
-    root_dir = os.path.dirname(os.path.normpath(main_dir))
-    bench_prob_dir = os.path.join(root_dir, 'benchmark_problems')
+    bench_prob_dir = os.path.dirname(inspect.getfile(benchmark_problems))
     fname = os.path.join(bench_prob_dir, 'simple_tests',
                          'cubic.dat')
 
