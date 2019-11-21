@@ -25,7 +25,7 @@ class ParserFactory:
         :param filename: The path to the file to be parsed
         :type filename: string
 
-        :returns: Initialised parser for the problem
+        :returns: Parser for the problem
         :rtype: fitbenchmarking.parsing.base_parser.Parser subclass
         """
 
