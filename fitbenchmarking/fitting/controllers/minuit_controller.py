@@ -21,6 +21,7 @@ class MinuitController(Controller):
         super(MinuitController, self).__init__(problem, use_errors)
         self._popt = None
         self._initial_step = None
+        self._minuit_problem = None
 
     def setup(self):
         """
@@ -35,6 +36,10 @@ class MinuitController(Controller):
         self._initial_step = 0.1 * np.array(self.initial_params)
         # set small steps to something sensible(?)
         self._initial_step[self._initial_step < 1e-12] = 1e-12
+        self._minuit_problem = Minuit.from_array_func(self._prediction_error,
+                                                      self.initial_params,
+                                                      error=self._initial_step,
+                                                      errordef=1)
 
     def _prediction_error(self, p):
         f = self.problem.eval_f(x=self.data_x,
@@ -51,19 +56,16 @@ class MinuitController(Controller):
         Run problem with Minuit
         """
         self.success = False
-        m = Minuit.from_array_func(self._prediction_error,
-                                   self.initial_params,
-                                   error=self._initial_step,
-                                   errordef=1)
-        m.migrad() # run optimizer
-        self._popt = m.np_values()
-        self.success = (self._popt is not None)
+        self._minuit_problem.migrad() # run optimizer
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results 
         will be read fromm
         """
+        self._popt = self._minuit_problem.np_values()
+        self.success = (self._popt is not None)
+
         if self.success:
             self.results = self.problem.eval_f(x=self.data_x,
                                                params=self._popt,
