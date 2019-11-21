@@ -46,9 +46,9 @@ def generate_test_cases():
     formats = [f[:-10] for f in os.listdir(os.path.join(test_dir, os.pardir))
                if f.endswith('_parser.py')
                and f != 'base_parser.py']
-    for known_format in ['nist_parser.py',
-                         'fitbenchmark_parser.py',
-                         'sasview_parser.py']:
+    for known_format in ['nist',
+                         'fitbenchmark',
+                         'sasview']:
         if known_format not in formats:
             raise RuntimeError(
                 'Could not find {}'.format(known_format))
