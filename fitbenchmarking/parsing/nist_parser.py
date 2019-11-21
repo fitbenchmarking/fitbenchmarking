@@ -280,27 +280,10 @@ class NISTParser(Parser):
                 break
 
             startval_str = line.split()
-            self._check_startval_validity(startval_str, line)
             alt_values = self._get_startvals_floats(startval_str)
             starting_vals.append([startval_str[0], alt_values])
 
         return starting_vals
-
-    def _check_startval_validity(self, startval_str, line):
-        """
-        Checks the validity of the starting value raw string.
-        There can only be 2 cases when parsing nist files
-        i.e. line can only have 6 or 7 strings separated by white space.
-
-        :param startval_str: Unparsed starting values
-        :type startval_str: list of str
-        :param line: The line being parsed
-        :type line: str
-        """
-
-        if len(startval_str) != 6 and len(startval_str) != 5:
-            raise RuntimeError("Failed to parse this line as starting "
-                               "values information: {0}".format(line))
 
     def _get_startvals_floats(self, startval_str):
         """
@@ -319,5 +302,9 @@ class NISTParser(Parser):
             alt_values = [float(startval_str[2]), float(startval_str[3])]
         elif len(startval_str) == 5:
             alt_values = [float(startval_str[2])]
+        # In the NIST format this can only contain 5 or 6 columns
+        else:
+            raise RuntimeError("Failed to parse this line as starting "
+                               "values information: {0}".format(startval_str))
 
         return alt_values

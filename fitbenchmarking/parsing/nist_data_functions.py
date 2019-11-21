@@ -33,10 +33,11 @@ def nist_func_definitions(function, startvals):
     if not is_safe(function_scipy_format):
         raise ValueError('Error while sanitizing input')
     # Sanitizing of function_scipy_format is done so exec use is valid
+    # Param_names is sanitized in get_nist_param_names_and_values
     #pylint: disable=exec-used
 
     exec("def fitting_function(x, " + param_names + "): return "
-         + function_scipy_format)
+         + function_scipy_format, {}, {'np': np})
     for values in all_values:
         # fitting function is created dynamically used exec
         #pylint: disable=undefined-variable
@@ -50,6 +51,9 @@ def get_nist_param_names_and_values(startvals):
     Parses startvals and retrieves the nist param names and values.
     """
     param_names = [row[0] for row in startvals]
+    for p in param_names:
+        if not p.isalnum():
+            raise ValueError('Parameter names must be alphanumeric')
     param_names = ", ".join(param for param in param_names)
     all_values = [row[1] for row in startvals]
     all_values = map(list, zip(*all_values))
@@ -84,8 +88,7 @@ def is_safe(func_str):
     :rtype: bool
     """
     # Remove whitespace
-    while ' ' in func_str:
-        func_str = func_str.replace(' ', '')
+    func_str = func_str.replace(' ', '')
 
     # Empty string is safe
     if func_str == '':
