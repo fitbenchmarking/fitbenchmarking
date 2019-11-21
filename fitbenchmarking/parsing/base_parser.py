@@ -35,17 +35,19 @@ class Parser:
         Called when used as a context manager.
         Closes the file.
 
-        :param type: Used if an exception occurs. Contains the exception type.
-        :type type: string?
-        :param value: Used if an exception occurs. Contains the exception
+        :param exc_type: Used if an exception occurs. Contains the exception type.
+        :type exc_type: type
+        :param exc_value: Used if an exception occurs. Contains the exception
                       value.
-        :type value: ?
+        :type exc_value: Exception
         :param traceback: Used if an exception occurs. Contains the exception
                           traceback.
-        :type traceback: string?
+        :type traceback: traceback
         """
-        if self.file is not None:
+        try:
             self.file.close()
+        except AttributeError:
+            pass
 
     @abstractmethod
     def parse(self):
