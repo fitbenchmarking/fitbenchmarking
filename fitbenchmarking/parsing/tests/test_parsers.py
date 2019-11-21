@@ -46,6 +46,10 @@ def generate_test_cases():
     formats = [f[:-10] for f in os.listdir(os.path.join(test_dir, os.pardir))
                if f.endswith('_parser.py')
                and f != 'base_parser.py']
+    for known_format in ['nist', 'fitbenchmark', 'sasview']:
+        if known_format not in formats:
+            raise RuntimeError(
+                'Could not find parser for {}'.format(known_format))
 
     # create list of test_cases
     expected_dir = os.listdir(os.path.join(test_dir, 'expected'))
@@ -56,7 +60,7 @@ def generate_test_cases():
             test_name = os.path.splitext(expected_file)[0]
             test_name_with_ext = [f for f in format_dir
                                   if f.startswith(test_name)]
-            if len(test_name_with_ext) == 0:
+            if not test_name_with_ext:
                 test_file = None
             elif len(test_name_with_ext) == 1:
                 test_file = os.path.join(test_dir,

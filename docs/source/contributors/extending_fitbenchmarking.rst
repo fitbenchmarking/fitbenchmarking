@@ -94,6 +94,9 @@ To add a new fitting problem definition type, complete the following steps:
      the list, raising an issue if the result is not suitably close to the
      specified value.
 
+5. Verify that your tests have been found by running
+   `pytest -vv fitbenchmarking/parsing/tests/test_parsers.py`
+
 .. _fitting_software:
 
 Adding additional fitting software
