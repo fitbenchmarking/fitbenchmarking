@@ -11,6 +11,8 @@ class Parser:
     Further parsers should inherit from this and override the abstract parse()
     method.
     """
+    __metaclass__ = ABCMeta
+
     def __init__(self, filename):
         """
         Store the filename for use by enter.
