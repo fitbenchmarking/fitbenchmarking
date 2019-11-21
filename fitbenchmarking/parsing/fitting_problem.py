@@ -112,10 +112,7 @@ class FittingProblem:
         """
         Basic check that minimal set of attributes have been set.
 
-        Raise RuntimeWarning if object is not properly initialised.
-
-        :returns: True if minimal set of attributes are set, else False
-        :rtype: bool
+        Raise AttributeError if object is not properly initialised.
         """
 
         values = {'data_x': np.ndarray,
@@ -123,13 +120,11 @@ class FittingProblem:
                   'starting_values': list,
                   'functions': list}
 
-        is_correct = True
-        for attr, attr_type in values.items():
-            if not isinstance(getattr(self, attr), attr_type):
-                warn('Attribute "{}" is not the expected type. Expected "{}",'
-                     'got {}.'.format(attr, attr_type,
-                                      type(getattr(self, attr))),
-                     RuntimeWarning)
-                is_correct = False
-
-        return is_correct
+        for attr_name, attr_type in values.items():
+            attr = getattr(self, attr_name)
+            if not isinstance(attr, attr_type):
+                raise TypeError('Attribute "{}" is not the expected type.'
+                                'Expected "{}", got {}.'.format(attr_name,
+                                                                attr_type,
+                                                                type(attr)
+                                                                ))

@@ -67,7 +67,6 @@ def parse_problem_file(prob_file):
     parser = ParserFactory.create_parser(prob_file)
     with parser(prob_file) as p:
         problem = p.parse()
-    if not problem.verify():
-        raise RuntimeError('Parsing failed.')
 
+    problem.verify()
     return problem

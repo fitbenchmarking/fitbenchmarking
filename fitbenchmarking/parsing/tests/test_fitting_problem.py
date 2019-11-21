@@ -15,27 +15,39 @@ class TestFittingProblem(TestCase):
 
     def test_verify_problem(self):
         """
-        Test that verify only returns True if all required values are set.
+        Test that verify only passes if all required values are set.
         """
         fitting_problem = FittingProblem()
-        self.assertFalse(fitting_problem.verify(),
-                         'verify() incorrect when no values are set.')
+        with self.assertRaises(TypeError) as cm:
+            fitting_problem.verify()
+            self.fail('verify() passes when no values are set.')
+
         fitting_problem.starting_values = [['p1', [1]],
                                            ['p2', [2]]]
-        self.assertFalse(fitting_problem.verify(),
-                         'verify() incorrect when starting values are set.')
+        with self.assertRaises(TypeError) as cm:
+            fitting_problem.verify()
+            self.fail('verify() passes starting values are set.')
+
         fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
-        self.assertFalse(fitting_problem.verify(),
-                         'verify() incorrect when data_x is set.')
+        with self.assertRaises(TypeError) as cm:
+            fitting_problem.verify()
+            self.fail('verify() passes when data_x is set.')
+
         fitting_problem.data_y = np.array([1, 2, 3, 4, 5])
-        self.assertFalse(fitting_problem.verify(),
-                         'verify() incorrect when data_y is set.')
+        with self.assertRaises(TypeError) as cm:
+            fitting_problem.verify()
+            self.fail('verify() passes when data_y is set.')
+
         fitting_problem.functions = [[lambda x, p1, p2: p1+p2, [1, 2]]]
-        self.assertTrue(fitting_problem.verify(),
-                        'verify() incorrect when all required values set.')
+        try:
+            fitting_problem.verify()
+        except TypeError:
+            self.fail('verify() fails when all required values set.')
+
         fitting_problem.data_x = [1, 2, 3]
-        self.assertFalse(fitting_problem.verify(),
-                         'verify() incorrect for x values not numpy.')
+        with self.assertRaises(TypeError) as cm:
+            fitting_problem.verify()
+            self.fail('verify() passes for x values not numpy.')
 
     def test_eval_f(self):
         """
