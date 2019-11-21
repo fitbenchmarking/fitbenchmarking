@@ -5,9 +5,9 @@ This file implements a parser for the Fitbenchmark data format.
 from __future__ import (absolute_import, division, print_function)
 
 from collections import OrderedDict
-import os
 import mantid.simpleapi as msapi
 import numpy as np
+import os
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
