@@ -7,6 +7,10 @@ from collections import OrderedDict
 import logging
 import os
 import pandas as pd
+import numpy as np
+import re
+
+
 from fitbenchmarking.utils.logging_setup import logger
 from fitbenchmarking.resproc import visual_pages
 from fitbenchmarking.utils import create_dirs, options, misc
@@ -28,7 +32,7 @@ def save_results_tables(software_options, results_per_test, group_name,
     @param results_per_test :: results nested array of objects
     @param group_name :: name of the problem group
     @param use_errors :: bool whether to use errors or not
-    @param color_scale :: color the html table
+    @param colour_scale :: colour the html table
     @param results_dir :: directory in which the results are saved
 
     @returns :: html/rst tables with the fitting results
@@ -55,43 +59,54 @@ def save_results_tables(software_options, results_per_test, group_name,
     linked_problems = \
         visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
 
-    acc_tbl, acc_norm_tbl, acc_combined_table, \
-        runtime_tbl, runtime_norm_tbl, runtime_combined_table \
-        = generate_tables(results_per_test, minimizers, linked_problems)
+    generate_tables(results_per_test, minimizers, linked_problems, color_scale)
 
-    def colour_scheme(s):
-        '''
-        highlight the maximum in a Series yellow.
-        '''
-        is_max = s == s.min()
-        return ['background-color: white' if v else '' for v in is_max]
-
-    acc_norm_tbl = acc_norm_tbl.style.apply(colour_scheme, axis=1)
-    html = acc_norm_tbl.render()
-
-    save_tables(tables_dir, html, use_errors, group_name,
-                FILENAME_SUFFIX_ACCURACY)
-    save_tables(tables_dir, html, use_errors, group_name,
-                FILENAME_SUFFIX_RUNTIME)
-
-    # Shut down logging at end of run
     logging.shutdown()
 
 
-def generate_tables(results_per_test, minimizers, linked_problems):
+def generate_tables(results_per_test, minimizers,
+                    linked_problems, colour_scale):
     """
     Generates accuracy and runtime tables, with both normalised and absolute results, and summary tables.
 
     @param results_per_test :: results nested array of objects
     @param minimizers :: array with minimizer names
+    linked_problems ::
 
     @returns :: data and summary tables of the results as np arrays
     """
-    prev_name = ''
+
+    acc_dict, time_dict = create_results_dict(results_per_test,
+                                              linked_problems)
+
+    create_pandas_rst(acc_dict[FILENAME_EXT_TXT],
+                      time_dict[FILENAME_EXT_TXT],
+                      minimizers, colour_scale)
+    # create_pandas_html(acc_dict[FILENAME_EXT_HTML],
+    #                    time_dict[FILENAME_EXT_HTML],
+    #                    minimizers)
+
+
+def create_results_dict(results_per_test, linked_problems):
+    """
+    Generates a dictionary used to create HTML and RST tables.
+
+    @param results_per_test :: results nested array of objects
+    linked_problems ::
+
+    @returns :: data and summary tables of the results as np arrays
+    """
+
     count = 1
-    acc_results_dict = OrderedDict()
-    time_results_dict = OrderedDict()
+    prev_name = ''
+    table_name = OrderedDict()
     template = '<a target="_blank" href="{0}">{1}</a>'
+    acc_results = OrderedDict()
+    time_results = OrderedDict()
+    acc_results[FILENAME_EXT_HTML] = OrderedDict()
+    acc_results[FILENAME_EXT_TXT] = OrderedDict()
+    time_results[FILENAME_EXT_HTML] = OrderedDict()
+    time_results[FILENAME_EXT_TXT] = OrderedDict()
     for test_idx, prob_results in enumerate(results_per_test):
         name = results_per_test[test_idx][0].problem.name
         if name == prev_name:
@@ -100,21 +115,130 @@ def generate_tables(results_per_test, minimizers, linked_problems):
             count = 1
         prev_name = name
         prob_name = name + ' ' + str(count)
-
         name, url = linked_problems[test_idx].split('<')
-        linked_name = template.format(url.split('>')[0], prob_name)
+        table_name[FILENAME_EXT_HTML] = \
+            template.format(url.split('>')[0], prob_name)
+        table_name[FILENAME_EXT_TXT] = linked_problems[test_idx]
 
-        acc_results_dict[linked_name] = [result.chi_sq for result in results_per_test[test_idx]]
-        time_results_dict[prob_name] = [result.runtime for result in results_per_test[test_idx]]
+        for key, value in table_name.items():
+            acc_results[key][value] = [result.chi_sq for result in results_per_test[test_idx]]
+            time_results[key][value] = [result.runtime for result in results_per_test[test_idx]]
 
-    acc_tbl, acc_norm_tbl, acc_combined_table = create_tables(
-        acc_results_dict,
-        minimizers)
-    runtime_tbl, runtime_norm_tbl, runtime_combined_table = create_tables(
-        time_results_dict,
-        minimizers)
+    return acc_results, time_results
 
-    return acc_tbl, acc_norm_tbl, acc_combined_table, runtime_tbl, runtime_norm_tbl, runtime_combined_table
+
+def create_pandas_html(acc_dict, time_dict, minimizers):
+    """
+    Generates a pandas data frame used to create the html tables.
+
+    @param results_per_test :: results nested array of objects
+    @param minimizers :: array with minimizer names
+    linked_problems ::
+
+    @returns :: data and summary tables of the results as np arrays
+    """
+    runtime_tbl, runtime_tbl_norm, runtime_tbl_combined = \
+        create_tables(time_dict, minimizers)
+    acc_tbl, acc_tbl_norm, acc_tbl_combined = \
+        create_tables(acc_dict, minimizers)
+    return 1
+
+
+def create_pandas_rst(acc_dict, time_dict, minimizers, colour_scale):
+    """
+    Generates a pandas data frame used to create the rst tables.
+
+    @param results_per_test :: results nested array of objects
+    @param minimizers :: array with minimizer names
+    linked_problems ::
+    colour_scale ::
+
+    @returns :: data and summary tables of the results as np arrays
+    """
+    import pytablewriter
+
+    acc_tbl = create_tables_rst(acc_dict, minimizers, colour_scale)
+    runtime_tbl = create_tables_rst(time_dict, minimizers, colour_scale)
+    for table in acc_tbl + runtime_tbl:
+        writer = pytablewriter.RstGridTableWriter()
+        writer.table_name = "example_table"
+        writer.from_dataframe(table, add_index_column=True)
+        table = writer.write_table()
+
+    return 1
+
+
+def create_tables_rst(table_data, minimizers, colour_scale):
+    """
+    Generates pandas dataframes in rst format.
+
+    :param table_data :: dictionary containing results
+    :type group_name :: dict
+    :param minimizers :: list of minimizers (column headers)
+    :type minimizers :: list
+    :param colour_scale :: user defined colour scale
+    :type colour_scale :: list
+
+
+    :return :: list(tbl, tbl_norm, tbl_combined) array of fitting results for
+                the problem group and the path to the results directory
+    :rtype :: [pandas DataFrame, pandas DataFrame, pandas DataFrame]
+    """
+    normalised_table_dict = OrderedDict()
+    combined_table_dict = OrderedDict()
+
+    colour_template = ':{}:`{:.4e}`'
+    colour_combined_template = ':{}:`{:.4e} ({:.4e})`'
+
+    template = '{:.4e}'
+    combined_template = '{:.4e} ({:.4e})`'
+    for key, value in table_data.items():
+        normalised = (value / np.min(value))
+        colour_format = len(normalised) * ['']
+        if isinstance(colour_scale, list):
+            for i, x in enumerate(normalised):
+                start = 1.0
+                colour_format[i] = 'ranking-low-5'
+                for colour in colour_scale:
+                    end = colour[0]
+
+                    if start <= float(x) <= end:
+                        colour_format[i] = colour[1]
+
+                    start = end
+
+            table_data[key] = [colour_template.format(colour, data) for colour, data in zip(colour_format, value)]
+
+            normalised_table_dict[key] = [colour_template.format(colour, data) for colour, data in zip(colour_format, normalised)]
+
+            combined_table_dict[key] = []
+            for colour, value1, value2 in zip(colour_format,
+                                              value, normalised):
+                combined_table_dict[key].append(colour_combined_template.format(
+                    colour,
+                    value1,
+                    value2))
+        else:
+
+            table_data[key] = [template.format(data) for data in value]
+
+            normalised_table_dict[key] = \
+                [template.format(data) for data in normalised]
+
+            combined_table_dict[key] = \
+                [combined_template.format(v1, v2)
+                 for v1, v2 in zip(value, normalised)]
+
+    tbl = pd.DataFrame.from_dict(table_data, orient='index')
+    tbl.columns = minimizers
+
+    tbl_norm = pd.DataFrame.from_dict(normalised_table_dict, orient='index')
+    tbl_norm.columns = minimizers
+
+    tbl_combined = pd.DataFrame.from_dict(combined_table_dict, orient='index')
+    tbl_combined.columns = minimizers
+
+    return [tbl, tbl_norm, tbl_combined]
 
 
 def create_tables(table_data, minimizers):
@@ -123,42 +247,28 @@ def create_tables(table_data, minimizers):
 
     :param table_data :: dictionary containing results
     :type group_name :: dict
-    :param table_data :: list of minimizers (column headers)
+    :param minimizers :: list of minimizers (column headers)
     :type group_name :: list
 
 
-    :return :: tuple(tbl, tbl_norm, tbl_combined) array of fitting results for
+    :return :: list(tbl, tbl_norm, tbl_combined) array of fitting results for
                 the problem group and the path to the results directory
-    :rtype :: (pandas DataFrame, pandas DataFrame, pandas DataFrame)
+    :rtype :: [pandas DataFrame, pandas DataFrame, pandas DataFrame]
     """
 
     tbl = pd.DataFrame.from_dict(table_data, orient='index')
     tbl.columns = minimizers
 
     tbl_norm = tbl.apply(lambda x: x / x.min(), axis=1)
+    tbl_norm = tbl_norm.applymap(lambda x: '{:.4e}'.format(x))
+    tbl = tbl.applymap(lambda x: '{:.4e}'.format(x))
 
-    tbl_combined = tbl.copy()
-    for i in tbl_combined.columns:
-        tbl_combined[i] = tbl[i].map(str) + \
-            ' (' + tbl_norm[i].map(str) + ')'
+    tbl_combined = OrderedDict()
+    for table1, table2 in zip(tbl.iterrows(), tbl_norm.iterrows()):
+        tbl_combined[table1[0]] = []
+        for value1, value2 in zip(table1[1].array, table2[1].array):
+            tbl_combined[table1[0]].append('{} ({})'.format(value1, value2))
+    tbl_combined = pd.DataFrame.from_dict(tbl_combined, orient='index')
+    tbl_combined.columns = minimizers
 
-    return tbl, tbl_norm, tbl_combined
-
-
-def save_tables(tables_dir, table_data, use_errors, group_name, metric):
-    """
-    Helper function that saves the rst table both to html and to text.
-    @param tables_dir :: the directory in which the tables are saved
-    @param table_data :: the results table, in rst
-    @param use_errors :: bool whether errors were used or not
-    @param group_name :: name of the problem group
-    @param metric :: whether it is an accuracy or runtime table
-    @returns :: tables saved to both html and txt.
-    """
-    values = {True: 'weighted', False: 'unweighted'}
-    table_name = ('{group_name}_{metric_type}_{weighted}_table.html'
-                  .format(weighted=values[use_errors],
-                          metric_type=metric, group_name=group_name))
-    file_name = os.path.join(tables_dir, table_name)
-    with open(file_name, 'w') as f:
-        f.write(table_data)
+    return [tbl, tbl_norm, tbl_combined]
