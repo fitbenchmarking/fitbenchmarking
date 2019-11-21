@@ -1,8 +1,10 @@
 import os
-import unittest
+from unittest import TestCase
 
 from fitbenchmarking.fitting.controllers.base_controller import \
     Controller
+from fitbenchmarking.fitting.controllers.controller_factory import \
+    ControllerFactory
 from fitbenchmarking.fitting.controllers.dfogn_controller import \
     DFOGNController
 from fitbenchmarking.fitting.controllers.mantid_controller import \
@@ -49,7 +51,7 @@ class DummyController(Controller):
         raise NotImplementedError
 
 
-class BaseControllerTests(unittest.TestCase):
+class BaseControllerTests(TestCase):
     """
     Tests for base software controller class methods.
     """
@@ -67,10 +69,10 @@ class BaseControllerTests(unittest.TestCase):
             self.problem.end_x = self.problem.data_x[-2]
 
         controller = DummyController(self.problem, True)
-        assert(min(controller.data_x) >= self.problem.start_x)
-        assert(max(controller.data_x) <= self.problem.end_x)
-        assert(len(controller.data_e) == len(controller.data_x))
-        assert(len(controller.data_e) == len(controller.data_y))
+        assert min(controller.data_x) >= self.problem.start_x
+        assert max(controller.data_x) <= self.problem.end_x
+        assert len(controller.data_e) == len(controller.data_x)
+        assert len(controller.data_e) == len(controller.data_y)
         x_is_subset = all(x in self.problem.data_x
                           for x in controller.data_x)
         y_is_subset = all(y in self.problem.data_y
@@ -90,7 +92,7 @@ class BaseControllerTests(unittest.TestCase):
         BaseSoftwareController: Test errors are not set when not requested
         """
         controller = DummyController(self.problem, False)
-        assert(controller.data_e is None)
+        assert controller.data_e is None
 
     def test_prepare(self):
         """
@@ -98,14 +100,12 @@ class BaseControllerTests(unittest.TestCase):
         """
         controller = DummyController(self.problem, True)
         controller.minimizer = 'test'
-        assert(controller.minimizer == 'test')
         controller.function_id = 0
-        assert(controller.function_id == 0)
         controller.prepare()
-        assert(controller.setup_result == 53)
+        assert controller.setup_result == 53
 
 
-class ControllerTests(unittest.TestCase):
+class ControllerTests(TestCase):
     """
     Tests for each controller class
     """
@@ -165,6 +165,29 @@ class ControllerTests(unittest.TestCase):
         controller.fit()
         controller.cleanup()
 
-        assert(controller.success)
-        assert(len(controller.results) == len(controller.data_y))
-        assert(len(controller.final_params) == len(controller.initial_params))
+        assert controller.success
+        assert len(controller.results) == len(controller.data_y)
+        assert len(controller.final_params) == len(controller.initial_params)
+
+
+class FactoryTests(TestCase):
+    """
+    Tests for the ControllerFactory
+    """
+
+    def test_imports(self):
+        """
+        Test that the factory returns the correct class for inputs
+        """
+
+        valid = ['scipy', 'mantid', 'sasview', 'ralfit']
+        invalid = ['foo', 'bar', 'hello', 'r2d2']
+
+        for software in valid:
+            controller = ControllerFactory.create_controller(software)
+            self.assertTrue(controller.__name__.lower().startswith(software))
+
+        for software in invalid:
+            self.assertRaises(ValueError,
+                              ControllerFactory.create_controller,
+                              software)

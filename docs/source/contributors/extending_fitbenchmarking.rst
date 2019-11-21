@@ -9,7 +9,7 @@ Adding additional problem groups
 --------------------------------
 
 *This section describes how to add a problem group to the fit benchmarking
-software. The default problem groups that come with this software are,
+software. The default problem groups that come with this software are:
 CUTEst, Muon, Neutron, NIST, SAS_modelling, and simple_tests.*
 
 1. Add your problem file directory in
@@ -27,8 +27,7 @@ Adding additional fitting problem definition types
 
 **Fitting problem definition types currently supported**
 
-The types (formats) that are currently supported
-are:
+The types (formats) that are currently supported are:
 
   - Native (Fitbenchmark)
   - NIST
@@ -62,7 +61,7 @@ To add a new fitting problem definition type, complete the following steps:
 
    Note: File opening and closing is handled automatically.
 
-3. If the format is unable to accomodate the current convention of
+3. If the format is unable to accommodate the current convention of
    starting with the ``<format_name>``, you will need to edit
    ``parser_factory.ParserFactory``.
    This should be done in such a way that the type is inferred from the file.
@@ -112,8 +111,11 @@ controllers can be found in ``fitbenchmarking/fitting/controllers``.
 
 In order to add a new controller, you will need to:
 
-1. Create a new subclass of BaseSoftwareController in
-   ``fitbenchmarking/fitting/controllers``.
+1. Give the software a name `<software_name>` this will be used by users when
+   selecting this software.
+2. Create ``fitbenchmarking/fitting/controllers/<software_name>_controller.py``
+   which contains a new subclass of ``BaseSoftwareController``
+   (from ``base_controller.py``).
    This should implement 4 functions:
 
    -  ``__init__()``: Initialise anything that is needed specifically for the
@@ -128,17 +130,13 @@ In order to add a new controller, you will need to:
       store them in the results variables
       (``self.results``, ``self.final_params``, ``self.success``)
 
-2. Import your controller and add it to the dictionary 'controllers' in
-   ``fitbenchmarking/fitbenchmark_one_problem.py``.
-   For ease of maintainance, please add new controllers in alphabetical order.
-
 3. Document the available minimizers (currently done by adding to
-   ``fitbenchmarking/fitbenchmarking_default_options.json``)
+   ``fitbenchmarking/fitbenchmarking_default_options.json`` and the
+   ``users/options.rst`` file)
 
 4. Create tests for the software in
    ``fitbenchmarking/fitting/tests/test_controllers.py``.
-   Again, for ease of maintainance, please add new controllers in alphabetical order.
+   For ease of maintainance, please add new controllers in alphabetical
+   order.
    Unless the new controller is more complicated than the currently available
    controllers, this can be done by following the example of the others.
-
-

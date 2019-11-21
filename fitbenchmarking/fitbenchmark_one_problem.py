@@ -9,27 +9,9 @@ import warnings
 import numpy as np
 
 from fitbenchmarking.fitting import misc
+from fitbenchmarking.fitting.controllers.controller_factory \
+    import ControllerFactory
 from fitbenchmarking.fitting.plotting import plot_helper, plots
-try:
-    from fitbenchmarking.fitting.controllers.dfogn_controller import DFOGNController
-except ImportError:
-    DFOGNController = None
-try:
-    from fitbenchmarking.fitting.controllers.mantid_controller import MantidController
-except ImportError:
-    MantidController = None
-try:
-    from fitbenchmarking.fitting.controllers.ralfit_controller import RALFitController
-except ImportError:
-    RALFitController = None
-try:
-    from fitbenchmarking.fitting.controllers.sasview_controller import SasviewController
-except ImportError:
-    SasviewController = None
-try:
-    from fitbenchmarking.fitting.controllers.scipy_controller import ScipyController
-except ImportError:
-    ScipyController = None
 
 
 def fitbm_one_prob(user_input, problem, num_runs):
@@ -53,19 +35,10 @@ def fitbm_one_prob(user_input, problem, num_runs):
 
     results_fit_problem = []
 
-    software = user_input.software.lower()
+    software = user_input.software
 
-    controllers = {'dfogn': DFOGNController,
-                   'mantid': MantidController,
-                   'ralfit': RALFitController,
-                   'sasview': SasviewController,
-                   'scipy': ScipyController}
-
-    if software in controllers:
-        controller = controllers[software](problem, user_input.use_errors)
-    else:
-        raise NotImplementedError('The chosen software is not implemented yet:'
-                                  '{}'.format(user_input.software))
+    controller_cls = ControllerFactory.create_controller(software)
+    controller = controller_cls(problem, user_input.use_errors)
 
     # The controller reformats the data to fit within a start- and end-x bound
     # It also estimates errors if not provided.
