@@ -18,7 +18,8 @@ These include:
 The software to use in fitting as a string or list of strings.
 Selected softwares will be benchmarked.
 
-Available options are ``"mantid"``, ``"sasview"``, ``"scipy"`` and ``"dfogn"``.
+Available options are ``"dfogn"``, ``"mantid"``, ``"minuit"``, ``""ralfit""``, ``"sasview"``,
+and ``"scipy"``.
 
 ``results_dir``
 ---------------
@@ -30,7 +31,7 @@ If ``None``, a results directory will be created at ``./results``.
 Bool to select whether to use errors in the fitting process or not.
 
 ``color_scale``
---------------
+---------------
 The mapping from relative value to colour in the results table.
 
 This should be in the form of a list of 2-tuples,
@@ -100,6 +101,12 @@ Mantid:
   `Mantid documentation
   <https://docs.mantidproject.org/nightly/fitting/fitminimizers/>`__
 
+Minuit: 
+  - ``"minuit"``
+
+  Information about this can be found on the 
+  `Minuit documentation
+  <http://iminuit.readthedocs.org>`__
 
 SasView (bumps):
   - ``"amoeba"``
@@ -126,16 +133,21 @@ Scipy:
 
 DFO-GN:
   - ``"dfogn"``
+
   Information about this can be found on the
   `DFO-GN documentation
   <http://people.maths.ox.ac.uk/robertsl/dfogn/>`__
 
 
 RALfit:
-  - ``"ralfit"``
+  - ``"gn"`` (Gauss-Newton within a trust region)
+  - ``"gn_reg"`` (Gauss-Newton with regularization)
+  - ``"hybrid"`` (Hybrid method within a trust region)
+  - ``"hybrid_reg"`` (Hybrid method with regularization)
+  
   Information about this can be found on the
   `RALfit documentation
-  <https://github.com/ralna/RALFit>`__
+  <https://ralfit.readthedocs.io/projects/Python/en/latest/>`__
 
 
 ``comparison_mode``
@@ -164,6 +176,7 @@ Available options are ``"abs"``, ``"rel"``, or ``"both"``.
 ``num_runs``
 -------------------
 
-Number of runs is defines how many times FitBenchmarking calls a minimizer and thus calculates an average elapsed time using ``timeit``.
+Number of runs defines how many times FitBenchmarking calls a minimizer and
+calculates an average elapsed time using ``timeit``.
 
 Default set as ``5``.

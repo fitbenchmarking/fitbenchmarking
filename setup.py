@@ -13,7 +13,7 @@ setup(name='FitBenchmarking',
       packages=find_packages(),
       install_requires=['docutils', 'numpy<1.17', 'matplotlib<3.0',
                         'scipy>=0.18,<1.3', 'bumps', 'sasmodels', 'lxml',
-                        'dfogn'],
+                        'dfogn','iminuit'],
       zip_safe=False,
 
       cmdclass={

@@ -45,7 +45,7 @@ def fitbenchmark_group(group_name, software_options, data_dir,
     num_runs = software_options.get('num_runs', None)
 
     if num_runs is None:
-        if 'num_runs' in software_options:
+        if 'options_file' in software_options:
             options_file = software_options['options_file']
             num_runs = options.get_option(options_file=options_file,
                                           option='num_runs')
