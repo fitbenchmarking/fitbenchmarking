@@ -35,12 +35,14 @@ def nist_func_definitions(function, startvals):
     # Param_names is sanitized in get_nist_param_names_and_values
     # pylint: disable=exec-used
 
+    local_dict = {}
+    global_dict = {'__builtins__': {}, 'np': np}
     exec("def fitting_function(x, " + param_names + "): return "
-         + function_scipy_format, {'__builtins__': {}}, {'np': np})
+         + function_scipy_format, global_dict, local_dict)
     for values in all_values:
         # fitting function is created dynamically used exec
         # pylint: disable=undefined-variable
-        function_defs.append([fitting_function, values, function_scipy_format])
+        function_defs.append([local_dict['fitting_function'], values, function_scipy_format])
 
     return function_defs
 
