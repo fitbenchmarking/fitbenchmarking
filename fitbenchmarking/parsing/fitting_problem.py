@@ -126,12 +126,10 @@ class FittingProblem:
         is_correct = True
         for attr, attr_type in values.items():
             if not isinstance(getattr(self, attr), attr_type):
-                warning = 'Attribute "{}" is not the expected type.'
-                warning += 'Expected "{}", got {}.'
-                warning = warning.format(attr,
-                                         attr_type,
-                                         type(getattr(self, attr)))
-                warn(warning, RuntimeWarning)
+                warn('Attribute "{}" is not the expected type. Expected "{}",'
+                     'got {}.'.format(attr, attr_type,
+                                      type(getattr(self, attr))),
+                     RuntimeWarning)
                 is_correct = False
 
         return is_correct
