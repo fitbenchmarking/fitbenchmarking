@@ -18,7 +18,7 @@ These include:
 The software to use in fitting as a string or list of strings.
 Selected softwares will be benchmarked.
 
-Available options are ``"dfogn"``, ``"mantid"``, ``""ralfit""``, ``"sasview"``,
+Available options are ``"dfogn"``, ``"gsl"``, ``"mantid"``, ``"minuit"``, ``""ralfit""``, ``"sasview"``,
 and ``"scipy"``.
 
 ``results_dir``
@@ -86,6 +86,25 @@ e.g.
 
 Available minimizers are:
 
+GSL:
+  - ``"lmsder"``
+  - ``"lmder"``
+  - ``"simplex"``
+  - ``"simplex2"``
+  - ``"conjugate_pr"``
+  - ``"conjugate_fr"``
+  - ``"bfgs"``
+  - ``"bfgs2"``
+  - ``"steepest_descent"``
+
+  Information about these can be found on the
+  `pyGSL website
+    <https://sourceforge.net/projects/pygsl/>`__
+  or the GSL documentation for
+  `multidimensional minimization <https://www.gnu.org/software/gsl/doc/html/multimin.html>`__
+  or `nonlinear least-squares fitting <https://www.gnu.org/software/gsl/doc/html/nls.html>`__
+  
+  
 Mantid:
   - ``"BFGS"``
   - ``"Conjugate gradient (Fletcher-Reeves imp.)"``
@@ -101,6 +120,12 @@ Mantid:
   `Mantid documentation
   <https://docs.mantidproject.org/nightly/fitting/fitminimizers/>`__
 
+Minuit: 
+  - ``"minuit"``
+
+  Information about this can be found on the 
+  `Minuit documentation
+  <http://iminuit.readthedocs.org>`__
 
 SasView (bumps):
   - ``"amoeba"``
