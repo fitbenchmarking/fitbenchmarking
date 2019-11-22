@@ -30,15 +30,20 @@ def save_results_tables(software_options, results_per_test, group_name,
     """
     Saves the results of the fitting to html/rst tables.
 
-    @param software_options :: dictionary containing software used in fitting the problem, list of minimizers and location of json file contain minimizers
-    @param minimizers :: array with minimizer names
-    @param results_per_test :: results nested array of objects
-    @param group_name :: name of the problem group
-    @param use_errors :: bool whether to use errors or not
-    @param colour_scale :: colour the html table
-    @param results_dir :: directory in which the results are saved
-
-    @returns :: html/rst tables with the fitting results
+    :param software_options :: dictionary containing software used in fitting the problem, list of minimizers and location of json file contain minimizers
+    :type software_options :: dict
+    :param minimizers :: array with minimizer names
+    :type minimizers :: list
+    :param results_per_test :: results nested array of objects
+    :type results_per_test :: list[list[list]]
+    :param group_name :: name of the problem group
+    :type group_name :: str
+    :param use_errors :: bool whether to use errors or not
+    :type use_errors :: bool
+    :param colour_scale :: colour the html table
+    :type colour_scale :: list
+    :param results_dir :: name of the problem group
+    :type results_dir :: str
     """
 
     minimizers, software = misc.get_minimizers(software_options)
@@ -71,21 +76,28 @@ def save_results_tables(software_options, results_per_test, group_name,
 def generate_tables(results_per_test, minimizers,
                     linked_problems, colour_scale, comparison_mode):
     """
-    Generates accuracy and runtime tables, with both normalised and absolute results, and summary tables.
+    Generates accuracy and runtime tables, with both normalised and absolute results, and summary tables in both rst and html.
 
-    @param results_per_test :: results nested array of objects
-    @param minimizers :: array with minimizer names
-    linked_problems ::
-
-    @returns :: data and summary tables of the results as np arrays
+    :param results_per_test :: results nested array of objects
+    :type results_per_test :: list[list[list]]
+    :param minimizers :: array with minimizer names
+    :type minimizers :: list
+    :param linked_problems :: rst links for supporting pages
+    :type linked_problems :: list[str]
+    :param colour_scale :: colour the html table
+    :type colour_scale :: list
+    :param comparison_mode :: check whether to produced 'rel', 'abs' or 'both'
+                              tables
+    :type comparison_mode :: str
     """
 
     acc_dict, time_dict, html_links = create_results_dict(results_per_test,
                                                           linked_problems)
     acc_tbl = \
-        create_tables(acc_dict, minimizers)
+        create_pandas_dataframe(acc_dict, minimizers)
     runtime_tbl = \
-        create_tables(time_dict, minimizers)
+        create_pandas_dataframe(time_dict, minimizers)
+
     create_pandas_html(acc_tbl[comparison_mode], runtime_tbl[comparison_mode],
                        minimizers, colour_scale, html_links)
     create_pandas_rst(acc_tbl[comparison_mode], runtime_tbl[comparison_mode],
@@ -96,10 +108,15 @@ def create_results_dict(results_per_test, linked_problems):
     """
     Generates a dictionary used to create HTML and RST tables.
 
-    @param results_per_test :: results nested array of objects
-    linked_problems ::
+    :param results_per_test :: results nested array of objects
+    :type results_per_test :: list[list[list]]
+    :param linked_problems :: rst links for supporting pages
+    :type linked_problems :: list[str]
 
-    @returns :: data and summary tables of the results as np arrays
+    :return :: tuple(acc_results, time_results, html_links)
+               dictionary of accuracy and timing results and
+               html links for rending
+    :rtype :: tuple(dict, dict, list)
     """
 
     count = 1
@@ -124,7 +141,55 @@ def create_results_dict(results_per_test, linked_problems):
     return acc_results, time_results, html_links
 
 
+def create_pandas_dataframe(table_data, minimizers):
+    """
+    Generates pandas tables.
+
+    :param table_data :: dictionary containing results
+    :type group_name :: dict
+    :param minimizers :: list of minimizers (column headers)
+    :type group_name :: list
+
+
+    :return :: dict(tbl, tbl_norm, tbl_combined) dictionary of
+               pandas DataFrames containing results.
+    :rtype :: dict{pandas DataFrame, pandas DataFrame,
+                   pandas DataFrame}
+    """
+
+    tbl = pd.DataFrame.from_dict(table_data, orient='index')
+    tbl.columns = minimizers
+
+    tbl_norm = tbl.apply(lambda x: x / x.min(), axis=1)
+    tbl_norm = tbl_norm.applymap(lambda x: '{:.4e}'.format(x))
+    tbl = tbl.applymap(lambda x: '{:.4e}'.format(x))
+
+    tbl_combined = OrderedDict()
+    for table1, table2 in zip(tbl.iterrows(), tbl_norm.iterrows()):
+        tbl_combined[table1[0]] = []
+        for value1, value2 in zip(table1[1].array, table2[1].array):
+            tbl_combined[table1[0]].append('{} ({})'.format(value1, value2))
+    tbl_combined = pd.DataFrame.from_dict(tbl_combined, orient='index')
+    tbl_combined.columns = minimizers
+    results_table = {'abs': tbl, 'rel': tbl_norm, 'both': tbl_combined}
+    return results_table
+
+
 def check_normalised(data, colours):
+    """
+    Loops through row data of pandas data frame and assigns
+    colours depending on size.
+
+    :param data :: Pandas row data
+    :type data :: Pandas Series
+    :param colours :: rst or html colour definitions
+    :type colours :: list[str]
+
+    :return :: list of colour mappings with respect to the
+               size of the elements in the row
+    :rtype :: list
+    """
+
     data_numpy = data.array.to_numpy()
     data_list = []
     for x in data_numpy:
@@ -148,23 +213,28 @@ def check_normalised(data, colours):
     return data_list
 
 
-def create_pandas_html(acc_tbl, runtime_tbl,
-                       minimizers, colour_scale, html_links):
+def create_pandas_html(acc_tbl, runtime_tbl, minimizers,
+                       colour_scale, html_links):
     """
-    Generates a pandas data frame used to create the html tables.
+    Generates html page from pandas dataframes.
 
-    @param results_per_test :: results nested array of objects
-    @param minimizers :: array with minimizer names
-    linked_problems ::
-
-    @returns :: data and summary tables of the results as np arrays
+    :param acc_tbl :: DataFrame of the accuracy results
+    :type acc_tbl :: pandas DataFrame
+    :param runtime_tbl :: DataFrame of the timing results
+    :type runtime_tbl :: pandas DataFrame
+    :param minimizers :: list of minimizers (column headers)
+    :type minimizers :: list
+    :param colour_scale :: user defined colour scale
+    :type colour_scale :: list
+    :param html_links :: html links used in pandas rendering
+    :type html_links :: list
     """
     acc_tbl.index = html_links
     runtime_tbl.index = html_links
 
     def colour_highlight(data):
         '''
-        highlight the maximum in a Series or DataFrame
+        Colour mapping for visulaisation of table
         '''
         data_list = check_normalised(data, html_color_scale)
 
@@ -177,31 +247,30 @@ def create_pandas_html(acc_tbl, runtime_tbl,
         f.close()
 
 
-def create_pandas_rst(acc_tbl, runtime_tbl, minimizers, colour_scale,
-                      linked_problems):
+def create_pandas_rst(acc_tbl, runtime_tbl, minimizers,
+                      colour_scale, rst_links):
     """
-    Generates pandas dataframes in rst format.
+    Generates html page from pandas dataframes.
 
-    :param table_data :: dictionary containing results
-    :type group_name :: dict
+    :param acc_tbl :: DataFrame of the accuracy results
+    :type acc_tbl :: pandas DataFrame
+    :param runtime_tbl :: DataFrame of the timing results
+    :type runtime_tbl :: pandas DataFrame
     :param minimizers :: list of minimizers (column headers)
     :type minimizers :: list
     :param colour_scale :: user defined colour scale
     :type colour_scale :: list
-
-
-    :return :: list(tbl, tbl_norm, tbl_combined) array of fitting results for
-                the problem group and the path to the results directory
-    :rtype :: [pandas DataFrame, pandas DataFrame, pandas DataFrame]
+    :param rst_links :: rst links used in pandas rendering
+    :type rst_links :: list
     """
     rst_colours = [colour[1] for colour in colour_scale]
 
-    acc_tbl.index = linked_problems
-    runtime_tbl.index = linked_problems
+    acc_tbl.index = rst_links
+    runtime_tbl.index = rst_links
 
     def colour_highlight(data):
         '''
-        highlight the maximum in a Series or DataFrame
+        Colour mapping for visualisation of table
         '''
         data_list = check_normalised(data, rst_colours)
         for i, x in enumerate(data):
@@ -215,36 +284,3 @@ def create_pandas_rst(acc_tbl, runtime_tbl, minimizers, colour_scale,
         writer.table_name = "example_table"
         writer.from_dataframe(table, add_index_column=True)
         writer.write_table()
-
-
-def create_tables(table_data, minimizers):
-    """
-    Generates pandas tables.
-
-    :param table_data :: dictionary containing results
-    :type group_name :: dict
-    :param minimizers :: list of minimizers (column headers)
-    :type group_name :: list
-
-
-    :return :: dict(tbl, tbl_norm, tbl_combined) array of fitting results for
-                the problem group and the path to the results directory
-    :rtype :: dict{pandas DataFrame, pandas DataFrame, pandas DataFrame}
-    """
-
-    tbl = pd.DataFrame.from_dict(table_data, orient='index')
-    tbl.columns = minimizers
-
-    tbl_norm = tbl.apply(lambda x: x / x.min(), axis=1)
-    tbl_norm = tbl_norm.applymap(lambda x: '{:.4e}'.format(x))
-    tbl = tbl.applymap(lambda x: '{:.4e}'.format(x))
-
-    tbl_combined = OrderedDict()
-    for table1, table2 in zip(tbl.iterrows(), tbl_norm.iterrows()):
-        tbl_combined[table1[0]] = []
-        for value1, value2 in zip(table1[1].array, table2[1].array):
-            tbl_combined[table1[0]].append('{} ({})'.format(value1, value2))
-    tbl_combined = pd.DataFrame.from_dict(tbl_combined, orient='index')
-    tbl_combined.columns = minimizers
-    results_table = {'abs': tbl, 'rel': tbl_norm, 'both': tbl_combined}
-    return results_table
