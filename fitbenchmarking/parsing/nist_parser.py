@@ -24,7 +24,7 @@ class NISTParser(Parser):
 
         fitting_problem = FittingProblem()
 
-        equation, data, starting_values = self._parse_line_by_line()
+        equation, data, starting_values, name = self._parse_line_by_line()
         data = self._parse_data(data)
 
         fitting_problem.data_x = data[:, 1]
@@ -32,7 +32,7 @@ class NISTParser(Parser):
         if len(data[0, :]) > 2:
             fitting_problem.data_e = data[:, 2]
 
-        fitting_problem.name = os.path.basename(self._filename.split('.')[0])
+        fitting_problem.name = name
 
         # String containing a mathematical expression
         fitting_problem.equation = self._parse_equation(equation)
@@ -70,13 +70,17 @@ class NISTParser(Parser):
             elif line.startswith("Data:"):
                 if " x" in line and " y " in line:
                     data_pattern_text, idx = self._get_data_txt(lines, idx)
+            elif line.startswith("Dataset Name:"):
+                name = line.split(':', 1)[1]
+                name = name.split('(', 1)[0]
+                name = name.strip()
             else:
                 ignored_lines += 1
 
         logger.info("%s lines were ignored in this problem file",
                     ignored_lines)
 
-        return equation_text, data_pattern_text, starting_values
+        return equation_text, data_pattern_text, starting_values, name
 
     def _get_nist_model(self, lines, idx):
         """
