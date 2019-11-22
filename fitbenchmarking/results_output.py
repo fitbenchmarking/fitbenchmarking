@@ -63,18 +63,30 @@ def save_results_tables(software_options, results_per_test, group_name,
     if isinstance(software, list):
         minimizers = sum(minimizers, [])
 
+    weighted_values = {True: 'weighted', False: 'unweighted'}
+
+    table_name = []
+
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
         visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
 
+    for x in [FILENAME_SUFFIX_ACCURACY, FILENAME_SUFFIX_RUNTIME]:
+        table_name.append(os.path.join(tables_dir,
+                                       '{0}_{1}_{2}_table.'.format(
+                                           weighted_values[use_errors],
+                                           x,
+                                           group_name)))
     generate_tables(results_per_test, minimizers,
-                    linked_problems, color_scale, comparison_mode)
+                    linked_problems, color_scale,
+                    comparison_mode, table_name)
 
     logging.shutdown()
 
 
 def generate_tables(results_per_test, minimizers,
-                    linked_problems, colour_scale, comparison_mode):
+                    linked_problems, colour_scale,
+                    comparison_mode, table_name):
     """
     Generates accuracy and runtime tables, with both normalised and absolute results, and summary tables in both rst and html.
 
@@ -99,9 +111,9 @@ def generate_tables(results_per_test, minimizers,
         create_pandas_dataframe(time_dict, minimizers)
 
     create_pandas_html(acc_tbl[comparison_mode], runtime_tbl[comparison_mode],
-                       minimizers, colour_scale, html_links)
+                       minimizers, colour_scale, html_links, table_name)
     create_pandas_rst(acc_tbl[comparison_mode], runtime_tbl[comparison_mode],
-                      minimizers, colour_scale, linked_problems)
+                      minimizers, colour_scale, linked_problems, table_name)
 
 
 def create_results_dict(results_per_test, linked_problems):
@@ -134,7 +146,7 @@ def create_results_dict(results_per_test, linked_problems):
             count = 1
         prev_name = name
         prob_name = name + ' ' + str(count)
-        name, url = linked_problems[test_idx].split('<')
+        url = linked_problems[test_idx].split('<')[1].split('>')[0]
         html_links.append(template.format(url, prob_name))
         acc_results[prob_name] = [result.chi_sq for result in results_per_test[test_idx]]
         time_results[prob_name] = [result.runtime for result in results_per_test[test_idx]]
@@ -161,8 +173,8 @@ def create_pandas_dataframe(table_data, minimizers):
     tbl.columns = minimizers
 
     tbl_norm = tbl.apply(lambda x: x / x.min(), axis=1)
-    tbl_norm = tbl_norm.applymap(lambda x: '{:.4e}'.format(x))
-    tbl = tbl.applymap(lambda x: '{:.4e}'.format(x))
+    tbl_norm = tbl_norm.applymap(lambda x: '{:.4g}'.format(x))
+    tbl = tbl.applymap(lambda x: '{:4g}'.format(x))
 
     tbl_combined = OrderedDict()
     for table1, table2 in zip(tbl.iterrows(), tbl_norm.iterrows()):
@@ -175,7 +187,7 @@ def create_pandas_dataframe(table_data, minimizers):
     return results_table
 
 
-def check_normalised(data, colours):
+def check_normalised(data, colours, colour_bounds):
     """
     Loops through row data of pandas data frame and assigns
     colours depending on size.
@@ -193,28 +205,25 @@ def check_normalised(data, colours):
     data_numpy = data.array.to_numpy()
     data_list = []
     for x in data_numpy:
-        if x != "nan":
-            norm_stripped = re.findall('\(([^)]+)', x)
-            if norm_stripped == []:
-                data_list.append(float(x))
-            else:
-                if norm_stripped[0] != "nan":
-                    data_list.append(float(norm_stripped[0]))
-                else:
-                    data_list.append(np.inf)
+        x = x.replace('nan', 'inf')
+        norm_stripped = re.findall('\(([^)]+)', x)
+        if norm_stripped == []:
+            data_list.append(float(x))
         else:
-            data_list.append(np.inf)
+            data_list.append(float(norm_stripped[0]))
 
     data_list = data_list / np.min(data_list)
-    data_list = np.select(
-        [data_list <= 1.1, data_list <= 1.33,
-         data_list <= 1.75, data_list <= 3, data_list > 3],
-        colours)
-    return data_list
+    results = len(data_list) * [colours[-1]]
+    for i, x in enumerate(data_list):
+        for j, y in enumerate(colour_bounds):
+            if x <= y:
+                results[i] = colours[j]
+                break
+    return results
 
 
 def create_pandas_html(acc_tbl, runtime_tbl, minimizers,
-                       colour_scale, html_links):
+                       colour_scale, html_links, table_name):
     """
     Generates html page from pandas dataframes.
 
@@ -229,26 +238,28 @@ def create_pandas_html(acc_tbl, runtime_tbl, minimizers,
     :param html_links :: html links used in pandas rendering
     :type html_links :: list
     """
+    colour_bounds = [colour[0] for colour in colour_scale]
+
     acc_tbl.index = html_links
     runtime_tbl.index = html_links
 
     def colour_highlight(data):
         '''
-        Colour mapping for visulaisation of table
+        Colour mapping for visualisation of table
         '''
-        data_list = check_normalised(data, html_color_scale)
+        data_list = check_normalised(data, html_color_scale, colour_bounds)
 
         return ['background-color: {0}'.format(i) for i in data_list]
-
-    for table in [acc_tbl, runtime_tbl]:
+    results = [acc_tbl, runtime_tbl]
+    for table, name in zip(results, table_name):
         table_style = table.style.apply(colour_highlight, axis=1)
-        f = open("test1.html", "w")
+        f = open(name + 'html', "w")
         f.write(table_style.render())
         f.close()
 
 
 def create_pandas_rst(acc_tbl, runtime_tbl, minimizers,
-                      colour_scale, rst_links):
+                      colour_scale, rst_links, table_name):
     """
     Generates html page from pandas dataframes.
 
@@ -263,6 +274,7 @@ def create_pandas_rst(acc_tbl, runtime_tbl, minimizers,
     :param rst_links :: rst links used in pandas rendering
     :type rst_links :: list
     """
+    colour_bounds = [colour[0] for colour in colour_scale]
     rst_colours = [colour[1] for colour in colour_scale]
 
     acc_tbl.index = rst_links
@@ -272,15 +284,16 @@ def create_pandas_rst(acc_tbl, runtime_tbl, minimizers,
         '''
         Colour mapping for visualisation of table
         '''
-        data_list = check_normalised(data, rst_colours)
+        data_list = check_normalised(data, rst_colours, colour_bounds)
         for i, x in enumerate(data):
             data[i] = ':{}:`{}`'.format(data_list[i], x)
 
         return data
 
-    for table in [acc_tbl, runtime_tbl]:
+    results = [acc_tbl, runtime_tbl]
+    for table, name in zip(results, table_name):
         table.apply(colour_highlight, axis=1)
         writer = pytablewriter.RstGridTableWriter()
         writer.table_name = "example_table"
         writer.from_dataframe(table, add_index_column=True)
-        writer.write_table()
+        writer.dump(name + "rst")
