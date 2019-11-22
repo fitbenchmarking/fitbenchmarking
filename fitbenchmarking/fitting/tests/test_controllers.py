@@ -141,7 +141,25 @@ class ControllerTests(TestCase):
         controller.minimizer = 'dfogn'
         self.shared_testing(controller)
 
-    def test_ralfit(self):
+    def test_gsl(self):
+        """
+        GSLController: Tests for output shape
+        """
+        controller = GSLController(self.problem, True)
+        minimizers = ['lmsder',
+                      'lmder',
+                      'simplex',
+                      'simplex2',
+                      'conjugate_pr',
+                      'conjugate_fr',
+                      'vector_bfgs',
+                      'vector_bfgs2',
+                      'steepest_descent']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_testing(controller)
+
+        def test_ralfit(self):
         """
         RALFitController: Tests for output shape
         """
@@ -151,6 +169,7 @@ class ControllerTests(TestCase):
             controller.minimizer = minimizer
             self.shared_testing(controller)
 
+            
     def shared_testing(self, controller):
         """
         Utility function to run controller and check output is in generic form
