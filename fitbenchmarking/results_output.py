@@ -65,12 +65,11 @@ def save_results_tables(software_options, results_per_test, group_name,
 
     weighted_values = {True: 'weighted', False: 'unweighted'}
 
-    table_name = []
-
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
         visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
 
+    table_name = []
     for x in [FILENAME_SUFFIX_ACCURACY, FILENAME_SUFFIX_RUNTIME]:
         table_name.append(os.path.join(tables_dir,
                                        '{0}_{1}_{2}_table.'.format(

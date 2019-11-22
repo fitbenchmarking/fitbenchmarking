@@ -135,8 +135,18 @@ def main(argv):
         linked_problems = \
             visual_pages.create_linked_probs(prob_results, group_name, results_dir)
 
+        table_name = []
+        weighted_values = {True: 'weighted', False: 'unweighted'}
+
+        for x in ['acc', 'runtime']:
+            table_name.append(os.path.join(tables_dir,
+                                           '{0}_{1}_{2}_table.'.format(
+                                               weighted_values[use_errors],
+                                               x,
+                                               group_name)))
         generate_tables(prob_results, minimizers,
-                        linked_problems, color_scale, comparison_mode)
+                        linked_problems, color_scale,
+                        comparison_mode, table_name)
 
         print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
 
