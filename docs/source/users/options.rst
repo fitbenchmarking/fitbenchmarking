@@ -20,5 +20,8 @@ The options file must be a `.ini` file, and a good reference for this can be
 found in the examples, as well as at the bottom of this document.
 
 
-.. autoattribute:: fitbenchmarking.utils.options.Options.DEFAULTS
+.. prettyprintvalue::
+   :module: fitbenchmarking.utils.options
+   :class: Options
+   :var: DEFAULTS
 

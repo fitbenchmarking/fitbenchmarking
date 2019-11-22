@@ -18,7 +18,7 @@ class Options(object):
         # In most cases this can be left out, and defaults will be sufficient
         #################################################################################
         [MINIMIZERS]
-        # To override the selection that is made by default, you should provide an entry 
+        # To override the selection that is made by default, you should provide an entry
         # for the software with a newline separated list of minimizers
         dfogn: dfogn
         mantid: BFGS
@@ -32,13 +32,13 @@ class Options(object):
                 Trust Region
         ralfit: ralfit
         sasview: amoeba
-                lm
-                newton
-                de
-                mp
+                 lm
+                 newton
+                 de
+                 mp
         scipy: lm
-            trf
-            dogbox
+               trf
+               dogbox
 
         ###########################################################################
         # The fitting section is used for options specific to running the benchmark
@@ -51,10 +51,10 @@ class Options(object):
         # this should be a newline-separated list
         # default is dfon, mantid, ralfit, sasview, and scipy
         software: dfogn
-                mantid
-                ralfit
-                sasview
-                scipy
+                  mantid
+                  ralfit
+                  sasview
+                  scipy
         # use_errors will switch between weighted and unweighted least squares
         # default is True (yes/no can also be used)
         use_errors: yes
@@ -67,16 +67,16 @@ class Options(object):
         #              In the below example, this means that values less than 1.1
         #              will have the top ranking (brightest) and values over 3
         #              will show as the worst ranking (deep red)
-        # default thresholds are 1.1, 1.33, 1.75, 3, and nan
+        # default thresholds are 1.1, 1.33, 1.75, 3, and inf
         colour_scale: 1.1, ranking-top-1
-                    1.33, ranking-top-2
-                    1.75, ranking-med-3
-                    3, ranking-low-4
-                    nan, ranking-low-5
+                      1.33, ranking-top-2
+                      1.75, ranking-med-3
+                      3, ranking-low-4
+                      inf, ranking-low-5
         # comparison_mode selects the mode for displaying values in the resulting table
         #                 options are 'abs', 'rel', 'both'
         #                 'abs' indicates that the absolute values should be displayed
-        #                 'rel' indicates that the values should all be relative to 
+        #                 'rel' indicates that the values should all be relative to
         #                       the best performing
         #                 'both' will show data in the form "abs (rel)"
         # default is both
