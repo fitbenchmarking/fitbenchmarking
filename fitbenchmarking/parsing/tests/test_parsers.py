@@ -7,10 +7,12 @@ from inspect import isclass, isabstract, getmembers
 from json import load
 import numpy as np
 import os
+from unittest import TestCase
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.parsing.parser_factory import ParserFactory
+from fitbenchmarking.parsing.parser_factory import \
+    ParserFactory, parse_problem_file
 
 
 def pytest_generate_tests(metafunc):
@@ -240,3 +242,36 @@ class TestParsers:
         parser = ParserFactory.create_parser(test_file)
         assert (parser.__name__.lower().startswith(file_format.lower())), \
             'Factory failed to get associated parser for {}'.format(test_file)
+
+
+class TestParserFactory(TestCase):
+    """
+    A class to hold the tests for the parser factory.
+    Note: testing that the parser factory works for all new parsers is left to
+          the factory tests in TestParsers
+    """
+
+    def test_unknown_parser(self):
+        """
+        Tests that the parser factory raises a value error when an erroneous
+        parser is requested.
+        """
+        filename = os.path.join(os.getcwd(), 'this_is_a_fake_parser.txt')
+        with open(filename, 'w') as f:
+            f.write('this_is_a_fake_parser')
+
+        factory = ParserFactory()
+        with self.assertRaises(ValueError):
+            _ = factory.create_parser(filename)
+
+        os.remove(filename)
+
+    def test_parse_problem_file(self):
+        """
+        Tests the parse_problem_file method
+        """
+        filename = os.path.join(os.path.dirname(__file__),
+                                'nist',
+                                'basic.dat')
+        fitting_problem = parse_problem_file(filename)
+        self.assertEqual(fitting_problem.name, 'basic')
