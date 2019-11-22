@@ -66,9 +66,9 @@ class BaseControllerTests(TestCase):
 
         controller = DummyController(self.problem, True)
 
-        if self.problem.start_x is None:
+        if self.problem.start_x is not None:
             assert min(controller.data_x) >= self.problem.start_x
-        if self.problem.end_x is None:
+        if self.problem.end_x is not None:
             assert max(controller.data_x) <= self.problem.end_x
 
         assert len(controller.data_e) == len(controller.data_x)
