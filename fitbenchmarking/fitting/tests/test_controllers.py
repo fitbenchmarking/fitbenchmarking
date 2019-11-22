@@ -9,6 +9,8 @@ from fitbenchmarking.fitting.controllers.dfogn_controller import \
     DFOGNController
 from fitbenchmarking.fitting.controllers.mantid_controller import \
     MantidController
+from fitbenchmarking.fitting.controllers.minuit_controller import \
+    MinuitController
 from fitbenchmarking.fitting.controllers.ralfit_controller import \
     RALFitController
 from fitbenchmarking.fitting.controllers.sasview_controller import \
@@ -150,6 +152,16 @@ class ControllerTests(TestCase):
         for minimizer in minimizers:
             controller.minimizer = minimizer
             self.shared_testing(controller)
+
+
+    def test_minuit(self):
+        """
+        MinuitController: Tests for output shape
+        """
+        controller = MinuitController(self.problem, True)
+        controller.minimizer = 'minuit'
+        self.shared_testing(controller)
+
 
     def shared_testing(self, controller):
         """

@@ -9,7 +9,8 @@
         "scipy" : ["lm", "trf", "dogbox"],
         "sasview" : ["amoeba", "lm-bumps", "newton", "de", "pt", "mp"],
         "dfogn" : ["dfogn"],
-        "ralfit" : ["gn","gn_reg","hybrid","hybrid_reg"]
+        "ralfit" : ["gn","gn_reg","hybrid","hybrid_reg"],
+	"minuit" : ["minuit"]
         },
 
     "comparison_mode" : "both",
