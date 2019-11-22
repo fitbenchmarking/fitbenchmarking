@@ -6,8 +6,9 @@ https://sourceforge.net/projects/pygsl/
 """
 
 import pygsl
-from pygsl import multifit_nlin, errno
+from pygsl import multifit_nlin, multiminimize, errno
 from pygsl import _numobj as numx
+import numpy as np
 
 from scipy.optimize._numdiff import approx_derivative
 
@@ -46,7 +47,19 @@ class GSLController(Controller):
         df = self._jac(p)
         return f, df
 
-    
+    def _chi_squared(self, p, data=None):
+        f = self._prediction_error(p)
+        return np.dot(f,f)
+
+    def _jac_chi_squared(self, p, data=None):
+        j = approx_derivative(self._chi_squared,
+                              p)
+        return j
+
+    def _chi_squared_fdf(self, p, data=None):
+        f  = self._chi_squared(p)
+        df = self._jac_chi_squared(p)
+        return f, df
         
     def setup(self):
         """
@@ -57,20 +70,67 @@ class GSLController(Controller):
                                  self.data_e])
         self._n = len(self.data_x)
         self._p = len(self.initial_params)
-        mysys = multifit_nlin.gsl_multifit_function_fdf(self._prediction_error,
-                                                        self._jac,
-                                                        self._fdf,
-                                                        self._data,
-                                                        self._n,
+        self._pinit = numx.array(self.initial_params)
+
+        self._residual_methods = ['lmsder',
+                                  'lmder']
+        self._function_methods_no_jac = ['simplex',
+                                         'simplex2']
+        self._function_methods_with_jac = ['conjugate_pr',
+                                           'conjugate_fr',
+                                           'vector_bfgs',
+                                           'vector_bfgs2',
+                                           'steepest_descent']
+
+        # set up the system
+        if self.minimizer in self._residual_methods:
+            mysys = multifit_nlin.gsl_multifit_function_fdf(
+                self._prediction_error,
+                self._jac,
+                self._fdf,
+                self._data,
+                self._n,
+                self._p)
+        elif self.minimizer in self._function_methods_no_jac:
+            mysys = multiminimize.gsl_multimin_function(self._chi_squared,
+                                                        self._pinit,
                                                         self._p)
+        elif self.minimizer in self._function_methods_with_jac:
+            mysys = multiminimize.gsl_multimin_function_fdf(self._chi_squared,
+                                                            self._jac_chi_squared,
+                                                            self._chi_squared_fdf,
+                                                            self._data,
+                                                            self._p)
+        else:
+            raise RuntimeError("An undefined GSL minimizer was selected")
+            
+        # define the solver
         if self.minimizer=='lmsder':
             self._solver = multifit_nlin.lmsder(mysys, self._n, self._p)
         elif self.minimizer=='lmder':
             self._solver = multifit_nlin.lmder(mysys, self._n, self._p)
+        elif self.minimizer=='simplex':
+            self._solver = multiminimize.nmsimplex(mysys, self._p)
+        elif self.minimizer=='simplex2':
+            self._solver = multiminimize.nmsimplex2(mysys, self._p)
+        elif self.minimizer=='conjugate_pr':
+            self._solver = multiminimize.conjugate_pr(mysys, self._p)
+        elif self.minimizer=='conjugate_fr':
+            self._solver = multiminimize.conjugate_fr(mysys, self._p)
+        elif self.minimizer=='bfgs':
+            self._solver = multiminimize.bfgs(mysys, self._p)
+        elif self.minimizer=='bfgs2':
+            self._solver = multiminimize.bfgs2(mysys, self._p)
+        elif self.minimizer=='steepest_descent':
+            self._solver = multiminimize.steepest_descent(mysys, self._p)
+
+        if self.minimizer in self._residual_methods:
+            self._solver.set(self._pinit)
+        elif self.minimizer in self._function_methods_no_jac:
+            initial_steps = 0.1 * numx.array(np.ones(self._p))
+            self._solver.set(self._pinit, initial_steps)
         else:
-            raise RuntimeError("An undefined GSL minmizer was selected")
-        self._pinit = numx.array(self.initial_params)
-        self._solver.set(self._pinit)
+            self._solver.set(self._pinit, 0.01, 1e-4) # why magic numbers?
 
     def fit(self):
         """ 
@@ -83,11 +143,21 @@ class GSLController(Controller):
         relerror = 1e-4 # consistent with Mantid
 
         for iter in range(maxits):
-            status = self._solver.iterate()                    
-            x  = self._solver.getx()
-            dx = self._solver.getdx()
-            # check if we've converged
-            status = multifit_nlin.test_delta(dx,x,abserror,relerror)
+            status = self._solver.iterate()
+            # check if the method has converged
+            if self.minimizer in self._residual_methods:
+                x  = self._solver.getx()
+                dx = self._solver.getdx()
+                # check if we've converged
+                status = multifit_nlin.test_delta(dx,x,abserror,relerror)
+            elif self.minimizer in self._function_methods_no_jac:
+                ssval = self._solver.size()
+                status = multiminimize.test_size(ssval, 1e-2)
+                # status is rval in sample code.  Break if rval=0.
+                # is this Equivalent to status?
+            else: # must be in function_methods_with_jac
+                gradient = self._solver.gradient()
+                status = multiminimize.test_gradient(gradient, 1e-3) #magic number                
             if status == errno.GSL_SUCCESS:
                 self.success = True
                 break
