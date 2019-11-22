@@ -10,7 +10,15 @@
         "sasview" : ["amoeba", "lm", "newton", "de", "pt", "mp"],
         "dfogn" : ["dfogn"],
         "ralfit" : ["gn","gn_reg","hybrid","hybrid_reg"],
-	"gsl" : ["lmsder", "lmder"]
+	"gsl" : ["lmsder",
+		 "lmder",
+		 "simplex",
+                 "simplex2",
+		 "conjugate_pr",
+                 "conjugate_fr",
+                 "vector_bfgs",
+                 "vector_bfgs2",
+                 "steepest_descent"]
         },
 
     "comparison_mode" : "both",
