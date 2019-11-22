@@ -21,4 +21,4 @@ setup(name='FitBenchmarking',
           'help': Help,
       },
       package_data={'fitbenchmarking': ['resproc/color_definitions.txt']}
-     )
+      )
