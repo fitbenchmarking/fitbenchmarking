@@ -157,7 +157,7 @@ def create_pandas_dataframe(table_data, minimizers):
     Generates pandas tables.
 
     :param table_data :: dictionary containing results
-    :type group_name :: dict
+    :type table_data :: dict
     :param minimizers :: list of minimizers (column headers)
     :type group_name :: list
 
