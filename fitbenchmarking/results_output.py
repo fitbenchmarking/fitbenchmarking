@@ -173,7 +173,7 @@ def create_pandas_dataframe(table_data, minimizers):
 
     tbl_norm = tbl.apply(lambda x: x / x.min(), axis=1)
     tbl_norm = tbl_norm.applymap(lambda x: '{:.4g}'.format(x))
-    tbl = tbl.applymap(lambda x: '{:4g}'.format(x))
+    tbl = tbl.applymap(lambda x: '{:.4g}'.format(x))
 
     tbl_combined = OrderedDict()
     for table1, table2 in zip(tbl.iterrows(), tbl_norm.iterrows()):
