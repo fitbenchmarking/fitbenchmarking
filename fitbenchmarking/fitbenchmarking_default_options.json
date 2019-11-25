@@ -6,7 +6,7 @@
                     "Levenberg-Marquardt", "Levenberg-MarquardtMD",
                     "Simplex","SteepestDescent",
                     "Trust Region"],
-        "scipy" : ["lm", "trf", "dogbox"],
+        "scipy" : ["lm-scipy", "trf", "dogbox"],
         "sasview" : ["amoeba", "lm-bumps", "newton", "de", "pt", "mp"],
         "dfogn" : ["dfogn"],
         "ralfit" : ["gn","gn_reg","hybrid","hybrid_reg"],
