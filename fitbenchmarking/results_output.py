@@ -106,10 +106,8 @@ def generate_tables(results_per_test, minimizers,
 
     acc_dict, time_dict, html_links = create_results_dict(results_per_test,
                                                           linked_problems)
-    acc_tbl = \
-        create_pandas_dataframe(acc_dict, minimizers)
-    runtime_tbl = \
-        create_pandas_dataframe(time_dict, minimizers)
+    acc_tbl = create_pandas_dataframe(acc_dict, minimizers)
+    runtime_tbl = create_pandas_dataframe(time_dict, minimizers)
 
     create_pandas_html(acc_tbl[comparison_mode], runtime_tbl[comparison_mode],
                        minimizers, colour_scale, html_links, table_names)
@@ -139,18 +137,18 @@ def create_results_dict(results_per_test, linked_problems):
     time_results = OrderedDict()
     html_links = []
 
-    for test_idx, prob_results in enumerate(results_per_test):
-        name = results_per_test[test_idx][0].problem.name
+    for prob_results, link in zip(results_per_test, linked_problems):
+        name = prob_results[0].problem.name
         if name == prev_name:
             count += 1
         else:
             count = 1
         prev_name = name
         prob_name = name + ' ' + str(count)
-        url = linked_problems[test_idx].split('<')[1].split('>')[0]
+        url = link.split('<')[1].split('>')[0]
         html_links.append(template.format(url, prob_name))
-        acc_results[prob_name] = [result.chi_sq for result in results_per_test[test_idx]]
-        time_results[prob_name] = [result.runtime for result in results_per_test[test_idx]]
+        acc_results[prob_name] = [result.chi_sq for result in prob_results]
+        time_results[prob_name] = [result.runtime for result in prob_results]
     return acc_results, time_results, html_links
 
 
@@ -199,6 +197,8 @@ def check_normalised(data, colours, colour_bounds):
     :type data : Pandas Series
     :param colours : rst or html colour definitions
     :type colours : list[str]
+    :param colour_bounds : rst or html colour bounds
+    :type colour_bounds : list[str]
 
     :return : list of colour mappings with respect to the
                size of the elements in the row
@@ -258,9 +258,8 @@ def create_pandas_html(acc_tbl, runtime_tbl, minimizers,
     results = [acc_tbl, runtime_tbl]
     for table, name in zip(results, table_names):
         table_style = table.style.apply(colour_highlight, axis=1)
-        f = open(name + 'html', "w")
-        f.write(table_style.render())
-        f.close()
+        with open(name + 'html', "w") as f:
+            f.write(table_style.render())
 
 
 def create_pandas_rst(acc_tbl, runtime_tbl, minimizers,
