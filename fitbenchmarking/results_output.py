@@ -89,7 +89,6 @@ def create_acc_tbl(minimizers, linked_problems, accuracy_tbl, use_errors,
                    color_scale, comparison_mode='abs'):
     """
     API function to create an accuracy table using the given parameters.
-    For usage, see the expert example script.
 
     @param minimizers :: array of minimizers used in fitting
     @param linked_problems :: array of the problems that were fitted
@@ -117,7 +116,6 @@ def create_runtime_tbl(minimizers, linked_problems, runtime_tbl, use_errors,
                        color_scale, comparison_mode='abs'):
     """
     API function to create a runtime table using the given parameters.
-    For usage, see the expert example script.
 
     @param minimizers :: array of minimizers used in fitting
     @param linked_problems :: array of the problems that were fitted
