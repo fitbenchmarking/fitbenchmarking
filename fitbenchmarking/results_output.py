@@ -22,7 +22,7 @@ FILENAME_SUFFIX_RUNTIME = 'runtime'
 FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
-HTML_COLUR_SCALE = ['#fef0d9', '#fdcc8a', '#fc8d59', '#e34a33', '#b30000']
+HTML_COLOUR_SCALE = ['#fef0d9', '#fdcc8a', '#fc8d59', '#e34a33', '#b30000']
 
 
 def save_results_tables(software_options, results_per_test, group_name,
@@ -252,7 +252,7 @@ def create_pandas_html(acc_tbl, runtime_tbl, minimizers,
         '''
         Colour mapping for visualisation of table
         '''
-        data_list = check_normalised(data, HTML_COLUR_SCALE, colour_bounds)
+        data_list = check_normalised(data, HTML_COLOUR_SCALE, colour_bounds)
 
         return ['background-color: {0}'.format(i) for i in data_list]
     results = [acc_tbl, runtime_tbl]
