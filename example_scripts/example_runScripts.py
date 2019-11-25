@@ -20,8 +20,8 @@ def main(args):
     software_options = {'software': software}
 
     # User defined minimizers
-    # custom_minimizers = {"scipy": ["lm", "trf", "dogbox"],
-    #                      "sasview": ["amoeba", "lm", "newton", "de", "pt", "mp"]}
+    # custom_minimizers = {"scipy": ["lm-scipy", "trf", "dogbox"],
+    #                      "sasview": ["amoeba", "lm-bumps", "newton", "de", "pt", "mp"]}
     # None will default to the list on the options file
     custom_minimizers = None
 

@@ -50,7 +50,7 @@ e.g.
    (1.33, "ranking-top-2"),
    (1.75, "ranking-med-3"),
    (3, "ranking-low-4"),
-   (float("nan"), "ranking-low-5")]
+   (float("inf"), "ranking-low-5")]
 
 
 ``problem_sets``
@@ -101,10 +101,10 @@ Mantid:
   `Mantid documentation
   <https://docs.mantidproject.org/nightly/fitting/fitminimizers/>`__
 
-Minuit: 
+Minuit:
   - ``"minuit"``
 
-  Information about this can be found on the 
+  Information about this can be found on the
   `Minuit documentation
   <http://iminuit.readthedocs.org>`__
 
@@ -144,7 +144,7 @@ RALfit:
   - ``"gn_reg"`` (Gauss-Newton with regularization)
   - ``"hybrid"`` (Hybrid method within a trust region)
   - ``"hybrid_reg"`` (Hybrid method with regularization)
-  
+
   Information about this can be found on the
   `RALfit documentation
   <https://ralfit.readthedocs.io/projects/Python/en/latest/>`__
