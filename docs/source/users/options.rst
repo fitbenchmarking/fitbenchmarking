@@ -24,4 +24,3 @@ found in the examples, as well as at the bottom of this document.
    :module: fitbenchmarking.utils.options
    :class: Options
    :var: DEFAULTS
-
