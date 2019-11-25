@@ -5,11 +5,11 @@ Functions that creates the tables and the visual display pages.
 from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
 import logging
+import numpy as np
 import os
 import pandas as pd
-import numpy as np
-import re
 import pytablewriter
+import re
 
 
 from fitbenchmarking.utils.logging_setup import logger
@@ -22,7 +22,7 @@ FILENAME_SUFFIX_RUNTIME = 'runtime'
 FILENAME_EXT_TXT = 'txt'
 FILENAME_EXT_HTML = 'html'
 
-html_color_scale = ['#fef0d9', '#fdcc8a', '#fc8d59', '#e34a33', '#b30000']
+HTML_COLUR_SCALE = ['#fef0d9', '#fdcc8a', '#fc8d59', '#e34a33', '#b30000']
 
 
 def save_results_tables(software_options, results_per_test, group_name,
@@ -30,20 +30,20 @@ def save_results_tables(software_options, results_per_test, group_name,
     """
     Saves the results of the fitting to html/rst tables.
 
-    :param software_options :: dictionary containing software used in fitting the problem, list of minimizers and location of json file contain minimizers
-    :type software_options :: dict
-    :param minimizers :: array with minimizer names
-    :type minimizers :: list
-    :param results_per_test :: results nested array of objects
-    :type results_per_test :: list[list[list]]
-    :param group_name :: name of the problem group
-    :type group_name :: str
-    :param use_errors :: bool whether to use errors or not
-    :type use_errors :: bool
-    :param colour_scale :: colour the html table
-    :type colour_scale :: list
-    :param results_dir :: name of the problem group
-    :type results_dir :: str
+    :param software_options : dictionary containing software used in fitting the problem, list of minimizers and location of json file contain minimizers
+    :type software_options : dict
+    :param minimizers : array with minimizer names
+    :type minimizers : list
+    :param results_per_test : results nested array of objects
+    :type results_per_test : list[list[list]]
+    :param group_name : name of the problem group
+    :type group_name : str
+    :param use_errors : bool whether to use errors or not
+    :type use_errors : bool
+    :param colour_scale : colour the html table
+    :type colour_scale : list
+    :param results_dir : name of the problem group
+    :type results_dir : str
     """
 
     minimizers, software = misc.get_minimizers(software_options)
@@ -63,43 +63,45 @@ def save_results_tables(software_options, results_per_test, group_name,
     if isinstance(software, list):
         minimizers = sum(minimizers, [])
 
-    weighted_values = {True: 'weighted', False: 'unweighted'}
+    weighted_str = 'weighted' if use_errors else 'unweighted'
 
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
         visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
 
-    table_name = []
+    table_names = []
     for x in [FILENAME_SUFFIX_ACCURACY, FILENAME_SUFFIX_RUNTIME]:
-        table_name.append(os.path.join(tables_dir,
-                                       '{0}_{1}_{2}_table.'.format(
-                                           weighted_values[use_errors],
-                                           x,
-                                           group_name)))
+        table_names.append(os.path.join(tables_dir,
+                                        '{0}_{1}_{2}_table.'.format(
+                                            weighted_str,
+                                            x,
+                                            group_name)))
     generate_tables(results_per_test, minimizers,
                     linked_problems, color_scale,
-                    comparison_mode, table_name)
+                    comparison_mode, table_names)
 
     logging.shutdown()
 
 
 def generate_tables(results_per_test, minimizers,
                     linked_problems, colour_scale,
-                    comparison_mode, table_name):
+                    comparison_mode, table_names):
     """
     Generates accuracy and runtime tables, with both normalised and absolute results, and summary tables in both rst and html.
 
-    :param results_per_test :: results nested array of objects
-    :type results_per_test :: list[list[list]]
-    :param minimizers :: array with minimizer names
-    :type minimizers :: list
-    :param linked_problems :: rst links for supporting pages
-    :type linked_problems :: list[str]
-    :param colour_scale :: colour the html table
-    :type colour_scale :: list
-    :param comparison_mode :: check whether to produced 'rel', 'abs' or 'both'
+    :param results_per_test : results nested array of objects
+    :type results_per_test : list[list[list]]
+    :param minimizers : array with minimizer names
+    :type minimizers : list
+    :param linked_problems : rst links for supporting pages
+    :type linked_problems : list[str]
+    :param colour_scale : colour the html table
+    :type colour_scale : list
+    :param comparison_mode : check whether to produced 'rel', 'abs' or 'both'
                               tables
-    :type comparison_mode :: str
+    :type comparison_mode : str
+    :param table_names : list of table names
+    :type table_names : list
     """
 
     acc_dict, time_dict, html_links = create_results_dict(results_per_test,
@@ -110,24 +112,24 @@ def generate_tables(results_per_test, minimizers,
         create_pandas_dataframe(time_dict, minimizers)
 
     create_pandas_html(acc_tbl[comparison_mode], runtime_tbl[comparison_mode],
-                       minimizers, colour_scale, html_links, table_name)
+                       minimizers, colour_scale, html_links, table_names)
     create_pandas_rst(acc_tbl[comparison_mode], runtime_tbl[comparison_mode],
-                      minimizers, colour_scale, linked_problems, table_name)
+                      minimizers, colour_scale, linked_problems, table_names)
 
 
 def create_results_dict(results_per_test, linked_problems):
     """
     Generates a dictionary used to create HTML and RST tables.
 
-    :param results_per_test :: results nested array of objects
-    :type results_per_test :: list[list[list]]
-    :param linked_problems :: rst links for supporting pages
-    :type linked_problems :: list[str]
+    :param results_per_test : results nested array of objects
+    :type results_per_test : list[list[list]]
+    :param linked_problems : rst links for supporting pages
+    :type linked_problems : list[str]
 
-    :return :: tuple(acc_results, time_results, html_links)
+    :return : tuple(acc_results, time_results, html_links)
                dictionary of accuracy and timing results and
                html links for rending
-    :rtype :: tuple(dict, dict, list)
+    :rtype : tuple(dict, dict, list)
     """
 
     count = 1
@@ -156,15 +158,17 @@ def create_pandas_dataframe(table_data, minimizers):
     """
     Generates pandas tables.
 
-    :param table_data :: dictionary containing results
-    :type table_data :: dict
-    :param minimizers :: list of minimizers (column headers)
-    :type group_name :: list
+    :param table_data : dictionary containing results, i.e.,
+                            {'prob1': [result1, result2, ...],
+                             'prob2': [result1, result2, ...], ...}
+    :type table_data : dict
+    :param minimizers : list of minimizers (column headers)
+    :type group_name : list
 
 
-    :return :: dict(tbl, tbl_norm, tbl_combined) dictionary of
+    :return : dict(tbl, tbl_norm, tbl_combined) dictionary of
                pandas DataFrames containing results.
-    :rtype :: dict{pandas DataFrame, pandas DataFrame,
+    :rtype : dict{pandas DataFrame, pandas DataFrame,
                    pandas DataFrame}
     """
 
@@ -191,14 +195,14 @@ def check_normalised(data, colours, colour_bounds):
     Loops through row data of pandas data frame and assigns
     colours depending on size.
 
-    :param data :: Pandas row data
-    :type data :: Pandas Series
-    :param colours :: rst or html colour definitions
-    :type colours :: list[str]
+    :param data : Pandas row data
+    :type data : Pandas Series
+    :param colours : rst or html colour definitions
+    :type colours : list[str]
 
-    :return :: list of colour mappings with respect to the
+    :return : list of colour mappings with respect to the
                size of the elements in the row
-    :rtype :: list
+    :rtype : list
     """
 
     data_numpy = data.array.to_numpy()
@@ -222,20 +226,22 @@ def check_normalised(data, colours, colour_bounds):
 
 
 def create_pandas_html(acc_tbl, runtime_tbl, minimizers,
-                       colour_scale, html_links, table_name):
+                       colour_scale, html_links, table_names):
     """
     Generates html page from pandas dataframes.
 
-    :param acc_tbl :: DataFrame of the accuracy results
-    :type acc_tbl :: pandas DataFrame
-    :param runtime_tbl :: DataFrame of the timing results
-    :type runtime_tbl :: pandas DataFrame
-    :param minimizers :: list of minimizers (column headers)
-    :type minimizers :: list
-    :param colour_scale :: user defined colour scale
-    :type colour_scale :: list
-    :param html_links :: html links used in pandas rendering
-    :type html_links :: list
+    :param acc_tbl : DataFrame of the accuracy results
+    :type acc_tbl : pandas DataFrame
+    :param runtime_tbl : DataFrame of the timing results
+    :type runtime_tbl : pandas DataFrame
+    :param minimizers : list of minimizers (column headers)
+    :type minimizers : list
+    :param colour_scale : user defined colour scale
+    :type colour_scale : list
+    :param html_links : html links used in pandas rendering
+    :type html_links : list
+    :param table_names : list of table names
+    :type table_names : list
     """
     colour_bounds = [colour[0] for colour in colour_scale]
 
@@ -246,11 +252,11 @@ def create_pandas_html(acc_tbl, runtime_tbl, minimizers,
         '''
         Colour mapping for visualisation of table
         '''
-        data_list = check_normalised(data, html_color_scale, colour_bounds)
+        data_list = check_normalised(data, HTML_COLUR_SCALE, colour_bounds)
 
         return ['background-color: {0}'.format(i) for i in data_list]
     results = [acc_tbl, runtime_tbl]
-    for table, name in zip(results, table_name):
+    for table, name in zip(results, table_names):
         table_style = table.style.apply(colour_highlight, axis=1)
         f = open(name + 'html', "w")
         f.write(table_style.render())
@@ -258,20 +264,22 @@ def create_pandas_html(acc_tbl, runtime_tbl, minimizers,
 
 
 def create_pandas_rst(acc_tbl, runtime_tbl, minimizers,
-                      colour_scale, rst_links, table_name):
+                      colour_scale, rst_links, table_names):
     """
     Generates html page from pandas dataframes.
 
-    :param acc_tbl :: DataFrame of the accuracy results
-    :type acc_tbl :: pandas DataFrame
-    :param runtime_tbl :: DataFrame of the timing results
-    :type runtime_tbl :: pandas DataFrame
-    :param minimizers :: list of minimizers (column headers)
-    :type minimizers :: list
-    :param colour_scale :: user defined colour scale
-    :type colour_scale :: list
-    :param rst_links :: rst links used in pandas rendering
-    :type rst_links :: list
+    :param acc_tbl : DataFrame of the accuracy results
+    :type acc_tbl : pandas DataFrame
+    :param runtime_tbl : DataFrame of the timing results
+    :type runtime_tbl : pandas DataFrame
+    :param minimizers : list of minimizers (column headers)
+    :type minimizers : list
+    :param colour_scale : user defined colour scale
+    :type colour_scale : list
+    :param rst_links : rst links used in pandas rendering
+    :type rst_links : list
+    :param table_names : list of table names
+    :type table_names : list
     """
     colour_bounds = [colour[0] for colour in colour_scale]
     rst_colours = [colour[1] for colour in colour_scale]
@@ -290,9 +298,8 @@ def create_pandas_rst(acc_tbl, runtime_tbl, minimizers,
         return data
 
     results = [acc_tbl, runtime_tbl]
-    for table, name in zip(results, table_name):
+    for table, name in zip(results, table_names):
         table.apply(colour_highlight, axis=1)
         writer = pytablewriter.RstGridTableWriter()
-        writer.table_name = "example_table"
         writer.from_dataframe(table, add_index_column=True)
         writer.dump(name + "rst")
