@@ -1,8 +1,6 @@
 '''
 Test the options.py file
 '''
-
-import configparser
 import datetime
 import os
 import unittest
@@ -34,7 +32,7 @@ class OptionsTests(unittest.TestCase):
 
             [PLOTTING]
             colour_scale: 17.1, a_string?
-                          nan, another_string
+                          inf, another_string
             comparison_mode: abs
             results_dir: new_results
             """
@@ -45,7 +43,7 @@ class OptionsTests(unittest.TestCase):
                             'num_runs': 2,
                             'software': ['foo', 'bar']},
                 'PLOTTING': {'colour_scale': [(17.1, 'a_string?'),
-                                              (float(nan), 'another_string')],
+                                              (float('inf'), 'another_string')],
                              'comparison_mode': 'abs',
                              'results_dir': 'new_results'}
                 }
@@ -67,10 +65,18 @@ class OptionsTests(unittest.TestCase):
             self.assertEqual(self.options['MINIMIZERS'][key],
                              options.minimizers[key])
 
-        self.assertEqual(self.options['FITTING']['use_errors'],
-                         options.use_errors)
+        fitting_opts = self.options['FITTING']
+        self.assertEqual(fitting_opts['use_errors'], options.use_errors)
+        self.assertEqual(fitting_opts['num_runs'], options.num_runs)
+        self.assertEqual(fitting_opts['software'], options.software)
 
-        ...
+        plotting_opts = self.options['PLOTTING']
+        self.assertEqual(plotting_opts['colour_scale'], options.colour_scale)
+        self.assertEqual(plotting_opts['comparison_mode'],
+                         options.comparison_mode)
+        # Use ends with as options creates an abs path rather than rel.
+        self.assertTrue(
+            options.results_dir.endswith(plotting_opts['results_dir']))
 
 
 if __name__ == '__main__':

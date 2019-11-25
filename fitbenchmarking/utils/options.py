@@ -30,7 +30,10 @@ class Options(object):
                 Simplex
                 SteepestDescent
                 Trust Region
-        ralfit: ralfit
+        ralfit: gn
+                gn_reg
+                hybrid
+                hybrid_reg
         sasview: amoeba
                  lm
                  newton
