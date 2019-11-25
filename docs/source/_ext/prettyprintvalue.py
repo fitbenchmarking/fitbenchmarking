@@ -36,13 +36,6 @@ class PrettyPrintValue(Directive):
         return [paragraph_node]
 
 
-def log(val):
-    filename = 'prettyprintvalue.log'
-    fp = os.path.join(os.path.dirname(__file__), filename)
-    with open(fp, 'w') as f:
-        f.write(str(val))
-
-
 def setup(app):
     app.add_directive("prettyprintvalue", PrettyPrintValue)
 
