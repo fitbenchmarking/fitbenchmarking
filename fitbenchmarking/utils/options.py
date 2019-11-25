@@ -3,6 +3,7 @@ This file will handle all interaction with the options configuration file.
 '''
 
 import configparser
+
 from json import loads
 import os
 
