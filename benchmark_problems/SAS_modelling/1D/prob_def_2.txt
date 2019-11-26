@@ -1,3 +1,4 @@
+# SasView Problem
 # An example data set for SasView 1D data
 name = 'Problem Def 2'
 input_file = 'cyl_400_40.txt'
