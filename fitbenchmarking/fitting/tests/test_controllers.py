@@ -161,7 +161,7 @@ class ControllerTests(TestCase):
             controller.minimizer = minimizer
             self.shared_testing(controller)
 
-        def test_ralfit(self):
+    def test_ralfit(self):
         """
         RALFitController: Tests for output shape
         """
