@@ -19,7 +19,7 @@ setup(name='FitBenchmarking',
                         'sasmodels',
                         'lxml',
                         'pandas<=0.24.2',
-                        'pytablewriter<=0.46.1'
+                        'pytablewriter<=0.46.1',
                         'dfogn',
                         'iminuit',
                         'configparser'],
