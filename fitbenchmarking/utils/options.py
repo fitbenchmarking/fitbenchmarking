@@ -36,11 +36,11 @@ class Options(object):
                 hybrid
                 hybrid_reg
         sasview: amoeba
-                 lm
+                 lm-bumps
                  newton
                  de
                  mp
-        scipy: lm
+        scipy: lm-scipy
                trf
                dogbox
 

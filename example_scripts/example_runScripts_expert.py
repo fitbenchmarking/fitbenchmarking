@@ -12,8 +12,7 @@ import glob
 
 from fitbenchmarking.fitting_benchmarking import _benchmark
 from fitbenchmarking.utils import create_dirs, misc, options
-from fitbenchmarking.results_output import save_tables, generate_tables, \
-    create_acc_tbl, create_runtime_tbl
+from fitbenchmarking.results_output import generate_tables
 from fitbenchmarking.resproc import visual_pages
 
 
@@ -116,29 +115,38 @@ def main(argv):
 
         # Creates the results directory where the tables are located
         tables_dir = create_dirs.restables_dir(results_dir, group_name)
+        comparison_mode = software_options.get('comparison_mode', None)
 
         if isinstance(software, list):
             minimizers = sum(minimizers, [])
 
-        # Creates the problem names with links to the visual display pages
-        # in rst
-        linked_problems = visual_pages.create_linked_probs(prob_results,
-                                                           group_name, results_dir)
+        if comparison_mode is None:
+            if 'options_file' in software_options:
+                options_file = software_options['options_file']
+                comparison_mode = options.get_option(options_file=options_file,
+                                                     option='comparison_mode')
+            else:
+                comparison_mode = options.get_option(option='comparison_mode')
 
-        # Generates accuracy and runtime tables and summary tables
-        acc_rankings, runtimes, sum_cells_acc, sum_cells_runtime = generate_tables(prob_results, minimizers)
+            if comparison_mode is None:
+                comparison_mode = 'both'
 
-        # Creates an accuracy table
-        acc_tbl = create_acc_tbl(minimizers, linked_problems, acc_rankings, use_errors, color_scale)
+        tables_dir = create_dirs.restables_dir(results_dir, group_name)
+        linked_problems = \
+            visual_pages.create_linked_probs(prob_results, group_name, results_dir)
 
-        # Creates an runtime table
-        runtime_tbl = create_runtime_tbl(minimizers, linked_problems, runtimes, use_errors, color_scale)
+        table_name = []
+        weighted_values = {True: 'weighted', False: 'unweighted'}
 
-        # Saves accuracy minimizer results
-        save_tables(tables_dir, acc_tbl, use_errors, group_name, 'acc')
-
-        # Saves runtime minimizer results
-        save_tables(tables_dir, runtime_tbl, use_errors, group_name, 'runtime')
+        for x in ['acc', 'runtime']:
+            table_name.append(os.path.join(tables_dir,
+                                           '{0}_{1}_{2}_table.'.format(
+                                               weighted_values[use_errors],
+                                               x,
+                                               group_name)))
+        generate_tables(prob_results, minimizers,
+                        linked_problems, color_scale,
+                        comparison_mode, table_name)
 
         print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
 
