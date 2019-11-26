@@ -24,7 +24,8 @@ class ScipyController(Controller):
         """
         No setup needed for scipy, so this is a no-op.
         """
-        pass
+        if self.minimizer == "lm-scipy":
+            self.minimizer = "lm"
 
     def fit(self):
         """
