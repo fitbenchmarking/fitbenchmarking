@@ -13,7 +13,8 @@ setup(name='FitBenchmarking',
       packages=find_packages(),
       install_requires=['docutils', 'numpy<1.17', 'matplotlib<3.0',
                         'scipy>=0.18,<1.3', 'bumps', 'sasmodels', 'lxml',
-                        'dfogn'],
+                        'dfogn', 'pandas<=0.24.2', 'pytablewriter<=0.46.1',
+                        'iminuit'],
       zip_safe=False,
 
       cmdclass={
@@ -21,4 +22,4 @@ setup(name='FitBenchmarking',
           'help': Help,
       },
       package_data={'fitbenchmarking': ['resproc/color_definitions.txt']}
-     )
+      )
