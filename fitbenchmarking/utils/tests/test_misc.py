@@ -86,17 +86,17 @@ class CreateDirsTests(unittest.TestCase):
     software_options = {'software': 'scipy', 'minimizer_options': None}
 
     minimizers, _ = get_minimizers(software_options)
-    minmizers_expected = ["lm", "trf", "dogbox"]
+    minmizers_expected = ["lm-scipy", "trf", "dogbox"]
 
     self.assertListEqual(minmizers_expected, minimizers)
 
   def test_getMinimizers_load_correct_minimizers_scipy_min_list(self):
 
     software_options = {'software': 'scipy',
-                        'minimizer_options': {"scipy": ["lm", "trf"]}}
+                        'minimizer_options': {"scipy": ["lm-scipy", "trf"]}}
 
     minimizers, _ = get_minimizers(software_options)
-    minmizers_expected = ["lm", "trf"]
+    minmizers_expected = ["lm-scipy", "trf"]
 
     self.assertListEqual(minmizers_expected, minimizers)
 
@@ -116,7 +116,7 @@ class CreateDirsTests(unittest.TestCase):
                         'options_file': self.get_minimizers_file()}
 
     minimizers, _ = get_minimizers(software_options)
-    minmizers_expected = ["lm", "trf", "dogbox"]
+    minmizers_expected = ["lm-scipy", "trf", "dogbox"]
 
     self.assertListEqual(minmizers_expected, minimizers)
 
@@ -149,7 +149,7 @@ class CreateDirsTests(unittest.TestCase):
                            "Levenberg-Marquardt", "Levenberg-MarquardtMD",
                            "Simplex", "SteepestDescent",
                            "Trust Region"],
-                          ["lm", "trf", "dogbox"]]
+                          ["lm-scipy", "trf", "dogbox"]]
 
     self.assertListEqual(minmizers_expected, minimizers)
 

@@ -71,6 +71,8 @@ class SasviewController(Controller):
         # acceptable by Bumps fitting.
         self._func_wrapper = func_wrapper
         self._fit_problem = FitProblem(func_wrapper)
+        if self.minimizer == "lm-bumps":
+            self.minimizer = "lm"
 
     def fit(self):
         """
