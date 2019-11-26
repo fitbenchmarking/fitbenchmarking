@@ -6,11 +6,9 @@ for a certain fitting software.
 
 from __future__ import (absolute_import, division, print_function)
 
-import os
-import json
 from fitbenchmarking.utils.logging_setup import logger
 
-from fitbenchmarking.parsing import parse
+from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import create_dirs, misc
 from fitbenchmarking.fitbenchmark_one_problem import fitbm_one_prob
 
@@ -45,7 +43,7 @@ def fitbenchmark_group(group_name, options, data_dir):
 
     results = []
     for p in problem_group:
-        parsed_problem = parse.parse_problem_file(p)
+        parsed_problem = parse_problem_file(p)
         problem_results = fitbm_one_prob(problem=parsed_problem,
                                          options=options,
                                          directory=group_results_dir)

@@ -1,0 +1,7 @@
+# Fitbenchmark Problem
+# A data set for testing fitbenchmark data
+name = 'start_end_x'
+input_file = 'start_end_x.dat'
+function ='name=BackToBackExponential,I=0.0,A=1'
+description = 'This dataset has no real world application. It is used to test the parsing.'
+fit_parameters = {'StartX': 1.0, 'EndX': 3.0}

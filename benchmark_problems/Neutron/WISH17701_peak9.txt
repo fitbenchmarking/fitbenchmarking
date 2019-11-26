@@ -1,3 +1,4 @@
+# FitBenchmark Problem
 # An example of tube calibration for the WISH instrument
 name = 'WISH17701 panel 103 tube 3 calibration, peak 9'
 input_file = 'WISH17701_calibration_panel103_tube3.txt'
