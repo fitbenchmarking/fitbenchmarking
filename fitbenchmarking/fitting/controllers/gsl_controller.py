@@ -8,8 +8,8 @@ https://sourceforge.net/projects/pygsl/
 import pygsl
 from pygsl import multifit_nlin, multiminimize, errno
 from pygsl import _numobj as numx
-import numpy as np
 
+import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
 from fitbenchmarking.fitting.controllers.base_controller import Controller
@@ -93,7 +93,7 @@ class GSLController(Controller):
                 self._p)
         elif self.minimizer in self._function_methods_no_jac:
             mysys = multiminimize.gsl_multimin_function(self._chi_squared,
-                                                        self._pinit,
+                                                        self._data,
                                                         self._p)
         elif self.minimizer in self._function_methods_with_jac:
             mysys = multiminimize.gsl_multimin_function_fdf(self._chi_squared,
@@ -124,13 +124,24 @@ class GSLController(Controller):
         elif self.minimizer=='steepest_descent':
             self._solver = multiminimize.steepest_descent(mysys, self._p)
 
+        # Set up initialization parameters
+        # 
+        # These have been chosen to be consistent with the parameters
+        # used in Mantid.
+        self._initial_steps = 1.0 * numx.array(np.ones(self._p))
+        self._step_size = 0.1
+        self._tol = 1e-4
+        self._gradient_tol = 1e-3        
+        self._abserror = 1e-4
+        self._relerror = 1e-4
+        self._maxits    = 500
+
         if self.minimizer in self._residual_methods:
             self._solver.set(self._pinit)
         elif self.minimizer in self._function_methods_no_jac:
-            initial_steps = 0.1 * numx.array(np.ones(self._p))
-            self._solver.set(self._pinit, initial_steps)
+            self._solver.set(self._pinit, self._initial_steps)
         else:
-            self._solver.set(self._pinit, 0.01, 1e-4) # why magic numbers?
+            self._solver.set(self._pinit, self._step_size, self._tol)
 
     def fit(self):
         """ 
@@ -138,26 +149,23 @@ class GSLController(Controller):
         """
         self.success = False
 
-        maxits   = 500  # consistent scipy/RALFit
-        abserror = 1e-4 # consistent with Mantid
-        relerror = 1e-4 # consistent with Mantid
-
-        for iter in range(maxits):
+        for iter in range(self._maxits):
             status = self._solver.iterate()
             # check if the method has converged
             if self.minimizer in self._residual_methods:
                 x  = self._solver.getx()
                 dx = self._solver.getdx()
-                # check if we've converged
-                status = multifit_nlin.test_delta(dx,x,abserror,relerror)
+                status = multifit_nlin.test_delta(dx, x,
+                                                  self._abserror,
+                                                  self._relerror)
             elif self.minimizer in self._function_methods_no_jac:
-                ssval = self._solver.size()
-                status = multiminimize.test_size(ssval, 1e-2)
-                # status is rval in sample code.  Break if rval=0.
-                # is this Equivalent to status?
+                simplex_size = self._solver.size()
+                status = multiminimize.test_size(simplex_size,
+                                                 self._abserror)
             else: # must be in function_methods_with_jac
                 gradient = self._solver.gradient()
-                status = multiminimize.test_gradient(gradient, 1e-3) #magic number                
+                status = multiminimize.test_gradient(gradient,
+                                                     self._gradient_tol)
             if status == errno.GSL_SUCCESS:
                 self.success = True
                 break
