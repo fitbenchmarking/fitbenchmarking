@@ -18,7 +18,7 @@
                  "conjugate_fr",
                  "vector_bfgs",
                  "vector_bfgs2",
-                 "steepest_descent"]
+                 "steepest_descent"],
 	"minuit" : ["minuit"]
         },
 
