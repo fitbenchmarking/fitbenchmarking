@@ -41,7 +41,7 @@ install:
 jobs:
   include:
     - stage: Tests
-      before_script: mantidpython -m mantid.simpleapi || true
+      before_script: python -m mantid.simpleapi || true
       script:
         # ======= Examples Tests =============== #
         - pytest example_scripts/ --cov=example_scripts/
@@ -63,9 +63,9 @@ jobs:
         - coveralls
   allow_failures:
     - stage: SysTests
-      before_script: mantidpython -m mantid.simpleapi || true
+      before_script: python -m mantid.simpleapi || true
       script:
         # ======= System Test =============== #
         - cd systests
-        - mantidpython generate_current_results.py
-        - mantidpython tbl_comparison.py
+        - python generate_current_results.py
+        - python tbl_comparison.py
