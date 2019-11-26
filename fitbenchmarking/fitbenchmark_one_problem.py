@@ -92,8 +92,8 @@ def benchmark(controller, minimizers, num_runs):
         controller.minimizer = minimizer
 
         init_function_def = controller.problem.get_function_def(
-            params=controller.initial_params,
-            function_id=controller.function_id)
+            params=controller.initial_params)
+
         try:
             # Calls timeit repeat with repeat = num_runs and number = 1
             runtime_list = \
@@ -111,8 +111,7 @@ def benchmark(controller, minimizers, num_runs):
         controller.cleanup()
 
         fin_function_def = controller.problem.get_function_def(
-            params=controller.final_params,
-            function_id=controller.function_id)
+            params=controller.final_params)
 
         if not controller.success:
             chi_sq = np.nan

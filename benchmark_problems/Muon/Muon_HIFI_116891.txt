@@ -1,3 +1,4 @@
+# FitBenchmark Problem
 # An example of (full) detector calibration for the HIFI instrument
 name = 'HIFI 116891'
 input_file = 'HIFIgrouped_116891.txt'

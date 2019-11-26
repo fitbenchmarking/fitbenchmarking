@@ -6,11 +6,9 @@ for a certain fitting software.
 
 from __future__ import (absolute_import, division, print_function)
 
-import os
-import json
 from fitbenchmarking.utils.logging_setup import logger
 
-from fitbenchmarking.parsing import parse
+from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import create_dirs, misc, options
 from fitbenchmarking.fitbenchmark_one_problem import fitbm_one_prob
 
@@ -76,46 +74,41 @@ def _benchmark(user_input, problem_group, num_runs):
     Loops through software and benchmarks each problem within the problem
     group.
 
-    :param user_input :: all the information specified by the user
-    :type user_input :: UserInput
-    :param problem_group :: list of paths to problem files in the group
+    :param user_input: all the information specified by the user
+    :type user_input: fitbenchmarking.utils.user_input.UserInput
+    :param problem_group: Paths to problem files in the group
                           e.g. ['NIST/low_difficulty/file1.dat',
                                 'NIST/low_difficulty/file2.dat',
                                 ...]
-    :type problem_group :: list
-    :param num_runs :: number of times controller.fit() is run to
+    :type problem_group: list of string
+    :param num_runs: number of times controller.fit() is run to
                      generate an average runtime
-    :type num_runs :: str
+    :type num_runs: int
 
-
-    :return :: array of result objects, per problem per user_input
-    :rtype :: list of FittingResult
-
+    :returns: Result objects, per problem per user_input
+    :rtype: list of fitbenchmarking.plotting.plot_helper.data
     """
-
-    parsed_problems = [parse.parse_problem_file(p) for p in problem_group]
-
     if not isinstance(user_input, list):
-        list_prob_results = [per_func
-                             for p in parsed_problems
-                             for per_func in fitbm_one_prob(user_input,
-                                                            p, num_runs)]
+        user_input = [user_input]
 
-    else:
-        list_prob_results = [[fitbm_one_prob(u, p, num_runs)
-                              for u in user_input]
-                             for p in parsed_problems]
+    results = []
+
+    for p in problem_group:
+        problem = parse_problem_file(p)
+
+        problem_results = [fitbm_one_prob(u, problem, num_runs)
+                           for u in user_input]
 
         # reorganise loop structure from:
-        # [[[val per minimizer] per function] per input] per problem]
+        # [[val per minimizer] per function] per input]
         # to:
-        # [[val per input per minimizer] per function per problem]
-        list_prob_results = \
-            [[list_prob_results[prob_idx][input_idx][func_idx][minim_idx]
-              for input_idx in range(len(user_input))
-              for minim_idx
-              in range(len(list_prob_results[prob_idx][input_idx][func_idx]))]
-             for prob_idx in range(len(parsed_problems))
-             for func_idx in range(len(list_prob_results[prob_idx][0]))]
+        # [[val per input per minimizer] per function]
+        reordered_results = [[problem_results[inp_idx][fun_idx][min_idx]
+                              for inp_idx in range(len(user_input))
+                              for min_idx
+                              in range(len(problem_results[inp_idx][fun_idx]))]
+                             for fun_idx in range(len(problem_results[0]))]
 
-    return list_prob_results
+        results.extend(reordered_results)
+
+    return results
