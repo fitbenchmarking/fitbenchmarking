@@ -19,3 +19,7 @@ sudo apt-add-repository ppa:mantid/mantid -y
 
 sudo apt-get update
 sudo apt-get install mantid -y
+
+PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib
+echo "Mantid is now setup for this session."
+echo "To enable mantid in future sessions we recommend adding 'PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib' to your .bashrc file"
