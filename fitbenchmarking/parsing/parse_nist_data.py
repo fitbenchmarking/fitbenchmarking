@@ -27,10 +27,14 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         super(FittingProblem, self).__init__(fname)
         super(FittingProblem, self).read_file()
 
-        equation_text, data_pattern_text, starting_values = self.parse_line_by_line(self.contents)
+        (
+            equation_text,
+            data_pattern_text,
+            starting_values) = self.parse_line_by_line(self.contents)
         data_pattern = self.parse_data_pattern(data_pattern_text)
 
-        self._start_x, self._end_x = self.get_start_x_and_end_x(data_pattern[:, 1])
+        self._start_x, self._end_x = self.get_start_x_and_end_x(
+            data_pattern[:, 1])
 
         self._data_x = data_pattern[:, 1]
         self._data_y = data_pattern[:, 0]
@@ -55,7 +59,8 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         @returns :: list of callable-parameter pairs
         """
         if self.function is None:
-            self.function = nist_func_definitions(self._equation, self._starting_values)
+            self.function = nist_func_definitions(
+                self._equation, self._starting_values)
 
         return self.function
 
@@ -70,7 +75,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
                     values and the reference residual sum from the file
         """
         lines = contents.readlines()
-        idx, ignored_lines, residual_sum_sq = 0, 0, 0
+        idx, ignored_lines = 0, 0
 
         while idx < len(lines):
             line = lines[idx].strip()
@@ -81,14 +86,17 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
             if line.startswith('Model:'):
                 equation_text, idx = self.get_nist_model(lines, idx)
             elif 'Starting values' in line or 'Starting Values' in line:
-                starting_values, idx = self.get_nist_starting_values(lines, idx)
+                starting_values, idx = self.get_nist_starting_values(
+                    lines, idx)
             elif line.startswith("Data:"):
                 if " x" in line and " y " in line:
-                    data_pattern_text, idx = self.get_data_pattern_txt(lines, idx)
+                    data_pattern_text, idx = self.get_data_pattern_txt(
+                        lines, idx)
             else:
                 ignored_lines += 1
 
-        logger.info("{0} lines were ignored in this problem file".format(ignored_lines))
+        logger.info("{0} lines were ignored in this problem file".format(
+            ignored_lines))
 
         return equation_text, data_pattern_text, starting_values
 
@@ -111,7 +119,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
                     and idx < len(lines):
 
                 idx += 1
-        except IndexError as err:
+        except IndexError:
             logger.error("Could not find equation, index went out of bounds!")
             idxerr = True
 
@@ -196,7 +204,8 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         Sort the numpy array of the data points of the problem
         using its x data.
 
-        @param data_points :: unsorted numpy array of the data points of the problem
+        @param data_points :: unsorted numpy array of the data points
+                              of the problem
         @returns :: sorted numpy array of the data points of the problem
         """
 
@@ -218,8 +227,8 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
             match = re.search(r'y\s*=(.+)\s*\+\s*e', eq_text)
             equation = match.group(1).strip()
         else:
-            raise RuntimeError("Unrecognized equation syntax when trying to parse "
-                               "a NIST equation: " + eq_text)
+            raise RuntimeError("Unrecognized equation syntax when trying "
+                               "to parse a NIST equation: " + eq_text)
 
         equation = self.convert_nist_to_muparser(equation)
         return equation
@@ -333,6 +342,7 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         """
 
         data_e = None
-        if len(data_pattern[0, :]) > 2: data_e = data_pattern[:, 2]
+        if len(data_pattern[0, :]) > 2:
+            data_e = data_pattern[:, 2]
 
         return data_e

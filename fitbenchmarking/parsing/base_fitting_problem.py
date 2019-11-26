@@ -209,5 +209,6 @@ class BaseFittingProblem:
 
     def __new__(cls, *args, **kwargs):
         if cls is BaseFittingProblem:
-            raise TypeError("Base class {} may not be instantiated".format(cls))
+            raise TypeError(
+                "Base class {} may not be instantiated".format(cls))
         return object.__new__(cls, *args, **kwargs)

@@ -1,6 +1,6 @@
 """
-Functions that prepare the function specified in FitBenchmark problem definition file into
-the right format for SciPy.
+Functions that prepare the function specified in FitBenchmark
+problem definition file into the right format for SciPy.
 """
 
 
@@ -53,16 +53,17 @@ def set_ties(function_object, ties):
 
     return function_object
 
+
 def fitbenchmark_func_definitions(functions_string):
     """
-    Processing the function in a FitBenchmark problem definition into an appropriate format
-    for the SciPy software.
+    Processing the function in a FitBenchmark problem definition into
+    an appropriate format for the SciPy software.
 
     @param function_string :: string defining the function in
                               Mantid format
 
-    @returns :: function definition array of one element which contains a callable Mantid function
-                and the function parameter values
+    @returns :: function definition array of one element which contains
+                a callable Mantid function and the function parameter values
     """
 
     function_names = get_all_fitbenchmark_func_names(functions_string)
@@ -70,7 +71,8 @@ def fitbenchmark_func_definitions(functions_string):
     params, ties = get_fitbenchmark_initial_params_values(function_params)
     fit_function = None
     for name, params_set in zip(function_names, function_params):
-        fit_function = make_fitbenchmark_fit_function(name, fit_function, params_set)
+        fit_function = make_fitbenchmark_fit_function(
+            name, fit_function, params_set)
     fit_function = set_ties(fit_function, ties)
 
     function_def = [[fit_function, params]]
@@ -100,7 +102,8 @@ def get_all_fitbenchmark_func_params(functions_string):
     functions = functions_string.split(';')
     function_params = []
     for function in functions:
-        function_params = get_fitbenchmark_func_params(function, function_params)
+        function_params = get_fitbenchmark_func_params(
+            function, function_params)
 
     return function_params
 
@@ -155,7 +158,7 @@ def make_fitbenchmark_fit_function(func_name, fit_function, params_set):
     Create the FitBenchmark fit function object that can be used by SciPy.
     """
     func_obj = gen_func_obj(func_name, params_set)
-    if fit_function == None:
+    if fit_function is None:
         fit_function = func_obj
     else:
         fit_function += func_obj

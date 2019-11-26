@@ -1,8 +1,6 @@
 from __future__ import (absolute_import, division, print_function)
 
 import os
-import numpy as np
-import re
 from fitbenchmarking.parsing import base_fitting_problem
 from sasmodels.data import load_data, empty_data1D
 from sasmodels.core import load_model
@@ -95,7 +93,8 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
             for i in range(len(self._starting_values[0][1])):
 
-                param_values = [params[1][i] for params in self._starting_values]
+                param_values = [params[
+                    1][i] for params in self._starting_values]
 
                 functions.append([fitFunction, param_values, self._equation])
 
@@ -105,23 +104,26 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
 
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """
-        Find/create the (full) path to a data_file specified in a FitBenchmark definition file, where
-        the data_file is search for in the directory of the definition file and subfolders of this
-        file
+        Find/create the (full) path to a data_file specified in a FitBenchmark
+        definition file, where the data_file is search for in the directory of
+        the definition file and subfolders of this file
 
-        @param full_path_of_fitting_def_file :: (full) path of a FitBenchmark definition file
-        @param data_file_name :: the name of the data file as specified in the FitBenchmark definition file
+        @param full_path_of_fitting_def_file :: (full) path of a FitBenchmark
+                                                definition file
+        @param data_file_name :: the name of the data file as specified in
+                                 the FitBenchmark definition file
 
         @returns :: (full) path to a data file (str). Return None if not found
         """
         data_file = None
         # find or search for path for data_file_name
-        for root, dirs, files in os.walk(os.path.dirname(full_path_of_fitting_def_file)):
+        for root, dirs, files in os.walk(
+                os.path.dirname(full_path_of_fitting_def_file)):
             for name in files:
                 if data_file_name == name:
                     data_file = os.path.join(root, data_file_name)
 
-        if data_file == None:
+        if data_file is None:
             logger.error("Data file {} not found".format(data_file_name))
 
         return data_file

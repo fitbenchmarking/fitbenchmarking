@@ -21,15 +21,20 @@ def parse_problem_file(prob_file):
 
     prob_type = determine_problem_type(prob_file)
     logger.info("Loading {0} formatted problem definition file {1} | Path: "
-                "{2}".format(prob_type, os.path.basename(prob_file), prob_file[prob_file.find('fitbenchmarking'):]))
+                "{2}".format(
+                    prob_type, os.path.basename(
+                        prob_file), prob_file[prob_file.find(
+                            'fitbenchmarking'):]))
 
     if prob_type == "NIST":
 
         problem = parse_nist_data.FittingProblem(prob_file)
     elif prob_type == "FitBenchmark":
         """
-        The script parse_fitbenchmark_data contains a method which uses mantid packages.
-        To allow FitBenchmarking to analyse NIST problems independently of mantid, the import is purposely put here.
+        The script parse_fitbenchmark_data contains a method which
+        uses mantid packages.
+        To allow FitBenchmarking to analyse NIST problems
+        independently of mantid, the import is purposely put here.
         """
         from fitbenchmarking.parsing import parse_fitbenchmark_data
         problem = parse_fitbenchmark_data.FittingProblem(prob_file)
@@ -67,7 +72,8 @@ def determine_problem_type(prob_file):
         # Checking for NIST in first line and from that assume the format is:
         prob_type = "NIST"
     elif "#" in fline:
-        # Checking for a comment in the first line and from assume the format is:
+        # Checking for a comment in the first line and from assume the
+        # format is:
         if "SasView" in fline:
             prob_type = "SasView"
         else:
@@ -80,7 +86,8 @@ def determine_problem_type(prob_file):
 
 def check_problem_attributes(problem):
     """
-    Helper function that determines whether problem class has been required attributes
+    Helper function that determines whether problem class has been required
+    attributes
 
     @param problem :: fitting problem
     """

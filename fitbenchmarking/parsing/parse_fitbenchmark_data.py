@@ -39,25 +39,30 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
         self._name = entries['name']
         self.function = None
 
-        # String containing the function name(s) and the starting parameter values for each function
+        # String containing the function name(s) and the starting parameter
+        # values for each function
         self._mantid_equation = entries['function']
 
-        ##### Print number of equations until better way of doing this is looked at.
+        # Print number of equations until better way of doing this is
+        # looked at.
         # Readable equation for output to user
-        #equation = entries['function'].split(';', 1)[-1]
-        #equation = equation.split(',', 1)[0]
+        # equation = entries['function'].split(';', 1)[-1]
+        # equation = equation.split(',', 1)[0]
 
-        #self._equation = equation.split('=', 1)[1].strip()
+        # self._equation = equation.split('=', 1)[1].strip()
         equation_count = entries['function'].count(';') + 1
         self._equation = '{} Functions'.format(equation_count)
 
-        # list of starting values in format [[name, [value1, value2, ...]], ...]
+        # list of starting values in format
+        # [[name, [value1, value2, ...]], ...]
         tmp_starting_values = entries['function'].split(';')
-        tmp_starting_values = (tmp.split('ties=')[0] for tmp in tmp_starting_values)
+        tmp_starting_values = (
+            tmp.split('ties=')[0] for tmp in tmp_starting_values)
         tmp_starting_values = ('f{}_{}'.format(i, sv.strip())
                                for i, tmp in enumerate(tmp_starting_values)
                                for sv in tmp.split(',')[1:]
-                               if sv.strip() != '' and not sv.startswith('BinWidth'))
+                               if sv.strip() != '' and not sv.startswith(
+                                   'BinWidth'))
         self._starting_values = [[f.split('=')[0].strip(),
                                   [float(f.split('=')[1].strip())]]
                                  for f in tmp_starting_values]
@@ -76,29 +81,33 @@ class FittingProblem(base_fitting_problem.BaseFittingProblem):
                     starting parameter values
         """
         if self.function is None:
-            self.function = fitbenchmark_func_definitions(self._mantid_equation)
-            
+            self.function = fitbenchmark_func_definitions(
+                self._mantid_equation)
+
         return self.function
 
     def get_data_file(self, full_path_of_fitting_def_file, data_file_name):
         """
-        Find/create the (full) path to a data_file specified in a FitBenchmark definition file, where
-        the data_file is search for in the directory of the definition file and subfolders of this
-        file
+        Find/create the (full) path to a data_file specified in a FitBenchmark
+        definition file, where the data_file is search for in the directory
+        of the definition file and subfolders of this file
 
-        @param full_path_of_fitting_def_file :: (full) path of a FitBenchmark definition file
-        @param data_file_name :: the name of the data file as specified in the FitBenchmark definition file
+        @param full_path_of_fitting_def_file :: (full) path of a FitBenchmark
+                                                definition file
+        @param data_file_name :: the name of the data file as specified in
+                                 the FitBenchmark definition file
 
         @returns :: (full) path to a data file (str). Return None if not found
         """
         data_file = None
         # find or search for path for data_file_name
-        for root, dirs, files in os.walk(os.path.dirname(full_path_of_fitting_def_file)):
+        for root, dirs, files in os.walk(
+                os.path.dirname(full_path_of_fitting_def_file)):
             for name in files:
                 if data_file_name == name:
                     data_file = os.path.join(root, data_file_name)
 
-        if data_file == None:
+        if data_file is None:
             logger.error("Data file {} not found".format(data_file_name))
 
         return data_file
