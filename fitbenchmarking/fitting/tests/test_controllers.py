@@ -148,11 +148,10 @@ class ControllerTests(TestCase):
         RALFitController: Tests for output shape
         """
         controller = RALFitController(self.problem, True)
-        minimizers = ['gn','gn_reg','hybrid','hybrid_reg']
+        minimizers = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg']
         for minimizer in minimizers:
             controller.minimizer = minimizer
             self.shared_testing(controller)
-
 
     def test_minuit(self):
         """
@@ -161,7 +160,6 @@ class ControllerTests(TestCase):
         controller = MinuitController(self.problem, True)
         controller.minimizer = 'minuit'
         self.shared_testing(controller)
-
 
     def shared_testing(self, controller):
         """
