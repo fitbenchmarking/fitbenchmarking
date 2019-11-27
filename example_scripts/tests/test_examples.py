@@ -9,7 +9,7 @@ class TestExampleScripts(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         # inputs. Include at least one test with inputs
-        self.args = ['tests', '/../fitbenchmarking/fitbenchmarking_default_options.ini']
+        self.args = ['tests', 'options_template.ini']
 
         # get curdir and store for teardown
         self.cwd = os.getcwd()

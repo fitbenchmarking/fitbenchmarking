@@ -20,7 +20,7 @@ def main(args):
     current_path = os.path.dirname(os.path.realpath(__file__))
     if len(args) > 1:
         # Read custom minimizer options from file
-        options_file = current_path + args[1]
+        options_file = os.path.join(current_path, args[1])
         options = Options(options_file)
     else:
         options = Options()

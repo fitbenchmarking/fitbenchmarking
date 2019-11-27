@@ -134,12 +134,13 @@ In order to add a new controller, you will need to:
       (``self.results``, ``self.final_params``, ``self.success``)
 
 3. Document the available minimizers (currently done by adding to
-   ``fitbenchmarking/fitbenchmarking_default_options.json`` and the
-   ``users/options.rst`` file)
+   ``fitbenchmarking/utils/default_options.ini`` and any example files in
+   the ``example_scripts`` directory)
 
 4. Create tests for the software in
    ``fitbenchmarking/fitting/tests/test_controllers.py``.
-   For ease of maintainance, please add new controllers in alphabetical
-   order.
    Unless the new controller is more complicated than the currently available
    controllers, this can be done by following the example of the others.
+
+Note: For ease of maintainance, please add new controllers in alphabetical
+      order, whenever it is added to a list of softwares.
