@@ -90,8 +90,8 @@ Available minimizers are:
 GSL:
   - ``"lmsder"``
   - ``"lmder"``
-  - ``"simplex"``
-  - ``"simplex2"``
+  - ``"nmsimplex"``
+  - ``"nmsimplex2"``
   - ``"conjugate_pr"``
   - ``"conjugate_fr"``
   - ``"bfgs"``

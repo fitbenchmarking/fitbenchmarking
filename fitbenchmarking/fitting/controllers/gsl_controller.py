@@ -24,17 +24,10 @@ class GSLController(Controller):
         """
         super(GSLController, self).__init__(problem, use_errors)
         
-        self._pinit = None
         self._solver = None
-        self._data = None
-        self._n = None
-        self._p = None
         self._residual_methods = None
         self._function_methods_no_jac = None
         self._function_methods_with_jac = None
-        self._initial_steps = None
-        self._step_size = None
-        self._tol = None
         self._gradient_tol = None
         self._abserror = None
         self._relerror = None
@@ -78,17 +71,17 @@ class GSLController(Controller):
         """
         Setup for GSL
         """
-        self._data = numx.array([self.data_x,
-                                 self.data_y,
-                                 self.data_e])
-        self._n = len(self.data_x)
-        self._p = len(self.initial_params)
-        self._pinit = numx.array(self.initial_params)
+        data = numx.array([self.data_x,
+                           self.data_y,
+                           self.data_e])
+        n = len(self.data_x)
+        p = len(self.initial_params)
+        pinit = numx.array(self.initial_params)
 
         self._residual_methods = ['lmsder',
                                   'lmder']
-        self._function_methods_no_jac = ['simplex',
-                                         'simplex2']
+        self._function_methods_no_jac = ['nmsimplex',
+                                         'nmsimplex2']
         self._function_methods_with_jac = ['conjugate_pr',
                                            'conjugate_fr',
                                            'vector_bfgs',
@@ -101,61 +94,44 @@ class GSLController(Controller):
                 self._prediction_error,
                 self._jac,
                 self._fdf,
-                self._data,
-                self._n,
-                self._p)
+                data,
+                n,
+                p)
+            self._solver = getattr(multifit_nlin, self.minimizer)(mysys, n, p)
         elif self.minimizer in self._function_methods_no_jac:
             mysys = multiminimize.gsl_multimin_function(self._chi_squared,
-                                                        self._data,
-                                                        self._p)
+                                                        data,
+                                                        p)
+            self._solver = getattr(multiminimize, self.minimizer)(mysys, p)
         elif self.minimizer in self._function_methods_with_jac:
             mysys = multiminimize.gsl_multimin_function_fdf(
                 self._chi_squared,
                 self._jac_chi_squared,
                 self._chi_squared_fdf,
-                self._data,
-                self._p)
+                data,
+                p)
+            self._solver = getattr(multiminimize, self.minimizer)(mysys, p)
         else:
             raise RuntimeError("An undefined GSL minimizer was selected")
-
-        # define the solver
-        if self.minimizer == 'lmsder':
-            self._solver = multifit_nlin.lmsder(mysys, self._n, self._p)
-        elif self.minimizer == 'lmder':
-            self._solver = multifit_nlin.lmder(mysys, self._n, self._p)
-        elif self.minimizer == 'simplex':
-            self._solver = multiminimize.nmsimplex(mysys, self._p)
-        elif self.minimizer == 'simplex2':
-            self._solver = multiminimize.nmsimplex2(mysys, self._p)
-        elif self.minimizer == 'conjugate_pr':
-            self._solver = multiminimize.conjugate_pr(mysys, self._p)
-        elif self.minimizer == 'conjugate_fr':
-            self._solver = multiminimize.conjugate_fr(mysys, self._p)
-        elif self.minimizer == 'bfgs':
-            self._solver = multiminimize.bfgs(mysys, self._p)
-        elif self.minimizer == 'bfgs2':
-            self._solver = multiminimize.bfgs2(mysys, self._p)
-        elif self.minimizer == 'steepest_descent':
-            self._solver = multiminimize.steepest_descent(mysys, self._p)
 
         # Set up initialization parameters
         #
         # These have been chosen to be consistent with the parameters
         # used in Mantid.
-        self._initial_steps = 1.0 * numx.array(np.ones(self._p))
-        self._step_size = 0.1
-        self._tol = 1e-4
+        initial_steps = 1.0 * numx.array(np.ones(p))
+        step_size = 0.1
+        tol = 1e-4
         self._gradient_tol = 1e-3
         self._abserror = 1e-4
         self._relerror = 1e-4
         self._maxits = 500
 
         if self.minimizer in self._residual_methods:
-            self._solver.set(self._pinit)
+            self._solver.set(pinit)
         elif self.minimizer in self._function_methods_no_jac:
-            self._solver.set(self._pinit, self._initial_steps)
+            self._solver.set(pinit, initial_steps)
         else:
-            self._solver.set(self._pinit, self._step_size, self._tol)
+            self._solver.set(pinit, step_size, tol)
 
     def fit(self):
         """
