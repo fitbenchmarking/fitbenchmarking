@@ -4,11 +4,11 @@ https://www.gnu.org/software/gsl/
 using the pyGSL python interface
 https://sourceforge.net/projects/pygsl/
 """
+import numpy as np
 
 from pygsl import multifit_nlin, multiminimize, errno
 from pygsl import _numobj as numx
 
-import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
 from fitbenchmarking.fitting.controllers.base_controller import Controller
