@@ -151,8 +151,8 @@ class ControllerTests(TestCase):
         controller = GSLController(self.problem, True)
         minimizers = ['lmsder',
                       'lmder',
-                      'simplex',
-                      'simplex2',
+                      'nmsimplex',
+                      'nmsimplex2',
                       'conjugate_pr',
                       'conjugate_fr',
                       'vector_bfgs',
