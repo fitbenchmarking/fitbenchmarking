@@ -79,7 +79,7 @@ class FitMiscTests(unittest.TestCase):
         errors = np.array([5, 0.1, 0.5])
 
         chi_sq = compute_chisq(actual, calculated, errors)
-        chi_sq_expected = 9.9
+        chi_sq_expected = 436.04
 
         self.assertEqual(chi_sq_expected, chi_sq)
 
