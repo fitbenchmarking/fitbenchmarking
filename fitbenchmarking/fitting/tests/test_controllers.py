@@ -149,15 +149,10 @@ class ControllerTests(TestCase):
         GSLController: Tests for output shape
         """
         controller = GSLController(self.problem, True)
+        # test one from each class
         minimizers = ['lmsder',
-                      'lmder',
                       'nmsimplex',
-                      'nmsimplex2',
-                      'conjugate_pr',
-                      'conjugate_fr',
-                      'vector_bfgs',
-                      'vector_bfgs2',
-                      'steepest_descent']
+                      'conjugate_pr']
         for minimizer in minimizers:
             controller.minimizer = minimizer
             self.shared_testing(controller)
