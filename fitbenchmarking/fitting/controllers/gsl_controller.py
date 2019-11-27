@@ -161,8 +161,7 @@ class GSLController(Controller):
                 simplex_size = self._solver.size()
                 status = multiminimize.test_size(simplex_size,
                                                  self._abserror)
-            else:
-                # must be in function_methods_with_jac
+            else:  # must be in function_methods_with_jac
                 gradient = self._solver.gradient()
                 status = multiminimize.test_gradient(gradient,
                                                      self._gradient_tol)
