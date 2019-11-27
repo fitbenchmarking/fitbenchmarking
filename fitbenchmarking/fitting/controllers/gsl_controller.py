@@ -139,7 +139,7 @@ class GSLController(Controller):
         """
         self.success = False
 
-        for iter in range(self._maxits):
+        for _ in range(self._maxits):
             status = self._solver.iterate()
             # check if the method has converged
             if self.minimizer in self._residual_methods:
