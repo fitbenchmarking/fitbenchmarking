@@ -14,7 +14,7 @@ setup(name='FitBenchmarking',
       install_requires=['docutils', 'numpy<1.17', 'matplotlib<3.0',
                         'scipy>=0.18,<1.3', 'bumps', 'sasmodels', 'lxml',
                         'dfogn', 'pandas<=0.24.2', 'pytablewriter<=0.46.1',
-                        'iminuit'],
+                        'iminuit','pygsl'],
       zip_safe=False,
 
       cmdclass={
