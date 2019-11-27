@@ -9,6 +9,8 @@ from fitbenchmarking.fitting.controllers.controller_factory import \
     ControllerFactory
 from fitbenchmarking.fitting.controllers.dfogn_controller import \
     DFOGNController
+from fitbenchmarking.fitting.controllers.gsl_controller import \
+    GSLController
 from fitbenchmarking.fitting.controllers.mantid_controller import \
     MantidController
 from fitbenchmarking.fitting.controllers.minuit_controller import \
