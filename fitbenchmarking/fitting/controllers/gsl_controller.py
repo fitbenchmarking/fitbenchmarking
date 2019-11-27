@@ -160,9 +160,9 @@ class GSLController(Controller):
                 self.success = True
                 break
             elif status != errno.GSL_CONTINUE:
-                raise ValueError("GSL couldn't find a solution")
+                raise RuntimeError("GSL couldn't find a solution")
         else:
-            raise ValueError("Maximum number of iterations exceeded!")
+            raise RuntimeError("Maximum number of iterations exceeded in GSL")
 
     def cleanup(self):
         """
