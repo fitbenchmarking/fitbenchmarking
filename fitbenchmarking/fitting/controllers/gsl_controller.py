@@ -23,7 +23,7 @@ class GSLController(Controller):
         Initializes variable used for temporary storage
         """
         super(GSLController, self).__init__(problem, use_errors)
-        
+
         self._solver = None
         self._residual_methods = None
         self._function_methods_no_jac = None
@@ -32,7 +32,6 @@ class GSLController(Controller):
         self._abserror = None
         self._relerror = None
         self._maxits = None
-
 
     def _prediction_error(self, p, data=None):
         f = self.problem.eval_f(x=self.data_x,
