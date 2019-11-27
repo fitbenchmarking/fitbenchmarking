@@ -1,3 +1,4 @@
+# FitBenchmark Problem
 # An example data set for the EMU instrument
 name = 'EMU 73673'
 input_file = 'EMU_116891_long.txt'

@@ -1,0 +1,46 @@
+NIST/ITL StRD
+Dataset Name:  basic           (basic.dat)
+
+File Format:   ASCII
+               Starting Values   (lines 32 to 33)
+               Certified Values  (lines 35 to 38)
+               Data              (lines 42 to 45)
+
+Procedure:     Nonlinear Least Squares Regression
+
+Description:   This is meaningless data, created to test parsing the NIST format.
+
+Reference:     Fitbenchmark test.
+
+
+Data:          1 Response Variable  (y = volume)
+               1 Predictor Variable (x = pressure)
+               14 Observations
+               Lower Level of Difficulty
+               Observed Data
+
+Model:         Exponential Class
+               2 Parameters (b1 and b2)
+
+               y = p1*(1-exp[-p2*x])  +  e
+
+
+ 
+        Starting values                  Certified Values
+ 
+        Start 1       Parameter         Standard Deviation
+  p1 =  0.0           N/A               N/A
+  p2 =  1.0           N/A               N/A
+
+Residual Sum of Squares:                    N/A
+Residual Standard Deviation:                N/A
+Degrees of Freedom:                                2
+Number of Observations:                            4
+
+
+Data:   y               x
+         33.5         0.5
+          1.0         1.0
+          0.1         1.5
+         -2.0         2.0
+          0.0         2.5

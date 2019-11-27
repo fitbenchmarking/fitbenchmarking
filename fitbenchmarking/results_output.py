@@ -30,7 +30,9 @@ def save_results_tables(software_options, results_per_test, group_name,
     """
     Saves the results of the fitting to html/rst tables.
 
-    :param software_options : dictionary containing software used in fitting the problem, list of minimizers and location of json file contain minimizers
+    :param software_options : dictionary containing software used in fitting
+                              the problem, list of minimizers and location
+                              of json file contain minimizers
     :type software_options : dict
     :param minimizers : array with minimizer names
     :type minimizers : list

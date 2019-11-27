@@ -1,3 +1,4 @@
+# FitBenchmark Problem
 # An example of fitting of a spline background on a Vanadium run from ENGIN-X
 name = 'ENGINX 236516 vanadium, bank 1, 10 brk'
 input_file = 'ENGINX236516_vanadium_bank1.txt'
