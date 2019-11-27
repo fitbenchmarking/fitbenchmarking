@@ -26,7 +26,10 @@ before_install:
   - sudo apt-get install libblas-dev
   - sudo apt-get install liblapack-dev
   # Adding gsl pacakges
-  - sudo apt-get install libgsl-dev=2.1
+  - sudo apt-get install gsl-bin	
+  - sudo apt-get install libgsl-dev
+  - sudo apt-get install libgsl-dbg
+  
 
 install:
   # Builds RALfit
