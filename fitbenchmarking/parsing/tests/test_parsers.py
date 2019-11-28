@@ -118,7 +118,6 @@ def load_expectation(filename):
     expectation.data_e = expectation_dict['data_e']
     if expectation.data_e is not None:
         expectation.data_e = np.array(expectation.data_e)
-    expectation.functions = expectation_dict['functions']
     expectation.starting_values = expectation_dict['starting_values']
     expectation.value_ranges = expectation_dict['value_ranges']
 
@@ -179,14 +178,16 @@ class TestParsers:
             assert (equal), '{} was parsed incorrectly.'.format(attr) \
                 + '{} != {}'.format(parsed_attr, expected_attr)
 
-        # Check starting_values, but ignore the param names
+        # Check starting_values
         for a, e in zip(fitting_problem.starting_values,
                         expected.starting_values):
-            assert (a[1] == e[1]), 'starting_values were parsed incorrectly.'
+            loaded_as_set = set(a.values())
+            expected_as_set = set(e.values())
+            assert (loaded_as_set == expected_as_set), \
+                'starting_values were parsed incorrectly.'
 
-        # Check functions length but nothing else here.
-        assert (len(fitting_problem.functions) == len(expected.functions)), \
-            'functions were parsed incorrectly.'
+        # Check that the function is callable
+        assert callable(fitting_problem.function)
 
     def test_function_evaluation(self, file_format, evaluations_file):
         """
@@ -223,11 +224,9 @@ class TestParsers:
                 fitting_problem = p.parse()
 
             for r in tests:
-                for i in range(len(fitting_problem.functions)):
-                    actual = fitting_problem.eval_f(x=np.array(r[0]),
-                                                    params=r[1],
-                                                    function_id=i)
-                    assert np.isclose(actual, r[2]).all()
+                actual = fitting_problem.eval_f(x=np.array(r[0]),
+                                                params=r[1])
+                assert np.isclose(actual, r[2]).all()
 
     def test_factory(self, file_format, test_file):
         """
