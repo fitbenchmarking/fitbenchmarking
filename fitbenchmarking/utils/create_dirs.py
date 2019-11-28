@@ -3,7 +3,6 @@ Utility functions for creating/deleting directories.
 """
 
 import os
-import sys
 import shutil
 
 
@@ -11,19 +10,15 @@ def results(results_dir):
     """
     Creates the results folder in the working directory.
 
-    @param results_dir :: path to the results directory, results dir
-                          name or None
+    :param results_dir: path to the results directory, results dir name
+    :type results_dir: str
 
-    @returns :: proper path to the results directory
+    :returns: proper path to the results directory
+    :rtype: str
     """
 
-    working_dir = os.getcwd()
-    if results_dir is None:
-        results_dir = os.path.join(working_dir, "results")
-    elif not isinstance(results_dir, str):
+    if not isinstance(results_dir, str):
         raise TypeError("results_dir must be a string!")
-    elif not os.sep in results_dir:
-        results_dir = os.path.join(working_dir, results_dir)
 
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)

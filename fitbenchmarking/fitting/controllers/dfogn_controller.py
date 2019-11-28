@@ -8,6 +8,7 @@ import numpy as np
 
 from fitbenchmarking.fitting.controllers.base_controller import Controller
 
+
 class DFOGNController(Controller):
     """
     Controller for the DFO-GN fitting software.
@@ -22,22 +23,22 @@ class DFOGNController(Controller):
         self._soln = None
         self._popt = None
         self._pinit = None
-        
+
     def setup(self):
         """
         Setup for DFO-GN
         """
         self._pinit = np.asarray(self.initial_params)
 
-    def _prediction_error(self,p):
+    def _prediction_error(self, p):
         f = self.data_y - self.problem.eval_f(x=self.data_x,
-                                              params=p, 
+                                              params=p,
                                               function_id=self.function_id)
         if self.use_errors:
             f = f/self.data_e
-            
+
         return f
-    
+
     def fit(self):
         """
         Run problem with DFO-GN.
@@ -49,7 +50,7 @@ class DFOGNController(Controller):
 
         if (self._soln.flag == 0):
             self.success = True
-            
+
         self._popt = self._soln.x
 
     def cleanup(self):
