@@ -1,3 +1,4 @@
+# FitBenchmark Problem
 # An example of (full) detector calibration for the ENGIN-X instrument
 name = 'ENGINX 193749 calibration, spectrum 651, peak 6'
 input_file = 'ENGINX193749_calibration_spec651.txt'

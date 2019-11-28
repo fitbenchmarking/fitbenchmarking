@@ -1,3 +1,4 @@
+# FitBenchmark Problem
 # An example of (full) detector calibration for the HIFI instrument
 name = 'EMU 67068 coadd 67108'
 input_file = 'EMU_67068_coadd_67108.txt'
