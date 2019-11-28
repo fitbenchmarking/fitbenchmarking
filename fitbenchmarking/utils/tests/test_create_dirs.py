@@ -4,10 +4,10 @@ import unittest
 import os
 import shutil
 
-from fitbenchmarking.utils.create_dirs import results
+from fitbenchmarking.utils.create_dirs import figures
 from fitbenchmarking.utils.create_dirs import group_results
 from fitbenchmarking.utils.create_dirs import restables_dir
-from fitbenchmarking.utils.create_dirs import figures
+from fitbenchmarking.utils.create_dirs import results
 
 
 class CreateDirsTests(unittest.TestCase):

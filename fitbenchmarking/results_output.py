@@ -11,10 +11,9 @@ import pandas as pd
 import pytablewriter
 import re
 
-
-from fitbenchmarking.utils.logging_setup import logger
 from fitbenchmarking.resproc import visual_pages
 from fitbenchmarking.utils import create_dirs
+from fitbenchmarking.utils.logging_setup import logger
 
 # Some naming conventions for the output files
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -59,9 +58,9 @@ def save_results_tables(options, results, group_name):
     for x in [FILENAME_SUFFIX_ACCURACY, FILENAME_SUFFIX_RUNTIME]:
         table_names.append(os.path.join(tables_dir,
                                         '{0}_{1}_{2}_table.'.format(
-                                            weighted_str,
+                                            group_name,
                                             x,
-                                            group_name)))
+                                            weighted_str)))
     generate_tables(results, minimizers,
                     linked_problems, colour_scale,
                     comparison_mode, table_names)
@@ -73,7 +72,8 @@ def generate_tables(results_per_test, minimizers,
                     linked_problems, colour_scale,
                     comparison_mode, table_names):
     """
-    Generates accuracy and runtime tables, with both normalised and absolute results, and summary tables in both rst and html.
+    Generates accuracy and runtime tables, with both normalised and absolute
+    results, and summary tables in both rst and html.
 
     :param results_per_test : results nested array of objects
     :type results_per_test : list[list[list]]

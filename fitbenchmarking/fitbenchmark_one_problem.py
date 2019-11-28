@@ -4,9 +4,9 @@ Fit benchmark one problem functions.
 
 from __future__ import absolute_import, division, print_function
 
+import numpy as np
 import timeit
 import warnings
-import numpy as np
 
 from fitbenchmarking.fitting import misc
 from fitbenchmarking.fitting.controllers.controller_factory \
