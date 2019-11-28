@@ -100,7 +100,8 @@ class Controller:
             self.initial_params = self.functions[self.function_id][1]
             self.setup()
         else:
-            raise RuntimeError('Either minimizer or function_id is set to None.')
+            raise RuntimeError('Either minimizer or function_id is set to '
+                               'None.')
 
     @abstractmethod
     def setup(self):

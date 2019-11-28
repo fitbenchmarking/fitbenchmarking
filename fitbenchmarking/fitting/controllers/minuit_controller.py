@@ -9,6 +9,7 @@ import numpy as np
 
 from fitbenchmarking.fitting.controllers.base_controller import Controller
 
+
 class MinuitController(Controller):
     """
     Controller for the Minuit fitting software
@@ -26,11 +27,11 @@ class MinuitController(Controller):
     def setup(self):
         """
         Setup for Minuit
-        """        
+        """
         # minuit requires an initial step size.
         # The docs say
-        # "A good guess is a fraction of the initial 
-        #  fit parameter value, e.g. 10% 
+        # "A good guess is a fraction of the initial
+        #  fit parameter value, e.g. 10%
         #  (be careful when applying this rule-of-thumb
         #  when the initial parameter value is zero "
         self._initial_step = 0.1 * np.array(self.initial_params)
@@ -49,18 +50,18 @@ class MinuitController(Controller):
         if self.use_errors:
             f = f / self.data_e
 
-        return np.dot(f,f)
+        return np.dot(f, f)
 
     def fit(self):
         """
         Run problem with Minuit
         """
         self.success = False
-        self._minuit_problem.migrad() # run optimizer
+        self._minuit_problem.migrad()  # run optimizer
 
     def cleanup(self):
         """
-        Convert the result to a numpy array and populate the variables results 
+        Convert the result to a numpy array and populate the variables results
         will be read fromm
         """
         self._popt = self._minuit_problem.np_values()
@@ -71,4 +72,3 @@ class MinuitController(Controller):
                                                params=self._popt,
                                                function_id=self.function_id)
             self.final_params = self._popt
-
