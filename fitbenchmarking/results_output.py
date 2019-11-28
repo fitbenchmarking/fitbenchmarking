@@ -11,10 +11,9 @@ import pandas as pd
 import pytablewriter
 import re
 
-
-from fitbenchmarking.utils.logging_setup import logger
 from fitbenchmarking.resproc import visual_pages
-from fitbenchmarking.utils import create_dirs, options, misc
+from fitbenchmarking.utils import create_dirs
+from fitbenchmarking.utils.logging_setup import logger
 
 # Some naming conventions for the output files
 FILENAME_SUFFIX_ACCURACY = 'acc'
@@ -25,61 +24,45 @@ FILENAME_EXT_HTML = 'html'
 HTML_COLOUR_SCALE = ['#fef0d9', '#fdcc8a', '#fc8d59', '#e34a33', '#b30000']
 
 
-def save_results_tables(software_options, results_per_test, group_name,
-                        use_errors, color_scale=None, results_dir=None):
+def save_results_tables(options, results, group_name):
     """
     Saves the results of the fitting to html/rst tables.
 
-    :param software_options : dictionary containing software used in fitting
-                              the problem, list of minimizers and location
-                              of json file contain minimizers
-    :type software_options : dict
-    :param minimizers : array with minimizer names
-    :type minimizers : list
-    :param results_per_test : results nested array of objects
-    :type results_per_test : list[list[list]]
+    :param options : The options used in the fitting problem and plotting
+    :type options : fitbenchmarking.utils.options.Options
+    :param results : results nested array of objects
+    :type results : list[list[list]]
     :param group_name : name of the problem group
     :type group_name : str
-    :param use_errors : bool whether to use errors or not
-    :type use_errors : bool
-    :param colour_scale : colour the html table
-    :type colour_scale : list
-    :param results_dir : name of the problem group
-    :type results_dir : str
     """
 
-    minimizers, software = misc.get_minimizers(software_options)
-    comparison_mode = software_options.get('comparison_mode', None)
+    software = options.software
+    if not isinstance(software, list):
+        software = [software]
+    minimizers = [options.minimizers[s] for s in software]
+    minimizers = sum(minimizers, [])
 
-    if comparison_mode is None:
-        if 'options_file' in software_options:
-            options_file = software_options['options_file']
-            comparison_mode = options.get_option(options_file=options_file,
-                                                 option='comparison_mode')
-        else:
-            comparison_mode = options.get_option(option='comparison_mode')
+    comparison_mode = options.comparison_mode
 
-        if comparison_mode is None:
-            comparison_mode = 'both'
-
-    if isinstance(software, list):
-        minimizers = sum(minimizers, [])
+    results_dir = options.results_dir
+    use_errors = options.use_errors
+    colour_scale = options.colour_scale
 
     weighted_str = 'weighted' if use_errors else 'unweighted'
 
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
     linked_problems = \
-        visual_pages.create_linked_probs(results_per_test, group_name, results_dir)
+        visual_pages.create_linked_probs(results, group_name, results_dir)
 
     table_names = []
     for x in [FILENAME_SUFFIX_ACCURACY, FILENAME_SUFFIX_RUNTIME]:
         table_names.append(os.path.join(tables_dir,
                                         '{0}_{1}_{2}_table.'.format(
-                                            weighted_str,
+                                            group_name,
                                             x,
-                                            group_name)))
-    generate_tables(results_per_test, minimizers,
-                    linked_problems, color_scale,
+                                            weighted_str)))
+    generate_tables(results, minimizers,
+                    linked_problems, colour_scale,
                     comparison_mode, table_names)
 
     logging.shutdown()
@@ -89,7 +72,8 @@ def generate_tables(results_per_test, minimizers,
                     linked_problems, colour_scale,
                     comparison_mode, table_names):
     """
-    Generates accuracy and runtime tables, with both normalised and absolute results, and summary tables in both rst and html.
+    Generates accuracy and runtime tables, with both normalised and absolute
+    results, and summary tables in both rst and html.
 
     :param results_per_test : results nested array of objects
     :type results_per_test : list[list[list]]
@@ -211,7 +195,7 @@ def check_normalised(data, colours, colour_bounds):
     data_list = []
     for x in data_numpy:
         x = x.replace('nan', 'inf')
-        norm_stripped = re.findall('\(([^)]+)', x)
+        norm_stripped = re.findall(r'\(([^)]+)', x)
         if norm_stripped == []:
             data_list.append(float(x))
         else:
