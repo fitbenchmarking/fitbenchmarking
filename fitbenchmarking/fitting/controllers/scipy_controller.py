@@ -33,7 +33,7 @@ class ScipyController(Controller):
         """
         popt = None
 
-        popt, _ = curve_fit(f=self.functions[self.function_id][0].__call__,
+        popt, _ = curve_fit(f=self.problem.function,
                             xdata=self.data_x,
                             ydata=self.data_y,
                             p0=self.initial_params,
@@ -51,6 +51,5 @@ class ScipyController(Controller):
         """
         if self.success:
             self.results = self.problem.eval_f(x=self.data_x,
-                                               params=self._popt,
-                                               function_id=self.function_id)
+                                               params=self._popt)
             self.final_params = self._popt

@@ -22,7 +22,7 @@ class MantidController(Controller):
         """
         super(MantidController, self).__init__(problem, use_errors)
 
-        self._param_names = [row[0] for row in problem.starting_values]
+        self._param_names = self.problem.param_names
 
         self._cost_function = 'Least squares' if use_errors \
             else 'Unweighted least squares'
@@ -41,8 +41,8 @@ class MantidController(Controller):
 
         Adds a custom function to Mantid for calling in fit().
         """
-        if isinstance(self.functions[self.function_id][0], FunctionWrapper):
-            function_def = self.functions[self.function_id][0]
+        if isinstance(self.problem.function, FunctionWrapper):
+            function_def = self.problem.function
         else:
             start_val_list = ['{0}={1}'.format(name, value)
                               for name, value
@@ -65,8 +65,7 @@ class MantidController(Controller):
                         fit_param[i] = ff_self.getParameterValue(param)
 
                     return self.problem.eval_f(x=xdata,
-                                               params=fit_param,
-                                               function_id=self.function_id)
+                                               params=fit_param)
 
             FunctionFactory.subscribe(fitFunction)
 

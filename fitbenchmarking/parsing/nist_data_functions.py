@@ -9,24 +9,21 @@ from __future__ import (absolute_import, division, print_function)
 import numpy as np
 
 
-def nist_func_definitions(function, startvals):
+def nist_func_definition(function, param_names):
     """
     Processing a function plus different set of starting values as specified in
-    the NIST problem definition file into function definitions appropriate for
-    the SciPy software.
+    the NIST problem definition file into a callable
 
     :param function : function string as defined in a NIST problem definition
                       file
-    :param startvals: starting values for the function variables
-                      provided in the definition file
+    :type function: str
+    :param startvals: names of the parameters in the function
+    :type param_names: list
 
-    :return: array where each element contains function callable by SciPy,
-             one set of starting parameter values and copy of the function
-             string
+    :return: callable function
+    :rtype: callable
     """
-    param_names, all_values = get_nist_param_names_and_values(startvals)
     function_scipy_format = format_function_scipy(function)
-    function_defs = []
 
     # Create a function def for each starting set in startvals
     if not is_safe(function_scipy_format):
@@ -37,29 +34,10 @@ def nist_func_definitions(function, startvals):
 
     local_dict = {}
     global_dict = {'__builtins__': {}, 'np': np}
-    exec("def fitting_function(x, " + param_names + "): return "
+    exec("def fitting_function(x, " + ','.join(param_names) + "): return "
          + function_scipy_format, global_dict, local_dict)
-    for values in all_values:
-        # fitting function is created dynamically used exec
-        # pylint: disable=undefined-variable
-        function_defs.append([local_dict['fitting_function'], values, function_scipy_format])
 
-    return function_defs
-
-
-def get_nist_param_names_and_values(startvals):
-    """
-    Parses startvals and retrieves the nist param names and values.
-    """
-    param_names = [row[0] for row in startvals]
-    for p in param_names:
-        if not p.isalnum():
-            raise ValueError('Parameter names must be alphanumeric')
-    param_names = ", ".join(param for param in param_names)
-    all_values = [row[1] for row in startvals]
-    all_values = map(list, zip(*all_values))
-
-    return param_names, all_values
+    return local_dict['fitting_function']
 
 
 def format_function_scipy(function):

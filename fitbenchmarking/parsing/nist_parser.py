@@ -6,12 +6,12 @@ from __future__ import (absolute_import, division, print_function)
 
 import re
 
-import os
+from collections import OrderedDict
 import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.parsing.nist_data_functions import nist_func_definitions
+from fitbenchmarking.parsing.nist_data_functions import nist_func_definition
 from fitbenchmarking.utils.logging_setup import logger
 
 
@@ -39,9 +39,9 @@ class NISTParser(Parser):
 
         fitting_problem.starting_values = starting_values
 
-        fitting_problem.functions = \
-            nist_func_definitions(function=fitting_problem.equation,
-                                  startvals=fitting_problem.starting_values)
+        fitting_problem.function = \
+            nist_func_definition(function=fitting_problem.equation,
+                                 param_names=starting_values[0].keys())
 
         return fitting_problem
 
@@ -257,7 +257,7 @@ class NISTParser(Parser):
         :type idx: int
 
         :returns: The starting values and the new index
-        :type: (list of list of float) and int
+        :type: (list of OrderedDict) and int
         """
 
         starting_values = None
@@ -284,8 +284,15 @@ class NISTParser(Parser):
                 break
 
             startval_str = line.split()
+            if not startval_str[0].isalnum():
+                raise ValueError('Could not parse starting parameters.')
+
             alt_values = self._get_startvals_floats(startval_str)
-            starting_vals.append([startval_str[0], alt_values])
+
+            if not starting_vals:
+                starting_vals = [OrderedDict() for _ in alt_values]
+            for i, a in enumerate(alt_values):
+                starting_vals[i][startval_str[0]] = a
 
         return starting_vals
 

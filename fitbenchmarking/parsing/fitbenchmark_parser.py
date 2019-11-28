@@ -45,7 +45,7 @@ class FitbenchmarkParser(Parser):
         # values for each function
         self._mantid_equation = self._entries['function']
 
-        fitting_problem.functions = self._fitbenchmark_func_definitions()
+        fitting_problem.function = self._fitbenchmark_func_definition()
 
         # Print number of equations until better way of doing this is looked at
         equation_count = len(self._parsed_func)
@@ -205,14 +205,15 @@ class FitbenchmarkParser(Parser):
         Get the starting values for the problem
 
         :returns: Starting values for the function
-        :rtype: list
+        :rtype: list of OrderedDict
         """
         ignore = ['name', 'BinWidth', 'ties']
 
-        starting_values = [['f{}_{}'.format(i, name), [f[name]]]
-                           for i, f in enumerate(self._parsed_func)
-                           for name in f.keys()
-                           if name not in ignore]
+        starting_values = [
+            OrderedDict([('f{}_{}'.format(i, name), f[name])
+                         for i, f in enumerate(self._parsed_func)
+                         for name in f.keys()
+                         if name not in ignore])]
 
         return starting_values
 
@@ -243,17 +244,15 @@ class FitbenchmarkParser(Parser):
 
         return start_x, end_x
 
-    def _fitbenchmark_func_definitions(self):
+    def _fitbenchmark_func_definition(self):
         """
         Processing the function in the FitBenchmark problem definition into a
         python callable.
 
-        :returns: A function definition array of one element which contains a
-                callable Mantid function and the function parameter values.
-        :rtype: list
+        :returns: A callable function
+        :rtype: callable
         """
         fit_function = None
-        param_vals = []
 
         for f in self._parsed_func:
             name = f['name']
@@ -261,7 +260,6 @@ class FitbenchmarkParser(Parser):
             for key in ['name', 'BinWidth', 'ties']:
                 if key in params:
                     params.pop(key)
-            param_vals.extend(params.values())
             tmp_function = msapi.__dict__[name](**params)
             if fit_function is None:
                 fit_function = tmp_function
@@ -274,6 +272,4 @@ class FitbenchmarkParser(Parser):
                         for tie, val in f['ties'].items()}
                 fit_function.tie(ties)
 
-        function_def = [[fit_function, param_vals]]
-
-        return function_def
+        return fit_function

@@ -57,11 +57,11 @@ def fitbm_one_prob(problem, options, directory):
         problem.data_y = controller.data_y
         problem.data_e = controller.data_e
 
-        for i in range(len(controller.functions)):
+        for i in range(len(controller.starting_values)):
             if len(results) <= i:
                 results.append({})
 
-            controller.function_id = i
+            controller.parameter_set = i
 
             problem_result, best_fit = benchmark(controller=controller,
                                                  minimizers=minimizers,
