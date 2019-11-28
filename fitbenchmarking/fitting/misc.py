@@ -20,10 +20,8 @@ def compute_chisq(actual, fitted, errors=None):
     """
     r = fitted - actual
     if errors is not None:
-        weighted_r = np.multiply(errors, r)
-        chi_sq = np.dot(r, weighted_r)
-    else:
-        chi_sq = np.dot(r, r)
+        r = r / errors
+    chi_sq = np.dot(r, r)
 
     return chi_sq
 
