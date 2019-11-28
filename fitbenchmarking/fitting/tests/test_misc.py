@@ -1,7 +1,6 @@
 from __future__ import (absolute_import, division, print_function)
 
 import unittest
-import os
 import numpy as np
 
 from fitbenchmarking.utils import fitbm_result

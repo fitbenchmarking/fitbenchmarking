@@ -19,23 +19,23 @@ class TestFittingProblem(TestCase):
         Test that verify only passes if all required values are set.
         """
         fitting_problem = FittingProblem()
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             fitting_problem.verify()
             self.fail('verify() passes when no values are set.')
 
         fitting_problem.starting_values = [
             OrderedDict([('p1', 1), ('p2', 2)])]
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             fitting_problem.verify()
             self.fail('verify() passes starting values are set.')
 
         fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             fitting_problem.verify()
             self.fail('verify() passes when data_x is set.')
 
         fitting_problem.data_y = np.array([1, 2, 3, 4, 5])
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             fitting_problem.verify()
             self.fail('verify() passes when data_y is set.')
 
@@ -46,7 +46,7 @@ class TestFittingProblem(TestCase):
             self.fail('verify() fails when all required values set.')
 
         fitting_problem.data_x = [1, 2, 3]
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             fitting_problem.verify()
             self.fail('verify() passes for x values not numpy.')
 
