@@ -43,8 +43,7 @@ class MinuitController(Controller):
                                                       errordef=1)
 
     def _prediction_error(self, p):
-        f = self.problem.eval_f(x=self.data_x,
-                                params=p,
+        f = self.problem.eval_f(params=p,
                                 function_id=self.function_id)
         f = f - self.data_y
         if self.use_errors:
@@ -68,7 +67,6 @@ class MinuitController(Controller):
         self.success = (self._popt is not None)
 
         if self.success:
-            self.results = self.problem.eval_f(x=self.data_x,
-                                               params=self._popt,
+            self.results = self.problem.eval_f(params=self._popt,
                                                function_id=self.function_id)
             self.final_params = self._popt

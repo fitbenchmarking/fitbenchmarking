@@ -50,7 +50,6 @@ class ScipyController(Controller):
         will be read from.
         """
         if self.success:
-            self.results = self.problem.eval_f(x=self.data_x,
-                                               params=self._popt,
+            self.results = self.problem.eval_f(params=self._popt,
                                                function_id=self.function_id)
             self.final_params = self._popt
