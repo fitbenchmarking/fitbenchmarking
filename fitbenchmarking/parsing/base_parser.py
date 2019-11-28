@@ -37,7 +37,8 @@ class Parser:
         Called when used as a context manager.
         Closes the file.
 
-        :param exc_type: Used if an exception occurs. Contains the exception type.
+        :param exc_type: Used if an exception occurs. Contains the
+                         exception type.
         :type exc_type: type
         :param exc_value: Used if an exception occurs. Contains the exception
                       value.

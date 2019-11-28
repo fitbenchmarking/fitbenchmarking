@@ -11,7 +11,6 @@ except ImportError:
     # python3
     from itertools import zip_longest as izip_longest
 import numpy as np
-from warnings import warn
 
 
 class FittingProblem:
