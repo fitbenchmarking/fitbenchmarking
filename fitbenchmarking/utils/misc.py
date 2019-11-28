@@ -12,7 +12,8 @@ from fitbenchmarking.utils.logging_setup import logger
 
 def get_problem_files(data_dir):
     """
-    Gets all the problem definition files from the specified problem set directory.
+    Gets all the problem definition files from the specified problem
+    set directory.
 
     @param data_dir :: directory containing the problems
 
@@ -23,8 +24,9 @@ def get_problem_files(data_dir):
 
     test_data = glob.glob(data_dir + '/*.*')
     if test_data == []:
-        raise ValueError('"{}" not recognised as a dataset.'.format(data_dir) +
-                         'Check that it contains problem files and try again.') 
+        raise ValueError('"{}" not recognised as a dataset. '
+                         'Check that it contains problem files '
+                         'and try again.'.format(data_dir))
     problems = [os.path.join(data_dir, data) for data in test_data]
     problems.sort()
     for problem in problems:
