@@ -42,7 +42,8 @@ def nist_func_definitions(function, startvals):
     for values in all_values:
         # fitting function is created dynamically used exec
         # pylint: disable=undefined-variable
-        function_defs.append([local_dict['fitting_function'], values, function_scipy_format])
+        function_defs.append(
+            [local_dict['fitting_function'], values, function_scipy_format])
 
     return function_defs
 
