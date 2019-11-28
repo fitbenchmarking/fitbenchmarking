@@ -20,10 +20,8 @@ def compute_chisq(actual, fitted, errors=None):
     """
     r = fitted - actual
     if errors is not None:
-        weighted_r = np.multiply(errors, r)
-        chi_sq = np.dot(r, weighted_r)
-    else:
-        chi_sq = np.dot(r, r)
+        r = r / errors
+    chi_sq = np.dot(r, r)
 
     return chi_sq
 
@@ -46,8 +44,10 @@ def create_result_entry(problem, status, chi_sq, runtime, minimizer,
     """
 
     if 'fitFunction' in ini_function_def:
-        ini_function_def = ini_function_def.replace('fitFunction', problem.equation)
-        fin_function_def = fin_function_def.replace('fitFunction', problem.equation)
+        ini_function_def = ini_function_def.replace(
+            'fitFunction', problem.equation)
+        fin_function_def = fin_function_def.replace(
+            'fitFunction', problem.equation)
 
     # Create empty fitting result object
     result = fitbm_result.FittingResult()

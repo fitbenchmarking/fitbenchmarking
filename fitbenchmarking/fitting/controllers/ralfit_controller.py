@@ -23,27 +23,25 @@ class RALFitController(Controller):
         self._popt = None
         self._options = {}
 
-
     def setup(self):
         """
         Setup for RALFit
         """
         self._options["maxit"] = 500
-        if self.minimizer=="gn":
+        if self.minimizer == "gn":
             self._options["model"] = 1
             self._options["nlls_method"] = 4
-        elif self.minimizer=="gn_reg":
+        elif self.minimizer == "gn_reg":
             self._options["model"] = 1
             self._options["type_of_method"] = 2
-        elif self.minimizer=="hybrid":
+        elif self.minimizer == "hybrid":
             self._options["model"] = 3
             self._options["nlls_method"] = 4
-        elif self.minimizer=="hybrid_reg":
+        elif self.minimizer == "hybrid_reg":
             self._options["model"] = 3
             self._options["type_of_method"] = 2
         else:
             raise RuntimeError("An undefined RALFit minmizer was selected")
-        
 
     def _prediction_error(self, p):
         f = self.problem.eval_f(x=self.data_x,
@@ -69,7 +67,7 @@ class RALFitController(Controller):
                                     self._prediction_error,
                                     self._jac,
                                     options=self._options)[0]
-            
+
         self.success = (self._popt is not None)
 
     def cleanup(self):

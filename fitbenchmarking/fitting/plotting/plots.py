@@ -20,7 +20,8 @@ def make_plots(problem, best_fit, count, group_results_dir):
     @param group_results_dir :: dir where results for the current group
                                 are stored
 
-    @returns :: None, plots are saved to /group_results_dir/support_pages/figures
+    @returns :: None, plots are saved to
+                /group_results_dir/support_pages/figures
     """
 
     figures_dir = create_dirs.figures(group_results_dir)
@@ -32,7 +33,6 @@ def make_plots(problem, best_fit, count, group_results_dir):
                              problem=problem,
                              count=count,
                              figures_dir=figures_dir)
-
 
 
 def get_data_points(problem):
