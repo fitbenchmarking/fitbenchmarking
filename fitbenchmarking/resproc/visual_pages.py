@@ -6,7 +6,6 @@ from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
 import os
-import re
 from docutils.core import publish_string
 from fitbenchmarking.resproc import fitdetails_tbls
 from fitbenchmarking.utils.logging_setup import logger
@@ -66,11 +65,11 @@ def create(prob_results, group_name, results_dir, count):
     # Get the best result for a group
     best_result = min((result for result in prob_results),
                       key=lambda result: result.chi_sq
-                      if not result.chi_sq is np.nan else np.inf)
+                      if result.chi_sq is not np.nan else np.inf)
 
     problem_name = process_problem_name(best_result.problem.name)
-    support_pages_dir, file_path, see_also_link = \
-        setup_page_misc(group_name, problem_name, best_result, results_dir, count)
+    support_pages_dir, file_path, see_also_link = setup_page_misc(
+        group_name, problem_name, best_result, results_dir, count)
     rst_link = generate_rst_link(file_path)
 
     ini_details_tbl, fin_details_tbl = \
@@ -156,7 +155,7 @@ def generate_rst_link(file_path):
 def setup_detail_page_tbls(initial_fdef, final_fdef):
 
     initial_details_tbl = fitdetails_tbls.create(initial_fdef)
-    if not final_fdef is None:
+    if final_fdef is not None:
         final_details_tbl = fitdetails_tbls.create(final_fdef)
     else:
         final_details_tbl = "None - fit failed\n\n"
@@ -325,10 +324,12 @@ def save_page(rst_text, prob_name, file_path):
         print(rst_text, file=visual_rst)
         logger.info('Saved {prob_name}.{extension} to {working_directory}'.
                     format(prob_name=prob_name, extension=FILENAME_EXT_TXT,
-                           working_directory=file_path[file_path.find('fitbenchmarking'):]))
+                           working_directory=file_path[
+                               file_path.find('fitbenchmarking'):]))
 
     with open(file_path + '.' + FILENAME_EXT_HTML, 'w') as visual_html:
         print(html, file=visual_html)
         logger.info('Saved {prob_name}.{extension} to {working_directory}'.
                     format(prob_name=prob_name, extension=FILENAME_EXT_HTML,
-                           working_directory=file_path[file_path.find('fitbenchmarking'):]))
+                           working_directory=file_path[
+                               file_path.find('fitbenchmarking'):]))

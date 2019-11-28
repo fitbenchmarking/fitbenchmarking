@@ -43,7 +43,8 @@ class OptionsTests(unittest.TestCase):
                             'num_runs': 2,
                             'software': ['foo', 'bar']},
                 'PLOTTING': {'colour_scale': [(17.1, 'a_string?'),
-                                              (float('inf'), 'another_string')],
+                                              (float('inf'),
+                                               'another_string')],
                              'comparison_mode': 'abs',
                              'results_dir': 'new_results'}
                 }
