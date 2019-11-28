@@ -44,7 +44,7 @@ class OptionsTests(unittest.TestCase):
                             'software': ['foo', 'bar']},
                 'PLOTTING': {'colour_scale': [(17.1, 'a_string?'),
                                               (float('inf'),
-                                              'another_string')],
+                                               'another_string')],
                              'comparison_mode': 'abs',
                              'results_dir': 'new_results'}
                 }
