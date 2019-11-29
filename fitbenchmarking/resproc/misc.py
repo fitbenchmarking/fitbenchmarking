@@ -5,8 +5,6 @@ fitting results.
 
 from __future__ import (absolute_import, division, print_function)
 
-from fitbenchmarking.resproc import visual_pages
-
 
 def display_name_for_minimizers(names):
     """

@@ -3,7 +3,6 @@ Utility functions for creating/deleting directories.
 """
 
 import os
-import sys
 import shutil
 
 

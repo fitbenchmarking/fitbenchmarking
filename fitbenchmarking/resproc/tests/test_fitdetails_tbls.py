@@ -46,7 +46,8 @@ class FitDetailsTblsTests(unittest.TestCase):
 
         names, params = generate_names_and_params(function)
         func_names_expected = "BackToBackExponential"
-        func_parameters_expected = "I=597.076, A=1, B=0.05, X0=24027.5, S=22.9096"
+        func_parameters_expected = \
+            "I=597.076, A=1, B=0.05, X0=24027.5, S=22.9096"
 
         self.assertEqual(func_names_expected, names[0])
         self.assertEqual(func_parameters_expected, params[0])
@@ -131,8 +132,8 @@ class FitDetailsTblsTests(unittest.TestCase):
         name_dim = 21
         params_dim = 44
 
-        body = \
-            generate_fit_det_body(func_names, func_params, name_dim, params_dim)
+        body = generate_fit_det_body(
+            func_names, func_params, name_dim, params_dim)
         body_expected = '| LinearBackground      |' + \
                         ' None                                         |\n' + \
                         '+-----------------------+' + \
