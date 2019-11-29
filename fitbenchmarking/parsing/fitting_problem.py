@@ -76,14 +76,14 @@ class FittingProblem:
     def param_names(self, value):
         raise ValueError('This property should not be set manually')
 
-    def eval_f(self, x, params):
+    def eval_f(self, params, x=None):
         """
         Function evaluation method
 
-        :param x: x data values
-        :type x: numpy array
         :param params: parameter value(s)
         :type params: list
+        :param x: x data values or None, if None this uses self.data_x
+        :type x: numpy array
 
         :return: y data values evaluated from the function of the problem
         :rtype: numpy array
@@ -91,6 +91,8 @@ class FittingProblem:
         if self.function is None:
             raise AttributeError('Cannot call function before setting'
                                  'function.')
+        if x is None:
+            x = self.data_x
         return self.function(x, *params)
 
     def eval_starting_params(self, param_set):
@@ -106,8 +108,7 @@ class FittingProblem:
         if self.starting_values is None:
             raise AttributeError('Cannot call function before setting'
                                  'starting values.')
-        return self.eval_f(self.data_x,
-                           self.starting_values[param_set].values())
+        return self.eval_f(self.starting_values[param_set].values())
 
     def get_function_def(self, params):
         """
