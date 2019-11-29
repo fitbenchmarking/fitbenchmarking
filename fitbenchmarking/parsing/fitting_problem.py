@@ -50,16 +50,16 @@ class FittingProblem:
         # Executable param pairs
         self.functions = None
 
-    def eval_f(self, x, params, function_id):
+    def eval_f(self, params, function_id, x=None):
         """
         Function evaluation method
 
-        :param x: x data values
-        :type x: numpy array
         :param params: parameter value(s)
         :type params: list
         :param function_id: The index of the function in functions
         :type function_id: int
+        :param x: x data values or None, if None this uses self.data_x
+        :type x: numpy array
 
         :return: y data values evaluated from the function of the problem
         :rtype: numpy array
@@ -67,6 +67,9 @@ class FittingProblem:
         if self.functions is None:
             raise AttributeError('Cannot call function before setting'
                                  + 'functions in object.')
+
+        if x is None:
+            x = self.data_x
         function = self.functions[function_id][0]
         return function(x, *params)
 

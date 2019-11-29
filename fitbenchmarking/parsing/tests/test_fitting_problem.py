@@ -70,6 +70,10 @@ class TestFittingProblem(TestCase):
                                              params=[5],
                                              function_id=1)
         self.assertTrue(all(eval_result == np.array([16])))
+        fitting_problem.data_x = np.array([20, 21, 22])
+        eval_result = fitting_problem.eval_f(params=[5],
+                                             function_id=0)
+        self.assertTrue(all(eval_result == np.array([25, 26, 27])))
 
     def test_eval_starting_params(self):
         """
