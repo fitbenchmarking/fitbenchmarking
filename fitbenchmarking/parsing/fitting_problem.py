@@ -11,6 +11,7 @@ except ImportError:
     # python3
     from itertools import zip_longest as izip_longest
 import numpy as np
+from scipy.optimize._numdiff import approx_derivative
 
 
 class FittingProblem:
@@ -94,6 +95,58 @@ class FittingProblem:
         if x is None:
             x = self.data_x
         return self.function(x, *params)
+
+    def eval_r(self, params, x=None, y=None, e=None):
+        """
+        Calculate residuals and weight them if using errors
+
+        :param params: The parameters to calculate residuals for
+        :type params: list
+        :param x: x data points, defaults to self.data_x
+        :type x: numpy array, optional
+        :param y: y data points, defaults to self.data_y
+        :type y: numpy array, optional
+        :param e: error at each data point, defaults to self.data_e
+        :type e: numpy array, optional
+
+        :return: The residuals for the datapoints at the given parameters
+        :rtype: numpy array
+        """
+
+        if x is None and y is None:
+            x = self.data_x
+            y = self.data_y
+            if e is None:
+                e = self.data_e
+            else:
+                raise ValueError('Residuals cannot be computed with errors'
+                                 'and with given arguments. Please specify'
+                                 'x and y.')
+        elif x is None or y is None:
+            raise ValueError('Residuals could not be computed with only one'
+                             'of x and y')
+
+        result = y - self.eval_f(params=params, x=x)
+        if e is not None:
+            result = result / e
+        return result
+
+    def eval_j(self, params, func=None, **kwargs):
+        """
+        Approximate the jacobian using scipy for a given function at a given
+        point.
+
+        :param params: The parameter values to find the jacobian at
+        :type params: list
+        :param func: Function to find the jacobian for, defaults to self.eval_r
+        :type func: Callable, optional
+        :return: Approximation of the jacobian
+        :rtype: numpy array
+        """
+        if func is None:
+            func = self.eval_r
+
+        return approx_derivative(func, params, kwargs=kwargs)
 
     def eval_starting_params(self, param_set):
         """
