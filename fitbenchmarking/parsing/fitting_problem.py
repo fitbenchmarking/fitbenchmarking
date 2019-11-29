@@ -113,15 +113,10 @@ class FittingProblem:
         :rtype: numpy array
         """
 
-        if x is None and y is None:
+        if x is None and y is None and e is None:
             x = self.data_x
             y = self.data_y
-            if e is None:
-                e = self.data_e
-            else:
-                raise ValueError('Residuals cannot be computed with errors'
-                                 'and with given arguments. Please specify'
-                                 'x and y.')
+            e = self.data_e
         elif x is None or y is None:
             raise ValueError('Residuals could not be computed with only one'
                              'of x and y')
