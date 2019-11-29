@@ -6,8 +6,6 @@ results.
 from __future__ import (absolute_import, division, print_function)
 
 import os
-import sys
-
 
 from fitbenchmarking.fitting_benchmarking import fitbenchmark_group
 from fitbenchmarking.results_output import save_results_tables
@@ -17,7 +15,9 @@ from fitbenchmarking.results_output import save_results_tables
 software = 'scipy'
 software_options = {'software': software,
                     'minimizer_options': None,
-                    'options_file': '../fitbenchmarking/fitbenchmarking_default_options.json'}
+                    'options_file':
+                        '../fitbenchmarking/'
+                        'fitbenchmarking_default_options.json'}
 
 color_scale = [(1.1, 'ranking-top-1'),
                (1.33, 'ranking-top-2'),
