@@ -131,6 +131,26 @@ class FittingProblem:
             result = result / e
         return result
 
+    def eval_r_norm(self, params, x=None, y=None, e=None):
+        """
+        Evaluate the square of the L2 norm of the residuals
+
+        :param params: The parameters to calculate residuals for
+        :type params: list
+        :param x: x data points, defaults to self.data_x
+        :type x: numpy array, optional
+        :param y: y data points, defaults to self.data_y
+        :type y: numpy array, optional
+        :param e: error at each data point, defaults to self.data_e
+        :type e: numpy array, optional
+
+        :return: The sum of squares of residuals for the datapoints at the
+                 given parameters
+        :rtype: numpy array
+        """
+        r = self.eval_r(params=params, x=x, y=y, e=e)
+        return np.dot(r, r)
+
     def eval_j(self, params, func=None, **kwargs):
         """
         Approximate the jacobian using scipy for a given function at a given

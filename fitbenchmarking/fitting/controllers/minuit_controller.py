@@ -37,7 +37,7 @@ class MinuitController(Controller):
         self._initial_step = 0.1 * np.array(self.initial_params)
         # set small steps to something sensible(?)
         self._initial_step[self._initial_step < 1e-12] = 1e-12
-        self._minuit_problem = Minuit.from_array_func(self.problem.eval_r,
+        self._minuit_problem = Minuit.from_array_func(self.problem.eval_r_norm,
                                                       self.initial_params,
                                                       error=self._initial_step,
                                                       errordef=1)
