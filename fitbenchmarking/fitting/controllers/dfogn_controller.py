@@ -31,8 +31,7 @@ class DFOGNController(Controller):
         self._pinit = np.asarray(self.initial_params)
 
     def _prediction_error(self, p):
-        f = self.data_y - self.problem.eval_f(params=p,
-                                              function_id=self.function_id)
+        f = self.data_y - self.problem.eval_f(params=p)
         if self.use_errors:
             f = f/self.data_e
 
@@ -58,6 +57,5 @@ class DFOGNController(Controller):
         will be read from.
         """
         if self.success:
-            self.results = self.problem.eval_f(params=self._popt,
-                                               function_id=self.function_id)
+            self.results = self.problem.eval_f(params=self._popt)
             self.final_params = self._popt

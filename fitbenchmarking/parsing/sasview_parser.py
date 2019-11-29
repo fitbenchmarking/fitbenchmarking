@@ -51,7 +51,7 @@ class SasViewParser(Parser):
 
         fitting_problem.value_ranges = self._get_value_ranges()
 
-        fitting_problem.functions = self._create_sasview_functions()
+        fitting_problem.function = self._create_sasview_function()
 
         return fitting_problem
 
@@ -160,9 +160,10 @@ class SasViewParser(Parser):
         """
         ignore = ['name']
 
-        starting_values = [[name, [val]]
-                           for name, val in self._parsed_func.items()
-                           if name not in ignore]
+        starting_values = [
+            OrderedDict([(name, val)
+                         for name, val in self._parsed_func.items()
+                         if name not in ignore])]
 
         return starting_values
 
@@ -212,19 +213,17 @@ class SasViewParser(Parser):
 
         return value_ranges
 
-    def _create_sasview_functions(self):
+    def _create_sasview_function(self):
         """
-        Creates list of functions alongside the starting parameters.
+        Creates callable function
 
-        :returns: Function definition list containing the model and its
-                  starting parameter values
-        :rtype: List of list
+        :return: the model
+        :rtype: callable
         """
-        functions = []
         equation = self._parsed_func['name']
         starting_values = self._get_starting_values()
         value_ranges = self._get_value_ranges()
-        param_names = [params[0] for params in starting_values]
+        param_names = starting_values[0].keys()
 
         def fitFunction(x, *tmp_params):
 
@@ -243,10 +242,4 @@ class SasViewParser(Parser):
 
             return func_wrapper.theory()
 
-        for i in range(len(starting_values[0][1])):
-
-            param_values = [params[1][i] for params in starting_values]
-
-            functions.append([fitFunction, param_values])
-
-        return functions
+        return fitFunction

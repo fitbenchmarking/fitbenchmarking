@@ -97,7 +97,7 @@ class BaseControllerTests(TestCase):
         """
         controller = DummyController(self.problem, True)
         controller.minimizer = 'test'
-        controller.function_id = 0
+        controller.parameter_set = 0
         controller.prepare()
         assert controller.setup_result == 53
 
@@ -167,7 +167,7 @@ class ControllerTests(TestCase):
         :param controller: Controller to test, with setup already completed
         :type contrller: Object derived from BaseSoftwareController
         """
-        controller.function_id = 0
+        controller.parameter_set = 0
         controller.prepare()
         controller.fit()
         controller.cleanup()

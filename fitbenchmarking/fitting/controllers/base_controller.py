@@ -34,9 +34,6 @@ class Controller:
         # Use Errors: Bool to use errors or not
         self.use_errors = use_errors
 
-        # Functions: The functions to fit
-        self.functions = problem.functions
-
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)
         self.data_x = problem.data_x
@@ -46,8 +43,10 @@ class Controller:
 
         # Initial Params: The starting values for params when fitting
         self.initial_params = None
-        # Function: The current function to fit (from functions)
-        self.function_id = None
+        # Staring Valuess: The list of starting parameters
+        self.starting_values = problem.starting_values
+        # Parameter set: The index of the starting parameters to use
+        self.parameter_set = None
         # Minimizer: The current minimizer to use
         self.minimizer = None
 
@@ -96,11 +95,12 @@ class Controller:
         If both have been set, run self.setup().
         """
 
-        if (self.minimizer is not None) and (self.function_id is not None):
-            self.initial_params = self.functions[self.function_id][1]
+        if (self.minimizer is not None) and (self.parameter_set is not None):
+            self.initial_params = \
+                self.starting_values[self.parameter_set].values()
             self.setup()
         else:
-            raise RuntimeError('Either minimizer or function_id is set to '
+            raise RuntimeError('Either minimizer or parameter_set is set to'
                                'None.')
 
     @abstractmethod
@@ -109,9 +109,6 @@ class Controller:
         Setup the specifics of the fitting
 
         Anything needed for "fit" should be saved to self.
-
-        :returns: None
-        :rtype: None
         """
         raise NotImplementedError
 
