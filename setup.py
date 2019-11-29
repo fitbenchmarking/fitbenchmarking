@@ -22,7 +22,7 @@ setup(name='FitBenchmarking',
                         'pytablewriter<=0.46.1',
                         'dfogn',
                         'iminuit',
-                        'pygsl',
+                        'pygsl=2.3.0',
                         'configparser'],
       zip_safe=False,
 
