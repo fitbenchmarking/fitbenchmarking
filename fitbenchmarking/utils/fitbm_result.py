@@ -37,21 +37,34 @@ class FittingResult(object):
         elif self.options.comparison_mode == "rel":
             output = "{:.4g}".format(self.value)
         elif self.options.comparison_mode == "both":
-            output = "{:.4g} ({:.4g})".format(
-                self.chi_sq, self.chi_sq / self.min_chi_sq)
+            output = "{:.4g} ({:.4g})".format(self.value, self.norm_value)
         return output
 
     def set_return_value(self):
         """
         Utility function set values for the tables
-
-        :return: tuple(value, norm_value) chi_sq or runtime value
-                 together with the corresponding normalised value
-        :rtype: (float, float)
         """
         if self.table_type == "runtime":
             self.value = self.runtime
             self.norm_value = self.norm_runtime
+            self.colour = self.colour_runtime
         if self.table_type == "chi_sq":
             self.value = self.chi_sq
             self.norm_value = self.norm_chi_sq
+            self.colour = self.colour_chi_sq
+
+    def set_colour_scale(self):
+        """
+        Utility function set colour rendering for html tables
+        """
+        colour_scale = self.option.colour_scale
+        colour_bounds = [colour[0] for colour in colour_scale]
+        # prepending 0 value for colour bound
+        colour_bounds = [0] + colour_bounds
+        html_colours = [colour[2] for colour in colour_scale]
+        self.colour = colour_scale[-1]
+        for i in range(len(colour_bounds)):
+            if colour_bounds[i] <= self.norm_runtime < colour_bounds[i + 1]:
+                self.colour_runtime = html_colours[i]
+            if colour_bounds[i] <= self.norm_chi_sq < colour_bounds[i + 1]:
+                self.colour_chi_sq = html_colours[i]
