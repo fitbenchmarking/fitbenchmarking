@@ -38,8 +38,6 @@ def save_results_tables(options, results, group_name):
     minimizers = [options.minimizers[s] for s in software]
     minimizers = sum(minimizers, [])
 
-    comparison_mode = options.comparison_mode
-
     results_dir = options.results_dir
     use_errors = options.use_errors
 
@@ -84,7 +82,7 @@ def generate_tables(results_per_test, minimizers,
     results_dict, html_links = create_results_dict(results_per_test,
                                                    linked_problems)
     table = create_pandas_dataframe(results_dict, minimizers, table_suffix)
-    create_pandas_html(table, minimizers, html_links, table_name)
+    render_pandas_dataframe(table, minimizers, html_links, table_name)
 
 
 def create_results_dict(results_per_test, linked_problems):
@@ -124,7 +122,7 @@ def create_results_dict(results_per_test, linked_problems):
 
 def create_pandas_dataframe(table_data, minimizers, table_suffix):
     """
-    Generates pandas tables.
+    Generates pandas data frame.
 
     :param table_data : dictionary containing results, i.e.,
                             {'prob1': [result1, result2, ...],
@@ -155,9 +153,9 @@ def create_pandas_dataframe(table_data, minimizers, table_suffix):
     return tbl
 
 
-def create_pandas_html(table, minimizers, html_links, table_name):
+def render_pandas_dataframe(table, minimizers, html_links, table_name):
     """
-    Generates html page from pandas dataframes.
+    Generates html and rst page from pandas dataframes.
 
     :param table : DataFrame of the results
     :type table : pandas DataFrame
