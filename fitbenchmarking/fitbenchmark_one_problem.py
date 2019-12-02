@@ -79,7 +79,7 @@ def fitbm_one_prob(problem, options, directory):
     return results
 
 
-def benchmark(controller, minimizers, num_runs):
+def benchmark(controller, minimizers, options):
     """
     Fit benchmark one problem, with one function definition and all
     the selected minimizers, using the chosen fitting software.
@@ -88,9 +88,8 @@ def benchmark(controller, minimizers, num_runs):
     :type controller: Object derived from BaseSoftwareController
     :param minimizers: array of minimizers used in fitting
     :type minimizers: list
-    :param num_runs: number of times controller.fit() is run to
-                     generate an average runtime
-    :type num_runs: int
+    :param options: all the information specified by the user
+    :type options: fitbenchmarking.utils.options.Options
 
     :returns: tuple(results_problem, best_fit) nested array of
               result objects, per minimizer and data object for
@@ -99,7 +98,7 @@ def benchmark(controller, minimizers, num_runs):
     """
     min_chi_sq, best_fit = None, None
     results_problem = []
-
+    num_runs = options.num_runs
     for minimizer in minimizers:
         controller.minimizer = minimizer
 
@@ -154,7 +153,8 @@ def benchmark(controller, minimizers, num_runs):
                                         sorted_index=index)
 
         individual_result = \
-            misc.create_result_entry(problem=controller.problem,
+            misc.create_result_entry(options=options,
+                                     problem=controller.problem,
                                      status=status,
                                      chi_sq=chi_sq,
                                      runtime=runtime,

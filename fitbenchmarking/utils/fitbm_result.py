@@ -8,6 +8,7 @@ class FittingResult(object):
     """
 
     def __init__(self):
+        self.options = None
         self.problem = None
         self.fit_status = None
         self.chi_sq = None
