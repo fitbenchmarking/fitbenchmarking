@@ -171,5 +171,7 @@ def benchmark(controller, minimizers, options):
     for r in results_problem:
         r.min_chi_sq = min_chi_sq
         r.min_runtime = min_runtime
+        r.set_normalised_data()
+        r.set_colour_scale()
 
     return results_problem, best_fit

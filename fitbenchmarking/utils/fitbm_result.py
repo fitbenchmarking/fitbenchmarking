@@ -57,14 +57,29 @@ class FittingResult(object):
         """
         Utility function set colour rendering for html tables
         """
-        colour_scale = self.option.colour_scale
+        colour_scale = self.options.colour_scale
         colour_bounds = [colour[0] for colour in colour_scale]
         # prepending 0 value for colour bound
         colour_bounds = [0] + colour_bounds
         html_colours = [colour[2] for colour in colour_scale]
-        self.colour = colour_scale[-1]
+        self.colour_runtime = colour_scale[-1]
+        self.colour_chi_sq = colour_scale[-1]
         for i in range(len(colour_bounds)):
             if colour_bounds[i] <= self.norm_runtime < colour_bounds[i + 1]:
                 self.colour_runtime = html_colours[i]
             if colour_bounds[i] <= self.norm_chi_sq < colour_bounds[i + 1]:
                 self.colour_chi_sq = html_colours[i]
+
+    def set_normalised_data(self):
+        """
+        Utility function that sets the normalised runtime and accuracy values
+        """
+        try:
+            self.norm_chi_sq = self.chi_sq / self.min_chi_sq
+        except Exception as excp:
+            print(str(excp))
+
+        try:
+            self.norm_runtime = self.runtime / self.min_runtime
+        except Exception as excp:
+            print(str(excp))
