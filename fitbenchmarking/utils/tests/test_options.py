@@ -31,8 +31,8 @@ class OptionsTests(unittest.TestCase):
                       bar
 
             [PLOTTING]
-            colour_scale: 17.1, a_string?
-                          inf, another_string
+            colour_scale: 17.1, a_string?, b_string?
+                          inf, another_string, final_string
             comparison_mode: abs
             results_dir: new_results
             """
@@ -43,8 +43,7 @@ class OptionsTests(unittest.TestCase):
                             'num_runs': 2,
                             'software': ['foo', 'bar']},
                 'PLOTTING': {'colour_scale': [(17.1, 'a_string?', 'b_string?'),
-                                              (float('inf'),
-                                               'another_string',
+                                              (float('inf'), 'another_string',
                                                'final_string')],
                              'comparison_mode': 'abs',
                              'results_dir': 'new_results'}
@@ -54,7 +53,6 @@ class OptionsTests(unittest.TestCase):
             datetime.datetime.now())
         with open(opts_file, 'w') as f:
             f.write(config_str)
-
         self.options = opts
         self.options_file = opts_file
 
@@ -62,6 +60,7 @@ class OptionsTests(unittest.TestCase):
         os.remove(self.options_file)
 
     def test_from_file(self):
+        print(self.options_file)
         options = Options(file_name=self.options_file)
         for key in self.options['MINIMIZERS']:
             self.assertEqual(self.options['MINIMIZERS'][key],

@@ -28,8 +28,11 @@ class FittingResult(object):
         self.fin_function_def = None
 
         self.table_type = None
-        self.value = 1
-        self.norm_value = 1
+        self.value = None
+        self.norm_value = None
+        self.colour = None
+        self.colour_runtime = None
+        self.colour_acc = None
 
     def __repr__(self):
         if self.options.comparison_mode == "abs":
@@ -48,10 +51,10 @@ class FittingResult(object):
             self.value = self.runtime
             self.norm_value = self.norm_runtime
             self.colour = self.colour_runtime
-        if self.table_type == "chi_sq":
+        if self.table_type == "acc":
             self.value = self.chi_sq
-            self.norm_value = self.norm_chi_sq
-            self.colour = self.colour_chi_sq
+            self.norm_value = self.norm_acc
+            self.colour = self.colour_acc
 
     def set_colour_scale(self):
         """
@@ -63,19 +66,19 @@ class FittingResult(object):
         colour_bounds = [0] + colour_bounds
         html_colours = [colour[2] for colour in colour_scale]
         self.colour_runtime = colour_scale[-1]
-        self.colour_chi_sq = colour_scale[-1]
+        self.colour_acc = colour_scale[-1]
         for i in range(len(colour_bounds)):
             if colour_bounds[i] <= self.norm_runtime < colour_bounds[i + 1]:
                 self.colour_runtime = html_colours[i]
-            if colour_bounds[i] <= self.norm_chi_sq < colour_bounds[i + 1]:
-                self.colour_chi_sq = html_colours[i]
+            if colour_bounds[i] <= self.norm_acc < colour_bounds[i + 1]:
+                self.colour_acc = html_colours[i]
 
     def set_normalised_data(self):
         """
         Utility function that sets the normalised runtime and accuracy values
         """
         try:
-            self.norm_chi_sq = self.chi_sq / self.min_chi_sq
+            self.norm_acc = self.chi_sq / self.min_chi_sq
         except Exception as excp:
             print(str(excp))
 
