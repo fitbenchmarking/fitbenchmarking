@@ -50,7 +50,7 @@ def main(args):
     #                 "NIST/low_difficulty",
     #                 "SAS_modelling/1D",
     #                 "simple_tests"]
-    problem_sets = ["simple_tests"]
+    problem_sets = ["NIST/average_difficulty"]
 
     # Benchmark problem directories
     fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))

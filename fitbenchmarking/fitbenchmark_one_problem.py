@@ -126,7 +126,7 @@ def benchmark(controller, minimizers, options):
             params=controller.final_params)
 
         if not controller.success:
-            chi_sq = np.nan
+            chi_sq = np.inf
             status = 'failed'
         else:
             ratio = np.max(runtime_list) / np.min(runtime_list)

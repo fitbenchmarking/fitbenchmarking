@@ -67,10 +67,10 @@ class FittingResult(object):
         html_colours = [colour[2] for colour in colour_scale]
         self.colour_runtime = colour_scale[-1]
         self.colour_acc = colour_scale[-1]
-        for i in range(len(colour_bounds)):
-            if colour_bounds[i] <= self.norm_runtime < colour_bounds[i + 1]:
+        for i in range(len(colour_bounds) - 1):
+            if colour_bounds[i] < self.norm_runtime <= colour_bounds[i + 1]:
                 self.colour_runtime = html_colours[i]
-            if colour_bounds[i] <= self.norm_acc < colour_bounds[i + 1]:
+            if colour_bounds[i] < self.norm_acc <= colour_bounds[i + 1]:
                 self.colour_acc = html_colours[i]
 
     def set_normalised_data(self):
