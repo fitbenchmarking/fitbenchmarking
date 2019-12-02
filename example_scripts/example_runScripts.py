@@ -29,11 +29,11 @@ def main(args):
     # User defined options #####################################
     ############################################################
     options.software = ['scipy']
-    #options.minimizers = {"scipy": ["lm", "trf", "dogbox"],
+    # options.minimizers = {"scipy": ["lm", "trf", "dogbox"],
     #                      "sasview": ["amoeba", "lm", "newton", "de", "mp"]}
-    #options.use_errors = True
-    #options.results_dir = None
-    #options.colour_scale = [(1.1, 'ranking-top-1'),
+    # options.use_errors = True
+    # options.results_dir = None
+    # options.colour_scale = [(1.1, 'ranking-top-1'),
     #                        (1.33, 'ranking-top-2'),
     #                        (1.75, 'ranking-med-3'),
     #                        (3, 'ranking-low-4'),
@@ -41,7 +41,8 @@ def main(args):
     ############################################################
 
     # ADD WHICH PROBLEM SETS TO TEST AGAINST HERE
-    # Do this, in this example file, by selecting sub-folders in benchmark_probs_dir
+    # Do this, in this example file, by selecting sub-folders in
+    # benchmark_probs_dir
     # problem_sets = ["CUTEst",
     #                 "Muon",
     #                 "Neutron",
@@ -53,7 +54,8 @@ def main(args):
     problem_sets = ["simple_tests"]
 
     # Benchmark problem directories
-    fitbenchmarking_folder = os.path.abspath(os.path.join(current_path, os.pardir))
+    fitbenchmarking_folder = os.path.abspath(
+        os.path.join(current_path, os.pardir))
     benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
                                        'benchmark_problems')
 
@@ -61,7 +63,8 @@ def main(args):
         # generate group label/name used for problem set
         label = sub_dir.replace('/', '_')
 
-        # Create full path for the directory that holds a group of problem definition files
+        # Create full path for the directory that holds a group of
+        # problem definition files
         data_dir = os.path.join(benchmark_probs_dir, sub_dir)
 
         test_data = glob.glob(data_dir + '/*.*')
@@ -70,7 +73,8 @@ def main(args):
             print('Problem set {} not found'.format(sub_dir))
             continue
 
-        print('\nRunning the benchmarking on the {} problem set\n'.format(label))
+        print('\nRunning the benchmarking on the {} problem set\n'.format(
+            label))
         results = fitbenchmark_group(group_name=label,
                                      options=options,
                                      data_dir=data_dir)
