@@ -66,7 +66,6 @@ def fitbm_one_prob(problem, options, directory):
             problem_result, best_fit = benchmark(controller=controller,
                                                  minimizers=minimizers,
                                                  options=options)
-
             if best_fit is not None:
                 # Make the plot of the best fit
                 plots.make_plots(problem=problem,
@@ -99,6 +98,8 @@ def benchmark(controller, minimizers, options):
     min_chi_sq, best_fit = None, None
     results_problem = []
     num_runs = options.num_runs
+    min_chi_sq = np.inf
+    min_runtime = np.inf
     for minimizer in minimizers:
         controller.minimizer = minimizer
 
@@ -161,7 +162,14 @@ def benchmark(controller, minimizers, options):
                                      minimizer=minimizer,
                                      ini_function_def=init_function_def,
                                      fin_function_def=fin_function_def)
-
+        if chi_sq < min_chi_sq:
+            min_chi_sq = chi_sq
+        if runtime < min_runtime:
+            min_runtime = runtime
         results_problem.append(individual_result)
+
+    for r in results_problem:
+        r.min_chi_sq = min_chi_sq
+        r.min_runtime = min_runtime
 
     return results_problem, best_fit

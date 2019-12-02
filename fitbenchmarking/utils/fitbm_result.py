@@ -12,7 +12,7 @@ class FittingResult(object):
         self.problem = None
         self.fit_status = None
         self.chi_sq = None
-
+        self.min_chi_sq = None
         # Workspace with data to fit
         self.fit_wks = None
         self.params = None
@@ -20,24 +20,25 @@ class FittingResult(object):
 
         # Time it took to run the Fit algorithm
         self.runtime = None
+        self.min_chi_sq = None
 
         # Best minimizer for a certain problem and its function definition
         self.minimizer = None
         self.ini_function_def = None
         self.fin_function_def = None
 
-        self.comparison_mode = self.options.comparison_mode
         self.table_type = None
-        self.value = None
-        self.norm_value = None
+        self.value = 1
+        self.norm_value = 1
 
     def __repr__(self):
-        if self.comparison_mode == "abs":
+        if self.options.comparison_mode == "abs":
             output = "{:.4g}".format(self.value)
-        elif self.comparison_mode == "rel":
+        elif self.options.comparison_mode == "rel":
             output = "{:.4g}".format(self.value)
-        elif self.comparison_mode == "both":
-            output = "{:.4g} ({:.4g})".format(self.value, self.norm_value)
+        elif self.options.comparison_mode == "both":
+            output = "{:.4g} ({:.4g})".format(
+                self.chi_sq, self.chi_sq / self.min_chi_sq)
         return output
 
     def set_return_value(self):
