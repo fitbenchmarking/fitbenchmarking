@@ -4,7 +4,6 @@ https://github.com/ralna/RALFit
 """
 
 import ral_nlls
-from scipy.optimize._numdiff import approx_derivative
 
 from fitbenchmarking.fitting.controllers.base_controller import Controller
 
