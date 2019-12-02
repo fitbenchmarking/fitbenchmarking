@@ -65,7 +65,7 @@ def fitbm_one_prob(problem, options, directory):
 
             problem_result, best_fit = benchmark(controller=controller,
                                                  minimizers=minimizers,
-                                                 num_runs=options.num_runs)
+                                                 options=options)
 
             if best_fit is not None:
                 # Make the plot of the best fit
