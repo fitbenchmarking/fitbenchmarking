@@ -45,8 +45,10 @@ class Options(object):
         plotting = config['PLOTTING']
         self.colour_scale = plotting.getlist('colour_scale')
         self.colour_scale = [(float(cs.split(',', 1)[0].strip()),
+                              cs.split(',', 1)[1].strip(),
                               cs.split(',', 1)[1].strip())
                              for cs in self.colour_scale]
+        print(self.colour_scale)
         self.comparison_mode = plotting.getstr('comparison_mode')
         self.results_dir = plotting.getstr('results_dir')
 

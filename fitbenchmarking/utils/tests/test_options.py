@@ -42,9 +42,10 @@ class OptionsTests(unittest.TestCase):
                 'FITTING': {'use_errors': False,
                             'num_runs': 2,
                             'software': ['foo', 'bar']},
-                'PLOTTING': {'colour_scale': [(17.1, 'a_string?'),
+                'PLOTTING': {'colour_scale': [(17.1, 'a_string?', 'b_string?'),
                                               (float('inf'),
-                                               'another_string')],
+                                               'another_string',
+                                               'final_string')],
                              'comparison_mode': 'abs',
                              'results_dir': 'new_results'}
                 }
