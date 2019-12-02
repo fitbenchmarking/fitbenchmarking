@@ -204,3 +204,9 @@ Installing RAlfit
 The fitbenchmarking setup does not currently support installing RALfit
 through it. RALfit can be downloaded and installed from
 `here <https://github.com/ralna/RALFit>`__.
+
+*****************
+Installing Pandoc
+*****************
+
+Pandoc is used to convert the HTML tables into RST format, see here `here <https://pandoc.org/installing.html>`__ for installation.

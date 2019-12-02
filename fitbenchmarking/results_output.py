@@ -16,8 +16,6 @@ from fitbenchmarking.utils.logging_setup import logger
 # Some naming conventions for the output files
 FILENAME_SUFFIX_ACCURACY = 'acc'
 FILENAME_SUFFIX_RUNTIME = 'runtime'
-FILENAME_EXT_TXT = 'txt'
-FILENAME_EXT_HTML = 'html'
 
 
 def save_results_tables(options, results, group_name):
@@ -179,6 +177,9 @@ def render_pandas_dataframe(table, minimizers, html_links, table_name):
     table_style = table.style.applymap(colour_highlight)
     with open(table_name + 'html', "w") as f:
         f.write(table_style.render())
-    output = pypandoc.convert_file(table_name + 'html', 'rst')
-    with open(table_name + 'rst', "w") as f:
-        f.write(output)
+    try:
+        output = pypandoc.convert_file(table_name + 'html', 'rst')
+        with open(table_name + 'rst', "w") as f:
+            f.write(output)
+    except ImportError:
+        print('RST tables require Pandoc to be installed')
