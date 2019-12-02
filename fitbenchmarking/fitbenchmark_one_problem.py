@@ -39,6 +39,7 @@ def fitbm_one_prob(problem, options, directory):
         software = [software]
 
     for s in software:
+        print("    Software: {}".format(s.upper()))
         try:
             minimizers = options.minimizers[s]
         except KeyError:
@@ -58,11 +59,13 @@ def fitbm_one_prob(problem, options, directory):
         problem.data_e = controller.data_e
 
         for i in range(len(controller.starting_values)):
+            print("        Starting value: {0}/{1}".format(
+                i + 1,
+                len(controller.starting_values)))
             if len(results) <= i:
                 results.append({})
 
             controller.parameter_set = i
-
             problem_result, best_fit = benchmark(controller=controller,
                                                  minimizers=minimizers,
                                                  num_runs=options.num_runs)
@@ -101,6 +104,8 @@ def benchmark(controller, minimizers, num_runs):
     results_problem = []
 
     for minimizer in minimizers:
+        print("            Minimizer: {}".format(minimizer))
+
         controller.minimizer = minimizer
 
         init_function_def = controller.problem.get_function_def(
