@@ -4,6 +4,7 @@ Functions that creates the tables and the visual display pages.
 
 from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
+import copy
 import logging
 import os
 import pandas as pd
@@ -45,21 +46,24 @@ def save_results_tables(options, results, group_name):
     linked_problems = \
         visual_pages.create_linked_probs(results, group_name, results_dir)
 
-    for table_suffix in [FILENAME_SUFFIX_ACCURACY, FILENAME_SUFFIX_RUNTIME]:
-        table_name = os.path.join(tables_dir,
-                                  '{0}_{1}_{2}_table.'.format(
-                                      group_name,
-                                      table_suffix,
-                                      weighted_str))
-        generate_tables(results, minimizers,
-                        linked_problems, table_name,
-                        table_suffix)
+    table_suffix = [FILENAME_SUFFIX_ACCURACY, FILENAME_SUFFIX_RUNTIME]
+    table_names = []
+    for suffix in table_suffix:
+        table_names.append(os.path.join(tables_dir,
+                                        '{0}_{1}_{2}_table.'.format(
+                                            group_name,
+                                            suffix,
+                                            weighted_str)))
+
+    generate_tables(results, minimizers,
+                    linked_problems, table_names,
+                    table_suffix)
 
     logging.shutdown()
 
 
 def generate_tables(results_per_test, minimizers,
-                    linked_problems, table_name,
+                    linked_problems, table_names,
                     table_suffix):
     """
     Generates accuracy and runtime tables, with both normalised and absolute
@@ -80,7 +84,7 @@ def generate_tables(results_per_test, minimizers,
     results_dict, html_links = create_results_dict(results_per_test,
                                                    linked_problems)
     table = create_pandas_dataframe(results_dict, minimizers, table_suffix)
-    render_pandas_dataframe(table, minimizers, html_links, table_name)
+    render_pandas_dataframe(table, minimizers, html_links, table_names)
 
 
 def create_results_dict(results_per_test, linked_problems):
@@ -129,34 +133,36 @@ def create_pandas_dataframe(table_data, minimizers, table_suffix):
     :param minimizers : list of minimizers (column headers)
     :type minimizers : list
     :param table_suffix : set output to be runtime or accuracy table
-    :type table_suffix : str
+    :type table_suffix : list
 
 
     :return : dict(tbl, tbl_norm, tbl_combined) dictionary of
                pandas DataFrames containing results.
-    :rtype : dict{pandas DataFrame, pandas DataFrame,
-                   pandas DataFrame}
+    :rtype : dict{pandas DataFrame, pandas DataFrame}
     """
     def select_table(value, table_suffix):
         '''
         Selects either accuracy or runtime table
         '''
         value.table_type = table_suffix
+        value = copy.copy(value)
         value.set_return_value()
         return value
 
     tbl = pd.DataFrame.from_dict(table_data, orient='index')
     tbl.columns = minimizers
-    tbl = tbl.applymap(lambda x: select_table(x, table_suffix))
-    return tbl
+    results = {}
+    for suffix in table_suffix:
+        results[suffix] = tbl.applymap(lambda x: select_table(x, suffix))
+    return results
 
 
-def render_pandas_dataframe(table, minimizers, html_links, table_name):
+def render_pandas_dataframe(table_dict, minimizers, html_links, table_names):
     """
     Generates html and rst page from pandas dataframes.
 
-    :param table : DataFrame of the results
-    :type table : pandas DataFrame
+    :param table_dict : dictionary of DataFrame of the results
+    :type table_dict : dict(pandas DataFrame, ...)
     :param minimizers : list of minimizers (column headers)
     :type minimizers : list
     :param html_links : html links used in pandas rendering
@@ -173,13 +179,14 @@ def render_pandas_dataframe(table, minimizers, html_links, table_name):
 
         return 'background-color: {0}'.format(colour)
 
-    table.index = html_links
-    table_style = table.style.applymap(colour_highlight)
-    with open(table_name + 'html', "w") as f:
-        f.write(table_style.render())
-    try:
-        output = pypandoc.convert_file(table_name + 'html', 'rst')
-        with open(table_name + 'rst', "w") as f:
-            f.write(output)
-    except ImportError:
-        print('RST tables require Pandoc to be installed')
+    for name, table in zip(table_names, table_dict.values()):
+        table.index = html_links
+        table_style = table.style.applymap(colour_highlight)
+        with open(name + 'html', "w") as f:
+            f.write(table_style.render())
+        try:
+            output = pypandoc.convert_file(name + 'html', 'rst')
+            with open(name + 'rst', "w") as f:
+                f.write(output)
+        except ImportError:
+            print('RST tables require Pandoc to be installed')

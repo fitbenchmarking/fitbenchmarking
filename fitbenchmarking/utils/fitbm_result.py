@@ -35,6 +35,7 @@ class FittingResult(object):
         self.colour_acc = None
 
     def __repr__(self):
+
         if self.options.comparison_mode == "abs":
             output = "{:.4g}".format(self.value)
         elif self.options.comparison_mode == "rel":
