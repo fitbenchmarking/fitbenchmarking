@@ -1,5 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 
+import numpy as np
+
 
 class FittingResult(object):
     """
@@ -79,6 +81,8 @@ class FittingResult(object):
         Utility function that sets the normalised runtime and accuracy values
         """
         try:
+            if not self.chi_sq > 0:
+                self.chi_sq = np.inf
             self.norm_acc = self.chi_sq / self.min_chi_sq
         except Exception as excp:
             print(str(excp))

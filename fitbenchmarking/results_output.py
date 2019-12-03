@@ -9,7 +9,6 @@ import logging
 import os
 import pandas as pd
 import pypandoc
-import numpy as np
 
 from fitbenchmarking.resproc import visual_pages
 from fitbenchmarking.utils import create_dirs
@@ -131,8 +130,8 @@ def preproccess_data(data):
     :type data: dict
     """
     for results in data.values():
-        min_chi_sq = np.min([r.chi_sq for r in results])
-        min_runtime = np.min([r.runtime for r in results])
+        min_chi_sq = min([r.chi_sq for r in results])
+        min_runtime = min([r.runtime for r in results])
         for r in results:
             r.min_chi_sq = min_chi_sq
             r.min_runtime = min_runtime
