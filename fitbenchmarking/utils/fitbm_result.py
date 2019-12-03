@@ -37,13 +37,16 @@ class FittingResult(object):
         self.colour_acc = None
 
     def __repr__(self):
-
-        if self.options.comparison_mode == "abs":
-            output = "{:.4g}".format(self.value)
-        elif self.options.comparison_mode == "rel":
-            output = "{:.4g}".format(self.value)
-        elif self.options.comparison_mode == "both":
-            output = "{:.4g} ({:.4g})".format(self.value, self.norm_value)
+        if self.table_type is not None:
+            if self.options.comparison_mode == "abs":
+                output = "{:.4g}".format(self.value)
+            elif self.options.comparison_mode == "rel":
+                output = "{:.4g}".format(self.value)
+            elif self.options.comparison_mode == "both":
+                output = "{:.4g} ({:.4g})".format(self.value, self.norm_value)
+        else:
+            output = 'Fitting problem class: minimizer = {0}'.format(
+                self.minimizer)
         return output
 
     def set_return_value(self):
