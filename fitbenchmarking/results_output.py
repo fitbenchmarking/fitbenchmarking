@@ -9,6 +9,7 @@ import logging
 import os
 import pandas as pd
 import pypandoc
+import numpy as np
 
 from fitbenchmarking.resproc import visual_pages
 from fitbenchmarking.utils import create_dirs
@@ -54,7 +55,6 @@ def save_results_tables(options, results, group_name):
                                             group_name,
                                             suffix,
                                             weighted_str)))
-
     generate_tables(results, minimizers,
                     linked_problems, table_names,
                     table_suffix)
@@ -83,6 +83,7 @@ def generate_tables(results_per_test, minimizers,
 
     results_dict, html_links = create_results_dict(results_per_test,
                                                    linked_problems)
+    preproccess_data(results_dict)
     table = create_pandas_dataframe(results_dict, minimizers, table_suffix)
     render_pandas_dataframe(table, minimizers, html_links, table_names)
 
@@ -120,6 +121,23 @@ def create_results_dict(results_per_test, linked_problems):
         html_links.append(template.format(url, prob_name))
         results[prob_name] = [result for result in prob_results]
     return results, html_links
+
+
+def preproccess_data(data):
+    """
+    Helper function that preprocesses data into the right format for printing
+
+    :param data: dictionary of results objects
+    :type data: dict
+    """
+    for results in data.values():
+        min_chi_sq = np.min([r.chi_sq for r in results])
+        min_runtime = np.min([r.runtime for r in results])
+        for r in results:
+            r.min_chi_sq = min_chi_sq
+            r.min_runtime = min_runtime
+            r.set_normalised_data()
+            r.set_colour_scale()
 
 
 def create_pandas_dataframe(table_data, minimizers, table_suffix):
