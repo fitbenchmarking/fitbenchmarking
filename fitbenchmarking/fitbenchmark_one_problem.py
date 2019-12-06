@@ -38,32 +38,32 @@ def fitbm_one_prob(problem, options, directory):
     if not isinstance(software, list):
         software = [software]
 
-    for s in software:
-        print("    Software: {}".format(s.upper()))
-        try:
-            minimizers = options.minimizers[s]
-        except KeyError:
-            raise ValueError(
-                'Minimizers could not be found for software: {}'.format(s))
+    for i in range(len(problem.starting_values)):
+        print("    Starting value: {0}/{1}".format(
+            i + 1,
+            len(problem.starting_values)))
+        if len(results) <= i:
+            results.append({})
 
-        controller_cls = ControllerFactory.create_controller(software=s)
-        controller = controller_cls(problem=problem,
-                                    use_errors=options.use_errors)
+        for s in software:
+            print("        Software: {}".format(s.upper()))
+            try:
+                minimizers = options.minimizers[s]
+            except KeyError:
+                raise ValueError(
+                    'Minimizers could not be found for software: {}'.format(s))
 
-        # The controller reformats the data to fit within a start- and end-x
-        # bound
-        # It also estimates errors if not provided.
-        # Copy this back to the problem as it is used in plotting.
-        problem.data_x = controller.data_x
-        problem.data_y = controller.data_y
-        problem.data_e = controller.data_e
+            controller_cls = ControllerFactory.create_controller(software=s)
+            controller = controller_cls(problem=problem,
+                                        use_errors=options.use_errors)
 
-        for i in range(len(controller.starting_values)):
-            print("        Starting value: {0}/{1}".format(
-                i + 1,
-                len(controller.starting_values)))
-            if len(results) <= i:
-                results.append({})
+            # The controller reformats the data to fit within a
+            # start- and end-x bound
+            # It also estimates errors if not provided.
+            # Copy this back to the problem as it is used in plotting.
+            problem.data_x = controller.data_x
+            problem.data_y = controller.data_y
+            problem.data_e = controller.data_e
 
             controller.parameter_set = i
             problem_result, best_fit = benchmark(controller=controller,
@@ -77,7 +77,6 @@ def fitbm_one_prob(problem, options, directory):
                                  group_results_dir=directory)
 
             results[i][s] = problem_result
-
     return results
 
 
