@@ -57,8 +57,8 @@ def fitbm_one_prob(problem, options, directory):
             controller = controller_cls(problem=problem,
                                         use_errors=options.use_errors)
 
-            # The controller reformats the data to fit within a start- and end-x
-            # bound
+            # The controller reformats the data to fit within a
+            # start- and end-x bound
             # It also estimates errors if not provided.
             # Copy this back to the problem as it is used in plotting.
             problem.data_x = controller.data_x
