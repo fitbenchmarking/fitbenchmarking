@@ -27,19 +27,22 @@ class RALFitController(Controller):
         """
         Setup for RALFit
         """
-        self._options["maxit"] = 500
+
+        # Use bytestrings explicitly as thats whats expected in RALFit and
+        # python 3 defaults to unicode.
+        self._options[b"maxit"] = 500
         if self.minimizer == "gn":
-            self._options["model"] = 1
-            self._options["nlls_method"] = 4
+            self._options[b"model"] = 1
+            self._options[b"nlls_method"] = 4
         elif self.minimizer == "gn_reg":
-            self._options["model"] = 1
-            self._options["type_of_method"] = 2
+            self._options[b"model"] = 1
+            self._options[b"type_of_method"] = 2
         elif self.minimizer == "hybrid":
-            self._options["model"] = 3
-            self._options["nlls_method"] = 4
+            self._options[b"model"] = 3
+            self._options[b"nlls_method"] = 4
         elif self.minimizer == "hybrid_reg":
-            self._options["model"] = 3
-            self._options["type_of_method"] = 2
+            self._options[b"model"] = 3
+            self._options[b"type_of_method"] = 2
         else:
             raise RuntimeError("An undefined RALFit minmizer was selected")
 
