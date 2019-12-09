@@ -16,47 +16,56 @@ from scipy.optimize._numdiff import approx_derivative
 
 class FittingProblem:
     """
-    Definition of a fitting problem, normally populated by a parser from a
+    Definition of a fitting problem, which will be populated by a parser from a
     problem definition file.
 
-    Types of data:
-        - strings: name, equation
-        - floats: start_x, end_x
-        - numpy arrays: data_x, data_y, data_e
-        - arrays: starting_values, value_ranges, functions
+    This defines a fitting problem where, given a set of :math:`n` data points
+    :math:`(x_i,y_i)`, associated errors :math:`e_i`, and a model 
+    function :math:`f(x,p)`, we find the optimal parameters in the least-squares
+    sense by solving:
+
+    :math:`\min_p \sum_{i=1}^n ( (y_i - f(x_i, p))/e_i )^2`
+
+    where :math:`p` is a vector of length :math:`m`, and we start from a given 
+    intial guess for the optimal parameters.
     """
 
     def __init__(self):
 
-        # Name (title) of the fitting problem
-        # str
+        #: *string* Name (title) of the fitting problem
         self.name = None
 
-        # Equation (function or model) to fit against data
-        # string
+        #: *string* Equation (function or model) to fit against data
         self.equation = None
 
-        # Define range to fit model data over if different from entire range
-        # of data
-        # floats
+        #: *float* The start of the range to fit model data over
+        #: (if different from entire range)
         self.start_x = None
+        
+        #: *float* The end of the range to fit model data over
+        #: (if different from entire range) (/float/)
         self.end_x = None
 
-        # The data
-        # numpy array of floats
+        #: *numpy array* The x-data
         self.data_x = None
+        
+        #: *numpy array* The y-data 
         self.data_y = None
+        
+        #: *numpy array* The errors
         self.data_e = None
 
-        # Starting values of the fitting parameters
-        # list of dict -> [{p1_name: p1_val1, p2_name: p2_val1, ...},
-        #                  {p1_name: p1_val2, ...},
-        #                  ...]
+        #: *list of dict* of the form
+        #: :code:`[{p1_name: p1_val1, p2_name: p2_val1, ...}, {p1_name: p1_val2, ...}, ...]`
+        #: Starting values of the fitting parameters
         self.starting_values = None
-        # dict -> {p1_name: [p1_min, p1_max], ...}
+        
+        #: *dict* of the form
+        #: :code`{p1_name: [p1_min, p1_max], ...}`
+        #: Smallest and largest values of interest in the data
         self.value_ranges = None
 
-        # Callable function
+        #: Callable function
         self.function = None
 
         self._param_names = None
@@ -148,14 +157,14 @@ class FittingProblem:
 
     def eval_j(self, params, func=None, **kwargs):
         """
-        Approximate the jacobian using scipy for a given function at a given
+        Approximate the Jacobian using scipy for a given function at a given
         point.
 
-        :param params: The parameter values to find the jacobian at
+        :param params: The parameter values to find the Jacobian at
         :type params: list
-        :param func: Function to find the jacobian for, defaults to self.eval_r
+        :param func: Function to find the Jacobian for, defaults to self.eval_r
         :type func: Callable, optional
-        :return: Approximation of the jacobian
+        :return: Approximation of the Jacobian
         :rtype: numpy array
         """
         if func is None:
