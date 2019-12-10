@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 This example script is designed to demonstrate the features of fitbenchmarking to benchmark
 the performance of Scipy and SasView minimizers against the NIST-type problem definition files
@@ -17,7 +18,7 @@ from fitbenchmarking.utils.options import Options
 
 def main(args):
     # Find the options file
-    current_path = os.path.dirname(os.path.realpath(__file__))
+    current_path = os.path.abspath(os.path.curdir)
     if len(args) > 1:
         # Read custom minimizer options from file
         options_file = os.path.join(current_path, args[1])
@@ -54,8 +55,7 @@ def main(args):
     problem_sets = ["simple_tests"]
 
     # Benchmark problem directories
-    fitbenchmarking_folder = os.path.abspath(
-        os.path.join(current_path, os.pardir))
+    fitbenchmarking_folder = current_path
     benchmark_probs_dir = os.path.join(fitbenchmarking_folder,
                                        'benchmark_problems')
 
@@ -70,7 +70,7 @@ def main(args):
         test_data = glob.glob(data_dir + '/*.*')
 
         if test_data == []:
-            print('Problem set {} not found'.format(sub_dir))
+            print('Problem set {} not found'.format(data_dir))
             continue
 
         print('\nRunning the benchmarking on the {} problem set\n'.format(

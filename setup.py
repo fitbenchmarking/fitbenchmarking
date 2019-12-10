@@ -1,8 +1,10 @@
-from setuptools import setup, find_packages
-
 from build.commands.installs import InstallExternals
 from build.commands.help import Help
+import os
+from setuptools import setup, find_packages
+import sys
 
+sys.path.insert(0, os.path.abspath('lib/'))
 
 setup(name='FitBenchmarking',
       version='0.1.dev2',
@@ -10,7 +12,9 @@ setup(name='FitBenchmarking',
       author='FitBenchmarking Team',
       url='http://github.com/fitbenchmarking/fitbenchmarking',
       license='GPL-3.0',
-      packages=find_packages(),
+      scripts=['bin/fitbenchmarking'],
+      packages=find_packages('lib/'),
+      package_dir={'': 'lib'},
       install_requires=['docutils',
                         'numpy<1.17',
                         'matplotlib<3.0',
@@ -30,5 +34,5 @@ setup(name='FitBenchmarking',
           'externals': InstallExternals,
           'help': Help,
       },
-      package_data={'fitbenchmarking': ['resproc/color_definitions.txt']}
+      package_data={'fitbenchmarking': ['utils/default_options.ini']}
       )
