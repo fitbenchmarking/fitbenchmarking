@@ -11,51 +11,66 @@ except ImportError:
     # python3
     from itertools import zip_longest as izip_longest
 import numpy as np
+from scipy.optimize._numdiff import approx_derivative
 
 
 class FittingProblem:
-    """
-    Definition of a fitting problem, normally populated by a parser from a
+    r"""
+    Definition of a fitting problem, which will be populated by a parser from a
     problem definition file.
 
-    Types of data:
-        - strings: name, equation
-        - floats: start_x, end_x
-        - numpy arrays: data_x, data_y, data_e
-        - arrays: starting_values, value_ranges, functions
+    This defines a fitting problem where, given a set of :math:`n` data points
+    :math:`(x_i,y_i)`, associated errors :math:`e_i`, and a model
+    function :math:`f(x,p)`, we find the optimal parameters in the
+    least-squares sense by solving:
+
+    .. math:: \min_p \sum_{i=1}^n \left( \frac{y_i - f(x_i, p)}{e_i} \right)^2
+
+    where :math:`p` is a vector of length :math:`m`, and we start from a given
+    intial guess for the optimal parameters.
     """
 
     def __init__(self):
 
-        # Name (title) of the fitting problem
-        # str
+        #: *string* Name (title) of the fitting problem
         self.name = None
 
-        # Equation (function or model) to fit against data
-        # string
+        #: *string* Equation (function or model) to fit against data
         self.equation = None
 
-        # Define range to fit model data over if different from entire range
-        # of data
-        # floats
+        #: *float* The start of the range to fit model data over
+        #: (if different from entire range)
         self.start_x = None
+
+        #: *float* The end of the range to fit model data over
+        #: (if different from entire range) (/float/)
         self.end_x = None
 
-        # The data
-        # numpy array of floats
+        #: *numpy array* The x-data
         self.data_x = None
+
+        #: *numpy array* The y-data
         self.data_y = None
+
+        #: *numpy array* The errors
         self.data_e = None
 
-        # Starting values of the fitting parameters
-        # list of dict -> [{p1_name: p1_val1, p2_name: p2_val1, ...},
-        #                  {p1_name: p1_val2, ...},
-        #                  ...]
+        #: *list of dict*
+        #: Starting values of the fitting parameters
+        #:
+        #: e.g.
+        #: :code:`[{p1_name: p1_val1, p2_name: p2_val1, ...},
+        #: {p1_name: p1_val2, ...}, ...]`
         self.starting_values = None
-        # dict -> {p1_name: [p1_min, p1_max], ...}
+
+        #: *dict*
+        #: Smallest and largest values of interest in the data
+        #:
+        #: e.g.
+        #: :code:`{p1_name: [p1_min, p1_max], ...}`
         self.value_ranges = None
 
-        # Callable function
+        #: Callable function
         self.function = None
 
         self._param_names = None
@@ -94,6 +109,73 @@ class FittingProblem:
         if x is None:
             x = self.data_x
         return self.function(x, *params)
+
+    def eval_r(self, params, x=None, y=None, e=None):
+        """
+        Calculate residuals and weight them if using errors
+
+        :param params: The parameters to calculate residuals for
+        :type params: list
+        :param x: x data points, defaults to self.data_x
+        :type x: numpy array, optional
+        :param y: y data points, defaults to self.data_y
+        :type y: numpy array, optional
+        :param e: error at each data point, defaults to self.data_e
+        :type e: numpy array, optional
+
+        :return: The residuals for the datapoints at the given parameters
+        :rtype: numpy array
+        """
+
+        if x is None and y is None and e is None:
+            x = self.data_x
+            y = self.data_y
+            e = self.data_e
+        elif x is None or y is None:
+            raise ValueError('Residuals could not be computed with only one'
+                             'of x and y')
+
+        result = y - self.eval_f(params=params, x=x)
+        if e is not None:
+            result = result / e
+        return result
+
+    def eval_r_norm(self, params, x=None, y=None, e=None):
+        """
+        Evaluate the square of the L2 norm of the residuals
+
+        :param params: The parameters to calculate residuals for
+        :type params: list
+        :param x: x data points, defaults to self.data_x
+        :type x: numpy array, optional
+        :param y: y data points, defaults to self.data_y
+        :type y: numpy array, optional
+        :param e: error at each data point, defaults to self.data_e
+        :type e: numpy array, optional
+
+        :return: The sum of squares of residuals for the datapoints at the
+                 given parameters
+        :rtype: numpy array
+        """
+        r = self.eval_r(params=params, x=x, y=y, e=e)
+        return np.dot(r, r)
+
+    def eval_j(self, params, func=None, **kwargs):
+        """
+        Approximate the Jacobian using scipy for a given function at a given
+        point.
+
+        :param params: The parameter values to find the Jacobian at
+        :type params: list
+        :param func: Function to find the Jacobian for, defaults to self.eval_r
+        :type func: Callable, optional
+        :return: Approximation of the Jacobian
+        :rtype: numpy array
+        """
+        if func is None:
+            func = self.eval_r
+
+        return approx_derivative(func, params, kwargs=kwargs)
 
     def eval_starting_params(self, param_set):
         """
