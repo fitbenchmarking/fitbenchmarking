@@ -15,18 +15,18 @@ from scipy.optimize._numdiff import approx_derivative
 
 
 class FittingProblem:
-    """
+    r"""
     Definition of a fitting problem, which will be populated by a parser from a
     problem definition file.
 
     This defines a fitting problem where, given a set of :math:`n` data points
-    :math:`(x_i,y_i)`, associated errors :math:`e_i`, and a model 
-    function :math:`f(x,p)`, we find the optimal parameters in the least-squares
-    sense by solving:
+    :math:`(x_i,y_i)`, associated errors :math:`e_i`, and a model
+    function :math:`f(x,p)`, we find the optimal parameters in the
+    least-squares sense by solving:
 
-    :math:`\min_p \sum_{i=1}^n ( (y_i - f(x_i, p))/e_i )^2`
+    .. math:: \min_p \sum_{i=1}^n \left( \frac{y_i - f(x_i, p)}{e_i} \right)^2
 
-    where :math:`p` is a vector of length :math:`m`, and we start from a given 
+    where :math:`p` is a vector of length :math:`m`, and we start from a given
     intial guess for the optimal parameters.
     """
 
@@ -41,28 +41,33 @@ class FittingProblem:
         #: *float* The start of the range to fit model data over
         #: (if different from entire range)
         self.start_x = None
-        
+
         #: *float* The end of the range to fit model data over
         #: (if different from entire range) (/float/)
         self.end_x = None
 
         #: *numpy array* The x-data
         self.data_x = None
-        
-        #: *numpy array* The y-data 
+
+        #: *numpy array* The y-data
         self.data_y = None
-        
+
         #: *numpy array* The errors
         self.data_e = None
 
-        #: *list of dict* of the form
-        #: :code:`[{p1_name: p1_val1, p2_name: p2_val1, ...}, {p1_name: p1_val2, ...}, ...]`
+        #: *list of dict*
         #: Starting values of the fitting parameters
+        #:
+        #: e.g.
+        #: :code:`[{p1_name: p1_val1, p2_name: p2_val1, ...},
+        #: {p1_name: p1_val2, ...}, ...]`
         self.starting_values = None
-        
-        #: *dict* of the form
-        #: :code`{p1_name: [p1_min, p1_max], ...}`
+
+        #: *dict*
         #: Smallest and largest values of interest in the data
+        #:
+        #: e.g.
+        #: :code:`{p1_name: [p1_min, p1_max], ...}`
         self.value_ranges = None
 
         #: Callable function
