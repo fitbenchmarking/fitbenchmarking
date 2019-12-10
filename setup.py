@@ -30,5 +30,4 @@ setup(name='FitBenchmarking',
           'externals': InstallExternals,
           'help': Help,
       },
-      package_data={'fitbenchmarking': ['resproc/color_definitions.txt']}
       )
