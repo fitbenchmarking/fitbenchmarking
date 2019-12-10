@@ -32,9 +32,12 @@ benchmark_problems/Muon '''
         prog='FitBenchmarking', add_help=True, epilog=epilog,
         formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    parser.add_argument('-o', '--options-file', metavar='OPTIONS_FILE', default='',
+    parser.add_argument('-o', '--options-file',
+                        metavar='OPTIONS_FILE',
+                        default='',
                         help='The path to a %(prog)s options file')
-    parser.add_argument('problem_sets', nargs='+',
+    parser.add_argument('problem_sets',
+                        nargs='+',
                         help='Paths to directories containing problem sets.')
 
     return parser
