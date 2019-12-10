@@ -30,20 +30,13 @@ class DFOGNController(Controller):
         """
         self._pinit = np.asarray(self.initial_params)
 
-    def _prediction_error(self, p):
-        f = self.data_y - self.problem.eval_f(params=p)
-        if self.use_errors:
-            f = f/self.data_e
-
-        return f
-
     def fit(self):
         """
         Run problem with DFO-GN.
         """
         self.success = False
 
-        self._soln = dfogn.solve(self._prediction_error,
+        self._soln = dfogn.solve(self.problem.eval_r,
                                  self._pinit)
 
         if (self._soln.flag == 0):

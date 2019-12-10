@@ -69,6 +69,83 @@ class TestFittingProblem(TestCase):
         eval_result = fitting_problem.eval_f(params=[5])
         self.assertTrue(all(eval_result == np.array([25, 26, 27])))
 
+    def test_eval_r(self):
+        """
+        Test that eval_r is correct
+        """
+        fitting_problem = FittingProblem()
+        self.assertRaises(ValueError,
+                          fitting_problem.eval_r,
+                          params=[1, 2, 3],
+                          x=2)
+
+        fitting_problem.function = lambda x, p1: x + p1
+        x_val = np.array([1, 8, 11])
+        y_val = np.array([6, 10, 20])
+
+        eval_result = fitting_problem.eval_r(x=x_val,
+                                             y=y_val,
+                                             params=[5])
+        self.assertTrue(all(eval_result == np.array([0, -3, 4])))
+
+        e_val = np.array([2, 4, 1])
+        eval_result = fitting_problem.eval_r(x=x_val,
+                                             y=y_val,
+                                             e=e_val,
+                                             params=[5])
+        self.assertTrue(all(eval_result == np.array([0, -0.75, 4])))
+
+        fitting_problem.data_x = np.array([20, 21, 22])
+        fitting_problem.data_y = np.array([20, 30, 35])
+        eval_result = fitting_problem.eval_r(params=[5])
+        self.assertTrue(all(eval_result == np.array([-5, 4, 8])))
+
+        fitting_problem.data_e = np.array([2, 5, 10])
+        eval_result = fitting_problem.eval_r(params=[5])
+        self.assertTrue(all(eval_result == np.array([-2.5, 0.8, 0.8])))
+
+    def test_eval_r_norm(self):
+        """
+        Test that eval_r_norm is correct
+        """
+        fitting_problem = FittingProblem()
+        fitting_problem.function = lambda x, p1: x + p1
+        x_val = np.array([1, 8, 11])
+        y_val = np.array([6, 10, 20])
+        e_val = np.array([0.5, 10, 0.1])
+
+        eval_result = fitting_problem.eval_r_norm(params=[5],
+                                                  x=x_val,
+                                                  y=y_val,
+                                                  e=e_val)
+        self.assertEqual(eval_result, 1600.09)
+
+        fitting_problem.data_x = x_val
+        fitting_problem.data_y = y_val
+        eval_result = fitting_problem.eval_r_norm(params=[5])
+        self.assertEqual(eval_result, 25)
+
+    def test_eval_j(self):
+        """
+        Test that eval_j is correct
+        """
+        def f(x, p1, p2):
+            return p1*np.exp(p2*x)
+
+        def J(x, p):
+            return np.column_stack((-np.exp(p[1]*x),
+                                    -x*p[0]*np.exp(p[1]*x)))
+
+        fitting_problem = FittingProblem()
+        fitting_problem.function = f
+        fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
+        fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
+        params = [6, 0.1]
+
+        eval_result = fitting_problem.eval_j(params=params)
+        actual = J(x=fitting_problem.data_x, p=params)
+        self.assertTrue(np.isclose(actual, eval_result).all())
+
     def test_eval_starting_params(self):
         """
         Test that eval_starting_params returns the correct result

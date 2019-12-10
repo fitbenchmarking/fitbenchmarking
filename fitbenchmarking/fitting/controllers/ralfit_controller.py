@@ -4,7 +4,6 @@ https://github.com/ralna/RALFit
 """
 
 import ral_nlls
-from scipy.optimize._numdiff import approx_derivative
 
 from fitbenchmarking.fitting.controllers.base_controller import Controller
 
@@ -43,27 +42,14 @@ class RALFitController(Controller):
         else:
             raise RuntimeError("An undefined RALFit minmizer was selected")
 
-    def _prediction_error(self, p):
-        f = self.problem.eval_f(params=p)
-        f = f - self.data_y
-        if self.use_errors:
-            f = f / self.data_e
-
-        return f
-
-    def _jac(self, p):
-        j = approx_derivative(self._prediction_error,
-                              p)
-        return j
-
     def fit(self):
         """
         Run problem with RALFit.
         """
         self.success = False
         self._popt = ral_nlls.solve(self.initial_params,
-                                    self._prediction_error,
-                                    self._jac,
+                                    self.problem.eval_r,
+                                    self.problem.eval_j,
                                     options=self._options)[0]
 
         self.success = (self._popt is not None)

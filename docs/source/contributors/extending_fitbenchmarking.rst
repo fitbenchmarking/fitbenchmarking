@@ -112,6 +112,9 @@ written so that the fitting is separated from the preparation wherever possible
 in order to give accurate timings for the fitting. Examples of these
 controllers can be found in ``fitbenchmarking/fitting/controllers``.
 
+Fitting software requirements
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 In order to add a new controller, you will need to:
 
 1. Give the software a name `<software_name>` this will be used by users when
@@ -142,5 +145,18 @@ In order to add a new controller, you will need to:
    Unless the new controller is more complicated than the currently available
    controllers, this can be done by following the example of the others.
 
-Note: For ease of maintainance, please add new controllers in alphabetical
-      order, whenever it is added to a list of softwares.
+.. note::
+   For ease of maintainance, please add new controllers to a list of software in alphabetical order.
+   
+   
+The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` class
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When adding new minimizers, you will find it helpful to make use of the
+following members of the :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` class:
+
+.. currentmodule:: fitbenchmarking.parsing.fitting_problem
+.. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
+   :members: eval_f, eval_r, eval_r_norm, eval_j,
+	     data_x, data_y, data_e, starting_values
+	  
