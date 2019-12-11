@@ -28,15 +28,18 @@ For help on how to use the command line/terminal, click the hyperlink correspond
    -  Virtual Environment: `python setup.py install`
 
 You should now have all you need to use FitBenchmarking.
-To try it out, you can run one of the example scripts as below.
+To try it out with the `fitbenchmarking` command.
 
 ## FitBenchmarking
-The `example_scripts/example_runScripts.py` file is designed to benchmark minimizers supported by software/libraries that provide straightforward cross-platform Python install; as of now this means SciPy and SasView (more details provided in the file itself).
+The `fitbenchmarking` command is designed to benchmark minimizers supported by software/libraries that provide straightforward cross-platform Python install; as of now this includes DFOGN, Mantid, Minuit, SasView, SciPy, and RALFit.
 
-The required software packages should have been installed in step 3 above (scipy, numpy, lxml, bumps, sasmodels).
+The required software packages should have been installed in step 3 above.
 If you have issues with any of these please contact us so that we can update the installer.
 
-Try it out on Linux and Mac with: `python example_scripts/example_runScripts.py` and on Windows with: `python example_scripts\example_runScripts.py`
+To use fitbenchmarking you will need to specify a problem to benchmark with.
+The repository provides a variety of problem files in the `examples/benchmark_problems` directory.
+
+Try it out with: `fitbenchmarking examples/benchmark_problems/simple_tests`
 
 The resulting tables can be found in the folder `results`.
 
@@ -57,9 +60,6 @@ Python executable Mantid includes.
 * Go into the `fitbenchmarking` directory
 #### Mac ####
 Follow the instructions on the Mantid download page, found [here](https://download.mantidproject.org).
-#### To test the installation of Mantid ####
-On Mac/Linux run the example script: `example_scripts/example_runScript_mantid.py`.
-And on Windows `example_scripts\example_runScript_mantid.py`
 
 ## Description
 The tool creates a table/tables that shows a comparison between the different minimizers available in a fitting software (e.g. SciPy or Mantid), based on their accuracy and/or runtimes.
