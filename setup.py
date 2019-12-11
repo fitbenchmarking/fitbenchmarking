@@ -2,7 +2,7 @@ from build.commands.installs import InstallExternals
 from build.commands.help import Help
 import glob
 import os
-from setuptools import setup
+from setuptools import find_packages, setup
 import shutil
 
 setup(name='FitBenchmarking',
@@ -12,7 +12,7 @@ setup(name='FitBenchmarking',
       url='http://github.com/fitbenchmarking/fitbenchmarking',
       license='GPL-3.0',
       scripts=['bin/fitbenchmarking'],
-      packages=['fitbenchmarking', 'sas'],
+      packages=find_packages('./lib', exclude=('*mock*', '*test*')),
       package_dir={'': 'lib'},
       install_requires=['docutils',
                         'numpy<1.17',
