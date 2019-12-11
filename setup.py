@@ -1,10 +1,9 @@
 from build.commands.installs import InstallExternals
 from build.commands.help import Help
+import glob
 import os
-from setuptools import setup, find_packages
-import sys
-
-sys.path.insert(0, os.path.abspath('lib/'))
+from setuptools import setup
+import shutil
 
 setup(name='FitBenchmarking',
       version='0.1.dev2',
@@ -13,7 +12,7 @@ setup(name='FitBenchmarking',
       url='http://github.com/fitbenchmarking/fitbenchmarking',
       license='GPL-3.0',
       scripts=['bin/fitbenchmarking'],
-      packages=find_packages('lib/'),
+      packages=['fitbenchmarking'],
       package_dir={'': 'lib'},
       install_requires=['docutils',
                         'numpy<1.17',
@@ -36,3 +35,18 @@ setup(name='FitBenchmarking',
       },
       package_data={'fitbenchmarking': ['utils/default_options.ini']}
       )
+
+
+# Clean up build files
+CLEAN_FILES = ['./dist', './*.pyc', './*.tgz', './lib/*.egg-info']
+CURDIR = os.path.abspath(os.curdir)
+
+for path_spec in CLEAN_FILES:
+    # Make paths absolute and relative to this path
+    abs_paths = glob.glob(os.path.normpath(os.path.join(CURDIR, path_spec)))
+    for path in [str(p) for p in abs_paths]:
+        if not path.startswith(CURDIR):
+            # Die if path in CLEAN_FILES is absolute + outside this directory
+            raise ValueError("%s is not a path inside %s" % (path, CURDIR))
+        print('removing %s' % os.path.relpath(path))
+        shutil.rmtree(path)
