@@ -5,6 +5,7 @@ This is used to manage the imports and reduce effort in adding new parsers.
 
 from importlib import import_module
 from inspect import isclass, isabstract, getmembers
+import os
 
 from fitbenchmarking.parsing.base_parser import Parser
 
@@ -40,11 +41,19 @@ class ParserFactory:
             module_name += l
 
         module_name = '{}_parser'.format(module_name.lower())
+
         try:
             module = import_module('.' + module_name, __package__)
-        except ImportError:
-            raise ValueError('Could not find parser for {}.'.format(filename)
-                             + 'Check the input is correct and try again.')
+        except ImportError as e:
+            full_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                     module_name+'.py'))
+            if os.path.exists(full_path):
+                raise ImportError('This parser cannot be used as requirements'
+                                  'are missing: ' + str(e))
+            else:
+                raise ValueError('Could not find parser for {}. '
+                                 'Check the input is correct and try '
+                                 'again.'.format(filename))
 
         classes = getmembers(module, lambda m: (isclass(m)
                                                 and not isabstract(m)
