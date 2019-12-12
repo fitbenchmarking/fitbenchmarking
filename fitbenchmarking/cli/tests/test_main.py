@@ -11,8 +11,9 @@ class TestExampleScripts(unittest.TestCase):
         # get curdir and store for teardown
         self.cwd = os.getcwd()
 
-        # get rootdir of repo
+        # get rootdir of package
         root_dir = os.path.join(os.path.dirname(__file__),
+                                os.pardir,
                                 os.pardir,
                                 os.pardir)
 
