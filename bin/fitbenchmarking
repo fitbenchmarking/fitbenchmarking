@@ -24,7 +24,7 @@ def get_parser():
 
     epilog = '''Usage Examples:
 
-    $ fitbenchmarking benchmark_problems/*
+    $ fitbenchmarking benchmark_problems/NIST/*
     $ fitbenchmarking -o myoptions.ini benchmark_problems/simple_tests \
 benchmark_problems/Muon '''
 
