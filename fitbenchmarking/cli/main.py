@@ -23,9 +23,9 @@ def get_parser():
 
     epilog = '''Usage Examples:
 
-    $ fitbenchmarking benchmark_problems/NIST/*
-    $ fitbenchmarking -o myoptions.ini benchmark_problems/simple_tests \
-benchmark_problems/Muon '''
+    $ fitbenchmarking examples/benchmark_problems/NIST/*
+    $ fitbenchmarking -o examples/myoptions.ini \
+examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
 
     parser = argparse.ArgumentParser(
         prog='FitBenchmarking', add_help=True, epilog=epilog,
