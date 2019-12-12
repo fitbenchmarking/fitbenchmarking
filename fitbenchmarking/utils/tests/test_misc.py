@@ -5,7 +5,7 @@ import shutil
 import time
 import unittest
 
-import mock_problems
+from fitbenchmarking import mock_problems
 from fitbenchmarking.utils.misc import get_problem_files
 
 

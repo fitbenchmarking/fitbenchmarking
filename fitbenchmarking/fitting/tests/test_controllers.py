@@ -2,7 +2,7 @@ import inspect
 import os
 from unittest import TestCase
 
-import mock_problems
+from fitbenchmarking import mock_problems
 from fitbenchmarking.fitting.controllers.base_controller import \
     Controller
 from fitbenchmarking.fitting.controllers.controller_factory import \
