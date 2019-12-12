@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from fitbenchmarking import cli
+from fitbenchmarking.cli import main
 
 
 class TestExampleScripts(unittest.TestCase):
@@ -24,14 +24,14 @@ class TestExampleScripts(unittest.TestCase):
         os.chdir(self.cwd)
 
     def test_run_with_options(self):
-        cli.fitbenchmarking.run(['examples/benchmark_problems/simple_tests'],
-                                options_file='examples/options_template.ini')
+        main.run(['examples/benchmark_problems/simple_tests'],
+                 options_file='examples/options_template.ini')
 
     def test_run_no_options(self):
-        cli.fitbenchmarking.run(['examples/benchmark_problems/simple_tests'])
+        main.run(['examples/benchmark_problems/simple_tests'])
 
     def test_arg_parse(self):
-        parser = cli.fitbenchmarking.get_parser()
+        parser = main.get_parser()
 
         options_file = 'some_file/with_options'
         problem_sets = ['problems_1', 'problems2/*']
