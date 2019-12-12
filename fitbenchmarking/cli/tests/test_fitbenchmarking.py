@@ -1,19 +1,7 @@
 import os
 import unittest
 
-fbscript = {}
-fbscript_path = os.path.abspath(
-    os.path.join(os.path.dirname(__file__),
-                 os.pardir,
-                 'fitbenchmarking'))
-
-try:
-    exec(fbscript_path, fbscript)
-except SyntaxError:
-    execfile(fbscript_path, fbscript)
-
-run = fbscript['run']
-get_parser = fbscript['get_parser']
+from fitbenchmarking import cli
 
 
 class TestExampleScripts(unittest.TestCase):
@@ -36,14 +24,14 @@ class TestExampleScripts(unittest.TestCase):
         os.chdir(self.cwd)
 
     def test_run_with_options(self):
-        run(['examples/benchmark_problems/simple_tests'],
-            options_file='examples/options_template.ini')
+        cli.fitbenchmarking.run(['examples/benchmark_problems/simple_tests'],
+                                options_file='examples/options_template.ini')
 
     def test_run_no_options(self):
-        run(['examples/benchmark_problems/simple_tests'])
+        cli.fitbenchmarking.run(['examples/benchmark_problems/simple_tests'])
 
     def test_arg_parse(self):
-        parser = get_parser()
+        parser = cli.fitbenchmarking.get_parser()
 
         options_file = 'some_file/with_options'
         problem_sets = ['problems_1', 'problems2/*']

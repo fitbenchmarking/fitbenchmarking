@@ -44,20 +44,20 @@ jobs:
       before_script: python -m mantid.simpleapi || true
       script:
         # ======= Examples Tests =============== #
-        - pytest bin/ --cov=bin/
+        - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
           --cov-report term-missing
         # ======= Fitting Tests =============== #
-        - pytest lib/fitbenchmarking/fitting/ --cov=lib/fitbenchmarking/fitting/
+        - pytest fitbenchmarking/fitting/ --cov=fitbenchmarking/fitting/
           --cov-report term-missing --cov-append
         # ======= Parsing Tests =============== #
-        - pytest lib/fitbenchmarking/parsing/tests/ --cov=lib/fitbenchmarking/parsing/
+        - pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
           --cov-report term-missing --cov-append
         # ======= Result Processing Tests =============== #
-        - pytest lib/fitbenchmarking/resproc/tests/
-          --cov=lib/fitbenchmarking/resproc --cov-report term-missing
+        - pytest fitbenchmarking/resproc/tests/
+          --cov=fitbenchmarking/resproc --cov-report term-missing
           --cov-append
         # ======= Utils Tests =============== #
-        - pytest lib/fitbenchmarking/utils/tests/ --cov=lib/fitbenchmarking/utils/
+        - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
           --cov-report term-missing --cov-append
       after_success:
         - coveralls
@@ -66,6 +66,6 @@ jobs:
       before_script: python -m mantid.simpleapi || true
       script:
         # ======= System Test =============== #
-        - cd lib/systests
+        - cd fitbenchmarking/systests
         - python generate_current_results.py
         - python tbl_comparison.py

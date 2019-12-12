@@ -1,6 +1,5 @@
-#!/usr/bin/env python
 """
-This script is the main entry point into the FitBenchmarking software package.
+This is the main entry point into the FitBenchmarking software package.
 For more information on usage type fitbenchmarking --help 
 or for more general information, see the online docs at
 docs.fitbenchmarking.com.
@@ -91,7 +90,10 @@ def run(problem_sets, options_file=''):
         print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
 
 
-if __name__ == '__main__':
+def main():
+    """
+    Entry point to be exposed as the `fitbenchmarking` command.
+    """
     parser = get_parser()
 
     if len(sys.argv) == 1:
@@ -101,3 +103,7 @@ if __name__ == '__main__':
     args = parser.parse_args(sys.argv[1:])
 
     run(problem_sets=args.problem_sets, options_file=args.options_file)
+
+
+if __name__ == '__main__':
+    main()

@@ -11,9 +11,12 @@ setup(name='FitBenchmarking',
       author='FitBenchmarking Team',
       url='http://github.com/fitbenchmarking/fitbenchmarking',
       license='GPL-3.0',
-      scripts=['bin/fitbenchmarking'],
-      packages=find_packages('./lib', exclude=('*mock*', '*test*')),
-      package_dir={'': 'lib'},
+      entry_points={
+        "console_scripts": [
+            'fitbenchmarking = fitbenchmarking.cli.fitbenchmarking:main'
+            ]
+        },
+      packages=find_packages('./', exclude=('*mock*', '*test*')),
       install_requires=['docutils',
                         'numpy<1.17',
                         'matplotlib<3.0',
