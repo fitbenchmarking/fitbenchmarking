@@ -8,7 +8,6 @@ import numpy as np
 import timeit
 import warnings
 
-from fitbenchmarking.fitting import misc
 from fitbenchmarking.fitting.controllers.controller_factory \
     import ControllerFactory
 from fitbenchmarking.fitting.plotting import plot_helper, plots
