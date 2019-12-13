@@ -12,6 +12,7 @@ from fitbenchmarking.fitting import misc
 from fitbenchmarking.fitting.controllers.controller_factory \
     import ControllerFactory
 from fitbenchmarking.fitting.plotting import plot_helper, plots
+from fitbenchmarking.utils import fitbm_result
 
 
 def fitbm_one_prob(problem, options, directory):
@@ -157,15 +158,17 @@ def benchmark(controller, minimizers, num_runs):
                                         y=controller.results,
                                         E=controller.data_e,
                                         sorted_index=index)
+        problem = controller.problem
+        if 'fitFunction' in init_function_def:
+            init_function_def = init_function_def.replace(
+                'fitFunction', problem.equation)
+            fin_function_def = fin_function_def.replace(
+                'fitFunction', problem.equation)
 
-        individual_result = \
-            misc.create_result_entry(problem=controller.problem,
-                                     status=status,
-                                     chi_sq=chi_sq,
-                                     runtime=runtime,
-                                     minimizer=minimizer,
-                                     ini_function_def=init_function_def,
-                                     fin_function_def=fin_function_def)
+        individual_result = fitbm_result.FittingResult(
+            problem=problem, fit_status=status, chi_sq=chi_sq, runtime=runtime,
+            minimizer=minimizer, ini_function_def=init_function_def,
+            fin_function_def=fin_function_def,)
 
         results_problem.append(individual_result)
 
