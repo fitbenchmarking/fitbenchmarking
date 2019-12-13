@@ -1,4 +1,5 @@
 import inspect
+import numpy as np
 import os
 from unittest import TestCase
 
@@ -100,6 +101,36 @@ class BaseControllerTests(TestCase):
         controller.parameter_set = 0
         controller.prepare()
         assert controller.setup_result == 53
+
+    def test_eval_chisq_no_errors(self):
+        """
+        BaseSoftwareController: Test eval_chisq function
+        """
+        controller = DummyController(self.problem, True)
+
+        params = np.array([1, 2, 3, 4])
+        x = np.array([6, 2, 32, 4])
+        y = np.array([1, 21, 3, 4])
+        e = None
+
+        result = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
+
+        assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
+
+    def test_eval_chisq_with_errors(self):
+        """
+        BaseSoftwareController: Test eval_chisq function
+        """
+        controller = DummyController(self.problem, True)
+
+        params = np.array([1, 2, 3, 4])
+        x = np.array([6, 2, 32, 4])
+        y = np.array([1, 21, 3, 4])
+        e = np.array([.5, .003, 1, 2])
+
+        result = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
+
+        assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
 
 
 class ControllerTests(TestCase):

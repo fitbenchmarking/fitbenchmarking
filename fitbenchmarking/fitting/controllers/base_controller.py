@@ -103,6 +103,26 @@ class Controller:
             raise RuntimeError('Either minimizer or parameter_set is set to'
                                'None.')
 
+    def eval_chisq(self, params, x=None, y=None, e=None):
+        """
+        Computes the chisq value
+
+        :param params: The parameters to calculate residuals for
+        :type params: list
+        :param x: x data points, defaults to self.data_x
+        :type x: numpy array, optional
+        :param y: y data points, defaults to self.data_y
+        :type y: numpy array, optional
+        :param e: error at each data point, defaults to self.data_e
+        :type e: numpy array, optional
+
+        :return: The sum of squares of residuals for the datapoints at the
+                 given parameters
+        :rtype: numpy array
+        """
+        out = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
+        return out
+
     @abstractmethod
     def setup(self):
         """

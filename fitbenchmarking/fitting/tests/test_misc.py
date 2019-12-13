@@ -5,8 +5,6 @@ import numpy as np
 
 from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-
-from fitbenchmarking.fitting.misc import compute_chisq
 from fitbenchmarking.fitting.misc import create_result_entry
 
 
@@ -59,28 +57,6 @@ class FitMiscTests(unittest.TestCase):
         result.fin_function_def = 'fin_def_test'
 
         return result
-
-    def test_compute_chisq_no_errors(self):
-
-        actual = np.array([1, 2, 3])
-        calculated = np.array([2, 4, 6])
-        errors = None
-
-        chi_sq = compute_chisq(actual, calculated, errors)
-        chi_sq_expected = 14
-
-        self.assertEqual(chi_sq_expected, chi_sq)
-
-    def test_compute_chisq_errors(self):
-
-        actual = np.array([1, 2, 3])
-        calculated = np.array([2, 4, 6])
-        errors = np.array([5, 0.1, 0.5])
-
-        chi_sq = compute_chisq(actual, calculated, errors)
-        chi_sq_expected = 436.04
-
-        self.assertEqual(chi_sq_expected, chi_sq)
 
     def test_createResultEntry(self):
 

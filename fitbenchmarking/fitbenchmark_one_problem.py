@@ -140,9 +140,10 @@ def benchmark(controller, minimizers, num_runs):
                               ' which is  larger than the tolerance of {1},'
                               ' which may indicate that caching has occurred'
                               ' in the timing results'.format(ratio, tol))
-            chi_sq = misc.compute_chisq(fitted=controller.results,
-                                        actual=controller.data_y,
-                                        errors=controller.data_e)
+            chi_sq = controller.eval_chisq(params=controller.final_params,
+                                           x=controller.data_x,
+                                           y=controller.data_y,
+                                           e=controller.data_e)
             status = 'success'
 
         if min_chi_sq is None:

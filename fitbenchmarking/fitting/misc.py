@@ -3,27 +3,7 @@ General utility functions for calculating some attributes of the fit.
 """
 
 from __future__ import (absolute_import, division, print_function)
-import numpy as np
 from fitbenchmarking.utils import fitbm_result
-
-
-def compute_chisq(actual, fitted, errors=None):
-    """
-    Simple function that calculates the sum of the differences squared
-    between the data and the fit.
-
-    @param actual :: The values from the known data
-    @param fitted :: The values from the fitted data
-    @param errors :: The values of the errors (weights)
-
-    @returns :: the sum of the square of each element in differences
-    """
-    r = fitted - actual
-    if errors is not None:
-        r = r / errors
-    chi_sq = np.dot(r, r)
-
-    return chi_sq
 
 
 def create_result_entry(problem, status, chi_sq, runtime, minimizer,
