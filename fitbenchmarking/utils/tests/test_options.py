@@ -60,7 +60,6 @@ class OptionsTests(unittest.TestCase):
         os.remove(self.options_file)
 
     def test_from_file(self):
-        print(self.options_file)
         options = Options(file_name=self.options_file)
         for key in self.options['MINIMIZERS']:
             self.assertEqual(self.options['MINIMIZERS'][key],
