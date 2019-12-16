@@ -14,7 +14,7 @@ class FittingResult(object):
         self.problem = None
         self.fit_status = None
         self.chi_sq = None
-        self.min_chi_sq = None
+        self._min_chi_sq = None
         # Workspace with data to fit
         self.fit_wks = None
         self.params = None
@@ -22,7 +22,7 @@ class FittingResult(object):
 
         # Time it took to run the Fit algorithm
         self.runtime = None
-
+        self._min_runtime = None
         # Best minimizer for a certain problem and its function definition
         self.minimizer = None
         self.ini_function_def = None
@@ -83,10 +83,13 @@ class FittingResult(object):
             if colour_bounds[i] < self.norm_acc <= colour_bounds[i + 1]:
                 self.colour_acc = html_colours[i]
 
-    def set_normalised_data(self):
-        """
-        Utility function that sets the normalised runtime and accuracy values
-        """
+    @property
+    def min_chi_sq(self):
+        return self._min_chi_sq
+
+    @min_chi_sq.setter
+    def min_chi_sq(self, value):
+        self._min_chi_sq = value
         try:
             if not self.chi_sq > 0:
                 self.chi_sq = np.inf
@@ -94,6 +97,13 @@ class FittingResult(object):
         except Exception as excp:
             print(str(excp))
 
+    @property
+    def min_runtime(self):
+        return self._min_runtime
+
+    @min_runtime.setter
+    def min_runtime(self, value):
+        self._min_runtime = value
         try:
             self.norm_runtime = self.runtime / self.min_runtime
         except Exception as excp:

@@ -135,7 +135,6 @@ def preproccess_data(data):
         for r in results:
             r.min_chi_sq = min_chi_sq
             r.min_runtime = min_runtime
-            r.set_normalised_data()
             r.set_colour_scale()
 
 
