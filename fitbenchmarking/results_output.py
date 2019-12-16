@@ -200,6 +200,8 @@ def render_pandas_dataframe(table_dict, minimizers, html_links, table_names):
         table_style = table.style.applymap(colour_highlight)
         with open(name + 'html', "w") as f:
             f.write(table_style.render())
+
+        # pypandoc can be installed without pandoc
         try:
             output = pypandoc.convert_file(name + 'html', 'rst')
             with open(name + 'rst', "w") as f:
