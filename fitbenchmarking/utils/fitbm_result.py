@@ -90,12 +90,9 @@ class FittingResult(object):
     @min_chi_sq.setter
     def min_chi_sq(self, value):
         self._min_chi_sq = value
-        try:
-            if not self.chi_sq > 0:
-                self.chi_sq = np.inf
-            self.norm_acc = self.chi_sq / self.min_chi_sq
-        except Exception as excp:
-            print(str(excp))
+        if not self.chi_sq > 0:
+            self.chi_sq = np.inf
+        self.norm_acc = self.chi_sq / self.min_chi_sq
 
     @property
     def min_runtime(self):
@@ -104,7 +101,4 @@ class FittingResult(object):
     @min_runtime.setter
     def min_runtime(self, value):
         self._min_runtime = value
-        try:
-            self.norm_runtime = self.runtime / self.min_runtime
-        except Exception as excp:
-            print(str(excp))
+        self.norm_runtime = self.runtime / self.min_runtime
