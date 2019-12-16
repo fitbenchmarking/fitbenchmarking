@@ -97,7 +97,7 @@ class Controller:
 
         if (self.minimizer is not None) and (self.parameter_set is not None):
             self.initial_params = \
-                self.starting_values[self.parameter_set].values()
+                list(self.starting_values[self.parameter_set].values())
             self.setup()
         else:
             raise RuntimeError('Either minimizer or parameter_set is set to'
