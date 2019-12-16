@@ -1,6 +1,6 @@
 pytest>=3.6
 pytest-cov
 coveralls
-python-coveralls==2.4.3
+python-coveralls
 urllib3==1.23
 coverage<5.0
