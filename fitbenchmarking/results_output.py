@@ -163,7 +163,6 @@ def create_pandas_dataframe(table_data, minimizers, table_suffix):
         '''
         value.table_type = table_suffix
         value = copy.copy(value)
-        value.set_return_value()
         return value
 
     tbl = pd.DataFrame.from_dict(table_data, orient='index')

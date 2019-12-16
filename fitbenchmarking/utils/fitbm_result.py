@@ -22,19 +22,20 @@ class FittingResult(object):
 
         # Time it took to run the Fit algorithm
         self.runtime = None
-        self.min_chi_sq = None
 
         # Best minimizer for a certain problem and its function definition
         self.minimizer = None
         self.ini_function_def = None
         self.fin_function_def = None
 
-        self.table_type = None
         self.value = None
         self.norm_value = None
         self.colour = None
         self.colour_runtime = None
         self.colour_acc = None
+
+        # Defines the type of table to be produced
+        self._table_type = None
 
     def __repr__(self):
         if self.table_type is not None:
@@ -49,15 +50,18 @@ class FittingResult(object):
                 self.minimizer)
         return output
 
-    def set_return_value(self):
-        """
-        Utility function set values for the tables
-        """
-        if self.table_type == "runtime":
+    @property
+    def table_type(self):
+        return self._table_type
+
+    @table_type.setter
+    def table_type(self, value):
+        self._table_type = value
+        if value == "runtime":
             self.value = self.runtime
             self.norm_value = self.norm_runtime
             self.colour = self.colour_runtime
-        if self.table_type == "acc":
+        if value == "acc":
             self.value = self.chi_sq
             self.norm_value = self.norm_acc
             self.colour = self.colour_acc
