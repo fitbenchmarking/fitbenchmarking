@@ -4,8 +4,11 @@
 Getting Started
 ###############
 
-|Python 2.7| will be needed for running/installing this. For instructions
+|Python 2.7+| will be needed for running/installing this. For instructions
 on setting up python see :ref:`setting-up-python`.
+
+  Note: If using Python 3, Mantid problems and minimizers will be unavailable.
+  As such, you should skip step 4.
 
 1. Download this repository or clone it using
    `git <https://git-scm.com/>`__:
@@ -20,7 +23,7 @@ on setting up python see :ref:`setting-up-python`.
    benchmarks Mantid using all the available minimizers. The result
    tables can be found in ``example_scripts/results``.
 
-.. |Python 2.7| image:: https://img.shields.io/badge/python-2.7-blue.svg
+.. |Python 2.7+| image:: https://img.shields.io/badge/python-2.7-blue.svg
    :target: https://www.python.org/downloads/release/python-2715/
 
 .. _setting-up-python:
@@ -35,18 +38,19 @@ Windows
 Download and Install Python
 ---------------------------
 
-Download python 2.7
-`here <https://www.python.org/downloads/release/python-2715/>`__. From
-the list at the bottom of the page, please select
-``Windows x86 MSI installer``. Double click and run the installer with
+Download python
+`2.7 <https://www.python.org/downloads/release/python-2717/>`__, or
+`3 <https://www.python.org/downloads/release/python-380/>`__.
+From the list at the bottom of the page, please select
+``Windows x86 installer``. Double click and run the installer with
 the default options.
 
-Add the Python 2.7 Directory to your Path Environment Variable
+Add the Python Directory to your Path Environment Variable
 --------------------------------------------------------------
 
 In order to make it so you can access Python via any command line prompt
 (and not just the Python-specific one), you’ll need to add the
-newly-installed Python 2.7 directory to your “Path” system environment
+newly-installed Python directory to your “Path” system environment
 variable. This makes it easier to access Python and run scripts in
 whatever shell you’re using to using (Command Prompt, PowerShell or Git
 Bash.) Go to Control Panel –> System Properties –> Environment Variables
@@ -65,8 +69,9 @@ so:
 
    Appending Python Path
 
+If you are using Python 3, you should change this line accordingly.
 Also make sure you include the
-``C:\Python27\Scripts`` in the Path too even
+``C:\Python<version>\Scripts`` in the Path too even
 if it doesn’t exist yet – this is where your package management tools,
 unit testing tools, and other command line-accessible Python programs
 will live.
