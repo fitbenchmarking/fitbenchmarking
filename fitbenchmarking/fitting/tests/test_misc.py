@@ -9,6 +9,8 @@ from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.fitting.misc import compute_chisq
 from fitbenchmarking.fitting.misc import create_result_entry
 
+from fitbenchmarking.utils.options import Options
+
 
 class FitMiscTests(unittest.TestCase):
 
@@ -47,7 +49,7 @@ class FitMiscTests(unittest.TestCase):
         return prob
 
     def create_expected_result(self):
-
+        options = Options()
         result = fitbm_result.FittingResult()
         problem = self.setup_nist_expected_problem()
         result.problem = problem
@@ -91,10 +93,12 @@ class FitMiscTests(unittest.TestCase):
         minimizer = 'Test'
         ini_function_def = 'ini_def_test'
         fin_function_def = 'fin_def_test'
+        options = Options()
 
         result = \
-            create_result_entry(problem, status, chi_sq, runtime, minimizer,
-                                ini_function_def, fin_function_def)
+            create_result_entry(options, problem, status, chi_sq,
+                                runtime, minimizer, ini_function_def,
+                                fin_function_def)
         result_expected = self.create_expected_result()
 
         self.assertEqual(result_expected.fit_status, result.fit_status)
