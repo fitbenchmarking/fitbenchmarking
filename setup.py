@@ -13,7 +13,7 @@ setup(name='FitBenchmarking',
       license='GPL-3.0',
       entry_points={
         "console_scripts": [
-            'fitbenchmarking = fitbenchmarking.cli.fitbenchmarking:main'
+            'fitbenchmarking = fitbenchmarking.cli.main:main'
             ]
         },
       packages=find_packages('./', exclude=('*mock*', '*test*')),
