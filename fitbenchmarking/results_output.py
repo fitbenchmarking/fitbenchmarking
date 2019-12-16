@@ -157,9 +157,11 @@ def create_pandas_dataframe(table_data, minimizers, table_suffix):
                pandas DataFrames containing results.
     :rtype : dict{pandas DataFrame, pandas DataFrame}
     """
+
+    # This function is only used in the mapping, hence, it is defined here.
     def select_table(value, table_suffix):
         '''
-        Selects either accuracy or runtime table
+        Selects either accuracy or runtime table.
         '''
         value.table_type = table_suffix
         value = copy.copy(value)
