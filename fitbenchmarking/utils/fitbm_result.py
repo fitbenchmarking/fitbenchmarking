@@ -70,7 +70,7 @@ class FittingResult(object):
         colour_bounds = [colour[0] for colour in colour_scale]
         # prepending 0 value for colour bound
         colour_bounds = [0] + colour_bounds
-        html_colours = [colour[2] for colour in colour_scale]
+        html_colours = [colour[1] for colour in colour_scale]
         self.colour_runtime = colour_scale[-1]
         self.colour_acc = colour_scale[-1]
         for i in range(len(colour_bounds) - 1):
