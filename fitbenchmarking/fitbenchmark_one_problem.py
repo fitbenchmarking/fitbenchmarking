@@ -68,8 +68,7 @@ def fitbm_one_prob(problem, options, directory):
             controller.parameter_set = i
             problem_result, best_fit = benchmark(controller=controller,
                                                  minimizers=minimizers,
-                                                 num_runs=options.num_runs)
-
+                                                 options=options)
             if best_fit is not None:
                 # Make the plot of the best fit
                 plots.make_plots(problem=problem,
@@ -81,7 +80,7 @@ def fitbm_one_prob(problem, options, directory):
     return results
 
 
-def benchmark(controller, minimizers, num_runs):
+def benchmark(controller, minimizers, options):
     """
     Fit benchmark one problem, with one function definition and all
     the selected minimizers, using the chosen fitting software.
@@ -90,9 +89,8 @@ def benchmark(controller, minimizers, num_runs):
     :type controller: Object derived from BaseSoftwareController
     :param minimizers: array of minimizers used in fitting
     :type minimizers: list
-    :param num_runs: number of times controller.fit() is run to
-                     generate an average runtime
-    :type num_runs: int
+    :param options: all the information specified by the user
+    :type options: fitbenchmarking.utils.options.Options
 
     :returns: tuple(results_problem, best_fit) nested array of
               result objects, per minimizer and data object for
@@ -101,7 +99,7 @@ def benchmark(controller, minimizers, num_runs):
     """
     min_chi_sq, best_fit = None, None
     results_problem = []
-
+    num_runs = options.num_runs
     for minimizer in minimizers:
         print("            Minimizer: {}".format(minimizer))
 
@@ -130,7 +128,7 @@ def benchmark(controller, minimizers, num_runs):
             params=controller.final_params)
 
         if not controller.success:
-            chi_sq = np.nan
+            chi_sq = np.inf
             status = 'failed'
         else:
             ratio = np.max(runtime_list) / np.min(runtime_list)
@@ -157,6 +155,7 @@ def benchmark(controller, minimizers, num_runs):
                                         y=controller.results,
                                         E=controller.data_e,
                                         sorted_index=index)
+
         problem = controller.problem
         if 'fitFunction' in init_function_def:
             init_function_def = init_function_def.replace(
@@ -165,9 +164,10 @@ def benchmark(controller, minimizers, num_runs):
                 'fitFunction', problem.equation)
 
         individual_result = fitbm_result.FittingResult(
-            problem=problem, fit_status=status, chi_sq=chi_sq, runtime=runtime,
-            minimizer=minimizer, ini_function_def=init_function_def,
-            fin_function_def=fin_function_def,)
+            options=options, problem=problem, fit_status=status,
+            chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
+            ini_function_def=init_function_def,
+            fin_function_def=fin_function_def)
 
         results_problem.append(individual_result)
 
