@@ -17,7 +17,7 @@ class FittingResult(object):
         self.problem = problem
         self.fit_status = fit_status
         self.chi_sq = chi_sq
-
+self._min_chi_sq = None
         # Workspace with data to fit
         self.fit_wks = fit_wks
         self.params = params
