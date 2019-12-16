@@ -37,7 +37,7 @@ class FittingResult(object):
         # Defines the type of table to be produced
         self._table_type = None
 
-    def __repr__(self):
+    def __str__(self):
         if self.table_type is not None:
             if self.options.comparison_mode == "abs":
                 output = "{:.4g}".format(self.value)
