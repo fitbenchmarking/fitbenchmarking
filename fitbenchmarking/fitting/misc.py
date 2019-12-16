@@ -54,7 +54,7 @@ def create_result_entry(options, problem, status, chi_sq, runtime, minimizer,
     :type fin_function_def: str
 
     :returns: results object
-    :rtype: fitbenchmarking/utils/fitbm_result/FittingResult
+    :rtype: fitbenchmarking.utils.fitbm_result.FittingResult
     """
 
     if 'fitFunction' in ini_function_def:
