@@ -8,10 +8,10 @@ import numpy as np
 import timeit
 import warnings
 
-from fitbenchmarking.fitting import misc
 from fitbenchmarking.fitting.controllers.controller_factory \
     import ControllerFactory
 from fitbenchmarking.fitting.plotting import plot_helper, plots
+from fitbenchmarking.utils import fitbm_result
 
 
 def fitbm_one_prob(problem, options, directory):
@@ -138,9 +138,10 @@ def benchmark(controller, minimizers, options):
                               ' which is  larger than the tolerance of {1},'
                               ' which may indicate that caching has occurred'
                               ' in the timing results'.format(ratio, tol))
-            chi_sq = misc.compute_chisq(fitted=controller.results,
-                                        actual=controller.data_y,
-                                        errors=controller.data_e)
+            chi_sq = controller.eval_chisq(params=controller.final_params,
+                                           x=controller.data_x,
+                                           y=controller.data_y,
+                                           e=controller.data_e)
             status = 'success'
 
         if min_chi_sq is None:
@@ -155,15 +156,18 @@ def benchmark(controller, minimizers, options):
                                         E=controller.data_e,
                                         sorted_index=index)
 
-        individual_result = \
-            misc.create_result_entry(options=options,
-                                     problem=controller.problem,
-                                     status=status,
-                                     chi_sq=chi_sq,
-                                     runtime=runtime,
-                                     minimizer=minimizer,
-                                     ini_function_def=init_function_def,
-                                     fin_function_def=fin_function_def)
+        problem = controller.problem
+        if 'fitFunction' in init_function_def:
+            init_function_def = init_function_def.replace(
+                'fitFunction', problem.equation)
+            fin_function_def = fin_function_def.replace(
+                'fitFunction', problem.equation)
+
+        individual_result = fitbm_result.FittingResult(
+            options=options, problem=problem, fit_status=status,
+            chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
+            ini_function_def=init_function_def,
+            fin_function_def=fin_function_def)
 
         results_problem.append(individual_result)
 
