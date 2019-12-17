@@ -3,35 +3,17 @@
 Examples
 ========
 
-The file ``example_runScript.py`` can be found in the
-``fitbenchmarking/example_scripts/`` directory. It was written to provide
-any potential users with an example of how FitBenchmarking is run.
+A set of example problems can be found the ``fitbenchmarking/examples``
+directory along with a template for passing in options.
 
-To run this script using its basic settings, please follow
-the :ref:`getting-started`
-page. This page is
-for giving an overview of how the script works.
+To run with any of these problem sets, you should pass the path to the
+`fitbenchmarking` command.
 
-The benchmarking starts by considering two problem sets (neutron and
-NIST). Each provided problem is fitted using all the available
-minimizers in `Mantid <http://www.mantidproject.org/Main_Page>`__, a
-comprehensive data analysis software. FitBenchmarking records the time
-it took for a certain minimizer to solve a certain fitting problem.
-Additionally, the accuracy of the solution is also recorded by
-performing a
-`chi-squared <https://en.wikipedia.org/wiki/Chi-squared_test>`__ test of
-the fit. After running through all the problems, accuracy and runtimes
-tables are created for each problem set. In essence, there will be two
-tables for neutron data and two for NIST data. These tables are saved in
-the ``fitbenchmarking/example_scripts/results`` folder.
+  e.g `fitbenchmarking examples/benchmarking_problems/simple_tests`
 
-The final result table for neutron looks like this:
+An options file can also be passed with the `-o` argument.
+The template in `examples` is heavily documented and serves as a good
+reference for what options are available.
 
-.. figure:: ../../images/example_table.png
-   :alt: Result Table
-
-   Result Table
-
-The ``example_runScript.py`` file is heavily commented. If you want to
-learn more about how it works and how can he modifty it, please consult
-the file itself using a text editor.
+The `fitbenchmarking` function can also be called with `-h` to get
+more help.

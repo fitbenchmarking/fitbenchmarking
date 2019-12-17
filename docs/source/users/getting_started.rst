@@ -17,11 +17,13 @@ on setting up python see :ref:`setting-up-python`.
    ``fitbenchmarking`` directory.
 3. Once you are in the right directory, type
    ``python setup.py install``.
-4. Install mantid, for platform specific instructions see :ref:`setting-up-mantid`.
-5. Finally run ``fitbenchmarking/example_scripts/example_runScript.py``,
-   located in the example\_scripts folder. This example script fit
-   benchmarks Mantid using all the available minimizers. The result
-   tables can be found in ``example_scripts/results``.
+4. Install mantid, for platform specific instructions see
+   :ref:`setting-up-mantid`.
+5. Finally run ``fitbenchmarking`` with a problem set from the examples
+   folder.
+   By default this will run fitbenchmarking with a variety of minimizers
+   from several software packages.
+   The result tables can be found in ``./results``.
 
 .. |Python 2.7+| image:: https://img.shields.io/badge/python-2.7-blue.svg
    :target: https://www.python.org/downloads/release/python-2715/
