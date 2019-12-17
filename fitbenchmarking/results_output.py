@@ -37,12 +37,13 @@ def save_results_tables(options, results, group_name):
     minimizers = [options.minimizers[s] for s in software]
     minimizers = sum(minimizers, [])
 
-    results_dir = options.results_dir
+    results_dir = os.path.relpath(
+        os.path.join(options.results_dir, group_name))
     use_errors = options.use_errors
 
     weighted_str = 'weighted' if use_errors else 'unweighted'
 
-    tables_dir = create_dirs.restables_dir(results_dir, group_name)
+    tables_dir = create_dirs.restables_dir(results_dir)
     linked_problems = \
         visual_pages.create_linked_probs(results, group_name, results_dir)
 

@@ -44,11 +44,10 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_restablesDir_create_correct_random_dir(self):
 
-        results_dir = results(self.results_dir)
-        group_name = 'random'
+        results_dir = os.path.join(results(self.results_dir), 'random')
 
-        tables_dir = restables_dir(results_dir, group_name)
-        tables_dir_expected = os.path.join(results_dir, 'random')
+        tables_dir = restables_dir(results_dir)
+        tables_dir_expected = results_dir
 
         self.assertEqual(tables_dir_expected, tables_dir)
         self.assertTrue(os.path.exists(tables_dir_expected))

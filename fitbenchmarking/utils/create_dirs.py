@@ -47,26 +47,19 @@ def group_results(results_dir, group_name):
     return group_results_dir
 
 
-def restables_dir(results_dir, group_name):
+def restables_dir(results_dir):
     """
     Creates the results directory where the tables are located.
     e.g. fitbenchmarking/results/neutron/
 
-    @param results_dir :: directory that holds all the results
-    @param group_name :: string containing the name of the problem group
+    @param results_dir :: directory that holds all the results for the problem
 
     @returns :: path to folder where the tables are stored
     """
 
-    if isinstance(group_name, str):
-        tables_dir = os.path.join(results_dir, group_name)
-    else:
-        raise TypeError('Type of variable group_name is required '
-                        'to be a string, type(group_name) '
-                        '= {}'.format(type(group_name)))
-    if not os.path.exists(tables_dir):
-        os.makedirs(tables_dir)
-    return tables_dir
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
+    return results_dir
 
 
 def figures(group_results_dir):

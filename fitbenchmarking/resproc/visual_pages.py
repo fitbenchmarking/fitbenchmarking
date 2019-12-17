@@ -68,21 +68,33 @@ def create(prob_results, group_name, results_dir, count):
                       if result.chi_sq is not np.nan else np.inf)
 
     problem_name = process_problem_name(best_result.problem.name)
-    support_pages_dir, file_path, see_also_link = setup_page_misc(
-        group_name, problem_name, best_result, results_dir, count)
+    file_path, see_also_link = setup_page_misc(
+        group_name=group_name,
+        problem_name=problem_name,
+        res_obj=best_result,
+        results_dir=results_dir,
+        count=count)
+
     rst_link = generate_rst_link(file_path)
 
-    ini_details_tbl, fin_details_tbl = \
-        setup_detail_page_tbls(best_result.ini_function_def,
-                               best_result.fin_function_def)
+    ini_details_tbl, fin_details_tbl = setup_detail_page_tbls(
+        best_result.ini_function_def, best_result.fin_function_def)
 
-    fig_data, fig_fit, fig_start = \
-        get_figure_paths(support_pages_dir, problem_name, count)
-    rst_text = \
-        create_rst_page(best_result.problem.name, fig_data, fig_start, fig_fit,
-                        best_result.minimizer, see_also_link, ini_details_tbl,
-                        fin_details_tbl)
-    save_page(rst_text, problem_name, file_path)
+    fig_data, fig_fit, fig_start = get_figure_paths(problem_name, count)
+
+    rst_text = create_rst_page(name=best_result.problem.name,
+                               fig_data=fig_data,
+                               fig_start=fig_start,
+                               fig_fit=fig_fit,
+                               minimizer=best_result.minimizer,
+                               see_also_link=see_also_link,
+                               ini_det_tbl=ini_details_tbl,
+                               fin_det_tbl=fin_details_tbl)
+
+    save_page(rst_text=rst_text,
+              prob_name=problem_name,
+              file_path=file_path,
+              results_dir=results_dir)
 
     return rst_link
 
@@ -175,17 +187,17 @@ def setup_page_misc(group_name, problem_name, res_obj, results_dir, count):
     @param count :: number of times a problem with the same name was
                     passed through this function, consecutively
 
-    @returns :: the directory in which the visual display pages go
-                the file path to the visual display page that is
-                currently being made
+    @returns :: the file path to the visual display page that is
+                currently being made relative to the results dir
                 the fit details table and the see also link
     """
 
     # Group specific path and other misc stuff
 
-    support_pages_dir = os.path.join(results_dir, group_name, "support_pages")
-    if not os.path.exists(support_pages_dir):
-        os.makedirs(support_pages_dir)
+    support_pages_dir = "support_pages"
+    abs_support_pages_dir = os.path.join(results_dir, support_pages_dir)
+    if not os.path.exists(abs_support_pages_dir):
+        os.makedirs(abs_support_pages_dir)
     see_also_link = ''
     if 'nist' in group_name.lower():
         link = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data"
@@ -195,15 +207,13 @@ def setup_page_misc(group_name, problem_name, res_obj, results_dir, count):
     file_name = (group_name + '_' + problem_name + '_' + str(count)).lower()
     file_path = os.path.join(support_pages_dir, file_name)
 
-    return support_pages_dir, file_path, see_also_link
+    return file_path, see_also_link
 
 
-def get_figure_paths(support_pages_dir, problem_name, count):
+def get_figure_paths(problem_name, count):
     """
     Get the paths to the figures used in the visual display page.
 
-    @param support_pages_dir :: directory containing the visual
-                                display pages
     @param problem_name :: name of the problem
     @param count :: number of times a problem with the same name was
                     passed through this function, consecutively
@@ -211,7 +221,7 @@ def get_figure_paths(support_pages_dir, problem_name, count):
     @returns :: the paths to the required figures
     """
 
-    figures_dir = os.path.join(support_pages_dir, "figures")
+    figures_dir = "figures"
     figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name +
                                "_" + str(count) + ".png")
     figure_fits = os.path.join(figures_dir, "Fit_for_" + problem_name +
@@ -307,18 +317,20 @@ def generate_rst_solution_plot(figure_fit, minimizer, final_details_tbl):
     return solution_plot
 
 
-def save_page(rst_text, prob_name, file_path):
+def save_page(rst_text, prob_name, file_path, results_dir):
     """
     Helper function that saves the rst page into text and html after
     converting it to html.
 
     @param rst_text :: page to be converted/saved in rst
     @param prob_name :: name of the problem
-    @param file_path :: path to where the file is going to be saved
+    @param file_path :: path to where the file is going to be saved relative
+                        to the results directory
+    @param results_dir:: full path to the results directory
 
     @returns :: html/txt visual display page saved at file_path
     """
-
+    file_path = os.path.join(results_dir, file_path)
     html = publish_string(rst_text, writer_name='html')
     with open(file_path + '.' + FILENAME_EXT_TXT, 'w') as visual_rst:
         print(rst_text, file=visual_rst)
