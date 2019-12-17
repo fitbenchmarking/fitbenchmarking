@@ -16,7 +16,6 @@ notifications:
 stages:
   - name: Tests
   - name: SysTests
-    if: type = cron
 
 before_install:
   # Adding RALfit packages
@@ -67,6 +66,4 @@ jobs:
       before_script: python -m mantid.simpleapi || true
       script:
         # ======= System Test =============== #
-        - cd fitbenchmarking/systests
-        - python generate_current_results.py
-        - python tbl_comparison.py
+        - pytest fitbenchmarking/systests
