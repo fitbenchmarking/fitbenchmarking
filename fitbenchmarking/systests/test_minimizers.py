@@ -56,4 +56,5 @@ class TestMinimizers(TestCase):
         with open(actual_file, 'r') as f:
             actual = f.readlines()
 
-        self.assertListEqual(expected, actual)
+        self.assertListEqual(expected, actual,
+            'Accuracy has changed in at least 1 minimizer for simple_tests.')
