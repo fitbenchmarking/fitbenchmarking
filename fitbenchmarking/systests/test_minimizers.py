@@ -44,11 +44,11 @@ class TestMinimizers(TestCase):
         """
 
         expected_file = os.path.join(
-            os.path.dirname(__file__), 'expected_results', 'minimizers.rst')
+            os.path.dirname(__file__), 'expected_results', 'minimizers.txt')
 
         actual_file = os.path.join(
             os.path.dirname(__file__), 'results', 'simple_tests',
-            'simple_tests_acc_weighted_table.rst')
+            'simple_tests_acc_weighted_table.txt')
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()

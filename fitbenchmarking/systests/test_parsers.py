@@ -44,11 +44,11 @@ class TestParsers(TestCase):
         """
 
         expected_file = os.path.join(
-            os.path.dirname(__file__), 'expected_results', 'parsers.rst')
+            os.path.dirname(__file__), 'expected_results', 'parsers.txt')
 
         actual_file = os.path.join(
             os.path.dirname(__file__), 'results', 'all_parser_test_set',
-            'all_parser_test_set_acc_weighted_table.rst')
+            'all_parser_test_set_acc_weighted_table.txt')
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()

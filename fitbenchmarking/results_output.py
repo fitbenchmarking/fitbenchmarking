@@ -8,7 +8,6 @@ import copy
 import logging
 import os
 import pandas as pd
-import pypandoc
 
 from fitbenchmarking.resproc import visual_pages
 from fitbenchmarking.utils import create_dirs
@@ -198,16 +197,11 @@ def render_pandas_dataframe(table_dict, minimizers, html_links, table_names):
         return 'background-color: {0}'.format(colour)
 
     for name, table in zip(table_names, table_dict.values()):
+
+        with open(name + 'txt', "w") as f:
+            f.write(table.to_string())
+
         table.index = html_links
         table_style = table.style.applymap(colour_highlight)
         with open(name + 'html', "w") as f:
             f.write(table_style.render())
-
-        # pypandoc can be installed without pandoc
-        try:
-            output = pypandoc.convert_file(name + 'html', 'rst',
-                                           extra_args=['--columns=80'])
-            with open(name + 'rst', "w") as f:
-                f.write(output)
-        except ImportError:
-            print('RST tables require Pandoc to be installed')
