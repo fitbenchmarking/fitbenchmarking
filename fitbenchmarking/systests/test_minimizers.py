@@ -58,15 +58,13 @@ class TestMinimizers(TestCase):
 
         diff = []
         for i in range(len(expected)):
-            # Filter out seperators
-            if expected[i][0] == '|':
-                if expected[i] != actual[i]:
-                    diff.append([expected[i], actual[i]])
+            if expected[i] != actual[i]:
+                diff.append([expected[i], actual[i]])
 
-        self.assertListEqual(
-            expected, actual, 'Accuracy has changed in at least 1 minimizer '
-                              'for simple_tests. \n'
-                              'First 3 differences: \n'
-                              + '\n'.join(
-                                  ['{} \n{}'.format(*diff[i])
-                                   for i in range(3)]))
+        num_diff = min(6, len(diff))
+        msg = 'Accuracy has changed in at least 1 minimizer ' \
+              + 'for simple_tests. \n' \
+              + 'First {} of {} differences: \n'.format(num_diff, len(diff)) \
+              + '\n'.join(['{} \n{}'.format(*diff[i])
+                           for i in range(num_diff)])
+        self.assertListEqual(expected, actual, msg)

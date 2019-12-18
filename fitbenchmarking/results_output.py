@@ -205,7 +205,8 @@ def render_pandas_dataframe(table_dict, minimizers, html_links, table_names):
 
         # pypandoc can be installed without pandoc
         try:
-            output = pypandoc.convert_file(name + 'html', 'rst')
+            output = pypandoc.convert_file(name + 'html', 'rst',
+                                           extra_args=['--wrap=none', '--no-wrap'])
             with open(name + 'rst', "w") as f:
                 f.write(output)
         except ImportError:
