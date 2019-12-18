@@ -15,7 +15,6 @@ notifications:
 
 stages:
   - name: Tests
-  - name: SysTests
 
 before_install:
   # Adding RALfit packages
@@ -41,7 +40,7 @@ install:
 jobs:
   include:
     - stage: Tests
-      before_script: python -m mantid.simpleapi || true
+      name: Unit Tests
       script:
         # ======= Examples Tests =============== #
         - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
@@ -59,11 +58,7 @@ jobs:
         # ======= Utils Tests =============== #
         - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
           --cov-report term-missing --cov-append
-      after_success:
-        - coveralls
-  allow_failures:
-    - stage: SysTests
-      before_script: python -m mantid.simpleapi || true
+    - name: Integration Tests
       script:
         # ======= System Test =============== #
         - pytest fitbenchmarking/systests
