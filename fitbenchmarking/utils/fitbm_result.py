@@ -34,6 +34,7 @@ class FittingResult(object):
 
         self.value = None
         self.norm_value = None
+
         self.colour = None
         self.colour_runtime = None
         self.colour_acc = None
@@ -43,12 +44,18 @@ class FittingResult(object):
 
     def __str__(self):
         if self.table_type is not None:
-            if self.options.comparison_mode == "abs":
-                output = "{:.4g}".format(self.value)
-            elif self.options.comparison_mode == "rel":
-                output = "{:.4g}".format(self.value)
-            elif self.options.comparison_mode == "both":
-                output = "{:.4g} ({:.4g})".format(self.value, self.norm_value)
+            if self.table_type == "compare":
+                output = "{:.4g} ({:.4g})<br>{:.4g} ({:.4g})".format(
+                    self.chi_sq, self.norm_acc,
+                    self.runtime, self.norm_runtime)
+            else:
+                if self.options.comparison_mode == "abs":
+                    output = "{:.4g}".format(self.value)
+                elif self.options.comparison_mode == "rel":
+                    output = "{:.4g}".format(self.value)
+                elif self.options.comparison_mode == "both":
+                    output = "{:.4g} ({:.4g})".format(self.value,
+                                                      self.norm_value)
         else:
             output = 'Fitting problem class: minimizer = {0}'.format(
                 self.minimizer)
@@ -65,10 +72,12 @@ class FittingResult(object):
             self.value = self.runtime
             self.norm_value = self.norm_runtime
             self.colour = self.colour_runtime
-        if value == "acc":
+        elif value == "acc":
             self.value = self.chi_sq
             self.norm_value = self.norm_acc
             self.colour = self.colour_acc
+        elif value == "compare":
+            self.colour = [self.colour_acc, self.colour_runtime]
 
     def set_colour_scale(self):
         """

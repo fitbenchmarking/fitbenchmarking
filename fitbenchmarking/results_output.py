@@ -17,6 +17,7 @@ from fitbenchmarking.utils.logging_setup import logger
 # Some naming conventions for the output files
 FILENAME_SUFFIX_ACCURACY = 'acc'
 FILENAME_SUFFIX_RUNTIME = 'runtime'
+FILENAME_SUFFIX_COMPARE = 'compare'
 
 
 def save_results_tables(options, results, group_name):
@@ -46,7 +47,10 @@ def save_results_tables(options, results, group_name):
     linked_problems = \
         visual_pages.create_linked_probs(results, group_name, results_dir)
 
-    table_suffix = [FILENAME_SUFFIX_ACCURACY, FILENAME_SUFFIX_RUNTIME]
+    table_suffix = [FILENAME_SUFFIX_ACCURACY,
+                    FILENAME_SUFFIX_RUNTIME,
+                    FILENAME_SUFFIX_COMPARE]
+
     table_names = []
     for suffix in table_suffix:
         table_names.append(os.path.join(tables_dir,
@@ -168,7 +172,7 @@ def create_pandas_dataframe(table_data, minimizers, table_suffix):
 
     tbl = pd.DataFrame.from_dict(table_data, orient='index')
     tbl.columns = minimizers
-    results = {}
+    results = OrderedDict()
     for suffix in table_suffix:
         results[suffix] = tbl.applymap(lambda x: select_table(x, suffix))
     return results
@@ -193,8 +197,13 @@ def render_pandas_dataframe(table_dict, minimizers, html_links, table_names):
         Colour mapping for visualisation of table
         '''
         colour = value.colour
-
-        return 'background-color: {0}'.format(colour)
+        if isinstance(colour, list):
+            colour_output = \
+                'background-image: linear-gradient({0},{1})'.format(
+                    colour[0], colour[1])
+        else:
+            colour_output = 'background-color: {0}'.format(colour)
+        return colour_output
 
     for name, table in zip(table_names, table_dict.values()):
         table.index = html_links
