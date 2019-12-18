@@ -57,6 +57,8 @@ jobs:
         # ======= Utils Tests =============== #
         - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
           --cov-report term-missing --cov-append
+      after_success:
+        - coveralls
     - name: Integration Tests
       script:
         # ======= System Test =============== #

@@ -20,7 +20,7 @@ FILENAME_SUFFIX_RUNTIME = 'runtime'
 
 def save_results_tables(options, results, group_name):
     """
-    Saves the results of the fitting to html/rst tables.
+    Saves the results of the fitting to html/txt tables.
 
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
@@ -89,7 +89,7 @@ def generate_tables(results_per_test, minimizers,
 
 def create_results_dict(results_per_test, linked_problems):
     """
-    Generates a dictionary used to create HTML and RST tables.
+    Generates a dictionary used to create HTML and txt tables.
 
     :param results_per_test : results nested array of objects
     :type results_per_test : list[list[list]]
@@ -176,7 +176,7 @@ def create_pandas_dataframe(table_data, minimizers, table_suffix):
 
 def render_pandas_dataframe(table_dict, minimizers, html_links, table_names):
     """
-    Generates html and rst page from pandas dataframes.
+    Generates html and txt page from pandas dataframes.
 
     :param table_dict : dictionary of DataFrame of the results
     :type table_dict : dict(pandas DataFrame, ...)
