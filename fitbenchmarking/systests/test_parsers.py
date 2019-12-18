@@ -56,5 +56,17 @@ class TestParsers(TestCase):
         with open(actual_file, 'r') as f:
             actual = f.readlines()
 
-        self.assertListEqual(expected, actual,
-            'Accuracy has changed in at least 1 parser with scipy.')
+        diff = []
+        for i in range(len(expected)):
+            # Filter out seperators
+            if expected[i][0] == '|':
+                if expected[i] != actual[i]:
+                    diff.append([expected[i], actual[i]])
+
+        self.assertListEqual(
+            expected, actual, 'Accuracy has changed in at least 1 parser '
+                              'with scipy. \n'
+                              'First 3 differences: \n'
+                              + '\n'.join(
+                                  ['{} \n{}'.format(*diff[i])
+                                   for i in range(3)]))
