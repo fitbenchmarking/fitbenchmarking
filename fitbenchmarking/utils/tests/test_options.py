@@ -71,7 +71,7 @@ class OptionsTests(unittest.TestCase):
         self.assertEqual(fitting_opts['use_errors'], options.use_errors)
         self.assertEqual(fitting_opts['num_runs'], options.num_runs)
         self.assertEqual(fitting_opts['software'], options.software)
-        print(options.table_type)
+
         plotting_opts = self.options['PLOTTING']
         self.assertEqual(plotting_opts['colour_scale'], options.colour_scale)
         self.assertEqual(plotting_opts['comparison_mode'],
