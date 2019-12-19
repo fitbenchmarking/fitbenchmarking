@@ -207,7 +207,7 @@ class FitbenchmarkParser(Parser):
         :returns: Starting values for the function
         :rtype: list of OrderedDict
         """
-        ignore = ['name', 'BinWidth', 'ties']
+        ignore = ['name', 'BinWidth', 'ties', 'Formula']
 
         starting_values = [
             OrderedDict([('f{}_{}'.format(i, name), f[name])
@@ -257,7 +257,7 @@ class FitbenchmarkParser(Parser):
         for f in self._parsed_func:
             name = f['name']
             params = f.copy()
-            for key in ['name', 'BinWidth', 'ties']:
+            for key in ['name', 'ties']:
                 if key in params:
                     params.pop(key)
             tmp_function = msapi.__dict__[name](**params)
