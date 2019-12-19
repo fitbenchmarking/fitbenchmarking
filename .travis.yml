@@ -37,7 +37,7 @@ install:
   - ./build_ralfit.sh
 
   - pip install -r requirements.txt
-  - python setup.py install
+  - pip install .
   - python setup.py externals
 
   # To access RALfit
