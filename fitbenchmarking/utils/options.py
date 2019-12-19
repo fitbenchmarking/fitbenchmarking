@@ -71,10 +71,12 @@ class Options(object):
         config['FITTING'] = {'num_runs': self.num_runs,
                              'software': list_to_string(self.software),
                              'use_errors': self.use_errors}
-        cs = list_to_string(['{0}, {1}'.format(*pair) for pair in self.colour_scale])
+        cs = list_to_string(['{0}, {1}'.format(*pair)
+                             for pair in self.colour_scale])
         config['PLOTTING'] = {'colour_scale': cs,
                               'comparison_mode': self.comparison_mode,
-                              'results_dir': self.results_dir}
+                              'results_dir': self.results_dir,
+                              'table_type': list_to_string(self.table_type)}
 
         with open(file_name, 'w') as f:
             config.write(f)

@@ -22,7 +22,7 @@ class TestMinimizers(TestCase):
         """
 
         opts = Options()
-        opts.minimizers = {k: v[0] for k, v in opts.minimizers.items()}
+        opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
         opts.results_dir = os.path.join(os.path.dirname(__file__), 'results')
 
         opt_file = os.path.join(

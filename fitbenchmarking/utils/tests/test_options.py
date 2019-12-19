@@ -87,11 +87,13 @@ class OptionsTests(unittest.TestCase):
         """
         options = Options(file_name=self.options_file)
         new_file_name = 'copy_of_{}'.format(self.options_file)
-        options.write(new_file_name)
 
+        options.write(new_file_name)
         new_options = Options(new_file_name)
 
-        self.assertDictEqual(options, new_options)
+        os.remove(new_file_name)
+
+        self.assertDictEqual(options.__dict__, new_options.__dict__)
 
 
 if __name__ == '__main__':

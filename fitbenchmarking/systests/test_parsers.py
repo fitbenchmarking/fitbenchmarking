@@ -22,7 +22,7 @@ class TestParsers(TestCase):
         """
 
         opts = Options()
-        opts.minimizers = {k: v[0] for k, v in opts.minimizers.items()}
+        opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
         opts.software = ['scipy']
         opts.results_dir = os.path.join(os.path.dirname(__file__), 'results')
 
