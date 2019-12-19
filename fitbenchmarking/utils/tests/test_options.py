@@ -77,6 +77,18 @@ class OptionsTests(unittest.TestCase):
         self.assertTrue(
             options.results_dir.endswith(plotting_opts['results_dir']))
 
+    def test_write(self):
+        """
+        Test that the options writer works.
+        """
+        options = Options(file_name=self.options_file)
+        new_file_name = 'copy_of_{}'.format(self.options_file)
+        options.write(new_file_name)
+
+        new_options = Options(new_file_name)
+
+        self.assertDictEqual(options, new_options)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -61,11 +61,16 @@ class Options(object):
     def write(self, file_name):
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str})
-        config['MINIMIZERS'] = self.minimizers
+
+        def list_to_string(l):
+            return '\n'.join(l)
+
+        config['MINIMIZERS'] = {k: list_to_string(m)
+                                for k, m in self.minimizers.items()}
         config['FITTING'] = {'num_runs': self.num_runs,
-                             'software': '\n'.join(self.software),
+                             'software': list_to_string(self.software),
                              'use_errors': self.use_errors}
-        cs = '\n'.join(['{0}, {1}'.format(*pair) for pair in self.colour_scale])
+        cs = list_to_string(['{0}, {1}'.format(*pair) for pair in self.colour_scale])
         config['PLOTTING'] = {'colour_scale': cs,
                               'comparison_mode': self.comparison_mode,
                               'results_dir': self.results_dir}
