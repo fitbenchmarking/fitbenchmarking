@@ -34,35 +34,86 @@ class GSLController(Controller):
         self._maxits = None
 
     def _prediction_error(self, p, data=None):
-        f = self.problem.eval_f(x=self.data_x,
-                                params=p,
-                                function_id=self.function_id)
-        f = f - self.data_y
-        if self.use_errors:
-            f = f / self.data_e
-        return f
+        """
+        Utility function to call problem.eval_r with correct args
+
+        :param p: parameters
+        :type p: list
+        :param data: x data, this is discarded as the defaults can be used. 
+        :type data: N/A
+        :return: result from problem.eval_r
+        :rtype: numpy array
+        """
+        return self.problem.eval_r(p)
 
     def _jac(self, p, data=None):
-        j = approx_derivative(self._prediction_error,
-                              p)
-        return j
+        """
+        Utility function to call problem.eval_j with correct args
+
+        :param p: parameters
+        :type p: list
+        :param data: x data, this is discarded as the defaults can be used. 
+        :type data: N/A
+        :return: result from problem.eval_j
+        :rtype: numpy array
+        """
+        return self.problem.eval_j(p)
 
     def _fdf(self, p, data=None):
-        f = self._prediction_error(p)
-        df = self._jac(p)
+        """
+        Utility function to return results from eval_r and eval_j as a tuple.
+
+        :param p: parameters
+        :type p: list
+        :param data: x data, this is discarded as the defaults can be used. 
+        :type data: N/A
+        :return: result from problem.eval_r and eval_j
+        :rtype: (numpy array, numpy array)
+        """
+        f = self.problem.eval_r(p)
+        df = self.problem.eval_j(p)
         return f, df
 
     def _chi_squared(self, p, data=None):
-        f = self._prediction_error(p)
-        return np.dot(f, f)
+        """
+        Utility function to call problem.eval_r_norm with correct args
+
+        :param p: parameters
+        :type p: list
+        :param data: x data, this is discarded as the defaults can be used. 
+        :type data: N/A
+        :return: result from problem.eval_r_norm
+        :rtype: numpy array
+        """
+        return self.problem.eval_r_norm(p)
 
     def _jac_chi_squared(self, p, data=None):
-        j = approx_derivative(self._chi_squared,
-                              p)
+        """
+        Utility function to get jacobian for problem.eval_r_norm
+
+        :param p: parameters
+        :type p: list
+        :param data: x data, this is discarded as the defaults can be used. 
+        :type data: N/A
+        :return: jacobian approximation for problem.eval_r_norm
+        :rtype: numpy array
+        """
+        j = approx_derivative(self.problem.eval_r_norm, p)
         return j
 
     def _chi_squared_fdf(self, p, data=None):
-        f = self._chi_squared(p)
+        """
+        Utility function to return results from eval_r_norm and
+        _jac_chi_squared as a tuple.
+
+        :param p: parameters
+        :type p: list
+        :param data: x data, this is discarded as the defaults can be used. 
+        :type data: N/A
+        :return: result from problem.eval_r_norm and _jac_chi_squared
+        :rtype: (numpy array, numpy array)
+        """
+        f = self.problem.eval_r_norm(p)
         df = self._jac_chi_squared(p)
         return f, df
 
@@ -170,6 +221,4 @@ class GSLController(Controller):
         """
         if self.success:
             self.final_params = self._solver.getx()
-            self.results = self.problem.eval_f(x=self.data_x,
-                                               params=self.final_params,
-                                               function_id=self.function_id)
+            self.results = self.problem.eval_f(params=self.final_params)
