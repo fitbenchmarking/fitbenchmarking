@@ -34,6 +34,8 @@ class OptionsTests(unittest.TestCase):
             colour_scale: 17.1, b_string?
                           inf, final_string
             comparison_mode: abs
+            table_type: acc
+                        runtime
             results_dir: new_results
             """
         opts = {'MINIMIZERS': {'scipy': ['nonesense',
@@ -45,6 +47,7 @@ class OptionsTests(unittest.TestCase):
                 'PLOTTING': {'colour_scale': [(17.1, 'b_string?'),
                                               (float('inf'), 'final_string')],
                              'comparison_mode': 'abs',
+                             'table_type': ['acc', 'runtime'],
                              'results_dir': 'new_results'}
                 }
 
@@ -73,6 +76,7 @@ class OptionsTests(unittest.TestCase):
         self.assertEqual(plotting_opts['colour_scale'], options.colour_scale)
         self.assertEqual(plotting_opts['comparison_mode'],
                          options.comparison_mode)
+        self.assertEqual(plotting_opts['table_type'], options.table_type)
         # Use ends with as options creates an abs path rather than rel.
         self.assertTrue(
             options.results_dir.endswith(plotting_opts['results_dir']))

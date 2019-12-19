@@ -34,21 +34,20 @@ class FittingResult(object):
 
         self.value = None
         self.norm_value = None
+
         self.colour = None
         self.colour_runtime = None
         self.colour_acc = None
 
         # Defines the type of table to be produced
         self._table_type = None
+        self.output_string_type = {"abs": '{:.4g}',
+                                   "rel": '{:.4g}',
+                                   "both": '{0:.4g} ({1:.4g})'}
 
     def __str__(self):
         if self.table_type is not None:
-            if self.options.comparison_mode == "abs":
-                output = "{:.4g}".format(self.value)
-            elif self.options.comparison_mode == "rel":
-                output = "{:.4g}".format(self.value)
-            elif self.options.comparison_mode == "both":
-                output = "{:.4g} ({:.4g})".format(self.value, self.norm_value)
+            output = self.table_output
         else:
             output = 'Fitting problem class: minimizer = {0}'.format(
                 self.minimizer)
@@ -61,14 +60,32 @@ class FittingResult(object):
     @table_type.setter
     def table_type(self, value):
         self._table_type = value
+        comp_mode = self.options.comparison_mode
+        result_template = self.output_string_type[comp_mode]
+
         if value == "runtime":
-            self.value = self.runtime
-            self.norm_value = self.norm_runtime
+            abs_value = [self.runtime]
+            rel_value = [self.norm_runtime]
             self.colour = self.colour_runtime
-        if value == "acc":
-            self.value = self.chi_sq
-            self.norm_value = self.norm_acc
+        elif value == "acc":
+            abs_value = [self.chi_sq]
+            rel_value = [self.norm_acc]
             self.colour = self.colour_acc
+        elif value == "compare":
+            abs_value = [self.chi_sq, self.runtime]
+            rel_value = [self.norm_acc, self.norm_runtime]
+            self.colour = [self.colour_acc, self.colour_runtime]
+
+        if comp_mode == "abs":
+            self.table_output = \
+                '<br>'.join([result_template.format(v) for v in abs_value])
+        elif comp_mode == "rel":
+            self.table_output = \
+                '<br>'.join([result_template.format(v) for v in rel_value])
+        elif comp_mode == "both":
+            self.table_output = \
+                '<br>'.join([result_template.format(v1, v2)
+                             for v1, v2 in zip(abs_value, rel_value)])
 
     def set_colour_scale(self):
         """

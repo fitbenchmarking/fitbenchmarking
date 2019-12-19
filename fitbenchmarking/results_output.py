@@ -14,10 +14,6 @@ from fitbenchmarking.resproc import visual_pages
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.logging_setup import logger
 
-# Some naming conventions for the output files
-FILENAME_SUFFIX_ACCURACY = 'acc'
-FILENAME_SUFFIX_RUNTIME = 'runtime'
-
 
 def save_results_tables(options, results, group_name):
     """
@@ -46,9 +42,8 @@ def save_results_tables(options, results, group_name):
     linked_problems = \
         visual_pages.create_linked_probs(results, group_name, results_dir)
 
-    table_suffix = [FILENAME_SUFFIX_ACCURACY, FILENAME_SUFFIX_RUNTIME]
     table_names = []
-    for suffix in table_suffix:
+    for suffix in options.table_type:
         table_names.append(os.path.join(tables_dir,
                                         '{0}_{1}_{2}_table.'.format(
                                             group_name,
@@ -56,7 +51,7 @@ def save_results_tables(options, results, group_name):
                                             weighted_str)))
     generate_tables(results, minimizers,
                     linked_problems, table_names,
-                    table_suffix)
+                    options.table_type)
 
     logging.shutdown()
 
@@ -79,12 +74,14 @@ def generate_tables(results_per_test, minimizers,
     :param table_suffix : set output to be runtime or accuracy table
     :type table_suffix : str
     """
-
+    table_titles = ["FitBenchmarking: {0} table".format(name)
+                    for name in table_suffix]
     results_dict, html_links = create_results_dict(results_per_test,
                                                    linked_problems)
     preproccess_data(results_dict)
     table = create_pandas_dataframe(results_dict, minimizers, table_suffix)
-    render_pandas_dataframe(table, minimizers, html_links, table_names)
+    render_pandas_dataframe(table, minimizers, html_links,
+                            table_names, table_titles)
 
 
 def create_results_dict(results_per_test, linked_problems):
@@ -168,13 +165,14 @@ def create_pandas_dataframe(table_data, minimizers, table_suffix):
 
     tbl = pd.DataFrame.from_dict(table_data, orient='index')
     tbl.columns = minimizers
-    results = {}
+    results = OrderedDict()
     for suffix in table_suffix:
         results[suffix] = tbl.applymap(lambda x: select_table(x, suffix))
     return results
 
 
-def render_pandas_dataframe(table_dict, minimizers, html_links, table_names):
+def render_pandas_dataframe(table_dict, minimizers, html_links,
+                            table_names, table_title):
     """
     Generates html and rst page from pandas dataframes.
 
@@ -186,6 +184,8 @@ def render_pandas_dataframe(table_dict, minimizers, html_links, table_names):
     :type html_links : list
     :param table_names : list of table names
     :type table_names : list
+    :param table_title : list of table titles
+    :type table_title : list
     """
 
     def colour_highlight(value):
@@ -193,12 +193,19 @@ def render_pandas_dataframe(table_dict, minimizers, html_links, table_names):
         Colour mapping for visualisation of table
         '''
         colour = value.colour
+        if isinstance(colour, list):
+            colour_output = \
+                'background-image: linear-gradient({0},{1})'.format(
+                    colour[0], colour[1])
+        else:
+            colour_output = 'background-color: {0}'.format(colour)
+        return colour_output
 
-        return 'background-color: {0}'.format(colour)
-
-    for name, table in zip(table_names, table_dict.values()):
+    for name, title, table in zip(table_names, table_title,
+                                  table_dict.values()):
         table.index = html_links
-        table_style = table.style.applymap(colour_highlight)
+        table_style = table.style.applymap(colour_highlight)\
+            .set_caption(title)
         with open(name + 'html', "w") as f:
             f.write(table_style.render())
 
