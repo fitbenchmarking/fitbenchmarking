@@ -28,5 +28,5 @@ This is a template you can use which contains information on each option
 available, as well as the defaults.
 
 
-.. include:: ../../../lib/fitbenchmarking/utils/default_options.ini
+.. include:: ../../../fitbenchmarking/utils/default_options.ini
    :literal:
