@@ -5,12 +5,11 @@ FitBenchmarking Options
 #######################
 
 FitBenchmarking is controlled by a set of options that can be controlled in
-3 different ways.
+2 different ways.
 In order from lowest priority to highest these are:
 
 - The default options.
 - An options file.
-- Options set in a script.
 
 The default options are a complete set of options with sensible values.
 These will be used when no other values are given for any of the options,

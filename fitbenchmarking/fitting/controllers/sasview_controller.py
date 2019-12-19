@@ -21,7 +21,7 @@ class SasviewController(Controller):
         """
         super(SasviewController, self).__init__(problem, use_errors)
 
-        self._param_names = [param[0] for param in problem.starting_values]
+        self._param_names = self.problem.param_names
 
         self._func_wrapper = None
         self._fit_problem = None
@@ -38,7 +38,7 @@ class SasviewController(Controller):
         wrapper = "def fitFunction(x, {}):\n".format(param_name_str)
         wrapper += "    return func(x, {})".format(param_name_str)
 
-        exec_dict = {'func': self.functions[self.function_id][0]}
+        exec_dict = {'func': self.problem.function}
         exec(wrapper, exec_dict)
 
         model = exec_dict['fitFunction']

@@ -48,6 +48,7 @@ class Options(object):
                               cs.split(',', 1)[1].strip())
                              for cs in self.colour_scale]
         self.comparison_mode = plotting.getstr('comparison_mode')
+        self.table_type = plotting.getlist('table_type')
         self.results_dir = plotting.getstr('results_dir')
 
     @property

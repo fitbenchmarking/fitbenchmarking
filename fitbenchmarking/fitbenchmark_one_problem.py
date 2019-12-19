@@ -8,10 +8,10 @@ import numpy as np
 import timeit
 import warnings
 
-from fitbenchmarking.fitting import misc
 from fitbenchmarking.fitting.controllers.controller_factory \
     import ControllerFactory
 from fitbenchmarking.fitting.plotting import plot_helper, plots
+from fitbenchmarking.utils import fitbm_result
 
 
 def fitbm_one_prob(problem, options, directory):
@@ -38,35 +38,37 @@ def fitbm_one_prob(problem, options, directory):
     if not isinstance(software, list):
         software = [software]
 
-    for s in software:
-        try:
-            minimizers = options.minimizers[s]
-        except KeyError:
-            raise ValueError(
-                'Minimizers could not be found for software: {}'.format(s))
+    for i in range(len(problem.starting_values)):
+        print("    Starting value: {0}/{1}".format(
+            i + 1,
+            len(problem.starting_values)))
+        if len(results) <= i:
+            results.append({})
 
-        controller_cls = ControllerFactory.create_controller(software=s)
-        controller = controller_cls(problem=problem,
-                                    use_errors=options.use_errors)
+        for s in software:
+            print("        Software: {}".format(s.upper()))
+            try:
+                minimizers = options.minimizers[s]
+            except KeyError:
+                raise ValueError(
+                    'Minimizers could not be found for software: {}'.format(s))
 
-        # The controller reformats the data to fit within a start- and end-x
-        # bound
-        # It also estimates errors if not provided.
-        # Copy this back to the problem as it is used in plotting.
-        problem.data_x = controller.data_x
-        problem.data_y = controller.data_y
-        problem.data_e = controller.data_e
+            controller_cls = ControllerFactory.create_controller(software=s)
+            controller = controller_cls(problem=problem,
+                                        use_errors=options.use_errors)
 
-        for i in range(len(controller.functions)):
-            if len(results) <= i:
-                results.append({})
+            # The controller reformats the data to fit within a
+            # start- and end-x bound
+            # It also estimates errors if not provided.
+            # Copy this back to the problem as it is used in plotting.
+            problem.data_x = controller.data_x
+            problem.data_y = controller.data_y
+            problem.data_e = controller.data_e
 
-            controller.function_id = i
-
+            controller.parameter_set = i
             problem_result, best_fit = benchmark(controller=controller,
                                                  minimizers=minimizers,
-                                                 num_runs=options.num_runs)
-
+                                                 options=options)
             if best_fit is not None:
                 # Make the plot of the best fit
                 plots.make_plots(problem=problem,
@@ -75,11 +77,10 @@ def fitbm_one_prob(problem, options, directory):
                                  group_results_dir=directory)
 
             results[i][s] = problem_result
-
     return results
 
 
-def benchmark(controller, minimizers, num_runs):
+def benchmark(controller, minimizers, options):
     """
     Fit benchmark one problem, with one function definition and all
     the selected minimizers, using the chosen fitting software.
@@ -88,9 +89,8 @@ def benchmark(controller, minimizers, num_runs):
     :type controller: Object derived from BaseSoftwareController
     :param minimizers: array of minimizers used in fitting
     :type minimizers: list
-    :param num_runs: number of times controller.fit() is run to
-                     generate an average runtime
-    :type num_runs: int
+    :param options: all the information specified by the user
+    :type options: fitbenchmarking.utils.options.Options
 
     :returns: tuple(results_problem, best_fit) nested array of
               result objects, per minimizer and data object for
@@ -99,8 +99,10 @@ def benchmark(controller, minimizers, num_runs):
     """
     min_chi_sq, best_fit = None, None
     results_problem = []
-
+    num_runs = options.num_runs
     for minimizer in minimizers:
+        print("            Minimizer: {}".format(minimizer))
+
         controller.minimizer = minimizer
 
         init_function_def = controller.problem.get_function_def(
@@ -126,7 +128,7 @@ def benchmark(controller, minimizers, num_runs):
             params=controller.final_params)
 
         if not controller.success:
-            chi_sq = np.nan
+            chi_sq = np.inf
             status = 'failed'
         else:
             ratio = np.max(runtime_list) / np.min(runtime_list)
@@ -136,9 +138,10 @@ def benchmark(controller, minimizers, num_runs):
                               ' which is  larger than the tolerance of {1},'
                               ' which may indicate that caching has occurred'
                               ' in the timing results'.format(ratio, tol))
-            chi_sq = misc.compute_chisq(fitted=controller.results,
-                                        actual=controller.data_y,
-                                        errors=controller.data_e)
+            chi_sq = controller.eval_chisq(params=controller.final_params,
+                                           x=controller.data_x,
+                                           y=controller.data_y,
+                                           e=controller.data_e)
             status = 'success'
 
         if min_chi_sq is None:
@@ -153,14 +156,18 @@ def benchmark(controller, minimizers, num_runs):
                                         E=controller.data_e,
                                         sorted_index=index)
 
-        individual_result = \
-            misc.create_result_entry(problem=controller.problem,
-                                     status=status,
-                                     chi_sq=chi_sq,
-                                     runtime=runtime,
-                                     minimizer=minimizer,
-                                     ini_function_def=init_function_def,
-                                     fin_function_def=fin_function_def)
+        problem = controller.problem
+        if 'fitFunction' in init_function_def:
+            init_function_def = init_function_def.replace(
+                'fitFunction', problem.equation)
+            fin_function_def = fin_function_def.replace(
+                'fitFunction', problem.equation)
+
+        individual_result = fitbm_result.FittingResult(
+            options=options, problem=problem, fit_status=status,
+            chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
+            ini_function_def=init_function_def,
+            fin_function_def=fin_function_def)
 
         results_problem.append(individual_result)
 

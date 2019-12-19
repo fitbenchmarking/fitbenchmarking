@@ -30,15 +30,16 @@ before_install:
   - sudo apt-get install libgsl-dev
   - sudo apt-get install libgsl-dbg
   
+  - sudo apt-get install pandoc
 
 install:
   # Builds RALfit
   - ./build_ralfit.sh
-  
+
   - pip install -r requirements.txt
   - python setup.py install
   - python setup.py externals
-  
+
   # To access RALfit
   - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
 
@@ -49,7 +50,7 @@ jobs:
       before_script: python -m mantid.simpleapi || true
       script:
         # ======= Examples Tests =============== #
-        - pytest example_scripts/ --cov=example_scripts/
+        - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
           --cov-report term-missing
         # ======= Fitting Tests =============== #
         - pytest fitbenchmarking/fitting/ --cov=fitbenchmarking/fitting/
@@ -71,6 +72,6 @@ jobs:
       before_script: python -m mantid.simpleapi || true
       script:
         # ======= System Test =============== #
-        - cd systests
+        - cd fitbenchmarking/systests
         - python generate_current_results.py
         - python tbl_comparison.py

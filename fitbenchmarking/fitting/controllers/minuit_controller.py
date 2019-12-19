@@ -37,19 +37,10 @@ class MinuitController(Controller):
         self._initial_step = 0.1 * np.array(self.initial_params)
         # set small steps to something sensible(?)
         self._initial_step[self._initial_step < 1e-12] = 1e-12
-        self._minuit_problem = Minuit.from_array_func(self._prediction_error,
+        self._minuit_problem = Minuit.from_array_func(self.problem.eval_r_norm,
                                                       self.initial_params,
                                                       error=self._initial_step,
                                                       errordef=1)
-
-    def _prediction_error(self, p):
-        f = self.problem.eval_f(params=p,
-                                function_id=self.function_id)
-        f = f - self.data_y
-        if self.use_errors:
-            f = f / self.data_e
-
-        return np.dot(f, f)
 
     def fit(self):
         """
@@ -67,6 +58,5 @@ class MinuitController(Controller):
         self.success = (self._popt is not None)
 
         if self.success:
-            self.results = self.problem.eval_f(params=self._popt,
-                                               function_id=self.function_id)
+            self.results = self.problem.eval_f(params=self._popt)
             self.final_params = self._popt

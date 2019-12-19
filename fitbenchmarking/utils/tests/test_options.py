@@ -31,9 +31,11 @@ class OptionsTests(unittest.TestCase):
                       bar
 
             [PLOTTING]
-            colour_scale: 17.1, a_string?
-                          inf, another_string
+            colour_scale: 17.1, b_string?
+                          inf, final_string
             comparison_mode: abs
+            table_type: acc
+                        runtime
             results_dir: new_results
             """
         opts = {'MINIMIZERS': {'scipy': ['nonesense',
@@ -42,10 +44,10 @@ class OptionsTests(unittest.TestCase):
                 'FITTING': {'use_errors': False,
                             'num_runs': 2,
                             'software': ['foo', 'bar']},
-                'PLOTTING': {'colour_scale': [(17.1, 'a_string?'),
-                                              (float('inf'),
-                                               'another_string')],
+                'PLOTTING': {'colour_scale': [(17.1, 'b_string?'),
+                                              (float('inf'), 'final_string')],
                              'comparison_mode': 'abs',
+                             'table_type': ['acc', 'runtime'],
                              'results_dir': 'new_results'}
                 }
 
@@ -53,7 +55,6 @@ class OptionsTests(unittest.TestCase):
             datetime.datetime.now())
         with open(opts_file, 'w') as f:
             f.write(config_str)
-
         self.options = opts
         self.options_file = opts_file
 
@@ -75,6 +76,7 @@ class OptionsTests(unittest.TestCase):
         self.assertEqual(plotting_opts['colour_scale'], options.colour_scale)
         self.assertEqual(plotting_opts['comparison_mode'],
                          options.comparison_mode)
+        self.assertEqual(plotting_opts['table_type'], options.table_type)
         # Use ends with as options creates an abs path rather than rel.
         self.assertTrue(
             options.results_dir.endswith(plotting_opts['results_dir']))

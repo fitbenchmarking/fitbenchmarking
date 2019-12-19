@@ -4,7 +4,6 @@ https://github.com/ralna/RALFit
 """
 
 import ral_nlls
-from scipy.optimize._numdiff import approx_derivative
 
 from fitbenchmarking.fitting.controllers.base_controller import Controller
 
@@ -27,35 +26,24 @@ class RALFitController(Controller):
         """
         Setup for RALFit
         """
-        self._options["maxit"] = 500
+
+        # Use bytestrings explicitly as thats whats expected in RALFit and
+        # python 3 defaults to unicode.
+        self._options[b"maxit"] = 500
         if self.minimizer == "gn":
-            self._options["model"] = 1
-            self._options["nlls_method"] = 4
+            self._options[b"model"] = 1
+            self._options[b"nlls_method"] = 4
         elif self.minimizer == "gn_reg":
-            self._options["model"] = 1
-            self._options["type_of_method"] = 2
+            self._options[b"model"] = 1
+            self._options[b"type_of_method"] = 2
         elif self.minimizer == "hybrid":
-            self._options["model"] = 3
-            self._options["nlls_method"] = 4
+            self._options[b"model"] = 3
+            self._options[b"nlls_method"] = 4
         elif self.minimizer == "hybrid_reg":
-            self._options["model"] = 3
-            self._options["type_of_method"] = 2
+            self._options[b"model"] = 3
+            self._options[b"type_of_method"] = 2
         else:
             raise RuntimeError("An undefined RALFit minmizer was selected")
-
-    def _prediction_error(self, p):
-        f = self.problem.eval_f(params=p,
-                                function_id=self.function_id)
-        f = f - self.data_y
-        if self.use_errors:
-            f = f / self.data_e
-
-        return f
-
-    def _jac(self, p):
-        j = approx_derivative(self._prediction_error,
-                              p)
-        return j
 
     def fit(self):
         """
@@ -63,8 +51,8 @@ class RALFitController(Controller):
         """
         self.success = False
         self._popt = ral_nlls.solve(self.initial_params,
-                                    self._prediction_error,
-                                    self._jac,
+                                    self.problem.eval_r,
+                                    self.problem.eval_j,
                                     options=self._options)[0]
 
         self.success = (self._popt is not None)
@@ -75,6 +63,5 @@ class RALFitController(Controller):
         will be read from.
         """
         if self.success:
-            self.results = self.problem.eval_f(params=self._popt,
-                                               function_id=self.function_id)
+            self.results = self.problem.eval_f(params=self._popt)
             self.final_params = self._popt

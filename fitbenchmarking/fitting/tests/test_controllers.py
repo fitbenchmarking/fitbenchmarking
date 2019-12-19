@@ -1,8 +1,9 @@
 import inspect
+import numpy as np
 import os
 from unittest import TestCase
 
-import benchmark_problems
+from fitbenchmarking import mock_problems
 from fitbenchmarking.fitting.controllers.base_controller import \
     Controller
 from fitbenchmarking.fitting.controllers.controller_factory import \
@@ -30,9 +31,8 @@ def make_fitting_problem():
     Helper function that returns a simple fitting problem
     """
 
-    bench_prob_dir = os.path.dirname(inspect.getfile(benchmark_problems))
-    fname = os.path.join(bench_prob_dir, 'simple_tests',
-                         'cubic.dat')
+    bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
+    fname = os.path.join(bench_prob_dir, 'cubic.dat')
 
     fitting_problem = parse_problem_file(fname)
     return fitting_problem
@@ -99,9 +99,39 @@ class BaseControllerTests(TestCase):
         """
         controller = DummyController(self.problem, True)
         controller.minimizer = 'test'
-        controller.function_id = 0
+        controller.parameter_set = 0
         controller.prepare()
         assert controller.setup_result == 53
+
+    def test_eval_chisq_no_errors(self):
+        """
+        BaseSoftwareController: Test eval_chisq function
+        """
+        controller = DummyController(self.problem, True)
+
+        params = np.array([1, 2, 3, 4])
+        x = np.array([6, 2, 32, 4])
+        y = np.array([1, 21, 3, 4])
+        e = None
+
+        result = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
+
+        assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
+
+    def test_eval_chisq_with_errors(self):
+        """
+        BaseSoftwareController: Test eval_chisq function
+        """
+        controller = DummyController(self.problem, True)
+
+        params = np.array([1, 2, 3, 4])
+        x = np.array([6, 2, 32, 4])
+        y = np.array([1, 21, 3, 4])
+        e = np.array([.5, .003, 1, 2])
+
+        result = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
+
+        assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
 
 
 class ControllerTests(TestCase):
@@ -182,7 +212,7 @@ class ControllerTests(TestCase):
         :param controller: Controller to test, with setup already completed
         :type contrller: Object derived from BaseSoftwareController
         """
-        controller.function_id = 0
+        controller.parameter_set = 0
         controller.prepare()
         controller.fit()
         controller.cleanup()
