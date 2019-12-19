@@ -14,11 +14,6 @@ from fitbenchmarking.resproc import visual_pages
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.logging_setup import logger
 
-# Some naming conventions for the output files
-FILENAME_SUFFIX_ACCURACY = 'acc'
-FILENAME_SUFFIX_RUNTIME = 'runtime'
-FILENAME_SUFFIX_COMPARE = 'compare'
-
 
 def save_results_tables(options, results, group_name):
     """
@@ -47,12 +42,8 @@ def save_results_tables(options, results, group_name):
     linked_problems = \
         visual_pages.create_linked_probs(results, group_name, results_dir)
 
-    table_suffix = [FILENAME_SUFFIX_ACCURACY,
-                    FILENAME_SUFFIX_RUNTIME,
-                    FILENAME_SUFFIX_COMPARE]
-
     table_names = []
-    for suffix in table_suffix:
+    for suffix in options.table_type:
         table_names.append(os.path.join(tables_dir,
                                         '{0}_{1}_{2}_table.'.format(
                                             group_name,
@@ -60,7 +51,7 @@ def save_results_tables(options, results, group_name):
                                             weighted_str)))
     generate_tables(results, minimizers,
                     linked_problems, table_names,
-                    table_suffix)
+                    options.table_type)
 
     logging.shutdown()
 
