@@ -24,8 +24,8 @@ For help on how to use the command line/terminal, click the hyperlink correspond
 2. Within a terminal (command prompt) go into the `fitbenchmarking` directory.
 3. Within this directory, start the install with the following depending on your environment:
 
-   -  No virtual environment: `python setup.py install --user`
-   -  Virtual Environment: `python setup.py install`
+   -  No virtual environment: `pip install . --user`
+   -  Virtual Environment: `pip install .`
 
 You should now have all you need to use FitBenchmarking.
 To try it out with the `fitbenchmarking` command.
