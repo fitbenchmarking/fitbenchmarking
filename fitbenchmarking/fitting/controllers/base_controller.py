@@ -70,8 +70,14 @@ class Controller:
             if self.data_e is None:
                 self.data_e = np.sqrt(abs(self.data_y))
 
-            self.data_e[self.data_e == 0] = \
-                np.min(self.data_e[self.data_e != 0]) * 1e-8
+            # The values of data_e are used to divide the residuals.
+            # If these are (close to zero), then this blows up.
+            # This is particularly a problem if trying to fit
+            # counts, which may follow a Poisson distribution.
+            #
+            # Fix this by cutting values less than a certain value
+            trim_value = 1.0e-8
+            self.data_e[self.data_e < trim_value] = trim_value
         else:
             self.data_e = None
 
