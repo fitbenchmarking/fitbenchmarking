@@ -56,9 +56,12 @@ class FitbenchmarkParser(Parser):
 
     def _get_starting_values(self):
 
-        starting_values = [OrderedDict()]
-        for i in range(self._n):
-            starting_values[0][i] = self._p.x0[i]
+        starting_values = [
+            OrderedDict([
+                ('f{}'.format(i), self._p.x0[i])
+                for i in range(self._n)
+            ])
+        ]
 
         return starting_values
         
