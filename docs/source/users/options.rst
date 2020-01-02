@@ -20,12 +20,12 @@ The options file must be a `.ini` formatted file
 and a good reference for this can be
 found in the examples, as well as at the bottom of this document.
 
-
 ----------------
 Options template
 ----------------
 This is a template you can use which contains information on each option
 available, as well as the defaults.
+
 
 
 .. include:: ../../../fitbenchmarking/utils/default_options.ini
