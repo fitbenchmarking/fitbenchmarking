@@ -10,6 +10,8 @@ from fitbenchmarking.fitting.controllers.controller_factory import \
     ControllerFactory
 from fitbenchmarking.fitting.controllers.dfogn_controller import \
     DFOGNController
+from fitbenchmarking.fitting.controllers.gsl_controller import \
+    GSLController
 from fitbenchmarking.fitting.controllers.mantid_controller import \
     MantidController
 from fitbenchmarking.fitting.controllers.minuit_controller import \
@@ -171,6 +173,19 @@ class ControllerTests(TestCase):
         controller = DFOGNController(self.problem, True)
         controller.minimizer = 'dfogn'
         self.shared_testing(controller)
+
+    def test_gsl(self):
+        """
+        GSLController: Tests for output shape
+        """
+        controller = GSLController(self.problem, True)
+        # test one from each class
+        minimizers = ['lmsder',
+                      'nmsimplex',
+                      'conjugate_pr']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_testing(controller)
 
     def test_ralfit(self):
         """

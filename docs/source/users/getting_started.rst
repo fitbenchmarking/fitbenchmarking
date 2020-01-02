@@ -16,7 +16,7 @@ on setting up python see :ref:`setting-up-python`.
 2. Open up a terminal (command prompt) and go into the
    ``fitbenchmarking`` directory.
 3. Once you are in the right directory, type
-   ``python setup.py install``.
+   ``pip install .``.
 4. Install mantid, for platform specific instructions see
    :ref:`setting-up-mantid`.
 5. Finally run ``fitbenchmarking`` with a problem set from the examples
@@ -159,7 +159,7 @@ Installing Through the FitBenchmarking Tool
 The fitbenchmarking tool does support installing mantid through it on
 Ubuntu 16.04 and Ubuntu 18.04. Open up a terminal and cd into the
 fitbenchmarking folder. Here, type ``python setup.py help`` and follow
-the instrucitons there to install mantid or any additional external
+the instructions there to install mantid or any additional external
 software. For clarity, it is as simple as running
 ``python setup.py externals -s mantid``
 

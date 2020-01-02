@@ -28,6 +28,7 @@ setup(name='FitBenchmarking',
                         'jinja2',
                         'dfogn',
                         'iminuit',
+                        'pygsl',
                         'configparser'],
       zip_safe=False,
 
