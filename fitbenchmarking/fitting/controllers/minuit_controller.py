@@ -52,11 +52,9 @@ class MinuitController(Controller):
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
-        will be read fromm
+        will be read from
         """
-        self._popt = self._minuit_problem.np_values()
-        self.success = (self._popt is not None)
-
         if self.success:
+            self._popt = self._minuit_problem.np_values()
             self.results = self.problem.eval_f(params=self._popt)
             self.final_params = self._popt
