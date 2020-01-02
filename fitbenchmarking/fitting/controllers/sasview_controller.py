@@ -25,7 +25,7 @@ class SasviewController(Controller):
 
         self._func_wrapper = None
         self._fit_problem = None
-        self._bumps_results = None
+        self._bumps_result = None
 
     def setup(self):
         """
@@ -88,6 +88,6 @@ class SasviewController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-
-        self.final_params = self._bumps_result.x
-        self.results = self._func_wrapper.theory()
+        if self.success:
+            self.final_params = self._bumps_result.x
+            self.results = self._func_wrapper.theory()

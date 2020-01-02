@@ -29,6 +29,7 @@ setup(name='FitBenchmarking',
                         'pypandoc',
                         'dfogn',
                         'iminuit',
+                        'pygsl',
                         'configparser'],
       zip_safe=False,
 
