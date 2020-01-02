@@ -25,7 +25,7 @@ class SasviewController(Controller):
 
         self._func_wrapper = None
         self._fit_problem = None
-        self._bumps_results = None
+        self._bumps_result = None
 
     def setup(self):
         """
