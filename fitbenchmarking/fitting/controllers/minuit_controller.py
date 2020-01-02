@@ -48,6 +48,7 @@ class MinuitController(Controller):
         """
         self.success = False
         self._minuit_problem.migrad()  # run optimizer
+        self.success = True
 
     def cleanup(self):
         """
