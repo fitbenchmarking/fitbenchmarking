@@ -49,7 +49,6 @@ class FitbenchmarkParser(Parser):
 
     def _function(self, x, *params):
 
-        test_params = np.array((1.0,2.0,3.0))
         _, fx = self._p.objcons(np.asarray(params))
 
         return fx
