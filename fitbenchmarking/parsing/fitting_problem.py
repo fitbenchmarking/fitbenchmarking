@@ -157,6 +157,11 @@ class FittingProblem:
                  given parameters
         :rtype: numpy array
         """
+        if x is None and y is None and e is None:
+            x = self.data_x
+            y = self.data_y
+            e = self.data_e
+
         r = self.eval_r(params=params, x=x, y=y, e=e)
         return np.dot(r, r)
 
