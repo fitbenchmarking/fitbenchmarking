@@ -39,6 +39,7 @@ class FitbenchmarkParser(Parser):
 
         fp.name = problem
         fp.data_x, fp.data_y = self._get_data()
+        self._y = fp.data_y
         fp.function = self._function # self._p.obj
         fp.equation = None
         fp.starting_values = self._get_starting_values()
@@ -50,6 +51,7 @@ class FitbenchmarkParser(Parser):
     def _function(self, x, *params):
 
         _, fx = self._p.objcons(np.asarray(params))
+        fx = fx + self._y
 
         return fx
 
