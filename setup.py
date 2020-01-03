@@ -30,7 +30,8 @@ setup(name='FitBenchmarking',
                         'dfogn',
                         'iminuit',
                         'pygsl',
-                        'configparser'],
+                        'configparser',
+                        'pycutest'],
       zip_safe=False,
 
       cmdclass={
