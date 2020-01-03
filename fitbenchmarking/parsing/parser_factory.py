@@ -33,12 +33,16 @@ class ParserFactory:
         with open(filename, 'r') as f:
             line = f.readline()
 
-        # Take the first section of text
-        module_name = ''
-        for l in line.strip('#').strip():
-            if not l.isalpha():
-                break
-            module_name += l
+        # if there's a SIF file ending, use cutest
+        extension = os.path.splitext(filename)[1]
+        if "SIF" in extension.upper():
+            module_name = 'cutest'
+        else: # Otherwse, take the first section of text
+            module_name = ''
+            for l in line.strip('#').strip():
+                if not l.isalpha():
+                    break
+                module_name += l
 
         module_name = '{}_parser'.format(module_name.lower())
 
