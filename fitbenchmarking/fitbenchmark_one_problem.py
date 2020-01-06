@@ -157,12 +157,6 @@ def benchmark(controller, minimizers, options):
                                         sorted_index=index)
 
         problem = controller.problem
-        if 'fitFunction' in init_function_params:
-            init_function_params = init_function_params.replace(
-                'fitFunction', problem.equation)
-            fin_function_params = fin_function_params.replace(
-                'fitFunction', problem.equation)
-
         individual_result = fitbm_result.FittingResult(
             options=options, problem=problem, fit_status=status,
             chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
