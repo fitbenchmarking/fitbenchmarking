@@ -5,11 +5,10 @@ Set up and build the visual display pages for various types of problems.
 from __future__ import (absolute_import, division, print_function)
 
 import numpy as np
-import os
-from docutils.core import publish_string
-from fitbenchmarking.utils.logging_setup import logger
 from jinja2 import Environment, FileSystemLoader
 import os
+
+from fitbenchmarking.utils.logging_setup import logger
 
 # Some naming conventions for the output files
 FILENAME_EXT_TXT = 'txt'

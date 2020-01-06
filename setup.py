@@ -12,10 +12,10 @@ setup(name='FitBenchmarking',
       url='http://github.com/fitbenchmarking/fitbenchmarking',
       license='GPL-3.0',
       entry_points={
-        "console_scripts": [
-            'fitbenchmarking = fitbenchmarking.cli.main:main'
-            ]
-        },
+          "console_scripts": [
+              'fitbenchmarking = fitbenchmarking.cli.main:main'
+          ]
+      },
       packages=find_packages('./', exclude=('*mock*', '*test*')),
       install_requires=['docutils',
                         'numpy<1.17',
@@ -30,7 +30,8 @@ setup(name='FitBenchmarking',
                         'dfogn',
                         'iminuit',
                         'pygsl',
-                        'configparser'],
+                        'configparser',
+                        'jinja2'],
       zip_safe=False,
 
       cmdclass={
