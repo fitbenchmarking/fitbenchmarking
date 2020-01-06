@@ -91,10 +91,10 @@ def create(prob_results, group_name, results_dir, count):
         fh.write(template.render(
             title=prob_name,
             equation=best_result.problem.equation,
-            initial_guess=best_result.ini_function_def.split("|")[1],
+            initial_guess=best_result.ini_function_params,
             best_minimiser=best_result.minimizer,
             initial_plot=fig_start,
-            min_params=best_result.fin_function_def.split("|")[1],
+            min_params=best_result.fin_function_params,
             fitted_plot=fig_fit))
 
     return html_link
