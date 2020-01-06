@@ -48,5 +48,5 @@ class ScipyController(Controller):
         will be read from.
         """
         if self.success:
-            self.results = self.problem.eval_r(params=self._popt)
+            self.results = self.problem.eval_f(params=self._popt)
             self.final_params = self._popt
