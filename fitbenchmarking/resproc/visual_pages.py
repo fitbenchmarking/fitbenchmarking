@@ -10,21 +10,22 @@ import os
 
 from fitbenchmarking.utils.logging_setup import logger
 
-# Some naming conventions for the output files
-FILENAME_EXT_TXT = 'txt'
-FILENAME_EXT_HTML = 'html'
-
 
 def create_linked_probs(results_per_test, group_name, results_dir):
     """
     Creates the problem names with links to the visual display pages
     in rst.
 
-    @param results_per_test :: results object
-    @param group_name :: name of the problem group
-    @param results_dir :: directory in which the results are saved
+    :param results_per_test : results object
+    :type results_per_test : list[list[list]]
+    :param group_name : name of the problem group
+    :type group_name : str
+    :param results_dir : directory in which the results are saved
+    :type results_dir : str
 
-    @returns :: array of the problem names with the links in rst
+
+    :return : array of the problem names with the links in rst
+    :rtype : list[str]
     """
 
     # Count keeps track if it is the same problem but different starting point
@@ -50,14 +51,19 @@ def create(prob_results, group_name, results_dir, count):
     Creates a visual display page containing figures and other
     details about the best fit for a problem.
 
-    @param prob_results :: problem results objects containing results for
-                           each minimizer and a certain fitting function
-    @param group_name :: name of the group the problem belongs to
-    @param results_dir :: results directory
-    @param count :: number of times a problem with the same name was
-                    passed through this function, consecutively
+    :param prob_results : problem results objects containing results for
+                          each minimizer and a certain fitting function
+    :type prob_results : list
+    :param group_name : name of the problem group
+    :type group_name : str
+    :param results_dir : directory in which the results are saved
+    :type results_dir : str
+    :param count : number of times a problem with the same name was
+                   passed through this function, consecutively
+    :type count : int
 
-    @returns :: link to the visual display page (file path)
+    :return : link to the visual display page (file path)
+    :rtype : str
     """
 
     # Get the best result for a group
@@ -98,18 +104,23 @@ def setup_page_misc(group_name, problem_name, res_obj, results_dir, count):
     """
     Sets up some miscellaneous things for the visual display pages.
 
-    @param group_name :: name of the group containing the
-                         current problem
-    @param problem_name :: name of the problem
-    @param res_obj :: problem result object
-    @param results_dir :: directory containing the results
-    @param count :: number of times a problem with the same name was
-                    passed through this function, consecutively
+    :param group_name : name of the group containing the current problem
+    :type group_name : str
+    :param problem_name : name of the problem
+    :type problem_name : str
+    :param res_obj : best results object
+    :type res_obj : results object
+    :param results_dir : directory in which the results are saved
+    :type results_dir : str
+    :param count : number of times a problem with the same name was
+                   passed through this function, consecutively
+    :type count : int
 
-    @returns :: the directory in which the visual display pages go
-                the file path to the visual display page that is
-                currently being made
-                the fit details table and the see also link
+    :return : the directory in which the visual display pages go
+              the file path to the visual display page that is
+              currently being made the fit details table and the
+              see also link
+    :rtype : tuple(str, str, str)
     """
 
     # Group specific path and other misc stuff
@@ -133,13 +144,16 @@ def get_figure_paths(support_pages_dir, problem_name, count):
     """
     Get the paths to the figures used in the visual display page.
 
-    @param support_pages_dir :: directory containing the visual
-                                display pages
-    @param problem_name :: name of the problem
-    @param count :: number of times a problem with the same name was
-                    passed through this function, consecutively
+    :param support_pages_dir : directory containing the visual display pages
+    :type support_pages_dir : str
+    :param problem_name : name of the problem
+    :type problem_name : str
+    :param count : number of times a problem with the same name was
+                   passed through this function, consecutively
+    :type count : int
 
-    @returns :: the paths to the required figures
+    :return : the paths to the required figures
+    :rtype : tuple(str, str, str)
     """
 
     figures_dir = os.path.join(support_pages_dir, "figures")
