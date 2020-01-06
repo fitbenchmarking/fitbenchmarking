@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<style>
+body,h1,h2,h3,h4,h5 {ofnt-family: "Raleway", sans-serif}
+table {
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+</style>
+
+<html>
+<head>
+    <title>Fitbenchmarking results</title>
+</head>
+<body>
+    <section class="row">
+        <header class="large-12 columns">
+            <h1>Fitbenchmarking results</h1>
+            <hr>
+        </header>
+    </section>
+    FitBenchmarking is a tool for comparing different minimizers/fitting software based on their accuracy and runtimes.
+    {% if acc %}
+        <header class="large-12 columns">
+            <h2>Accuracy results</h2>
+        </header>
+      The accuracy results are calculated from the final chi squared value.
+      <h3> <button class="btn default" type="button">Table</button> </h3>
+    {% endif %}
+
+    {% if runtime %}
+      <header class="large-12 columns">
+          <h2>Runtime results</h2>
+      </header>
+      The runtime results are calculated using the timeit module in python
+      <h3> <button class="btn default" type="button">Table</button> </h3>
+    {% endif %}
+
+    {% if compare %}
+      <header class="large-12 columns">
+          <h2>Combine accuracy and runtime results</h2>
+      </header>
+      The combined results show the accurary in the first line of the cell and the runtime on the second line of the cell.
+      <h3> <button class="btn default" type="button">Table</button> </h3>
+    {% endif %}
+</body>
+</html>
