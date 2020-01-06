@@ -10,6 +10,7 @@ import logging
 import os
 import pandas as pd
 import pypandoc
+import webbrowser
 
 from fitbenchmarking.resproc import visual_pages
 from fitbenchmarking.utils import create_dirs
@@ -252,3 +253,4 @@ def create_top_level_index(options, table_names):
             rlink=table_names[1] + 'html',
             compare="compare" in options.table_type,
             clink=table_names[2] + 'html'))
+    webbrowser.open_new(output_file)
