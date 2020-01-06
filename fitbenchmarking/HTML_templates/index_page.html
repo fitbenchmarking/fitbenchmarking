@@ -32,7 +32,11 @@ table, th, td {
             <h2>Accuracy results</h2>
         </header>
       The accuracy results are calculated from the final chi squared value.
-      <h3> <button class="btn default" type="button">Table</button> </h3>
+      <h3>
+        <form>
+          <button class="btn default" type="submit" formaction={{ alink }}>Table</button>
+        </form>
+      </h3>
     {% endif %}
 
     {% if runtime %}
@@ -40,15 +44,22 @@ table, th, td {
           <h2>Runtime results</h2>
       </header>
       The runtime results are calculated using the timeit module in python
-      <h3> <button class="btn default" type="button">Table</button> </h3>
-    {% endif %}
+      <h3>
+        <form>
+          <button class="btn default" type="submit" formaction={{ rlink }}>Table</button>
+        </form>
+      </h3>    {% endif %}
 
     {% if compare %}
       <header class="large-12 columns">
           <h2>Combine accuracy and runtime results</h2>
       </header>
       The combined results show the accurary in the first line of the cell and the runtime on the second line of the cell.
-      <h3> <button class="btn default" type="button">Table</button> </h3>
+      <h3>
+        <form>
+          <button class="btn default" type="submit" formaction={{ clink }}>Table</button>
+        </form>
+      </h3>
     {% endif %}
 </body>
 </html>

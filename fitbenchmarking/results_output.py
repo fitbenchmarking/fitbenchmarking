@@ -5,6 +5,7 @@ Functions that creates the tables and the visual display pages.
 from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
 import copy
+from jinja2 import Environment, FileSystemLoader
 import logging
 import os
 import pandas as pd
@@ -52,7 +53,7 @@ def save_results_tables(options, results, group_name):
     generate_tables(results, minimizers,
                     linked_problems, table_names,
                     options.table_type)
-
+    create_top_level_index(options, table_names)
     logging.shutdown()
 
 
@@ -216,3 +217,38 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
                 f.write(output)
         except ImportError:
             print('RST tables require Pandoc to be installed')
+
+
+def create_top_level_index(options, table_names):
+    """
+    Generates top level index page.
+
+    :param options : The options used in the fitting problem and plotting
+    :type options : fitbenchmarking.utils.options.Options
+    :param table_names : list of table names
+    :type table_names : list
+    """
+    root = os.path.dirname(os.path.abspath(__file__))
+    env = Environment(loader=FileSystemLoader(
+        table_names[0].rsplit('/', 1)[0]))
+
+    template_html = '{}/HTML_templates/index_page.html'.format(root)
+    style_html = '{}/HTML_templates/style_sheet.html'.format(root)
+
+    output_file = "{}/top_level_index.html".format(
+        table_names[0].rsplit('/', 1)[0])
+
+    with open(output_file, 'wb') as newf:
+        for filename in [style_html, template_html]:
+            with open(filename, 'rb') as hf:
+                newf.write(hf.read())
+
+    template = env.get_template("top_level_index.html")
+    with open(output_file, 'w') as fh:
+        fh.write(template.render(
+            acc="acc" in options.table_type,
+            alink=table_names[0] + 'html',
+            runtime="runtime" in options.table_type,
+            rlink=table_names[1] + 'html',
+            compare="compare" in options.table_type,
+            clink=table_names[2] + 'html'))
