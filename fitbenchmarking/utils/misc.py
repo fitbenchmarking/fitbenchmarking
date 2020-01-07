@@ -27,7 +27,9 @@ def get_problem_files(data_dir):
         raise ValueError('"{}" not recognised as a dataset. '
                          'Check that it contains problem files '
                          'and try again.'.format(data_dir))
-    problems = [os.path.join(data_dir, data) for data in test_data]
+    problems = [os.path.join(data_dir, data)
+                for data in test_data
+                if not data.endswith('META.txt')]
     problems.sort()
     for problem in problems:
         logger.info(problem)
