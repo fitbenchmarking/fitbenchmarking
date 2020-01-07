@@ -115,8 +115,7 @@ def create_results_dict(results_per_test, linked_problems):
             count = 1
         prev_name = name
         prob_name = name + ' ' + str(count)
-        url = link.split('<')[1].split('>')[0]
-        html_links.append(template.format(url, prob_name))
+        html_links.append(template.format(link, prob_name))
         results[prob_name] = [result for result in prob_results]
     return results, html_links
 
