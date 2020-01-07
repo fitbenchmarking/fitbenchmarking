@@ -75,10 +75,17 @@ def create(prob_results, group_name, results_dir, count):
     prob_name = prob_name.replace(',', '')
     prob_name = prob_name.replace(' ', '_')
 
+<<<<<<< HEAD
     support_pages_dir, file_path = \
         get_filename_and_path(group_name, prob_name,
                               best_result, results_dir, count)
     fig_fit, fig_start = \
+=======
+    support_pages_dir, file_path, see_also_link = \
+        get_filename_and_path(group_name, prob_name,
+                              best_result, results_dir, count)
+    fig_data, fig_fit, fig_start = \
+>>>>>>> a170df0ab12310e82a31cca70d4d885c148a0a88
         get_figure_paths(support_pages_dir, prob_name, count)
 
     root = os.path.dirname(os.path.abspath(__file__))
