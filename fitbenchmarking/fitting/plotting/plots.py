@@ -27,8 +27,11 @@ def make_plots(problem, best_fit, count, group_results_dir):
     figures_dir = create_dirs.figures(group_results_dir)
 
     raw_data = get_data_points(problem)
-    make_data_plot(problem.name, raw_data, count, figures_dir)
-    make_best_fit_plot(problem.name, raw_data, best_fit, count, figures_dir)
+    make_best_fit_plot(name=problem.name,
+                       raw_data=raw_data,
+                       best_fit=best_fit,
+                       count=count,
+                       figures_dir=figures_dir)
     make_starting_guess_plot(raw_data=raw_data,
                              problem=problem,
                              count=count,
@@ -52,28 +55,6 @@ def get_data_points(problem):
     raw_data.linestyle = ''
 
     return raw_data
-
-
-def make_data_plot(name, raw_data, count, figures_dir):
-    """
-    Creates a scatter plot of the raw data.
-
-    @param name :: name of the problem related to the data
-    @param raw_data :: the raw data stored into an object
-    @param count :: number of times same name was passed through
-    @param figures_dir :: dir where figures are stored
-
-    @returns :: a figure of the raw data saved as a .png file
-    """
-
-    data_fig = plot()
-    data_fig.add_data(raw_data)
-    data_fig.labels['y'] = "Arbitrary units"
-    data_fig.labels['x'] = "Time ($\mu s$)"
-    data_fig.labels['title'] = name + " " + str(count)
-    data_fig.title_size = 10
-    data_fig.make_scatter_plot(figures_dir + os.sep + "Data Plot " + name +
-                               " " + str(count) + ".png")
 
 
 def make_best_fit_plot(name, raw_data, best_fit, count, figures_dir):
