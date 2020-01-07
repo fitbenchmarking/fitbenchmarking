@@ -203,14 +203,18 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             colour_output = 'background-color: {0}'.format(colour)
         return colour_output
 
+    root = os.path.dirname(os.path.abspath(__file__))
+    style_html = '{}/HTML_templates/style_sheet.html'.format(root)
+
     for name, title, table in zip(table_names.values(), table_title,
                                   table_dict.values()):
         table.index = html_links
         table_style = table.style.applymap(colour_highlight)\
             .set_caption(title)
         with open(name + 'html', "w") as f:
+            with open(style_html, 'rb') as hf:
+                f.write(hf.read())
             f.write(table_style.render())
-
         # pypandoc can be installed without pandoc
         try:
             output = pypandoc.convert_file(name + 'html', 'rst')
