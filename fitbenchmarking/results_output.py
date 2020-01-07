@@ -55,7 +55,7 @@ def save_results_tables(options, results, group_name):
     generate_tables(results, minimizers,
                     linked_problems, table_names,
                     options.table_type)
-    create_top_level_index(options, table_names)
+    create_top_level_index(options, table_names, group_name)
     logging.shutdown()
 
 
@@ -203,14 +203,18 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             colour_output = 'background-color: {0}'.format(colour)
         return colour_output
 
+    root = os.path.dirname(os.path.abspath(__file__))
+    style_html = '{}/HTML_templates/style_sheet.html'.format(root)
+
     for name, title, table in zip(table_names.values(), table_title,
                                   table_dict.values()):
         table.index = html_links
         table_style = table.style.applymap(colour_highlight)\
             .set_caption(title)
         with open(name + 'html', "w") as f:
+            with open(style_html, 'rb') as hf:
+                f.write(hf.read())
             f.write(table_style.render())
-
         # pypandoc can be installed without pandoc
         try:
             output = pypandoc.convert_file(name + 'html', 'rst')
@@ -220,7 +224,7 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             print('RST tables require Pandoc to be installed')
 
 
-def create_top_level_index(options, table_names):
+def create_top_level_index(options, table_names,group_name):
     """
     Generates top level index page.
 
@@ -228,6 +232,8 @@ def create_top_level_index(options, table_names):
     :type options : fitbenchmarking.utils.options.Options
     :param table_names : list of table names
     :type table_names : list
+    :param group_name : name of the problem group
+    :type group_name : str
     """
     root = os.path.dirname(os.path.abspath(__file__))
 
@@ -244,6 +250,7 @@ def create_top_level_index(options, table_names):
     template = env.get_template("top_level_index.html")
     with open(output_file, 'w') as fh:
         fh.write(template.render(
+            group_name=group_name,
             acc="acc" in options.table_type,
             alink=table_names['acc'] +
                 "html" if 'acc' in table_names else 0,
