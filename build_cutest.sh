@@ -2,20 +2,54 @@
 
 SCRIPTPATH=$PWD
 
+cd $HOME
 mkdir cutest
 cd cutest
 git clone https://github.com/ralna/ARCHDefs ./archdefs
 git clone https://github.com/ralna/SIFDecode ./sifdecode
 git clone https://github.com/ralna/CUTEst ./cutest
 
-cd $SCRIPTPATH/cutest
+cd $HOME/cutest
 
-export ARCHDEFS=/path/to/cutest/archdefs/
-export SIFDECODE=/path/to/cutest/sifdecode/
-export MASTSIF=/path/to/cutest/mastsif/
-export CUTEST=/path/to/cutest/cutest/
+export ARCHDEFS=$HOME/cutest/archdefs/
+export SIFDECODE=$HOME/cutest/sifdecode/
+export MASTSIF=$HOME/cutest/mastsif/
+export CUTEST=$HOME/cutest/cutest/
 export MYARCH="pc64.lnx.gfo"
 
-echo "N Y N 6 3 N 5 N 2 N Y Y D" | ${ARCHDEFS}/install_optrove
+# install sifdecode
+cd $SIFDECODE
+# 6 - 64 bit PC
+# 2 - linux
+# 5 - gfortran compiler
+printf "6\n2\n5\n" > sifdecode.input
+# n - modify compiler settings?
+# n - modify system commands?
+# y - compile the package
+printf "nny" >> sfidecode.input
+
+./install_sifdecode  < sifdecode.input
+
+# install cutest
+
+cd $CUTEST
+# 6 - 64 bit PC
+# 2 - linux
+# 5 - gfortran compiler
+# 2 - everything except matlab
+# 7 - generic gcc compiler
+printf "6\n2\n5\n2\n7\n" > cutest.input
+# n - modify compiler settings?
+# n - modify system commands?
+# y - compile package subset?
+# d - double precision
+# y - install single precision?
+printf "nnydn" >> cutest.input
+
+./install_cutest #< cutest.input
+
+
 
 cd $SCRIPTPATH
+
+
