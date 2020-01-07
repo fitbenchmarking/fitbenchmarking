@@ -105,7 +105,7 @@ def benchmark(controller, minimizers, options):
 
         controller.minimizer = minimizer
 
-        init_function_def = controller.problem.get_function_def(
+        init_function_params = controller.problem.get_function_params(
             params=controller.initial_params)
 
         try:
@@ -124,7 +124,7 @@ def benchmark(controller, minimizers, options):
 
         controller.cleanup()
 
-        fin_function_def = controller.problem.get_function_def(
+        fin_function_params = controller.problem.get_function_params(
             params=controller.final_params)
 
         if not controller.success:
@@ -157,17 +157,11 @@ def benchmark(controller, minimizers, options):
                                         sorted_index=index)
 
         problem = controller.problem
-        if 'fitFunction' in init_function_def:
-            init_function_def = init_function_def.replace(
-                'fitFunction', problem.equation)
-            fin_function_def = fin_function_def.replace(
-                'fitFunction', problem.equation)
-
         individual_result = fitbm_result.FittingResult(
             options=options, problem=problem, fit_status=status,
             chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
-            ini_function_def=init_function_def,
-            fin_function_def=fin_function_def)
+            ini_function_params=init_function_params,
+            fin_function_params=fin_function_params)
 
         results_problem.append(individual_result)
 

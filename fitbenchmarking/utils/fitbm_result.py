@@ -11,8 +11,8 @@ class FittingResult(object):
 
     def __init__(self, options=None, problem=None, fit_status=None,
                  chi_sq=None, fit_wks=None, params=None, errors=None,
-                 runtime=None, minimizer=None, ini_function_def=None,
-                 fin_function_def=None):
+                 runtime=None, minimizer=None, ini_function_params=None,
+                 fin_function_params=None):
         self.options = options
         self.problem = problem
         self.fit_status = fit_status
@@ -29,8 +29,8 @@ class FittingResult(object):
 
         # Best minimizer for a certain problem and its function definition
         self.minimizer = minimizer
-        self.ini_function_def = ini_function_def
-        self.fin_function_def = fin_function_def
+        self.ini_function_params = ini_function_params
+        self.fin_function_params = fin_function_params
 
         self.value = None
         self.norm_value = None

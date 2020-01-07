@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<style>
+body,h1,h2,h3,h4,h5 {ofnt-family: "Raleway", sans-serif}
+table {
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+</style>
+
+</head>
+<body>
+<div class="document" id="cubic">
+<h1 align="center" class="title">{{ title }}</h1>
+<div class="section" id="plot-of-the-initial-starting-guess">
+<h1>Plot of the initial starting guess</h1>
+<p><em>Functions</em>:</p>
+<table>
+<colgroup>
+<col width="45%" />
+<col width="55%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Form</th>
+<th class="head">Parameters</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>{{ equation }}</td>
+<td>{{ initial_guess }}</td>
+</tr>
+</tbody>
+</table>
+<div align="center" class="figure align-center">
+<img alt={{ initial_plot }} src={{ initial_plot }} />
+</div>
+</div>
+<div class="section" id="plot-of-the-solution-found">
+<h1>Plot of the solution found</h1>
+<p><em>Minimizer</em>: {{ best_minimiser }}</p>
+<p><em>Functions</em>:</p>
+<table>
+<colgroup>
+<col width="36%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Form</th>
+<th class="head">Parameters</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>{{ equation }}</td>
+<td>{{ min_params }}</td>
+</tr>
+</tbody>
+</table>
+<div align="center" class="figure align-center">
+<img alt={{ fitted_plot }} src={{ fitted_plot }} />
+</div>
+</div>
+</body>
+</html>

@@ -192,7 +192,7 @@ class FittingProblem:
                                  'starting values.')
         return self.eval_f(self.starting_values[param_set].values())
 
-    def get_function_def(self, params):
+    def get_function_params(self, params):
         """
         Return the function definition in a string format for output
 
@@ -208,8 +208,7 @@ class FittingProblem:
                                   params if params is not None else [])]
         param_string = ', '.join(params)
 
-        func_name = self.equation
-        return '{} | {}'.format(func_name, param_string)
+        return param_string
 
     def verify(self):
         """
