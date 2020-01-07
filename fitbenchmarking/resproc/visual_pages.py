@@ -75,10 +75,10 @@ def create(prob_results, group_name, results_dir, count):
     prob_name = prob_name.replace(',', '')
     prob_name = prob_name.replace(' ', '_')
 
-    support_pages_dir, file_path, see_also_link = \
-        setup_page_misc(group_name, prob_name,
-                        best_result, results_dir, count)
-    fig_data, fig_fit, fig_start = \
+    support_pages_dir, file_path = \
+        get_filename_and_path(group_name, prob_name,
+                              best_result, results_dir, count)
+    fig_fit, fig_start = \
         get_figure_paths(support_pages_dir, prob_name, count)
 
     root = os.path.dirname(os.path.abspath(__file__))
@@ -100,7 +100,8 @@ def create(prob_results, group_name, results_dir, count):
     return html_link
 
 
-def setup_page_misc(group_name, problem_name, res_obj, results_dir, count):
+def get_filename_and_path(group_name, problem_name, res_obj,
+                          results_dir, count):
     """
     Sets up some miscellaneous things for the visual display pages.
 
@@ -120,7 +121,7 @@ def setup_page_misc(group_name, problem_name, res_obj, results_dir, count):
               the file path to the visual display page that is
               currently being made the fit details table and the
               see also link
-    :rtype : tuple(str, str, str)
+    :rtype : tuple(str, str)
     """
 
     # Group specific path and other misc stuff
@@ -128,16 +129,11 @@ def setup_page_misc(group_name, problem_name, res_obj, results_dir, count):
     support_pages_dir = os.path.join(results_dir, group_name, "support_pages")
     if not os.path.exists(support_pages_dir):
         os.makedirs(support_pages_dir)
-    see_also_link = ''
-    if 'nist' in group_name.lower():
-        link = ("`{0} <http://www.itl.nist.gov/div898/strd/nls/data"
-                "/{1}.shtml>`__".format(problem_name, problem_name.lower()))
-        see_also_link = 'See also:\n ' + link + '\n on NIST website\n\n'
 
     file_name = (group_name + '_' + problem_name + '_' + str(count)).lower()
     file_path = os.path.join(support_pages_dir, file_name)
 
-    return support_pages_dir, file_path, see_also_link
+    return support_pages_dir, file_path
 
 
 def get_figure_paths(support_pages_dir, problem_name, count):
@@ -153,12 +149,10 @@ def get_figure_paths(support_pages_dir, problem_name, count):
     :type count : int
 
     :return : the paths to the required figures
-    :rtype : tuple(str, str, str)
+    :rtype : tuple(str, str)
     """
 
     figures_dir = os.path.join(support_pages_dir, "figures")
-    figure_data = os.path.join(figures_dir, "Data_Plot_" + problem_name +
-                               "_" + str(count) + ".png")
     figure_fits = os.path.join(figures_dir, "Fit_for_" + problem_name +
                                "_" + str(count) + ".png")
     figure_strt = os.path.join(figures_dir, "start_for_" + problem_name +
@@ -166,8 +160,7 @@ def get_figure_paths(support_pages_dir, problem_name, count):
 
     # If OS is Windows, then need to add prefix 'file:///'
     if os.name == 'nt':
-        figure_data = 'file:///' + figure_data
         figure_fits = 'file:///' + figure_fits
         figure_strt = 'file:///' + figure_strt
 
-    return figure_data, figure_fits, figure_strt
+    return figure_fits, figure_strt
