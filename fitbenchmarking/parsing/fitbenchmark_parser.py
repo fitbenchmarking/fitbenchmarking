@@ -5,9 +5,24 @@ This file implements a parser for the Fitbenchmark data format.
 from __future__ import (absolute_import, division, print_function)
 
 from collections import OrderedDict
-import mantid.simpleapi as msapi
+
+import_success = {}
+try:
+    import mantid.simpleapi as msapi
+    import_success['mantid'] = True
+except ImportError:
+    import_success['mantid'] = False
+
 import numpy as np
 import os
+
+try:
+    from sasmodels.data import load_data, empty_data1D
+    from sasmodels.core import load_model
+    from sasmodels.bumps_model import Experiment, Model
+    import_success['sasview'] = True
+except ImportError:
+    import_success['sasview'] = False
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -29,35 +44,63 @@ class FitbenchmarkParser(Parser):
         """
         fitting_problem = FittingProblem()
 
-        self._entries = self._get_fitbenchmark_data_problem_entries()
+        self._entries = self._get_data_problem_entries()
+        software = self._entries['software'].lower()
+        if (software not in import_success) or (not import_success[software]):
+            raise ImportError('Could not import necessary modules for software'
+                              ' ({})'.format(software))
+
         self._parsed_func = self._parse_function()
 
+        # NAME
         fitting_problem.name = self._entries['name']
 
-        data_points = self._get_data_points()
+        # DATA
+        if software == 'mantid':
+            data_points = self._get_mantid_data_points()
 
-        fitting_problem.data_x = data_points[:, 0]
-        fitting_problem.data_y = data_points[:, 1]
-        if data_points.shape[1] > 2:
-            fitting_problem.data_e = data_points[:, 2]
+            fitting_problem.data_x = data_points[:, 0]
+            fitting_problem.data_y = data_points[:, 1]
+            if data_points.shape[1] > 2:
+                fitting_problem.data_e = data_points[:, 2]
+        elif software == 'sasview':
+            data_file_path = self._get_data_file()
+            data_obj = load_data(data_file_path)
 
-        # String containing the function name(s) and the starting parameter
-        # values for each function
-        self._mantid_equation = self._entries['function']
+            fitting_problem.data_x = data_obj.x
+            fitting_problem.data_y = data_obj.y
 
-        fitting_problem.function = self._fitbenchmark_func_definition()
+        # FUNCTION
+        if software == 'mantid':
+            fitting_problem.function = self._create_mantid_function()
+        elif software == 'sasview':
+            fitting_problem.function = self._create_sasview_function()
 
-        # Print number of equations until better way of doing this is looked at
+        # EQUATION
         equation_count = len(self._parsed_func)
-        fitting_problem.equation = '{} Functions'.format(equation_count)
+        if equation_count == 1:
+            fitting_problem.equation = self._parsed_func[0]['name']
+        else:
+            fitting_problem.equation = '{} Functions'.format(equation_count)
 
+        if software == 'mantid':
+            # String containing the function name(s) and the starting parameter
+            # values for each function
+            fitting_problem._mantid_equation = self._entries['function']
+
+        # STARTING VALUES
         fitting_problem.starting_values = self._get_starting_values()
 
-        # start and end values in x range
-        if 'fit_parameters' in self._entries:
-            start_x, end_x = self._get_x_range()
-            fitting_problem.start_x = start_x
-            fitting_problem.end_x = end_x
+        # PARAMETER RANGES
+        fitting_problem.value_ranges = self._parse_range('parameter_ranges')
+
+        # FIT RANGES
+        fit_ranges = self._parse_range('fit_ranges')
+        try:
+            fitting_problem.start_x = fit_ranges['x'][0]
+            fitting_problem.end_x = fit_ranges['x'][1]
+        except KeyError:
+            pass
 
         return fitting_problem
 
@@ -83,10 +126,9 @@ class FitbenchmarkParser(Parser):
 
         return data_file
 
-    def _get_fitbenchmark_data_problem_entries(self):
+    def _get_data_problem_entries(self):
         """
-        Get the problem entries from a fitbenchmark problem definition
-        file.
+        Get the problem entries from a problem definition file.
 
         :returns: The entries from the file with string values
         :rtype: dict
@@ -176,30 +218,6 @@ class FitbenchmarkParser(Parser):
 
         return function_def
 
-    def _get_data_points(self):
-        """
-        Get the data points of the problem from the data file.
-
-        :return: data points
-        :rtype: np.ndarray
-        """
-
-        data_file_path = self._get_data_file()
-
-        with open(data_file_path, 'r') as f:
-            data_text = f.readlines()
-
-        first_row = data_text[2].strip()
-        dim = len(first_row.split())
-        data_points = np.zeros((len(data_text)-2, dim))
-
-        for idx, line in enumerate(data_text[2:]):
-            point_text = line.split()
-            point = [float(val) for val in point_text]
-            data_points[idx, :] = point
-
-        return data_points
-
     def _get_starting_values(self):
         """
         Get the starting values for the problem
@@ -209,42 +227,69 @@ class FitbenchmarkParser(Parser):
         """
         ignore = ['name', 'BinWidth', 'ties', 'Formula']
 
+        name_template = '{1}' if len(self._parsed_func) == 1 else 'f{0}_{1}'
         starting_values = [
-            OrderedDict([('f{}_{}'.format(i, name), f[name])
+            OrderedDict([(name_template.format(i, name), val)
                          for i, f in enumerate(self._parsed_func)
-                         for name in f.keys()
+                         for name, val in f.items()
                          if name not in ignore])]
 
         return starting_values
 
-    def _get_x_range(self):
+    def _parse_range(self, key):
         """
-        Get the x ranges for the problem
+        Parse a range string for the problem into a dict
 
-        :returns: start_x and end_x
-        :rtype: float, float
+        :param key: The key in self._entries to parse
+        :type key: string
+
+        :return: The ranges in a dictionary with key as the var and value as a
+                 list with min and max
+                 e.g. {'x': [0, 10]}
+        :rtype: dict
         """
-        fit_params_str = self._entries['fit_parameters'].strip('{').strip('}')
-        fit_params = fit_params_str.split(',')
-        for f in fit_params:
-            name, val = f.split(':')
-            name = name.strip().strip('"').strip("'")
-            if name not in ['StartX', 'EndX']:
-                continue
+        if key not in self._entries:
+            return {}
 
-            try:
-                val = float(val.strip())
-            except ValueError:
-                raise ValueError('Could not parse fit_parameter: {}'.format(f))
-
-            if name == 'StartX':
-                start_x = val
+        output_ranges = {}
+        range_str = self._entries[key].strip('{').strip('}')
+        tmp_ranges = range_str.split(',')
+        ranges = []
+        cur_str = ''
+        for r in tmp_ranges:
+            cur_str += r
+            balanced = True
+            for lb, rb in ['[]', '{}', '()']:
+                if cur_str.count(lb) > cur_str.count(rb):
+                    balanced = False
+                elif cur_str.count(lb) < cur_str.count(rb):
+                    raise ValueError('Could not parse {}: {}'.format(key, r))
+            if balanced:
+                ranges.append(cur_str)
+                cur_str = ''
             else:
-                end_x = val
+                cur_str += ','
 
-        return start_x, end_x
+        for r in ranges:
+            name, val = r.split(':')
+            name = name.strip().strip('"').strip("'").lower()
 
-    def _fitbenchmark_func_definition(self):
+            # Strip off brackets and split on comma
+            val = val.strip(' ')[1:-1].split(',')
+            val = [v.strip() for v in val]
+            try:
+                pair = [float(val[0]), float(val[1])]
+            except ValueError:
+                raise ValueError('Could not parse {}: {}'.format(key, r))
+
+            if pair[0] >= pair[1]:
+                raise ValueError('Could not parse {}: {}'.format(key, r))
+
+            output_ranges[name] = pair
+
+        return output_ranges
+
+    def _create_mantid_function(self):
         """
         Processing the function in the FitBenchmark problem definition into a
         python callable.
@@ -273,3 +318,58 @@ class FitbenchmarkParser(Parser):
                 fit_function.tie(ties)
 
         return fit_function
+
+    def _create_sasview_function(self):
+        """
+        Creates callable function
+
+        :return: the model
+        :rtype: callable
+        """
+        equation = self._parsed_func[0]['name']
+        starting_values = self._get_starting_values()
+        value_ranges = self._parse_range('parameter_ranges')
+        param_names = starting_values[0].keys()
+
+        def fitFunction(x, *tmp_params):
+
+            model = load_model(equation)
+
+            data = empty_data1D(x)
+            param_dict = {name: value
+                          for name, value
+                          in zip(param_names, tmp_params)}
+
+            model_wrapper = Model(model, **param_dict)
+            if value_ranges is not None:
+                for name, values in value_ranges.items():
+                    model_wrapper.__dict__[name].range(values[0], values[1])
+            func_wrapper = Experiment(data=data, model=model_wrapper)
+
+            return func_wrapper.theory()
+
+        return fitFunction
+
+    def _get_mantid_data_points(self):
+        """
+        Get the data points of the problem from the mantid data file.
+
+        :return: data points
+        :rtype: np.ndarray
+        """
+
+        data_file_path = self._get_data_file()
+
+        with open(data_file_path, 'r') as f:
+            data_text = f.readlines()
+
+        first_row = data_text[2].strip()
+        dim = len(first_row.split())
+        data_points = np.zeros((len(data_text)-2, dim))
+
+        for idx, line in enumerate(data_text[2:]):
+            point_text = line.split()
+            point = [float(val) for val in point_text]
+            data_points[idx, :] = point
+
+        return data_points
