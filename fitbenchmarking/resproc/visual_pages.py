@@ -9,6 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 import os
 
 from fitbenchmarking.utils.logging_setup import logger
+from fitbenchmarking.utils.misc import combine_files
 
 
 def create_linked_probs(results_per_test, group_name, results_dir):
@@ -81,11 +82,16 @@ def create(prob_results, group_name, results_dir, count):
     fig_fit, fig_start = \
         get_figure_paths(support_pages_dir, prob_name, count)
 
+    html_dir = file_path.rsplit('/', 1)
     root = os.path.dirname(os.path.abspath(__file__))
-    env = Environment(loader=FileSystemLoader(root))
+    env = Environment(loader=FileSystemLoader(html_dir[0]))
 
-    template = env.get_template('results_template.html')
+    template_html = '{}/../HTML_templates/results_template.html'.format(root)
+    style_html = '{}/../HTML_templates/style_sheet.html'.format(root)
     html_link = "{0}.html".format(file_path)
+    combine_files(html_link, style_html, template_html)
+
+    template = env.get_template("{0}.html".format(html_dir[1]))
 
     with open(html_link, 'w') as fh:
         fh.write(template.render(

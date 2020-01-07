@@ -15,6 +15,7 @@ import webbrowser
 from fitbenchmarking.resproc import visual_pages
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.logging_setup import logger
+from fitbenchmarking.utils.misc import combine_files
 
 
 def save_results_tables(options, results, group_name):
@@ -44,13 +45,13 @@ def save_results_tables(options, results, group_name):
     linked_problems = \
         visual_pages.create_linked_probs(results, group_name, results_dir)
 
-    table_names = []
+    table_names = OrderedDict()
     for suffix in options.table_type:
-        table_names.append(os.path.join(tables_dir,
-                                        '{0}_{1}_{2}_table.'.format(
-                                            group_name,
-                                            suffix,
-                                            weighted_str)))
+        table_names[suffix] = os.path.join(tables_dir,
+                                           '{0}_{1}_{2}_table.'.format(
+                                               group_name,
+                                               suffix,
+                                               weighted_str))
     generate_tables(results, minimizers,
                     linked_problems, table_names,
                     options.table_type)
@@ -202,7 +203,7 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             colour_output = 'background-color: {0}'.format(colour)
         return colour_output
 
-    for name, title, table in zip(table_names, table_title,
+    for name, title, table in zip(table_names.values(), table_title,
                                   table_dict.values()):
         table.index = html_links
         table_style = table.style.applymap(colour_highlight)\
@@ -229,27 +230,27 @@ def create_top_level_index(options, table_names):
     :type table_names : list
     """
     root = os.path.dirname(os.path.abspath(__file__))
+
     env = Environment(loader=FileSystemLoader(
-        table_names[0].rsplit('/', 1)[0]))
+        table_names.values()[0].rsplit('/', 1)[0]))
 
     template_html = '{}/HTML_templates/index_page.html'.format(root)
     style_html = '{}/HTML_templates/style_sheet.html'.format(root)
-
     output_file = "{}/top_level_index.html".format(
-        table_names[0].rsplit('/', 1)[0])
+        table_names.values()[0].rsplit('/', 1)[0])
 
-    with open(output_file, 'wb') as newf:
-        for filename in [style_html, template_html]:
-            with open(filename, 'rb') as hf:
-                newf.write(hf.read())
+    combine_files(output_file, style_html, template_html)
 
     template = env.get_template("top_level_index.html")
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             acc="acc" in options.table_type,
-            alink=table_names[0] + 'html',
+            alink=table_names['acc'] +
+                "html" if 'acc' in table_names else 0,
             runtime="runtime" in options.table_type,
-            rlink=table_names[1] + 'html',
+            rlink=table_names['runtime'] +
+                "html" if 'runtime' in table_names else 0,
             compare="compare" in options.table_type,
-            clink=table_names[2] + 'html'))
+            clink=table_names['compare'] +
+                "html" if 'compare' in table_names else 0))
     webbrowser.open_new(output_file)
