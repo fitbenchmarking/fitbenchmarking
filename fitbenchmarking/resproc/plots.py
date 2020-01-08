@@ -4,6 +4,7 @@ Higher level functions that are used for plotting the best fit plot and a starti
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import os
 
 from fitbenchmarking.utils import create_dirs
 
@@ -49,6 +50,11 @@ class Plot(object):
 
         :param errors: boolean to say whether fit minimizer uses errors
         :type errors: bool
+        :param default_options: dictionary containing default plot options
+        :type default_options: dict
+        :param specific_options: dictionary containing specific plot options,
+                                 for example for the data plot
+        :type specific_options: dict
         :param x: x values to be plotted
         :type x: np.array
         :param y: y values to be plotted
@@ -58,15 +64,16 @@ class Plot(object):
             x = self.problem.data_x
         if y is None:
             y = self.problem.data_y
-        # print(default_options, specific_options)
-        default_options.update(specific_options)
+        temp_options = {}
+        temp_options.update(default_options)
+        temp_options.update(specific_options)
         if errors:
             # Plot with errors
             plt.errorbar(x, y, yerr=self.problem.data_e,
-                         **default_options)
+                         **temp_options)
         else:
-                # Plot without errors
-            plt.plot(x, y, **default_options)
+            # Plot without errors
+            plt.plot(x, y, **temp_options)
 
     def plot_initial_guess(self):
         """
@@ -81,8 +88,8 @@ class Plot(object):
                        self.ini_guess_plot_options,
                        y=self.problem.eval_f(ini_guess))
         self.format_plot()
-        file_name = "{0}/start_for_{1}_{2}.png".format(
-            self.figures_dir, self.problem.name, self.count)
+        file = "start_for_{0}_{1}.png".format(self.problem.name, self.count)
+        file_name = os.path.join(self.figures_dir, file)
         plt.savefig(file_name)
         plt.close()
 
@@ -90,9 +97,10 @@ class Plot(object):
         """
         Plots the best fit along with the data
 
-        :param best_fit: dictionary containing the 'name' and 'value' of
-                         the best fit as the keys
-        :type best_fit: dict
+        :param minimizer: name of the best fit minimizer
+        :type minimizer: str
+        :param params: fit parameters returned from the best fit minimizer
+        :type params: list
         """
 
         self.labels = [minimizer, "Data"]
@@ -103,7 +111,7 @@ class Plot(object):
                        self.best_fit_plot_options,
                        y=self.problem.eval_f(params))
         self.format_plot()
-        file_name = "{0}/Fit_for_{1}_{2}.png".format(
-            self.figures_dir, self.problem.name, self.count)
+        file = "Fit_for_{0}_{1}.png".format(self.problem.name, self.count)
+        file_name = os.path.join(self.figures_dir, file)
         plt.savefig(file_name)
         plt.close()
