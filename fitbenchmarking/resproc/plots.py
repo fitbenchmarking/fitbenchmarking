@@ -46,6 +46,13 @@ class plot(object):
     def plot_data(self, errors, x=None, y=None):
         """
         Plots the data given
+
+        :param errors: boolean to say whether fit minimizer uses errors
+        :type errors: bool
+        :param x: x values to be plotted
+        :type x: np.array
+        :param y: y values to be plotted
+        :type y: np.array
         """
         if x is None:
             x = self.problem.data_x
@@ -89,7 +96,12 @@ class plot(object):
     def plot_best_fit(self, best_fit):
         """
         Plots the best fit along with the data
+
+        :param best_fit: dictionary containing the 'name' and 'value' of
+                         the best fit as the keys
+        :type best_fit: dict
         """
+
         self.default_plot_options()
         self.labels = [best_fit['name'], "Data"]
         self.plot_data(self.options.use_errors)
