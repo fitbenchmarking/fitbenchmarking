@@ -114,6 +114,7 @@ def benchmark(controller, minimizers, options):
                 timeit.Timer(setup=controller.prepare,
                              stmt=controller.fit).repeat(num_runs, 1)
             runtime = sum(runtime_list) / num_runs
+            controller.success = True
 
         # Catching all exceptions as this means runtime cannot be calculated
         # pylint: disable=broad-except
@@ -129,7 +130,6 @@ def benchmark(controller, minimizers, options):
 
         if not controller.success:
             chi_sq = np.inf
-            status = 'failed'
         else:
             ratio = np.max(runtime_list) / np.min(runtime_list)
             tol = 4
@@ -142,7 +142,6 @@ def benchmark(controller, minimizers, options):
                                            x=controller.data_x,
                                            y=controller.data_y,
                                            e=controller.data_e)
-            status = 'success'
 
         if min_chi_sq is None:
             min_chi_sq = chi_sq + 1
@@ -158,7 +157,7 @@ def benchmark(controller, minimizers, options):
 
         problem = controller.problem
         individual_result = fitbm_result.FittingResult(
-            options=options, problem=problem, fit_status=status,
+            options=options, problem=problem, fit_status=controller.success,
             chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
             ini_function_params=init_function_params,
             fin_function_params=fin_function_params)
