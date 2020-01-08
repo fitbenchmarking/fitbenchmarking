@@ -8,8 +8,10 @@ import numpy as np
 from jinja2 import Environment, FileSystemLoader
 import os
 
+from fitbenchmarking.resproc import plots
 
-def create_linked_probs(results_per_test, group_name, results_dir):
+
+def create_linked_probs(results_per_test, group_name, results_dir, options):
     """
     Creates the problem names with links to the visual display pages
     in rst.
@@ -20,7 +22,8 @@ def create_linked_probs(results_per_test, group_name, results_dir):
     :type group_name : str
     :param results_dir : directory in which the results are saved
     :type results_dir : str
-
+    :param options : The options used in the fitting problem and plotting
+    :type options : fitbenchmarking.utils.options.Options
 
     :return : array of the problem names with the links in rst
     :rtype : list[str]
@@ -38,13 +41,13 @@ def create_linked_probs(results_per_test, group_name, results_dir):
         else:
             count = 1
         prev_name = name
-        name = create(prob_results, group_name, results_dir, count)
+        name = create(prob_results, group_name, results_dir, count, options)
         linked_problems.append(name)
 
     return linked_problems
 
 
-def create(prob_results, group_name, results_dir, count):
+def create(prob_results, group_name, results_dir, count, options):
     """
     Creates a visual display page containing figures and other
     details about the best fit for a problem.
@@ -59,6 +62,8 @@ def create(prob_results, group_name, results_dir, count):
     :param count : number of times a problem with the same name was
                    passed through this function, consecutively
     :type count : int
+    :param options : The options used in the fitting problem and plotting
+    :type options : fitbenchmarking.utils.options.Options
 
     :return : link to the visual display page (file path)
     :rtype : str
@@ -72,6 +77,14 @@ def create(prob_results, group_name, results_dir, count):
     prob_name = best_result.problem.name
     prob_name = prob_name.replace(',', '')
     prob_name = prob_name.replace(' ', '_')
+    directory = os.path.join(results_dir, group_name)
+
+    plot = plots.Plot(problem=best_result.problem,
+                      options=options,
+                      count=count,
+                      group_results_dir=directory)
+    plot.plot_initial_guess()
+    plot.plot_best_fit(best_result.minimizer, best_result.params)
 
     support_pages_dir, file_path = \
         get_filename_and_path(group_name, prob_name,
