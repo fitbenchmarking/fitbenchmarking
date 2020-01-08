@@ -12,7 +12,7 @@ import pandas as pd
 import pypandoc
 import webbrowser
 
-from fitbenchmarking.resproc import visual_pages
+from fitbenchmarking.plotting import visual_pages
 from fitbenchmarking.utils import create_dirs
 
 
