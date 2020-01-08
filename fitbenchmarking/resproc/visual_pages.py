@@ -78,7 +78,7 @@ def create(prob_results, group_name, results_dir, count, options):
     prob_name = best_result.problem.name
     prob_name = prob_name.replace(',', '')
     prob_name = prob_name.replace(' ', '_')
-    directory = "{}/{}".format(results_dir, group_name)
+    directory = os.path.join(results_dir, group_name)
 
     plot = plots.plot(problem=best_result.problem,
                       options=options,
