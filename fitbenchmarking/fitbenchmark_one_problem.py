@@ -85,12 +85,10 @@ def benchmark(controller, minimizers, options):
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
 
-    :returns: tuple(results_problem, best_fit) nested array of
-              result objects, per minimizer and data object for
-              the best fit data
-    :rtype: (list of FittingResult, plot_helper.data instance)
+    :returns: results_problem nested array of result objects, per
+              minimizer
+    :rtype: list
     """
-    min_chi_sq, best_fit = None, None
     results_problem = []
     num_runs = options.num_runs
     for minimizer in minimizers:
