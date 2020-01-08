@@ -6,6 +6,13 @@ from __future__ import (absolute_import, division, print_function)
 
 from collections import OrderedDict
 
+import numpy as np
+import os
+
+from fitbenchmarking.parsing.base_parser import Parser
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.utils.logging_setup import logger
+
 import_success = {}
 try:
     import mantid.simpleapi as msapi
@@ -13,8 +20,6 @@ try:
 except ImportError:
     import_success['mantid'] = False
 
-import numpy as np
-import os
 
 try:
     from sasmodels.data import load_data, empty_data1D
@@ -23,10 +28,6 @@ try:
     import_success['sasview'] = True
 except ImportError:
     import_success['sasview'] = False
-
-from fitbenchmarking.parsing.base_parser import Parser
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.utils.logging_setup import logger
 
 
 class FitbenchmarkParser(Parser):
@@ -92,7 +93,8 @@ class FitbenchmarkParser(Parser):
         fitting_problem.starting_values = self._get_starting_values()
 
         # PARAMETER RANGES
-        fitting_problem.value_ranges = self._parse_range('parameter_ranges')
+        vr = self._parse_range('parameter_ranges')
+        fitting_problem.value_ranges = vr if vr != {} else None
 
         # FIT RANGES
         fit_ranges = self._parse_range('fit_ranges')

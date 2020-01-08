@@ -1,6 +1,6 @@
 # Fitbenchmark Problem
-# A data set for testing fitbenchmark data
+software = 'Mantid'
 name = 'basic'
-input_file = 'basic.dat'
-function ='name=BackToBackExponential,I=0.0,A=1'
 description = 'This dataset has no real world application. It is used to test the parsing.'
+input_file = 'mantid_basic.dat'
+function ='name=BackToBackExponential,I=0.0,A=1'
