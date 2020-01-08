@@ -8,7 +8,6 @@ import numpy as np
 from jinja2 import Environment, FileSystemLoader
 import os
 
-from fitbenchmarking.utils.logging_setup import logger
 from fitbenchmarking.resproc import plots
 
 
@@ -96,13 +95,17 @@ def create(prob_results, group_name, results_dir, count, options):
     else:
         fig_fit = fig_start = "Plot_option_is_turned_off"
     root = os.path.dirname(os.path.abspath(__file__))
-    env = Environment(loader=FileSystemLoader(root))
-
-    template = env.get_template('results_template.html')
+    main_dir = os.path.dirname(root)
+    html_page_dir = os.path.join(main_dir, "HTML_templates")
+    env = Environment(loader=FileSystemLoader(html_page_dir))
+    style_css = os.path.join(main_dir, 'HTML_templates/style_sheet.css')
     html_link = "{0}.html".format(file_path)
+
+    template = env.get_template("results_template.html")
 
     with open(html_link, 'w') as fh:
         fh.write(template.render(
+            css_style_sheet=style_css,
             title=prob_name,
             equation=best_result.problem.equation,
             initial_guess=best_result.ini_function_params,
