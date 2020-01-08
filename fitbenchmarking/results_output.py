@@ -206,8 +206,14 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
         table.index = html_links
         table_style = table.style.applymap(colour_highlight)\
             .set_caption(title)
+        root = os.path.dirname(os.path.abspath(__file__))
+        style_css = os.path.join(root, 'HTML_templates/style_sheet.css')
+
+        style = '<link rel="stylesheet" type="text/css"  ' \
+            'href="{0}" />'.format(style_css)
         with open(name + 'html', "w") as f:
-            f.write(table_style.render())
+            f.write(style)
+            f.write(table_style.render(table_styles=style_css))
         # pypandoc can be installed without pandoc
         try:
             output = pypandoc.convert_file(name + 'html', 'rst')
@@ -231,8 +237,7 @@ def create_top_level_index(options, table_names, group_name):
     root = os.path.dirname(os.path.abspath(__file__))
     html_page_dir = os.path.join(root, "HTML_templates")
     env = Environment(loader=FileSystemLoader(html_page_dir))
-    style_css = os.path.join(root, '/HTML_templates/style_sheet.css')
-
+    style_css = os.path.join(root, 'HTML_templates/style_sheet.css')
     template = env.get_template("index_page.html")
 
     output_file = "{}/top_level_index.html".format(

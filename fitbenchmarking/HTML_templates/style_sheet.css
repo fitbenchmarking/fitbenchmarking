@@ -1,0 +1,21 @@
+body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+.btn {
+  border: black;
+  background-color: #75D0C7;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-block;
+}
+.default {
+  color: black;
+}
+.default:hover {
+  background: #e7e7e7;
+}
+table {
+  border-collapse: collapse;
+}
+table, th, td {
+  border: 1px solid black;
+}

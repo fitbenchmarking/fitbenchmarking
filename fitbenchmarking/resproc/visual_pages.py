@@ -96,7 +96,7 @@ def create(prob_results, group_name, results_dir, count, options):
     main_dir = os.path.dirname(root)
     html_page_dir = os.path.join(main_dir, "HTML_templates")
     env = Environment(loader=FileSystemLoader(html_page_dir))
-    style_css = os.path.join(main_dir, '/HTML_templates/style_sheet.css')
+    style_css = os.path.join(main_dir, 'HTML_templates/style_sheet.css')
     html_link = "{0}.html".format(file_path)
 
     template = env.get_template("results_template.html")
