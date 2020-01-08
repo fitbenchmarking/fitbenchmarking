@@ -16,8 +16,7 @@ from fitbenchmarking.utils import fitbm_result
 def fitbm_one_prob(problem, options, directory):
     """
     Sets up the controller for a particular problem and fits the models
-    provided in the problem object. The best fit, along with the data and a
-    starting guess is then plotted on a visual display page.
+    provided in the problem object.
 
     :param problem: a problem object containing information used in fitting
     :type problem: FittingProblem

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from fitbenchmarking.utils import create_dirs
 
 
-class plot(object):
+class Plot(object):
     """
     Class providing plotting functionality.
     """
@@ -20,17 +20,17 @@ class plot(object):
         self.group_results_dir = group_results_dir
         self.figures_dir = create_dirs.figures(group_results_dir)
 
-    def default_plot_options(self):
-        """
-        Defines defaults plot options for matplotlib
-        """
-        self.markers = "x"
-        self.colour = "k"
-        self.linestyle = '--'
-        self.z_order = 2
-        self.linewidth = 1.5
         self.legend_location = "upper left"
         self.title_size = 10
+        self.labels = None
+        self.default_plot_options = \
+            {"zorder": 2, "linewidth": 1.5}
+        self.data_plot_options = \
+            {"color": "black", "marker": "x", "linestyle": '--'}
+        self.ini_guess_plot_options = \
+            {"color": "red", "marker": "", "linestyle": '-'}
+        self.best_fit_plot_options = \
+            {"color": "lime", "marker": "", "linestyle": '-'}
 
     def format_plot(self):
         """
@@ -43,7 +43,7 @@ class plot(object):
         plt.legend(labels=self.labels, loc=self.legend_location)
         plt.tight_layout()
 
-    def plot_data(self, errors, x=None, y=None):
+    def plot_data(self, errors, default_options, specific_options, x=None, y=None):
         """
         Plots the data given
 
@@ -58,42 +58,35 @@ class plot(object):
             x = self.problem.data_x
         if y is None:
             y = self.problem.data_y
+        # print(default_options, specific_options)
+        default_options.update(specific_options)
         if errors:
             # Plot with errors
-            plt.errorbar(x, y,
-                         yerr=self.problem.data_e,
-                         marker=self.markers, color=self.colour,
-                         linestyle=self.linestyle, markersize=8,
-                         zorder=self.z_order, linewidth=self.linewidth)
+            plt.errorbar(x, y, yerr=self.problem.data_e,
+                         **default_options)
         else:
                 # Plot without errors
-            plt.plot(x, y,
-                     marker=self.markers, color=self.colour,
-                     linestyle=self.linestyle, markersize=8,
-                     zorder=self.z_order, linewidth=self.linewidth)
+            plt.plot(x, y, **default_options)
 
     def plot_initial_guess(self):
         """
         Plots the initial guess along with the data
         """
-        self.default_plot_options()
         self.labels = ["Starting Guess", "Data"]
-        self.plot_data(self.options.use_errors)
-
         ini_guess = self.problem.starting_values[self.count - 1].values()
-        self.colour = "red"
-        self.markers = ""
-        self.linestyle = '-'
-        self.linewidth = 2
-        y = self.problem.eval_f(ini_guess)
-        self.plot_data(False, y=y)
+        self.plot_data(self.options.use_errors,
+                       self.default_plot_options,
+                       self.data_plot_options)
+        self.plot_data(False, self.default_plot_options,
+                       self.ini_guess_plot_options,
+                       y=self.problem.eval_f(ini_guess))
         self.format_plot()
         file_name = "{0}/start_for_{1}_{2}.png".format(
             self.figures_dir, self.problem.name, self.count)
         plt.savefig(file_name)
         plt.close()
 
-    def plot_best_fit(self, best_fit):
+    def plot_best_fit(self, minimizer, params):
         """
         Plots the best fit along with the data
 
@@ -102,14 +95,13 @@ class plot(object):
         :type best_fit: dict
         """
 
-        self.default_plot_options()
-        self.labels = [best_fit['name'], "Data"]
-        self.plot_data(self.options.use_errors)
-        self.colour = "lime"
-        self.markers = ""
-        self.linestyle = '-'
-        self.linewidth = 2
-        self.plot_data(False, y=self.problem.eval_f(best_fit['value']))
+        self.labels = [minimizer, "Data"]
+        self.plot_data(self.options.use_errors,
+                       self.default_plot_options,
+                       self.data_plot_options)
+        self.plot_data(False, self.default_plot_options,
+                       self.best_fit_plot_options,
+                       y=self.problem.eval_f(params))
         self.format_plot()
         file_name = "{0}/Fit_for_{1}_{2}.png".format(
             self.figures_dir, self.problem.name, self.count)
