@@ -8,7 +8,7 @@ import numpy as np
 import timeit
 import warnings
 
-from fitbenchmarking.fitting.controllers.controller_factory \
+from fitbenchmarking.controllers.controller_factory \
     import ControllerFactory
 from fitbenchmarking.utils import fitbm_result
 

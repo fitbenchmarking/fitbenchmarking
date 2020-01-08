@@ -4,11 +4,11 @@ Set up and build the visual display pages for various types of problems.
 
 from __future__ import (absolute_import, division, print_function)
 
-import numpy as np
 from jinja2 import Environment, FileSystemLoader
+import numpy as np
 import os
 
-from fitbenchmarking.resproc import plots
+from fitbenchmarking.plotting import plots
 
 
 def create_linked_probs(results_per_test, group_name, results_dir, options):

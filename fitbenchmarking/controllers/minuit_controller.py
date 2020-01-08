@@ -7,7 +7,7 @@ http://iminuit.readthedocs.org
 from iminuit import Minuit
 import numpy as np
 
-from fitbenchmarking.fitting.controllers.base_controller import Controller
+from fitbenchmarking.controllers.base_controller import Controller
 
 
 class MinuitController(Controller):

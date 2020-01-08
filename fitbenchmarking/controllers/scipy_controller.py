@@ -4,7 +4,7 @@ Implements a controller for the scipy fitting software.
 
 from scipy.optimize import least_squares
 
-from fitbenchmarking.fitting.controllers.base_controller import Controller
+from fitbenchmarking.controllers.base_controller import Controller
 
 
 class ScipyController(Controller):

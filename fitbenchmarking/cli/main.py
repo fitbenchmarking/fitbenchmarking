@@ -11,8 +11,8 @@ import glob
 import os
 import sys
 
-from fitbenchmarking.fitting_benchmarking import fitbenchmark_group
-from fitbenchmarking.results_output import save_results_tables
+from fitbenchmarking.core.fitting_benchmarking import fitbenchmark_group
+from fitbenchmarking.core.results_output import save_results_tables
 from fitbenchmarking.utils.options import Options
 
 
