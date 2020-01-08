@@ -8,8 +8,6 @@ import numpy as np
 from jinja2 import Environment, FileSystemLoader
 import os
 
-from fitbenchmarking.utils.logging_setup import logger
-
 
 def create_linked_probs(results_per_test, group_name, results_dir):
     """

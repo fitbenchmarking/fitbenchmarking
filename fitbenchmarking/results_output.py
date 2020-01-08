@@ -14,7 +14,6 @@ import webbrowser
 
 from fitbenchmarking.resproc import visual_pages
 from fitbenchmarking.utils import create_dirs
-from fitbenchmarking.utils.logging_setup import logger
 
 
 def save_results_tables(options, results, group_name):
