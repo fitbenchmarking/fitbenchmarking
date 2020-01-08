@@ -15,7 +15,6 @@ import webbrowser
 from fitbenchmarking.resproc import visual_pages
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.logging_setup import logger
-from fitbenchmarking.utils.misc import combine_files
 
 
 def save_results_tables(options, results, group_name):
@@ -203,17 +202,12 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             colour_output = 'background-color: {0}'.format(colour)
         return colour_output
 
-    root = os.path.dirname(os.path.abspath(__file__))
-    style_html = '{}/HTML_templates/style_sheet.html'.format(root)
-
     for name, title, table in zip(table_names.values(), table_title,
                                   table_dict.values()):
         table.index = html_links
         table_style = table.style.applymap(colour_highlight)\
             .set_caption(title)
         with open(name + 'html', "w") as f:
-            with open(style_html, 'rb') as hf:
-                f.write(hf.read())
             f.write(table_style.render())
         # pypandoc can be installed without pandoc
         try:
@@ -224,7 +218,7 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             print('RST tables require Pandoc to be installed')
 
 
-def create_top_level_index(options, table_names,group_name):
+def create_top_level_index(options, table_names, group_name):
     """
     Generates top level index page.
 
@@ -236,20 +230,17 @@ def create_top_level_index(options, table_names,group_name):
     :type group_name : str
     """
     root = os.path.dirname(os.path.abspath(__file__))
+    html_page_dir = os.path.join(root, "HTML_templates")
+    env = Environment(loader=FileSystemLoader(html_page_dir))
+    style_css = os.path.join(root, '/HTML_templates/style_sheet.css')
 
-    env = Environment(loader=FileSystemLoader(
-        table_names.values()[0].rsplit('/', 1)[0]))
+    template = env.get_template("index_page.html")
 
-    template_html = '{}/HTML_templates/index_page.html'.format(root)
-    style_html = '{}/HTML_templates/style_sheet.html'.format(root)
     output_file = "{}/top_level_index.html".format(
         table_names.values()[0].rsplit('/', 1)[0])
-
-    combine_files(output_file, style_html, template_html)
-
-    template = env.get_template("top_level_index.html")
     with open(output_file, 'w') as fh:
         fh.write(template.render(
+            css_style_sheet=style_css,
             group_name=group_name,
             acc="acc" in options.table_type,
             alink=table_names['acc'] +

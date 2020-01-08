@@ -35,31 +35,3 @@ def get_problem_files(data_dir):
         logger.info(problem)
 
     return problems
-
-
-def combine_files(output_file, *files):
-    """
-    Creates a combined file, used in joining HTML style sheet to HTML templates
-
-    :param output_file : path to output file
-    :type output_file : str
-    :param files : paths to input files which will be joined together
-    :type files : tuple(str, str, ...)
-    """
-
-    if not isinstance(output_file, str):
-        raise TypeError("Path to output file is required to be a string.")
-
-    if len(files) < 1:
-        raise IndexError("Need to provide multiple input files to join, "
-                         "currently none are given.")
-    for filesnames in files:
-        if not isinstance(filesnames, str):
-            raise TypeError("Path to file is required to be a string")
-        elif not os.path.isfile(filesnames):
-            raise RuntimeError("File does not exist")
-
-    with open(output_file, 'wb') as newf:
-        for filename in files:
-            with open(filename, 'rb') as hf:
-                newf.write(hf.read())
