@@ -10,7 +10,6 @@ import warnings
 
 from fitbenchmarking.fitting.controllers.controller_factory \
     import ControllerFactory
-from fitbenchmarking.fitting.plotting import plot_helper, plots
 from fitbenchmarking.utils import fitbm_result
 
 
@@ -66,15 +65,9 @@ def fitbm_one_prob(problem, options, directory):
             problem.data_e = controller.data_e
 
             controller.parameter_set = i
-            problem_result, best_fit = benchmark(controller=controller,
-                                                 minimizers=minimizers,
-                                                 options=options)
-            if best_fit is not None:
-                # Make the plot of the best fit
-                plots.make_plots(problem=problem,
-                                 best_fit=best_fit,
-                                 count=i + 1,
-                                 group_results_dir=directory)
+            problem_result = benchmark(controller=controller,
+                                       minimizers=minimizers,
+                                       options=options)
 
             results[i][s] = problem_result
     return results
@@ -143,25 +136,14 @@ def benchmark(controller, minimizers, options):
                                            y=controller.data_y,
                                            e=controller.data_e)
 
-        if min_chi_sq is None:
-            min_chi_sq = chi_sq + 1
-
-        if chi_sq < min_chi_sq:
-            min_chi_sq = chi_sq
-            index = controller.sorted_index
-            best_fit = plot_helper.data(name=minimizer,
-                                        x=controller.data_x,
-                                        y=controller.results,
-                                        E=controller.data_e,
-                                        sorted_index=index)
-
         problem = controller.problem
         individual_result = fitbm_result.FittingResult(
             options=options, problem=problem, fit_status=controller.success,
             chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
+            params=controller.final_params,
             ini_function_params=init_function_params,
             fin_function_params=fin_function_params)
 
         results_problem.append(individual_result)
 
-    return results_problem, best_fit
+    return results_problem
