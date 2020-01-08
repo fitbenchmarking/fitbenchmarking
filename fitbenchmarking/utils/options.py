@@ -43,6 +43,7 @@ class Options(object):
         self.use_errors = fitting.getboolean('use_errors')
 
         plotting = config['PLOTTING']
+        self.make_plots = plotting.getboolean('make_plots')
         self.colour_scale = plotting.getlist('colour_scale')
         self.colour_scale = [(float(cs.split(',', 1)[0].strip()),
                               cs.split(',', 1)[1].strip())

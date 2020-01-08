@@ -80,19 +80,21 @@ def create(prob_results, group_name, results_dir, count, options):
     prob_name = prob_name.replace(' ', '_')
     directory = os.path.join(results_dir, group_name)
 
-    plot = plots.Plot(problem=best_result.problem,
-                      options=options,
-                      count=count,
-                      group_results_dir=directory)
-    plot.plot_initial_guess()
-    plot.plot_best_fit(best_result.minimizer, best_result.params)
-
     support_pages_dir, file_path = \
         get_filename_and_path(group_name, prob_name,
                               best_result, results_dir, count)
-    fig_fit, fig_start = \
-        get_figure_paths(support_pages_dir, prob_name, count)
+    if options.make_plots:
+        plot = plots.Plot(problem=best_result.problem,
+                          options=options,
+                          count=count,
+                          group_results_dir=directory)
+        plot.plot_initial_guess()
+        plot.plot_best_fit(best_result.minimizer, best_result.params)
 
+        fig_fit, fig_start = \
+            get_figure_paths(support_pages_dir, prob_name, count)
+    else:
+        fig_fit = fig_start = "Plot_option_is_turned_off"
     root = os.path.dirname(os.path.abspath(__file__))
     env = Environment(loader=FileSystemLoader(root))
 

@@ -31,6 +31,7 @@ class OptionsTests(unittest.TestCase):
                       bar
 
             [PLOTTING]
+            make_plots: no
             colour_scale: 17.1, b_string?
                           inf, final_string
             comparison_mode: abs
@@ -44,7 +45,8 @@ class OptionsTests(unittest.TestCase):
                 'FITTING': {'use_errors': False,
                             'num_runs': 2,
                             'software': ['foo', 'bar']},
-                'PLOTTING': {'colour_scale': [(17.1, 'b_string?'),
+                'PLOTTING': {'make_plots': False,
+                             'colour_scale': [(17.1, 'b_string?'),
                                               (float('inf'), 'final_string')],
                              'comparison_mode': 'abs',
                              'table_type': ['acc', 'runtime'],
@@ -73,6 +75,7 @@ class OptionsTests(unittest.TestCase):
         self.assertEqual(fitting_opts['software'], options.software)
 
         plotting_opts = self.options['PLOTTING']
+        self.assertEqual(plotting_opts['make_plots'], options.make_plots)
         self.assertEqual(plotting_opts['colour_scale'], options.colour_scale)
         self.assertEqual(plotting_opts['comparison_mode'],
                          options.comparison_mode)
