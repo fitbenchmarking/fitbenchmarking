@@ -98,9 +98,6 @@ def benchmark(controller, minimizers, options):
 
         controller.minimizer = minimizer
 
-        init_function_params = controller.problem.get_function_params(
-            params=controller.initial_params)
-
         try:
             # Calls timeit repeat with repeat = num_runs and number = 1
             runtime_list = \
@@ -118,6 +115,8 @@ def benchmark(controller, minimizers, options):
 
         controller.cleanup()
 
+        init_function_params = controller.problem.get_function_params(
+            params=controller.initial_params)
         fin_function_params = controller.problem.get_function_params(
             params=controller.final_params)
 
