@@ -31,13 +31,15 @@ before_install:
   - sudo apt-get install libgsl-dbg
 
   - sudo apt-get install pandoc
-
-install:
-  # Builds RALfit
+  
+    # Builds RALfit
   - ./build_ralfit.sh
 
   # Builds cutest
   - source build_cutest.sh
+
+
+install:
   
   - pip install -r requirements.txt
   - pip install .
