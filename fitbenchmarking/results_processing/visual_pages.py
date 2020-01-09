@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader
 import numpy as np
 import os
 
-from fitbenchmarking.plotting import plots
+from fitbenchmarking.results_processing import plots
 
 
 def create_linked_probs(results_per_test, group_name, results_dir, options):

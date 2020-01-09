@@ -14,7 +14,7 @@ import pypandoc
 import webbrowser
 
 import fitbenchmarking
-from fitbenchmarking.plotting import visual_pages
+from fitbenchmarking.results_processing import visual_pages
 from fitbenchmarking.utils import create_dirs
 
 
