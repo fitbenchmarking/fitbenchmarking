@@ -37,7 +37,7 @@ install:
   - ./build_ralfit.sh
 
   # Builds cutest
-  - ./build_cutest.sh
+  - source build_cutest.sh
   
   - pip install -r requirements.txt
   - pip install .
