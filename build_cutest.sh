@@ -26,7 +26,7 @@ printf "6\n2\n5\n" > sifdecode.input
 # n - modify compiler settings?
 # n - modify system commands?
 # y - compile the package
-printf "nny" >> sfidecode.input
+printf "nny" >> sifdecode.input
 
 ./install_sifdecode  < sifdecode.input
 
