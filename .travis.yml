@@ -49,7 +49,7 @@ env:
      # let's ensure the environment variables are set
     - ARCHDEFS=$HOME/cutest/archdefs/
     - SIFDECODE=$HOME/cutest/sifdecode/
-    - MASTSIF=$HOME/cutest/mastsif/
+    - MASTSIF=$HOME/cutest/cutest/sif/
     - CUTEST=$HOME/cutest/cutest/
     - MYARCH="pc64.lnx.gfo"	
 
