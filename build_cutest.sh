@@ -46,7 +46,7 @@ printf "6\n2\n5\n2\n7\n" > cutest.input
 # y - install single precision?
 printf "nnydn" >> cutest.input
 
-./install_cutest #< cutest.input
+./install_cutest < cutest.input
 
 
 
