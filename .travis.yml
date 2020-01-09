@@ -42,15 +42,13 @@ before_install:
   - source build_cutest.sh
     # to access cutest
   - export PATH="${SIFDECODE}/bin:${CUTEST}/bin:$PATH"
-
-
-env:
   # let's ensure the environment variables are set
-  - ARCHDEFS=$HOME/cutest/archdefs/
-  - SIFDECODE=$HOME/cutest/sifdecode/
-  - MASTSIF=$HOME/cutest/cutest/sif/
-  - CUTEST=$HOME/cutest/cutest/
-  - MYARCH="pc64.lnx.gfo"	
+  - export ARCHDEFS=$HOME/cutest/archdefs/
+  - export SIFDECODE=$HOME/cutest/sifdecode/
+  - export MASTSIF=$HOME/cutest/cutest/sif/
+  - export CUTEST=$HOME/cutest/cutest/
+  - export MYARCH="pc64.lnx.gfo"	
+
 
 install:
   
