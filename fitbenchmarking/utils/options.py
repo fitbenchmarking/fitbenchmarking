@@ -5,6 +5,7 @@ This file will handle all interaction with the options configuration file.
 import configparser
 
 import os
+import sys
 
 
 class Options(object):
@@ -24,6 +25,9 @@ class Options(object):
         :param file_name: The options file to load
         :type file_name: str
         """
+        template = "OPTIONS FAILED TO SET: trying to get {0} option with in " \
+                   "valid input.\nOption {0} takes {1} as inputs. Please " \
+                   "alter ini file to reflect this"
         self._results_dir = ''
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str})
@@ -43,7 +47,11 @@ class Options(object):
         self.use_errors = fitting.getboolean('use_errors')
 
         plotting = config['PLOTTING']
-        self.make_plots = plotting.getboolean('make_plots')
+        try:
+            self.make_plots = plotting.getboolean('make_plots')
+        except ValueError:
+            print(template.format('make_plots', "boolean"))
+            sys.exit()
         self.colour_scale = plotting.getlist('colour_scale')
         self.colour_scale = [(float(cs.split(',', 1)[0].strip()),
                               cs.split(',', 1)[1].strip())
