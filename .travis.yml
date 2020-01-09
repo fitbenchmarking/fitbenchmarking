@@ -34,9 +34,21 @@ before_install:
   
     # Builds RALfit
   - ./build_ralfit.sh
+    # To access RALfit
+  - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
 
-  # Builds cutest
+
+    # Builds cutest
   - source build_cutest.sh
+    # to access cutest
+  - export PATH="${SIFDECODE}/bin:${CUTEST}/bin:$PATH"
+    # let's re-export the environment variables
+  - export ARCHDEFS=$HOME/cutest/archdefs/
+  - export SIFDECODE=$HOME/cutest/sifdecode/
+  - export MASTSIF=$HOME/cutest/mastsif/
+  - export CUTEST=$HOME/cutest/cutest/
+  - export MYARCH="pc64.lnx.gfo"
+
 
 
 install:
@@ -44,11 +56,6 @@ install:
   - pip install -r requirements.txt
   - pip install .
   - python setup.py externals
-
-  # To access RALfit
-  - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
-  # To access CUTEST
-  - export PATH="${SIFDECODE}/bin:${CUTEST}/bin:$PATH"
   
 
 jobs:
