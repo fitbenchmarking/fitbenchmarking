@@ -7,7 +7,7 @@ from importlib import import_module
 from inspect import isclass, isabstract, getmembers
 import os
 
-from fitbenchmarking.fitting.controllers.base_controller import Controller
+from fitbenchmarking.controllers.base_controller import Controller
 
 
 class ControllerFactory:
