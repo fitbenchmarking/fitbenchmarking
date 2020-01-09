@@ -6,17 +6,70 @@ from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
 import copy
 from jinja2 import Environment, FileSystemLoader
-import logging
 import os
 import pandas as pd
 import pypandoc
 import webbrowser
 
-from fitbenchmarking.resproc import visual_pages
+from fitbenchmarking.resproc import plots, visual_pages
 from fitbenchmarking.utils import create_dirs
 
 
-def save_results_tables(options, results, group_name):
+def save_results(options, results, group_name):
+    """
+    Create all results files and store them.
+    Result files are plots, visual pages, tables, and index pages.
+
+    :param options : The options used in the fitting problem and plotting
+    :type options : fitbenchmarking.utils.options.Options
+    :param results : results nested array of objects
+    :type results : list[list[list]]
+    :param group_name : name of the problem group
+    :type group_name : str
+    """
+    _, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
+    create_plots(options, results, group_name, fig_dir)
+    linked_probs = visual_pages.create_visual_pages(options=options,
+                                                    results_per_test=results,
+                                                    group_name=group_name,
+                                                    support_pages_dir=supp_dir)
+    table_names = create_results_tables(options,
+                                        results,
+                                        group_name,
+                                        linked_probs,
+                                        group_dir)
+    create_top_level_index(options, table_names, group_name, group_dir)
+
+
+def create_directories(options, group_name):
+    results_dir = create_dirs.results(options.results_dir)
+    group_dir = create_dirs.group_results(results_dir, group_name)
+    support_dir = create_dirs.support_pages(group_dir)
+    figures_dir = create_dirs.figures(support_dir)
+    return results_dir, group_dir, support_dir, figures_dir
+
+
+def create_plots(options, results, group_name, figures_dir):
+    # TODO: figure out naming convention for all plots
+    #       make plotting reuse the same data graph
+    name_count = {}
+    for result in results:
+        name = result[0].problem.name
+        name_count[name] = 1 + name_count.get(name, 0)
+        count = name_count[name]
+
+        plot = plots.Plot(problem=result[0].problem,
+                          options=options,
+                          count=count,
+                          figures_dir=figures_dir)
+        plot.plot_initial_guess()
+
+        for r in result:
+            plot.plot_best_fit(r.minimizer, r.params)
+
+
+def create_results_tables(options, results, group_name, linked_problems,
+                          group_dir):
     """
     Saves the results of the fitting to html/rst tables.
 
@@ -26,26 +79,20 @@ def save_results_tables(options, results, group_name):
     :type results : list[list[list]]
     :param group_name : name of the problem group
     :type group_name : str
+
+    :return: filepaths to each table
+             e.g {'acc': <acc-table-filename>, 'runtime': ...}
+    :rtype: dict
     """
 
-    software = options.software
-    if not isinstance(software, list):
-        software = [software]
-    minimizers = [options.minimizers[s] for s in software]
+    minimizers = [options.minimizers[s] for s in options.software]
     minimizers = sum(minimizers, [])
 
-    results_dir = options.results_dir
-    use_errors = options.use_errors
-
-    weighted_str = 'weighted' if use_errors else 'unweighted'
-
-    tables_dir = create_dirs.restables_dir(results_dir, group_name)
-    linked_problems = visual_pages.create_linked_probs(
-        results, group_name, results_dir, options)
+    weighted_str = 'weighted' if options.use_errors else 'unweighted'
 
     table_names = OrderedDict()
     for suffix in options.table_type:
-        table_names[suffix] = os.path.join(tables_dir,
+        table_names[suffix] = os.path.join(group_dir,
                                            '{0}_{1}_{2}_table.'.format(
                                                group_name,
                                                suffix,
@@ -53,8 +100,7 @@ def save_results_tables(options, results, group_name):
     generate_tables(results, minimizers,
                     linked_problems, table_names,
                     options.table_type)
-    create_top_level_index(options, table_names, group_name)
-    logging.shutdown()
+    return table_names
 
 
 def generate_tables(results_per_test, minimizers,
@@ -223,7 +269,7 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             print('RST tables require Pandoc to be installed')
 
 
-def create_top_level_index(options, table_names, group_name):
+def create_top_level_index(options, table_names, group_name, group_dir):
     """
     Generates top level index page.
 
@@ -240,8 +286,7 @@ def create_top_level_index(options, table_names, group_name):
     style_css = os.path.join(root, 'HTML_templates/style_sheet.css')
     template = env.get_template("index_page.html")
 
-    output_file = "{}/top_level_index.html".format(
-        table_names.values()[0].rsplit('/', 1)[0])
+    output_file = os.path.join(group_dir, "top_level_index.html")
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,

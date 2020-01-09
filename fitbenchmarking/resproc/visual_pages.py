@@ -4,17 +4,15 @@ Set up and build the visual display pages for various types of problems.
 
 from __future__ import (absolute_import, division, print_function)
 
-import numpy as np
 from jinja2 import Environment, FileSystemLoader
+import numpy as np
 import os
 
-from fitbenchmarking.resproc import plots
 
-
-def create_linked_probs(results_per_test, group_name, results_dir, options):
+def create_visual_pages(results_per_test, group_name, support_pages_dir,
+                        options):
     """
-    Creates the problem names with links to the visual display pages
-    in rst.
+    Creates the visual display html pages.
 
     :param results_per_test : results object
     :type results_per_test : list[list[list]]
@@ -25,7 +23,7 @@ def create_linked_probs(results_per_test, group_name, results_dir, options):
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
 
-    :return : array of the problem names with the links in rst
+    :return : paths to created pages
     :rtype : list[str]
     """
 
@@ -41,13 +39,17 @@ def create_linked_probs(results_per_test, group_name, results_dir, options):
         else:
             count = 1
         prev_name = name
-        name = create(prob_results, group_name, results_dir, count, options)
+        name = create(prob_results,
+                      group_name,
+                      support_pages_dir,
+                      count,
+                      options)
         linked_problems.append(name)
 
     return linked_problems
 
 
-def create(prob_results, group_name, results_dir, count, options):
+def create(prob_results, group_name, support_pages_dir, count, options):
     """
     Creates a visual display page containing figures and other
     details about the best fit for a problem.
@@ -77,20 +79,13 @@ def create(prob_results, group_name, results_dir, count, options):
     prob_name = best_result.problem.name
     prob_name = prob_name.replace(',', '')
     prob_name = prob_name.replace(' ', '_')
-    directory = os.path.join(results_dir, group_name)
 
-    plot = plots.Plot(problem=best_result.problem,
-                      options=options,
-                      count=count,
-                      group_results_dir=directory)
-    plot.plot_initial_guess()
-    plot.plot_best_fit(best_result.minimizer, best_result.params)
+    file_name = (group_name + '_' + prob_name + '_' + str(count)).lower()
+    file_path = os.path.join(support_pages_dir, file_name)
 
-    support_pages_dir, file_path = \
-        get_filename_and_path(group_name, prob_name,
-                              best_result, results_dir, count)
-    fig_fit, fig_start = \
-        get_figure_paths(support_pages_dir, prob_name, count)
+    fig_fit, fig_start = get_figure_paths(support_pages_dir,
+                                          best_result,
+                                          count)
 
     root = os.path.dirname(os.path.abspath(__file__))
     main_dir = os.path.dirname(root)
@@ -115,43 +110,7 @@ def create(prob_results, group_name, results_dir, count, options):
     return html_link
 
 
-def get_filename_and_path(group_name, problem_name, res_obj,
-                          results_dir, count):
-    """
-    Sets up some miscellaneous things for the visual display pages.
-
-    :param group_name : name of the group containing the current problem
-    :type group_name : str
-    :param problem_name : name of the problem
-    :type problem_name : str
-    :param res_obj : best results object
-    :type res_obj : results object
-    :param results_dir : directory in which the results are saved
-    :type results_dir : str
-    :param count : number of times a problem with the same name was
-                   passed through this function, consecutively
-    :type count : int
-
-    :return : the directory in which the visual display pages go
-              the file path to the visual display page that is
-              currently being made the fit details table and the
-              see also link
-    :rtype : tuple(str, str)
-    """
-
-    # Group specific path and other misc stuff
-
-    support_pages_dir = os.path.join(results_dir, group_name, "support_pages")
-    if not os.path.exists(support_pages_dir):
-        os.makedirs(support_pages_dir)
-
-    file_name = (group_name + '_' + problem_name + '_' + str(count)).lower()
-    file_path = os.path.join(support_pages_dir, file_name)
-
-    return support_pages_dir, file_path
-
-
-def get_figure_paths(support_pages_dir, problem_name, count):
+def get_figure_paths(support_pages_dir, result, count):
     """
     Get the paths to the figures used in the visual display page.
 
@@ -166,12 +125,12 @@ def get_figure_paths(support_pages_dir, problem_name, count):
     :return : the paths to the required figures
     :rtype : tuple(str, str)
     """
-
+    problem_name = result.problem.name
     figures_dir = os.path.join(support_pages_dir, "figures")
-    figure_fits = os.path.join(figures_dir, "Fit_for_" + problem_name +
-                               "_" + str(count) + ".png")
-    figure_strt = os.path.join(figures_dir, "start_for_" + problem_name +
-                               "_" + str(count) + ".png")
+    figure_fits = os.path.join(
+        figures_dir, "fit_for_{}_{}.png".format(problem_name, count))
+    figure_strt = os.path.join(
+        figures_dir, "start_for_{}_{}.png".format(problem_name, count))
 
     # If OS is Windows, then need to add prefix 'file:///'
     if os.name == 'nt':

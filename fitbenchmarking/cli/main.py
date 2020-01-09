@@ -12,7 +12,7 @@ import os
 import sys
 
 from fitbenchmarking.fitting_benchmarking import fitbenchmark_group
-from fitbenchmarking.results_output import save_results_tables
+from fitbenchmarking.results_output import save_results
 from fitbenchmarking.utils.options import Options
 
 
@@ -88,9 +88,9 @@ def run(problem_sets, options_file=''):
 
         print('\nProducing output for the {} problem set\n'.format(label))
         # Display the runtime and accuracy results in a table
-        save_results_tables(group_name=label,
-                            results=results,
-                            options=options)
+        save_results(group_name=label,
+                     results=results,
+                     options=options)
 
         print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
 

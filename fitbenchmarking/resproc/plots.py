@@ -6,20 +6,17 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
 
-from fitbenchmarking.utils import create_dirs
-
 
 class Plot(object):
     """
     Class providing plotting functionality.
     """
 
-    def __init__(self, problem, options, count, group_results_dir):
+    def __init__(self, problem, options, count, figures_dir):
         self.problem = problem
         self.options = options
         self.count = count
-        self.group_results_dir = group_results_dir
-        self.figures_dir = create_dirs.figures(group_results_dir)
+        self.figures_dir = figures_dir
 
         self.legend_location = "upper left"
         self.title_size = 10
@@ -37,7 +34,7 @@ class Plot(object):
         """
         Performs post plot processing to annotate the plot correctly
         """
-        plt.xlabel("Time ($\mu s$)")
+        plt.xlabel(r"Time ($\mu s$)")
         plt.ylabel("Arbitrary units")
         plt.title(self.problem.name + " " + str(self.count),
                   fontsize=self.title_size)

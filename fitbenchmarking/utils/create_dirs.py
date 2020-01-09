@@ -28,48 +28,43 @@ def results(results_dir):
 
 def group_results(results_dir, group_name):
     """
-    Creates the group results folder into the main results directory.
-
-    @param results_dir :: path to the results directory, results dir
-                          name or None
-    @group_name :: name of the problem group that is currently
-                   being processed
-
-    @returns :: proper path to the group results directory
-    """
-
-    group_results_dir = os.path.join(results_dir, group_name)
-    if os.path.exists(group_results_dir):
-        del_contents_of_dir(group_results_dir)
-    else:
-        os.makedirs(group_results_dir)
-
-    return group_results_dir
-
-
-def restables_dir(results_dir, group_name):
-    """
-    Creates the results directory where the tables are located.
-    e.g. fitbenchmarking/results/neutron/
+    Creates the results directory for a specific group.
+    e.g. fitbenchmarking/results/Neutron/
 
     @param results_dir :: directory that holds all the results
     @param group_name :: string containing the name of the problem group
 
-    @returns :: path to folder where the tables are stored
+    @returns :: path to folder group specific results dir
     """
 
     if isinstance(group_name, str):
-        tables_dir = os.path.join(results_dir, group_name)
+        group_dir = os.path.join(results_dir, group_name)
     else:
         raise TypeError('Type of variable group_name is required '
                         'to be a string, type(group_name) '
                         '= {}'.format(type(group_name)))
-    if not os.path.exists(tables_dir):
-        os.makedirs(tables_dir)
-    return tables_dir
+    if not os.path.exists(group_dir):
+        os.makedirs(group_dir)
+    return group_dir
 
 
-def figures(group_results_dir):
+def support_pages(group_results_dir):
+    """
+    Creates the support_pages directory in the group results directory.
+
+    @param group_results_dir :: path to the group results directory
+
+    @returns :: path to the figures directory
+    """
+    support_pages_dir = \
+        os.path.join(group_results_dir, "support_pages")
+    if not os.path.exists(support_pages_dir):
+        os.makedirs(support_pages_dir)
+
+    return support_pages_dir
+
+
+def figures(support_pages_dir):
     """
     Creates the figures directory inside the support_pages directory.
 
@@ -77,11 +72,6 @@ def figures(group_results_dir):
 
     @returns :: path to the figures directory
     """
-
-    support_pages_dir = \
-        os.path.join(group_results_dir, "support_pages")
-    if not os.path.exists(support_pages_dir):
-        os.makedirs(support_pages_dir)
     figures_dir = os.path.join(support_pages_dir, "figures")
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
