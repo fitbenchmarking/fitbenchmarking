@@ -5,14 +5,15 @@ Functions that creates the tables and the visual display pages.
 from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
 import copy
+from jinja2 import Environment, FileSystemLoader
 import logging
 import os
 import pandas as pd
 import pypandoc
+import webbrowser
 
 from fitbenchmarking.resproc import visual_pages
 from fitbenchmarking.utils import create_dirs
-from fitbenchmarking.utils.logging_setup import logger
 
 
 def save_results_tables(options, results, group_name):
@@ -39,20 +40,20 @@ def save_results_tables(options, results, group_name):
     weighted_str = 'weighted' if use_errors else 'unweighted'
 
     tables_dir = create_dirs.restables_dir(results_dir, group_name)
-    linked_problems = \
-        visual_pages.create_linked_probs(results, group_name, results_dir)
+    linked_problems = visual_pages.create_linked_probs(
+        results, group_name, results_dir, options)
 
-    table_names = []
+    table_names = OrderedDict()
     for suffix in options.table_type:
-        table_names.append(os.path.join(tables_dir,
-                                        '{0}_{1}_{2}_table.'.format(
-                                            group_name,
-                                            suffix,
-                                            weighted_str)))
+        table_names[suffix] = os.path.join(tables_dir,
+                                           '{0}_{1}_{2}_table.'.format(
+                                               group_name,
+                                               suffix,
+                                               weighted_str))
     generate_tables(results, minimizers,
                     linked_problems, table_names,
                     options.table_type)
-
+    create_top_level_index(options, table_names, group_name)
     logging.shutdown()
 
 
@@ -200,14 +201,19 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             colour_output = 'background-color: {0}'.format(colour)
         return colour_output
 
-    for name, title, table in zip(table_names, table_title,
+    for name, title, table in zip(table_names.values(), table_title,
                                   table_dict.values()):
         table.index = html_links
         table_style = table.style.applymap(colour_highlight)\
             .set_caption(title)
-        with open(name + 'html', "w") as f:
-            f.write(table_style.render())
+        root = os.path.dirname(os.path.abspath(__file__))
+        style_css = os.path.join(root, 'HTML_templates/style_sheet.css')
 
+        style = '<link rel="stylesheet" type="text/css"  ' \
+            'href="{0}" />'.format(style_css)
+        with open(name + 'html', "w") as f:
+            f.write(style)
+            f.write(table_style.render(table_styles=style_css))
         # pypandoc can be installed without pandoc
         try:
             output = pypandoc.convert_file(name + 'html', 'rst')
@@ -215,3 +221,38 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
                 f.write(output)
         except ImportError:
             print('RST tables require Pandoc to be installed')
+
+
+def create_top_level_index(options, table_names, group_name):
+    """
+    Generates top level index page.
+
+    :param options : The options used in the fitting problem and plotting
+    :type options : fitbenchmarking.utils.options.Options
+    :param table_names : list of table names
+    :type table_names : list
+    :param group_name : name of the problem group
+    :type group_name : str
+    """
+    root = os.path.dirname(os.path.abspath(__file__))
+    html_page_dir = os.path.join(root, "HTML_templates")
+    env = Environment(loader=FileSystemLoader(html_page_dir))
+    style_css = os.path.join(root, 'HTML_templates/style_sheet.css')
+    template = env.get_template("index_page.html")
+
+    output_file = "{}/top_level_index.html".format(
+        table_names.values()[0].rsplit('/', 1)[0])
+    with open(output_file, 'w') as fh:
+        fh.write(template.render(
+            css_style_sheet=style_css,
+            group_name=group_name,
+            acc="acc" in options.table_type,
+            alink=table_names['acc'] +
+                "html" if 'acc' in table_names else 0,
+            runtime="runtime" in options.table_type,
+            rlink=table_names['runtime'] +
+                "html" if 'runtime' in table_names else 0,
+            compare="compare" in options.table_type,
+            clink=table_names['compare'] +
+                "html" if 'compare' in table_names else 0))
+    webbrowser.open_new(output_file)
