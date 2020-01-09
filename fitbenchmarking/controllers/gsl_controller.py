@@ -11,7 +11,7 @@ from pygsl import _numobj as numx
 
 from scipy.optimize._numdiff import approx_derivative
 
-from fitbenchmarking.fitting.controllers.base_controller import Controller
+from fitbenchmarking.controllers.base_controller import Controller
 
 
 class GSLController(Controller):

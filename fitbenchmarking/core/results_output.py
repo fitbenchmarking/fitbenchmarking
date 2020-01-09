@@ -5,6 +5,7 @@ Functions that creates the tables and the visual display pages.
 from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
 import copy
+import inspect
 from jinja2 import Environment, FileSystemLoader
 import logging
 import os
@@ -12,7 +13,8 @@ import pandas as pd
 import pypandoc
 import webbrowser
 
-from fitbenchmarking.resproc import visual_pages
+import fitbenchmarking
+from fitbenchmarking.results_processing import visual_pages
 from fitbenchmarking.utils import create_dirs
 
 
@@ -234,14 +236,14 @@ def create_top_level_index(options, table_names, group_name):
     :param group_name : name of the problem group
     :type group_name : str
     """
-    root = os.path.dirname(os.path.abspath(__file__))
-    html_page_dir = os.path.join(root, "HTML_templates")
+    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    html_page_dir = os.path.join(root, 'HTML_templates')
     env = Environment(loader=FileSystemLoader(html_page_dir))
-    style_css = os.path.join(root, 'HTML_templates/style_sheet.css')
+    style_css = os.path.join(html_page_dir, 'style_sheet.css')
     template = env.get_template("index_page.html")
 
-    output_file = "{}/top_level_index.html".format(
-        table_names.values()[0].rsplit('/', 1)[0])
+    output_file = os.path.join(os.path.dirname(table_names.values()[0]),
+                               'top_level_index.html')
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,
