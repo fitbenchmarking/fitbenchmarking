@@ -93,7 +93,8 @@ def create(prob_results, group_name, results_dir, count, options):
         fig_fit, fig_start = \
             get_figure_paths(support_pages_dir, prob_name, count)
     else:
-        fig_fit = fig_start = "Plot_option_is_turned_off"
+        fig_fit = fig_start = "Re-run with make_plots set to yes in the " \
+                              "ini file to generate plots"
     root = os.path.dirname(os.path.abspath(__file__))
     main_dir = os.path.dirname(root)
     html_page_dir = os.path.join(main_dir, "HTML_templates")
@@ -108,6 +109,7 @@ def create(prob_results, group_name, results_dir, count, options):
             css_style_sheet=style_css,
             title=prob_name,
             equation=best_result.problem.equation,
+            make_plots=options.make_plots,
             initial_guess=best_result.ini_function_params,
             best_minimiser=best_result.minimizer,
             initial_plot=fig_start,
