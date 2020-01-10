@@ -4,24 +4,15 @@ import os
 from unittest import TestCase
 
 from fitbenchmarking import mock_problems
-from fitbenchmarking.fitting.controllers.base_controller import \
-    Controller
-from fitbenchmarking.fitting.controllers.controller_factory import \
-    ControllerFactory
-from fitbenchmarking.fitting.controllers.dfogn_controller import \
-    DFOGNController
-from fitbenchmarking.fitting.controllers.gsl_controller import \
-    GSLController
-from fitbenchmarking.fitting.controllers.mantid_controller import \
-    MantidController
-from fitbenchmarking.fitting.controllers.minuit_controller import \
-    MinuitController
-from fitbenchmarking.fitting.controllers.ralfit_controller import \
-    RALFitController
-from fitbenchmarking.fitting.controllers.sasview_controller import \
-    SasviewController
-from fitbenchmarking.fitting.controllers.scipy_controller import \
-    ScipyController
+from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.controllers.controller_factory import ControllerFactory
+from fitbenchmarking.controllers.dfogn_controller import DFOGNController
+from fitbenchmarking.controllers.gsl_controller import GSLController
+from fitbenchmarking.controllers.mantid_controller import MantidController
+from fitbenchmarking.controllers.minuit_controller import MinuitController
+from fitbenchmarking.controllers.ralfit_controller import RALFitController
+from fitbenchmarking.controllers.sasview_controller import SasviewController
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 
