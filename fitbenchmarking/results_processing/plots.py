@@ -24,24 +24,35 @@ class Plot(object):
         self.default_plot_options = \
             {"zorder": 2, "linewidth": 1.5}
         self.data_plot_options = \
-            {"color": "black", "marker": "x", "linestyle": '--'}
+            {"color": "black", "marker": "x", "linestyle": ''}
         self.ini_guess_plot_options = \
             {"color": "red", "marker": "", "linestyle": '-'}
         self.best_fit_plot_options = \
             {"color": "lime", "marker": "", "linestyle": '-'}
 
+        self.fig = plt.figure()
+        self.ax = self.fig.add_subplot(1, 1, 1)
+        self.line_plot = None
+        self.plot_data(self.options.use_errors,
+                       self.data_plot_options)
+        # reset line_plot as base data won't need updating
+        self.line_plot = None
+
+    def __del__(self):
+        plt.close(self.fig)
+
     def format_plot(self):
         """
         Performs post plot processing to annotate the plot correctly
         """
-        plt.xlabel(r"Time ($\mu s$)")
-        plt.ylabel("Arbitrary units")
-        plt.title(self.problem.name + " " + str(self.count),
-                  fontsize=self.title_size)
-        plt.legend(labels=self.labels, loc=self.legend_location)
-        plt.tight_layout()
+        self.ax.set_xlabel(r"Time ($\mu s$)")
+        self.ax.set_ylabel("Arbitrary units")
+        self.ax.set_title(self.problem.name + " " + str(self.count),
+                          fontsize=self.title_size)
+        self.ax.legend(labels=self.labels, loc=self.legend_location)
+        self.fig.set_tight_layout(True)
 
-    def plot_data(self, errors, default_options, specific_options, x=None, y=None):
+    def plot_data(self, errors, specific_options, x=None, y=None):
         """
         Plots the data given
 
@@ -62,37 +73,46 @@ class Plot(object):
         if y is None:
             y = self.problem.data_y
         temp_options = {}
-        temp_options.update(default_options)
+        temp_options.update(self.default_plot_options)
         temp_options.update(specific_options)
         if errors:
             # Plot with errors
-            plt.errorbar(x, y, yerr=self.problem.data_e,
-                         **temp_options)
+            self.ax.clear()
+            self.ax.errorbar(x, y, yerr=self.problem.data_e,
+                             **temp_options)
         else:
             # Plot without errors
-            plt.plot(x, y, **temp_options)
+            if self.line_plot is None:
+                self.line_plot = self.ax.plot(x, y, **temp_options)[0]
+            else:
+                # Update line instead of recreating
+                self.line_plot.set_data(x, y)
+                # Update style
+                for k, v in temp_options.items():
+                    try:
+                        getattr(self.line_plot, 'set_{}'.format(k))(v)
+                    except AttributeError:
+                        pass
+
+                self.fig.canvas.draw()
 
     def plot_initial_guess(self):
         """
         Plots the initial guess along with the data
         """
-        self.labels = ["Starting Guess", "Data"]
+        self.labels = ["Data", "Starting Guess"]
         ini_guess = self.problem.starting_values[self.count - 1].values()
-        self.plot_data(self.options.use_errors,
-                       self.default_plot_options,
-                       self.data_plot_options)
-        self.plot_data(False, self.default_plot_options,
+        self.plot_data(False,
                        self.ini_guess_plot_options,
                        y=self.problem.eval_f(ini_guess))
         self.format_plot()
         file = "start_for_{0}_{1}.png".format(self.problem.name, self.count)
         file_name = os.path.join(self.figures_dir, file)
-        plt.savefig(file_name)
-        plt.close()
+        self.fig.savefig(file_name)
 
-    def plot_best_fit(self, minimizer, params):
+    def plot_fit(self, minimizer, params):
         """
-        Plots the best fit along with the data
+        Plots the fit along with the data
 
         :param minimizer: name of the best fit minimizer
         :type minimizer: str
@@ -100,15 +120,12 @@ class Plot(object):
         :type params: list
         """
 
-        self.labels = [minimizer, "Data"]
-        self.plot_data(self.options.use_errors,
-                       self.default_plot_options,
-                       self.data_plot_options)
-        self.plot_data(False, self.default_plot_options,
+        self.labels = ["Data", minimizer]
+        self.plot_data(False,
                        self.best_fit_plot_options,
                        y=self.problem.eval_f(params))
         self.format_plot()
-        file = "Fit_for_{0}_{1}.png".format(self.problem.name, self.count)
+        file = "{}_fit_for_{}_{}.png".format(
+            minimizer, self.problem.name, self.count)
         file_name = os.path.join(self.figures_dir, file)
-        plt.savefig(file_name)
-        plt.close()
+        self.fig.savefig(file_name)

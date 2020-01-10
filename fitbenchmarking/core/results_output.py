@@ -10,7 +10,6 @@ from jinja2 import Environment, FileSystemLoader
 import os
 import pandas as pd
 import pypandoc
-import webbrowser
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import plots, visual_pages
@@ -25,11 +24,13 @@ def save_results(options, results, group_name):
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
     :param results : results nested array of objects
-    :type results : list[list[list]]
+    :type results : list of list of
+                    fitbenchmarking.utils.fitbm_result.FittingResult
     :param group_name : name of the problem group
     :type group_name : str
     """
-    _, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
+    results_dict, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
+    preproccess_data(results)
     create_plots(options, results, group_name, fig_dir)
     linked_probs = visual_pages.create_visual_pages(options=options,
                                                     results_per_test=results,
@@ -44,6 +45,17 @@ def save_results(options, results, group_name):
 
 
 def create_directories(options, group_name):
+    """
+    Create the directory structure ready to store the results
+    
+    :param options: The options used in the fitting problem and plotting
+    :type options: fitbenchmarking.utils.options.Options
+    :param group_name: name of the problem group
+    :type group_name: str
+    :return: paths to the top level results, group results, support pages,
+             and figures directories
+    :rtype: (str, str, str, str)
+    """
     results_dir = create_dirs.results(options.results_dir)
     group_dir = create_dirs.group_results(results_dir, group_name)
     support_dir = create_dirs.support_pages(group_dir)
@@ -51,9 +63,44 @@ def create_directories(options, group_name):
     return results_dir, group_dir, support_dir, figures_dir
 
 
+def preproccess_data(results_per_test):
+    """
+    Helper function that preprocesses data into the right format for printing
+    and finds the best result for each problem
+
+    :param results_per_test: results nested array of objects
+    :type results_per_test : list of list of
+                             fitbenchmarking.utils.fitbm_result.FittingResult
+
+    :return: 
+    """
+    output = []
+    for results in results_per_test:
+        best_result = min(results, key=lambda x: x.chi_sq)
+        min_chi_sq = best_result.chi_sq
+        min_runtime = min([r.runtime for r in results])
+        for r in results:
+            r.min_chi_sq = min_chi_sq
+            r.min_runtime = min_runtime
+            r.set_colour_scale()
+        output.append(best_result)
+    return output
+
+
 def create_plots(options, results, group_name, figures_dir):
-    # TODO: figure out naming convention for all plots
-    #       make plotting reuse the same data graph
+    """
+    Create a plot for each result and store in the figures directory
+
+    :param options: The options used in the fitting problem and plotting
+    :type options: fitbenchmarking.utils.options.Options
+    :param results: results nested array of objects
+    :type results : list of list of
+                    fitbenchmarking.utils.fitbm_result.FittingResult
+    :param group_name: name of he problem group
+    :type group_name: str
+    :param figures_dir: Path to directory to store the figures in
+    :type figures_dir: str
+    """
     name_count = {}
     for result in results:
         name = result[0].problem.name
@@ -67,7 +114,7 @@ def create_plots(options, results, group_name, figures_dir):
         plot.plot_initial_guess()
 
         for r in result:
-            plot.plot_best_fit(r.minimizer, r.params)
+            plot.plot_fit(r.minimizer, r.params)
 
 
 def create_results_tables(options, results, group_name, linked_problems,
@@ -78,9 +125,15 @@ def create_results_tables(options, results, group_name, linked_problems,
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
     :param results : results nested array of objects
-    :type results : list[list[list]]
+    :type results : list of list of
+                    fitbenchmarking.utils.fitbm_result.FittingResult
     :param group_name : name of the problem group
     :type group_name : str
+    :param linked_problems : Paths to the support pages
+    :type linked_problems : list of str
+    :param group_dir : path to the directory where group results should be
+                       stored
+    :type group_dir : str
 
     :return: filepaths to each table
              e.g {'acc': <acc-table-filename>, 'runtime': ...}
@@ -105,18 +158,18 @@ def create_results_tables(options, results, group_name, linked_problems,
     return table_names
 
 
-def generate_tables(results_per_test, minimizers,
-                    linked_problems, table_names,
+def generate_tables(results_per_test, minimizers, linked_problems, table_names,
                     table_suffix):
     """
     Generates accuracy and runtime tables, with both normalised and absolute
     results, and summary tables in both rst and html.
 
     :param results_per_test : results nested array of objects
-    :type results_per_test : list[list[list]]
+    :type results_per_test : list of list of
+                             fitbenchmarking.utils.fitbm_result.FittingResult
     :param minimizers : array with minimizer names
     :type minimizers : list
-    :param linked_problems : rst links for supporting pages
+    :param linked_problems : paths to supporting pages
     :type linked_problems : list[str]
     :param table_name : list of table names
     :type table_name : list
@@ -127,7 +180,6 @@ def generate_tables(results_per_test, minimizers,
                     for name in table_suffix]
     results_dict, html_links = create_results_dict(results_per_test,
                                                    linked_problems)
-    preproccess_data(results_dict)
     table = create_pandas_dataframe(results_dict, minimizers, table_suffix)
     render_pandas_dataframe(table, minimizers, html_links,
                             table_names, table_titles)
@@ -138,13 +190,14 @@ def create_results_dict(results_per_test, linked_problems):
     Generates a dictionary used to create HTML and RST tables.
 
     :param results_per_test : results nested array of objects
-    :type results_per_test : list[list[list]]
-    :param linked_problems : rst links for supporting pages
+    :type results_per_test : list of list of
+                             fitbenchmarking.utils.fitbm_result.FittingResult
+    :param linked_problems : paths to supporting pages
     :type linked_problems : list[str]
 
     :return : tuple(results, html_links)
-               dictionary of results objects and
-               html links for rending
+              dictionary of results objects and
+              html links for rending
     :rtype : tuple(dict, list)
     """
 
@@ -165,22 +218,6 @@ def create_results_dict(results_per_test, linked_problems):
         html_links.append(template.format(link, prob_name))
         results[prob_name] = [result for result in prob_results]
     return results, html_links
-
-
-def preproccess_data(data):
-    """
-    Helper function that preprocesses data into the right format for printing
-
-    :param data: dictionary of results objects
-    :type data: dict
-    """
-    for results in data.values():
-        min_chi_sq = min([r.chi_sq for r in results])
-        min_runtime = min([r.runtime for r in results])
-        for r in results:
-            r.min_chi_sq = min_chi_sq
-            r.min_runtime = min_runtime
-            r.set_colour_scale()
 
 
 def create_pandas_dataframe(table_data, minimizers, table_suffix):
@@ -281,6 +318,9 @@ def create_top_level_index(options, table_names, group_name, group_dir):
     :type table_names : list
     :param group_name : name of the problem group
     :type group_name : str
+    :param group_dir : Path to the directory where the index should be stored
+    :type group_dir : str
+
     """
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     html_page_dir = os.path.join(root, 'HTML_templates')
@@ -302,4 +342,3 @@ def create_top_level_index(options, table_names, group_name, group_dir):
             compare="compare" in options.table_type,
             clink=table_names['compare'] +
                 "html" if 'compare' in table_names else 0))
-    webbrowser.open_new(output_file)

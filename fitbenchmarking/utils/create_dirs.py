@@ -43,8 +43,9 @@ def group_results(results_dir, group_name):
         raise TypeError('Type of variable group_name is required '
                         'to be a string, type(group_name) '
                         '= {}'.format(type(group_name)))
-    if not os.path.exists(group_dir):
-        os.makedirs(group_dir)
+    if os.path.exists(group_dir):
+        shutil.rmtree(group_dir)
+    os.makedirs(group_dir)
     return group_dir
 
 

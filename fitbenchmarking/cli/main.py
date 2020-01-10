@@ -51,7 +51,6 @@ def run(problem_sets, options_file=''):
     :param options_file: he path to an options file, defaults to ''
     :type options_file: str, optional
     """
-
     # Find the options file
     current_path = os.path.abspath(os.path.curdir)
     if options_file != '':
