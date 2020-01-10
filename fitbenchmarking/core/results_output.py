@@ -5,13 +5,16 @@ Functions that creates the tables and the visual display pages.
 from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
 import copy
+import inspect
+from jinja2 import Environment, FileSystemLoader
 import logging
 import os
 import pandas as pd
+import webbrowser
 
-from fitbenchmarking.resproc import visual_pages
+import fitbenchmarking
+from fitbenchmarking.results_processing import visual_pages
 from fitbenchmarking.utils import create_dirs
-from fitbenchmarking.utils.logging_setup import logger
 
 
 def save_results_tables(options, results, group_name):
@@ -38,21 +41,21 @@ def save_results_tables(options, results, group_name):
 
     weighted_str = 'weighted' if use_errors else 'unweighted'
 
-    tables_dir = create_dirs.restables_dir(results_dir)
-    linked_problems = \
-        visual_pages.create_linked_probs(results, group_name, results_dir)
+    tables_dir = create_dirs.restables_dir(results_dir, group_name)
+    linked_problems = visual_pages.create_linked_probs(
+        results, group_name, results_dir, options)
 
-    table_names = []
+    table_names = OrderedDict()
     for suffix in options.table_type:
-        table_names.append(os.path.join(tables_dir,
-                                        '{0}_{1}_{2}_table.'.format(
-                                            group_name,
-                                            suffix,
-                                            weighted_str)))
+        table_names[suffix] = os.path.join(tables_dir,
+                                           '{0}_{1}_{2}_table.'.format(
+                                               group_name,
+                                               suffix,
+                                               weighted_str))
     generate_tables(results, minimizers,
                     linked_problems, table_names,
                     options.table_type)
-
+    create_top_level_index(options, table_names, group_name)
     logging.shutdown()
 
 
@@ -61,13 +64,13 @@ def generate_tables(results_per_test, minimizers,
                     table_suffix):
     """
     Generates accuracy and runtime tables, with both normalised and absolute
-    results, and summary tables in both rst and html.
+    results, and summary tables in both txt and html.
 
     :param results_per_test : results nested array of objects
     :type results_per_test : list[list[list]]
     :param minimizers : array with minimizer names
     :type minimizers : list
-    :param linked_problems : rst links for supporting pages
+    :param linked_problems : path to supporting pages
     :type linked_problems : list[str]
     :param table_name : list of table names
     :type table_name : list
@@ -90,7 +93,7 @@ def create_results_dict(results_per_test, linked_problems):
 
     :param results_per_test : results nested array of objects
     :type results_per_test : list[list[list]]
-    :param linked_problems : rst links for supporting pages
+    :param linked_problems : paths to supporting pages
     :type linked_problems : list[str]
 
     :return : tuple(results, html_links)
@@ -113,8 +116,7 @@ def create_results_dict(results_per_test, linked_problems):
             count = 1
         prev_name = name
         prob_name = name + ' ' + str(count)
-        url = link.split('<')[1].split('>')[0]
-        html_links.append(template.format(url, prob_name))
+        html_links.append(template.format(link, prob_name))
         results[prob_name] = [result for result in prob_results]
     return results, html_links
 
@@ -201,7 +203,7 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             colour_output = 'background-color: {0}'.format(colour)
         return colour_output
 
-    for name, title, table in zip(table_names, table_title,
+    for name, title, table in zip(table_names.values(), table_title,
                                   table_dict.values()):
 
         with open(name + 'txt', "w") as f:
@@ -210,5 +212,46 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
         table.index = html_links
         table_style = table.style.applymap(colour_highlight)\
             .set_caption(title)
+        root = os.path.dirname(inspect.getfile(fitbenchmarking))
+        style_css = os.path.join(root, 'HTML_templates', 'style_sheet.css')
+
+        style = '<link rel="stylesheet" type="text/css"  ' \
+            'href="{0}" />'.format(style_css)
         with open(name + 'html', "w") as f:
-            f.write(table_style.render())
+            f.write(style)
+            f.write(table_style.render(table_styles=style_css))
+
+
+def create_top_level_index(options, table_names, group_name):
+    """
+    Generates top level index page.
+
+    :param options : The options used in the fitting problem and plotting
+    :type options : fitbenchmarking.utils.options.Options
+    :param table_names : list of table names
+    :type table_names : list
+    :param group_name : name of the problem group
+    :type group_name : str
+    """
+    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    html_page_dir = os.path.join(root, 'HTML_templates')
+    env = Environment(loader=FileSystemLoader(html_page_dir))
+    style_css = os.path.join(html_page_dir, 'style_sheet.css')
+    template = env.get_template("index_page.html")
+
+    output_file = os.path.join(os.path.dirname(table_names.values()[0]),
+                               'top_level_index.html')
+    with open(output_file, 'w') as fh:
+        fh.write(template.render(
+            css_style_sheet=style_css,
+            group_name=group_name,
+            acc="acc" in options.table_type,
+            alink=table_names['acc'] +
+                "html" if 'acc' in table_names else 0,
+            runtime="runtime" in options.table_type,
+            rlink=table_names['runtime'] +
+                "html" if 'runtime' in table_names else 0,
+            compare="compare" in options.table_type,
+            clink=table_names['compare'] +
+                "html" if 'compare' in table_names else 0))
+    webbrowser.open_new(output_file)

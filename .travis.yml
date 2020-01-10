@@ -25,10 +25,10 @@ before_install:
   - sudo apt-get install liblapack-dev
 
   # Adding gsl pacakges
-  - sudo apt-get install gsl-bin	
+  - sudo apt-get install gsl-bin
   - sudo apt-get install libgsl-dev
   - sudo apt-get install libgsl-dbg
-  
+
   - sudo apt-get install pandoc
 
 
@@ -53,17 +53,13 @@ jobs:
         - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
           --cov-report term-missing
         # ======= Fitting Tests =============== #
-        - pytest fitbenchmarking/fitting/ --cov=fitbenchmarking/fitting/
+        - pytest fitbenchmarking/controllers --cov=fitbenchmarking/controllers
           --cov-report term-missing --cov-append
         # ======= Parsing Tests =============== #
-        - pytest fitbenchmarking/parsing/tests/ --cov=fitbenchmarking/parsing/
+        - pytest fitbenchmarking/parsing --cov=fitbenchmarking/parsing
           --cov-report term-missing --cov-append
-        # ======= Result Processing Tests =============== #
-        - pytest fitbenchmarking/resproc/tests/
-          --cov=fitbenchmarking/resproc --cov-report term-missing
-          --cov-append
         # ======= Utils Tests =============== #
-        - pytest fitbenchmarking/utils/tests/ --cov=fitbenchmarking/utils/
+        - pytest fitbenchmarking/utils --cov=fitbenchmarking/utils
           --cov-report term-missing --cov-append
       after_success:
         - coveralls

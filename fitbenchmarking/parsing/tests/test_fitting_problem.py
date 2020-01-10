@@ -39,7 +39,7 @@ class TestFittingProblem(TestCase):
             fitting_problem.verify()
             self.fail('verify() passes when data_y is set.')
 
-        fitting_problem.function = lambda x, p1, p2: p1+p2
+        fitting_problem.function = lambda x, p1, p2: p1 + p2
         try:
             fitting_problem.verify()
         except TypeError:
@@ -130,11 +130,11 @@ class TestFittingProblem(TestCase):
         Test that eval_j is correct
         """
         def f(x, p1, p2):
-            return p1*np.exp(p2*x)
+            return p1 * np.exp(p2 * x)
 
         def J(x, p):
-            return np.column_stack((-np.exp(p[1]*x),
-                                    -x*p[0]*np.exp(p[1]*x)))
+            return np.column_stack((-np.exp(p[1] * x),
+                                    -x * p[0] * np.exp(p[1] * x)))
 
         fitting_problem = FittingProblem()
         fitting_problem.function = f
@@ -163,15 +163,14 @@ class TestFittingProblem(TestCase):
         eval_result = fitting_problem.eval_starting_params(1)
         self.assertTrue(all(eval_result == np.array([8])))
 
-    def test_get_function_def(self):
+    def test_get_function_params(self):
         """
-        Tests that the function def is formatted correctly
+        Tests that the function params is formatted correctly
         """
         fitting_problem = FittingProblem()
-        expected_function_def = 'test_function | a=1, b=2.0, c=3.3, d=4.99999'
-        fitting_problem.equation = 'test_function'
+        expected_function_def = 'a=1, b=2.0, c=3.3, d=4.99999'
         fitting_problem.starting_values = [
             OrderedDict([('a', 0), ('b', 0), ('c', 0), ('d', 0)])]
         params = [1, 2.0, 3.3, 4.99999]
-        function_def = fitting_problem.get_function_def(params=params)
+        function_def = fitting_problem.get_function_params(params=params)
         self.assertEqual(function_def, expected_function_def)

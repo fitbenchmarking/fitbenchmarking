@@ -10,7 +10,7 @@ from fitbenchmarking.utils.logging_setup import logger
 
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import create_dirs, misc
-from fitbenchmarking.fitbenchmark_one_problem import fitbm_one_prob
+from fitbenchmarking.core.fitbenchmark_one_problem import fitbm_one_prob
 
 
 def fitbenchmark_group(group_name, options, data_dir):
@@ -29,9 +29,9 @@ def fitbenchmark_group(group_name, options, data_dir):
                      definition files
     :type date_dir: str
 
-    :returns: tuple(prob_results, results_dir) array of fitting results for
-              the problem group and the path to the results directory
-    :rtype: (list of FittingResult, str)
+    :returns: prob_results array of fitting results for
+              the problem group
+    :rtype: list
     """
 
     # Create results directory

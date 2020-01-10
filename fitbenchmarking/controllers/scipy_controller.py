@@ -2,9 +2,9 @@
 Implements a controller for the scipy fitting software.
 """
 
-from scipy.optimize import curve_fit
+from scipy.optimize import least_squares
 
-from fitbenchmarking.fitting.controllers.base_controller import Controller
+from fitbenchmarking.controllers.base_controller import Controller
 
 
 class ScipyController(Controller):
@@ -31,20 +31,16 @@ class ScipyController(Controller):
         """
         Run problem with Scipy.
         """
-        popt = None
+        result = least_squares(fun=self.problem.eval_r,
+                               x0=self.initial_params,
+                               method=self.minimizer,
+                               max_nfev=500)
 
-        # Use self.problem.function here instead of eval_f as the arguments
-        # need to be passed separately
-        popt, _ = curve_fit(f=self.problem.function,
-                            xdata=self.data_x,
-                            ydata=self.data_y,
-                            p0=self.initial_params,
-                            sigma=self.data_e,
-                            method=self.minimizer,
-                            maxfev=500)
-
-        self.success = (popt is not None)
-        self._popt = popt
+        # To be consistent with Mantid results, we only report when the fit
+        # fails. That is when the algorithm diverges or falls over but not
+        # when the maximum number of iterations is reached (results.status = 0)
+        self.success = (result.status >= 0)
+        self._popt = result.x
 
     def cleanup(self):
         """

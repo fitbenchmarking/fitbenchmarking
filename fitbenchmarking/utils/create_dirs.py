@@ -47,9 +47,12 @@ def group_results(results_dir, group_name):
     return group_results_dir
 
 
-def restables_dir(results_dir):
+def restables_dir(results_dir, group_name):
     """
     Creates the results directory where the tables are located.
+    Note this is the same as the above funtion but without deleting the
+    contents. This will be changed in a future issue.
+
     e.g. fitbenchmarking/results/neutron/
 
     @param results_dir :: directory that holds all the results for the problem
@@ -57,6 +60,7 @@ def restables_dir(results_dir):
     @returns :: path to folder where the tables are stored
     """
 
+    results_dir = os.path.join(results_dir, group_name)
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
     return results_dir

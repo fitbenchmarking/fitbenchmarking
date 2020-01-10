@@ -11,8 +11,8 @@ import glob
 import os
 import sys
 
-from fitbenchmarking.fitting_benchmarking import fitbenchmark_group
-from fitbenchmarking.results_output import save_results_tables
+from fitbenchmarking.core.fitting_benchmarking import fitbenchmark_group
+from fitbenchmarking.core.results_output import save_results_tables
 from fitbenchmarking.utils.options import Options
 
 
@@ -62,8 +62,6 @@ def run(problem_sets, options_file=''):
         options = Options()
 
     for sub_dir in problem_sets:
-        # generate group label/name used for problem set
-        label = sub_dir.replace('/', '_')
 
         # Create full path for the directory that holds a group of
         # problem definition files
@@ -74,6 +72,13 @@ def run(problem_sets, options_file=''):
         if test_data == []:
             print('Problem set {} not found'.format(data_dir))
             continue
+
+        # generate group label/name used for problem set
+        try:
+            with open(os.path.join(data_dir, 'META.txt'), 'r') as f:
+                label = f.readline().strip('\n')
+        except IOError:
+            label = sub_dir.replace('/', '_')
 
         print('\nRunning the benchmarking on the {} problem set\n'.format(
             label))

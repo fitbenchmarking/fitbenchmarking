@@ -6,7 +6,7 @@ http://people.maths.ox.ac.uk/robertsl/dfogn/
 import dfogn
 import numpy as np
 
-from fitbenchmarking.fitting.controllers.base_controller import Controller
+from fitbenchmarking.controllers.base_controller import Controller
 
 
 class DFOGNController(Controller):
