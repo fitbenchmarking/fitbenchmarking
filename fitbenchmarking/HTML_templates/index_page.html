@@ -5,50 +5,27 @@
 <link rel="stylesheet" type="text/css"  href={{ css_style_sheet }}>
 <html>
 <head>
-    <title>{{ group_name }} results</title>
+    <title> Index page</title>
 </head>
+<section class="row">
+    <header class="large">
+        <h1> FitBenchmarking results page</h1>
+        <hr>
+    </header>
+</section>
+Follow the links below to the results for the individual groups
+
 <body>
-    <section class="row">
-        <header class="large">
-            <h1>Fitbenchmarking results: {{ group_name }}</h1>
-            <hr>
-        </header>
-    </section>
-    FitBenchmarking is a tool for comparing different fitting software based on their accuracy and runtimes.
-
-    {% if compare %}
-      <header class="large">
-          <h2>Combined accuracy and runtime results</h2>
-      </header>
-      The combined results show the accurary in the first line of the cell and the runtime on the second line of the cell.
-      <h3>
-        <form>
-          <button class="btn default" type="submit" formaction={{ clink }}>Table</button>
-        </form>
-      </h3>
-    {% endif %}
-
-    {% if acc %}
-        <header class="large">
-            <h2>Accuracy results</h2>
-        </header>
-      The accuracy results are calculated from the final chi squared value.
-      <h3>
-        <form>
-          <button class="btn default" type="submit" formaction={{ alink }}>Table</button>
-        </form>
-      </h3>
-    {% endif %}
-
-    {% if runtime %}
-      <header class="large">
-          <h2>Runtime results</h2>
-      </header>
-      The runtime results are calculated using the timeit module in python
-      <h3>
-        <form>
-          <button class="btn default" type="submit" formaction={{ rlink }}>Table</button>
-        </form>
-      </h3>    {% endif %}
-</body>
+<ul>
+{% for group, link in zip(groups, group_link) %}
+  <h3>
+  {{ group }}
+  </h3>
+  <h3>
+    <form>
+      <button class="btn default" type="submit" formaction={{ link }}>Results</button>
+    </form>
+  <h3>
+{% endfor %}
+</ul>
 </html>
