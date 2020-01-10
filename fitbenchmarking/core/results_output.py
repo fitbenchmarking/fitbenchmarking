@@ -35,19 +35,18 @@ def save_results_tables(options, results, group_name):
     minimizers = [options.minimizers[s] for s in software]
     minimizers = sum(minimizers, [])
 
-    results_dir = os.path.relpath(
-        os.path.join(options.results_dir, group_name))
     use_errors = options.use_errors
 
     weighted_str = 'weighted' if use_errors else 'unweighted'
 
-    tables_dir = create_dirs.restables_dir(results_dir, group_name)
+    group_dir = create_dirs.restables_dir(options.results_dir, group_name)
+    rel_group_dir = os.path.relpath(group_dir)
     linked_problems = visual_pages.create_linked_probs(
-        results, group_name, results_dir, options)
+        results, group_name, rel_group_dir, options)
 
     table_names = OrderedDict()
     for suffix in options.table_type:
-        table_names[suffix] = os.path.join(tables_dir,
+        table_names[suffix] = os.path.join(group_dir,
                                            '{0}_{1}_{2}_table.'.format(
                                                group_name,
                                                suffix,
