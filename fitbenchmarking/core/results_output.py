@@ -217,9 +217,8 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
         output_file = os.path.join(name + 'html')
 
         with open(output_file, "w") as f:
-            f.write(template.render(
-                css_style_sheet=style_css))
-            f.write(table_style.render(table_styles=style_css))
+            f.write(template.render(css_style_sheet=style_css))
+            f.write(table_style.render())
         # pypandoc can be installed without pandoc
         try:
             output = pypandoc.convert_file(name + 'html', 'rst')
