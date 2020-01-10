@@ -1,6 +1,5 @@
 """
-Test that accuracy of a single minimizer for each fitting software is
-consistent with previous versions
+Test that accuracy of FitBenchmarking is consistent with previous versions
 """
 
 import os
@@ -11,9 +10,9 @@ from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
 
 
-class TestMinimizers(TestCase):
+class TestRegression(TestCase):
     """
-    Test that the minimizers are consistent.
+    Regression tests for the Fitbenchmarking software
     """
 
     @classmethod
@@ -31,23 +30,25 @@ class TestMinimizers(TestCase):
 
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,
-                                               os.pardir,
-                                               'examples',
-                                               'benchmark_problems',
-                                               'simple_tests'))
+                                               'mock_problems',
+                                               'all_parsers_set'))
         run([problem], options_file=opt_file.name)
 
-    def test_minimizers_consistent(self):
+    def test_results_consistent(self):
         """
-        Compare the results with the expected
+        Regression testing that the results of fitting a set of problems
+        containing all problem types against a single minimiser from each of
+        the supported softwares
         """
 
-        expected_file = os.path.join(
-            os.path.dirname(__file__), 'expected_results', 'minimizers.txt')
+        expected_file = os.path.join(os.path.dirname(__file__),
+                                     'expected_results',
+                                     'results_regression.txt')
 
-        actual_file = os.path.join(
-            os.path.dirname(__file__), 'results', 'simple_tests',
-            'simple_tests_acc_weighted_table.txt')
+        actual_file = os.path.join(os.path.dirname(__file__),
+                                   'results',
+                                   'all_parsers_set',
+                                   'all_parsers_set_acc_weighted_table.txt')
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()
@@ -61,8 +62,8 @@ class TestMinimizers(TestCase):
                 diff.append([expected[i], actual[i]])
 
         num_diff = min(6, len(diff))
-        msg = 'Accuracy has changed in at least 1 minimizer ' \
-              + 'for simple_tests. \n' \
+        msg = 'Accuracy has changed in at least 1 minimizer-' \
+              + 'problem pair. \n' \
               + 'First {} of {} differences: \n'.format(num_diff, len(diff)) \
               + '\n'.join(['{} \n{}'.format(*diff[i])
                            for i in range(num_diff)])

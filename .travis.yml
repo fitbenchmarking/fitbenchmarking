@@ -29,8 +29,6 @@ before_install:
   - sudo apt-get install libgsl-dev
   - sudo apt-get install libgsl-dbg
 
-  - sudo apt-get install pandoc
-
 
 install:
   # Builds RALfit
