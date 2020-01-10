@@ -25,9 +25,9 @@ class Options(object):
         :param file_name: The options file to load
         :type file_name: str
         """
-        template = "OPTIONS FAILED TO SET: trying to get {0} option with in " \
-                   "valid input.\nOption {0} takes {1} as inputs. Please " \
-                   "alter ini file to reflect this"
+        template = "ERROR IN OPTIONS FILE:\n" \
+                   "The option {0} must be of type {1}. \n" \
+                   "Please alter the ini file to reflect this and re-run."
         self._results_dir = ''
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str})
