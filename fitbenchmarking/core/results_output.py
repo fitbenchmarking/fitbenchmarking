@@ -54,7 +54,7 @@ def save_results_tables(options, results, group_name):
     generate_tables(results, minimizers,
                     linked_problems, table_names,
                     options.table_type)
-    create_top_level_index(options, table_names, group_name)
+    create_problem_level_index(options, table_names, group_name)
     logging.shutdown()
 
 
@@ -224,9 +224,9 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             print('RST tables require Pandoc to be installed')
 
 
-def create_top_level_index(options, table_names, group_name):
+def create_problem_level_index(options, table_names, group_name):
     """
-    Generates top level index page.
+    Generates problem level index page.
 
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
