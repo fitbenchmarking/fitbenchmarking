@@ -4,6 +4,7 @@ consistent with previous versions
 """
 
 import os
+import tempfile
 from unittest import TestCase
 
 from fitbenchmarking.cli.main import run
@@ -26,17 +27,14 @@ class TestParsers(TestCase):
         opts.software = ['scipy']
         opts.results_dir = os.path.join(os.path.dirname(__file__), 'results')
 
-        opt_file = os.path.join(
-            os.path.dirname(__file__), 'test_parsers_options.ini')
-        opts.write(opt_file)
+        opt_file = tempfile.NamedTemporaryFile()
+        opts.write(opt_file.name)
 
-        cd = os.path.abspath(os.curdir)
-
-        problem_set_dir = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), os.pardir, 'mock_problems'))
-        os.chdir(problem_set_dir)
-        run(['all_parser_test_set'], options_file=opt_file)
-        os.chdir(cd)
+        problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                               os.pardir,
+                                               'mock_problems',
+                                               'all_parser_test_set'))
+        run([problem], options_file=opt_file.name)
 
     def test_minimizers_consistent(self):
         """

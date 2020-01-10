@@ -4,6 +4,7 @@ consistent with previous versions
 """
 
 import os
+import tempfile
 from unittest import TestCase
 
 from fitbenchmarking.cli.main import run
@@ -25,18 +26,16 @@ class TestMinimizers(TestCase):
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
         opts.results_dir = os.path.join(os.path.dirname(__file__), 'results')
 
-        opt_file = os.path.join(
-            os.path.dirname(__file__), 'test_minimizer_options.ini')
-        opts.write(opt_file)
+        opt_file = tempfile.NamedTemporaryFile()
+        opts.write(opt_file.name)
 
-        cd = os.path.abspath(os.curdir)
-
-        problem_set_dir = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), os.pardir, os.pardir, 'examples',
-            'benchmark_problems'))
-        os.chdir(problem_set_dir)
-        run(['simple_tests'], options_file=opt_file)
-        os.chdir(cd)
+        problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                               os.pardir,
+                                               os.pardir,
+                                               'examples',
+                                               'benchmark_problems',
+                                               'simple_tests'))
+        run([problem], options_file=opt_file.name)
 
     def test_minimizers_consistent(self):
         """
