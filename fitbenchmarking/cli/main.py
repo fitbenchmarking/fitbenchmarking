@@ -1,6 +1,6 @@
 """
 This is the main entry point into the FitBenchmarking software package.
-For more information on usage type fitbenchmarking --help 
+For more information on usage type fitbenchmarking --help
 or for more general information, see the online docs at
 docs.fitbenchmarking.com.
 """
@@ -8,9 +8,13 @@ docs.fitbenchmarking.com.
 from __future__ import (absolute_import, division, print_function)
 import argparse
 import glob
+import inspect
+from jinja2 import Environment, FileSystemLoader
 import os
 import sys
+import webbrowser
 
+import fitbenchmarking
 from fitbenchmarking.core.fitting_benchmarking import fitbenchmark_group
 from fitbenchmarking.core.results_output import save_results_tables
 from fitbenchmarking.utils.options import Options
@@ -60,7 +64,8 @@ def run(problem_sets, options_file=''):
         options = Options(options_file)
     else:
         options = Options()
-
+    groups = []
+    result_dir = []
     for sub_dir in problem_sets:
 
         # Create full path for the directory that holds a group of
@@ -82,10 +87,9 @@ def run(problem_sets, options_file=''):
 
         print('\nRunning the benchmarking on the {} problem set\n'.format(
             label))
-        results = fitbenchmark_group(group_name=label,
-                                     options=options,
-                                     data_dir=data_dir)
-
+        results, group_results_dir = fitbenchmark_group(group_name=label,
+                                                        options=options,
+                                                        data_dir=data_dir)
         print('\nProducing output for the {} problem set\n'.format(label))
         # Display the runtime and accuracy results in a table
         save_results_tables(group_name=label,
@@ -93,6 +97,26 @@ def run(problem_sets, options_file=''):
                             options=options)
 
         print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
+        result_dir.append(group_results_dir)
+        groups.append(label)
+
+    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    print(root)
+    html_page_dir = os.path.join(root, 'HTML_templates')
+    env = Environment(loader=FileSystemLoader(html_page_dir))
+    style_css = os.path.join(html_page_dir, 'style_sheet.css')
+    template = env.get_template("index_page.html")
+    r_dir = os.path.dirname(group_results_dir)
+    group_links = [os.path.join(d, "{}_index.html".format(g))
+                   for g, d in zip(groups, result_dir)]
+    output_file = os.path.join(r_dir, 'index_index.html')
+
+    with open(output_file, 'w') as fh:
+        fh.write(template.render(
+            css_style_sheet=style_css, groups=groups,
+            group_link=group_links,
+            zip=zip))
+    webbrowser.open_new(output_file)
 
 
 def main():
