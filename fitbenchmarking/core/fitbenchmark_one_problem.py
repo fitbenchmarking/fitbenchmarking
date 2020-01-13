@@ -108,6 +108,10 @@ def benchmark(controller, minimizers, options):
             print(str(excp))
             controller.success = False
             runtime = np.inf
+            controller.final_params = len(controller.initial_params) * [np.inf]
+            controller.flag = 2
+            controller.error_message = \
+                controller.error_options[controller.flag]
 
         controller.cleanup()
 

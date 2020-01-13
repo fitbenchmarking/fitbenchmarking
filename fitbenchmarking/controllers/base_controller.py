@@ -58,6 +58,17 @@ class Controller:
         # Success: Bool for flagging issues
         self.success = None
 
+        # Flag: error handling flag
+        self.flag = None
+        # error_options: dictionary containing software error messages
+        self.error_options = \
+            {0: "Successfully converged",
+             1: "Software reported maximum number of iterations exceeded"
+             2: "Software raised an exception"
+             3: "Software diverged."}
+        # error_message: reported error message for tables
+        self.error_message = None
+
     def _correct_data(self):
         """
         Strip data that overruns the start and end x_range,
