@@ -81,10 +81,10 @@ def generate_tables(results_per_test, minimizers,
                     for name in table_suffix]
     results_dict, html_links = create_results_dict(results_per_test,
                                                    linked_problems)
-    preproccess_data(results_dict)
+    error_options = preproccess_data(results_dict)
     table = create_pandas_dataframe(results_dict, minimizers, table_suffix)
     render_pandas_dataframe(table, minimizers, html_links,
-                            table_names, table_titles)
+                            table_names, table_titles, error_options)
 
 
 def create_results_dict(results_per_test, linked_problems):
@@ -127,6 +127,10 @@ def preproccess_data(data):
 
     :param data: dictionary of results objects
     :type data: dict
+
+    :return : dictionary containing controller error messages
+               html links for rending
+    :rtype : dict
     """
     for results in data.values():
         min_chi_sq = min([r.chi_sq for r in results])
@@ -135,6 +139,8 @@ def preproccess_data(data):
             r.min_chi_sq = min_chi_sq
             r.min_runtime = min_runtime
             r.set_colour_scale()
+            error_options = r.error_options
+    return error_options
 
 
 def create_pandas_dataframe(table_data, minimizers, table_suffix):
@@ -174,7 +180,7 @@ def create_pandas_dataframe(table_data, minimizers, table_suffix):
 
 
 def render_pandas_dataframe(table_dict, minimizers, html_links,
-                            table_names, table_title):
+                            table_names, table_title, error_options):
     """
     Generates html and rst page from pandas dataframes.
 
@@ -188,6 +194,8 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
     :type table_names : list
     :param table_title : list of table titles
     :type table_title : list
+    :param error_options : dictionary containing controller error messages
+    :type error_options : dict
     """
 
     def colour_highlight(value):
@@ -203,7 +211,7 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             colour_output = 'background-color: {0}'.format(colour)
         return colour_output
 
-    for name, title, table in zip(table_names.values(), table_title,
+    for name, title, table in zip(table_names.items(), table_title,
                                   table_dict.values()):
         table.index = html_links
         table_style = table.style.applymap(colour_highlight)\
@@ -213,16 +221,18 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
         style_css = os.path.join(html_page_dir, 'style_sheet.css')
         env = Environment(loader=FileSystemLoader(html_page_dir))
         template = env.get_template("blank_page.html")
-
-        output_file = name + 'html'
+        info_template = env.get_template("{}_table_info.html".format(name[0]))
+        output_file = name[1] + 'html'
 
         with open(output_file, "w") as f:
             f.write(template.render(css_style_sheet=style_css))
             f.write(table_style.render())
+            f.write(info_template.render(error_message=error_options))
+
         # pypandoc can be installed without pandoc
         try:
-            output = pypandoc.convert_file(name + 'html', 'rst')
-            with open(name + 'rst', "w") as f:
+            output = pypandoc.convert_file(output_file, 'rst')
+            with open(name[1] + 'rst', "w") as f:
                 f.write(output)
         except ImportError:
             print('RST tables require Pandoc to be installed')
