@@ -88,6 +88,14 @@ class SasviewController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
+        status = self._bumps_result.status
+        if status == 0:
+            self.flag = 0
+        elif status == 2:
+            self.flag = 1
+        else:
+            self.flag = 3
         if self.success:
             self.final_params = self._bumps_result.x
             self.results = self._func_wrapper.theory()
+        self.error_message = self.error_options[self.flag]
