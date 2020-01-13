@@ -138,7 +138,7 @@ class ControllerTests(TestCase):
         MantidController: Test for output shape
         """
         controller = MantidController(self.problem, True)
-        controller.minimizer = 'SteepestDescent'
+        controller.minimizer = 'Levenberg-Marquardt'
         self.shared_testing(controller)
 
     def test_sasview(self):
@@ -211,6 +211,7 @@ class ControllerTests(TestCase):
         assert controller.success
         assert len(controller.results) == len(controller.data_y)
         assert len(controller.final_params) == len(controller.initial_params)
+        assert controller.flag == 0
 
 
 class FactoryTests(TestCase):

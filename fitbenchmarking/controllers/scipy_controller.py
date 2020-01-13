@@ -43,7 +43,7 @@ class ScipyController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        status = self.results.status
+        status = self.result.status
         if self.success:
             self.results = self.problem.eval_f(params=self._popt)
             self.final_params = self._popt
