@@ -61,7 +61,7 @@ jobs:
           --cov-report term-missing --cov-append
       after_success:
         - coveralls
-    - name: Integration Tests
+    - name: System Tests
       script:
         # ======= System Test =============== #
         - pytest fitbenchmarking/systests
