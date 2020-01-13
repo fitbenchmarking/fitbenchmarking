@@ -50,5 +50,16 @@ class DFOGNController(Controller):
         will be read from.
         """
         if self.success:
+            status = self._soln.flag
             self.results = self.problem.eval_f(params=self._popt)
             self.final_params = self._popt
+            if status == 0:
+                self.flag = 0
+            elif status == 2:
+                self.flag = 1
+            else:
+                self.flag = 3
+        else:
+            self.flag = 4
+            self.success = False
+        self.error_message = self.error_options[self.flag]

@@ -99,7 +99,6 @@ class MantidController(Controller):
             elif "Failed to converge" in self._mantid_results.OutputStatus:
                 self.flag = 1
             else:
-
                 self.flag = 3
         else:
             self.flag = 4
