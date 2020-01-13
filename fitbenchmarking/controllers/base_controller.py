@@ -63,9 +63,10 @@ class Controller:
         # error_options: dictionary containing software error messages
         self.error_options = \
             {0: "Successfully converged",
-             1: "Software reported maximum number of iterations exceeded"
-             2: "Software raised an exception"
-             3: "Software diverged."}
+             1: "Software reported maximum number of iterations exceeded",
+             2: "Software raised an exception",
+             3: "Software run but didn't converge to solution",
+             4: "Software fell over"}
         # error_message: reported error message for tables
         self.error_message = None
 
