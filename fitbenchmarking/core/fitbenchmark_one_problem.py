@@ -109,7 +109,7 @@ def benchmark(controller, minimizers, options):
             print(str(excp))
             controller.success = False
             runtime = np.inf
-            controller.final_params = len(controller.initial_params) * [np.inf]
+            controller.final_params = len(controller.initial_params) * [0]
             controller.flag = 2
             controller.error_message = \
                 controller.error_options[controller.flag]
@@ -118,8 +118,6 @@ def benchmark(controller, minimizers, options):
             params=controller.initial_params)
         fin_function_params = controller.problem.get_function_params(
             params=controller.final_params)
-
-        print("\n\n\n", controller.flag, controller.error_message, "\n\n\n")
 
         if not controller.success:
             chi_sq = np.inf

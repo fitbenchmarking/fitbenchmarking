@@ -55,7 +55,16 @@ class MinuitController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
+        status = self._minuit_problem.migrad_ok()
         if self.success:
+            fmin = self._minuit_problem.get_fmin()
             self._popt = self._minuit_problem.np_values()
             self.results = self.problem.eval_f(params=self._popt)
             self.final_params = self._popt
+            if status:
+                self.flag = 0
+            elif fmin.has_reached_call_limit:
+                self.flag = 3
+        else:
+            self.flag = 4
+        self.error_message = self.error_options[self.flag]
