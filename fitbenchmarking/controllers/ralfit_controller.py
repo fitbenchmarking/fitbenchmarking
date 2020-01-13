@@ -54,7 +54,6 @@ class RALFitController(Controller):
                                     self.problem.eval_r,
                                     self.problem.eval_j,
                                     options=self._options)[0]
-
         self.success = (self._popt is not None)
 
     def cleanup(self):
@@ -65,3 +64,5 @@ class RALFitController(Controller):
         if self.success:
             self.results = self.problem.eval_f(params=self._popt)
             self.final_params = self._popt
+            self.flag = 0
+        self.error_message = self.error_options[self.flag]

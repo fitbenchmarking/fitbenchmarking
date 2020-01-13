@@ -140,7 +140,8 @@ def benchmark(controller, minimizers, options):
             chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
             params=controller.final_params,
             ini_function_params=init_function_params,
-            fin_function_params=fin_function_params)
+            fin_function_params=fin_function_params,
+            error_flag=controller.flag, error_message=controller.error_message)
 
         results_problem.append(individual_result)
 
