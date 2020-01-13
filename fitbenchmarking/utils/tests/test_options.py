@@ -39,6 +39,10 @@ class OptionsTests(unittest.TestCase):
                         runtime
             results_dir: new_results
             """
+        incorrect_config_str = """
+            [PLOTTING]
+            make_plots: incorrect_falue
+            """
         opts = {'MINIMIZERS': {'scipy': ['nonesense',
                                          'another_fake_minimizer'],
                                'dfogn': ['test']},
@@ -60,8 +64,15 @@ class OptionsTests(unittest.TestCase):
         self.options = opts
         self.options_file = opts_file
 
+        opts_file_incorrect = 'test_incorrect_options_tests_{}.txt'.format(
+            datetime.datetime.now())
+        with open(opts_file_incorrect, 'w') as f:
+            f.write(incorrect_config_str)
+        self.options_file_incorrect = opts_file_incorrect
+
     def tearDown(self):
         os.remove(self.options_file)
+        os.remove(self.options_file_incorrect)
 
     def test_from_file(self):
         options = Options(file_name=self.options_file)
@@ -75,7 +86,6 @@ class OptionsTests(unittest.TestCase):
         self.assertEqual(fitting_opts['software'], options.software)
 
         plotting_opts = self.options['PLOTTING']
-        self.assertEqual(plotting_opts['make_plots'], options.make_plots)
         self.assertEqual(plotting_opts['colour_scale'], options.colour_scale)
         self.assertEqual(plotting_opts['comparison_mode'],
                          options.comparison_mode)
@@ -83,6 +93,15 @@ class OptionsTests(unittest.TestCase):
         # Use ends with as options creates an abs path rather than rel.
         self.assertTrue(
             options.results_dir.endswith(plotting_opts['results_dir']))
+
+    def test_make_plots_false(self):
+        with self.assertRaises(SystemExit):
+            Options(file_name=self.options_file_incorrect)
+
+    def test_make_plots_true(self):
+        options = Options(file_name=self.options_file)
+        plotting_opts = self.options['PLOTTING']
+        self.assertEqual(plotting_opts['make_plots'], options.make_plots)
 
 
 if __name__ == '__main__':

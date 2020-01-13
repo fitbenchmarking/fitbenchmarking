@@ -47,6 +47,8 @@ class Options(object):
         self.use_errors = fitting.getboolean('use_errors')
 
         plotting = config['PLOTTING']
+        # sys.exit() will be addressed in future FitBenchmarking
+        # error handling issue
         try:
             self.make_plots = plotting.getboolean('make_plots')
         except ValueError:
