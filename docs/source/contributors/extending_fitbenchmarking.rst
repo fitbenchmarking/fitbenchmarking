@@ -137,13 +137,14 @@ In order to add a new controller, you will need to:
       (``self.results``, ``self.final_params``, ``self.success``)
 
 3. For error handling add an error flag to either ``fit()`` or ``cleanup``
-   using the following keys
-   ``{0: "Successfully converged",
+   using the following keys::
+   
+     {0: "Successfully converged",
       1: "Software reported maximum number of iterations exceeded",
       2: "Software raised an exception",
       3: "Software run but didn't converge to solution",
       4: "Software fell over"}.
-      ``
+   
   From the flag set the error_message value.
 
 4. Document the available minimizers (currently done by adding to
