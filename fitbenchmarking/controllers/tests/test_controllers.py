@@ -310,30 +310,31 @@ class ErrorFlagsTest(TestCase):
 
     def check_conveged(self, controller):
         """
-        Utility function to run controller and check output is in generic form
+        Utility function to check controller.error_flags() produces a success
 
         :param controller: Controller to test, with setup already completed
-        :type contrller: Object derived from BaseSoftwareController
+        :type controller: Object derived from BaseSoftwareController
         """
         controller.error_flags()
         assert controller.flag == 0
 
     def check_max_iterations(self, controller):
         """
-        Utility function to run controller and check output is in generic form
+        Utility function to check controller.error_flags() produces a maximum
+        iteration flag
 
         :param controller: Controller to test, with setup already completed
-        :type contrller: Object derived from BaseSoftwareController
+        :type controller: Object derived from BaseSoftwareController
         """
         controller.error_flags()
         assert controller.flag == 1
 
     def check_diverged(self, controller):
         """
-        Utility function to run controller and check output is in generic form
+        Utility function to check controller.error_flags() produces a fail
 
         :param controller: Controller to test, with setup already completed
-        :type contrller: Object derived from BaseSoftwareController
+        :type controller: Object derived from BaseSoftwareController
         """
         controller.error_flags()
         assert controller.flag == 2
