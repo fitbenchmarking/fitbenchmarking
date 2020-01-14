@@ -30,8 +30,8 @@ def fitbenchmark_group(group_name, options, data_dir):
     :type date_dir: str
 
     :returns: prob_results array of fitting results for
-              the problem group
-    :rtype: list
+              the problem group and the location of the results
+    :rtype: tuple(list, str)
     """
 
     # Create results directory
@@ -61,4 +61,4 @@ def fitbenchmark_group(group_name, options, data_dir):
                 tmp_result.extend(r[s])
             results.append(tmp_result)
 
-    return results
+    return results, group_results_dir
