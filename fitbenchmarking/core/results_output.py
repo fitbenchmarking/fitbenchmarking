@@ -117,12 +117,16 @@ def create_plots(options, results, best_results, group_name, figures_dir):
                           count=count,
                           figures_dir=figures_dir)
         initial_guess_path = plot.plot_initial_guess()
-        plot.plot_best(best.minimizer, best.params)
+        if best.params is not None:
+            plot.plot_best(best.minimizer, best.params)
 
         for result in prob_result:
-            plot_path = plot.plot_fit(result.minimizer, result.params)
+            if result.params is not None:
+                plot_path = plot.plot_fit(result.minimizer, result.params)
+                result.figure_link = plot_path
+            else:
+                result.figure_link = 'Failed to return params'
             result.start_figure_link = initial_guess_path
-            result.figure_link = plot_path
 
 
 def create_results_tables(options, results, best_results, group_name,
