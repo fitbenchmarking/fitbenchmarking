@@ -11,7 +11,6 @@ import logging
 import os
 import pandas as pd
 import pypandoc
-import webbrowser
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import visual_pages
@@ -55,7 +54,7 @@ def save_results_tables(options, results, group_name):
     generate_tables(results, minimizers,
                     linked_problems, table_names,
                     options.table_type)
-    create_top_level_index(options, table_names, group_name)
+    create_problem_level_index(options, table_names, group_name)
     logging.shutdown()
 
 
@@ -238,9 +237,9 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             print('RST tables require Pandoc to be installed')
 
 
-def create_top_level_index(options, table_names, group_name):
+def create_problem_level_index(options, table_names, group_name):
     """
-    Generates top level index page.
+    Generates problem level index page.
 
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
@@ -253,10 +252,10 @@ def create_top_level_index(options, table_names, group_name):
     html_page_dir = os.path.join(root, 'HTML_templates')
     env = Environment(loader=FileSystemLoader(html_page_dir))
     style_css = os.path.join(html_page_dir, 'style_sheet.css')
-    template = env.get_template("index_page.html")
+    template = env.get_template("problem_index_page.html")
 
     output_file = os.path.join(os.path.dirname(table_names.values()[0]),
-                               'top_level_index.html')
+                               '{}_index.html'.format(group_name))
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,
@@ -270,4 +269,3 @@ def create_top_level_index(options, table_names, group_name):
             compare="compare" in options.table_type,
             clink=table_names['compare'] +
                 "html" if 'compare' in table_names else 0))
-    webbrowser.open_new(output_file)
