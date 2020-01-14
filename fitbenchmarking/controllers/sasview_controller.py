@@ -82,20 +82,30 @@ class SasviewController(Controller):
 
         self.success = result.success
         self._bumps_result = result
+        self._status = self._bumps_result.status
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        status = self._bumps_result.status
-        if status == 0:
-            self.flag = 0
-        elif status == 2:
-            self.flag = 1
-        else:
-            self.flag = 3
         if self.success:
             self.final_params = self._bumps_result.x
             self.results = self._func_wrapper.theory()
+        self.error_message = self.error_options[self.flag]
+
+    def error_flags(self):
+        """
+        Sets the error flags for the controller, the options are:
+            {0: "Successfully converged",
+             1: "Software reported maximum number of iterations exceeded",
+             2: "Software run but didn't converge to solution",
+             3: "Software raised an exception"}
+        """
+        if self._status == 0:
+            self.flag = 0
+        elif self._status == 2:
+            self.flag = 1
+        else:
+            self.flag = 2
         self.error_message = self.error_options[self.flag]

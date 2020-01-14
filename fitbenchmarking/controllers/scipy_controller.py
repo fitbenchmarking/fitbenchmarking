@@ -37,20 +37,29 @@ class ScipyController(Controller):
                                     max_nfev=500)
         self.success = (self.result.status >= 0)
         self._popt = self.result.x
+        self._status = self.result.status
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        status = self.result.status
         if self.success:
             self.results = self.problem.eval_f(params=self._popt)
             self.final_params = self._popt
-            if status == 0:
-                self.flag = 1
-            elif status > 0:
-                self.flag = 0
+
+    def error_flags(self):
+        """
+        Sets the error flags for the controller, the options are:
+            {0: "Successfully converged",
+             1: "Software reported maximum number of iterations exceeded",
+             2: "Software run but didn't converge to solution",
+             3: "Software raised an exception"}
+        """
+        if self._status > 0:
+            self.flag = 0
+        elif self._status == 0:
+            self.flag = 1
         else:
-            self.flag = 3
+            self.flag = 2
         self.error_message = self.error_options[self.flag]

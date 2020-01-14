@@ -83,6 +83,7 @@ class MantidController(Controller):
 
         self._mantid_results = fit_result
         self.success = (self._mantid_results.OutputStatus != 'failed')
+        self._status = self._mantid_results.OutputStatus
 
     def cleanup(self):
         """
@@ -94,13 +95,20 @@ class MantidController(Controller):
             self.results = ws.readY(1)
             final_params = self._mantid_results.OutputParameters.column(1)
             self.final_params = final_params[:len(self.initial_params)]
-            if self._mantid_results.OutputStatus == "success":
-                self.flag = 0
-            elif "Failed to converge" in self._mantid_results.OutputStatus:
-                self.flag = 1
-            else:
-                self.flag = 3
+
+    def error_flags(self):
+        """
+        Sets the error flags for the controller, the options are:
+            {0: "Successfully converged",
+             1: "Software reported maximum number of iterations exceeded",
+             2: "Software run but didn't converge to solution",
+             3: "Software raised an exception"}
+        """
+        if self._status == "success":
+            self.flag = 0
+        elif "Failed to converge" in self._status:
+            self.flag = 1
         else:
-            self.flag = 4
-            self.success = False
+            self.flag = 2
+
         self.error_message = self.error_options[self.flag]

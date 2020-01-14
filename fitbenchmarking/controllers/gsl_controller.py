@@ -209,12 +209,12 @@ class GSLController(Controller):
                                                      self._gradient_tol)
             if status == errno.GSL_SUCCESS:
                 self.success = True
-                self.flag = 0
+                self._status = 0
                 break
             elif status != errno.GSL_CONTINUE:
-                self.flag = 3
+                self._status = 2
         else:
-            self.flag = 1
+            self._status = 1
 
     def cleanup(self):
         """
@@ -224,4 +224,21 @@ class GSLController(Controller):
         if self.success:
             self.final_params = self._solver.getx()
             self.results = self.problem.eval_f(params=self.final_params)
+        self.error_message = self.error_options[self.flag]
+
+    def error_flags(self):
+        """
+        Sets the error flags for the controller, the options are:
+            {0: "Successfully converged",
+             1: "Software reported maximum number of iterations exceeded",
+             2: "Software run but didn't converge to solution",
+             3: "Software raised an exception"}
+        """
+        if self._status == 0:
+            self.flag = 0
+        elif self._status == 1:
+            self.flag = 1
+        else:
+            self.flag = 2
+
         self.error_message = self.error_options[self.flag]

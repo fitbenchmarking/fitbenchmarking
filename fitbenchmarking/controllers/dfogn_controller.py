@@ -43,6 +43,7 @@ class DFOGNController(Controller):
             self.success = True
 
         self._popt = self._soln.x
+        self._status = self._soln.flag
 
     def cleanup(self):
         """
@@ -50,16 +51,24 @@ class DFOGNController(Controller):
         will be read from.
         """
         if self.success:
-            status = self._soln.flag
             self.results = self.problem.eval_f(params=self._popt)
             self.final_params = self._popt
-            if status == 0:
-                self.flag = 0
-            elif status == 2:
-                self.flag = 1
-            else:
-                self.flag = 3
-        else:
-            self.flag = 4
             self.success = False
+        self.error_message = self.error_options[self.flag]
+
+    def error_flags(self):
+        """
+        Sets the error flags for the controller, the options are:
+            {0: "Successfully converged",
+             1: "Software reported maximum number of iterations exceeded",
+             2: "Software run but didn't converge to solution",
+             3: "Software raised an exception"}
+        """
+        if self._status == 0:
+            self.flag = 0
+        elif self._status == 2:
+            self.flag = 1
+        else:
+            self.flag = 2
+
         self.error_message = self.error_options[self.flag]

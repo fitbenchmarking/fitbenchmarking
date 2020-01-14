@@ -55,6 +55,7 @@ class RALFitController(Controller):
                                     self.problem.eval_j,
                                     options=self._options)[0]
         self.success = (self._popt is not None)
+        self._status = self.success
 
     def cleanup(self):
         """
@@ -64,5 +65,18 @@ class RALFitController(Controller):
         if self.success:
             self.results = self.problem.eval_f(params=self._popt)
             self.final_params = self._popt
+
+    def error_flags(self):
+        """
+        Sets the error flags for the controller, the options are:
+            {0: "Successfully converged",
+             1: "Software reported maximum number of iterations exceeded",
+             2: "Software run but didn't converge to solution",
+             3: "Software raised an exception"}
+        """
+        if self._status:
             self.flag = 0
+        else:
+            self.flag = 2
+
         self.error_message = self.error_options[self.flag]

@@ -64,9 +64,8 @@ class Controller:
         self.error_options = \
             {0: "Successfully converged",
              1: "Software reported maximum number of iterations exceeded",
-             2: "Software raised an exception",
-             3: "Software run but didn't converge to solution",
-             4: "Software fell over"}
+             2: "Software run but didn't converge to solution",
+             3: "Software raised an exception"}
         # error_message: reported error message for tables
         self.error_message = None
 
@@ -161,5 +160,16 @@ class Controller:
     def cleanup(self):
         """
         Retrieve the result as a numpy array and store in self.results
+        """
+        raise NotImplementedError
+
+    # @abstractmethod
+    def error_flags(self):
+        """
+        Sets the error flags for the controller, the options are:
+            {0: "Successfully converged",
+             1: "Software reported maximum number of iterations exceeded",
+             2: "Software run but didn't converge to solution",
+             3: "Software raised an exception"}
         """
         raise NotImplementedError
