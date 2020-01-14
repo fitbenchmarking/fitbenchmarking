@@ -92,7 +92,6 @@ class SasviewController(Controller):
         if self.success:
             self.final_params = self._bumps_result.x
             self.results = self._func_wrapper.theory()
-        self.error_message = self.error_options[self.flag]
 
     def error_flags(self):
         """

@@ -224,7 +224,6 @@ class GSLController(Controller):
         if self.success:
             self.final_params = self._solver.getx()
             self.results = self.problem.eval_f(params=self.final_params)
-        self.error_message = self.error_options[self.flag]
 
     def error_flags(self):
         """

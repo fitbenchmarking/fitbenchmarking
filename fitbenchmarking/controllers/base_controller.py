@@ -163,7 +163,7 @@ class Controller:
         """
         raise NotImplementedError
 
-    # @abstractmethod
+    @abstractmethod
     def error_flags(self):
         """
         Sets the error flags for the controller, the options are:

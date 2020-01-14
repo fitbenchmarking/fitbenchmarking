@@ -55,7 +55,7 @@ class RALFitController(Controller):
                                     self.problem.eval_j,
                                     options=self._options)[0]
         self.success = (self._popt is not None)
-        self._status = self.success
+        self._status = 0 if self.success else 1
 
     def cleanup(self):
         """
@@ -74,7 +74,7 @@ class RALFitController(Controller):
              2: "Software run but didn't converge to solution",
              3: "Software raised an exception"}
         """
-        if self._status:
+        if self._status == 0:
             self.flag = 0
         else:
             self.flag = 2

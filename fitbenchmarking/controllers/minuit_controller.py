@@ -49,7 +49,7 @@ class MinuitController(Controller):
         self.success = False
         self._minuit_problem.migrad()  # run optimizer
         self.success = True
-        self._status = self._minuit_problem.migrad_ok()
+        self._status = 0 if self._minuit_problem.migrad_ok() else 1
 
     def cleanup(self):
         """
@@ -70,7 +70,7 @@ class MinuitController(Controller):
              3: "Software raised an exception"}
         """
         fmin = self._minuit_problem.get_fmin()
-        if self._status:
+        if self._status == 0:
             self.flag = 0
         elif fmin.has_reached_call_limit:
             self.flag = 1
