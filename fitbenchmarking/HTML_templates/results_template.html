@@ -25,8 +25,12 @@
 </tr>
 </tbody>
 </table>
+{% if make_plots %}
 <div align="center" class="figure align-center">
 <img alt={{ initial_plot }} src={{ initial_plot }} />
+{% else %}
+<h3>{{ initial_plot }}</h3>
+{% endif %}
 </div>
 </div>
 <div class="section" id="plot-of-the-solution-found">
@@ -49,8 +53,12 @@
 </tr>
 </tbody>
 </table>
+{% if make_plots %}
 <div align="center" class="figure align-center">
 <img alt={{ fitted_plot }} src={{ fitted_plot }} />
+{% else %}
+<h3>{{ fitted_plot }}</h3>
+{% endif %}
 </div>
 </div>
 </body>

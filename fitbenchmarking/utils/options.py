@@ -5,6 +5,7 @@ This file will handle all interaction with the options configuration file.
 import configparser
 
 import os
+import sys
 
 
 class Options(object):
@@ -24,6 +25,9 @@ class Options(object):
         :param file_name: The options file to load
         :type file_name: str
         """
+        template = "ERROR IN OPTIONS FILE:\n" \
+                   "The option {0} must be of type {1}. \n" \
+                   "Please alter the ini file to reflect this and re-run."
         self._results_dir = ''
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str})
@@ -43,6 +47,13 @@ class Options(object):
         self.use_errors = fitting.getboolean('use_errors')
 
         plotting = config['PLOTTING']
+        # sys.exit() will be addressed in future FitBenchmarking
+        # error handling issue
+        try:
+            self.make_plots = plotting.getboolean('make_plots')
+        except ValueError:
+            print(template.format('make_plots', "boolean"))
+            sys.exit()
         self.colour_scale = plotting.getlist('colour_scale')
         self.colour_scale = [(float(cs.split(',', 1)[0].strip()),
                               cs.split(',', 1)[1].strip())
