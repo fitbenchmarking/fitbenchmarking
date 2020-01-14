@@ -101,6 +101,7 @@ def create(prob_results, group_name, support_pages_dir, count, options):
             css_style_sheet=style_css,
             title=prob_name,
             equation=best_result.problem.equation,
+            make_plots=options.make_plots,
             initial_guess=best_result.ini_function_params,
             best_minimiser=best_result.minimizer,
             initial_plot=fig_start,

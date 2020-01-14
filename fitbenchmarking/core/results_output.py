@@ -31,7 +31,8 @@ def save_results(options, results, group_name):
     """
     results_dict, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
     preproccess_data(results)
-    create_plots(options, results, group_name, fig_dir)
+    if options.make_plots:
+        create_plots(options, results, group_name, fig_dir)
     linked_probs = visual_pages.create_visual_pages(options=options,
                                                     results_per_test=results,
                                                     group_name=group_name,
@@ -115,7 +116,6 @@ def create_plots(options, results, group_name, figures_dir):
 
         for r in result:
             plot.plot_fit(r.minimizer, r.params)
-
 
 def create_results_tables(options, results, group_name, linked_problems,
                           group_dir):
@@ -291,14 +291,17 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
         table.index = html_links
         table_style = table.style.applymap(colour_highlight)\
             .set_caption(title)
-        root = os.path.dirname(os.path.abspath(__file__))
-        style_css = os.path.join(root, 'HTML_templates/style_sheet.css')
+        root = os.path.dirname(inspect.getfile(fitbenchmarking))
+        html_page_dir = os.path.join(root, 'HTML_templates')
+        style_css = os.path.join(html_page_dir, 'style_sheet.css')
+        env = Environment(loader=FileSystemLoader(html_page_dir))
+        template = env.get_template("blank_page.html")
 
-        style = '<link rel="stylesheet" type="text/css"  ' \
-            'href="{0}" />'.format(style_css)
-        with open(name + 'html', "w") as f:
-            f.write(style)
-            f.write(table_style.render(table_styles=style_css))
+        output_file = name + 'html'
+
+        with open(output_file, "w") as f:
+            f.write(template.render(css_style_sheet=style_css))
+            f.write(table_style.render())
         # pypandoc can be installed without pandoc
         try:
             output = pypandoc.convert_file(name + 'html', 'rst')
@@ -308,9 +311,9 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             print('RST tables require Pandoc to be installed')
 
 
-def create_top_level_index(options, table_names, group_name, group_dir):
+def create_problem_level_index(options, table_names, group_name, group_dir):
     """
-    Generates top level index page.
+    Generates problem level index page.
 
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
@@ -326,9 +329,9 @@ def create_top_level_index(options, table_names, group_name, group_dir):
     html_page_dir = os.path.join(root, 'HTML_templates')
     env = Environment(loader=FileSystemLoader(html_page_dir))
     style_css = os.path.join(html_page_dir, 'style_sheet.css')
-    template = env.get_template("index_page.html")
+    template = env.get_template("problem_index_page.html")
 
-    output_file = os.path.join(group_dir, 'top_level_index.html')
+    output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,
