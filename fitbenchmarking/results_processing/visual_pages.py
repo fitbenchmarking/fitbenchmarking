@@ -80,18 +80,23 @@ def create(prob_results, group_name, results_dir, count, options):
     prob_name = prob_name.replace(',', '')
     prob_name = prob_name.replace(' ', '_')
 
-    plot = plots.Plot(problem=best_result.problem,
-                      options=options,
-                      count=count,
-                      group_results_dir=results_dir)
-    plot.plot_initial_guess()
-    plot.plot_best_fit(best_result.minimizer, best_result.params)
+    if options.make_plots:
+        plot = plots.Plot(problem=best_result.problem,
+                          options=options,
+                          count=count,
+                          group_results_dir=results_dir)
+        plot.plot_initial_guess()
+        plot.plot_best_fit(best_result.minimizer, best_result.params)
+
+        fig_fit, fig_start = get_figure_paths(prob_name, count)
+    else:
+        fig_fit = fig_start = "Re-run with make_plots set to yes in the " \
+                              "ini file to generate plots"
 
     file_path = get_filepath(group_name, prob_name, results_dir, count)
-    fig_fit, fig_start = get_figure_paths(prob_name, count)
-
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     html_page_dir = os.path.join(root, "HTML_templates")
+
     env = Environment(loader=FileSystemLoader(html_page_dir))
     style_css = os.path.join(html_page_dir, 'style_sheet.css')
     html_link = "{0}.html".format(file_path)
@@ -105,6 +110,7 @@ def create(prob_results, group_name, results_dir, count, options):
             css_style_sheet=style_css,
             title=prob_name,
             equation=best_result.problem.equation,
+            make_plots=options.make_plots,
             initial_guess=best_result.ini_function_params,
             best_minimiser=best_result.minimizer,
             initial_plot=fig_start,
