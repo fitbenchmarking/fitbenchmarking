@@ -20,15 +20,25 @@ class Plot(object):
 
         self.legend_location = "upper left"
         self.title_size = 10
-        self.labels = None
-        self.default_plot_options = \
-            {"zorder": 2, "linewidth": 1.5}
-        self.data_plot_options = \
-            {"color": "black", "marker": "x", "linestyle": ''}
-        self.ini_guess_plot_options = \
-            {"color": "red", "marker": "", "linestyle": '-'}
-        self.best_fit_plot_options = \
-            {"color": "lime", "marker": "", "linestyle": '-'}
+        self.default_plot_options = {"linewidth": 3}
+        self.data_plot_options = {"label": "Data",
+                                  "zorder": 0,
+                                  "color": "black",
+                                  "marker": "x",
+                                  "linestyle": ''}
+        self.ini_guess_plot_options = {"label": "Starting Guess",
+                                       "zorder": 1,
+                                       "color": "#ff6699",
+                                       "marker": "",
+                                       "linestyle": '-'}
+        self.best_fit_plot_options = {"zorder": 3,
+                                      "color": '#6699ff',
+                                      "marker": "",
+                                      "linestyle": ':'}
+        self.fit_plot_options = {"zorder": 2,
+                                 "color": "#99ff66",
+                                 "marker": "",
+                                 "linestyle": '-'}
 
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(1, 1, 1)
@@ -49,7 +59,7 @@ class Plot(object):
         self.ax.set_ylabel("Arbitrary units")
         self.ax.set_title(self.problem.name + " " + str(self.count),
                           fontsize=self.title_size)
-        self.ax.legend(labels=self.labels, loc=self.legend_location)
+        self.ax.legend(loc=self.legend_location)
         self.fig.set_tight_layout(True)
 
     def plot_data(self, errors, specific_options, x=None, y=None):
@@ -100,7 +110,6 @@ class Plot(object):
         """
         Plots the initial guess along with the data
         """
-        self.labels = ["Data", "Starting Guess"]
         ini_guess = self.problem.starting_values[self.count - 1].values()
         self.plot_data(False,
                        self.ini_guess_plot_options,
@@ -109,23 +118,43 @@ class Plot(object):
         file = "start_for_{0}_{1}.png".format(self.problem.name, self.count)
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
+        return file
 
-    def plot_fit(self, minimizer, params):
+    def plot_best(self, minimizer, params):
         """
-        Plots the fit along with the data
+        Plots the fit along with the data using the "best_fit" style
 
         :param minimizer: name of the best fit minimizer
         :type minimizer: str
         :param params: fit parameters returned from the best fit minimizer
         :type params: list
         """
-
-        self.labels = ["Data", minimizer]
+        plot_options_dict = self.best_fit_plot_options.copy()
+        plot_options_dict['label'] = 'Best Fit ({})'.format(minimizer)
+        line = self.line_plot
+        self.line_plot = None
         self.plot_data(False,
-                       self.best_fit_plot_options,
+                       plot_options_dict,
+                       y=self.problem.eval_f(params))
+        self.line_plot = line
+
+    def plot_fit(self, minimizer, params):
+        """
+        Plots the fit along with the data
+
+        :param minimizer: name of the fit minimizer
+        :type minimizer: str
+        :param params: fit parameters returned from the best fit minimizer
+        :type params: list
+        """
+        plot_options_dict = self.fit_plot_options.copy()
+        plot_options_dict['label'] = minimizer
+        self.plot_data(False,
+                       plot_options_dict,
                        y=self.problem.eval_f(params))
         self.format_plot()
         file = "{}_fit_for_{}_{}.png".format(
             minimizer, self.problem.name, self.count)
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
+        return file

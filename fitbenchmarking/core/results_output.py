@@ -29,26 +29,26 @@ def save_results(options, results, group_name):
     :param group_name : name of the problem group
     :type group_name : str
     """
-    results_dict, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
-    preproccess_data(results)
+    _, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
+    best_results = preproccess_data(results)
     if options.make_plots:
-        create_plots(options, results, group_name, fig_dir)
-    linked_probs = visual_pages.create_visual_pages(options=options,
-                                                    results_per_test=results,
-                                                    group_name=group_name,
-                                                    support_pages_dir=supp_dir)
+        create_plots(options, results, best_results, group_name, fig_dir)
+    visual_pages.create_visual_pages(options=options,
+                                     results_per_test=results,
+                                     group_name=group_name,
+                                     support_pages_dir=supp_dir)
     table_names = create_results_tables(options,
                                         results,
+                                        best_results,
                                         group_name,
-                                        linked_probs,
                                         group_dir)
-    create_top_level_index(options, table_names, group_name, group_dir)
+    create_problem_level_index(options, table_names, group_name, group_dir)
 
 
 def create_directories(options, group_name):
     """
     Create the directory structure ready to store the results
-    
+
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
     :param group_name: name of the problem group
@@ -73,7 +73,8 @@ def preproccess_data(results_per_test):
     :type results_per_test : list of list of
                              fitbenchmarking.utils.fitbm_result.FittingResult
 
-    :return: 
+    :return: The best result for each problem
+    :rtype: list of fitbenchmarking.utils.fitbm_result.FittingResult
     """
     output = []
     for results in results_per_test:
@@ -88,7 +89,7 @@ def preproccess_data(results_per_test):
     return output
 
 
-def create_plots(options, results, group_name, figures_dir):
+def create_plots(options, results, best_results, group_name, figures_dir):
     """
     Create a plot for each result and store in the figures directory
 
@@ -97,27 +98,34 @@ def create_plots(options, results, group_name, figures_dir):
     :param results: results nested array of objects
     :type results : list of list of
                     fitbenchmarking.utils.fitbm_result.FittingResult
+    :param best_results: best result for each problem
+    :type best_results: list of
+                        fitbenchmarking.utils.fitbm_result.FittingResult
     :param group_name: name of he problem group
     :type group_name: str
     :param figures_dir: Path to directory to store the figures in
     :type figures_dir: str
     """
     name_count = {}
-    for result in results:
-        name = result[0].problem.name
+    for best, prob_result in zip(best_results, results):
+        name = best.problem.name
         name_count[name] = 1 + name_count.get(name, 0)
         count = name_count[name]
 
-        plot = plots.Plot(problem=result[0].problem,
+        plot = plots.Plot(problem=best.problem,
                           options=options,
                           count=count,
                           figures_dir=figures_dir)
-        plot.plot_initial_guess()
+        initial_guess_path = plot.plot_initial_guess()
+        plot.plot_best(best.minimizer, best.params)
 
-        for r in result:
-            plot.plot_fit(r.minimizer, r.params)
+        for result in prob_result:
+            plot_path = plot.plot_fit(result.minimizer, result.params)
+            result.start_figure_link = initial_guess_path
+            result.figure_link = plot_path
 
-def create_results_tables(options, results, group_name, linked_problems,
+
+def create_results_tables(options, results, best_results, group_name,
                           group_dir):
     """
     Saves the results of the fitting to html/rst tables.
@@ -129,8 +137,6 @@ def create_results_tables(options, results, group_name, linked_problems,
                     fitbenchmarking.utils.fitbm_result.FittingResult
     :param group_name : name of the problem group
     :type group_name : str
-    :param linked_problems : Paths to the support pages
-    :type linked_problems : list of str
     :param group_dir : path to the directory where group results should be
                        stored
     :type group_dir : str
@@ -139,10 +145,6 @@ def create_results_tables(options, results, group_name, linked_problems,
              e.g {'acc': <acc-table-filename>, 'runtime': ...}
     :rtype: dict
     """
-
-    minimizers = [options.minimizers[s] for s in options.software]
-    minimizers = sum(minimizers, [])
-
     weighted_str = 'weighted' if options.use_errors else 'unweighted'
 
     table_names = OrderedDict()
@@ -152,14 +154,11 @@ def create_results_tables(options, results, group_name, linked_problems,
                                                group_name,
                                                suffix,
                                                weighted_str))
-    generate_tables(results, minimizers,
-                    linked_problems, table_names,
-                    options.table_type)
+    generate_tables(results, best_results, table_names, options.table_type)
     return table_names
 
 
-def generate_tables(results_per_test, minimizers, linked_problems, table_names,
-                    table_suffix):
+def generate_tables(results_per_test, best_results, table_names, table_suffix):
     """
     Generates accuracy and runtime tables, with both normalised and absolute
     results, and summary tables in both rst and html.
@@ -178,14 +177,12 @@ def generate_tables(results_per_test, minimizers, linked_problems, table_names,
     """
     table_titles = ["FitBenchmarking: {0} table".format(name)
                     for name in table_suffix]
-    results_dict, html_links = create_results_dict(results_per_test,
-                                                   linked_problems)
-    table = create_pandas_dataframe(results_dict, minimizers, table_suffix)
-    render_pandas_dataframe(table, minimizers, html_links,
-                            table_names, table_titles)
+    results_dict = create_results_dict(results_per_test)
+    table = create_pandas_dataframe(results_dict, table_suffix)
+    render_pandas_dataframe(table, best_results, table_names, table_titles)
 
 
-def create_results_dict(results_per_test, linked_problems):
+def create_results_dict(results_per_test):
     """
     Generates a dictionary used to create HTML and RST tables.
 
@@ -201,26 +198,20 @@ def create_results_dict(results_per_test, linked_problems):
     :rtype : tuple(dict, list)
     """
 
-    count = 1
-    prev_name = ''
-    template = '<a target="_blank" href="{0}">{1}</a>'
     results = OrderedDict()
-    html_links = []
 
-    for prob_results, link in zip(results_per_test, linked_problems):
+    name_count = {}
+    for prob_results in results_per_test:
         name = prob_results[0].problem.name
-        if name == prev_name:
-            count += 1
-        else:
-            count = 1
-        prev_name = name
+        name_count[name] = 1 + name_count.get(name, 0)
+        count = name_count[name]
+
         prob_name = name + ' ' + str(count)
-        html_links.append(template.format(link, prob_name))
         results[prob_name] = [result for result in prob_results]
-    return results, html_links
+    return results
 
 
-def create_pandas_dataframe(table_data, minimizers, table_suffix):
+def create_pandas_dataframe(table_data, table_suffix):
     """
     Generates pandas data frame.
 
@@ -228,8 +219,6 @@ def create_pandas_dataframe(table_data, minimizers, table_suffix):
                             {'prob1': [result1, result2, ...],
                              'prob2': [result1, result2, ...], ...}
     :type table_data : dict
-    :param minimizers : list of minimizers (column headers)
-    :type minimizers : list
     :param table_suffix : set output to be runtime or accuracy table
     :type table_suffix : list
 
@@ -249,24 +238,19 @@ def create_pandas_dataframe(table_data, minimizers, table_suffix):
         return value
 
     tbl = pd.DataFrame.from_dict(table_data, orient='index')
-    tbl.columns = minimizers
+    tbl.columns = [r.minimizer for r in tbl.iloc[0]]
     results = OrderedDict()
     for suffix in table_suffix:
         results[suffix] = tbl.applymap(lambda x: select_table(x, suffix))
     return results
 
 
-def render_pandas_dataframe(table_dict, minimizers, html_links,
-                            table_names, table_title):
+def render_pandas_dataframe(table_dict, best_results, table_names, table_title):
     """
     Generates html and rst page from pandas dataframes.
 
     :param table_dict : dictionary of DataFrame of the results
     :type table_dict : dict(pandas DataFrame, ...)
-    :param minimizers : list of minimizers (column headers)
-    :type minimizers : list
-    :param html_links : html links used in pandas rendering
-    :type html_links : list
     :param table_names : list of table names
     :type table_names : list
     :param table_title : list of table titles
@@ -280,15 +264,25 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
         colour = value.colour
         if isinstance(colour, list):
             colour_output = \
-                'background-image: linear-gradient({0},{1})'.format(
+                'background-image: linear-gradient({0},{0},{1},{1})'.format(
                     colour[0], colour[1])
         else:
             colour_output = 'background-color: {0}'.format(colour)
         return colour_output
 
+    def insert_link(result):
+        '''
+        Insert HTML links into values
+        '''
+        result.html_print = True
+        return result
+
     for name, title, table in zip(table_names.values(), table_title,
                                   table_dict.values()):
-        table.index = html_links
+        index = ['<a target="_blank" href="{0}">{1}</a>'.format(b.support_page_link,i)
+                       for b, i in zip(best_results, table.index)]
+        table.index = index
+        table.applymap(insert_link)
         table_style = table.style.applymap(colour_highlight)\
             .set_caption(title)
         root = os.path.dirname(inspect.getfile(fitbenchmarking))

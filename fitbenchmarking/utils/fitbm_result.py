@@ -45,9 +45,17 @@ class FittingResult(object):
                                    "rel": '{:.4g}',
                                    "both": '{0:.4g} ({1:.4g})'}
 
+        self.support_page_link = ''
+        self.start_figure_link = ''
+        self.figure_link = ''
+        self.html_print = False
+
     def __str__(self):
         if self.table_type is not None:
             output = self.table_output
+            if self.html_print:
+                output = '<a target="_blank" href="{0}">{1}</a>'.format(
+                    self.support_page_link, output)
         else:
             output = 'Fitting problem class: minimizer = {0}'.format(
                 self.minimizer)
