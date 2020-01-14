@@ -13,9 +13,12 @@ cd $HOME/cutest
 
 export ARCHDEFS=$HOME/cutest/archdefs/
 export SIFDECODE=$HOME/cutest/sifdecode/
-export MASTSIF=$HOME/cutest/mastsif/
+export MASTSIF=$SCRIPTPATH/examples/benchmark_problems/SIF/
 export CUTEST=$HOME/cutest/cutest/
 export MYARCH="pc64.lnx.gfo"
+mkdir pycutest_cache
+export PYCUTEST_CACHE=$PWD/pycutest_cache
+export PYTHONPATH="${PYCUTEST_CACHE}:${PYTHONPATH}"
 
 # install sifdecode
 cd $SIFDECODE
