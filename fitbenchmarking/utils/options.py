@@ -86,6 +86,7 @@ class Options(object):
                              for pair in self.colour_scale])
         config['PLOTTING'] = {'colour_scale': cs,
                               'comparison_mode': self.comparison_mode,
+                              'make_plots': self.make_plots,
                               'results_dir': self.results_dir,
                               'table_type': list_to_string(self.table_type)}
 
