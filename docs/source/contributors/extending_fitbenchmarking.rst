@@ -122,7 +122,7 @@ In order to add a new controller, you will need to:
 2. Create ``fitbenchmarking/fitting/controllers/<software_name>_controller.py``
    which contains a new subclass of ``BaseSoftwareController``
    (from ``base_controller.py``).
-   This should implement 4 functions:
+   This should implement 5 functions:
 
    -  ``__init__()``: Initialise anything that is needed specifically for the
       software, do any work that can be done without knowledge of the
@@ -135,17 +135,12 @@ In order to add a new controller, you will need to:
    -  ``cleanup()``: Convert the results into the expected numpy arrays and
       store them in the results variables
       (``self.results``, ``self.final_params``, ``self.success``)
-
-3. For error handling add an error flag to either ``fit()`` or ``cleanup``
-   using the following keys::
-   
-     {0: "Successfully converged",
-      1: "Software reported maximum number of iterations exceeded",
-      2: "Software raised an exception",
-      3: "Software run but didn't converge to solution",
-      4: "Software fell over"}.
-   
-  From the flag set the error_message value.
+   -  ``error_flags()``: Converts the software flags into the same format as
+      FitBenchmarking, the keys are give as::
+         {0: "Successfully converged",
+          1: "Software reported maximum number of iterations exceeded",
+          2: "Software run but didn't converge to solution",
+          3: "Software raised an exception"}.
 
 4. Document the available minimizers (currently done by adding to
    ``fitbenchmarking/utils/default_options.ini`` and any example files in
