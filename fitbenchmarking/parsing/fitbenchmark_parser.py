@@ -390,6 +390,6 @@ class FitbenchmarkParser(Parser):
             data_points[idx, :] = point
 
         # Strip all np.nan entries
-        data_points = data_points[data_points[:, 0] != np.nan, :]
+        data_points = data_points[~np.isnan(data_points[:, 0]), :]
 
         return data_points
