@@ -8,17 +8,14 @@ import numpy as np
 import timeit
 import warnings
 
-from fitbenchmarking.fitting.controllers.controller_factory \
-    import ControllerFactory
-from fitbenchmarking.fitting.plotting import plot_helper, plots
+from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.utils import fitbm_result
 
 
 def fitbm_one_prob(problem, options, directory):
     """
     Sets up the controller for a particular problem and fits the models
-    provided in the problem object. The best fit, along with the data and a
-    starting guess is then plotted on a visual display page.
+    provided in the problem object.
 
     :param problem: a problem object containing information used in fitting
     :type problem: FittingProblem
@@ -66,15 +63,9 @@ def fitbm_one_prob(problem, options, directory):
             problem.data_e = controller.data_e
 
             controller.parameter_set = i
-            problem_result, best_fit = benchmark(controller=controller,
-                                                 minimizers=minimizers,
-                                                 options=options)
-            if best_fit is not None:
-                # Make the plot of the best fit
-                plots.make_plots(problem=problem,
-                                 best_fit=best_fit,
-                                 count=i + 1,
-                                 group_results_dir=directory)
+            problem_result = benchmark(controller=controller,
+                                       minimizers=minimizers,
+                                       options=options)
 
             results[i][s] = problem_result
     return results
@@ -92,12 +83,10 @@ def benchmark(controller, minimizers, options):
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
 
-    :returns: tuple(results_problem, best_fit) nested array of
-              result objects, per minimizer and data object for
-              the best fit data
-    :rtype: (list of FittingResult, plot_helper.data instance)
+    :returns: results_problem nested array of result objects, per
+              minimizer
+    :rtype: list
     """
-    min_chi_sq, best_fit = None, None
     results_problem = []
     num_runs = options.num_runs
     for minimizer in minimizers:
@@ -105,15 +94,13 @@ def benchmark(controller, minimizers, options):
 
         controller.minimizer = minimizer
 
-        init_function_params = controller.problem.get_function_params(
-            params=controller.initial_params)
-
         try:
             # Calls timeit repeat with repeat = num_runs and number = 1
             runtime_list = \
                 timeit.Timer(setup=controller.prepare,
                              stmt=controller.fit).repeat(num_runs, 1)
             runtime = sum(runtime_list) / num_runs
+            controller.success = True
 
         # Catching all exceptions as this means runtime cannot be calculated
         # pylint: disable=broad-except
@@ -124,12 +111,13 @@ def benchmark(controller, minimizers, options):
 
         controller.cleanup()
 
+        init_function_params = controller.problem.get_function_params(
+            params=controller.initial_params)
         fin_function_params = controller.problem.get_function_params(
             params=controller.final_params)
 
         if not controller.success:
             chi_sq = np.inf
-            status = 'failed'
         else:
             ratio = np.max(runtime_list) / np.min(runtime_list)
             tol = 4
@@ -142,27 +130,15 @@ def benchmark(controller, minimizers, options):
                                            x=controller.data_x,
                                            y=controller.data_y,
                                            e=controller.data_e)
-            status = 'success'
-
-        if min_chi_sq is None:
-            min_chi_sq = chi_sq + 1
-
-        if chi_sq < min_chi_sq:
-            min_chi_sq = chi_sq
-            index = controller.sorted_index
-            best_fit = plot_helper.data(name=minimizer,
-                                        x=controller.data_x,
-                                        y=controller.results,
-                                        E=controller.data_e,
-                                        sorted_index=index)
 
         problem = controller.problem
         individual_result = fitbm_result.FittingResult(
-            options=options, problem=problem, fit_status=status,
+            options=options, problem=problem, fit_status=controller.success,
             chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
+            params=controller.final_params,
             ini_function_params=init_function_params,
             fin_function_params=fin_function_params)
 
         results_problem.append(individual_result)
 
-    return results_problem, best_fit
+    return results_problem

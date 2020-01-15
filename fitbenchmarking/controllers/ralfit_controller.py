@@ -5,7 +5,7 @@ https://github.com/ralna/RALFit
 
 import ral_nlls
 
-from fitbenchmarking.fitting.controllers.base_controller import Controller
+from fitbenchmarking.controllers.base_controller import Controller
 
 
 class RALFitController(Controller):
