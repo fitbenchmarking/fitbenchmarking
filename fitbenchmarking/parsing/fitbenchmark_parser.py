@@ -22,7 +22,7 @@ except ImportError:
 
 
 try:
-    from sasmodels.data import load_data, empty_data1D
+    from sasmodels.data import empty_data1D
     from sasmodels.core import load_model
     from sasmodels.bumps_model import Experiment, Model
     import_success['sasview'] = True
@@ -57,19 +57,11 @@ class FitbenchmarkParser(Parser):
         fitting_problem.name = self._entries['name']
 
         # DATA
-        if software == 'mantid':
-            data_points = self._get_mantid_data_points()
-
-            fitting_problem.data_x = data_points[:, 0]
-            fitting_problem.data_y = data_points[:, 1]
-            if data_points.shape[1] > 2:
-                fitting_problem.data_e = data_points[:, 2]
-        elif software == 'sasview':
-            data_file_path = self._get_data_file()
-            data_obj = load_data(data_file_path)
-
-            fitting_problem.data_x = data_obj.x
-            fitting_problem.data_y = data_obj.y
+        data_points = self._get_data_points()
+        fitting_problem.data_x = data_points[:, 0]
+        fitting_problem.data_y = data_points[:, 1]
+        if data_points.shape[1] > 2:
+            fitting_problem.data_e = data_points[:, 2]
 
         # FUNCTION
         if software == 'mantid':
@@ -352,9 +344,9 @@ class FitbenchmarkParser(Parser):
 
         return fitFunction
 
-    def _get_mantid_data_points(self):
+    def _get_data_points(self):
         """
-        Get the data points of the problem from the mantid data file.
+        Get the data points of the problem from the data file.
 
         :return: data points
         :rtype: np.ndarray
@@ -365,13 +357,35 @@ class FitbenchmarkParser(Parser):
         with open(data_file_path, 'r') as f:
             data_text = f.readlines()
 
-        first_row = data_text[2].strip()
-        dim = len(first_row.split())
-        data_points = np.zeros((len(data_text)-2, dim))
+        # Find the line where data starts
+        # i.e. the first line with a float on it
+        first_row = 0
+        done = False
+        while not done:
+            line = data_text[first_row].strip()
+            if line != '':
+                x_val = line.split()[0]
+                try:
+                    _ = float(x_val)
+                except ValueError:
+                    pass
+                else:
+                    break
+            first_row += 1
 
-        for idx, line in enumerate(data_text[2:]):
+        dim = len(data_text[first_row].split())
+        data_points = np.zeros((len(data_text)-first_row, dim))
+
+        for idx, line in enumerate(data_text[first_row:]):
             point_text = line.split()
-            point = [float(val) for val in point_text]
+            # Skip any values that can't be represented
+            try:
+                point = [float(val) for val in point_text]
+            except ValueError:
+                point = [np.nan for val in point_text]
             data_points[idx, :] = point
+
+        # Strip all np.nan entries
+        data_points = data_points[data_points[:, 0] != np.nan, :]
 
         return data_points
