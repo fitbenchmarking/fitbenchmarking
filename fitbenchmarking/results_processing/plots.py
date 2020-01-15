@@ -1,5 +1,6 @@
 """
-Higher level functions that are used for plotting the best fit plot and a starting guess plot.
+Higher level functions that are used for plotting the fit plot and a starting
+guess plot.
 """
 import matplotlib
 matplotlib.use('Agg')
@@ -15,12 +16,20 @@ class Plot(object):
     def __init__(self, problem, options, count, figures_dir):
         self.problem = problem
         self.options = options
+
+        # Count is the a unique number associated with a possibly duplicated
+        # problem name (e.g. in the case of multiple starting points)
         self.count = count
+
         self.figures_dir = figures_dir
 
         self.legend_location = "upper left"
         self.title_size = 10
+
+        # These are styles that are shared by all generated plots
         self.default_plot_options = {"linewidth": 3}
+
+        # These define the styles of the 4 types of plot
         self.data_plot_options = {"label": "Data",
                                   "zorder": 0,
                                   "color": "black",
@@ -40,15 +49,24 @@ class Plot(object):
                                  "marker": "",
                                  "linestyle": '-'}
 
+        # Create a single reusable plot containing the problem data.
+        # We store a line here, which is updated to change the graph where we
+        # know the rest of the graph is untouched between plots.
+        # This is more efficient that the alternative of creating a new graph
+        # every time.
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(1, 1, 1)
         self.line_plot = None
+        # Plot the data that functions were fitted to
         self.plot_data(self.options.use_errors,
                        self.data_plot_options)
         # reset line_plot as base data won't need updating
         self.line_plot = None
 
     def __del__(self):
+        """
+        Close the matplotlib figure
+        """
         plt.close(self.fig)
 
     def format_plot(self):
@@ -66,12 +84,10 @@ class Plot(object):
         """
         Plots the data given
 
-        :param errors: boolean to say whether fit minimizer uses errors
+        :param errors: whether fit minimizer uses errors
         :type errors: bool
-        :param default_options: dictionary containing default plot options
-        :type default_options: dict
-        :param specific_options: dictionary containing specific plot options,
-                                 for example for the data plot
+        :param specific_options: Values for style of the data to plot,
+                                 for example color and zorder
         :type specific_options: dict
         :param x: x values to be plotted
         :type x: np.array
@@ -93,6 +109,7 @@ class Plot(object):
         else:
             # Plot without errors
             if self.line_plot is None:
+                # Create a new line and store
                 self.line_plot = self.ax.plot(x, y, **temp_options)[0]
             else:
                 # Update line instead of recreating
@@ -108,11 +125,11 @@ class Plot(object):
 
     def plot_initial_guess(self):
         """
-        Plots the initial guess along with the data
+        Plots the initial guess along with the data and stores in a file
         """
         ini_guess = self.problem.starting_values[self.count - 1].values()
-        self.plot_data(False,
-                       self.ini_guess_plot_options,
+        self.plot_data(errors=False,
+                       specific_options=self.ini_guess_plot_options,
                        y=self.problem.eval_f(ini_guess))
         self.format_plot()
         file = "start_for_{0}_{1}.png".format(self.problem.name, self.count)
@@ -131,16 +148,20 @@ class Plot(object):
         """
         plot_options_dict = self.best_fit_plot_options.copy()
         plot_options_dict['label'] = 'Best Fit ({})'.format(minimizer)
+        # This should not update the line as it will be consistent between plots
+        # Cache the line here and reset it after plotting
         line = self.line_plot
         self.line_plot = None
-        self.plot_data(False,
-                       plot_options_dict,
+        self.plot_data(errors=False,
+                       specific_options=plot_options_dict,
                        y=self.problem.eval_f(params))
         self.line_plot = line
 
     def plot_fit(self, minimizer, params):
         """
-        Plots the fit along with the data
+        Updates self.line to show the fit using the passed in params.
+        If self.line is empty it will create a new line.
+        Stores the plot in a file
 
         :param minimizer: name of the fit minimizer
         :type minimizer: str

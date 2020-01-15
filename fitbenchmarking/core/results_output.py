@@ -1,5 +1,5 @@
 """
-Functions that creates the tables and the visual display pages.
+Functions that create the tables, support pages, figures, and indexes.
 """
 
 from __future__ import (absolute_import, division, print_function)
@@ -66,8 +66,8 @@ def create_directories(options, group_name):
 
 def preproccess_data(results_per_test):
     """
-    Helper function that preprocesses data into the right format for printing
-    and finds the best result for each problem
+    Preprocess data into the right format for printing and find the best result
+    for each problem
 
     :param results_per_test: results nested array of objects
     :type results_per_test : list of list of
@@ -116,10 +116,17 @@ def create_plots(options, results, best_results, group_name, figures_dir):
                           options=options,
                           count=count,
                           figures_dir=figures_dir)
+
+        # Create a plot showing the initial guess and get filename
         initial_guess_path = plot.plot_initial_guess()
+
+        # If none of the fits succeeded, params could be None
+        # Otherwise, add the best fit to the plot
         if best.params is not None:
             plot.plot_best(best.minimizer, best.params)
 
+        # For each result, if it succeeded, create a plot and add plot links to
+        # the resuts object
         for result in prob_result:
             if result.params is not None:
                 plot_path = plot.plot_fit(result.minimizer, result.params)
@@ -139,6 +146,9 @@ def create_results_tables(options, results, best_results, group_name,
     :param results : results nested array of objects
     :type results : list of list of
                     fitbenchmarking.utils.fitbm_result.FittingResult
+    :param best_results: best result for each problem
+    :type best_results: list of
+                        fitbenchmarking.utils.fitbm_result.FittingResult
     :param group_name : name of the problem group
     :type group_name : str
     :param group_dir : path to the directory where group results should be
@@ -170,12 +180,11 @@ def generate_tables(results_per_test, best_results, table_names, table_suffix):
     :param results_per_test : results nested array of objects
     :type results_per_test : list of list of
                              fitbenchmarking.utils.fitbm_result.FittingResult
-    :param minimizers : array with minimizer names
-    :type minimizers : list
-    :param linked_problems : paths to supporting pages
-    :type linked_problems : list[str]
-    :param table_name : list of table names
-    :type table_name : list
+    :param best_results: best result for each problem
+    :type best_results: list of
+                        fitbenchmarking.utils.fitbm_result.FittingResult
+    :param table_names : list of table names
+    :type table_names : list
     :param table_suffix : set output to be runtime or accuracy table
     :type table_suffix : str
     """
@@ -193,13 +202,9 @@ def create_results_dict(results_per_test):
     :param results_per_test : results nested array of objects
     :type results_per_test : list of list of
                              fitbenchmarking.utils.fitbm_result.FittingResult
-    :param linked_problems : paths to supporting pages
-    :type linked_problems : list[str]
 
-    :return : tuple(results, html_links)
-              dictionary of results objects and
-              html links for rending
-    :rtype : tuple(dict, list)
+    :return : A dictionary of results objects
+    :rtype : dict
     """
 
     results = OrderedDict()
@@ -211,7 +216,7 @@ def create_results_dict(results_per_test):
         count = name_count[name]
 
         prob_name = name + ' ' + str(count)
-        results[prob_name] = [result for result in prob_results]
+        results[prob_name] = prob_results
     return results
 
 
@@ -242,6 +247,7 @@ def create_pandas_dataframe(table_data, table_suffix):
         return value
 
     tbl = pd.DataFrame.from_dict(table_data, orient='index')
+    # Get minimizers from first row of objects to use as columns
     tbl.columns = [r.minimizer for r in tbl.iloc[0]]
     results = OrderedDict()
     for suffix in table_suffix:
@@ -249,24 +255,31 @@ def create_pandas_dataframe(table_data, table_suffix):
     return results
 
 
-def render_pandas_dataframe(table_dict, best_results, table_names, table_title):
+def render_pandas_dataframe(table_dict, best_results, table_names,
+                            table_title):
     """
     Generates html and rst page from pandas dataframes.
 
     :param table_dict : dictionary of DataFrame of the results
     :type table_dict : dict(pandas DataFrame, ...)
+    :param best_results: best result for each problem
+    :type best_results: list of
+                        fitbenchmarking.utils.fitbm_result.FittingResult
     :param table_names : list of table names
     :type table_names : list
     :param table_title : list of table titles
     :type table_title : list
     """
 
+    # Define functions that are used in calls to map over dataframes
     def colour_highlight(value):
         '''
         Colour mapping for visualisation of table
         '''
         colour = value.colour
         if isinstance(colour, list):
+            # Use 4 colours in gradient to make gradient only change in centre
+            # of cell
             colour_output = \
                 'background-image: linear-gradient({0},{0},{1},{1})'.format(
                     colour[0], colour[1])
@@ -274,35 +287,52 @@ def render_pandas_dataframe(table_dict, best_results, table_names, table_title):
             colour_output = 'background-color: {0}'.format(colour)
         return colour_output
 
-    def insert_link(result):
+    def enable_link(result):
         '''
-        Insert HTML links into values
+        Enable HTML links in values
+
+        Note: Due to the way applymap works in DataFrames, this cannot make a
+        change based on the state of the value
+
+        :param result: The result object to update
+        :type result: fitbenchmaring.utils.fitbm_result.FittingResult
+
+        :return: The same result object after updating
+        :rtype: fitbenchmarking.utils.fitbm_result.FittingResult
         '''
         result.html_print = True
         return result
 
     for name, title, table in zip(table_names.values(), table_title,
                                   table_dict.values()):
-        index = ['<a target="_blank" href="{0}">{1}</a>'.format(b.support_page_link,i)
-                       for b, i in zip(best_results, table.index)]
+        # Update table indexes to link to the best support page
+        index = ['<a target="_blank" '
+                 'href="{0}">{1}</a>'.format(b.support_page_link, i)
+                 for b, i in zip(best_results, table.index)]
         table.index = index
-        table.applymap(insert_link)
+
+        # Update table values to point to individual support pages
+        table.applymap(enable_link)
+
+        # Set colour on each cell and add title
         table_style = table.style.applymap(colour_highlight)\
             .set_caption(title)
+
+        # Setup template for css
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         html_page_dir = os.path.join(root, 'HTML_templates')
         style_css = os.path.join(html_page_dir, 'style_sheet.css')
         env = Environment(loader=FileSystemLoader(html_page_dir))
         template = env.get_template("blank_page.html")
 
+        # Write to html, then use pypandoc to convert to RST
         output_file = name + 'html'
-
         with open(output_file, "w") as f:
             f.write(template.render(css_style_sheet=style_css))
             f.write(table_style.render())
         # pypandoc can be installed without pandoc
         try:
-            output = pypandoc.convert_file(name + 'html', 'rst')
+            output = pypandoc.convert_file(output_file, 'rst')
             with open(name + 'rst', "w") as f:
                 f.write(output)
         except ImportError:

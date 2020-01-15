@@ -11,14 +11,15 @@ import os
 def create_visual_pages(results_per_test, group_name, support_pages_dir,
                         options):
     """
-    Creates the visual display html pages, and store links in result objects.
+    Iterate through problem results and create a visual display html page for
+    each.
 
     :param results_per_test : results object
     :type results_per_test : list[list[list]]
     :param group_name : name of the problem group
     :type group_name : str
-    :param results_dir : directory in which the results are saved
-    :type results_dir : str
+    :param support_pages_dir : directory in which the results are saved
+    :type support_pages_dir : str
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
     """
@@ -40,16 +41,17 @@ def create(prob_results, group_name, support_pages_dir, count, options):
     """
     Creates a visual display page containing figures and other
     details about the fit for a problem.
+    A link to the visual page is stored in the results object.
 
     :param prob_results : problem results objects containing results for
                           each minimizer and a certain fitting function
-    :type prob_results : list
+    :type prob_results : list[fitbenchmarking.utils.fitbm_result.FittingResult]
     :param group_name : name of the problem group
     :type group_name : str
-    :param results_dir : directory in which the results are saved
-    :type results_dir : str
+    :param support_pages_dir : directory to store the support pages in
+    :type support_pages_dir : str
     :param count : number of times a problem with the same name was
-                   passed through this function, consecutively
+                   passed through this function
     :type count : int
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
@@ -95,10 +97,8 @@ def get_figure_paths(result, count):
     """
     Get the paths to the figures used in the visual display page.
 
-    :param support_pages_dir : directory containing the visual display pages
-    :type support_pages_dir : str
-    :param problem_name : name of the problem
-    :type problem_name : str
+    :param result : THe result to get the figures for
+    :type result : fitbenchmarking.utils.fitbm_result.FittingProblem
     :param count : number of times a problem with the same name was
                    passed through this function, consecutively
     :type count : int
