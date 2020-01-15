@@ -360,9 +360,13 @@ class FitbenchmarkParser(Parser):
         # Find the line where data starts
         # i.e. the first line with a float on it
         first_row = 0
-        done = False
-        while not done:
-            line = data_text[first_row].strip()
+
+        # Loop until break statement
+        while True:
+            try:
+                line = data_text[first_row].strip()
+            except IndexError:
+                raise ValueError('Could not find data points')
             if line != '':
                 x_val = line.split()[0]
                 try:
@@ -370,7 +374,7 @@ class FitbenchmarkParser(Parser):
                 except ValueError:
                     pass
                 else:
-                    done = True
+                    break
             first_row += 1
 
         dim = len(data_text[first_row].split())
