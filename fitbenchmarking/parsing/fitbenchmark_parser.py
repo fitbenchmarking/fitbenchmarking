@@ -370,7 +370,7 @@ class FitbenchmarkParser(Parser):
                 except ValueError:
                     pass
                 else:
-                    break
+                    done = True
             first_row += 1
 
         dim = len(data_text[first_row].split())
