@@ -34,7 +34,11 @@ class FitbenchmarkParser(Parser):
         
         # get just the short filename (minus the .SIF)
         fp = FittingProblem()
-        
+
+        # load the problem from the sif file
+        # set the MASTSIF environment variable so that pycutest
+        # can find the sif files
+        os.environ["MASTSIF"] = problem_directory
         self._p = pycutest.import_problem(problem)
 
         fp.name = problem
