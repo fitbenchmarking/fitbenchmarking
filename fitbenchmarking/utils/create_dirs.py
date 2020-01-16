@@ -13,7 +13,7 @@ def results(results_dir):
     :param results_dir: path to the results directory, results dir name
     :type results_dir: str
 
-    :returns: proper path to the results directory
+    :return: proper path to the results directory
     :rtype: str
     """
 
@@ -31,10 +31,13 @@ def group_results(results_dir, group_name):
     Creates the results directory for a specific group.
     e.g. fitbenchmarking/results/Neutron/
 
-    @param results_dir :: directory that holds all the results
-    @param group_name :: string containing the name of the problem group
+    :param results_dir: path to directory that holds all the results
+    :type results_dir: str
+    :param group_name: name of the problem group
+    :type group_name: str
 
-    @returns :: path to folder group specific results dir
+    :return: path to folder group specific results dir
+    :rtype: str
     """
 
     if isinstance(group_name, str):
@@ -53,12 +56,13 @@ def support_pages(group_results_dir):
     """
     Creates the support_pages directory in the group results directory.
 
-    @param group_results_dir :: path to the group results directory
+    :param group_results_dir: path to the group results directory
+    :type group_results_dir: str
 
-    @returns :: path to the figures directory
+    :return: path to the figures directory
+    :rtype: str
     """
-    support_pages_dir = \
-        os.path.join(group_results_dir, "support_pages")
+    support_pages_dir = os.path.join(group_results_dir, "support_pages")
     if not os.path.exists(support_pages_dir):
         os.makedirs(support_pages_dir)
 
@@ -69,9 +73,11 @@ def figures(support_pages_dir):
     """
     Creates the figures directory inside the support_pages directory.
 
-    @param group_results_dir :: path to the group results directory
+    :param support_pages_dir: path to the support pages directory
+    :type support_pages_dir: str
 
-    @returns :: path to the figures directory
+    :return: path to the figures directory
+    :rtype: str
     """
     figures_dir = os.path.join(support_pages_dir, "figures")
     if not os.path.exists(figures_dir):
@@ -84,7 +90,8 @@ def del_contents_of_dir(directory):
     """
     Delete contents of a directory, including other directories.
 
-    @param directory :: the target directory
+    :param directory: the target directory
+    :type directory: str
     """
 
     for file in os.listdir(directory):
