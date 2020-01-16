@@ -54,7 +54,7 @@ class FittingResult(object):
         if self.table_type is not None:
             output = self.table_output
             if self.html_print:
-                output = '<a target="_blank" href="{0}">{1}</a>'.format(
+                output = '<a href="{0}">{1}</a>'.format(
                     self.support_page_link, output)
         else:
             output = 'Fitting problem class: minimizer = {0}'.format(
