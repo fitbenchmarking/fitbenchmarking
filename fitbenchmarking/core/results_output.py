@@ -28,6 +28,9 @@ def save_results(options, results, group_name):
                     fitbenchmarking.utils.fitbm_result.FittingResult
     :param group_name : name of the problem group
     :type group_name : str
+
+    :return: Path to directory of group results
+    :rtype: str
     """
     _, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
     best_results = preproccess_data(results)
@@ -43,6 +46,8 @@ def save_results(options, results, group_name):
                                         group_name,
                                         group_dir)
     create_problem_level_index(options, table_names, group_name, group_dir)
+
+    return group_dir
 
 
 def create_directories(options, group_name):

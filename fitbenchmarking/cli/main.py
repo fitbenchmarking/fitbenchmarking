@@ -86,14 +86,14 @@ def run(problem_sets, options_file=''):
 
         print('\nRunning the benchmarking on the {} problem set\n'.format(
             label))
-        results, group_results_dir = fitbenchmark_group(group_name=label,
-                                                        options=options,
-                                                        data_dir=data_dir)
+        results = fitbenchmark_group(group_name=label,
+                                     options=options,
+                                     data_dir=data_dir)
         print('\nProducing output for the {} problem set\n'.format(label))
         # Display the runtime and accuracy results in a table
-        save_results(group_name=label,
-                     results=results,
-                     options=options)
+        group_results_dir = save_results(group_name=label,
+                                         results=results,
+                                         options=options)
 
         print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
         result_dir.append(group_results_dir)
@@ -104,10 +104,9 @@ def run(problem_sets, options_file=''):
     env = Environment(loader=FileSystemLoader(html_page_dir))
     style_css = os.path.join(html_page_dir, 'style_sheet.css')
     template = env.get_template("index_page.html")
-    r_dir = os.path.dirname(group_results_dir)
     group_links = [os.path.join(d, "{}_index.html".format(g))
                    for g, d in zip(groups, result_dir)]
-    output_file = os.path.join(r_dir, 'index_index.html')
+    output_file = os.path.join(options.results_dir, 'results_index.html')
 
     with open(output_file, 'w') as fh:
         fh.write(template.render(
