@@ -1,7 +1,7 @@
 # FitBenchmark Problem
-# An example of tube calibration for the WISH instrument
+software = 'Mantid'
 name = 'WISH17701 panel 103 tube 3 calibration, peak 8'
+description = 'An example of tube calibration for the WISH instrument'
 input_file = 'WISH17701_calibration_panel103_tube3.txt'
 function = 'name=LinearBackground,A0=3999,A1=0;name=Gaussian,Height=23531,PeakCentre=399.983,Sigma=1'
-fit_parameters = {'StartX': 384.98334112999999, 'EndX': 414.98334112999999}
-description = ''
+fit_ranges = {'x': [384.98334112999999, 414.98334112999999]}

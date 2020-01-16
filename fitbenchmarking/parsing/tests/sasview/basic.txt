@@ -1,6 +1,0 @@
-# SasView Problem
-# A data set for testing SasView 1D data
-name = 'basic'
-input_file = 'basic.dat'
-function ='name=cylinder,radius=0.0,length=1.0'
-description = 'This dataset has no real world application. It is used to test the parsing.'
