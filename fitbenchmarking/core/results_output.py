@@ -312,7 +312,7 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
     for name, title, table in zip(table_names.values(), table_title,
                                   table_dict.values()):
         # Update table indexes to link to the best support page
-        index = ['<a target="_blank" '
+        index = ['<a  '
                  'href="{0}">{1}</a>'.format(b.support_page_link, i)
                  for b, i in zip(best_results, table.index)]
         table.index = index
