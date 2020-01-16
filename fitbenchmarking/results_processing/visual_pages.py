@@ -67,8 +67,7 @@ def create(prob_results, group_name, support_pages_dir, count, options):
             group_name, prob_name, count, result.minimizer).lower()
         file_path = os.path.join(support_pages_dir, file_name)
 
-        fig_fit, fig_start = get_figure_paths(result,
-                                              count)
+        fig_fit, fig_start = get_figure_paths(result, count)
 
         root = os.path.dirname(os.path.abspath(__file__))
         main_dir = os.path.dirname(root)
@@ -86,9 +85,9 @@ def create(prob_results, group_name, support_pages_dir, count, options):
                 initial_guess=result.ini_function_params,
                 minimiser=result.minimizer,
                 make_plots=options.make_plots,
-                initial_plot=os.path.join(support_pages_dir, fig_start),
+                initial_plot=fig_start,
                 min_params=result.fin_function_params,
-                fitted_plot=os.path.join(support_pages_dir, fig_fit)))
+                fitted_plot=fig_fit))
 
         result.support_page_link = file_path
 
