@@ -26,28 +26,29 @@ class Plot(object):
         self.legend_location = "upper left"
         self.title_size = 10
 
-        # These are styles that are shared by all generated plots
-        self.default_plot_options = {"linewidth": 3}
-
         # These define the styles of the 4 types of plot
         self.data_plot_options = {"label": "Data",
                                   "zorder": 0,
                                   "color": "black",
                                   "marker": "x",
-                                  "linestyle": ''}
+                                  "linestyle": '',
+                                  "linewidth": 1}
         self.ini_guess_plot_options = {"label": "Starting Guess",
                                        "zorder": 1,
                                        "color": "#ff6699",
                                        "marker": "",
-                                       "linestyle": '-'}
+                                       "linestyle": '-',
+                                       "linewidth": 3}
         self.best_fit_plot_options = {"zorder": 3,
                                       "color": '#6699ff',
                                       "marker": "",
-                                      "linestyle": ':'}
+                                      "linestyle": ':',
+                                      "linewidth": 3}
         self.fit_plot_options = {"zorder": 2,
                                  "color": "#99ff66",
                                  "marker": "",
-                                 "linestyle": '-'}
+                                 "linestyle": '-',
+                                 "linewidth": 3}
 
         # Create a single reusable plot containing the problem data.
         # We store a line here, which is updated to change the graph where we
@@ -80,15 +81,15 @@ class Plot(object):
         self.ax.legend(loc=self.legend_location)
         self.fig.set_tight_layout(True)
 
-    def plot_data(self, errors, specific_options, x=None, y=None):
+    def plot_data(self, errors, plot_options, x=None, y=None):
         """
         Plots the data given
 
         :param errors: whether fit minimizer uses errors
         :type errors: bool
-        :param specific_options: Values for style of the data to plot,
+        :param plot_options: Values for style of the data to plot,
                                  for example color and zorder
-        :type specific_options: dict
+        :type plot_options: dict
         :param x: x values to be plotted
         :type x: np.array
         :param y: y values to be plotted
@@ -98,24 +99,21 @@ class Plot(object):
             x = self.problem.data_x
         if y is None:
             y = self.problem.data_y
-        temp_options = {}
-        temp_options.update(self.default_plot_options)
-        temp_options.update(specific_options)
         if errors:
             # Plot with errors
             self.ax.clear()
             self.ax.errorbar(x, y, yerr=self.problem.data_e,
-                             **temp_options)
+                             **plot_options)
         else:
             # Plot without errors
             if self.line_plot is None:
                 # Create a new line and store
-                self.line_plot = self.ax.plot(x, y, **temp_options)[0]
+                self.line_plot = self.ax.plot(x, y, **plot_options)[0]
             else:
                 # Update line instead of recreating
                 self.line_plot.set_data(x, y)
                 # Update style
-                for k, v in temp_options.items():
+                for k, v in plot_options.items():
                     try:
                         getattr(self.line_plot, 'set_{}'.format(k))(v)
                     except AttributeError:
@@ -129,7 +127,7 @@ class Plot(object):
         """
         ini_guess = self.problem.starting_values[self.count - 1].values()
         self.plot_data(errors=False,
-                       specific_options=self.ini_guess_plot_options,
+                       plot_options=self.ini_guess_plot_options,
                        y=self.problem.eval_f(ini_guess))
         self.format_plot()
         file = "start_for_{0}_{1}.png".format(self.problem.name, self.count)
@@ -148,12 +146,13 @@ class Plot(object):
         """
         plot_options_dict = self.best_fit_plot_options.copy()
         plot_options_dict['label'] = 'Best Fit ({})'.format(minimizer)
-        # This should not update the line as it will be consistent between plots
+        # This should not update the line as it will be consistent between
+        # plots
         # Cache the line here and reset it after plotting
         line = self.line_plot
         self.line_plot = None
         self.plot_data(errors=False,
-                       specific_options=plot_options_dict,
+                       plot_options=plot_options_dict,
                        y=self.problem.eval_f(params))
         self.line_plot = line
 
@@ -170,8 +169,8 @@ class Plot(object):
         """
         plot_options_dict = self.fit_plot_options.copy()
         plot_options_dict['label'] = minimizer
-        self.plot_data(False,
-                       plot_options_dict,
+        self.plot_data(errors=False,
+                       plot_options=plot_options_dict,
                        y=self.problem.eval_f(params))
         self.format_plot()
         file = "{}_fit_for_{}_{}.png".format(
