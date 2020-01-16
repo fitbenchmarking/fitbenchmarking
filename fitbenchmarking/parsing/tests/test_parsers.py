@@ -49,8 +49,7 @@ def generate_test_cases():
                if f.endswith('_parser.py')
                and f != 'base_parser.py']
     for known_format in ['nist',
-                         'fitbenchmark',
-                         'sasview']:
+                         'fitbenchmark']:
         if known_format not in formats:
             raise RuntimeError(
                 'Could not find {}'.format(known_format))
