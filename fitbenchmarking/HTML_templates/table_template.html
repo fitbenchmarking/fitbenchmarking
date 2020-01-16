@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css"   href={{ css_style_sheet }}></head>
+<header class="large">
+  <h2>{{ result_name }}</h2>
+</header>
+{{ table }}
+<header class="large">
+  <h4>Errors</h4>
+</header>
+The superscripts in the tables denote current error handling within FitBenchmarking. Currently the errors correspond to:
+ <table style="width:60%">
+  <tr>
+    <th>Error flag</th>
+    <th>Error message</th>
+  </tr>
+  {% for flag, message in error_message.items() %}
+  <tr>
+    <td>{{ flag }}</td>
+    <td>{{ message }}</td>
+  </tr>
+{% endfor %}
+</table>

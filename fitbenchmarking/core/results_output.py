@@ -218,7 +218,7 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
         html_page_dir = os.path.join(root, 'HTML_templates')
         style_css = os.path.join(html_page_dir, 'style_sheet.css')
         env = Environment(loader=FileSystemLoader(html_page_dir))
-        template = env.get_template("support_page_template.html")
+        template = env.get_template("table_template.html")
         output_file = name[1] + 'html'
 
         with open(output_file, "w") as f:

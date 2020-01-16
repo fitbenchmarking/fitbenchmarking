@@ -102,7 +102,7 @@ def create(prob_results, group_name, results_dir, count, options):
     style_css = os.path.join(main_dir, 'HTML_templates/style_sheet.css')
     html_link = "{0}.html".format(file_path)
 
-    template = env.get_template("results_template.html")
+    template = env.get_template("support_page_template.html")
 
     with open(html_link, 'w') as fh:
         fh.write(template.render(
