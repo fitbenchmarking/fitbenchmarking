@@ -57,9 +57,9 @@ class TestRegression(TestCase):
             actual = f.readlines()
 
         diff = []
-        for i in range(len(expected)):
-            if expected[i] != actual[i]:
-                diff.append([expected[i], actual[i]])
+        for exp_line, act_line in zip(expected, actual):
+            if exp_line != act_line:
+                diff.append([exp_line, act_line])
 
         num_diff = min(6, len(diff))
         msg = 'Accuracy has changed in at least 1 minimizer-' \
