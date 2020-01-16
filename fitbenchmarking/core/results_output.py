@@ -174,8 +174,8 @@ def create_results_tables(options, results, best_results, group_name,
 
 def generate_tables(results_per_test, best_results, table_names, table_suffix):
     """
-    Generates accuracy and runtime tables, with both normalised and absolute
-    results, and summary tables in both rst and html.
+    Generates accuracy, runtime, and combined accuracy and runtime tables, with
+    both normalised and absolute results in both rst and html.
 
     :param results_per_test : results nested array of objects
     :type results_per_test : list of list of
