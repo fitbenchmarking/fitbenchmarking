@@ -45,9 +45,16 @@ class FittingResult(object):
                                    "rel": '{:.4g}',
                                    "both": '{0:.4g} ({1:.4g})'}
 
+        # Paths to vaious output files
         self.support_page_link = ''
         self.start_figure_link = ''
         self.figure_link = ''
+
+        # Error written to support page if plotting failed
+        # Default can be overwritten with more information
+        self.figure_error = 'Plotting Failed'
+
+        # Print with html tag or not
         self.html_print = False
 
     def __str__(self):

@@ -137,7 +137,8 @@ def create_plots(options, results, best_results, group_name, figures_dir):
                 plot_path = plot.plot_fit(result.minimizer, result.params)
                 result.figure_link = plot_path
             else:
-                result.figure_link = 'Failed to return params'
+                result.figure_error = 'Minimizer failed to produce any ' \
+                    'parameters'
             result.start_figure_link = initial_guess_path
 
 

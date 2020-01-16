@@ -67,7 +67,20 @@ def create(prob_results, group_name, support_pages_dir, count, options):
             group_name, prob_name, count, result.minimizer).lower()
         file_path = os.path.join(support_pages_dir, file_name)
 
-        fig_fit, fig_start = get_figure_paths(result, count)
+        # Bool for print message/insert image
+        fit_success = init_success = options.make_plots
+
+        if options.make_plots:
+            fig_fit, fig_start = get_figure_paths(result, count)
+            if fig_fit == '':
+                fig_fit = result.figure_error
+                fit_success = False
+            if fig_start == '':
+                fig_start = result.figure_error
+                init_success = False
+        else:
+            fig_fit = fig_start = 'Re-run with make_plots set to yes in the ' \
+                                  'ini file to generate plots.'
 
         root = os.path.dirname(os.path.abspath(__file__))
         main_dir = os.path.dirname(root)
@@ -84,9 +97,10 @@ def create(prob_results, group_name, support_pages_dir, count, options):
                 equation=result.problem.equation,
                 initial_guess=result.ini_function_params,
                 minimiser=result.minimizer,
-                make_plots=options.make_plots,
+                initial_plot_available=init_success,
                 initial_plot=fig_start,
                 min_params=result.fin_function_params,
+                fitted_plot_available=fit_success,
                 fitted_plot=fig_fit))
 
         result.support_page_link = file_path
@@ -96,7 +110,7 @@ def get_figure_paths(result, count):
     """
     Get the paths to the figures used in the visual display page.
 
-    :param result : THe result to get the figures for
+    :param result : The result to get the figures for
     :type result : fitbenchmarking.utils.fitbm_result.FittingProblem
     :param count : number of times a problem with the same name was
                    passed through this function, consecutively
@@ -106,20 +120,17 @@ def get_figure_paths(result, count):
     :rtype : tuple(str, str)
     """
 
-    if result.figure_link == '' and result.start_figure_link == '':
-        message = 'Re-run with make_plots set to yes in the ini file to' \
-            ' generate plots.'
-        return message, message
-    elif result.figure_link == '' or result.start_figure_link == '':
-        raise ValueError('Missing links for plots.')
-
     figures_dir = "figures"
-    figure_fits = os.path.join(figures_dir, result.figure_link)
-    figure_strt = os.path.join(figures_dir, result.start_figure_link)
 
-    # If OS is Windows, then need to add prefix 'file:///'
-    if os.name == 'nt':
-        figure_fits = 'file:///' + figure_fits
-        figure_strt = 'file:///' + figure_strt
+    output = []
+    for l in [result.figure_link, result.start_figure_link]:
+        if l == '':
+            output.append('')
+        else:
+            path = os.path.join(figures_dir, l)
+            # If OS is Windows, then need to add prefix 'file:///'
+            if os.name == 'nt':
+                path = 'file:///' + path
+            output.append(path)
 
-    return figure_fits, figure_strt
+    return output[0], output[1]
