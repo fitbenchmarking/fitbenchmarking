@@ -1,7 +1,7 @@
 # FitBenchmark Problem
-# An example of fitting of a spline background on a Vanadium run from ENGIN-X
+software = 'Mantid'
 name = 'ENGINX 236516 vanadium, bank 1, 30 brk'
+description = 'An example of fitting of a spline background on a Vanadium run from ENGIN-X'
 input_file = 'ENGINX236516_vanadium_bank1.txt'
 function = 'name=BSpline, Order=3, NBreak=20, StartX=0.0, EndX=5.4'
-fit_parameters = {'StartX': 0, 'EndX': 5.4}
-description = ''
+fit_ranges = {'x': [0, 5.4]}

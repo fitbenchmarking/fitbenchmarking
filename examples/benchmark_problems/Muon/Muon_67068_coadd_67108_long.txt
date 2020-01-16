@@ -1,7 +1,7 @@
 # FitBenchmark Problem
-# An example of (full) detector calibration for the HIFI instrument
+software = 'Mantid'
 name = 'EMU 67068 coadd 67108'
+description = 'An example of (full) detector calibration for the HIFI instrument'
 input_file = 'EMU_67068_coadd_67108.txt'
-function ='name=FlatBackground,A0=0.05;name=ExpDecayOsc,A=0.2,Lambda=0.2,Frequency=0.1,Phi=0;name=ExpDecayOsc,A=0.2,Lambda=0.2,Frequency=1,Phi=0;name=ExpDecayOsc,A=0.2,Lambda=0.2,Frequency=5,Phi=0'
-fit_parameters = {'StartX': 0.1, 'EndX': 10}
-description = ''
+function = 'name=FlatBackground,A0=0.05;name=ExpDecayOsc,A=0.2,Lambda=0.2,Frequency=0.1,Phi=0;name=ExpDecayOsc,A=0.2,Lambda=0.2,Frequency=1,Phi=0;name=ExpDecayOsc,A=0.2,Lambda=0.2,Frequency=5,Phi=0'
+fit_ranges = {'x': [0.1, 10]}

@@ -30,21 +30,19 @@ Adding additional fitting problem definition types
 The types (formats) that are currently supported are:
 
   - Native (Fitbenchmark)
+    This supports functions/data from Mantid or SasView
   - NIST
-  - Sasview
 
 An example of these formats can be seen in
-``benchmark_problems/Neutron_data/``,
-``benchmark_problems/NIST/``,
-and ``benchmark_problems/SAS_modelling/``
-respectively.
+``benchmark_problems/Neutron_data/``/``benchmark_problems/SAS_modelling/``
+and ``benchmark_problems/NIST/`` respectively.
 
 **Adding new fitting problem definition types**
 
 To add a new fitting problem type, it is a requirement that the parser name
 can be derived from the file to be parsed.
 This is done for all current file formats by including it as the first line
-in the file. e.g ``# Fitbenchmark Format`` or ``NIST/ITL StRD``.
+in the file. e.g ``# Fitbenchmark Problem`` or ``NIST/ITL StRD``.
 
 To add a new fitting problem definition type, complete the following steps:
 
