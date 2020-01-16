@@ -213,20 +213,19 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
     for name, title, table in zip(table_names.items(), table_title,
                                   table_dict.values()):
         table.index = html_links
-        table_style = table.style.applymap(colour_highlight)\
-            .set_caption(title)
+        table_style = table.style.applymap(colour_highlight)
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         html_page_dir = os.path.join(root, 'HTML_templates')
         style_css = os.path.join(html_page_dir, 'style_sheet.css')
         env = Environment(loader=FileSystemLoader(html_page_dir))
-        template = env.get_template("blank_page.html")
-        info_template = env.get_template("{}_table_info.html".format(name[0]))
+        template = env.get_template("support_page_template.html")
         output_file = name[1] + 'html'
 
         with open(output_file, "w") as f:
-            f.write(template.render(css_style_sheet=style_css))
-            f.write(table_style.render())
-            f.write(info_template.render(error_message=error_options))
+            f.write(template.render(css_style_sheet=style_css,
+                                    result_name=title,
+                                    table=table_style.render(),
+                                    error_message=error_options))
 
         # pypandoc can be installed without pandoc
         try:
