@@ -68,5 +68,3 @@ class DFOGNController(Controller):
             self.flag = 1
         else:
             self.flag = 2
-
-        self.error_message = self.error_options[self.flag]

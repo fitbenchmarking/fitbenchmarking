@@ -142,8 +142,7 @@ def benchmark(controller, minimizers, options):
             params=controller.final_params,
             ini_function_params=init_function_params,
             fin_function_params=fin_function_params,
-            error_flag=controller.flag, error_message=controller.error_message,
-            error_options=controller.error_options)
+            error_flag=controller.flag, error_options=controller.error_options)
 
         results_problem.append(individual_result)
 

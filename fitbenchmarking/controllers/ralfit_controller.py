@@ -78,5 +78,3 @@ class RALFitController(Controller):
             self.flag = 0
         else:
             self.flag = 2
-
-        self.error_message = self.error_options[self.flag]

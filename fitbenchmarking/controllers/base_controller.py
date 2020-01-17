@@ -66,8 +66,6 @@ class Controller:
              1: "Software reported maximum number of iterations exceeded",
              2: "Software run but didn't converge to solution",
              3: "Software raised an exception"}
-        # error_message: reported error message for tables
-        self.error_message = None
 
     def _correct_data(self):
         """
