@@ -58,6 +58,8 @@ class TestRegression(TestCase):
 
         diff = []
         for exp_line, act_line in zip(expected, actual):
+            exp_line = exp_line.strip('\n')
+            act_line = act_line.strip('\n')
             if exp_line != act_line:
                 diff.append([exp_line, act_line])
 
