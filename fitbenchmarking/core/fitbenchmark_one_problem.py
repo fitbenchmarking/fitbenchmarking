@@ -103,7 +103,7 @@ def benchmark(controller, minimizers, options):
             controller.success = True
             controller.cleanup()
             controller.error_flags()
-
+            controller.check_attributes()
         # Catching all exceptions as this means runtime cannot be calculated
         # pylint: disable=broad-except
         except Exception as excp:

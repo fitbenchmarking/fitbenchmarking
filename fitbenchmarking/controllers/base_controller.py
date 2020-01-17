@@ -140,6 +140,27 @@ class Controller:
         out = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
         return out
 
+    def check_attributes(self):
+        """
+        A helper function which checks all required attributes are set
+        in software controllers
+        """
+        values = {'flag': int}
+
+        for attr_name, attr_type in values.items():
+            attr = getattr(self, attr_name)
+            if not isinstance(attr, attr_type):
+                raise TypeError('Attribute "{}" is not the expected type.'
+                                'Expected "{}", got {}.'.format(attr_name,
+                                                                attr_type,
+                                                                type(attr)))
+
+            if attr_name == 'flag' and attr not in [0, 1, 2, 3]:
+                raise ValueError('Attribute flag needs to be set to one '
+                                 'of {}. Currently given as {}.'.format(
+                                     [0, 1, 2, 3],
+                                     attr))
+
     @abstractmethod
     def setup(self):
         """

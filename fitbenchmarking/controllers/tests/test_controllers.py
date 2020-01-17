@@ -127,6 +127,28 @@ class BaseControllerTests(TestCase):
 
         assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
 
+    def test_check_flag_attr_true(self):
+        """
+        BaseSoftwareController: Test check_attributes function for flag
+                                attribute
+        """
+        controller = DummyController(self.problem, True)
+        controller.flag = 1
+        controller.check_attributes()
+
+    def test_check_flag_attr_false(self):
+        """
+        BaseSoftwareController: Test check_attributes function for flag
+                                attribute
+        """
+        controller = DummyController(self.problem, True)
+        with self.assertRaises(TypeError):
+            controller.check_attributes()
+
+        controller.flag = 10
+        with self.assertRaises(ValueError):
+            controller.check_attributes()
+
 
 class ControllerTests(TestCase):
     """
