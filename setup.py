@@ -36,7 +36,8 @@ setup(name='FitBenchmarking',
           'externals': InstallExternals,
           'help': Help,
       },
-      package_data={'fitbenchmarking': ['utils/default_options.ini']}
+      package_data={'fitbenchmarking': ['utils/default_options.ini',
+                                        'HTML_templates/*']}
       )
 
 
