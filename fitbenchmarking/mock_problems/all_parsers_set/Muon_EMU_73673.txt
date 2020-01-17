@@ -1,0 +1,7 @@
+# FitBenchmark Problem
+software = 'Mantid'
+name = 'EMU 73673'
+description = 'An example data set for the EMU instrument'
+input_file = 'EMU_116891_long.txt'
+function ='name=DynamicKuboToyabe,BinWidth=0.050000000000000003,Asym=0.2,Delta=0.2,Field=0,Nu=0;name=StretchExpMuon,A=0.2,Lambda=0.2,Beta=0.2'
+fit_ranges = {'x': [0.2, 16]}

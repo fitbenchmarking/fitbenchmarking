@@ -6,7 +6,6 @@ import shutil
 
 from fitbenchmarking.utils.create_dirs import figures
 from fitbenchmarking.utils.create_dirs import group_results
-from fitbenchmarking.utils.create_dirs import restables_dir
 from fitbenchmarking.utils.create_dirs import results
 
 
@@ -39,19 +38,6 @@ class CreateDirsTests(unittest.TestCase):
 
         self.assertEqual(group_results_dir_expected, group_results_dir)
         self.assertTrue(os.path.exists(group_results_dir_expected))
-
-        shutil.rmtree(results_dir)
-
-    def test_restablesDir_create_correct_random_dir(self):
-
-        results_dir = results(self.results_dir)
-        group_name = 'random'
-
-        tables_dir = restables_dir(results_dir, group_name)
-        tables_dir_expected = os.path.join(results_dir, 'random')
-
-        self.assertEqual(tables_dir_expected, tables_dir)
-        self.assertTrue(os.path.exists(tables_dir_expected))
 
         shutil.rmtree(results_dir)
 

@@ -70,6 +70,29 @@ class Options(object):
     def results_dir(self, value):
         self._results_dir = os.path.abspath(value)
 
+    def write(self, file_name):
+        config = configparser.ConfigParser(converters={'list': read_list,
+                                                       'str': str})
+
+        def list_to_string(l):
+            return '\n'.join(l)
+
+        config['MINIMIZERS'] = {k: list_to_string(m)
+                                for k, m in self.minimizers.items()}
+        config['FITTING'] = {'num_runs': self.num_runs,
+                             'software': list_to_string(self.software),
+                             'use_errors': self.use_errors}
+        cs = list_to_string(['{0}, {1}'.format(*pair)
+                             for pair in self.colour_scale])
+        config['PLOTTING'] = {'colour_scale': cs,
+                              'comparison_mode': self.comparison_mode,
+                              'make_plots': self.make_plots,
+                              'results_dir': self.results_dir,
+                              'table_type': list_to_string(self.table_type)}
+
+        with open(file_name, 'w') as f:
+            config.write(f)
+
 
 def read_list(s):
     return str(s).split('\n')

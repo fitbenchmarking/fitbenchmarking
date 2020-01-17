@@ -6,11 +6,11 @@ from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
 import copy
 import inspect
-from jinja2 import Environment, FileSystemLoader
 import logging
 import os
+
+from jinja2 import Environment, FileSystemLoader
 import pandas as pd
-import pypandoc
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import visual_pages
@@ -19,7 +19,7 @@ from fitbenchmarking.utils import create_dirs
 
 def save_results_tables(options, results, group_name):
     """
-    Saves the results of the fitting to html/rst tables.
+    Saves the results of the fitting to html/txt tables.
 
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
@@ -35,18 +35,18 @@ def save_results_tables(options, results, group_name):
     minimizers = [options.minimizers[s] for s in software]
     minimizers = sum(minimizers, [])
 
-    results_dir = options.results_dir
     use_errors = options.use_errors
 
     weighted_str = 'weighted' if use_errors else 'unweighted'
 
-    tables_dir = create_dirs.restables_dir(results_dir, group_name)
+    group_dir = create_dirs.restables_dir(options.results_dir, group_name)
+    rel_group_dir = os.path.relpath(group_dir)
     linked_problems = visual_pages.create_linked_probs(
-        results, group_name, results_dir, options)
+        results, group_name, rel_group_dir, options)
 
     table_names = OrderedDict()
     for suffix in options.table_type:
-        table_names[suffix] = os.path.join(tables_dir,
+        table_names[suffix] = os.path.join(group_dir,
                                            '{0}_{1}_{2}_table.'.format(
                                                group_name,
                                                suffix,
@@ -63,13 +63,13 @@ def generate_tables(results_per_test, minimizers,
                     table_suffix):
     """
     Generates accuracy and runtime tables, with both normalised and absolute
-    results, and summary tables in both rst and html.
+    results, and summary tables in both txt and html.
 
     :param results_per_test : results nested array of objects
     :type results_per_test : list[list[list]]
     :param minimizers : array with minimizer names
     :type minimizers : list
-    :param linked_problems : rst links for supporting pages
+    :param linked_problems : path to supporting pages
     :type linked_problems : list[str]
     :param table_name : list of table names
     :type table_name : list
@@ -88,11 +88,11 @@ def generate_tables(results_per_test, minimizers,
 
 def create_results_dict(results_per_test, linked_problems):
     """
-    Generates a dictionary used to create HTML and RST tables.
+    Generates a dictionary used to create HTML and txt tables.
 
     :param results_per_test : results nested array of objects
     :type results_per_test : list[list[list]]
-    :param linked_problems : rst links for supporting pages
+    :param linked_problems : paths to supporting pages
     :type linked_problems : list[str]
 
     :return : tuple(results, html_links)
@@ -175,7 +175,7 @@ def create_pandas_dataframe(table_data, minimizers, table_suffix):
 def render_pandas_dataframe(table_dict, minimizers, html_links,
                             table_names, table_title):
     """
-    Generates html and rst page from pandas dataframes.
+    Generates html and txt page from pandas dataframes.
 
     :param table_dict : dictionary of DataFrame of the results
     :type table_dict : dict(pandas DataFrame, ...)
@@ -204,6 +204,10 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
 
     for name, title, table in zip(table_names.values(), table_title,
                                   table_dict.values()):
+
+        with open(name + 'txt', "w") as f:
+            f.write(table.to_string())
+
         table.index = html_links
         table_style = table.style.applymap(colour_highlight)\
             .set_caption(title)
@@ -214,17 +218,9 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
         template = env.get_template("blank_page.html")
 
         output_file = name + 'html'
-
         with open(output_file, "w") as f:
             f.write(template.render(css_style_sheet=style_css))
             f.write(table_style.render())
-        # pypandoc can be installed without pandoc
-        try:
-            output = pypandoc.convert_file(name + 'html', 'rst')
-            with open(name + 'rst', "w") as f:
-                f.write(output)
-        except ImportError:
-            print('RST tables require Pandoc to be installed')
 
 
 def create_problem_level_index(options, table_names, group_name):

@@ -1,0 +1,3 @@
+all_parsers_set
+
+This dataset contains a problem in each of the formats that Fitbenchmarking supports. It is used during testing.

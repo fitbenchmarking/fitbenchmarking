@@ -15,8 +15,6 @@ notifications:
 
 stages:
   - name: Tests
-  - name: SysTests
-    if: type = cron
 
 before_install:
   # Adding RALfit packages
@@ -25,12 +23,12 @@ before_install:
   - sudo apt-get install lcov
   - sudo apt-get install libblas-dev
   - sudo apt-get install liblapack-dev
+
   # Adding gsl pacakges
   - sudo apt-get install gsl-bin
   - sudo apt-get install libgsl-dev
   - sudo apt-get install libgsl-dbg
 
-  - sudo apt-get install pandoc
 
 install:
   # Builds RALfit
@@ -50,7 +48,7 @@ install:
 jobs:
   include:
     - stage: Tests
-      before_script: python -m mantid.simpleapi || true
+      name: Unit Tests
       script:
         # ======= Examples Tests =============== #
         - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
@@ -66,11 +64,7 @@ jobs:
           --cov-report term-missing --cov-append
       after_success:
         - coveralls
-  allow_failures:
-    - stage: SysTests
-      before_script: python -m mantid.simpleapi || true
+    - name: System Tests
       script:
         # ======= System Test =============== #
-        - cd fitbenchmarking/systests
-        - python generate_current_results.py
-        - python tbl_comparison.py
+        - pytest fitbenchmarking/systests
