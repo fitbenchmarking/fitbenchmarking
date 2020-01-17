@@ -55,8 +55,6 @@ class Controller:
         # Results: Stores output results using the final parameters in
         #          numpy array
         self.results = None
-        # Success: Bool for flagging issues
-        self.success = None
 
         # Flag: error handling flag
         self.flag = None

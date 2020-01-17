@@ -82,7 +82,6 @@ class MantidController(Controller):
                                CostFunction=self._cost_function)
 
         self._mantid_results = fit_result
-        self.success = (self._mantid_results.OutputStatus != 'failed')
         self._status = self._mantid_results.OutputStatus
 
     def cleanup(self):

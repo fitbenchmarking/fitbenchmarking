@@ -188,8 +188,6 @@ class GSLController(Controller):
         """
         Run problem with GSL
         """
-        self.success = False
-
         for _ in range(self._maxits):
             status = self._solver.iterate()
             # check if the method has converged
@@ -208,7 +206,6 @@ class GSLController(Controller):
                 status = multiminimize.test_gradient(gradient,
                                                      self._gradient_tol)
             if status == errno.GSL_SUCCESS:
-                self.success = True
                 self._status = 0
                 break
             elif status != errno.GSL_CONTINUE:
@@ -231,12 +228,3 @@ class GSLController(Controller):
         if self.flag <= 1:
             self.final_params = self._solver.getx()
             self.results = self.problem.eval_f(params=self.final_params)
-
-    def error_flags(self):
-        """
-        Sets the error flags for the controller, the options are:
-            {0: "Successfully converged",
-             1: "Software reported maximum number of iterations exceeded",
-             2: "Software run but didn't converge to solution",
-             3: "Software raised an exception"}
-        """

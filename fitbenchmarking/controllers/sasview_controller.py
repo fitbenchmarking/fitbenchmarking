@@ -80,7 +80,6 @@ class SasviewController(Controller):
         """
         result = bumpsFit(self._fit_problem, method=self.minimizer)
 
-        self.success = result.success
         self._bumps_result = result
         self._status = self._bumps_result.status
 

@@ -9,13 +9,12 @@ class FittingResult(object):
     fitting problem test.
     """
 
-    def __init__(self, options=None, problem=None, fit_status=None,
-                 chi_sq=None, fit_wks=None, params=None, errors=None,
-                 runtime=None, minimizer=None, ini_function_params=None,
+    def __init__(self, options=None, problem=None, chi_sq=None,
+                 fit_wks=None, params=None, errors=None, runtime=None,
+                 minimizer=None, ini_function_params=None,
                  fin_function_params=None, error_flag=None):
         self.options = options
         self.problem = problem
-        self.fit_status = fit_status
         self.chi_sq = chi_sq
         self._min_chi_sq = None
         # Workspace with data to fit

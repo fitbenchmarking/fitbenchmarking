@@ -34,13 +34,8 @@ class DFOGNController(Controller):
         """
         Run problem with DFO-GN.
         """
-        self.success = False
-
         self._soln = dfogn.solve(self.problem.eval_r,
                                  self._pinit)
-
-        if (self._soln.flag == 0):
-            self.success = True
 
         self._popt = self._soln.x
         self._status = self._soln.flag

@@ -35,7 +35,6 @@ class ScipyController(Controller):
                                     x0=self.initial_params,
                                     method=self.minimizer,
                                     max_nfev=500)
-        self.success = (self.result.status >= 0)
         self._popt = self.result.x
         self._status = self.result.status
 
