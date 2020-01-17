@@ -55,9 +55,11 @@ class FittingResult(object):
     def __str__(self):
         if self.table_type is not None:
             output = self.table_output
-            if self.html_print:
-                if self.error_flag != 0:
+            if self.error_flag != 0:
+                if self.html_print:
                     output += "<sup>{}</sup>".format(self.error_flag)
+                else:
+                    output += "[{}]".format(self.error_flag)
         else:
             output = 'Fitting problem class: minimizer = {0}'.format(
                 self.minimizer)
