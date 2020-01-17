@@ -2,6 +2,10 @@
 Test that accuracy of FitBenchmarking is consistent with previous versions
 """
 
+try:
+    from itertools import zip_longest
+except ImportError:
+    from itertools import izip_longest as zip_longest
 import os
 import tempfile
 from unittest import TestCase
@@ -57,7 +61,7 @@ class TestRegression(TestCase):
             actual = f.readlines()
 
         diff = []
-        for exp_line, act_line in zip(expected, actual):
+        for exp_line, act_line in zip_longest(expected, actual):
             exp_line = exp_line.strip('\n')
             act_line = act_line.strip('\n')
             if exp_line != act_line:
@@ -69,4 +73,4 @@ class TestRegression(TestCase):
               + 'First {} of {} differences: \n'.format(num_diff, len(diff)) \
               + '\n'.join(['{} \n{}'.format(*diff[i])
                            for i in range(num_diff)])
-        self.assertListEqual(expected, actual, msg)
+        self.assertListEqual([], diff, msg)
