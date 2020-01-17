@@ -4,10 +4,13 @@ Set up and build the visual display pages for various types of problems.
 
 from __future__ import (absolute_import, division, print_function)
 
-from jinja2 import Environment, FileSystemLoader
-import numpy as np
+import inspect
 import os
 
+from jinja2 import Environment, FileSystemLoader
+import numpy as np
+
+import fitbenchmarking
 from fitbenchmarking.results_processing import plots
 
 
@@ -77,34 +80,33 @@ def create(prob_results, group_name, results_dir, count, options):
     prob_name = best_result.problem.name
     prob_name = prob_name.replace(',', '')
     prob_name = prob_name.replace(' ', '_')
-    directory = os.path.join(results_dir, group_name)
 
-    support_pages_dir, file_path = \
-        get_filename_and_path(group_name, prob_name,
-                              best_result, results_dir, count)
     if options.make_plots:
         plot = plots.Plot(problem=best_result.problem,
                           options=options,
                           count=count,
-                          group_results_dir=directory)
+                          group_results_dir=results_dir)
         plot.plot_initial_guess()
         plot.plot_best_fit(best_result.minimizer, best_result.params)
 
-        fig_fit, fig_start = \
-            get_figure_paths(support_pages_dir, prob_name, count)
+        fig_fit, fig_start = get_figure_paths(prob_name, count)
     else:
         fig_fit = fig_start = "Re-run with make_plots set to yes in the " \
                               "ini file to generate plots"
-    root = os.path.dirname(os.path.abspath(__file__))
-    main_dir = os.path.dirname(root)
-    html_page_dir = os.path.join(main_dir, "HTML_templates")
+
+    file_path = get_filepath(group_name, prob_name, results_dir, count)
+    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    html_page_dir = os.path.join(root, "HTML_templates")
+
     env = Environment(loader=FileSystemLoader(html_page_dir))
-    style_css = os.path.join(main_dir, 'HTML_templates/style_sheet.css')
+    style_css = os.path.join(html_page_dir, 'style_sheet.css')
     html_link = "{0}.html".format(file_path)
+    full_html_link = os.path.abspath(
+        os.path.join(results_dir, html_link))
 
     template = env.get_template("results_template.html")
 
-    with open(html_link, 'w') as fh:
+    with open(full_html_link, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,
             title=prob_name,
@@ -119,8 +121,7 @@ def create(prob_results, group_name, results_dir, count, options):
     return html_link
 
 
-def get_filename_and_path(group_name, problem_name, res_obj,
-                          results_dir, count):
+def get_filepath(group_name, problem_name, results_dir, count):
     """
     Sets up some miscellaneous things for the visual display pages.
 
@@ -128,39 +129,32 @@ def get_filename_and_path(group_name, problem_name, res_obj,
     :type group_name : str
     :param problem_name : name of the problem
     :type problem_name : str
-    :param res_obj : best results object
-    :type res_obj : results object
     :param results_dir : directory in which the results are saved
     :type results_dir : str
     :param count : number of times a problem with the same name was
                    passed through this function, consecutively
     :type count : int
 
-    :return : the directory in which the visual display pages go
-              the file path to the visual display page that is
-              currently being made the fit details table and the
-              see also link
-    :rtype : tuple(str, str)
+    :return : the file path to the visual display page that is
+              currently being made, relative to the results dir
+    :rtype : str
     """
 
-    # Group specific path and other misc stuff
-
-    support_pages_dir = os.path.join(results_dir, group_name, "support_pages")
-    if not os.path.exists(support_pages_dir):
-        os.makedirs(support_pages_dir)
+    support_pages_dir = "support_pages"
+    abs_support_pages_dir = os.path.join(results_dir, support_pages_dir)
+    if not os.path.exists(abs_support_pages_dir):
+        os.makedirs(abs_support_pages_dir)
 
     file_name = (group_name + '_' + problem_name + '_' + str(count)).lower()
     file_path = os.path.join(support_pages_dir, file_name)
 
-    return support_pages_dir, file_path
+    return file_path
 
 
-def get_figure_paths(support_pages_dir, problem_name, count):
+def get_figure_paths(problem_name, count):
     """
     Get the paths to the figures used in the visual display page.
 
-    :param support_pages_dir : directory containing the visual display pages
-    :type support_pages_dir : str
     :param problem_name : name of the problem
     :type problem_name : str
     :param count : number of times a problem with the same name was
@@ -171,7 +165,7 @@ def get_figure_paths(support_pages_dir, problem_name, count):
     :rtype : tuple(str, str)
     """
 
-    figures_dir = os.path.join(support_pages_dir, "figures")
+    figures_dir = "figures"
     figure_fits = os.path.join(figures_dir, "Fit_for_" + problem_name +
                                "_" + str(count) + ".png")
     figure_strt = os.path.join(figures_dir, "start_for_" + problem_name +
