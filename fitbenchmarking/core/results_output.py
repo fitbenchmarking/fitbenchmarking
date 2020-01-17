@@ -210,7 +210,7 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
     for name, title, table in zip(table_names.items(), table_title,
                                   table_dict.values()):
 
-        with open(name + 'txt', "w") as f:
+        with open(name[1] + 'txt', "w") as f:
             f.write(table.to_string())
 
         table.index = html_links
@@ -227,7 +227,7 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
                                     result_name=title,
                                     table=table_style.render(),
                                     error_message=error_options))
-           
+
 
 def create_problem_level_index(options, table_names, group_name):
     """
