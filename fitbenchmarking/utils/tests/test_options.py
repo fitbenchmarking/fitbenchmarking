@@ -7,11 +7,6 @@ import unittest
 
 from fitbenchmarking.utils.options import Options
 
-try:
-    FileNotFoundError
-except NameError:
-    FileNotFoundError = IOError
-
 
 class OptionsTests(unittest.TestCase):
     def setUp(self):
@@ -93,6 +88,20 @@ class OptionsTests(unittest.TestCase):
         # Use ends with as options creates an abs path rather than rel.
         self.assertTrue(
             options.results_dir.endswith(plotting_opts['results_dir']))
+
+    def test_write(self):
+        """
+        Test that the options writer works.
+        """
+        options = Options(file_name=self.options_file)
+        new_file_name = 'copy_of_{}'.format(self.options_file)
+
+        options.write(new_file_name)
+        new_options = Options(new_file_name)
+
+        os.remove(new_file_name)
+
+        self.assertDictEqual(options.__dict__, new_options.__dict__)
 
     def test_make_plots_false(self):
         with self.assertRaises(SystemExit):

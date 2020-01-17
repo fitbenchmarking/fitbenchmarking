@@ -78,7 +78,7 @@ To add a new fitting problem definition type, complete the following steps:
      parser to check that the entries in the generated fitting problem match
      the values in the ``expected`` file.
 
-   - **Function tests**: 1 file must be provided in the directory to test that
+   - **Function tests**: 1 file can be provided in the directory to test that
      function evaluation is as expected. This file must be in json format and
      contain a string of the form::
 
@@ -86,11 +86,23 @@ To add a new fitting problem definition type, complete the following steps:
                        [x2, [param12, param22], result2],
                        ...],
        {"file_name2": [...],
-        ...}``
+        ...}
 
      The test will then load the files in turn and run it against each item in
      the list, raising an issue if the result is not suitably close to the
      specified value.
+
+   - **Integration tests**: Add an example to the `mock_problems/all_parser_test_set`.
+     This will be used to verify that the problem can be run by scipy, and that
+     accuracy results do not change unexpectedly in future changes to the code.
+
+     As part of this, the `systests/expected/parsers.txt` file will need to be
+     updated. This is done by running the systests::
+
+       pytest fitbenchmarking/systests
+
+     and then checking that the only difference between the results table and the
+     expected value is the new problem, and replacing the expected with the result.
 
 5. Verify that your tests have been found by running
    `pytest -vv fitbenchmarking/parsing/tests/test_parsers.py`
