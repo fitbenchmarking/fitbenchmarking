@@ -16,7 +16,7 @@ setup(name='FitBenchmarking',
               'fitbenchmarking = fitbenchmarking.cli.main:main'
           ]
       },
-      packages=find_packages('./', exclude=('*mock*', '*test*')),
+      packages=find_packages(exclude=('*mock*', '*test*')),
       install_requires=['docutils',
                         'numpy<1.17',
                         'matplotlib<3.0',
