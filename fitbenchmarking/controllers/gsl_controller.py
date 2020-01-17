@@ -221,7 +221,14 @@ class GSLController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-        if self.success:
+        if self._status == 0:
+            self.flag = 0
+        elif self._status == 1:
+            self.flag = 1
+        else:
+            self.flag = 2
+
+        if self.flag <= 1:
             self.final_params = self._solver.getx()
             self.results = self.problem.eval_f(params=self.final_params)
 
@@ -233,9 +240,3 @@ class GSLController(Controller):
              2: "Software run but didn't converge to solution",
              3: "Software raised an exception"}
         """
-        if self._status == 0:
-            self.flag = 0
-        elif self._status == 1:
-            self.flag = 1
-        else:
-            self.flag = 2

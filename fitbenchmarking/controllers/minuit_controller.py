@@ -56,19 +56,6 @@ class MinuitController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-        if self.success:
-            self._popt = self._minuit_problem.np_values()
-            self.results = self.problem.eval_f(params=self._popt)
-            self.final_params = self._popt
-
-    def error_flags(self):
-        """
-        Sets the error flags for the controller, the options are:
-            {0: "Successfully converged",
-             1: "Software reported maximum number of iterations exceeded",
-             2: "Software run but didn't converge to solution",
-             3: "Software raised an exception"}
-        """
         fmin = self._minuit_problem.get_fmin()
         if self._status == 0:
             self.flag = 0
@@ -76,3 +63,8 @@ class MinuitController(Controller):
             self.flag = 1
         else:
             self.flag = 2
+
+        if self.flag <= 1:
+            self._popt = self._minuit_problem.np_values()
+            self.results = self.problem.eval_f(params=self._popt)
+            self.final_params = self._popt

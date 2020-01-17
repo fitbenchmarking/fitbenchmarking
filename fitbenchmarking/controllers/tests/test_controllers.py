@@ -166,6 +166,13 @@ class ControllerTests(TestCase):
         controller.minimizer = 'Levenberg-Marquardt'
         self.shared_testing(controller)
 
+        controller._status = "success"
+        self.check_conveged(controller)
+        controller._status = "Failed to converge"
+        self.check_max_iterations(controller)
+        controller._status = "Failed"
+        self.check_diverged(controller)
+
     def test_sasview(self):
         """
         SasviewController: Test for output shape
@@ -173,6 +180,13 @@ class ControllerTests(TestCase):
         controller = SasviewController(self.problem, True)
         controller.minimizer = 'amoeba'
         self.shared_testing(controller)
+
+        controller._status = 0
+        self.check_conveged(controller)
+        controller._status = 2
+        self.check_max_iterations(controller)
+        controller._status = 1
+        self.check_diverged(controller)
 
     def test_scipy(self):
         """
@@ -182,6 +196,13 @@ class ControllerTests(TestCase):
         controller.minimizer = 'lm'
         self.shared_testing(controller)
 
+        controller._status = 1
+        self.check_conveged(controller)
+        controller._status = 0
+        self.check_max_iterations(controller)
+        controller._status = -1
+        self.check_diverged(controller)
+
     def test_dfogn(self):
         """
         DFOGNController: Tests for output shape
@@ -189,6 +210,13 @@ class ControllerTests(TestCase):
         controller = DFOGNController(self.problem, True)
         controller.minimizer = 'dfogn'
         self.shared_testing(controller)
+
+        controller._status = 0
+        self.check_conveged(controller)
+        controller._status = 2
+        self.check_max_iterations(controller)
+        controller._status = 5
+        self.check_diverged(controller)
 
     def test_gsl(self):
         """
@@ -203,6 +231,13 @@ class ControllerTests(TestCase):
             controller.minimizer = minimizer
             self.shared_testing(controller)
 
+            controller._status = 0
+            self.check_conveged(controller)
+            controller._status = 1
+            self.check_max_iterations(controller)
+            controller._status = 2
+            self.check_diverged(controller)
+
     def test_ralfit(self):
         """
         RALFitController: Tests for output shape
@@ -213,6 +248,11 @@ class ControllerTests(TestCase):
             controller.minimizer = minimizer
             self.shared_testing(controller)
 
+            controller._status = 0
+            self.check_conveged(controller)
+            controller._status = 2
+            self.check_diverged(controller)
+
     def test_minuit(self):
         """
         MinuitController: Tests for output shape
@@ -220,6 +260,10 @@ class ControllerTests(TestCase):
         controller = MinuitController(self.problem, True)
         controller.minimizer = 'minuit'
         self.shared_testing(controller)
+        controller._status = 0
+        self.check_conveged(controller)
+        controller._status = 2
+        self.check_diverged(controller)
 
     def shared_testing(self, controller):
         """
@@ -232,133 +276,40 @@ class ControllerTests(TestCase):
         controller.prepare()
         controller.fit()
         controller.cleanup()
-        controller.error_flags()
 
         assert controller.success
         assert len(controller.results) == len(controller.data_y)
         assert len(controller.final_params) == len(controller.initial_params)
-        assert controller.flag == 0
-
-
-class ErrorFlagsTest(TestCase):
-
-    def setUp(self):
-        self.problem = make_fitting_problem()
-
-    def test_mantid(self):
-        """
-        MantidController: Test for output shape
-        """
-        controller = MantidController(self.problem, True)
-        controller._status = "success"
-        self.check_conveged(controller)
-        controller._status = "Failed to converge"
-        self.check_max_iterations(controller)
-        controller._status = "Failed"
-        self.check_diverged(controller)
-
-    def test_sasview(self):
-        """
-        SasviewController: Test for output shape
-        """
-        controller = SasviewController(self.problem, True)
-        controller._status = 0
-        self.check_conveged(controller)
-        controller._status = 2
-        self.check_max_iterations(controller)
-        controller._status = 1
-        self.check_diverged(controller)
-
-    def test_scipy(self):
-        """
-        ScipyController: Test for output shape
-        """
-        controller = ScipyController(self.problem, True)
-        controller._status = 1
-        self.check_conveged(controller)
-        controller._status = 0
-        self.check_max_iterations(controller)
-        controller._status = -1
-        self.check_diverged(controller)
-
-    def test_dfogn(self):
-
-        # DFOGNController: Tests for output shape
-
-        controller = DFOGNController(self.problem, True)
-        controller._status = 0
-        self.check_conveged(controller)
-        controller._status = 2
-        self.check_max_iterations(controller)
-        controller._status = 5
-        self.check_diverged(controller)
-
-    def test_gsl(self):
-        """
-        GSLController: Tests for output shape
-        """
-        controller = GSLController(self.problem, True)
-        controller._status = 0
-        self.check_conveged(controller)
-        controller._status = 1
-        self.check_max_iterations(controller)
-        controller._status = 2
-        self.check_diverged(controller)
-
-    def test_ralfit(self):
-        """
-        RALFitController: Tests for output shape
-        """
-        controller = RALFitController(self.problem, True)
-        controller._status = 0
-        self.check_conveged(controller)
-        controller._status = 2
-        self.check_diverged(controller)
-
-    def test_minuit(self):
-        """
-        MinuitController: Tests for output shape
-        """
-        controller = MinuitController(self.problem, True)
-        controller.minimizer = 'minuit'
-        controller.parameter_set = 0
-
-        controller.prepare()
-        controller.fit()
-        controller._status = 0
-        self.check_conveged(controller)
-        controller._status = 2
-        self.check_diverged(controller)
 
     def check_conveged(self, controller):
         """
-        Utility function to check controller.error_flags() produces a success
+        Utility function to check controller.cleanup() produces a success flag
 
         :param controller: Controller to test, with setup already completed
         :type controller: Object derived from BaseSoftwareController
         """
-        controller.error_flags()
+        controller.cleanup()
         assert controller.flag == 0
 
     def check_max_iterations(self, controller):
         """
-        Utility function to check controller.error_flags() produces a maximum
+        Utility function to check controller.cleanup() produces a maximum
         iteration flag
 
         :param controller: Controller to test, with setup already completed
         :type controller: Object derived from BaseSoftwareController
         """
-        controller.error_flags()
+        controller.cleanup()
         assert controller.flag == 1
 
     def check_diverged(self, controller):
         """
-        Utility function to check controller.error_flags() produces a fail
+        Utility function to check controller.cleanup() produces a fail
 
         :param controller: Controller to test, with setup already completed
         :type controller: Object derived from BaseSoftwareController
         """
-        controller.error_flags()
+        controller.cleanup()
         assert controller.flag == 2
 
 

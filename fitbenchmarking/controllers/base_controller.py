@@ -181,14 +181,3 @@ class Controller:
         Retrieve the result as a numpy array and store in self.results
         """
         raise NotImplementedError
-
-    @abstractmethod
-    def error_flags(self):
-        """
-        Sets the error flags for the controller, the options are:
-            {0: "Successfully converged",
-             1: "Software reported maximum number of iterations exceeded",
-             2: "Software run but didn't converge to solution",
-             3: "Software raised an exception"}
-        """
-        raise NotImplementedError
