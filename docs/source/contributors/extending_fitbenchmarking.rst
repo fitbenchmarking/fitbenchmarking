@@ -1,7 +1,8 @@
 .. _extending-fitbenchmarking:
 
+#########################
 Extending Fitbenchmarking
-=========================
+#########################
 
 .. _problem-groups:
 

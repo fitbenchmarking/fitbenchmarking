@@ -1,7 +1,8 @@
 .. _logging:
 
+#######
 Logging
-=======
+#######
 
 Logging is the process of tracking certain events that occur when the
 software is running. FitBenchmaring uses the logging tool included in
