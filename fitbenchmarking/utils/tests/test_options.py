@@ -7,11 +7,6 @@ import unittest
 
 from fitbenchmarking.utils.options import Options
 
-try:
-    FileNotFoundError
-except NameError:
-    FileNotFoundError = IOError
-
 
 class OptionsTests(unittest.TestCase):
     def setUp(self):

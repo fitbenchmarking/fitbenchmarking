@@ -6,11 +6,11 @@ from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
 import copy
 import inspect
-from jinja2 import Environment, FileSystemLoader
 import logging
 import os
+
+from jinja2 import Environment, FileSystemLoader
 import pandas as pd
-import webbrowser
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import visual_pages

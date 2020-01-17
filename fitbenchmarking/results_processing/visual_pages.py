@@ -5,9 +5,10 @@ Set up and build the visual display pages for various types of problems.
 from __future__ import (absolute_import, division, print_function)
 
 import inspect
+import os
+
 from jinja2 import Environment, FileSystemLoader
 import numpy as np
-import os
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import plots
