@@ -60,12 +60,6 @@ class Controller:
 
         # Flag: error handling flag
         self.flag = None
-        # error_options: dictionary containing software error messages
-        self.error_options = \
-            {0: "Successfully converged",
-             1: "Software reported maximum number of iterations exceeded",
-             2: "Software run but didn't converge to solution",
-             3: "Software raised an exception"}
 
     def _correct_data(self):
         """

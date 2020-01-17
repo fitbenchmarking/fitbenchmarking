@@ -12,8 +12,7 @@ class FittingResult(object):
     def __init__(self, options=None, problem=None, fit_status=None,
                  chi_sq=None, fit_wks=None, params=None, errors=None,
                  runtime=None, minimizer=None, ini_function_params=None,
-                 fin_function_params=None, error_flag=None,
-                 error_options=None):
+                 fin_function_params=None, error_flag=None):
         self.options = options
         self.problem = problem
         self.fit_status = fit_status
@@ -35,7 +34,6 @@ class FittingResult(object):
 
         # Controller error handling
         self.error_flag = error_flag
-        self.error_options = error_options
 
         self.value = None
         self.norm_value = None

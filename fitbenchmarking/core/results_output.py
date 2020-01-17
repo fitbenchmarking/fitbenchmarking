@@ -16,6 +16,11 @@ import fitbenchmarking
 from fitbenchmarking.results_processing import visual_pages
 from fitbenchmarking.utils import create_dirs
 
+error_options = {0: "Successfully converged",
+                 1: "Software reported maximum number of iterations exceeded",
+                 2: "Software run but didn't converge to solution",
+                 3: "Software raised an exception"}
+
 
 def save_results_tables(options, results, group_name):
     """
@@ -80,10 +85,10 @@ def generate_tables(results_per_test, minimizers,
                     for name in table_suffix]
     results_dict, html_links = create_results_dict(results_per_test,
                                                    linked_problems)
-    error_options = preproccess_data(results_dict)
+    preproccess_data(results_dict)
     table = create_pandas_dataframe(results_dict, minimizers, table_suffix)
     render_pandas_dataframe(table, minimizers, html_links,
-                            table_names, table_titles, error_options)
+                            table_names, table_titles)
 
 
 def create_results_dict(results_per_test, linked_problems):
@@ -126,10 +131,6 @@ def preproccess_data(data):
 
     :param data: dictionary of results objects
     :type data: dict
-
-    :return : dictionary containing controller error messages
-               html links for rending
-    :rtype : dict
     """
     for results in data.values():
         min_chi_sq = min([r.chi_sq for r in results])
@@ -138,8 +139,6 @@ def preproccess_data(data):
             r.min_chi_sq = min_chi_sq
             r.min_runtime = min_runtime
             r.set_colour_scale()
-            error_options = r.error_options
-    return error_options
 
 
 def create_pandas_dataframe(table_data, minimizers, table_suffix):
@@ -179,7 +178,7 @@ def create_pandas_dataframe(table_data, minimizers, table_suffix):
 
 
 def render_pandas_dataframe(table_dict, minimizers, html_links,
-                            table_names, table_title, error_options):
+                            table_names, table_title):
     """
     Generates html and rst page from pandas dataframes.
 
@@ -193,8 +192,6 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
     :type table_names : list
     :param table_title : list of table titles
     :type table_title : list
-    :param error_options : dictionary containing controller error messages
-    :type error_options : dict
     """
 
     def colour_highlight(value):

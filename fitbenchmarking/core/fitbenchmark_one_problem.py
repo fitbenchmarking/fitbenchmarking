@@ -102,7 +102,6 @@ def benchmark(controller, minimizers, options):
             runtime = sum(runtime_list) / num_runs
             controller.success = True
             controller.cleanup()
-            controller.error_flags()
             controller.check_attributes()
         # Catching all exceptions as this means runtime cannot be calculated
         # pylint: disable=broad-except
@@ -110,10 +109,7 @@ def benchmark(controller, minimizers, options):
             print(str(excp))
             controller.success = False
             runtime = np.inf
-            controller.final_params = len(controller.initial_params) * [0]
             controller.flag = 3
-            controller.error_message = \
-                controller.error_options[controller.flag]
 
         init_function_params = controller.problem.get_function_params(
             params=controller.initial_params)
@@ -142,7 +138,7 @@ def benchmark(controller, minimizers, options):
             params=controller.final_params,
             ini_function_params=init_function_params,
             fin_function_params=fin_function_params,
-            error_flag=controller.flag, error_options=controller.error_options)
+            error_flag=controller.flag)
 
         results_problem.append(individual_result)
 
