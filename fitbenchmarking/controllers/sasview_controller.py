@@ -95,6 +95,5 @@ class SasviewController(Controller):
         else:
             self.flag = 2
 
-        if self.flag <= 1:
-            self.final_params = self._bumps_result.x
-            self.results = self._func_wrapper.theory()
+        self.final_params = self._bumps_result.x
+        self.results = self._func_wrapper.theory()

@@ -114,7 +114,7 @@ def benchmark(controller, minimizers, options):
         fin_function_params = controller.problem.get_function_params(
             params=controller.final_params)
 
-        if controller.flag <= 1:
+        if controller.flag <= 2:
             ratio = np.max(runtime_list) / np.min(runtime_list)
             tol = 4
             if ratio > tol:

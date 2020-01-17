@@ -225,6 +225,5 @@ class GSLController(Controller):
         else:
             self.flag = 2
 
-        if self.flag <= 1:
-            self.final_params = self._solver.getx()
-            self.results = self.problem.eval_f(params=self.final_params)
+        self.final_params = self._solver.getx()
+        self.results = self.problem.eval_f(params=self.final_params)

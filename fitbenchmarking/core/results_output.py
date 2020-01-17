@@ -207,12 +207,25 @@ def render_pandas_dataframe(table_dict, minimizers, html_links,
             colour_output = 'background-color: {0}'.format(colour)
         return colour_output
 
+    def enable_link(result):
+        '''
+        Enable HTML links in values
+        Note: Due to the way applymap works in DataFrames, this cannot make a
+        change based on the state of the value
+        :param result: The result object to update
+        :type result: fitbenchmaring.utils.fitbm_result.FittingResult
+        :return: The same result object after updating
+        :rtype: fitbenchmarking.utils.fitbm_result.FittingResult
+        '''
+        result.html_print = True
+        return result
+
     for name, title, table in zip(table_names.items(), table_title,
                                   table_dict.values()):
 
         with open(name[1] + 'txt', "w") as f:
             f.write(table.to_string())
-
+        table.applymap(enable_link)
         table.index = html_links
         table_style = table.style.applymap(colour_highlight)
         root = os.path.dirname(inspect.getfile(fitbenchmarking))

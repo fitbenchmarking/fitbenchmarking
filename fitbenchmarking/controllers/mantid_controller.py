@@ -96,8 +96,7 @@ class MantidController(Controller):
         else:
             self.flag = 2
 
-        if self.flag <= 1:
-            ws = self._mantid_results.OutputWorkspace
-            self.results = ws.readY(1)
-            final_params = self._mantid_results.OutputParameters.column(1)
-            self.final_params = final_params[:len(self.initial_params)]
+        ws = self._mantid_results.OutputWorkspace
+        self.results = ws.readY(1)
+        final_params = self._mantid_results.OutputParameters.column(1)
+        self.final_params = final_params[:len(self.initial_params)]

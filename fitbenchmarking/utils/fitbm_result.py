@@ -1,5 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 
+import os
+
 import numpy as np
 
 
@@ -47,9 +49,15 @@ class FittingResult(object):
                                    "rel": '{:.4g}',
                                    "both": '{0:.4g} ({1:.4g})'}
 
+        # Print with html tag or not
+        self.html_print = False
+
     def __str__(self):
         if self.table_type is not None:
             output = self.table_output
+            if self.html_print:
+                if self.error_flag != 0:
+                    output += "<sup>{}</sup>".format(self.error_flag)
         else:
             output = 'Fitting problem class: minimizer = {0}'.format(
                 self.minimizer)
@@ -88,8 +96,6 @@ class FittingResult(object):
             self.table_output = \
                 '<br>'.join([result_template.format(v1, v2)
                              for v1, v2 in zip(abs_value, rel_value)])
-        if self.error_flag != 0:
-            self.table_output += "<sup>{}</sup>".format(self.error_flag)
 
     def set_colour_scale(self):
         """

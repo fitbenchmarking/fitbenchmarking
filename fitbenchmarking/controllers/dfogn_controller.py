@@ -52,6 +52,5 @@ class DFOGNController(Controller):
         else:
             self.flag = 2
 
-        if self.flag <= 1:
-            self.results = self.problem.eval_f(params=self._popt)
-            self.final_params = self._popt
+        self.results = self.problem.eval_f(params=self._popt)
+        self.final_params = self._popt
