@@ -130,15 +130,15 @@ In order to add a new controller, you will need to:
       around a callable.
    -  ``fit()``: Run the fitting. This will be timed so should include only
       what is needed to fit the data.
-   -  ``cleanup()``: Convert the results into the expected numpy arrays and
-      store them in the results variables
-      (``self.results``, ``self.final_params``, ``self.success``)
-   -  ``error_flags()``: Converts the software flags into the same format as
-      FitBenchmarking, the keys are give as::
-         {0: "Successfully converged",
-          1: "Software reported maximum number of iterations exceeded",
-          2: "Software run but didn't converge to solution",
-          3: "Software raised an exception"}.
+   -  ``cleanup()``: Convert the results into the expected numpy arrays,
+      error flags and store them in the results variables
+      (``self.results``, ``self.final_params``, ``self.success``, ``self.flag``).
+      The flag corresponds to the following messages::
+
+         0: "Successfully converged",
+         1: "Software reported maximum number of iterations exceeded",
+         2: "Software run but didn't converge to solution",
+         3: "Software raised an exception".
 
 4. Document the available minimizers (currently done by adding to
    ``fitbenchmarking/utils/default_options.ini`` and any example files in
