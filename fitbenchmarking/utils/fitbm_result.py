@@ -1,5 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 
+import os
+
 import numpy as np
 
 
@@ -49,6 +51,8 @@ class FittingResult(object):
         self.support_page_link = ''
         self.start_figure_link = ''
         self.figure_link = ''
+        # Links will be displayed relative to this dir
+        self.relative_dir = os.path.abspath(os.sep)
 
         # Error written to support page if plotting failed
         # Default can be overwritten with more information
@@ -61,8 +65,9 @@ class FittingResult(object):
         if self.table_type is not None:
             output = self.table_output
             if self.html_print:
-                output = '<a href="{0}">{1}</a>'.format(
-                    self.support_page_link, output)
+                link = os.path.relpath(path=self.support_page_link,
+                                       start=self.relative_dir)
+                output = '<a href="{0}">{1}</a>'.format(link, output)
         else:
             output = 'Fitting problem class: minimizer = {0}'.format(
                 self.minimizer)

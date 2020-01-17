@@ -4,8 +4,14 @@ Set up and build the visual display pages for various types of problems.
 
 from __future__ import (absolute_import, division, print_function)
 
-from jinja2 import Environment, FileSystemLoader
+import inspect
 import os
+
+from jinja2 import Environment, FileSystemLoader
+import numpy as np
+
+import fitbenchmarking
+from fitbenchmarking.results_processing import plots
 
 
 def create_visual_pages(results_per_test, group_name, support_pages_dir,
@@ -82,11 +88,10 @@ def create(prob_results, group_name, support_pages_dir, count, options):
             fig_fit = fig_start = 'Re-run with make_plots set to yes in the ' \
                                   'ini file to generate plots.'
 
-        root = os.path.dirname(os.path.abspath(__file__))
-        main_dir = os.path.dirname(root)
-        html_page_dir = os.path.join(main_dir, "HTML_templates")
+        root = os.path.dirname(inspect.getfile(fitbenchmarking))
+        html_page_dir = os.path.join(root, "HTML_templates")
         env = Environment(loader=FileSystemLoader(html_page_dir))
-        style_css = os.path.join(main_dir, 'HTML_templates/style_sheet.css')
+        style_css = os.path.join(html_page_dir, 'style_sheet.css')
 
         template = env.get_template("results_template.html")
 
@@ -123,11 +128,11 @@ def get_figure_paths(result, count):
     figures_dir = "figures"
 
     output = []
-    for l in [result.figure_link, result.start_figure_link]:
-        if l == '':
+    for link in [result.figure_link, result.start_figure_link]:
+        if link == '':
             output.append('')
         else:
-            path = os.path.join(figures_dir, l)
+            path = os.path.join(figures_dir, link)
             # If OS is Windows, then need to add prefix 'file:///'
             if os.name == 'nt':
                 path = 'file:///' + path
