@@ -16,7 +16,8 @@ on setting up python see :ref:`setting-up-python`.
 2. Open up a terminal (command prompt) and go into the
    ``fitbenchmarking`` directory.
 3. Once you are in the right directory, type
-   ``pip install .``.
+   ``pip install .``. If this doesn't work either ``pip`` is not
+   in your PATH or not installed, then see instructions further below.
 4. Install any additional softwares you wish to benchmark.
    See :ref:`install_instructions` for more information on this.
 5. Finally run ``fitbenchmarking`` with a problem set from the examples
@@ -30,9 +31,9 @@ on setting up python see :ref:`setting-up-python`.
 
 .. _setting-up-python:
 
-******************
-Setting up Python
-******************
+***************************
+Setting up Python, pip etc.
+***************************
 
 Windows
 =======
@@ -47,7 +48,7 @@ From the list at the bottom of the page, please select
 ``Windows x86 installer``. Double click and run the installer with
 the default options.
 
-Add the Python Directory to your Path Environment Variable
+Add Python and pip Directories to your Path Environment Variable
 --------------------------------------------------------------
 
 In order to make it so you can access Python via any command line prompt
@@ -74,47 +75,31 @@ so:
 If you are using Python 3, you should change this line accordingly.
 Also make sure you include the
 ``C:\Python<version>\Scripts`` in the Path too even
-if it doesn’t exist yet – this is where your package management tools,
+if it doesn’t exist yet – this is where your package management tools (including pip),
 unit testing tools, and other command line-accessible Python programs
 will live.
 
 Installing pip
 --------------
 
-There’s a couple of different options for package management in Python,
-here we are going to use pip. Pip makes it trivial for us to install
-Python packages, like ``setuptools``. You are going to have to install
-packages pretty often if we’re working with third party tools and
-libraries, so this is a must-have.
+Pip is a Python package management tool.
 
-`Pip has a detailed set of instructions on how to install it from
-source <https://pip.pypa.io/en/latest/installing/>`__ – if you don’t
-have the curl command on your system, just use your Git or even your web
-browser to download the source file mentioned in their instructions.
+If for some reason pip is not installed on your system then e.g.
+see `these detailed set of instructions on how to install it from
+source <https://pip.pypa.io/en/latest/installing/>`__ .
 
-Installing setuptools
----------------------
-
-Installing setuptools, which will be needed for installing the
-fitbenchmarking package, is straight forward. If pip installed
-succesfully, just run: ``pip install setuptools``
-
-This concludes the python installation guide for Windows 7/10.
 
 Linux
 =====
 
-Python comes with the supported versions of Ubuntu (18.04 or 16.04).
+Python comes with the supported Linux versions of FitBenchmarking.
 
-Setting up Pip and Setuptools
+Setting up Pip
 -----------------------------
 
 It also usually has pip installed. If pip is not present in your system,
-please open a terminal and run ``sudo apt-get install python-pip``
-Following this, to get the setuptools package run
-``sudo pip install python-setuptools``
-
-This concludes the python installation guide for Ubuntu 16.04/18.04.
+then, for example, on a debian version of Linux open a terminal and run
+``sudo apt-get install python-pip``
 
 
 *****************
