@@ -132,7 +132,7 @@ In order to add a new controller, you will need to:
 2. Create ``fitbenchmarking/fitting/controllers/<software_name>_controller.py``
    which contains a new subclass of ``BaseSoftwareController``
    (from ``base_controller.py``).
-   This should implement 5 functions:
+   This should implement 4 functions:
 
    -  ``__init__()``: Initialise anything that is needed specifically for the
       software, do any work that can be done without knowledge of the
@@ -144,7 +144,7 @@ In order to add a new controller, you will need to:
       what is needed to fit the data.
    -  ``cleanup()``: Convert the results into the expected numpy arrays,
       error flags and store them in the results variables
-      (``self.results``, ``self.final_params``, ``self.success``, ``self.flag``).
+      (``self.results``, ``self.final_params``, ``self.flag``).
       The flag corresponds to the following messages::
 
          0: "Successfully converged",
