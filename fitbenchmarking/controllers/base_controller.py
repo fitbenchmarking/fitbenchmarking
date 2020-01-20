@@ -136,6 +136,8 @@ class Controller:
         in software controllers
         """
         values = {'flag': int}
+        # In the FitBenchmarking error handling issue we will change TypeError
+        # and ValueError to be a ControllerAttributeError or similar
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
             if not isinstance(attr, attr_type):
