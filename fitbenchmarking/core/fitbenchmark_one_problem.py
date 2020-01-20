@@ -105,6 +105,7 @@ def benchmark(controller, minimizers, options):
             print(str(excp))
             runtime = np.inf
             controller.flag = 3
+            controller.final_params = None
 
         controller.check_attributes()
         init_function_params = controller.problem.get_function_params(
