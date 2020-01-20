@@ -231,11 +231,11 @@ class ControllerTests(TestCase):
             controller.minimizer = minimizer
             self.shared_testing(controller)
 
-            controller._status = 0
+            controller.flag = 0
             self.check_conveged(controller)
-            controller._status = 1
+            controller.flag = 1
             self.check_max_iterations(controller)
-            controller._status = 2
+            controller.flag = 2
             self.check_diverged(controller)
 
     def test_ralfit(self):

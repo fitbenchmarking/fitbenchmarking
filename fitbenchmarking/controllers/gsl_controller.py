@@ -206,24 +206,17 @@ class GSLController(Controller):
                 status = multiminimize.test_gradient(gradient,
                                                      self._gradient_tol)
             if status == errno.GSL_SUCCESS:
-                self._status = 0
+                self.flag = 0
                 break
             elif status != errno.GSL_CONTINUE:
-                self._status = 2
+                self.flag = 2
         else:
-            self._status = 1
+            self.flag = 1
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-        if self._status == 0:
-            self.flag = 0
-        elif self._status == 1:
-            self.flag = 1
-        else:
-            self.flag = 2
-
         self.final_params = self._solver.getx()
         self.results = self.problem.eval_f(params=self.final_params)
