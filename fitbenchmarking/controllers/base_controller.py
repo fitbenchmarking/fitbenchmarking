@@ -136,20 +136,17 @@ class Controller:
         in software controllers
         """
         values = {'flag': int}
-
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
             if not isinstance(attr, attr_type):
-                raise TypeError('Attribute "{}" is not the expected type.'
-                                'Expected "{}", got {}.'.format(attr_name,
-                                                                attr_type,
-                                                                type(attr)))
-
-            if attr_name == 'flag' and attr not in [0, 1, 2, 3]:
-                raise ValueError('Attribute flag needs to be set to one '
-                                 'of {}. Currently given as {}.'.format(
-                                     [0, 1, 2, 3],
-                                     attr))
+                raise TypeError('Attribute "{}" in the controller is not '
+                                'the expected type. Expected "{}", got '
+                                '{}.'.format(attr_name, attr_type, type(attr)))
+            valid_flags = [0, 1, 2, 3]
+            if attr_name == 'flag' and attr not in valid_flags:
+                raise ValueError('Attribute flag in the controller needs '
+                                 'to be set to one of {}. Currently given '
+                                 'as {}.'.format(valid_flags, attr))
 
     @abstractmethod
     def setup(self):
