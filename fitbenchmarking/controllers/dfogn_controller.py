@@ -34,21 +34,23 @@ class DFOGNController(Controller):
         """
         Run problem with DFO-GN.
         """
-        self.success = False
-
         self._soln = dfogn.solve(self.problem.eval_r,
                                  self._pinit)
 
-        if (self._soln.flag == 0):
-            self.success = True
-
         self._popt = self._soln.x
+        self._status = self._soln.flag
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        if self.success:
-            self.results = self.problem.eval_f(params=self._popt)
-            self.final_params = self._popt
+        if self._status == 0:
+            self.flag = 0
+        elif self._status == 2:
+            self.flag = 1
+        else:
+            self.flag = 2
+
+        self.results = self.problem.eval_f(params=self._popt)
+        self.final_params = self._popt

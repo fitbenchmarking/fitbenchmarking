@@ -13,7 +13,8 @@ class FittingResult(object):
 
     def __init__(self, options=None, problem=None, fit_status=None,
                  chi_sq=None, params=None, runtime=None, minimizer=None,
-                 ini_function_params=None, fin_function_params=None):
+                 ini_function_params=None, fin_function_params=None,
+                 error_flag=None):
 
         self.options = options
         self.problem = problem
@@ -32,6 +33,9 @@ class FittingResult(object):
         self.ini_function_params = ini_function_params
         self.fin_function_params = fin_function_params
 
+        # Controller error handling
+        self.error_flag = error_flag
+
         self.value = None
         self.norm_value = None
 
@@ -45,7 +49,7 @@ class FittingResult(object):
                                    "rel": '{:.4g}',
                                    "both": '{0:.4g} ({1:.4g})'}
 
-        # Paths to vaious output files
+        # Paths to various output files
         self.support_page_link = ''
         self.start_figure_link = ''
         self.figure_link = ''
@@ -70,7 +74,11 @@ class FittingResult(object):
             if self.html_print:
                 link = os.path.relpath(path=self.support_page_link,
                                        start=self.relative_dir)
+                if self.error_flag != 0:
+                    output += "<sup>{}</sup>".format(self.error_flag)
                 output = '<a href="{0}">{1}</a>'.format(link, output)
+            elif self.error_flag != 0:
+                output += "[{}]".format(self.error_flag)
         else:
             output = 'Fitting problem class: minimizer = {0}'.format(
                 self.minimizer)

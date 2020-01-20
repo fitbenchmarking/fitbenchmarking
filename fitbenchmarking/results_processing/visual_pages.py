@@ -61,7 +61,6 @@ def create(prob_results, group_name, support_pages_dir, count, options):
     :type count : int
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
-
     """
 
     for result in prob_results:
@@ -93,7 +92,7 @@ def create(prob_results, group_name, support_pages_dir, count, options):
         env = Environment(loader=FileSystemLoader(html_page_dir))
         style_css = os.path.join(html_page_dir, 'style_sheet.css')
 
-        template = env.get_template("results_template.html")
+        template = env.get_template("support_page_template.html")
 
         with open(file_path, 'w') as fh:
             fh.write(template.render(

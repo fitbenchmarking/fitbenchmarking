@@ -82,18 +82,21 @@ class MantidController(Controller):
                                CostFunction=self._cost_function)
 
         self._mantid_results = fit_result
-        self.success = (self._mantid_results.OutputStatus != 'failed')
+        self._status = self._mantid_results.OutputStatus
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-
-        if self._mantid_results is not None:
-            ws = self._mantid_results.OutputWorkspace
-            self.results = ws.readY(1)
-            final_params = self._mantid_results.OutputParameters.column(1)
-            self.final_params = final_params[:len(self.initial_params)]
+        if self._status == "success":
+            self.flag = 0
+        elif "Failed to converge" in self._status:
+            self.flag = 1
         else:
-            self.success = False
+            self.flag = 2
+
+        ws = self._mantid_results.OutputWorkspace
+        self.results = ws.readY(1)
+        final_params = self._mantid_results.OutputParameters.column(1)
+        self.final_params = final_params[:len(self.initial_params)]
