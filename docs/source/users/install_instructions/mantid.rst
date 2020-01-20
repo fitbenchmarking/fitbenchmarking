@@ -12,20 +12,18 @@ through it. Mantid can be downloaded from
 installation instructions
 page <http://download.mantidproject.org/windows.html>`__:
 
-The steps below will guide you through installation of Mantid on
-Windows:
+Note, as of Jan 2020, Mantid is expected to soon add support for Python 3.
+The Windows installation steps below are for guidance only, and may need some tweaking.
 
-1. Find the version of Mantid you previously downloaded. By default, it
-   will automatically download to your downloads folder, which is
-   located at: ``C:\Users\$USER\Downloads`` where
-   ``$USER`` is your Windows username.
-2. Double click the installer and click **Run**.
-3. Go through the steps of the installer. The default settings are
+1. Download the installer and click **Run**.
+2. Go through the steps of the installer. The default settings are
    recommended.
-4. Once you click **Install** the installation process will begin, and
-   inform you when it is complete.
-5. That’s it! Once the installation process is complete a MantidPlot
-   icon will appear on your desktop, and in your start menu.
+3. Once the installation process is complete a MantidPlot
+   and MantidPython icon should appear on your desktop, and in your start menu.
+
+Mantid ships a version of python with it, which by default it is installed in `C:\\MantidInstall\\bin`.
+FitBenchmarking can be installed using that version of Python. Note pip is shipped with Mantid in the
+`C:\\MantidInstall\\bin\\Scripts` folder.
 
 **Note**: the installer will look for the drive with the most free disk
 space, which may include external devices. Installing and uninstalling
