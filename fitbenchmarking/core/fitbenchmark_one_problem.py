@@ -12,7 +12,7 @@ from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.utils import fitbm_result
 
 
-def fitbm_one_prob(problem, options, directory):
+def fitbm_one_prob(problem, options):
     """
     Sets up the controller for a particular problem and fits the models
     provided in the problem object.
@@ -21,8 +21,6 @@ def fitbm_one_prob(problem, options, directory):
     :type problem: FittingProblem
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
-    :param directory: The directory to store the results in
-    :type directory: string
 
     :returns: nested array of result objects, per function definition
                containing the fit information
