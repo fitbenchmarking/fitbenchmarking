@@ -15,6 +15,11 @@ import fitbenchmarking
 from fitbenchmarking.results_processing import plots, visual_pages
 from fitbenchmarking.utils import create_dirs
 
+error_options = {0: "Successfully converged",
+                 1: "Software reported maximum number of iterations exceeded",
+                 2: "Software run but didn't converge to solution",
+                 3: "Software raised an exception"}
+
 
 def save_results(options, results, group_name):
     """
@@ -324,9 +329,10 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         result.html_print = True
         return result
 
-    for name, title, table in zip(table_names.values(), table_title,
+    for name, title, table in zip(table_names.items(), table_title,
                                   table_dict.values()):
-        file_path = os.path.join(group_dir, name)
+
+        file_path = os.path.join(group_dir, name[1])
         with open(file_path + 'txt', "w") as f:
             f.write(table.to_string())
 
@@ -342,20 +348,19 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         table.applymap(enable_link)
 
         # Set colour on each cell and add title
-        table_style = table.style.applymap(colour_highlight)\
-            .set_caption(title)
-
-        # Setup template for css
+        table_style = table.style.applymap(colour_highlight)
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         html_page_dir = os.path.join(root, 'HTML_templates')
         style_css = os.path.join(html_page_dir, 'style_sheet.css')
         env = Environment(loader=FileSystemLoader(html_page_dir))
-        template = env.get_template("blank_page.html")
+        template = env.get_template("table_template.html")
+        output_file = file_path + 'html'
 
-        # Write to html
-        with open(file_path + 'html', "w") as f:
-            f.write(template.render(css_style_sheet=style_css))
-            f.write(table_style.render())
+        with open(output_file, "w") as f:
+            f.write(template.render(css_style_sheet=style_css,
+                                    result_name=title,
+                                    table=table_style.render(),
+                                    error_message=error_options))
 
 
 def create_problem_level_index(options, table_names, group_name, group_dir):

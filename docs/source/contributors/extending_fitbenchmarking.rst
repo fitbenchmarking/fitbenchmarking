@@ -143,23 +143,29 @@ In order to add a new controller, you will need to:
       around a callable.
    -  ``fit()``: Run the fitting. This will be timed so should include only
       what is needed to fit the data.
-   -  ``cleanup()``: Convert the results into the expected numpy arrays and
-      store them in the results variables
-      (``self.results``, ``self.final_params``, ``self.success``)
+   -  ``cleanup()``: Convert the results into the expected numpy arrays,
+      error flags and store them in the results variables
+      (``self.results``, ``self.final_params``, ``self.flag``).
+      The flag corresponds to the following messages::
 
-3. Document the available minimizers (currently done by adding to
+         0: "Successfully converged",
+         1: "Software reported maximum number of iterations exceeded",
+         2: "Software run but didn't converge to solution",
+         3: "Software raised an exception".
+
+4. Document the available minimizers (currently done by adding to
    ``fitbenchmarking/utils/default_options.ini`` and any example files in
    the ``example_scripts`` directory)
 
-4. Create tests for the software in
+5. Create tests for the software in
    ``fitbenchmarking/fitting/tests/test_controllers.py``.
    Unless the new controller is more complicated than the currently available
    controllers, this can be done by following the example of the others.
 
 .. note::
-   For ease of maintainance, please add new controllers to a list of software in alphabetical order.
-   
-   
+   For ease of maintenance, please add new controllers to a list of software in alphabetical order.
+
+
 The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -170,4 +176,4 @@ following members of the :class:`~fitbenchmarking.parsing.fitting_problem.Fittin
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
    :members: eval_f, eval_r, eval_r_norm, eval_j,
 	     data_x, data_y, data_e, starting_values
-	  
+

@@ -55,8 +55,9 @@ class Controller:
         # Results: Stores output results using the final parameters in
         #          numpy array
         self.results = None
-        # Success: Bool for flagging issues
-        self.success = None
+
+        # Flag: error handling flag
+        self.flag = None
 
     def _correct_data(self):
         """
@@ -128,6 +129,26 @@ class Controller:
         """
         out = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
         return out
+
+    def check_attributes(self):
+        """
+        A helper function which checks all required attributes are set
+        in software controllers
+        """
+        values = {'flag': int}
+        # In the FitBenchmarking error handling issue we will change TypeError
+        # and ValueError to be a ControllerAttributeError or similar
+        for attr_name, attr_type in values.items():
+            attr = getattr(self, attr_name)
+            if not isinstance(attr, attr_type):
+                raise TypeError('Attribute "{}" in the controller is not '
+                                'the expected type. Expected "{}", got '
+                                '{}.'.format(attr_name, attr_type, type(attr)))
+            valid_flags = [0, 1, 2, 3]
+            if attr_name == 'flag' and attr not in valid_flags:
+                raise ValueError('Attribute flag in the controller needs '
+                                 'to be set to one of {}. Currently given '
+                                 'as {}.'.format(valid_flags, attr))
 
     @abstractmethod
     def setup(self):

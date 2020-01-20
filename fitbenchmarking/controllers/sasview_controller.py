@@ -80,14 +80,20 @@ class SasviewController(Controller):
         """
         result = bumpsFit(self._fit_problem, method=self.minimizer)
 
-        self.success = result.success
         self._bumps_result = result
+        self._status = self._bumps_result.status
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        if self.success:
-            self.final_params = self._bumps_result.x
-            self.results = self._func_wrapper.theory()
+        if self._status == 0:
+            self.flag = 0
+        elif self._status == 2:
+            self.flag = 1
+        else:
+            self.flag = 2
+
+        self.final_params = self._bumps_result.x
+        self.results = self._func_wrapper.theory()
