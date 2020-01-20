@@ -25,7 +25,7 @@
 </tr>
 </tbody>
 </table>
-{% if make_plots %}
+{% if initial_plot_available %}
 <div align="center" class="figure align-center">
 <img alt={{ initial_plot }} src={{ initial_plot }} />
 {% else %}
@@ -35,7 +35,10 @@
 </div>
 <div class="section" id="plot-of-the-solution-found">
 <h1>Plot of the solution found</h1>
-<p><em>Minimizer</em>: {{ best_minimiser }}</p>
+{% if is_best_fit %}
+<h4>This is the best fit of the minimizers used.</h4>
+{% endif %}
+<p><em>Minimizer</em>: {{ minimiser }}</p>
 <p><em>Functions</em>:</p>
 <table>
 <colgroup>
@@ -53,7 +56,7 @@
 </tr>
 </tbody>
 </table>
-{% if make_plots %}
+{% if fitted_plot_available %}
 <div align="center" class="figure align-center">
 <img alt={{ fitted_plot }} src={{ fitted_plot }} />
 {% else %}

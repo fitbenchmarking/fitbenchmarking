@@ -36,4 +36,12 @@ table {
 }
 table, th, td {
   border: 1px solid black;
+  height: 100%;
+}
+th a, td a {
+  display:block;
+  text-decoration:none;
+  color: rgb(30, 30, 30);
+  height: 100%;
+  width: 100%;
 }

@@ -1,12 +1,11 @@
 """
-Higher level functions that are used for plotting the best fit plot and a starting guess plot.
+Higher level functions that are used for plotting the fit plot and a starting
+guess plot.
 """
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
-
-from fitbenchmarking.utils import create_dirs
 
 
 class Plot(object):
@@ -14,47 +13,83 @@ class Plot(object):
     Class providing plotting functionality.
     """
 
-    def __init__(self, problem, options, count, group_results_dir):
+    def __init__(self, problem, options, count, figures_dir):
         self.problem = problem
         self.options = options
+
+        # Count is the a unique number associated with a possibly duplicated
+        # problem name (e.g. in the case of multiple starting points)
         self.count = count
-        self.group_results_dir = group_results_dir
-        self.figures_dir = create_dirs.figures(group_results_dir)
+
+        self.figures_dir = figures_dir
 
         self.legend_location = "upper left"
         self.title_size = 10
-        self.labels = None
-        self.default_plot_options = \
-            {"zorder": 2, "linewidth": 1.5}
-        self.data_plot_options = \
-            {"color": "black", "marker": "x", "linestyle": '--'}
-        self.ini_guess_plot_options = \
-            {"color": "red", "marker": "", "linestyle": '-'}
-        self.best_fit_plot_options = \
-            {"color": "lime", "marker": "", "linestyle": '-'}
+
+        # These define the styles of the 4 types of plot
+        self.data_plot_options = {"label": "Data",
+                                  "zorder": 0,
+                                  "color": "black",
+                                  "marker": "x",
+                                  "linestyle": '',
+                                  "linewidth": 1}
+        self.ini_guess_plot_options = {"label": "Starting Guess",
+                                       "zorder": 1,
+                                       "color": "#ff6699",
+                                       "marker": "",
+                                       "linestyle": '-',
+                                       "linewidth": 3}
+        self.best_fit_plot_options = {"zorder": 3,
+                                      "color": '#6699ff',
+                                      "marker": "",
+                                      "linestyle": ':',
+                                      "linewidth": 3}
+        self.fit_plot_options = {"zorder": 2,
+                                 "color": "#99ff66",
+                                 "marker": "",
+                                 "linestyle": '-',
+                                 "linewidth": 3}
+
+        # Create a single reusable plot containing the problem data.
+        # We store a line here, which is updated to change the graph where we
+        # know the rest of the graph is untouched between plots.
+        # This is more efficient that the alternative of creating a new graph
+        # every time.
+        self.fig = plt.figure()
+        self.ax = self.fig.add_subplot(1, 1, 1)
+        self.line_plot = None
+        # Plot the data that functions were fitted to
+        self.plot_data(self.options.use_errors,
+                       self.data_plot_options)
+        # reset line_plot as base data won't need updating
+        self.line_plot = None
+
+    def __del__(self):
+        """
+        Close the matplotlib figure
+        """
+        plt.close(self.fig)
 
     def format_plot(self):
         """
         Performs post plot processing to annotate the plot correctly
         """
-        plt.xlabel("Time ($\mu s$)")
-        plt.ylabel("Arbitrary units")
-        plt.title(self.problem.name + " " + str(self.count),
-                  fontsize=self.title_size)
-        plt.legend(labels=self.labels, loc=self.legend_location)
-        plt.tight_layout()
+        self.ax.set_xlabel(r"Time ($\mu s$)")
+        self.ax.set_ylabel("Arbitrary units")
+        self.ax.set_title(self.problem.name + " " + str(self.count),
+                          fontsize=self.title_size)
+        self.ax.legend(loc=self.legend_location)
+        self.fig.set_tight_layout(True)
 
-    def plot_data(self, errors, default_options, specific_options, x=None, y=None):
+    def plot_data(self, errors, plot_options, x=None, y=None):
         """
         Plots the data given
 
-        :param errors: boolean to say whether fit minimizer uses errors
+        :param errors: whether fit minimizer uses errors
         :type errors: bool
-        :param default_options: dictionary containing default plot options
-        :type default_options: dict
-        :param specific_options: dictionary containing specific plot options,
-                                 for example for the data plot
-        :type specific_options: dict
+        :param plot_options: Values for style of the data to plot,
+                                 for example color and zorder
+        :type plot_options: dict
         :param x: x values to be plotted
         :type x: np.array
         :param y: y values to be plotted
@@ -64,54 +99,102 @@ class Plot(object):
             x = self.problem.data_x
         if y is None:
             y = self.problem.data_y
-        temp_options = {}
-        temp_options.update(default_options)
-        temp_options.update(specific_options)
         if errors:
             # Plot with errors
-            plt.errorbar(x, y, yerr=self.problem.data_e,
-                         **temp_options)
+            self.ax.clear()
+            self.ax.errorbar(x, y, yerr=self.problem.data_e,
+                             **plot_options)
         else:
             # Plot without errors
-            plt.plot(x, y, **temp_options)
+            if self.line_plot is None:
+                # Create a new line and store
+                self.line_plot = self.ax.plot(x, y, **plot_options)[0]
+            else:
+                # Update line instead of recreating
+                self.line_plot.set_data(x, y)
+                # Update style
+                for k, v in plot_options.items():
+                    try:
+                        getattr(self.line_plot, 'set_{}'.format(k))(v)
+                    except AttributeError:
+                        pass
+
+                self.fig.canvas.draw()
 
     def plot_initial_guess(self):
         """
-        Plots the initial guess along with the data
+        Plots the initial guess along with the data and stores in a file
         """
-        self.labels = ["Starting Guess", "Data"]
         ini_guess = self.problem.starting_values[self.count - 1].values()
-        self.plot_data(self.options.use_errors,
-                       self.default_plot_options,
-                       self.data_plot_options)
-        self.plot_data(False, self.default_plot_options,
-                       self.ini_guess_plot_options,
+        self.plot_data(errors=False,
+                       plot_options=self.ini_guess_plot_options,
                        y=self.problem.eval_f(ini_guess))
         self.format_plot()
         file = "start_for_{0}_{1}.png".format(self.problem.name, self.count)
         file_name = os.path.join(self.figures_dir, file)
-        plt.savefig(file_name)
-        plt.close()
+        self.fig.savefig(file_name)
+        return file
 
-    def plot_best_fit(self, minimizer, params):
+    def plot_best(self, minimizer, params):
         """
-        Plots the best fit along with the data
+        Plots the fit along with the data using the "best_fit" style
 
         :param minimizer: name of the best fit minimizer
         :type minimizer: str
         :param params: fit parameters returned from the best fit minimizer
         :type params: list
         """
+        label = 'Best Fit ({})'.format(minimizer)
 
-        self.labels = [minimizer, "Data"]
-        self.plot_data(self.options.use_errors,
-                       self.default_plot_options,
-                       self.data_plot_options)
-        self.plot_data(False, self.default_plot_options,
-                       self.best_fit_plot_options,
+        # Plot line and save.
+        # This should have the style of fit plot options and the colour of
+        # best fit plot options.
+        # Then the plot should be saved and updated to use only best fit style
+        # for future plots.
+        plot_options_dict = self.fit_plot_options.copy()
+        plot_options_dict['label'] = label
+        plot_options_dict['color'] = self.best_fit_plot_options['color']
+
+        self.plot_data(errors=False,
+                       plot_options=plot_options_dict,
                        y=self.problem.eval_f(params))
         self.format_plot()
-        file = "Fit_for_{0}_{1}.png".format(self.problem.name, self.count)
+        file = "{}_fit_for_{}_{}.png".format(minimizer,
+                                             self.problem.name,
+                                             self.count)
         file_name = os.path.join(self.figures_dir, file)
-        plt.savefig(file_name)
-        plt.close()
+        self.fig.savefig(file_name)
+
+        # Update to correct linestyle
+        plot_options_dict = self.best_fit_plot_options.copy()
+        plot_options_dict['label'] = label
+        self.plot_data(errors=False,
+                       plot_options=plot_options_dict,
+                       y=self.problem.eval_f(params))
+
+        # Make sure line wont be replaced by resetting line_plot
+        self.line_plot = None
+        return file_name
+
+    def plot_fit(self, minimizer, params):
+        """
+        Updates self.line to show the fit using the passed in params.
+        If self.line is empty it will create a new line.
+        Stores the plot in a file
+
+        :param minimizer: name of the fit minimizer
+        :type minimizer: str
+        :param params: fit parameters returned from the best fit minimizer
+        :type params: list
+        """
+        plot_options_dict = self.fit_plot_options.copy()
+        plot_options_dict['label'] = minimizer
+        self.plot_data(errors=False,
+                       plot_options=plot_options_dict,
+                       y=self.problem.eval_f(params))
+        self.format_plot()
+        file = "{}_fit_for_{}_{}.png".format(
+            minimizer, self.problem.name, self.count)
+        file_name = os.path.join(self.figures_dir, file)
+        self.fig.savefig(file_name)
+        return file
