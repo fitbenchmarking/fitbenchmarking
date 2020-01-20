@@ -12,24 +12,22 @@ class FittingResult(object):
     """
 
     def __init__(self, options=None, problem=None, fit_status=None,
-                 chi_sq=None, fit_wks=None, params=None, errors=None,
-                 runtime=None, minimizer=None, ini_function_params=None,
-                 fin_function_params=None):
+                 chi_sq=None, params=None, runtime=None, minimizer=None,
+                 ini_function_params=None, fin_function_params=None):
+
         self.options = options
         self.problem = problem
         self.fit_status = fit_status
+        self.params = params
+
         self.chi_sq = chi_sq
         self._min_chi_sq = None
-        # Workspace with data to fit
-        self.fit_wks = fit_wks
-        self.params = params
-        self.errors = errors
 
         # Time it took to run the Fit algorithm
         self.runtime = runtime
         self._min_runtime = None
 
-        # Best minimizer for a certain problem and its function definition
+        # Minimizer for a certain problem and its function definition
         self.minimizer = minimizer
         self.ini_function_params = ini_function_params
         self.fin_function_params = fin_function_params
@@ -51,6 +49,7 @@ class FittingResult(object):
         self.support_page_link = ''
         self.start_figure_link = ''
         self.figure_link = ''
+
         # Links will be displayed relative to this dir
         self.relative_dir = os.path.abspath(os.sep)
 
@@ -60,6 +59,10 @@ class FittingResult(object):
 
         # Print with html tag or not
         self.html_print = False
+
+        # Marker to indicate this is the best fit for the problem
+        # Used for the support pages
+        self.is_best_fit = False
 
     def __str__(self):
         if self.table_type is not None:

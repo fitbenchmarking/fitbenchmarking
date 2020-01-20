@@ -35,6 +35,9 @@
 </div>
 <div class="section" id="plot-of-the-solution-found">
 <h1>Plot of the solution found</h1>
+{% if is_best_fit %}
+<h4>This is the best fit of the minimizers used.</h4>
+{% endif %}
 <p><em>Minimizer</em>: {{ minimiser }}</p>
 <p><em>Functions</em>:</p>
 <table>

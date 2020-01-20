@@ -84,6 +84,8 @@ def preproccess_data(results_per_test):
     output = []
     for results in results_per_test:
         best_result = min(results, key=lambda x: x.chi_sq)
+        best_result.is_best_fit = True
+
         min_chi_sq = best_result.chi_sq
         min_runtime = min([r.runtime for r in results])
         for r in results:
@@ -125,21 +127,28 @@ def create_plots(options, results, best_results, group_name, figures_dir):
         # Create a plot showing the initial guess and get filename
         initial_guess_path = plot.plot_initial_guess()
 
+        # Setup best plot first
         # If none of the fits succeeded, params could be None
         # Otherwise, add the best fit to the plot
         if best.params is not None:
-            plot.plot_best(best.minimizer, best.params)
+            plot_path = plot.plot_best(best.minimizer, best.params)
+            best.figure_link = plot_path
+        else:
+            best.figure_error = 'Minimizer failed to produce any parameters'
+        best.start_figure_link = initial_guess_path
 
         # For each result, if it succeeded, create a plot and add plot links to
         # the resuts object
         for result in prob_result:
-            if result.params is not None:
-                plot_path = plot.plot_fit(result.minimizer, result.params)
-                result.figure_link = plot_path
-            else:
-                result.figure_error = 'Minimizer failed to produce any ' \
-                    'parameters'
-            result.start_figure_link = initial_guess_path
+            # Don't plot best again
+            if not result.is_best_fit:
+                if result.params is not None:
+                    plot_path = plot.plot_fit(result.minimizer, result.params)
+                    result.figure_link = plot_path
+                else:
+                    result.figure_error = 'Minimizer failed to produce any ' \
+                        'parameters'
+                result.start_figure_link = initial_guess_path
 
 
 def create_results_tables(options, results, best_results, group_name,

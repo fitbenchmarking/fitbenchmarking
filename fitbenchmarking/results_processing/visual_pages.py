@@ -102,6 +102,7 @@ def create(prob_results, group_name, support_pages_dir, count, options):
                 equation=result.problem.equation,
                 initial_guess=result.ini_function_params,
                 minimiser=result.minimizer,
+                is_best_fit=result.is_best_fit,
                 initial_plot_available=init_success,
                 initial_plot=fig_start,
                 min_params=result.fin_function_params,

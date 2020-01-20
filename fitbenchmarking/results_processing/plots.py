@@ -144,17 +144,37 @@ class Plot(object):
         :param params: fit parameters returned from the best fit minimizer
         :type params: list
         """
-        plot_options_dict = self.best_fit_plot_options.copy()
-        plot_options_dict['label'] = 'Best Fit ({})'.format(minimizer)
-        # This should not update the line as it will be consistent between
-        # plots
-        # Cache the line here and reset it after plotting
-        line = self.line_plot
-        self.line_plot = None
+        label = 'Best Fit ({})'.format(minimizer)
+
+        # Plot line and save.
+        # This should have the style of fit plot options and the colour of
+        # best fit plot options.
+        # Then the plot should be saved and updated to use only best fit style
+        # for future plots.
+        plot_options_dict = self.fit_plot_options.copy()
+        plot_options_dict['label'] = label
+        plot_options_dict['color'] = self.best_fit_plot_options['color']
+
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
                        y=self.problem.eval_f(params))
-        self.line_plot = line
+        self.format_plot()
+        file = "{}_fit_for_{}_{}.png".format(minimizer,
+                                             self.problem.name,
+                                             self.count)
+        file_name = os.path.join(self.figures_dir, file)
+        self.fig.savefig(file_name)
+
+        # Update to correct linestyle
+        plot_options_dict = self.best_fit_plot_options.copy()
+        plot_options_dict['label'] = label
+        self.plot_data(errors=False,
+                       plot_options=plot_options_dict,
+                       y=self.problem.eval_f(params))
+
+        # Make sure line wont be replaced by resetting line_plot
+        self.line_plot = None
+        return file_name
 
     def plot_fit(self, minimizer, params):
         """
