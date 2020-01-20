@@ -9,7 +9,7 @@ from __future__ import (absolute_import, division, print_function)
 from fitbenchmarking.utils.logging_setup import logger
 
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.utils import create_dirs, misc
+from fitbenchmarking.utils import misc
 from fitbenchmarking.core.fitbenchmark_one_problem import fitbm_one_prob
 
 
@@ -34,10 +34,6 @@ def fitbenchmark_group(group_name, options, data_dir):
     :rtype: tuple(list, str)
     """
 
-    # Create results directory
-    results_dir = create_dirs.results(options.results_dir)
-    group_results_dir = create_dirs.group_results(results_dir, group_name)
-
     # Extract problem definitions
     problem_group = misc.get_problem_files(data_dir)
 
@@ -51,8 +47,7 @@ def fitbenchmark_group(group_name, options, data_dir):
         print("\n{0}\n{1} {2}/{3}\n{0}\n".format(decorator, tmp_prob_name,
                                                  i + 1, len(problem_group)))
         problem_results = fitbm_one_prob(problem=parsed_problem,
-                                         options=options,
-                                         directory=group_results_dir)
+                                         options=options)
 
         # Convert from list of dict to list of list and store
         for r in problem_results:
@@ -61,4 +56,4 @@ def fitbenchmark_group(group_name, options, data_dir):
                 tmp_result.extend(r[s])
             results.append(tmp_result)
 
-    return results, group_results_dir
+    return results

@@ -41,8 +41,9 @@ is:
    :alt: Example Table
 
 This is the result of fitbenchmarking mantid on a set of neutron data.
-The results are normalised with respect to the best minimizer per
-problem. The problem names link to html pages that display plots of the
+The results are chi squared values as well as a normalised value with respect
+to the best minimizer per problem.
+The problem names link to html pages that display plots of the
 data and the fit that was performed, together with initial and final
 values of the parameters. Here is an example of the final plot fit.
 
