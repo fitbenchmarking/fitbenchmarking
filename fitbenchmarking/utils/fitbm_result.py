@@ -4,6 +4,8 @@ import os
 
 import numpy as np
 
+LOCAL_MIN_TOL = 1e-2
+
 
 class FittingResult(object):
     """
@@ -68,6 +70,33 @@ class FittingResult(object):
         # Used for the support pages
         self.is_best_fit = False
 
+        # Boolian that checks return true or false depending whether
+        # norm(J^T r), norm(J^T r)/norm(r) and/or norm(r) are smaller
+        # than a set tolerance
+        self._local_min = None
+
+    @property
+    def local_min(self):
+        if self.params is not None:
+            r = self.problem.eval_r(self.params)
+            min_test = np.matmul(self.problem.eval_j(self.params).T, r)
+            norm_r = np.linalg.norm(r)
+            norm_min_test = np.linalg.norm(min_test)
+            self.norm_rel = norm_min_test / norm_r
+            if norm_r <= LOCAL_MIN_TOL or norm_min_test <= LOCAL_MIN_TOL \
+                    or self.norm_rel <= LOCAL_MIN_TOL:
+                self._local_min = "True"
+            else:
+                self._local_min = "False"
+        else:
+            self._local_min = "False"
+            self.norm_rel = np.inf
+        return self._local_min
+
+    @local_min.setter
+    def local_min(self, value):
+        self._local_min = value
+
     def __str__(self):
         if self.table_type is not None:
             output = self.table_output
@@ -107,16 +136,23 @@ class FittingResult(object):
             rel_value = [self.norm_acc, self.norm_runtime]
             self.colour = [self.colour_acc, self.colour_runtime]
 
-        if comp_mode == "abs":
-            self.table_output = \
-                '<br>'.join([result_template.format(v) for v in abs_value])
-        elif comp_mode == "rel":
-            self.table_output = \
-                '<br>'.join([result_template.format(v) for v in rel_value])
-        elif comp_mode == "both":
-            self.table_output = \
-                '<br>'.join([result_template.format(v1, v2)
-                             for v1, v2 in zip(abs_value, rel_value)])
+        if value == "local_min":
+            output = self.local_min
+            self.table_output = output + " (" +\
+                self.output_string_type['abs'].format(self.norm_rel) + ")"
+            colour = [c[1] for c in self.options.colour_scale]
+            self.colour = colour[0] if output == "True" else colour[-1]
+        else:
+            if comp_mode == "abs":
+                self.table_output = \
+                    '<br>'.join([result_template.format(v) for v in abs_value])
+            elif comp_mode == "rel":
+                self.table_output = \
+                    '<br>'.join([result_template.format(v) for v in rel_value])
+            elif comp_mode == "both":
+                self.table_output = \
+                    '<br>'.join([result_template.format(v1, v2)
+                                 for v1, v2 in zip(abs_value, rel_value)])
 
     def set_colour_scale(self):
         """
