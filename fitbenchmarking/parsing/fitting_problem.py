@@ -105,7 +105,7 @@ class FittingProblem:
 
     @sanitised_name.setter
     def sanitised_name(self, value):
-        self._sanitised_name = value
+        raise ValueError('This property should not be set manually')
 
     def eval_f(self, params, x=None):
         """
