@@ -74,6 +74,9 @@ class FittingProblem:
         self.function = None
 
         self._param_names = None
+
+        # the sanitised name strips out commas and white spaces which is used
+        # to define the plot and html links
         self._sanitised_name = None
 
     @property
