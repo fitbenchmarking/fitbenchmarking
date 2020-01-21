@@ -131,7 +131,7 @@ def create_plots(options, results, best_results, group_name, figures_dir):
     """
     name_count = {}
     for best, prob_result in zip(best_results, results):
-        name = best.problem.name
+        name = best.problem.sanitised_name
         name_count[name] = 1 + name_count.get(name, 0)
         count = name_count[name]
 

@@ -32,7 +32,7 @@ def create_visual_pages(results_per_test, group_name, support_pages_dir,
 
     name_count = {}
     for prob_result in results_per_test:
-        name = prob_result[0].problem.name
+        name = prob_result[0].problem.sanitised_name
         name_count[name] = 1 + name_count.get(name, 0)
         count = name_count[name]
 
@@ -64,9 +64,7 @@ def create(prob_results, group_name, support_pages_dir, count, options):
     """
 
     for result in prob_results:
-        prob_name = result.problem.name
-        prob_name = prob_name.replace(',', '')
-        prob_name = prob_name.replace(' ', '_')
+        prob_name = result.problem.sanitised_name
 
         file_name = '{}_{}_{}_{}.html'.format(
             group_name, prob_name, count, result.minimizer).lower()
@@ -97,7 +95,7 @@ def create(prob_results, group_name, support_pages_dir, count, options):
         with open(file_path, 'w') as fh:
             fh.write(template.render(
                 css_style_sheet=style_css,
-                title=prob_name,
+                title=result.problem.name,
                 equation=result.problem.equation,
                 initial_guess=result.ini_function_params,
                 minimiser=result.minimizer,
