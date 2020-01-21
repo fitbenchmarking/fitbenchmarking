@@ -130,7 +130,8 @@ class Plot(object):
                        plot_options=self.ini_guess_plot_options,
                        y=self.problem.eval_f(ini_guess))
         self.format_plot()
-        file = "start_for_{0}_{1}.png".format(self.problem.name, self.count)
+        file = "start_for_{0}_{1}.png".format(
+            self.problem.sanitised_name, self.count)
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
         return file
@@ -160,7 +161,7 @@ class Plot(object):
                        y=self.problem.eval_f(params))
         self.format_plot()
         file = "{}_fit_for_{}_{}.png".format(minimizer,
-                                             self.problem.name,
+                                             self.problem.sanitised_name,
                                              self.count)
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
@@ -194,7 +195,7 @@ class Plot(object):
                        y=self.problem.eval_f(params))
         self.format_plot()
         file = "{}_fit_for_{}_{}.png".format(
-            minimizer, self.problem.name, self.count)
+            minimizer, self.problem.sanitised_name, self.count)
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
         return file

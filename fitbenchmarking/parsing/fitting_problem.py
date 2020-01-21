@@ -74,6 +74,7 @@ class FittingProblem:
         self.function = None
 
         self._param_names = None
+        self._sanitised_name = None
 
     @property
     def param_names(self):
@@ -90,6 +91,18 @@ class FittingProblem:
     @param_names.setter
     def param_names(self, value):
         raise ValueError('This property should not be set manually')
+
+    @property
+    def sanitised_name(self):
+        if not self._sanitised_name:
+            self._sanitised_name = self.name
+            self._sanitised_name = self._sanitised_name.replace(',', '')
+            self._sanitised_name = self._sanitised_name.replace(' ', '_')
+        return self._sanitised_name
+
+    @sanitised_name.setter
+    def sanitised_name(self, value):
+        self._sanitised_name = value
 
     def eval_f(self, params, x=None):
         """
