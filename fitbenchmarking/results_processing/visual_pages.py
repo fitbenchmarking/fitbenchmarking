@@ -95,7 +95,7 @@ def create(prob_results, group_name, support_pages_dir, count, options):
         with open(file_path, 'w') as fh:
             fh.write(template.render(
                 css_style_sheet=style_css,
-                title=prob_name,
+                title=result.problem.name,
                 equation=result.problem.equation,
                 initial_guess=result.ini_function_params,
                 minimiser=result.minimizer,

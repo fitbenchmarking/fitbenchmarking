@@ -234,7 +234,7 @@ def create_results_dict(results_per_test):
 
     name_count = {}
     for prob_results in results_per_test:
-        name = prob_results[0].problem.sanitised_name
+        name = prob_results[0].problem.name
         name_count[name] = 1 + name_count.get(name, 0)
         count = name_count[name]
 
