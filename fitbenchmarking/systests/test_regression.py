@@ -25,8 +25,13 @@ class TestRegression(TestCase):
         Create an options file, run it, and get the results.
         """
 
+        # Get defaults which should have minimizers for every software
         opts = Options()
+        # Use only the first minimizer for each software
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
+        # Get a list of all softwares
+        # (sorted to ensure it is the same order as expected)
+        opts.software = sorted(opts.minimizers.keys())
         opts.results_dir = os.path.join(os.path.dirname(__file__), 'results')
 
         opt_file = tempfile.NamedTemporaryFile()
