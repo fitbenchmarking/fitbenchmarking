@@ -79,6 +79,9 @@ class FittingProblem:
         # to define the plot and html links
         self._sanitised_name = None
 
+        # The index for sorting the data (used in plotting)
+        self.sorted_index = None
+
     @property
     def param_names(self):
         """
@@ -247,3 +250,41 @@ class FittingProblem:
                                                                 ))
         if self.function is None:
             raise TypeError('Attribute "function" has not been set.')
+
+    def correct_data(self, use_errors):
+        """
+        Strip data that overruns the start and end x_range,
+        and approximate errors if not given.
+        Modifications happen on member variables.
+
+        :param use_errors: Specify whether to set data_e or not
+        :type use_errors: bool 
+        """
+
+        # fix self.data_e
+        if use_errors:
+            if self.data_e is None:
+                self.data_e = np.sqrt(abs(self.data_y))
+
+            # The values of data_e are used to divide the residuals.
+            # If these are (close to zero), then this blows up.
+            # This is particularly a problem if trying to fit
+            # counts, which may follow a Poisson distribution.
+            #
+            # Fix this by cutting values less than a certain value
+            trim_value = 1.0e-8
+            self.data_e[self.data_e < trim_value] = trim_value
+        else:
+            self.data_e = None
+
+        # impose x ranges
+        if self.start_x is not None and self.end_x is not None:
+            mask = np.logical_and(self.data_x >= self.start_x,
+                                  self.data_x <= self.end_x)
+            self.data_x = self.data_x[mask]
+            self.data_y = self.data_y[mask]
+            if self.data_e is not None:
+                self.data_e = self.data_e[mask]
+
+        # Stores the indices of the sorted data
+        self.sorted_index = np.argsort(self.data_x)

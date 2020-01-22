@@ -156,9 +156,10 @@ class Plot(object):
         plot_options_dict['label'] = label
         plot_options_dict['color'] = self.best_fit_plot_options['color']
 
+        x = self.problem.data_x[self.problem.sorted_index]
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
-                       y=self.problem.eval_f(params))
+                       y=self.problem.eval_f(params, x))
         self.format_plot()
         file = "{}_fit_for_{}_{}.png".format(minimizer,
                                              self.problem.sanitised_name,
@@ -190,9 +191,11 @@ class Plot(object):
         """
         plot_options_dict = self.fit_plot_options.copy()
         plot_options_dict['label'] = minimizer
+
+        x = self.problem.data_x[self.problem.sorted_index]
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
-                       y=self.problem.eval_f(params))
+                       y=self.problem.eval_f(params, x))
         self.format_plot()
         file = "{}_fit_for_{}_{}.png".format(
             minimizer, self.problem.sanitised_name, self.count)
