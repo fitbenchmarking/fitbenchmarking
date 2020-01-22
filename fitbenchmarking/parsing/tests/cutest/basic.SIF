@@ -1,8 +1,8 @@
-*************************** 
+***************************
 * SET UP THE INITIAL DATA *
 ***************************
 
-NAME		basic
+NAME          basic
 
 *   Problem :
 *   *********
@@ -53,12 +53,12 @@ GROUPS
 CONSTANTS
 
  DO I         1                        M
- Z  BOXBOD    F(I)                     Y(I)
+ Z  basic     F(I)                     Y(I)
  ND        
 
 BOUNDS
 
- FR BOXBOD    'DEFAULT'
+ FR basic     'DEFAULT'
 
 START POINT
 
@@ -96,7 +96,7 @@ OBJECT BOUND
 
 *   Least square problems are bounded below by zero
 
- LO BOXBOD              0.0
+ LO basic               0.0
 
 *   Solution
 
@@ -109,7 +109,7 @@ ENDATA
 * AND RANGE ROUTINES  *
 ***********************
 
-ELEMENTS      BOXBOD
+ELEMENTS      basic
 
 TEMPORARIES
 
@@ -128,4 +128,3 @@ INDIVIDUALS
 
 ENDATA
 
-  IE M		
