@@ -41,8 +41,7 @@ class FitbenchmarkParser(Parser):
         # can find the sif files
         os.environ["MASTSIF"] = problem_directory
         self._p = pycutest.import_problem(problem)
-
-        fp.name = problem
+        fp.name = self._p.name
         fp.data_x, fp.data_y = self._get_data()
         self._y = fp.data_y
         fp.function = self._function # self._p.obj
