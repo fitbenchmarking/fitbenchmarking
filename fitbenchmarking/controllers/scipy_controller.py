@@ -31,22 +31,24 @@ class ScipyController(Controller):
         """
         Run problem with Scipy.
         """
-        result = least_squares(fun=self.problem.eval_r,
-                               x0=self.initial_params,
-                               method=self.minimizer,
-                               max_nfev=500)
-
-        # To be consistent with Mantid results, we only report when the fit
-        # fails. That is when the algorithm diverges or falls over but not
-        # when the maximum number of iterations is reached (results.status = 0)
-        self.success = (result.status >= 0)
-        self._popt = result.x
+        self.result = least_squares(fun=self.problem.eval_r,
+                                    x0=self.initial_params,
+                                    method=self.minimizer,
+                                    max_nfev=500)
+        self._popt = self.result.x
+        self._status = self.result.status
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        if self.success:
-            self.results = self.problem.eval_f(params=self._popt)
-            self.final_params = self._popt
+        if self._status > 0:
+            self.flag = 0
+        elif self._status == 0:
+            self.flag = 1
+        else:
+            self.flag = 2
+
+        self.results = self.problem.eval_f(params=self._popt)
+        self.final_params = self._popt

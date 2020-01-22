@@ -1,5 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 
+import os
+
 import numpy as np
 
 
@@ -10,27 +12,29 @@ class FittingResult(object):
     """
 
     def __init__(self, options=None, problem=None, fit_status=None,
-                 chi_sq=None, fit_wks=None, params=None, errors=None,
-                 runtime=None, minimizer=None, ini_function_params=None,
-                 fin_function_params=None):
+                 chi_sq=None, params=None, runtime=None, minimizer=None,
+                 ini_function_params=None, fin_function_params=None,
+                 error_flag=None):
+
         self.options = options
         self.problem = problem
         self.fit_status = fit_status
+        self.params = params
+
         self.chi_sq = chi_sq
         self._min_chi_sq = None
-        # Workspace with data to fit
-        self.fit_wks = fit_wks
-        self.params = params
-        self.errors = errors
 
         # Time it took to run the Fit algorithm
         self.runtime = runtime
         self._min_runtime = None
 
-        # Best minimizer for a certain problem and its function definition
+        # Minimizer for a certain problem and its function definition
         self.minimizer = minimizer
         self.ini_function_params = ini_function_params
         self.fin_function_params = fin_function_params
+
+        # Controller error handling
+        self.error_flag = error_flag
 
         self.value = None
         self.norm_value = None
@@ -45,9 +49,36 @@ class FittingResult(object):
                                    "rel": '{:.4g}',
                                    "both": '{0:.4g} ({1:.4g})'}
 
+        # Paths to various output files
+        self.support_page_link = ''
+        self.start_figure_link = ''
+        self.figure_link = ''
+
+        # Links will be displayed relative to this dir
+        self.relative_dir = os.path.abspath(os.sep)
+
+        # Error written to support page if plotting failed
+        # Default can be overwritten with more information
+        self.figure_error = 'Plotting Failed'
+
+        # Print with html tag or not
+        self.html_print = False
+
+        # Marker to indicate this is the best fit for the problem
+        # Used for the support pages
+        self.is_best_fit = False
+
     def __str__(self):
         if self.table_type is not None:
             output = self.table_output
+            if self.html_print:
+                link = os.path.relpath(path=self.support_page_link,
+                                       start=self.relative_dir)
+                if self.error_flag != 0:
+                    output += "<sup>{}</sup>".format(self.error_flag)
+                output = '<a href="{0}">{1}</a>'.format(link, output)
+            elif self.error_flag != 0:
+                output += "[{}]".format(self.error_flag)
         else:
             output = 'Fitting problem class: minimizer = {0}'.format(
                 self.minimizer)

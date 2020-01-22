@@ -16,7 +16,7 @@ setup(name='FitBenchmarking',
               'fitbenchmarking = fitbenchmarking.cli.main:main'
           ]
       },
-      packages=find_packages('./', exclude=('*mock*', '*test*')),
+      packages=find_packages(exclude=('*mock*', '*test*')),
       install_requires=['docutils',
                         'numpy<1.17',
                         'matplotlib<3.0',
@@ -26,10 +26,8 @@ setup(name='FitBenchmarking',
                         'lxml',
                         'pandas<=0.24.2',
                         'jinja2',
-                        'pypandoc',
                         'dfogn',
                         'iminuit',
-                        'pygsl',
                         'configparser',
                         'jinja2'],
       zip_safe=False,
@@ -38,7 +36,8 @@ setup(name='FitBenchmarking',
           'externals': InstallExternals,
           'help': Help,
       },
-      package_data={'fitbenchmarking': ['utils/default_options.ini']}
+      package_data={'fitbenchmarking': ['utils/default_options.ini',
+                                        'HTML_templates/*']}
       )
 
 

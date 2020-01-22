@@ -75,6 +75,10 @@ class FittingProblem:
 
         self._param_names = None
 
+        # the sanitised name strips out commas and white spaces which is used
+        # to define the plot and html links
+        self._sanitised_name = None
+
     @property
     def param_names(self):
         """
@@ -89,6 +93,18 @@ class FittingProblem:
 
     @param_names.setter
     def param_names(self, value):
+        raise ValueError('This property should not be set manually')
+
+    @property
+    def sanitised_name(self):
+        if not self._sanitised_name:
+            self._sanitised_name = self.name
+            self._sanitised_name = self._sanitised_name.replace(',', '')
+            self._sanitised_name = self._sanitised_name.replace(' ', '_')
+        return self._sanitised_name
+
+    @sanitised_name.setter
+    def sanitised_name(self, value):
         raise ValueError('This property should not be set manually')
 
     def eval_f(self, params, x=None):

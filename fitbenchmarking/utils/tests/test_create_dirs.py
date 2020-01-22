@@ -1,19 +1,23 @@
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
 
-import unittest
+import time
 import os
 import shutil
+import unittest
 
-from fitbenchmarking.utils.create_dirs import figures
-from fitbenchmarking.utils.create_dirs import group_results
-from fitbenchmarking.utils.create_dirs import restables_dir
-from fitbenchmarking.utils.create_dirs import results
+from fitbenchmarking.utils.create_dirs import (figures, group_results, results,
+                                               support_pages)
 
 
 class CreateDirsTests(unittest.TestCase):
 
     def setUp(self):
-        self.results_dir = os.path.join(os.getcwd(), 'results')
+        path = 'r{}'.format(int(time.time()))
+        self.results_dir = os.path.join(os.getcwd(), path)
+
+    def tearDown(self):
+        if os.path.exists(self.results_dir):
+            shutil.rmtree(self.results_dir)
 
     def test_results_throw_correct_error(self):
 
@@ -22,14 +26,13 @@ class CreateDirsTests(unittest.TestCase):
 
     def test_results_create_correct_dir(self):
 
-        results_dir = os.path.join(os.getcwd(), "full_path", "test")
-        results_dir = results(results_dir)
-        results_dir_expected = os.path.join(os.getcwd(), "full_path", "test")
+        results_dir = results(self.results_dir)
+        results_dir_expected = self.results_dir
 
         self.assertEqual(results_dir_expected, results_dir)
+        self.assertTrue(os.path.exists(results_dir_expected))
 
         shutil.rmtree(results_dir_expected)
-        os.rmdir(os.path.join(os.getcwd(), "full_path"))
 
     def test_groupResults_create_correct_group_results(self):
 
@@ -42,16 +45,16 @@ class CreateDirsTests(unittest.TestCase):
 
         shutil.rmtree(results_dir)
 
-    def test_restablesDir_create_correct_random_dir(self):
+    def test_support_pages_create_correct_dir(self):
 
         results_dir = results(self.results_dir)
-        group_name = 'random'
+        group_results_dir = group_results(results_dir, "test_group")
+        support_pages_dir = support_pages(group_results_dir)
+        support_pages_dir_expected = os.path.join(group_results_dir,
+                                                  'support_pages')
 
-        tables_dir = restables_dir(results_dir, group_name)
-        tables_dir_expected = os.path.join(results_dir, 'random')
-
-        self.assertEqual(tables_dir_expected, tables_dir)
-        self.assertTrue(os.path.exists(tables_dir_expected))
+        self.assertEqual(support_pages_dir_expected, support_pages_dir)
+        self.assertTrue(os.path.exists(support_pages_dir_expected))
 
         shutil.rmtree(results_dir)
 
@@ -59,10 +62,10 @@ class CreateDirsTests(unittest.TestCase):
 
         results_dir = results(self.results_dir)
         group_results_dir = group_results(results_dir, "test_group")
+        support_pages_dir = support_pages(group_results_dir)
 
-        figures_dir = figures(group_results_dir)
-        figures_dir_expected = os.path.join(group_results_dir, 'support_pages',
-                                            'figures')
+        figures_dir = figures(support_pages_dir)
+        figures_dir_expected = os.path.join(support_pages_dir, 'figures')
 
         self.assertEqual(figures_dir_expected, figures_dir)
         self.assertTrue(os.path.exists(figures_dir_expected))

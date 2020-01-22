@@ -14,6 +14,14 @@ class TestFittingProblem(TestCase):
     Class to test the FittingProblem class
     """
 
+    def test_sanitised_name(self):
+        fitting_problem = FittingProblem()
+        expected = "test_1"
+        fitting_problem.name = "test 1"
+        self.assertEqual(fitting_problem.sanitised_name, expected)
+        fitting_problem.name = "test,1"
+        self.assertEqual(fitting_problem.sanitised_name, expected)
+
     def test_verify_problem(self):
         """
         Test that verify only passes if all required values are set.

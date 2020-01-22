@@ -49,19 +49,21 @@ class RALFitController(Controller):
         """
         Run problem with RALFit.
         """
-        self.success = False
         self._popt = ral_nlls.solve(self.initial_params,
                                     self.problem.eval_r,
                                     self.problem.eval_j,
                                     options=self._options)[0]
-
-        self.success = (self._popt is not None)
+        self._status = 0 if self._popt is not None else 1
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        if self.success:
-            self.results = self.problem.eval_f(params=self._popt)
-            self.final_params = self._popt
+        if self._status == 0:
+            self.flag = 0
+        else:
+            self.flag = 2
+
+        self.results = self.problem.eval_f(params=self._popt)
+        self.final_params = self._popt

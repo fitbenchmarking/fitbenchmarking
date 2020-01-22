@@ -21,5 +21,9 @@ sudo apt-get update
 sudo apt-get install mantid -y
 
 PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib
+
+# Run mantid python module as first load seems to fail
+python -m mantid.simpleapi || true
+
 echo "Mantid is now setup for this session."
 echo "To enable mantid in future sessions we recommend adding 'export PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib' to your .bashrc file"
