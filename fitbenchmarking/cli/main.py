@@ -102,6 +102,8 @@ def run(problem_sets, options_file=''):
                                          options=options)
 
         print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
+        group_results_dir = os.path.relpath(path=group_results_dir,
+                                            start=options.results_dir)
         result_dir.append(group_results_dir)
         groups.append(label)
 
