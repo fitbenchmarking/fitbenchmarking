@@ -30,6 +30,7 @@ class FitbenchmarkParser(Parser):
         self._m = None
         
         problem_ext = os.path.basename(self._filename)
+        problem_directory = os.path.dirname(self._filename)
         problem, _ = os.path.splitext(problem_ext)
         
         # get just the short filename (minus the .SIF)
