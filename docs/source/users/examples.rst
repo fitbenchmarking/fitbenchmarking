@@ -1,7 +1,8 @@
 .. _examples:
 
+########
 Examples
-========
+########
 
 A set of example problems can be found the ``fitbenchmarking/examples``
 directory along with a template for passing in options.

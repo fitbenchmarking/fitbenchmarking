@@ -1,0 +1,6 @@
+# Fitbenchmark Problem
+software = 'Sasview'
+name = 'sasview_basic'
+description = 'This dataset has no real world application. It is used to test the parsing.'
+input_file = 'sasview_basic.dat'
+function ='name=cylinder,radius=0.0,length=1.0'

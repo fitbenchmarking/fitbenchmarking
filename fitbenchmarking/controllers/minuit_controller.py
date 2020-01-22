@@ -46,16 +46,22 @@ class MinuitController(Controller):
         """
         Run problem with Minuit
         """
-        self.success = False
         self._minuit_problem.migrad()  # run optimizer
-        self.success = True
+        self._status = 0 if self._minuit_problem.migrad_ok() else 1
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-        if self.success:
-            self._popt = self._minuit_problem.np_values()
-            self.results = self.problem.eval_f(params=self._popt)
-            self.final_params = self._popt
+        fmin = self._minuit_problem.get_fmin()
+        if self._status == 0:
+            self.flag = 0
+        elif fmin.has_reached_call_limit:
+            self.flag = 1
+        else:
+            self.flag = 2
+
+        self._popt = self._minuit_problem.np_values()
+        self.results = self.problem.eval_f(params=self._popt)
+        self.final_params = self._popt

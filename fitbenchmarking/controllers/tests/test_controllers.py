@@ -43,6 +43,9 @@ class DummyController(Controller):
     def cleanup(self):
         raise NotImplementedError
 
+    def error_flags(self):
+        raise NotImplementedError
+
 
 class BaseControllerTests(TestCase):
     """
@@ -124,6 +127,28 @@ class BaseControllerTests(TestCase):
 
         assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
 
+    def test_check_flag_attr_true(self):
+        """
+        BaseSoftwareController: Test check_attributes function for flag
+                                attribute
+        """
+        controller = DummyController(self.problem, True)
+        controller.flag = 1
+        controller.check_attributes()
+
+    def test_check_flag_attr_false(self):
+        """
+        BaseSoftwareController: Test check_attributes function for flag
+                                attribute
+        """
+        controller = DummyController(self.problem, True)
+        with self.assertRaises(TypeError):
+            controller.check_attributes()
+
+        controller.flag = 10
+        with self.assertRaises(ValueError):
+            controller.check_attributes()
+
 
 class ControllerTests(TestCase):
     """
@@ -138,8 +163,15 @@ class ControllerTests(TestCase):
         MantidController: Test for output shape
         """
         controller = MantidController(self.problem, True)
-        controller.minimizer = 'SteepestDescent'
+        controller.minimizer = 'Levenberg-Marquardt'
         self.shared_testing(controller)
+
+        controller._status = "success"
+        self.check_conveged(controller)
+        controller._status = "Failed to converge"
+        self.check_max_iterations(controller)
+        controller._status = "Failed"
+        self.check_diverged(controller)
 
     def test_sasview(self):
         """
@@ -149,6 +181,13 @@ class ControllerTests(TestCase):
         controller.minimizer = 'amoeba'
         self.shared_testing(controller)
 
+        controller._status = 0
+        self.check_conveged(controller)
+        controller._status = 2
+        self.check_max_iterations(controller)
+        controller._status = 1
+        self.check_diverged(controller)
+
     def test_scipy(self):
         """
         ScipyController: Test for output shape
@@ -157,6 +196,13 @@ class ControllerTests(TestCase):
         controller.minimizer = 'lm'
         self.shared_testing(controller)
 
+        controller._status = 1
+        self.check_conveged(controller)
+        controller._status = 0
+        self.check_max_iterations(controller)
+        controller._status = -1
+        self.check_diverged(controller)
+
     def test_dfogn(self):
         """
         DFOGNController: Tests for output shape
@@ -164,6 +210,13 @@ class ControllerTests(TestCase):
         controller = DFOGNController(self.problem, True)
         controller.minimizer = 'dfogn'
         self.shared_testing(controller)
+
+        controller._status = 0
+        self.check_conveged(controller)
+        controller._status = 2
+        self.check_max_iterations(controller)
+        controller._status = 5
+        self.check_diverged(controller)
 
     def test_gsl(self):
         """
@@ -178,6 +231,13 @@ class ControllerTests(TestCase):
             controller.minimizer = minimizer
             self.shared_testing(controller)
 
+            controller.flag = 0
+            self.check_conveged(controller)
+            controller.flag = 1
+            self.check_max_iterations(controller)
+            controller.flag = 2
+            self.check_diverged(controller)
+
     def test_ralfit(self):
         """
         RALFitController: Tests for output shape
@@ -188,6 +248,11 @@ class ControllerTests(TestCase):
             controller.minimizer = minimizer
             self.shared_testing(controller)
 
+            controller._status = 0
+            self.check_conveged(controller)
+            controller._status = 2
+            self.check_diverged(controller)
+
     def test_minuit(self):
         """
         MinuitController: Tests for output shape
@@ -195,22 +260,56 @@ class ControllerTests(TestCase):
         controller = MinuitController(self.problem, True)
         controller.minimizer = 'minuit'
         self.shared_testing(controller)
+        controller._status = 0
+        self.check_conveged(controller)
+        controller._status = 2
+        self.check_diverged(controller)
 
     def shared_testing(self, controller):
         """
         Utility function to run controller and check output is in generic form
 
         :param controller: Controller to test, with setup already completed
-        :type contrller: Object derived from BaseSoftwareController
+        :type controller: Object derived from BaseSoftwareController
         """
         controller.parameter_set = 0
         controller.prepare()
         controller.fit()
         controller.cleanup()
 
-        assert controller.success
         assert len(controller.results) == len(controller.data_y)
         assert len(controller.final_params) == len(controller.initial_params)
+
+    def check_conveged(self, controller):
+        """
+        Utility function to check controller.cleanup() produces a success flag
+
+        :param controller: Controller to test, with setup already completed
+        :type controller: Object derived from BaseSoftwareController
+        """
+        controller.cleanup()
+        assert controller.flag == 0
+
+    def check_max_iterations(self, controller):
+        """
+        Utility function to check controller.cleanup() produces a maximum
+        iteration flag
+
+        :param controller: Controller to test, with setup already completed
+        :type controller: Object derived from BaseSoftwareController
+        """
+        controller.cleanup()
+        assert controller.flag == 1
+
+    def check_diverged(self, controller):
+        """
+        Utility function to check controller.cleanup() produces a fail
+
+        :param controller: Controller to test, with setup already completed
+        :type controller: Object derived from BaseSoftwareController
+        """
+        controller.cleanup()
+        assert controller.flag == 2
 
 
 class FactoryTests(TestCase):

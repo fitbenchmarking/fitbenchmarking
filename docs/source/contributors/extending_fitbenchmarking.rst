@@ -1,7 +1,8 @@
 .. _extending-fitbenchmarking:
 
+#########################
 Extending Fitbenchmarking
-=========================
+#########################
 
 .. _problem-groups:
 
@@ -30,21 +31,19 @@ Adding additional fitting problem definition types
 The types (formats) that are currently supported are:
 
   - Native (Fitbenchmark)
+    This supports functions/data from Mantid or SasView
   - NIST
-  - Sasview
 
 An example of these formats can be seen in
-``benchmark_problems/Neutron_data/``,
-``benchmark_problems/NIST/``,
-and ``benchmark_problems/SAS_modelling/``
-respectively.
+``benchmark_problems/Neutron_data/``/``benchmark_problems/SAS_modelling/``
+and ``benchmark_problems/NIST/`` respectively.
 
 **Adding new fitting problem definition types**
 
 To add a new fitting problem type, it is a requirement that the parser name
 can be derived from the file to be parsed.
 This is done for all current file formats by including it as the first line
-in the file. e.g ``# Fitbenchmark Format`` or ``NIST/ITL StRD``.
+in the file. e.g ``# Fitbenchmark Problem`` or ``NIST/ITL StRD``.
 
 To add a new fitting problem definition type, complete the following steps:
 
@@ -80,7 +79,7 @@ To add a new fitting problem definition type, complete the following steps:
      parser to check that the entries in the generated fitting problem match
      the values in the ``expected`` file.
 
-   - **Function tests**: 1 file must be provided in the directory to test that
+   - **Function tests**: 1 file can be provided in the directory to test that
      function evaluation is as expected. This file must be in json format and
      contain a string of the form::
 
@@ -88,11 +87,23 @@ To add a new fitting problem definition type, complete the following steps:
                        [x2, [param12, param22], result2],
                        ...],
        {"file_name2": [...],
-        ...}``
+        ...}
 
      The test will then load the files in turn and run it against each item in
      the list, raising an issue if the result is not suitably close to the
      specified value.
+
+   - **Integration tests**: Add an example to the `mock_problems/all_parser_test_set`.
+     This will be used to verify that the problem can be run by scipy, and that
+     accuracy results do not change unexpectedly in future changes to the code.
+
+     As part of this, the `systests/expected/parsers.txt` file will need to be
+     updated. This is done by running the systests::
+
+       pytest fitbenchmarking/systests
+
+     and then checking that the only difference between the results table and the
+     expected value is the new problem, and replacing the expected with the result.
 
 5. Verify that your tests have been found by running
    `pytest -vv fitbenchmarking/parsing/tests/test_parsers.py`
@@ -132,23 +143,29 @@ In order to add a new controller, you will need to:
       around a callable.
    -  ``fit()``: Run the fitting. This will be timed so should include only
       what is needed to fit the data.
-   -  ``cleanup()``: Convert the results into the expected numpy arrays and
-      store them in the results variables
-      (``self.results``, ``self.final_params``, ``self.success``)
+   -  ``cleanup()``: Convert the results into the expected numpy arrays,
+      error flags and store them in the results variables
+      (``self.results``, ``self.final_params``, ``self.flag``).
+      The flag corresponds to the following messages::
 
-3. Document the available minimizers (currently done by adding to
+         0: "Successfully converged",
+         1: "Software reported maximum number of iterations exceeded",
+         2: "Software run but didn't converge to solution",
+         3: "Software raised an exception".
+
+4. Document the available minimizers (currently done by adding to
    ``fitbenchmarking/utils/default_options.ini`` and any example files in
    the ``example_scripts`` directory)
 
-4. Create tests for the software in
+5. Create tests for the software in
    ``fitbenchmarking/fitting/tests/test_controllers.py``.
    Unless the new controller is more complicated than the currently available
    controllers, this can be done by following the example of the others.
 
 .. note::
-   For ease of maintainance, please add new controllers to a list of software in alphabetical order.
-   
-   
+   For ease of maintenance, please add new controllers to a list of software in alphabetical order.
+
+
 The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -159,4 +176,4 @@ following members of the :class:`~fitbenchmarking.parsing.fitting_problem.Fittin
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
    :members: eval_f, eval_r, eval_r_norm, eval_j,
 	     data_x, data_y, data_e, starting_values
-	  
+

@@ -18,6 +18,7 @@ class GSLController(Controller):
     """
     Controller for the GSL fitting software
     """
+
     def __init__(self, problem, use_errors):
         """
         Initializes variable used for temporary storage
@@ -39,7 +40,7 @@ class GSLController(Controller):
 
         :param p: parameters
         :type p: list
-        :param data: x data, this is discarded as the defaults can be used. 
+        :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
         :return: result from problem.eval_r
         :rtype: numpy array
@@ -52,7 +53,7 @@ class GSLController(Controller):
 
         :param p: parameters
         :type p: list
-        :param data: x data, this is discarded as the defaults can be used. 
+        :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
         :return: result from problem.eval_j
         :rtype: numpy array
@@ -65,7 +66,7 @@ class GSLController(Controller):
 
         :param p: parameters
         :type p: list
-        :param data: x data, this is discarded as the defaults can be used. 
+        :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
         :return: result from problem.eval_r and eval_j
         :rtype: (numpy array, numpy array)
@@ -80,7 +81,7 @@ class GSLController(Controller):
 
         :param p: parameters
         :type p: list
-        :param data: x data, this is discarded as the defaults can be used. 
+        :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
         :return: result from problem.eval_r_norm
         :rtype: numpy array
@@ -93,7 +94,7 @@ class GSLController(Controller):
 
         :param p: parameters
         :type p: list
-        :param data: x data, this is discarded as the defaults can be used. 
+        :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
         :return: jacobian approximation for problem.eval_r_norm
         :rtype: numpy array
@@ -108,7 +109,7 @@ class GSLController(Controller):
 
         :param p: parameters
         :type p: list
-        :param data: x data, this is discarded as the defaults can be used. 
+        :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
         :return: result from problem.eval_r_norm and _jac_chi_squared
         :rtype: (numpy array, numpy array)
@@ -187,8 +188,6 @@ class GSLController(Controller):
         """
         Run problem with GSL
         """
-        self.success = False
-
         for _ in range(self._maxits):
             status = self._solver.iterate()
             # check if the method has converged
@@ -207,18 +206,17 @@ class GSLController(Controller):
                 status = multiminimize.test_gradient(gradient,
                                                      self._gradient_tol)
             if status == errno.GSL_SUCCESS:
-                self.success = True
+                self.flag = 0
                 break
             elif status != errno.GSL_CONTINUE:
-                raise RuntimeError("GSL couldn't find a solution")
+                self.flag = 2
         else:
-            raise RuntimeError("Maximum number of iterations exceeded in GSL")
+            self.flag = 1
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-        if self.success:
-            self.final_params = self._solver.getx()
-            self.results = self.problem.eval_f(params=self.final_params)
+        self.final_params = self._solver.getx()
+        self.results = self.problem.eval_f(params=self.final_params)

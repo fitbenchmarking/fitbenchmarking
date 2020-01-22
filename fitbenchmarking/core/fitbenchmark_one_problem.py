@@ -12,7 +12,7 @@ from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.utils import fitbm_result
 
 
-def fitbm_one_prob(problem, options, directory):
+def fitbm_one_prob(problem, options):
     """
     Sets up the controller for a particular problem and fits the models
     provided in the problem object.
@@ -21,8 +21,6 @@ def fitbm_one_prob(problem, options, directory):
     :type problem: FittingProblem
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
-    :param directory: The directory to store the results in
-    :type directory: string
 
     :returns: nested array of result objects, per function definition
                containing the fit information
@@ -100,25 +98,22 @@ def benchmark(controller, minimizers, options):
                 timeit.Timer(setup=controller.prepare,
                              stmt=controller.fit).repeat(num_runs, 1)
             runtime = sum(runtime_list) / num_runs
-            controller.success = True
-
+            controller.cleanup()
         # Catching all exceptions as this means runtime cannot be calculated
         # pylint: disable=broad-except
         except Exception as excp:
             print(str(excp))
-            controller.success = False
             runtime = np.inf
+            controller.flag = 3
+            controller.final_params = None
 
-        controller.cleanup()
-
+        controller.check_attributes()
         init_function_params = controller.problem.get_function_params(
             params=controller.initial_params)
         fin_function_params = controller.problem.get_function_params(
             params=controller.final_params)
 
-        if not controller.success:
-            chi_sq = np.inf
-        else:
+        if controller.flag <= 2:
             ratio = np.max(runtime_list) / np.min(runtime_list)
             tol = 4
             if ratio > tol:
@@ -130,14 +125,17 @@ def benchmark(controller, minimizers, options):
                                            x=controller.data_x,
                                            y=controller.data_y,
                                            e=controller.data_e)
+        else:
+            chi_sq = np.inf
 
         problem = controller.problem
         individual_result = fitbm_result.FittingResult(
-            options=options, problem=problem, fit_status=controller.success,
-            chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
+            options=options, problem=problem, chi_sq=chi_sq,
+            runtime=runtime, minimizer=minimizer,
             params=controller.final_params,
             ini_function_params=init_function_params,
-            fin_function_params=fin_function_params)
+            fin_function_params=fin_function_params,
+            error_flag=controller.flag)
 
         results_problem.append(individual_result)
 
