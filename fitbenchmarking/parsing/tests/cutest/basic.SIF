@@ -62,13 +62,9 @@ BOUNDS
 
 START POINT
 
-    START1    B1        1.0
+    START1    B1        0.0
     START1    B2        1.0
 
-*  Alternative start point
-
-    START2    B1        100.0    
-    START2    B2        0.75
 
 
 ELEMENT TYPE
