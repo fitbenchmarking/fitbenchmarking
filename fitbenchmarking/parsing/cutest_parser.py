@@ -7,32 +7,33 @@ from __future__ import print_function
 import numpy as np
 import os
 import pycutest
+import shutil
 
 from collections import OrderedDict
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.logging_setup import logger
 
-class FitbenchmarkParser(Parser):
+
+class CutestParser(Parser):
     """
     Use the pycutest interface to parse SIF files
     """
-    
+
     def parse(self):
-        """ 
+        """
         Get data into a Fitting Problem via cutest.
-        
+
         :return: The fully parsed fitting problem
         :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
-        
         """
         self._n = None
         self._m = None
-        
+
         problem_ext = os.path.basename(self._filename)
         problem_directory = os.path.dirname(self._filename)
         problem, _ = os.path.splitext(problem_ext)
-        
+
         # get just the short filename (minus the .SIF)
         fp = FittingProblem()
 
@@ -40,11 +41,16 @@ class FitbenchmarkParser(Parser):
         # set the MASTSIF environment variable so that pycutest
         # can find the sif files
         os.environ["MASTSIF"] = problem_directory
+
+        # Clear the pycutest cache
+        shutil.rmtree(os.environ['PYCUTEST_CACHE'])
+        os.makedirs(os.environ['PYCUTEST_CACHE'])
+
         self._p = pycutest.import_problem(problem)
         fp.name = self._p.name
         fp.data_x, fp.data_y = self._get_data()
         self._y = fp.data_y
-        fp.function = self._function # self._p.obj
+        fp.function = self._function  # self._p.obj
         fp.equation = None
         fp.starting_values = self._get_starting_values()
         fp.start_x = None
@@ -69,18 +75,17 @@ class FitbenchmarkParser(Parser):
         ]
 
         return starting_values
-        
-    
+
     def _get_data(self):
         """
         Parses CUTEst SIF files to extract data points
-        
+
         :returns: data_x, data_y
         :rtype: lists of floats
         """
 
         lines = self.file.readlines()
-        idx, ignored_lines, x_idx, y_idx = 0, 0, 0, 0
+        idx, x_idx, y_idx = 0, 0, 0
 
         while idx < len(lines):
             line = lines[idx].strip()
@@ -96,7 +101,7 @@ class FitbenchmarkParser(Parser):
                 data_x = np.zeros(self._m)
                 data_y = np.zeros(self._m)
                 # initialize index parameters for x and y
-            
+
             if "IE N" in line:
                 self._n = int(line.split()[2])
 
@@ -112,11 +117,9 @@ class FitbenchmarkParser(Parser):
         # TODO: turn into an exception
         if x_idx != self._m:
             print("wrong number of x data points")
-            print(" got {}, expected {}".format(x_idx,self._m))
+            print(" got {}, expected {}".format(x_idx, self._m))
         if y_idx != self._m:
             print("wrong number of y data points")
-            print(" got {}, expected {}".format(y_idx,self._m))
+            print(" got {}, expected {}".format(y_idx, self._m))
 
         return data_x, data_y
-            
-    
