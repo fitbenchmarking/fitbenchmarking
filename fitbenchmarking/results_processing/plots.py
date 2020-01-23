@@ -176,7 +176,7 @@ class Plot(object):
 
         # Make sure line wont be replaced by resetting line_plot
         self.line_plot = None
-        return file_name
+        return file
 
     def plot_fit(self, minimizer, params):
         """

@@ -131,9 +131,6 @@ def get_figure_paths(result, count):
             output.append('')
         else:
             path = os.path.join(figures_dir, link)
-            # If OS is Windows, then need to add prefix 'file:///'
-            if os.name == 'nt':
-                path = 'file:///' + path
             output.append(path)
 
     return output[0], output[1]
