@@ -155,40 +155,62 @@ class FitbenchmarkParser(Parser):
 
         for f in functions:
             params_dict = OrderedDict()
-            # To handle brackets, must split on comma or split after an
-            # opening backet
-            tmp_params_list = f.split(',')
-            if '(' in f:
-                params_list = []
-                for p in tmp_params_list:
-                    if '(' in p:
-                        vals = [v+'(' for v in p.split('(', 1)]
-                        vals[-1] = vals[-1][:-1]
-                        params_list.extend(vals)
-                    else:
-                        params_list.append(p)
-            else:
-                params_list = tmp_params_list
+            pop_stack = 0
 
-            pop_stack = False
             stack = [params_dict]
-            for p in params_list:
+            for p in f.split(','):
                 name, val = p.split('=', 1)
                 name = name.strip()
                 val = val.strip()
 
-                if val == '(':
-                    val = OrderedDict()
-                    stack[-1][name] = val
-                    stack += [val]
-                    continue
+                l_count = val.count('(')
+                r_count = val.count(')')
+                if l_count > r_count:
+                    # in brackets
+                    # should be of the form 'varname=(othervar=3, ...)'
 
-                elif val[-1] == ')':
-                    pop_stack = val.count(')')
-                    if len(stack) <= pop_stack:
-                        raise ValueError('Could not parse.'
-                                         + 'Check parentheses in input')
-                    val = val.strip(')')
+                    # Allow for nested brackets e.g. 'a=(b=(c=(d=1,e=2)))'
+                    for _ in range(l_count - r_count):
+                        # Cover case where formula mistyped
+                        if '=' not in val:
+                            raise ValueError('Could not parse - '
+                                             'Unbalanced brackets in value: '
+                                             '{}'.format(p))
+                        # Must start with brackets
+                        if val[0] != '(':
+                            raise ValueError('Could not parse - '
+                                             'Bad placement of opening bracket'
+                                             ': {}'.format(p))
+                        # Create new dict for this entry and put at top of
+                        # working stack
+                        new_dict = OrderedDict()
+                        stack[-1][name] = new_dict
+                        stack.append(new_dict)
+                        # Update name and val
+                        name, val = val[1:].split('=', 1)
+                elif l_count == r_count:
+                    # Check if single item in brackets
+                    while '=' in val:
+                        if val[0] == '(' and val[-1] == ')':
+                            val = val[1:-1]
+                            new_dict = OrderedDict()
+                            stack[-1][name] = new_dict
+                            stack.append(new_dict)
+                            name, val = val.split('=', 1)
+                            pop_stack += 1
+                        else:
+                            raise ValueError('Could not parse - '
+                                             'Value contains "=": '
+                                             '{}'.format(p))
+                elif l_count < r_count:
+                    # exiting brackets
+                    pop_stack = r_count - l_count
+                    # must end with brackets
+                    if val[-pop_stack:] != ')'*pop_stack:
+                        raise ValueError('Could not parse - '
+                                         'Bad placement of closing bracket: '
+                                         '{}'.format(p))
+                    val = val[:-pop_stack]
 
                 # Parse to an int/float if possible else assume string
                 tmp_val = None
@@ -196,7 +218,7 @@ class FitbenchmarkParser(Parser):
                     if tmp_val is None:
                         try:
                             tmp_val = t(val)
-                        except ValueError:
+                        except (ValueError, TypeError):
                             pass
 
                 if tmp_val is not None:
@@ -205,9 +227,16 @@ class FitbenchmarkParser(Parser):
                 stack[-1][name] = val
 
                 if pop_stack > 0:
+                    if len(stack) <= pop_stack:
+                        raise ValueError('Could not parse - '
+                                         'Too many closing brackets: '
+                                         '{}'.format(p))
                     stack = stack[:-pop_stack]
                     pop_stack = 0
 
+            if len(stack) != 1:
+                raise ValueError('Could not parse - '
+                                 'Not all brackets are closed.')
             function_def.append(params_dict)
 
         return function_def
