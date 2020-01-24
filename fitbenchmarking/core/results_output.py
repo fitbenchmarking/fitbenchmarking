@@ -15,7 +15,7 @@ import fitbenchmarking
 from fitbenchmarking.results_processing import plots, visual_pages
 from fitbenchmarking.utils import create_dirs
 
-error_options = {0: "Successfully converged",
+ERROR_OPTIONS = {0: "Successfully converged",
                  1: "Software reported maximum number of iterations exceeded",
                  2: "Software run but didn't converge to solution",
                  3: "Software raised an exception"}
@@ -30,6 +30,8 @@ COMPARE_DESCRIPTION = \
 LOCAL_MIN_DESCRIPTION = \
     "The local min results show whether the software has converged to a " \
     " local minimum."
+
+SORTED_TABLE_LINKS = ["compare", "acc", "runtime", "local_min"]
 
 
 def save_results(options, results, group_name):
@@ -193,10 +195,11 @@ def create_results_tables(options, results, best_results, group_name,
     weighted_str = 'weighted' if options.use_errors else 'unweighted'
 
     table_names = OrderedDict()
-    for suffix in options.table_type:
-        table_names[suffix] = '{0}_{1}_{2}_table.'.format(group_name,
-                                                          suffix,
-                                                          weighted_str)
+    for suffix in SORTED_TABLE_LINKS:
+        if suffix in options.table_type:
+            table_names[suffix] = '{0}_{1}_{2}_table.'.format(group_name,
+                                                              suffix,
+                                                              weighted_str)
     generate_tables(results, best_results, table_names, options.table_type,
                     group_dir)
     return table_names
@@ -371,7 +374,7 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
             f.write(template.render(css_style_sheet=style_css,
                                     result_name=title,
                                     table=table_style.render(),
-                                    error_message=error_options))
+                                    error_message=ERROR_OPTIONS))
 
 
 def create_problem_level_index(options, table_names, group_name, group_dir):
