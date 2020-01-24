@@ -195,7 +195,7 @@ def create_results_tables(options, results, best_results, group_name,
     weighted_str = 'weighted' if options.use_errors else 'unweighted'
 
     table_names = OrderedDict()
-    for suffix in SORTED_TABLE_LINKS:
+    for suffix in SORTED_TABLE_NAMES:
         if suffix in options.table_type:
             table_names[suffix] = '{0}_{1}_{2}_table.'.format(group_name,
                                                               suffix,
