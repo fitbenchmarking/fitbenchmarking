@@ -193,14 +193,15 @@ def create_results_tables(options, results, best_results, group_name,
     :rtype: dict
     """
     weighted_str = 'weighted' if options.use_errors else 'unweighted'
-
+    table_type = []
     table_names = OrderedDict()
     for suffix in SORTED_TABLE_NAMES:
         if suffix in options.table_type:
+            table_type.append(suffix)
             table_names[suffix] = '{0}_{1}_{2}_table.'.format(group_name,
                                                               suffix,
                                                               weighted_str)
-    generate_tables(results, best_results, table_names, options.table_type,
+    generate_tables(results, best_results, table_names, table_type,
                     group_dir)
     return table_names
 
