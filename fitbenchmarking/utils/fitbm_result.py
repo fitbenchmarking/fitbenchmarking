@@ -4,7 +4,7 @@ import os
 
 import numpy as np
 
-LOCAL_MIN_TOL = 1e-2
+LOCAL_MIN_TOL = 1e-1
 
 
 class FittingResult(object):
