@@ -58,6 +58,9 @@ install:
   # --force seems to be necessary to link numpy
   - pip install pygsl --force
 
+  - pip install pycutest
+  - pip install backports.tempfile
+
 
 jobs:
   include:

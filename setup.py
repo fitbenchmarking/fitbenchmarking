@@ -29,7 +29,6 @@ setup(name='FitBenchmarking',
                         'dfogn',
                         'iminuit',
                         'configparser',
-                        'pycutest',
                         'jinja2'],
       zip_safe=False,
 
