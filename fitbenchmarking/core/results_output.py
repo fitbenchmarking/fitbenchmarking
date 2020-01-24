@@ -31,7 +31,7 @@ LOCAL_MIN_DESCRIPTION = \
     "The local min results show whether the software has converged to a " \
     " local minimum."
 
-SORTED_TABLE_LINKS = ["compare", "acc", "runtime", "local_min"]
+SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
 def save_results(options, results, group_name):
