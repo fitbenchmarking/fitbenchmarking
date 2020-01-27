@@ -102,7 +102,12 @@ class CutestParser(Parser):
         :returns: data_x, data_y
         :rtype: lists of floats
         """
-        lines = self.file.readlines()
+        if self.file.closed:
+            with open(self._filename, 'r') as f:
+                lines = f.readlines()
+        else:
+            lines = self.file.readlines()
+
         x_idx, y_idx = 0, 0
 
         # SIF requires columns of 25 chars
