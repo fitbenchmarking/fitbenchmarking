@@ -1,3 +1,5 @@
+.. _guidelines:
+
 ######################
 Contributor Guidelines
 ######################

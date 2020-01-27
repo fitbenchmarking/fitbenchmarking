@@ -1,32 +1,9 @@
-.. _extending-fitbenchmarking:
+.. _controllers:
 
-#########################
-Extending Fitbenchmarking
-#########################
-
-.. _problem-groups:
-
-Adding additional problem groups
---------------------------------
-
-*This section describes how to add a problem group to the fit benchmarking
-software. The default problem groups that come with this software are:
-CUTEst, Muon, Neutron, NIST, SAS_modelling, and simple_tests.*
-
-1. Add your problem file directory in
-   ``fitbenchmarking/benchmark_problems/``. Some examples of how this
-   should look like are available in the same dir.
-
-2. Modify ``example_scripts/example_runScripts.py`` to run new problem
-   set in ``fitbenchmarking/benchmark_problems/``.
-
-
-
-
-.. _fitting_software:
-
+##################################
 Adding additional fitting software
-----------------------------------
+##################################
+
 *This section describes how to add additional software to benchmark against
 the available problems.*
 
@@ -90,5 +67,5 @@ following members of the :class:`~fitbenchmarking.parsing.fitting_problem.Fittin
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
    :members: eval_f, eval_r, eval_r_norm, eval_j,
-	     data_x, data_y, data_e, starting_values
+         data_x, data_y, data_e, starting_values
 
