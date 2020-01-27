@@ -4,7 +4,8 @@ import os
 
 import numpy as np
 
-LOCAL_MIN_TOL = 1e-1
+GRAD_TOL = 1e-1
+RES_TOL = 1e-8
 
 
 class FittingResult(object):
@@ -83,8 +84,8 @@ class FittingResult(object):
             norm_r = np.linalg.norm(r)
             norm_min_test = np.linalg.norm(min_test)
             self.norm_rel = norm_min_test / norm_r
-            if norm_r <= LOCAL_MIN_TOL or norm_min_test <= LOCAL_MIN_TOL \
-                    or self.norm_rel <= LOCAL_MIN_TOL:
+            if norm_r <= RES_TOL or norm_min_test <= GRAD_TOL \
+                    or self.norm_rel <= GRAD_TOL:
                 self._local_min = "True"
             else:
                 self._local_min = "False"
