@@ -12,7 +12,7 @@ from jinja2 import Environment, FileSystemLoader
 import pandas as pd
 
 import fitbenchmarking
-from fitbenchmarking.results_processing import plots, visual_pages
+from fitbenchmarking.results_processing import plots, support_page
 from fitbenchmarking.utils import create_dirs
 
 error_options = {0: "Successfully converged",
@@ -24,7 +24,7 @@ error_options = {0: "Successfully converged",
 def save_results(options, results, group_name):
     """
     Create all results files and store them.
-    Result files are plots, visual pages, tables, and index pages.
+    Result files are plots, support pages, tables, and index pages.
 
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
@@ -41,10 +41,10 @@ def save_results(options, results, group_name):
     best_results = preproccess_data(results)
     if options.make_plots:
         create_plots(options, results, best_results, group_name, fig_dir)
-    visual_pages.create_visual_pages(options=options,
-                                     results_per_test=results,
-                                     group_name=group_name,
-                                     support_pages_dir=supp_dir)
+    support_page.create(options=options,
+                        results_per_test=results,
+                        group_name=group_name,
+                        support_pages_dir=supp_dir)
     table_names = create_results_tables(options,
                                         results,
                                         best_results,

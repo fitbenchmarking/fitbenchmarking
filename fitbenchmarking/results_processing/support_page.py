@@ -1,5 +1,5 @@
 """
-Set up and build the visual display pages for various types of problems.
+Set up and build the support pages for various types of problems.
 """
 
 from __future__ import (absolute_import, division, print_function)
@@ -8,16 +8,15 @@ import inspect
 import os
 
 from jinja2 import Environment, FileSystemLoader
-import numpy as np
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import plots
 
 
-def create_visual_pages(results_per_test, group_name, support_pages_dir,
-                        options):
+def create(results_per_test, group_name, support_pages_dir,
+           options):
     """
-    Iterate through problem results and create a visual display html page for
+    Iterate through problem results and create a support html page for
     each.
 
     :param results_per_test : results object
@@ -36,18 +35,19 @@ def create_visual_pages(results_per_test, group_name, support_pages_dir,
         name_count[name] = 1 + name_count.get(name, 0)
         count = name_count[name]
 
-        create(prob_result,
-               group_name,
-               support_pages_dir,
-               count,
-               options)
+        create_prob_group(prob_result,
+                          group_name,
+                          support_pages_dir,
+                          count,
+                          options)
 
 
-def create(prob_results, group_name, support_pages_dir, count, options):
+def create_prob_group(prob_results, group_name, support_pages_dir,
+                      count, options):
     """
-    Creates a visual display page containing figures and other
+    Creates a support page containing figures and other
     details about the fit for a problem.
-    A link to the visual page is stored in the results object.
+    A link to the support page is stored in the results object.
 
     :param prob_results : problem results objects containing results for
                           each minimizer and a certain fitting function
@@ -111,7 +111,7 @@ def create(prob_results, group_name, support_pages_dir, count, options):
 
 def get_figure_paths(result, count):
     """
-    Get the paths to the figures used in the visual display page.
+    Get the paths to the figures used in the support page.
 
     :param result : The result to get the figures for
     :type result : fitbenchmarking.utils.fitbm_result.FittingProblem
