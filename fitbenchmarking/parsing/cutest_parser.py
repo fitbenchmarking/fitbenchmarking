@@ -108,6 +108,9 @@ class CutestParser(Parser):
         else:
             lines = self.file.readlines()
 
+        if x is not None and len(x.shape) == 0:
+            x = np.array([x])
+
         x_idx, y_idx = 0, 0
 
         # SIF requires columns of 25 chars
@@ -128,8 +131,8 @@ class CutestParser(Parser):
                         data_y = np.zeros(self._m)
                         # initialize index parameters for x and y
                     else:
-                        self._m = x.size
-                        line = line[:col_width] + str(x.size)
+                        line = line[:col_width] + str(len(x))
+                        self._m = len(x)
 
                 elif "IE N " in line:
                     self._n = int(line.split()[2])
