@@ -1,0 +1,23 @@
+body {
+  padding: 24px;
+}
+table {
+  border-collapse: collapse;
+}
+table, th, td {
+  border: 1px solid black;
+  font-size:20px;
+  table-layout: auto;
+}
+th a, td a {
+  display:block;
+  text-decoration:none;
+  color: rgb(30, 30, 30);
+  height: 100%;
+  width: 100%;
+}
+
+thead tr th:first-child,
+tbody tr td:first-child {
+  word-break: break-all;
+}
