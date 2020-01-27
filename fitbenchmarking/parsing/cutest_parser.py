@@ -128,8 +128,8 @@ class CutestParser(Parser):
                         data_y = np.zeros(self._m)
                         # initialize index parameters for x and y
                     else:
-                        line = line[:col_width] + str(len(x))
-                        self._m = len(x)
+                        self._m = x.size
+                        line = line[:col_width] + str(x.size)
 
                 elif "IE N " in line:
                     self._n = int(line.split()[2])
