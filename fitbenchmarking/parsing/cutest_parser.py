@@ -7,7 +7,6 @@ from __future__ import print_function
 import numpy as np
 import os
 import pycutest
-import shutil
 try:
     from tempfile import TemporaryDirectory
 except ImportError:
@@ -16,6 +15,7 @@ except ImportError:
 from collections import OrderedDict
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.utils.create_dirs import del_contents_of_dir
 from fitbenchmarking.utils.logging_setup import logger
 
 
@@ -44,8 +44,7 @@ class CutestParser(Parser):
         fp = FittingProblem()
 
         # Clear the pycutest cache
-        shutil.rmtree(os.environ['PYCUTEST_CACHE'])
-        os.makedirs(os.environ['PYCUTEST_CACHE'])
+        del_contents_of_dir(os.environ['PYCUTEST_CACHE'])
 
         # Collect x and create new file with blank y
         fname, fp.data_x, fp.data_y = self._setup_data()
@@ -66,6 +65,14 @@ class CutestParser(Parser):
         return fp
 
     def _import_problem(self, file_name):
+        """
+        Import the problem using cutest
+
+        :param file_name: The path to the file
+        :type file_name: str
+        :return: The parsed problem
+        :rtype: pycutest.CUTEstProblem
+        """
 
         problem_ext = os.path.basename(file_name)
         problem, _ = os.path.splitext(problem_ext)
@@ -73,6 +80,15 @@ class CutestParser(Parser):
         return pycutest.import_problem(problem)
 
     def _function(self, x, *params):
+        """
+        If these x values have been passed in before, then run the function
+        Otherwise, create a new problem file, parse and cache the function
+
+        :param x: The data to evaluate at
+        :type x: np.array
+        :return: The result of evaluating at the given x
+        :rtype: np.array
+        """
         try:
             f = self._cache[id(x)]
         except KeyError:
@@ -99,6 +115,8 @@ class CutestParser(Parser):
         """
         Parses CUTEst SIF files to extract data points
 
+        :param x: X values to save (used for evaluating at new points)
+        :type x: np.array
         :returns: data_x, data_y
         :rtype: lists of floats
         """
@@ -118,7 +136,9 @@ class CutestParser(Parser):
         col_width = 25
 
         written_x = False
-        file_path = os.path.join(self.cache_dir.name, '{}.SIF'.format(id(x)))
+
+        file_path = os.path.join(self.cache_dir.name,
+                                 '{}.SIF'.format(str(id(x))[-10:]))
 
         with open(file_path, 'w') as tmp_file:
             for line in lines:
@@ -132,7 +152,7 @@ class CutestParser(Parser):
                         data_y = np.zeros(self._m)
                         # initialize index parameters for x and y
                     else:
-                        line = line[:col_width] + str(len(x))
+                        line = line[:col_width-1] + str(len(x))
                         self._m = len(x)
 
                 elif "IE N " in line:
@@ -149,10 +169,12 @@ class CutestParser(Parser):
                             line = ''
                             new_lines = []
                             for i, val in enumerate(x):
-                                tmp_line_x = ' RE X{}'.format(i)
-                                spacing = ' '*(col_width - (5 + len(str(i))))
+                                idx = i+1
+                                tmp_line_x = ' RE X{}'.format(idx)
+                                spacing = ' '*(col_width - (5 + len(str(idx))))
                                 tmp_line_x += spacing + str(val)
-                                tmp_line_y = ' RE Y{}{}0.0'.format(i, spacing)
+                                tmp_line_y = ' RE Y{}{}0.0'.format(idx,
+                                                                   spacing)
                                 new_lines.extend([tmp_line_x, tmp_line_y])
                             x_idx = y_idx = len(new_lines) / 2
                             line = '\n'.join(new_lines)
@@ -162,12 +184,11 @@ class CutestParser(Parser):
                     if x is None:
                         data_y[y_idx] = float(line.split()[2])
                         y_idx += 1
-                        line = line[:col_width] + '0.0'
+                        line = line[:col_width-1] + '0.0\n'
                     else:
                         continue
 
-                #print(line)
-                tmp_file.write(line + '\n')
+                tmp_file.write(line)
 
         # check the data is right
         # TODO: turn into an exception

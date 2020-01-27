@@ -228,8 +228,10 @@ class TestParsers:
                 fitting_problem = p.parse()
 
             for r in tests:
-                actual = fitting_problem.eval_f(x=np.array(r[0]),
+                x = np.array(r[0])
+                actual = fitting_problem.eval_f(x=x,
                                                 params=r[1])
+                print(r, actual)
                 assert np.isclose(actual, r[2]).all()
 
     def test_factory(self, file_format, test_file):
