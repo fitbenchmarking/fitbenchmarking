@@ -18,15 +18,14 @@
   </section>
   FitBenchmarking is a tool for comparing different fitting software based on their accuracy and runtimes.
 {% for type, link, description in zip(table_type, links, description) %}
-  <h3>
-  {{ type }} table
-  </h3>
+
+  <h3><tt>{{ type }}</tt> table </h3>
+  {{ description }}
   <h3>
     <form>
       <button class="btn default" type="submit" formaction={{ link }}>Table</button>
     </form>
   </h3>
-  {{ description }}
 {% endfor %}
 </body>
 
