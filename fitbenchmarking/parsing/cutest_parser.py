@@ -112,6 +112,7 @@ class CutestParser(Parser):
             x = np.array([x])
 
         x_idx, y_idx = 0, 0
+        data_x, data_y = None, None
 
         # SIF requires columns of 25 chars
         col_width = 25
