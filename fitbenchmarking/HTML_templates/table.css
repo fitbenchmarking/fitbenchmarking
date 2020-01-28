@@ -1,13 +1,10 @@
-body {
-  padding: 24px;
-}
 table {
   border-collapse: collapse;
 }
 table, th, td {
   border: 1px solid black;
-  font-size:20px;
-  table-layout: auto;
+  height: min-content;
+  width: auto;
 }
 th a, td a {
   display:block;
@@ -17,7 +14,6 @@ th a, td a {
   width: 100%;
 }
 
-thead tr th:first-child,
-tbody tr td:first-child {
-  word-break: break-all;
+body {
+  margin: 25px;
 }
