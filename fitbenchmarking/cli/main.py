@@ -59,8 +59,14 @@ def run(problem_sets, options_file=''):
     current_path = os.path.abspath(os.path.curdir)
     if options_file != '':
         # Read custom minimizer options from file
-        options_file = glob.glob(options_file)
-        options = Options(options_file)
+        glob_options_file = glob.glob(options_file)
+        if glob_options_file == [] or not options_file.endswith(".ini"):
+            raise RuntimeError('Error in user input options file. Please check'
+                               'that the file exist and has an .ini '
+                               'extension, current path to file is '
+                               '{}'.format(options_file))
+        else:
+            options = Options(glob_options_file)
     else:
         options = Options()
     groups = []
@@ -96,6 +102,8 @@ def run(problem_sets, options_file=''):
                                          options=options)
 
         print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
+        group_results_dir = os.path.relpath(path=group_results_dir,
+                                            start=options.results_dir)
         result_dir.append(group_results_dir)
         groups.append(label)
 

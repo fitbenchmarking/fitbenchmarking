@@ -24,6 +24,16 @@ class TestExampleScripts(unittest.TestCase):
     def tearDownClass(self):
         os.chdir(self.cwd)
 
+    def test_run_with_wrong_option_file_extension(self):
+        with self.assertRaises(RuntimeError):
+            main.run(['examples/benchmark_problems/simple_tests'],
+                     options_file='README.md')
+
+    def test_run_with_wrong_option_file(self):
+        with self.assertRaises(RuntimeError):
+            main.run(['examples/benchmark_problems/simple_tests'],
+                     options_file='options_template.ini')
+
     def test_run_with_options(self):
         main.run(['examples/benchmark_problems/simple_tests'],
                  options_file='examples/options_template.ini')
