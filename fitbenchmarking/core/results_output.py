@@ -12,7 +12,7 @@ from jinja2 import Environment, FileSystemLoader
 import pandas as pd
 
 import fitbenchmarking
-from fitbenchmarking.results_processing import plots, visual_pages
+from fitbenchmarking.results_processing import performance_profiller, plots, visual_pages
 from fitbenchmarking.utils import create_dirs
 
 error_options = {0: "Successfully converged",
@@ -39,6 +39,8 @@ def save_results(options, results, group_name):
     """
     _, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
     best_results = preproccess_data(results)
+    acc_profile, runtime_profile = performance_profiller.profile(
+        options, results, fig_dir)
     if options.make_plots:
         create_plots(options, results, best_results, group_name, fig_dir)
     visual_pages.create_visual_pages(options=options,
