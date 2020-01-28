@@ -10,7 +10,6 @@ import os
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
-from fitbenchmarking.results_processing import plots
 
 
 def create(results_per_test, group_name, support_pages_dir,
