@@ -205,9 +205,9 @@ class ControllerTests(TestCase):
 
     def test_dfo(self):
         """
-        DFOGNController: Tests for output shape
+        DFOController: Tests for output shape
         """
-        controller = DFOGNController(self.problem, True)
+        controller = DFOController(self.problem, True)
         # test one from each class
         minimizers = ['dfogn',
                       'dfols']
