@@ -222,4 +222,4 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
             f.write(template.render(css_style_sheet=style_css,
                                     result_name=title,
                                     table=table_style.render(),
-                                    error_message=error_options))
+                                    error_message=ERROR_OPTIONS))
