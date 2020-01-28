@@ -353,12 +353,14 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         html_page_dir = os.path.join(root, 'HTML_templates')
         style_css = os.path.join(html_page_dir, 'main.css')
         table_css = os.path.join(html_page_dir, 'table.css')
+        custom_style = os.path.join(html_page_dir, 'custom_style.css')
         env = Environment(loader=FileSystemLoader(html_page_dir))
         template = env.get_template("table_template.html")
         output_file = file_path + 'html'
 
         with open(output_file, "w") as f:
             f.write(template.render(css_style_sheet=style_css,
+                                    custom_style=custom_style,
                                     table_style=table_css,
                                     result_name=title,
                                     table=table_style.render(),
@@ -383,12 +385,14 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     html_page_dir = os.path.join(root, 'HTML_templates')
     env = Environment(loader=FileSystemLoader(html_page_dir))
     style_css = os.path.join(html_page_dir, 'main.css')
+    custom_style = os.path.join(html_page_dir, 'custom_style.css')
     template = env.get_template("problem_index_page.html")
 
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,
+            custom_style=custom_style,
             group_name=group_name,
             acc="acc" in options.table_type,
             alink=table_names['acc'] +

@@ -90,13 +90,14 @@ def create(prob_results, group_name, support_pages_dir, count, options):
         env = Environment(loader=FileSystemLoader(html_page_dir))
         style_css = os.path.join(html_page_dir, 'main.css')
         table_css = os.path.join(html_page_dir, 'table.css')
-
+        custom_style = os.path.join(html_page_dir, 'custom_style.css')
         template = env.get_template("support_page_template.html")
 
         with open(file_path, 'w') as fh:
             fh.write(template.render(
                 css_style_sheet=style_css,
                 table_style=table_css,
+                custom_style=custom_style,
                 title=result.problem.name,
                 equation=result.problem.equation,
                 initial_guess=result.ini_function_params,
