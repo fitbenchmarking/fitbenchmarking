@@ -1,5 +1,18 @@
-body {background-color: white}
-
 .btn {
-  background-color: #75D0C7;
+    background-color: #75D0C7;
+}
+
+div.box {
+    margin: 10px;
+    background-color: white;
+    padding: 50px;
+    display: inline-block;
+    border-radius: 5px;
+    box-shadow: 0 0 2px 2px;
+}
+
+body {
+    background-color:#4D90BA;
+    margin: 50px;
+    text-align: center;
 }

@@ -1,19 +1,19 @@
 table {
   border-collapse: collapse;
-}
-table, th, td {
-  border: 1px solid black;
-  height: min-content;
-  width: auto;
-}
-th a, td a {
-  display:block;
-  text-decoration:none;
-  color: rgb(30, 30, 30);
-  height: 100%;
-  width: 100%;
+  margin: auto;
 }
 
-body {
-  margin: 25px;
+table, th, td {
+  border: 1px solid black;
+  width: auto;
+  overflow: hidden;
+}
+th a, td a {
+  display: block;
+  text-decoration: none;
+  color: rgb(30, 30, 30);
+  margin-top: -10em;
+  margin-bottom: -10em;
+  padding-top: 10em;
+  padding-bottom: 10em;
 }

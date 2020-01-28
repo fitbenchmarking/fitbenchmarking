@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" type="text/css" href={{ css_style_sheet }}>
-<link rel="stylesheet" type="text/css"  href={{ custom_style }}>
-<html>
-<head>
-  <title>{{ group_name }} results</title>
-</head>
-<body>
-  <section class="row">
-    <header class="large">
-      <h1>Fitbenchmarking results: {{ group_name }}</h1>
-      <hr>
-    </header>
-  </section>
-  FitBenchmarking is a tool for comparing different fitting software based on their accuracy and runtimes.
-{% for type, link, description in zip(table_type, links, description) %}
-
-  <h3><tt>{{ type }}</tt> table </h3>
-  {{ description }}
-  <h3>
-    <form>
-      <button class="btn default" type="submit" formaction={{ link }}>Table</button>
-    </form>
-  </h3>
-{% endfor %}
-</body>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href={{ css_style_sheet }}>
+  <link rel="stylesheet" type="text/css"  href={{ custom_style }}>
+  <div class="box">
+    <head>
+      <title>{{ group_name }} results</title>
+    </head>
+    <body>
+      <section class="row">
+        <header class="large">
+          <h1>Fitbenchmarking results: {{ group_name }}</h1>
+          <hr>
+        </header>
+      </section>
+      FitBenchmarking is a tool for comparing different fitting software based on their accuracy and runtimes.
+      {% for type, link, description in zip(table_type, links, description) %}
+        <h3><tt>{{ type }}</tt> table </h3>
+        {{ description }}
+        <h3>
+        <form>
+          <button class="btn default" type="submit" formaction={{ link }}>Table</button>
+        </form>
+        </h3>
+      {% endfor %}
+    </body>
+  </div>
 </html>
