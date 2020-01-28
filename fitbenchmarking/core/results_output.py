@@ -148,7 +148,7 @@ def create_plots(options, results, best_results, group_name, figures_dir):
                         'parameters'
                 result.start_figure_link = initial_guess_path
 
-
+                
 def create_problem_level_index(options, table_names, group_name, group_dir):
     """
     Generates problem level index page.
@@ -170,16 +170,20 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     template = env.get_template("problem_index_page.html")
 
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
+    links = [v + "html" for v in table_names.values()]
+    names = table_names.keys()
+    descript_names = [n + "_description" for n in names]
+    description = []
+    for name in descript_names:
+        if name.upper() in globals().keys():
+            description.append(globals()[name.upper()])
+        else:
+            description.append('')
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,
             group_name=group_name,
-            acc="acc" in options.table_type,
-            alink=table_names['acc'] +
-                "html" if 'acc' in table_names else 0,
-            runtime="runtime" in options.table_type,
-            rlink=table_names['runtime'] +
-                "html" if 'runtime' in table_names else 0,
-            compare="compare" in options.table_type,
-            clink=table_names['compare'] +
-                "html" if 'compare' in table_names else 0))
+            table_type=names,
+            links=links,
+            description=description,
+            zip=zip))
