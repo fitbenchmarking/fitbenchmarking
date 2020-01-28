@@ -49,8 +49,7 @@ def fitbm_one_prob(problem, options):
                     'Minimizers could not be found for software: {}'.format(s))
 
             controller_cls = ControllerFactory.create_controller(software=s)
-            controller = controller_cls(problem=problem,
-                                        use_errors=options.use_errors)
+            controller = controller_cls(problem=problem)
 
             controller.parameter_set = i
             problem_result = benchmark(controller=controller,

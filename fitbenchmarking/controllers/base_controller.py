@@ -17,7 +17,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, problem, use_errors):
+    def __init__(self, problem):
         """
         Initialise the class.
         Sets up data as defined by the problem and use_errors variables,
@@ -25,14 +25,10 @@ class Controller:
 
         :param problem: The parsed problem
         :type problem: fitting_problem (see fitbenchmarking.parsers)
-        :param use_errors: Flag to enable errors in the fitting
-        :type use_errors: Bool
         """
 
         # Problem: The problem object from parsing
         self.problem = problem
-        # Use Errors: Bool to use errors or not
-        self.use_errors = use_errors
 
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)
