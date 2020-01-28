@@ -43,6 +43,8 @@ class OutputGrabber(object):
         # the escape character:
         self.origstream.flush()
 
+        # Reads the output and stores it in capturedtext
+        self.readOutput()
         # Close the pipe:
         os.close(self.pipe_in)
         os.close(self.pipe_out)
@@ -56,11 +58,8 @@ class OutputGrabber(object):
         Read the stream data (one byte at a time)
         and save the text in `capturedtext`.
         """
-        self.pipe_out, self.pipe_in = os.pipe()
         while True:
             char = os.read(self.pipe_out, 1)
             if not char or self.escape_char in char:
                 break
             self.capturedtext += char
-        os.close(self.pipe_in)
-        os.close(self.pipe_out)

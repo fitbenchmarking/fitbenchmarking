@@ -11,6 +11,17 @@ class OutputGrabberTests(unittest.TestCase):
         output = OutputGrabber()
         with output:
             print(output_string)
+        # print adds an extra \n
+        assert output.capturedtext == output_string + "\n"
+
+    def test_incorrect_output(self):
+        output_string = 'This is the correct output string\nSecond line'
+        incorrect_output_sting = 'This is the incorrect string'
+        output = OutputGrabber()
+        with output:
+            print(output_string)
+        # print adds an extra \n
+        assert output.capturedtext != incorrect_output_sting + "\n"
 
 
 if __name__ == "__main__":
