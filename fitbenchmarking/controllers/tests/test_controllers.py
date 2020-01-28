@@ -6,7 +6,7 @@ from unittest import TestCase
 from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
-from fitbenchmarking.controllers.dfogn_controller import DFOGNController
+from fitbenchmarking.controllers.dfo_controller import DFOController
 from fitbenchmarking.controllers.gsl_controller import GSLController
 from fitbenchmarking.controllers.mantid_controller import MantidController
 from fitbenchmarking.controllers.minuit_controller import MinuitController
@@ -203,20 +203,24 @@ class ControllerTests(TestCase):
         controller._status = -1
         self.check_diverged(controller)
 
-    def test_dfogn(self):
+    def test_dfo(self):
         """
         DFOGNController: Tests for output shape
         """
         controller = DFOGNController(self.problem, True)
-        controller.minimizer = 'dfogn'
-        self.shared_testing(controller)
+        # test one from each class
+        minimizers = ['dfogn',
+                      'dfols']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_testing(controller)
 
-        controller._status = 0
-        self.check_conveged(controller)
-        controller._status = 2
-        self.check_max_iterations(controller)
-        controller._status = 5
-        self.check_diverged(controller)
+            controller._status = 0
+            self.check_conveged(controller)
+            controller._status = 2
+            self.check_max_iterations(controller)
+            controller._status = 5
+            self.check_diverged(controller)
 
     def test_gsl(self):
         """
