@@ -4,7 +4,7 @@ import unittest
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.core.results_output import preproccess_data
-from fitbenchmarking.results_processing import performance_profiller
+from fitbenchmarking.results_processing import performance_profiler
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.fitbm_result import FittingResult
 
@@ -43,13 +43,13 @@ class PerformanceProfillerTests(unittest.TestCase):
         self.fig_dir = ''
 
     def test_correct_prepare_profile_data(self):
-        acc, runtime = performance_profiller.prepare_profile_data(self.results)
+        acc, runtime = performance_profiler.prepare_profile_data(self.results)
 
         assert acc == self.correct_acc
         assert runtime == self.correct_runtime
 
     def test_correct_profile(self):
-        acc, runtime = performance_profiller.profile(self.options,
+        acc, runtime = performance_profiler.profile(self.options,
                                                      self.results,
                                                      self.fig_dir)
 
@@ -58,7 +58,7 @@ class PerformanceProfillerTests(unittest.TestCase):
 
     def test_incorrect_profile(self):
         self.options.make_plots = False
-        acc, runtime = performance_profiller.profile(self.options,
+        acc, runtime = performance_profiler.profile(self.options,
                                                      self.results,
                                                      self.fig_dir)
 
