@@ -351,7 +351,7 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         table_style = table.style.applymap(colour_highlight)
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         html_page_dir = os.path.join(root, 'HTML_templates')
-        style_css = os.path.join(html_page_dir, 'main.css')
+        style_css = os.path.join(html_page_dir, 'main_style.css')
         table_css = os.path.join(html_page_dir, 'table.css')
         custom_style = os.path.join(html_page_dir, 'custom_style.css')
         env = Environment(loader=FileSystemLoader(html_page_dir))
@@ -384,7 +384,7 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     html_page_dir = os.path.join(root, 'HTML_templates')
     env = Environment(loader=FileSystemLoader(html_page_dir))
-    style_css = os.path.join(html_page_dir, 'main.css')
+    style_css = os.path.join(html_page_dir, 'main_style.css')
     custom_style = os.path.join(html_page_dir, 'custom_style.css')
     template = env.get_template("problem_index_page.html")
 

@@ -88,7 +88,7 @@ def create(prob_results, group_name, support_pages_dir, count, options):
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         html_page_dir = os.path.join(root, "HTML_templates")
         env = Environment(loader=FileSystemLoader(html_page_dir))
-        style_css = os.path.join(html_page_dir, 'main.css')
+        style_css = os.path.join(html_page_dir, 'main_style.css')
         table_css = os.path.join(html_page_dir, 'table.css')
         custom_style = os.path.join(html_page_dir, 'custom_style.css')
         template = env.get_template("support_page_template.html")
