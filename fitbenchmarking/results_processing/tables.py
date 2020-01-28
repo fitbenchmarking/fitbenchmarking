@@ -12,7 +12,7 @@ import pandas as pd
 
 import fitbenchmarking
 
-error_options = {0: "Successfully converged",
+ERROR_OPTIONS = {0: "Successfully converged",
                  1: "Software reported maximum number of iterations exceeded",
                  2: "Software run but didn't converge to solution",
                  3: "Software raised an exception"}

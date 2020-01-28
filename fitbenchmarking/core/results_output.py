@@ -10,7 +10,7 @@ import os
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
-from fitbenchmarking.results_processing import plots, visual_pages, tables
+from fitbenchmarking.results_processing import plots, tables, visual_pages
 from fitbenchmarking.utils import create_dirs
 
 
