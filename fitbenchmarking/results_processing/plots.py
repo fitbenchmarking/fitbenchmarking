@@ -64,6 +64,9 @@ class Plot(object):
         # reset line_plot as base data won't need updating
         self.line_plot = None
 
+        # Store sorted x values for plotting
+        self.x = self.problem.data_x[self.problem.sorted_index]
+
     def __del__(self):
         """
         Close the matplotlib figure
@@ -128,7 +131,7 @@ class Plot(object):
         ini_guess = self.problem.starting_values[self.count - 1].values()
         self.plot_data(errors=False,
                        plot_options=self.ini_guess_plot_options,
-                       y=self.problem.eval_f(ini_guess))
+                       y=self.problem.eval_f(ini_guess, self.x))
         self.format_plot()
         file = "start_for_{0}_{1}.png".format(
             self.problem.sanitised_name, self.count)
@@ -156,9 +159,10 @@ class Plot(object):
         plot_options_dict['label'] = label
         plot_options_dict['color'] = self.best_fit_plot_options['color']
 
+        y = self.problem.eval_f(params, self.x)
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
-                       y=self.problem.eval_f(params))
+                       y=y)
         self.format_plot()
         file = "{}_fit_for_{}_{}.png".format(minimizer,
                                              self.problem.sanitised_name,
@@ -171,7 +175,7 @@ class Plot(object):
         plot_options_dict['label'] = label
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
-                       y=self.problem.eval_f(params))
+                       y=y)
 
         # Make sure line wont be replaced by resetting line_plot
         self.line_plot = None
@@ -190,9 +194,10 @@ class Plot(object):
         """
         plot_options_dict = self.fit_plot_options.copy()
         plot_options_dict['label'] = minimizer
+
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
-                       y=self.problem.eval_f(params))
+                       y=self.problem.eval_f(params, self.x))
         self.format_plot()
         file = "{}_fit_for_{}_{}.png".format(
             minimizer, self.problem.sanitised_name, self.count)
