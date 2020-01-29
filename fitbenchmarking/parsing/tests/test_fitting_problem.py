@@ -182,3 +182,43 @@ class TestFittingProblem(TestCase):
         params = [1, 2.0, 3.3, 4.99999]
         function_def = fitting_problem.get_function_params(params=params)
         self.assertEqual(function_def, expected_function_def)
+
+    def test_correct_data(self):
+        """
+        Tests that correct data gives the expected result
+        """
+        fitting_problem = FittingProblem()
+        x_data = np.array([-0.5, 0.0, 1.0, 0.5, 1.5, 2.0, 2.5, 3.0, 4.0])
+        y_data = np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])
+        e_data = np.array([1.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 9.0])
+        start_x = 0.5
+        end_x = 2.5
+        expected_x_data = np.array([0.5, 1.0, 1.5, 2.0, 2.5])
+        expected_y_data = np.array([3.0, 2.0, 4.0, 5.0, 6.0])
+        expected_e_data = np.array([40.0, 30.0, 50.0, 60.0, 70.0])
+
+        fitting_problem.data_x = x_data
+        fitting_problem.data_y = y_data
+        fitting_problem.data_e = e_data
+        fitting_problem.start_x = start_x
+        fitting_problem.end_x = end_x
+
+        fitting_problem.correct_data(True)
+        self.assertTrue(
+            np.isclose(fitting_problem.data_x[fitting_problem.sorted_index],
+                       expected_x_data).all())
+        self.assertTrue(
+            np.isclose(fitting_problem.data_y[fitting_problem.sorted_index],
+                       expected_y_data).all())
+        self.assertTrue(
+            np.isclose(fitting_problem.data_e[fitting_problem.sorted_index],
+                       expected_e_data).all())
+
+        fitting_problem.correct_data(False)
+        self.assertTrue(
+            np.isclose(fitting_problem.data_x[fitting_problem.sorted_index],
+                       expected_x_data).all())
+        self.assertTrue(
+            np.isclose(fitting_problem.data_y[fitting_problem.sorted_index],
+                       expected_y_data).all())
+        self.assertIs(fitting_problem.data_e, None)

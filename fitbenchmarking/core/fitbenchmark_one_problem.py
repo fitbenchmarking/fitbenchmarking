@@ -48,18 +48,11 @@ def fitbm_one_prob(problem, options):
             except KeyError:
                 raise ValueError(
                     'Minimizers could not be found for software: {}'.format(s))
+
             with grabbed_output:
                 controller_cls = ControllerFactory.create_controller(
                     software=s)
-                controller = controller_cls(problem=problem,
-                                            use_errors=options.use_errors)
-            # The controller reformats the data to fit within a
-            # start- and end-x bound
-            # It also estimates errors if not provided.
-            # Copy this back to the problem as it is used in plotting.
-            problem.data_x = controller.data_x
-            problem.data_y = controller.data_y
-            problem.data_e = controller.data_e
+                controller = controller_cls(problem=problem)
 
             controller.parameter_set = i
             problem_result = benchmark(controller=controller,
