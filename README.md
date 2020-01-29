@@ -7,4 +7,5 @@
 [![Chat](https://img.shields.io/badge/chat-CompareFitMinimizers-lightgrey.svg?style=flat-square&logo=slack)](https://slack.com/)
 # FitBenchmarking
 For information on FitBenchmarking please visit: http://www.fitbenchmarking.com.
+
 If you are specifically looking for documentation on FitBenchmarking please visit: [documentation](https://fitbenchmarking.readthedocs.io/).
