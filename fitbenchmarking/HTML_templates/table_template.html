@@ -1,41 +1,55 @@
 <!DOCTYPE html>
 <html>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css"   href={{ css_style_sheet }}>
-  <link rel="stylesheet" type="text/css"   href={{ table_style }}>
-  <link rel="stylesheet" type="text/css"  href={{ custom_style }}>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" type="text/css" href="{{ css_style_sheet }}" />
+<link rel="stylesheet" type="text/css" href="{{ table_style }}" />
+<link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
+
+<head>
+  <title>Fitbenchmark Results Table</title>
+</head>
+
+<body>
   <div class="box">
-    <section class="row">
-      <header class="large">
-        <h1>{{ result_name }}</h1>
-        <hr>
-      </header>
-    </section>
-    <body>
-      {{ table }}
-      <h4>
-      Click a result in the tables to see more details such as graphs of the fit against the data and the parameters that
-      the minimizer found.
-      <br>
-      Clicking the problem names will take you to the best minimizer.
-      </h4>
-      <header class="large">
-        <h4>Errors</h4>
-      </header>
-      The superscripts in the tables denote current error handling within FitBenchmarking. Currently the errors correspond to:
-      <table style="width:60%">
-        <tr>
-          <th>Error flag</th>
-          <th>Error message</th>
-        </tr>
-        {% for flag, message in error_message.items() %}
+    <div class="container">
+      <div class="row">
+        <h1 class="title">{{ result_name }}</h1>
+        <hr />
+      </div>
+      <div class="row">
+        {{ table }}
+        <h4>
+          Click a result in the tables to see more details such as graphs of the fit against the data and the
+          parameters that
+          the minimizer found.
+          <br>
+          Clicking the problem names will take you to the best minimizer.
+        </h4>
+      </div>
+      <div class="row">
+        <header class="large">
+          <h4>Errors</h4>
+        </header>
+        <p>
+          The superscripts in the tables denote current error handling within FitBenchmarking. Currently the errors
+          correspond to:
+        </p>
+        <table style="width:60%">
+          <tr>
+            <th>Error flag</th>
+            <th>Error message</th>
+          </tr>
+          {% for flag, message in error_message.items() %}
           <tr>
             <td>{{ flag }}</td>
             <td>{{ message }}</td>
           </tr>
-        {% endfor %}
-      </table>
-    </body>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
   </div>
+</body>
+
 </html>
