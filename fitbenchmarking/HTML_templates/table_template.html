@@ -9,48 +9,43 @@
         <title>Fitbenchmark Results Table</title>
     </head>
     <body>
-        <div class="box">
-            <div class="container">
-                <div class="row">
-                    <h1 class="title">{{ result_name }}</h1>
-                    <hr />
-                </div>
-                <div class="row">
-                    <center>
-                    <div class="table">
-                        {{ table }}
-                    </div>
-                    </center>
-                    <h4>
-                    Click a result in the tables to see more details such as graphs of the fit against the data and the
-                    parameters that
-                    the minimizer found.
-                    <br>
-                    Clicking the problem names will take you to the best minimizer.
-                    </h4>
-                </div>
-                <div class="row">
-                    <header class="large">
-                        <h4>Errors</h4>
-                    </header>
-                    <p>
-                        The superscripts in the tables denote current error handling within FitBenchmarking. Currently the errors
-                        correspond to:
-                    </p>
-                    <table style="width:60%">
-                        <tr>
-                            <th>Error flag</th>
-                            <th>Error message</th>
-                        </tr>
-                        {% for flag, message in error_message.items() %}
-                            <tr>
-                                <td>{{ flag }}</td>
-                                <td>{{ message }}</td>
-                            </tr>
-                        {% endfor %}
-                    </table>
-                </div>
+      <div class="wrapper">
+        <div class="content">
+          <div class="post-title">
+            <h1>{{ result_name }}</h1>
+            <hr />
+          </div>
+          <center>
+            <div class="table">
+              {{ table }}
             </div>
-        </div>
+          </center>
+	  <p>
+            Clicking a result in the tables will give more details,
+	    such as graphs of the fit against the data and the parameters that the minimizer found.
+          </p>
+	  <p>
+            Clicking the problem names will take you to details of the best minimizer.
+	  </p>
+	  
+	  <h3>Errors</h3>
+          <p>
+            The superscripts in the tables denote current error handling within FitBenchmarking.
+	    Currently the errors correspond to:
+          </p>
+          <table style="width:60%">
+            <tr>
+              <th>Error flag</th>
+              <th>Error message</th>
+            </tr>
+            {% for flag, message in error_message.items() %}
+            <tr>
+              <td>{{ flag }}</td>
+              <td>{{ message }}</td>
+            </tr>
+            {% endfor %}
+          </table>
+	</div>
+      </div>
     </body>
 </html>

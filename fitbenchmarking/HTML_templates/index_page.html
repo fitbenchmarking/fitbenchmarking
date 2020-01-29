@@ -8,26 +8,20 @@
         <title> Index page</title>
     </head>
     <body>
-        <div class="box">
-            <div class="container">
-                <div class="row">
-                    <h1 class="title">FitBenchmarking results page</h1>
-                    <hr />
-                </div>
-                <div class="row">
-                    <p>Follow the links below to the results for the individual groups</p>
-                    {% for group, link in zip(groups, group_link) %}
-                        <h3>{{ group }}</h3>
-                        <h3>
-                        <form>
-                            <button class="btn default" type="submit" formaction="{{ link }}">
-                            Results
-                            </button>
-                        </form>
-                        </h3>
-                    {% endfor %}
-                </div>
-            </div>
+      <div class="wrapper">
+        <div class="content">
+          <div class="post-title">
+            <h1>FitBenchmarking results page</h1>
+            <hr />
+          </div>
+	  <p>
+	    Follow the links below to the results for the individual groups
+	  </p>
+	  {% for group, link in zip(groups, group_link) %}
+	  <h3><tt>{{ group }}</tt></h3>
+          <a class="btn zoombtn" href="{{ link }}">Results</a>
+	  {% endfor %}
         </div>
+      </div>
     </body>
 </html>
