@@ -7,8 +7,8 @@ body {
 }
 
 div.container {
-    max-width: none;
-    width: max-content;
+    max-width: max-content;
+    width: 80%;
     padding: 10px;
     margin-top: 10px;
     margin-bottom: 10px;

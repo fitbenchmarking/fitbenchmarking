@@ -17,3 +17,10 @@ th a, td a {
   padding-top: 10em;
   padding-bottom: 10em;
 }
+div.table{
+  max-height:800px;
+  max-width: max-content;
+  width: 90%;
+  overflow:auto;
+  padding:10px;
+}
