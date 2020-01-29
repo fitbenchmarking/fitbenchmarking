@@ -15,11 +15,11 @@ class SasviewController(Controller):
     Controller for the Sasview fitting software.
     """
 
-    def __init__(self, problem, use_errors):
+    def __init__(self, problem):
         """
         Extract param names for function setup
         """
-        super(SasviewController, self).__init__(problem, use_errors)
+        super(SasviewController, self).__init__(problem)
 
         self._param_names = self.problem.param_names
 

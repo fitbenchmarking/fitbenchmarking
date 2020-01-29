@@ -17,7 +17,7 @@ from fitbenchmarking.utils import create_dirs
 def save_results(options, results, group_name):
     """
     Create all results files and store them.
-    Result files are plots, visual pages, tables, and index pages.
+    Result files are plots, support pages, tables, and index pages.
 
     :param options : The options used in the fitting problem and plotting
     :type options : fitbenchmarking.utils.options.Options
