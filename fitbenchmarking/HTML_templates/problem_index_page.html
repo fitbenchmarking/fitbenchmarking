@@ -8,6 +8,7 @@
         <title>{{ group_name }} results</title>
     </head>
     <body>
+<<<<<<< HEAD
         <div class="box">
             <div class="container">
                 <div class="row">
@@ -32,6 +33,27 @@
                     {% endfor %}
                 </div>
             </div>
+=======
+      <div class="wrapper">
+        <div class="content">
+          <div class="post-title">
+            <h1>FitBenchmarking results: {{ group_name }}</h1>
+            <hr />
+	  </div>
+          <p>
+	    FitBenchmarking is a tool for comparing different fitting software based on their accuracy and runtimes.
+          </p>
+          {% for type, link, description in zip(table_type, links, description) %}
+	  <h3><tt>{{ type }}</tt> table</h3>
+          <p>{{ description }}</p>
+          <a class="btn zoombtn" href="{{ link }}">
+	    Table
+	  </a>
+	  <p> </p>
+          {% endfor %}
+          </div>
+>>>>>>> 0e819aa580b9ee873ff1205c3d15421e7911ee78
         </div>
+      </div>
     </body>
 </html>
