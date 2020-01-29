@@ -367,7 +367,7 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         html_page_dir = os.path.join(root, 'HTML_templates')
         style_css = os.path.join(html_page_dir, 'main_style.css')
-        table_css = os.path.join(html_page_dir, 'table.css')
+        table_css = os.path.join(html_page_dir, 'table_style.css')
         custom_style = os.path.join(html_page_dir, 'custom_style.css')
         env = Environment(loader=FileSystemLoader(html_page_dir))
         template = env.get_template("table_template.html")
