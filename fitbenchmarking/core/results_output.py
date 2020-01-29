@@ -10,7 +10,7 @@ import os
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
-from fitbenchmarking.results_processing import plots, tables, visual_pages
+from fitbenchmarking.results_processing import plots, support_page, tables
 from fitbenchmarking.utils import create_dirs
 
 
@@ -34,10 +34,10 @@ def save_results(options, results, group_name):
     best_results = preproccess_data(results)
     if options.make_plots:
         create_plots(options, results, best_results, group_name, fig_dir)
-    visual_pages.create_visual_pages(options=options,
-                                     results_per_test=results,
-                                     group_name=group_name,
-                                     support_pages_dir=supp_dir)
+    support_page.create(options=options,
+                        results_per_test=results,
+                        group_name=group_name,
+                        support_pages_dir=supp_dir)
     table_names = tables.create_results_tables(options,
                                                results,
                                                best_results,
@@ -148,7 +148,7 @@ def create_plots(options, results, best_results, group_name, figures_dir):
                         'parameters'
                 result.start_figure_link = initial_guess_path
 
-                
+
 def create_problem_level_index(options, table_names, group_name, group_dir):
     """
     Generates problem level index page.
