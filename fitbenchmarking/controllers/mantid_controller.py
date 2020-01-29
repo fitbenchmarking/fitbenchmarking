@@ -3,8 +3,7 @@ Implements a controller for the Mantid fitting software.
 """
 
 from mantid import simpleapi as msapi
-from mantid.api import *
-from mantid.fitfunctions import *
+from mantid.fitfunctions import FunctionFactory, FunctionWrapper, IFunction1D
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
