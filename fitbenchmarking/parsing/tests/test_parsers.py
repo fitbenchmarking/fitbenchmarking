@@ -246,7 +246,9 @@ class TestParsers:
 
         parser = ParserFactory.create_parser(test_file)
         assert (parser.__name__.lower().startswith(file_format.lower())), \
-            'Factory failed to get associated parser for {}: got {}, required starting with {}'.format(test_file, parser.__name__.lower(),parser.__name__.lower())
+            'Factory failed to get associated parser for {0}: got {1},' \
+            'required starting with {1}'.format(test_file,
+                                                parser.__name__.lower())
 
 
 class TestParserFactory(TestCase):

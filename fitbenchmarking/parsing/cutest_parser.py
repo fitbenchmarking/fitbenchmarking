@@ -60,9 +60,14 @@ class CutestParser(Parser):
         fp.start_x = None
         fp.end_x = None
 
-        self._cache = {id(fp.data_x): self._p.objcons}
+        # Use the object id as a hash to the function.
+        # In order to prevent the id being reused also store the x_data
+        self._cache = {id(fp.data_x): {'f':self._p.objcons, 'x':fp.data_x}}
 
         return fp
+
+    def __del__(self):
+        self.cache_dir.cleanup()
 
     def _import_problem(self, file_name):
         """
@@ -90,12 +95,12 @@ class CutestParser(Parser):
         :rtype: np.array
         """
         try:
-            f = self._cache[id(x)]
+            f = self._cache[id(x)]['f']
         except KeyError:
             fname, _, _ = self._setup_data(x)
             p = self._import_problem(fname)
             f = p.objcons
-            self._cache[id(x)] = f
+            self._cache[id(x)] = {'f': f, 'x': x}
         _, fx = f(np.asarray(params))
 
         return fx
