@@ -42,13 +42,16 @@ class Options(object):
             self.minimizers[key] = minimizers.getlist(key)
 
         fitting = config['FITTING']
+        # sys.exit() will be addressed in future FitBenchmarking
+        # error handling issue
         try:
             self.num_runs = fitting.getint('num_runs')
         except ValueError:
             print(template.format('num_runs', "int"))
             sys.exit()
         self.software = fitting.getlist('software')
-                # sys.exit() will be addressed in future FitBenchmarking
+
+        # sys.exit() will be addressed in future FitBenchmarking
         # error handling issue
         try:
             self.use_errors = fitting.getboolean('use_errors')
@@ -64,6 +67,7 @@ class Options(object):
         except ValueError:
             print(template.format('make_plots', "boolean"))
             sys.exit()
+
         self.colour_scale = plotting.getlist('colour_scale')
         self.colour_scale = [(float(cs.split(',', 1)[0].strip()),
                               cs.split(',', 1)[1].strip())
