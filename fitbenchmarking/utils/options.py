@@ -42,9 +42,19 @@ class Options(object):
             self.minimizers[key] = minimizers.getlist(key)
 
         fitting = config['FITTING']
-        self.num_runs = fitting.getint('num_runs')
+        try:
+            self.num_runs = fitting.getint('num_runs')
+        except ValueError:
+            print(template.format('num_runs', "int"))
+            sys.exit()
         self.software = fitting.getlist('software')
-        self.use_errors = fitting.getboolean('use_errors')
+                # sys.exit() will be addressed in future FitBenchmarking
+        # error handling issue
+        try:
+            self.use_errors = fitting.getboolean('use_errors')
+        except ValueError:
+            print(template.format('use_errors', "boolean"))
+            sys.exit()
 
         plotting = config['PLOTTING']
         # sys.exit() will be addressed in future FitBenchmarking
