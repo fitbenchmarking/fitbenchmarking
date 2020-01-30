@@ -41,24 +41,17 @@ class Options(object):
             self.minimizers[key] = minimizers.getlist(key)
 
         fitting = config['FITTING']
-        # sys.exit() will be addressed in future FitBenchmarking
-        # error handling issue
         try:
             self.num_runs = fitting.getint('num_runs')
         except ValueError:
             error_message.append(template.format('num_runs', "int"))
         self.software = fitting.getlist('software')
-
-        # sys.exit() will be addressed in future FitBenchmarking
-        # error handling issue
         try:
             self.use_errors = fitting.getboolean('use_errors')
         except ValueError:
             error_message.append(template.format('use_errors', "boolean"))
 
         plotting = config['PLOTTING']
-        # sys.exit() will be addressed in future FitBenchmarking
-        # error handling issue
         try:
             self.make_plots = plotting.getboolean('make_plots')
         except ValueError:
@@ -72,6 +65,8 @@ class Options(object):
         self.table_type = plotting.getlist('table_type')
         self.results_dir = plotting.getstr('results_dir')
 
+        # sys.exit() will be addressed in future FitBenchmarking
+        # error handling issue
         if error_message != []:
             print("ERROR IN OPTIONS FILE:")
             for error in error_message:
