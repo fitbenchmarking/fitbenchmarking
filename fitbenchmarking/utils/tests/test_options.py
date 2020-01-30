@@ -35,6 +35,9 @@ class OptionsTests(unittest.TestCase):
             results_dir: new_results
             """
         incorrect_config_str = """
+            [FITTING]
+            use_errors: correct
+            num_runs: two
             [PLOTTING]
             make_plots: incorrect_falue
             """
@@ -76,8 +79,6 @@ class OptionsTests(unittest.TestCase):
                              options.minimizers[key])
 
         fitting_opts = self.options['FITTING']
-        self.assertEqual(fitting_opts['use_errors'], options.use_errors)
-        self.assertEqual(fitting_opts['num_runs'], options.num_runs)
         self.assertEqual(fitting_opts['software'], options.software)
 
         plotting_opts = self.options['PLOTTING']
@@ -111,6 +112,24 @@ class OptionsTests(unittest.TestCase):
         options = Options(file_name=self.options_file)
         plotting_opts = self.options['PLOTTING']
         self.assertEqual(plotting_opts['make_plots'], options.make_plots)
+
+    def test_use_errors_false(self):
+        with self.assertRaises(SystemExit):
+            Options(file_name=self.options_file_incorrect)
+
+    def test_use_errors_true(self):
+        options = Options(file_name=self.options_file)
+        plotting_opts = self.options['FITTING']
+        self.assertEqual(plotting_opts['use_errors'], options.use_errors)
+
+    def test_num_runs_non_int_value(self):
+        with self.assertRaises(SystemExit):
+            Options(file_name=self.options_file_incorrect)
+
+    def test_num_runs_int_value(self):
+        options = Options(file_name=self.options_file)
+        plotting_opts = self.options['FITTING']
+        self.assertEqual(plotting_opts['num_runs'], options.num_runs)
 
 
 if __name__ == '__main__':

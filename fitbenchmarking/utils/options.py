@@ -25,9 +25,8 @@ class Options(object):
         :param file_name: The options file to load
         :type file_name: str
         """
-        template = "ERROR IN OPTIONS FILE:\n" \
-                   "The option {0} must be of type {1}. \n" \
-                   "Please alter the ini file to reflect this and re-run."
+        error_message = []
+        template = "The option '{0}' must be of type {1}."
         self._results_dir = ''
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str})
@@ -42,18 +41,22 @@ class Options(object):
             self.minimizers[key] = minimizers.getlist(key)
 
         fitting = config['FITTING']
-        self.num_runs = fitting.getint('num_runs')
+        try:
+            self.num_runs = fitting.getint('num_runs')
+        except ValueError:
+            error_message.append(template.format('num_runs', "int"))
         self.software = fitting.getlist('software')
-        self.use_errors = fitting.getboolean('use_errors')
+        try:
+            self.use_errors = fitting.getboolean('use_errors')
+        except ValueError:
+            error_message.append(template.format('use_errors', "boolean"))
 
         plotting = config['PLOTTING']
-        # sys.exit() will be addressed in future FitBenchmarking
-        # error handling issue
         try:
             self.make_plots = plotting.getboolean('make_plots')
         except ValueError:
-            print(template.format('make_plots', "boolean"))
-            sys.exit()
+            error_message.append(template.format('make_plots', "boolean"))
+
         self.colour_scale = plotting.getlist('colour_scale')
         self.colour_scale = [(float(cs.split(',', 1)[0].strip()),
                               cs.split(',', 1)[1].strip())
@@ -61,6 +64,15 @@ class Options(object):
         self.comparison_mode = plotting.getstr('comparison_mode')
         self.table_type = plotting.getlist('table_type')
         self.results_dir = plotting.getstr('results_dir')
+
+        # sys.exit() will be addressed in future FitBenchmarking
+        # error handling issue
+        if error_message != []:
+            print("ERROR IN OPTIONS FILE:")
+            for error in error_message:
+                print(error)
+            print("Please alter the ini file to reflect this and re-run.")
+            sys.exit()
 
     @property
     def results_dir(self):
