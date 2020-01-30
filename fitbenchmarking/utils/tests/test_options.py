@@ -131,5 +131,6 @@ class OptionsTests(unittest.TestCase):
         plotting_opts = self.options['FITTING']
         self.assertEqual(plotting_opts['num_runs'], options.num_runs)
 
+
 if __name__ == '__main__':
     unittest.main()
