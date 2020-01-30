@@ -15,16 +15,16 @@ class MantidController(Controller):
     Controller for the Mantid fitting software.
     """
 
-    def __init__(self, problem, use_errors):
+    def __init__(self, problem):
         """
         Setup workspace, cost_function, ignore_invalid, and initialise vars
         used for temporary storage within the mantid controller
         """
-        super(MantidController, self).__init__(problem, use_errors)
+        super(MantidController, self).__init__(problem)
 
         self._param_names = self.problem.param_names
 
-        self._cost_function = 'Least squares' if use_errors \
+        self._cost_function = 'Least squares' if self.data_e is not None \
             else 'Unweighted least squares'
 
         data_obj = msapi.CreateWorkspace(DataX=self.data_x,

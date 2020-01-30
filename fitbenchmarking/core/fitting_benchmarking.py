@@ -44,12 +44,14 @@ def fitbenchmark_group(group_name, options, data_dir):
     for i, p in enumerate(problem_group):
         with grabbed_output:
             parsed_problem = parse_problem_file(p)
+            parsed_problem.correct_data(options.use_errors)
 
         decorator = '#' * (len(template_prob_name) +
                            len(parsed_problem.name) + 4)
         tmp_prob_name = template_prob_name.format(parsed_problem.name)
         print("\n{0}\n{1} {2}/{3}\n{0}\n".format(decorator, tmp_prob_name,
                                                  i + 1, len(problem_group)))
+
         problem_results = fitbm_one_prob(problem=parsed_problem,
                                          options=options)
 
