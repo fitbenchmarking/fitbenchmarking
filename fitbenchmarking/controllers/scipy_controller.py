@@ -12,11 +12,11 @@ class ScipyController(Controller):
     Controller for the Scipy fitting software.
     """
 
-    def __init__(self, problem, use_errors):
+    def __init__(self, problem):
         """
         Initialises variable used for temporary storage.
         """
-        super(ScipyController, self).__init__(problem, use_errors)
+        super(ScipyController, self).__init__(problem)
 
         self._popt = None
 
