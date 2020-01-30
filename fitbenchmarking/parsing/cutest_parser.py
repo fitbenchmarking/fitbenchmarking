@@ -48,7 +48,7 @@ class CutestParser(Parser):
         fp = FittingProblem()
 
         # Collect x and create new file with blank y
-        fname, fp.data_x, fp.data_y = self._setup_data()
+        fname, fp.data_x, fp.data_y, fp.data_e = self._setup_data()
 
         self._p = self._import_problem(fname)
 
@@ -100,12 +100,8 @@ class CutestParser(Parser):
         try:
             f = self._cache[id(x)]['f']
         except KeyError:
-            fname, _, _ = self._setup_data(x)
-            try:
-                p = self._import_problem(fname)
-            except:
-                print('Failed for: {}'.format(self._p.name))
-                raise
+            fname, _, _, _ = self._setup_data(x)
+            p = self._import_problem(fname)
             f = p.objcons
             self._cache[id(x)] = {'f': f, 'x': x}
         _, fx = f(np.asarray(params))
@@ -142,8 +138,8 @@ class CutestParser(Parser):
         if x is not None and len(x.shape) == 0:
             x = np.array([x])
 
-        x_idx, y_idx = 0, 0
-        data_x, data_y = None, None
+        x_idx, y_idx, e_idx = 0, 0, 0
+        data_x, data_y, data_e = None, None, None
 
         # SIF requires columns of 25 chars
         col_width = 25
@@ -161,10 +157,17 @@ class CutestParser(Parser):
                     # so allocate space for these now
                     data_x = np.zeros(self._m)
                     data_y = np.zeros(self._m)
+                    data_e = np.zeros(self._m)
                     # initialize index parameters for x and y
                 else:
                     line = line[:col_width-1] + str(len(x))
                     self._m = len(x)
+
+            elif "IE MLOWER" in line and x is not None:
+                line = line[:col_width-1] + '1\n'
+
+            elif "IE MUPPER" in line and x is not None:
+                line = line[:col_width-1] + str(len(x))
 
             elif "IE N " in line:
                 self._n = int(line.split()[2])
@@ -184,10 +187,12 @@ class CutestParser(Parser):
                             tmp_line_x = ' RE X{}'.format(idx)
                             spacing = ' '*(col_width - (5 + len(str(idx))))
                             tmp_line_x += spacing + str(val)
-                            tmp_line_y = ' RE Y{}{}0.0'.format(idx,
-                                                                spacing)
-                            new_lines.extend([tmp_line_x, tmp_line_y])
-                        x_idx = y_idx = len(new_lines) / 2
+                            tmp_line_y = ' RE Y{}{}0.0'.format(idx, spacing)
+                            tmp_line_e = ' RE E{}{}1.0'.format(idx, spacing)
+                            new_lines.extend([tmp_line_x,
+                                              tmp_line_y,
+                                              tmp_line_e])
+                        x_idx = y_idx = e_idx = len(new_lines) / 3
                         line = '\n'.join(new_lines)
                         written_x = True
 
@@ -195,11 +200,19 @@ class CutestParser(Parser):
                 if x is None:
                     data_y[y_idx] = float(line.split()[2])
                     y_idx += 1
-                    line = line[:col_width-1] + '0.0\n'
+                    line = line[:col_width-1] + '0.0'
                 else:
                     continue
 
-            to_write.append(line)
+            elif 'RE E' in line:
+                if x is None:
+                    data_e[e_idx] = float(line.split()[2])
+                    e_idx += 1
+                    line = line[:col_width-1] + '1.0'
+                else:
+                    continue
+
+            to_write.append(line + '\n')
 
         if x is None:
             x = data_x
@@ -218,5 +231,10 @@ class CutestParser(Parser):
         if y_idx != self._m:
             print("wrong number of y data points")
             print(" got {}, expected {}".format(y_idx, self._m))
+        if e_idx == 0:
+            data_e = None
+        elif e_idx != self._m:
+            print("wrong number of e data points")
+            print(" got {}, expected {}".format(e_idx, self._m))
 
-        return file_path, data_x, data_y
+        return file_path, data_x, data_y, data_e
