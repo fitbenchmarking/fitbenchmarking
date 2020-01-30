@@ -15,11 +15,11 @@ class MinuitController(Controller):
     Controller for the Minuit fitting software
     """
 
-    def __init__(self, problem, use_errors):
+    def __init__(self, problem):
         """
         Initializes variable used for temporary storage.
         """
-        super(MinuitController, self).__init__(problem, use_errors)
+        super(MinuitController, self).__init__(problem)
         self._popt = None
         self._initial_step = None
         self._minuit_problem = None
