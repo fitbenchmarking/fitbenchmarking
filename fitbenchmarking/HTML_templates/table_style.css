@@ -10,7 +10,6 @@ table, th, td {
 }
 th a, td a {
   display: block;
-  text-decoration: none;
   color: rgb(30, 30, 30);
   margin-top: -10em;
   margin-bottom: -10em;

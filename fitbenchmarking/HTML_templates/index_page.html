@@ -18,8 +18,9 @@
                     Follow the links below to the results for the individual groups
                 </p>
                 {% for group, link in zip(groups, group_link) %}
-                    <h3><tt>{{ group }}</tt></h3>
-                    <a class="btn zoombtn" href="{{ link }}">Results</a>
+                    <h2>
+                    <a href="{{ link }}"><code>{{ group }}</code></a>
+                    </h2>
                 {% endfor %}
             </div>
         </div>

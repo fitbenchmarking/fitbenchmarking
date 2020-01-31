@@ -14,3 +14,10 @@ div.row {
     text-align: left;
 }
 
+a {
+    text-decoration: none;
+}
+div.centre {
+    margin:auto;
+    display:block;
+}
