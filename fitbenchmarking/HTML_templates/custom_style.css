@@ -1,0 +1,19 @@
+body {
+    background-color:#4D90BA;
+}
+
+div.container {
+    max-width: max-content;
+    width: 80%;
+    padding: 70px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+div.row {
+    text-align: left;
+}
+
+a {
+    text-decoration: none;
+}

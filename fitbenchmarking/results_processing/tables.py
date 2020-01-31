@@ -17,6 +17,8 @@ ERROR_OPTIONS = {0: "Successfully converged",
                  2: "Software run but didn't converge to solution",
                  3: "Software raised an exception"}
 
+SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
+
 
 def create_results_tables(options, results, best_results, group_name,
                           group_dir):
@@ -43,12 +45,15 @@ def create_results_tables(options, results, best_results, group_name,
     """
     weighted_str = 'weighted' if options.use_errors else 'unweighted'
 
+    table_type = []
     table_names = OrderedDict()
-    for suffix in options.table_type:
-        table_names[suffix] = '{0}_{1}_{2}_table.'.format(group_name,
-                                                          suffix,
-                                                          weighted_str)
-    generate_tables(results, best_results, table_names, options.table_type,
+    for suffix in SORTED_TABLE_NAMES:
+        if suffix in options.table_type:
+            table_type.append(suffix)
+            table_names[suffix] = '{0}_{1}_{2}_table.'.format(group_name,
+                                                              suffix,
+                                                              weighted_str)
+    generate_tables(results, best_results, table_names, table_type,
                     group_dir)
     return table_names
 
@@ -213,13 +218,17 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         table_style = table.style.applymap(colour_highlight)
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         html_page_dir = os.path.join(root, 'HTML_templates')
-        style_css = os.path.join(html_page_dir, 'style_sheet.css')
+        style_css = os.path.join(html_page_dir, 'main_style.css')
+        table_css = os.path.join(html_page_dir, 'table_style.css')
+        custom_style = os.path.join(html_page_dir, 'custom_style.css')
         env = Environment(loader=FileSystemLoader(html_page_dir))
         template = env.get_template("table_template.html")
         output_file = file_path + 'html'
 
         with open(output_file, "w") as f:
             f.write(template.render(css_style_sheet=style_css,
+                                    custom_style=custom_style,
+                                    table_style=table_css,
                                     result_name=title,
                                     table=table_style.render(),
                                     error_message=ERROR_OPTIONS))
