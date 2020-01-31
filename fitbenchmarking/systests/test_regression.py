@@ -34,7 +34,7 @@ class TestRegression(TestCase):
         opts.software = sorted(opts.minimizers.keys())
         opts.results_dir = os.path.join(os.path.dirname(__file__), 'results')
 
-        opt_file = tempfile.NamedTemporaryFile()
+        opt_file = tempfile.NamedTemporaryFile(suffix='.ini')
         opts.write(opt_file.name)
 
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
