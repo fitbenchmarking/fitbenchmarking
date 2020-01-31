@@ -17,7 +17,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, problem, use_errors):
+    def __init__(self, problem):
         """
         Initialise the class.
         Sets up data as defined by the problem and use_errors variables,
@@ -25,21 +25,16 @@ class Controller:
 
         :param problem: The parsed problem
         :type problem: fitting_problem (see fitbenchmarking.parsers)
-        :param use_errors: Flag to enable errors in the fitting
-        :type use_errors: Bool
         """
 
         # Problem: The problem object from parsing
         self.problem = problem
-        # Use Errors: Bool to use errors or not
-        self.use_errors = use_errors
 
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)
         self.data_x = problem.data_x
         self.data_y = problem.data_y
         self.data_e = problem.data_e
-        self._correct_data()
 
         # Initial Params: The starting values for params when fitting
         self.initial_params = None
@@ -58,43 +53,6 @@ class Controller:
 
         # Flag: error handling flag
         self.flag = None
-
-    def _correct_data(self):
-        """
-        Strip data that overruns the start and end x_range,
-        and approximate errors if not given.
-        Modifications happen on member variables.
-        """
-
-        # fix self.data_e
-        if self.use_errors:
-            if self.data_e is None:
-                self.data_e = np.sqrt(abs(self.data_y))
-
-            # The values of data_e are used to divide the residuals.
-            # If these are (close to zero), then this blows up.
-            # This is particularly a problem if trying to fit
-            # counts, which may follow a Poisson distribution.
-            #
-            # Fix this by cutting values less than a certain value
-            trim_value = 1.0e-8
-            self.data_e[self.data_e < trim_value] = trim_value
-        else:
-            self.data_e = None
-
-        # impose x ranges
-        start_x = self.problem.start_x
-        end_x = self.problem.end_x
-
-        if start_x is not None and end_x is not None:
-            mask = np.logical_and(self.data_x >= start_x, self.data_x <= end_x)
-            self.data_x = self.data_x[mask]
-            self.data_y = self.data_y[mask]
-            if self.data_e is not None:
-                self.data_e = self.data_e[mask]
-
-        # Stores the indices of the sorted data
-        self.sorted_index = np.argsort(self.data_x)
 
     def prepare(self):
         """

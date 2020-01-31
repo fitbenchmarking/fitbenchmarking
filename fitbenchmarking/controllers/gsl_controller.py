@@ -19,11 +19,11 @@ class GSLController(Controller):
     Controller for the GSL fitting software
     """
 
-    def __init__(self, problem, use_errors):
+    def __init__(self, problem):
         """
         Initializes variable used for temporary storage
         """
-        super(GSLController, self).__init__(problem, use_errors)
+        super(GSLController, self).__init__(problem)
 
         self._solver = None
         self._residual_methods = None

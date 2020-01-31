@@ -10,6 +10,7 @@ import warnings
 
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.utils import fitbm_result
+from fitbenchmarking.utils import output_grabber
 
 
 def fitbm_one_prob(problem, options):
@@ -26,7 +27,7 @@ def fitbm_one_prob(problem, options):
                containing the fit information
     :rtype: list
     """
-
+    grabbed_output = output_grabber.OutputGrabber()
     results = []
 
     software = options.software
@@ -48,17 +49,10 @@ def fitbm_one_prob(problem, options):
                 raise ValueError(
                     'Minimizers could not be found for software: {}'.format(s))
 
-            controller_cls = ControllerFactory.create_controller(software=s)
-            controller = controller_cls(problem=problem,
-                                        use_errors=options.use_errors)
-
-            # The controller reformats the data to fit within a
-            # start- and end-x bound
-            # It also estimates errors if not provided.
-            # Copy this back to the problem as it is used in plotting.
-            problem.data_x = controller.data_x
-            problem.data_y = controller.data_y
-            problem.data_e = controller.data_e
+            with grabbed_output:
+                controller_cls = ControllerFactory.create_controller(
+                    software=s)
+                controller = controller_cls(problem=problem)
 
             controller.parameter_set = i
             problem_result = benchmark(controller=controller,
@@ -85,6 +79,8 @@ def benchmark(controller, minimizers, options):
               minimizer
     :rtype: list
     """
+    grabbed_output = output_grabber.OutputGrabber()
+
     results_problem = []
     num_runs = options.num_runs
     for minimizer in minimizers:
@@ -93,12 +89,13 @@ def benchmark(controller, minimizers, options):
         controller.minimizer = minimizer
 
         try:
-            # Calls timeit repeat with repeat = num_runs and number = 1
-            runtime_list = \
-                timeit.Timer(setup=controller.prepare,
-                             stmt=controller.fit).repeat(num_runs, 1)
-            runtime = sum(runtime_list) / num_runs
-            controller.cleanup()
+            with grabbed_output:
+                # Calls timeit repeat with repeat = num_runs and number = 1
+                runtime_list = \
+                    timeit.Timer(setup=controller.prepare,
+                                 stmt=controller.fit).repeat(num_runs, 1)
+                runtime = sum(runtime_list) / num_runs
+                controller.cleanup()
         # Catching all exceptions as this means runtime cannot be calculated
         # pylint: disable=broad-except
         except Exception as excp:
