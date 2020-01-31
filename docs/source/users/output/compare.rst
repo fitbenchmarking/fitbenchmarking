@@ -1,7 +1,7 @@
 .. _compare:
 
 ################
-Comparison table
+Comparison Table
 ################
 
 Place holder for the compare table.

@@ -7,13 +7,14 @@ Windows
 =======
 
 The fitbenchmarking setup does not currently support installing mantid
-through it. Mantid can be downloaded from
+through it. Mantid can be downloaded
 `here <http://download.mantidproject.org/>`__. From the `Mantid
 installation instructions
 page <http://download.mantidproject.org/windows.html>`__:
 
 Note, as of Jan 2020, Mantid is expected to soon add support for Python 3.
-The Windows installation steps below are for guidance only, and may need some tweaking.
+The Windows installation steps below are for guidance only, and may need some
+tweaking.
 
 1. Download the installer and click **Run**.
 2. Go through the steps of the installer. The default settings are
@@ -21,8 +22,10 @@ The Windows installation steps below are for guidance only, and may need some tw
 3. Once the installation process is complete a MantidPlot
    and MantidPython icon should appear on your desktop, and in your start menu.
 
-Mantid ships a version of python with it, which by default it is installed in `C:\\MantidInstall\\bin`.
-FitBenchmarking can be installed using that version of Python. Note pip is shipped with Mantid in the
+Mantid ships a version of python with it, which by default it is installed in
+`C:\\MantidInstall\\bin`.
+FitBenchmarking can be installed using that version of Python. Note pip is shipped
+with Mantid in the
 `C:\\MantidInstall\\bin\\Scripts` folder.
 
 **Note**: the installer will look for the drive with the most free disk
@@ -77,5 +80,5 @@ To download the package manually go
 `here <http://download.mantidproject.org/>`__. To install a package
 manually, first install gdebi: ``sudo apt-get install gdebi`` then
 install mantid using: ``sudo gdebi pkgname.deb`` while you are in the
-folder from where you downloaded mantid and replace pckgname with the
+folder where you downloaded mantid and replace pkgname with the
 name of the downloaded file.

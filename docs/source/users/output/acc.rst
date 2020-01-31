@@ -1,7 +1,7 @@
 .. _acc:
 
 ##############
-Accuracy table
+Accuracy Table
 ##############
 
 Place holder for the accuracy table.

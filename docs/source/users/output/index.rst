@@ -9,7 +9,7 @@ descriptions of these tables.
 
 .. toctree::
     :titlesonly:
-    :caption: Softwares:
+    :caption: Tables:
 
     compare
     acc

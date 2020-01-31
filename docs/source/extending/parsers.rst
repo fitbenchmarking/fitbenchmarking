@@ -1,8 +1,8 @@
 .. _parsers:
 
-##################################################
-Adding additional fitting problem definition types
-##################################################
+#######################################
+Adding Fitting Problem Definition Types
+#######################################
 
 
 **Fitting problem definition types currently supported**

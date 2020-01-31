@@ -1,7 +1,7 @@
-.. _acc:
+.. _runtime:
 
 #############
-Runtime table
+Runtime Table
 #############
 
 Place holder for the runtime table.
