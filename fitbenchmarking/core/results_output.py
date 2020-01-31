@@ -13,6 +13,17 @@ import fitbenchmarking
 from fitbenchmarking.results_processing import plots, support_page, tables
 from fitbenchmarking.utils import create_dirs
 
+ACC_DESCRIPTION = \
+    "The accuracy results are calculated from the final chi squared value."
+RUNTIME_DESCRIPTION = \
+    "The runtime results are calculated using the timeit module in python."
+COMPARE_DESCRIPTION = \
+    "The combined results show the accuracy in the first line of the cell " \
+    "and the runtime on the second line of the cell."
+LOCAL_MIN_DESCRIPTION = \
+    "The local min results show whether the software has converged to a " \
+    " local minimum."
+
 
 def save_results(options, results, group_name):
     """
