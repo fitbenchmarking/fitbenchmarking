@@ -1,7 +1,7 @@
 .. _acc:
 
 ##############
-Accuracy table
+Accuracy Table
 ##############
 
 The accuracy results are calculated from the final chi squared value:

@@ -1,4 +1,4 @@
-.. _index:
+.. _contributors_index:
 
 #########################################
 FitBenchmarking Contributor Documentation

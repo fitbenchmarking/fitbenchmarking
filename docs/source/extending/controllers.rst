@@ -1,8 +1,8 @@
 .. _controllers:
 
-##################################
-Adding additional fitting software
-##################################
+#######################
+Adding Fitting Software
+#######################
 
 *This section describes how to add additional software to benchmark against
 the available problems.*

@@ -179,7 +179,8 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     main_dir = os.path.dirname(root)
     description_dir = os.path.join(
         main_dir, "docs", "source", "users", "output")
-
+    
+    # Generates specific table descriptions from docs
     reload(sys)
     sys.setdefaultencoding('utf-8')
     for n in names:
@@ -191,11 +192,13 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
             output_str, writer_name='html')
         description.append(description_page['body'])
 
+    # Generates generic table description from docs
     filename = os.path.join(description_dir, "index.rst")
     with open(filename) as f:
         output_str = f.readlines()
     index_str = ""
     for i, o in enumerate(output_str):
+        # Removes toctree since docutils complains about is
         if i > 17:
             index_str += o
 
@@ -203,7 +206,7 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     index_page = docutils.core.publish_parts(
         index_str, writer_name='html')
     index = index_page['body']
-
+    
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,

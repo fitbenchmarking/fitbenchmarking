@@ -1,7 +1,7 @@
 .. _local_min:
 
 #####################
-Local minimiser table
+Local Minimiser Table
 #####################
 
 The local min results show a ``True`` or ``False`` values together with a number. The ``True`` or ``False`` indicates whether the software finds a minimum with respect to the following criteria:

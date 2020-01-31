@@ -1,8 +1,8 @@
 .. _problems:
 
-################################
-Adding additional problem groups
-################################
+#####################
+Adding Problem Groups
+#####################
 
 *This section describes how to add a problem group to the fit benchmarking
 software. The default problem groups that come with this software are:
