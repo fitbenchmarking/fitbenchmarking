@@ -4,8 +4,10 @@ Functions that create the tables, support pages, figures, and indexes.
 
 from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
+import docutils.core
 import inspect
 import os
+import sys
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -172,17 +174,41 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
     links = [v + "html" for v in table_names.values()]
     names = table_names.keys()
-    descript_names = [n + "_description" for n in names]
+
     description = []
-    for name in descript_names:
-        if name.upper() in globals().keys():
-            description.append(globals()[name.upper()])
-        else:
-            description.append('')
+    main_dir = os.path.dirname(root)
+    description_dir = os.path.join(
+        main_dir, "docs", "source", "users", "output")
+
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+    for n in names:
+        filename = os.path.join(description_dir, "{}.rst".format(n))
+        with open(filename) as f:
+            output_str = f.read()
+            output_str = output_str.replace(':ref:', '')
+        description_page = docutils.core.publish_parts(
+            output_str, writer_name='html')
+        description.append(description_page['body'])
+
+    filename = os.path.join(description_dir, "index.rst")
+    with open(filename) as f:
+        output_str = f.readlines()
+    index_str = ""
+    for i, o in enumerate(output_str):
+        if i > 17:
+            index_str += o
+
+    index_str = index_str.replace(':ref:', '')
+    index_page = docutils.core.publish_parts(
+        index_str, writer_name='html')
+    index = index_page['body']
+
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,
             group_name=group_name,
+            index=index,
             table_type=names,
             links=links,
             description=description,
