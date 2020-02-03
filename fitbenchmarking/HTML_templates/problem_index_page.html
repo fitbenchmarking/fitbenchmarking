@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" href="{{ css_style_sheet }}" />
     <link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
+    <link rel="stylesheet" type="text/css" href="{{ maths_style }}" />
     <head>
         <title>{{ group_name }} results</title>
     </head>
@@ -18,6 +19,8 @@
                     <p>FitBenchmarking is a tool for comparing different fitting software based on their accuracy and runtimes.
                     </p>
                 </div>
+                {{ index }}
+                <hr />
                 <div class="row">
                     {% for type, link, description in zip(table_type, links, description) %}
                         <h3>

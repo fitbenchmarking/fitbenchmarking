@@ -181,6 +181,7 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     env = Environment(loader=FileSystemLoader(html_page_dir))
     style_css = os.path.join(html_page_dir, 'main_style.css')
     custom_style = os.path.join(html_page_dir, 'custom_style.css')
+    maths_style = os.path.join(html_page_dir, 'math_style.css')
     template = env.get_template("problem_index_page.html")
 
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
@@ -218,6 +219,7 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
         fh.write(template.render(
             css_style_sheet=style_css,
             custom_style=custom_style,
+            maths_style=maths_style,
             group_name=group_name,
             index=index,
             table_type=names,
