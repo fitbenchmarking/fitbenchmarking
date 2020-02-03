@@ -232,12 +232,12 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         # Set colour on each cell and add title
         table_style = table.style.applymap(colour_highlight)
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
-        html_page_dir = os.path.join(root, 'HTML_templates')
-        style_css = os.path.join(html_page_dir, 'main_style.css')
-        table_css = os.path.join(html_page_dir, 'table_style.css')
-        custom_style = os.path.join(html_page_dir, 'custom_style.css')
-        maths_style = os.path.join(html_page_dir, 'math_style.css')
-        env = Environment(loader=FileSystemLoader(html_page_dir))
+        template_dir = os.path.join(root, 'Templates')
+        style_css = os.path.join(template_dir, 'main_style.css')
+        table_css = os.path.join(template_dir, 'table_style.css')
+        custom_style = os.path.join(template_dir, 'custom_style.css')
+        maths_style = os.path.join(template_dir, 'math_style.css')
+        env = Environment(loader=FileSystemLoader(template_dir))
         template = env.get_template("table_template.html")
         output_file = file_path + 'html'
 

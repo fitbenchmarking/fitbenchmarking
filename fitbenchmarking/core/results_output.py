@@ -105,7 +105,7 @@ def preproccess_data(results_per_test):
 def create_table_descriptions(options):
     """
     Create a descriptions of the tables and the comparison mode from the file
-    fitbenchmarking/HTML_templates/table_descriptions.rst
+    fitbenchmarking/Templates/table_descriptions.rst
 
     : param options: The options used in the fitting problem and plotting
     : type options: fitbenchmarking.utils.options.Options
@@ -120,9 +120,9 @@ def create_table_descriptions(options):
 
     description = {}
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    html_page_dir = os.path.join(root, 'HTML_templates')
+    template_dir = os.path.join(root, 'Templates')
     # Generates specific table descriptions from docs
-    filename = os.path.join(html_page_dir, "table_descriptions.rst")
+    filename = os.path.join(template_dir, "table_descriptions.rst")
     with open(filename) as f:
         output_str = f.read()
     output_str = output_str.replace(':ref:', '')
@@ -217,11 +217,11 @@ def create_problem_level_index(options, table_names, group_name,
     """
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    html_page_dir = os.path.join(root, 'HTML_templates')
-    env = Environment(loader=FileSystemLoader(html_page_dir))
-    style_css = os.path.join(html_page_dir, 'main_style.css')
-    custom_style = os.path.join(html_page_dir, 'custom_style.css')
-    maths_style = os.path.join(html_page_dir, 'math_style.css')
+    template_dir = os.path.join(root, 'Templates')
+    env = Environment(loader=FileSystemLoader(template_dir))
+    style_css = os.path.join(template_dir, 'main_style.css')
+    custom_style = os.path.join(template_dir, 'custom_style.css')
+    maths_style = os.path.join(template_dir, 'math_style.css')
     template = env.get_template("problem_index_page.html")
 
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))

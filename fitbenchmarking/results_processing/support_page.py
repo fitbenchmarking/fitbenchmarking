@@ -85,11 +85,11 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
                                   'ini file to generate plots.'
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
-        html_page_dir = os.path.join(root, "HTML_templates")
-        env = Environment(loader=FileSystemLoader(html_page_dir))
-        style_css = os.path.join(html_page_dir, 'main_style.css')
-        table_css = os.path.join(html_page_dir, 'table_style.css')
-        custom_style = os.path.join(html_page_dir, 'custom_style.css')
+        template_dir = os.path.join(root, "Templates")
+        env = Environment(loader=FileSystemLoader(template_dir))
+        style_css = os.path.join(template_dir, 'main_style.css')
+        table_css = os.path.join(template_dir, 'table_style.css')
+        custom_style = os.path.join(template_dir, 'custom_style.css')
         template = env.get_template("support_page_template.html")
 
         with open(file_path, 'w') as fh:
