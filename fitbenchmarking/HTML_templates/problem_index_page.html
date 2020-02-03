@@ -13,14 +13,14 @@
             <div class="container">
                 <div class="row">
                     <h1 class="title">FitBenchmarking results: {{ group_name }}</h1>
-                    <hr />
+                    <hr>
                 </div>
                 <div class="row">
                     <p>FitBenchmarking is a tool for comparing different fitting software based on their accuracy and runtimes.
                     </p>
                 </div>
                 {{ index }}
-                <hr />
+                <hr>
                 <div class="row">
                     {% for type, link, description in zip(table_type, links, description) %}
                         <h3>
@@ -34,6 +34,7 @@
                             </button>
                         </form>
                         </h3>
+                        <hr>
                     {% endfor %}
                 </div>
                 <center>
