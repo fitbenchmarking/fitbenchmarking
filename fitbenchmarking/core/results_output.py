@@ -105,7 +105,7 @@ def preproccess_data(results_per_test):
 def create_table_descriptions(options):
     """
     Create a descriptions of the tables and the comparison mode from the file
-    fitbenchmarking/Templates/table_descriptions.rst
+    fitbenchmarking/templates/table_descriptions.rst
 
     : param options: The options used in the fitting problem and plotting
     : type options: fitbenchmarking.utils.options.Options
@@ -120,7 +120,7 @@ def create_table_descriptions(options):
 
     description = {}
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    template_dir = os.path.join(root, 'Templates')
+    template_dir = os.path.join(root, 'templates')
     # Generates specific table descriptions from docs
     filename = os.path.join(template_dir, "table_descriptions.rst")
     with open(filename) as f:
@@ -135,11 +135,6 @@ def create_table_descriptions(options):
         description_page = docutils.core.publish_parts(
             result, writer_name='html')
         description[n] = description_page['body']
-
-    description[options.comparison_mode] = description[options.comparison_mode]
-    if "local_min" in options.table_type:
-        description[options.comparison_mode] += description["local_min"]
-
     return description
 
 
@@ -217,7 +212,7 @@ def create_problem_level_index(options, table_names, group_name,
     """
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    template_dir = os.path.join(root, 'Templates')
+    template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
     style_css = os.path.join(template_dir, 'main_style.css')
     custom_style = os.path.join(template_dir, 'custom_style.css')

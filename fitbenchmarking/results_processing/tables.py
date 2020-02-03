@@ -213,7 +213,10 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
     for name, title, table in zip(table_names.items(), table_title,
                                   table_dict.values()):
         description = table_descriptions[name[0]]
-        table_format = table_descriptions[options.comparison_mode]
+
+        table_format = None if name[0] == 'local_min' \
+            else table_descriptions[options.comparison_mode]
+
         file_path = os.path.join(group_dir, name[1])
         with open(file_path + 'txt', "w") as f:
             f.write(table.to_string())
@@ -232,7 +235,7 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         # Set colour on each cell and add title
         table_style = table.style.applymap(colour_highlight)
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
-        template_dir = os.path.join(root, 'Templates')
+        template_dir = os.path.join(root, 'templates')
         style_css = os.path.join(template_dir, 'main_style.css')
         table_css = os.path.join(template_dir, 'table_style.css')
         custom_style = os.path.join(template_dir, 'custom_style.css')

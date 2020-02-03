@@ -46,6 +46,6 @@ rel: End
 
 both: Start
 
-Both values are displayed in the table in the format ``abs (rel)``
+Absolute and relative values are displayed in the table in the format ``abs (rel)``
 
 both: End

@@ -108,7 +108,7 @@ def run(problem_sets, options_file=''):
         groups.append(label)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    template_dir = os.path.join(root, 'Templates')
+    template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
     style_css = os.path.join(template_dir, 'main_style.css')
     custom_style = os.path.join(template_dir, 'custom_style.css')

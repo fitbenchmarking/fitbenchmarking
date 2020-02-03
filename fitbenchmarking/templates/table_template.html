@@ -17,6 +17,7 @@
                     <h1>{{ result_name }}</h1>
                     <hr />
                 </div>
+                {% if table_description %}
                 <section class="accordion">
                     <input type="checkbox" name="collapse" id="handle1" checked="checked">
                     <h2 class="handle">
@@ -26,20 +27,23 @@
                         {{ table_description }}
                     </div>
                 </section>
-                <section class="accordion">
-                    <input type="checkbox" name="collapse" id="handle2" checked="checked">
-                    <h2 class="handle">
-                    <label for="handle2">Table Formatting</label>
-                    </h2>
-                    <div class="content">
-                        {{ table_format }}
-                    </div>
-                </section>
+                {% endif %}
+                {% if table_format %}
+                    <section class="accordion">
+                        <input type="checkbox" name="collapse" id="handle2" checked="checked">
+                        <h2 class="handle">
+                        <label for="handle2">Table Formatting</label>
+                        </h2>
+                        <div class="content">
+                            {{ table_format }}
+                        </div>
+                    </section>
+                {% endif %}
                 <center>
                 <div class="table">
                     {{ table }}
                 </div>
-                </center>
+                z  </center>
                 <p>
                     Clicking a result in the tables will give more details,
                     such as graphs of the fit against the data and the parameters that the minimizer found.

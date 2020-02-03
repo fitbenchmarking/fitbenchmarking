@@ -12,7 +12,7 @@ import wget
 import fitbenchmarking
 
 root = os.path.dirname(inspect.getfile(fitbenchmarking))
-template_dir = os.path.join(root, 'Templates')
+template_dir = os.path.join(root, 'templates')
 filename = wget.download(
     "https://fitbenchmarking.com/assets/css/main.css", template_dir)
 

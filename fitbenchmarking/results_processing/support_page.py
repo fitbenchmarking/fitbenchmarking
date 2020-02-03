@@ -85,7 +85,7 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
                                   'ini file to generate plots.'
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
-        template_dir = os.path.join(root, "Templates")
+        template_dir = os.path.join(root, "templates")
         env = Environment(loader=FileSystemLoader(template_dir))
         style_css = os.path.join(template_dir, 'main_style.css')
         table_css = os.path.join(template_dir, 'table_style.css')
