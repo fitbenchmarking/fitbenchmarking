@@ -87,13 +87,16 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         html_page_dir = os.path.join(root, "HTML_templates")
         env = Environment(loader=FileSystemLoader(html_page_dir))
-        style_css = os.path.join(html_page_dir, 'style_sheet.css')
-
+        style_css = os.path.join(html_page_dir, 'main_style.css')
+        table_css = os.path.join(html_page_dir, 'table_style.css')
+        custom_style = os.path.join(html_page_dir, 'custom_style.css')
         template = env.get_template("support_page_template.html")
 
         with open(file_path, 'w') as fh:
             fh.write(template.render(
                 css_style_sheet=style_css,
+                table_style=table_css,
+                custom_style=custom_style,
                 title=result.problem.name,
                 equation=result.problem.equation,
                 initial_guess=result.ini_function_params,

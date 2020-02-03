@@ -15,6 +15,17 @@ import fitbenchmarking
 from fitbenchmarking.results_processing import plots, support_page, tables
 from fitbenchmarking.utils import create_dirs
 
+ACC_DESCRIPTION = \
+    "The accuracy results are calculated from the final chi squared value."
+RUNTIME_DESCRIPTION = \
+    "The runtime results are calculated using the timeit module in python."
+COMPARE_DESCRIPTION = \
+    "The combined results show the accuracy in the first line of the cell " \
+    "and the runtime on the second line of the cell."
+LOCAL_MIN_DESCRIPTION = \
+    "The local min results show whether the software has converged to a " \
+    " local minimum."
+
 
 def save_results(options, results, group_name):
     """
@@ -168,7 +179,8 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     html_page_dir = os.path.join(root, 'HTML_templates')
     env = Environment(loader=FileSystemLoader(html_page_dir))
-    style_css = os.path.join(html_page_dir, 'style_sheet.css')
+    style_css = os.path.join(html_page_dir, 'main_style.css')
+    custom_style = os.path.join(html_page_dir, 'custom_style.css')
     template = env.get_template("problem_index_page.html")
 
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
@@ -205,6 +217,7 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,
+            custom_style=custom_style,
             group_name=group_name,
             index=index,
             table_type=names,
