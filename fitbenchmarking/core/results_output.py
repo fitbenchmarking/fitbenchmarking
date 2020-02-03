@@ -15,17 +15,6 @@ import fitbenchmarking
 from fitbenchmarking.results_processing import plots, support_page, tables
 from fitbenchmarking.utils import create_dirs
 
-ACC_DESCRIPTION = \
-    "The accuracy results are calculated from the final chi squared value."
-RUNTIME_DESCRIPTION = \
-    "The runtime results are calculated using the timeit module in python."
-COMPARE_DESCRIPTION = \
-    "The combined results show the accuracy in the first line of the cell " \
-    "and the runtime on the second line of the cell."
-LOCAL_MIN_DESCRIPTION = \
-    "The local min results show whether the software has converged to a " \
-    " local minimum."
-
 
 def save_results(options, results, group_name):
     """
@@ -45,6 +34,7 @@ def save_results(options, results, group_name):
     """
     _, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
     best_results = preproccess_data(results)
+    table_descriptions = create_table_descriptions(options)
     if options.make_plots:
         create_plots(options, results, best_results, group_name, fig_dir)
     support_page.create(options=options,
@@ -55,8 +45,13 @@ def save_results(options, results, group_name):
                                                results,
                                                best_results,
                                                group_name,
-                                               group_dir)
-    create_problem_level_index(options, table_names, group_name, group_dir)
+                                               group_dir,
+                                               table_descriptions)
+    create_problem_level_index(options,
+                               table_names,
+                               group_name,
+                               group_dir,
+                               table_descriptions)
 
     return group_dir
 
@@ -105,6 +100,47 @@ def preproccess_data(results_per_test):
             r.set_colour_scale()
         output.append(best_result)
     return output
+
+
+def create_table_descriptions(options):
+    """
+    Create a descriptions of the tables and the comparison mode from the file
+    fitbenchmarking/HTML_templates/table_descriptions.rst
+
+    : param options: The options used in the fitting problem and plotting
+    : type options: fitbenchmarking.utils.options.Options
+
+    :return: dictionary containing descriptions of the tables and the
+             comparison mode
+    :rtype: dict
+    """
+
+    def find_between(s, start, end):
+        return (s.split(start))[1].split(end)[0]
+
+    description = {}
+    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    html_page_dir = os.path.join(root, 'HTML_templates')
+    # Generates specific table descriptions from docs
+    filename = os.path.join(html_page_dir, "table_descriptions.rst")
+    with open(filename) as f:
+        output_str = f.read()
+    output_str = output_str.replace(':ref:', '')
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+    for n in options.table_type + [options.comparison_mode]:
+        start = '{}: Start'.format(n)
+        end = '{}: End'.format(n)
+        result = find_between(output_str, start, end)
+        description_page = docutils.core.publish_parts(
+            result, writer_name='html')
+        description[n] = description_page['body']
+
+    description[options.comparison_mode] = description[options.comparison_mode]
+    if "local_min" in options.table_type:
+        description[options.comparison_mode] += description["local_min"]
+
+    return description
 
 
 def create_plots(options, results, best_results, group_name, figures_dir):
@@ -162,7 +198,8 @@ def create_plots(options, results, best_results, group_name, figures_dir):
                 result.start_figure_link = initial_guess_path
 
 
-def create_problem_level_index(options, table_names, group_name, group_dir):
+def create_problem_level_index(options, table_names, group_name,
+                               group_dir, table_descriptions):
     """
     Generates problem level index page.
 
@@ -174,8 +211,11 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     :type group_name : str
     :param group_dir : Path to the directory where the index should be stored
     :type group_dir : str
-
+    :param table_descriptions : dictionary containing descriptions of the
+                                tables and the comparison mode
+    :type table_descriptions : dict
     """
+
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     html_page_dir = os.path.join(root, 'HTML_templates')
     env = Environment(loader=FileSystemLoader(html_page_dir))
@@ -187,34 +227,8 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
     links = [v + "html" for v in table_names.values()]
     names = table_names.keys()
-
-    description = []
-    main_dir = os.path.dirname(root)
-    description_dir = os.path.join(
-        main_dir, "docs", "source", "users", "output")
-
-    # Generates specific table descriptions from docs
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
-    for n in names:
-        filename = os.path.join(description_dir, "{}.rst".format(n))
-        with open(filename) as f:
-            output_str = f.read()
-            output_str = output_str.replace(':ref:', '')
-        description_page = docutils.core.publish_parts(
-            output_str, writer_name='html')
-        description.append(description_page['body'])
-
-    # Generates generic table description from docs
-    filename = os.path.join(description_dir, "index.rst")
-    with open(filename) as f:
-        index_str = f.read()
-    index_str = index_str.split("*************")[1]
-    index_str = index_str.replace(':ref:', '')
-    index_page = docutils.core.publish_parts(
-        index_str, writer_name='html')
-    index = '<h4>Table formats</h4>' + index_page['body']
-
+    description = [table_descriptions[n] for n in names]
+    index = table_descriptions[options.comparison_mode]
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,
