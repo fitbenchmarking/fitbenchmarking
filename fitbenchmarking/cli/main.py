@@ -110,7 +110,8 @@ def run(problem_sets, options_file=''):
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     html_page_dir = os.path.join(root, 'HTML_templates')
     env = Environment(loader=FileSystemLoader(html_page_dir))
-    style_css = os.path.join(html_page_dir, 'style_sheet.css')
+    style_css = os.path.join(html_page_dir, 'main_style.css')
+    custom_style = os.path.join(html_page_dir, 'custom_style.css')
     template = env.get_template("index_page.html")
     group_links = [os.path.join(d, "{}_index.html".format(g))
                    for g, d in zip(groups, result_dir)]
@@ -118,7 +119,9 @@ def run(problem_sets, options_file=''):
 
     with open(output_file, 'w') as fh:
         fh.write(template.render(
-            css_style_sheet=style_css, groups=groups,
+            css_style_sheet=style_css,
+            custom_style=custom_style,
+            groups=groups,
             group_link=group_links,
             zip=zip))
     webbrowser.open_new(output_file)
