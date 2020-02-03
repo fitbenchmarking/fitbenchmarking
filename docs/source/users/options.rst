@@ -4,8 +4,7 @@
 FitBenchmarking Options
 #######################
 
-FitBenchmarking is controlled by a set of options that can be controlled in
-2 different ways.
+FitBenchmarking is controlled by a set of options that are set in 2 places.
 In order from lowest priority to highest these are:
 
 - The default options.

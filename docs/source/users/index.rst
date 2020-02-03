@@ -8,9 +8,11 @@ Welcome to the documentation for the FitBenchmarking software.
     :titlesonly:
     :caption: Contents:
 
-    getting_started
     install_instructions/index
-    examples
+    running
+    output/index
     options
+    tutorials
+    problem_definition_files/index
     notes
 

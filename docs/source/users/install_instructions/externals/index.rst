@@ -1,18 +1,19 @@
-.. _install_instructions:
+.. _external-instructions:
 
-############
-Installation
-############
+#############################
+Installing External Softwares
+#############################
 
 Fitbenchmarking will install all softwares that can be installed through pip.
 
 To enable Fitbenchmarking with the other supported softwares,
-you must install them with the external software instructions.
+you must install them with the following guides:
 
 
 .. toctree::
     :titlesonly:
     :caption: Softwares:
 
-    fitbenchmarking
-    externals/index
+    gsl
+    mantid
+    ralfit
