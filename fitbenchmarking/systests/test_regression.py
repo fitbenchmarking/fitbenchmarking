@@ -67,8 +67,8 @@ class TestRegression(TestCase):
 
         diff = []
         for exp_line, act_line in zip_longest(expected, actual):
-            exp_line = exp_line.strip('\n')
-            act_line = act_line.strip('\n')
+            exp_line = '' if exp_line is None else exp_line.strip('\n')
+            act_line = '' if act_line is None else act_line.strip('\n')
             if exp_line != act_line:
                 diff.append([exp_line, act_line])
 
