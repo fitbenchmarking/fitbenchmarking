@@ -16,7 +16,8 @@ compare: End
 
 local_min: Start
 
-The local min results shows a ``True`` or ``False`` value together with a number. The ``True`` or ``False`` indicates whether the software finds a minimum with respect to the following criteria:
+The local min results shows a ``True`` or ``False`` value together with :math:`\frac{|| J^T r||}{||r||}`. The ``True`` or ``False`` indicates whether the software finds a minimum with respect to the following criteria:
+
 
 - :math:`||r|| \leq \mbox{RES\_TOL}`,
 - :math:`|| J^T r|| \leq \mbox{GRAD\_TOL}`,
@@ -28,7 +29,7 @@ local_min: End
 
 runtime: Start
 
-The timing results are calculate from an average using the `timeit <https://docs.python.org/2/library/timeit.html>`_  module in python. The number of runs can be set in :ref:`options`.
+The timing results are calculated from an average using the `timeit <https://docs.python.org/2/library/timeit.html>`_  module in python. The number of runs can be set in :ref:`options`.
 
 runtime: End
 
