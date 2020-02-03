@@ -11,3 +11,4 @@ The local min results shows a ``True`` or ``False`` value together with a number
     - :math:`\frac{|| J^T r||}{||r||} \leq \mbox{GRAD\_TOL}`,
 
 where :math:`J` and :math:`r` are the Jacobian and residual of :math:`f(x, p)`, respectively. The tolerances can be found in the results object.
+

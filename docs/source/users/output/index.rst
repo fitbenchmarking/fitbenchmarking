@@ -26,3 +26,4 @@ The tables for ``accuracy``, ``runtime`` and ``compare`` have three display mode
     - ``both`` will show data in the form "abs (rel)"
 
 The ``Local minimum`` table shows a ``True`` or ``False`` value together with a number. The description of this can be found in :ref:`local_min`.
+
