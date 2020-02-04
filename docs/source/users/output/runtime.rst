@@ -4,4 +4,6 @@
 Runtime Table
 #############
 
-Place holder for the runtime table.
+.. include:: ../../../../fitbenchmarking/templates/table_descriptions.rst
+    :start-after: runtime: Start
+    :end-before: runtime: End

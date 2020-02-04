@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" href="{{ css_style_sheet }}" />
     <link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
+    <link rel="stylesheet" type="text/css" href="{{ maths_style }}" />
     <head>
         <title>{{ group_name }} results</title>
     </head>
@@ -12,12 +13,15 @@
             <div class="container">
                 <div class="row">
                     <h1 class="title">FitBenchmarking results: {{ group_name }}</h1>
-                    <hr />
+                    <hr>
                 </div>
                 <div class="row">
                     <p>FitBenchmarking is a tool for comparing different fitting software based on their accuracy and runtimes.
                     </p>
                 </div>
+                <h4>Table formats</h4>
+                {{ index }}
+                <hr>
                 <div class="row">
                     {% for type, link, description in zip(table_type, links, description) %}
                         <h3>
@@ -31,6 +35,7 @@
                             </button>
                         </form>
                         </h3>
+                        <hr>
                     {% endfor %}
                 </div>
                 <center>
