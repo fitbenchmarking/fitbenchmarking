@@ -103,3 +103,25 @@ class NoDataError(FitBenchmarkException):
 
         self._class_message = 'No data found.'
         self.error_code = 8
+
+
+class UnknownMinimizerError(FitBenchmarkException):
+    """
+    Indicates that the controller does not support a given minimizer.
+    """
+    def __init__(self, message=''):
+        super(UnknownMinimizerError, self).__init__(message)
+
+        self._class_message = 'Minimizer cannot be run with Controller.'
+        self.error_code = 9
+
+
+class FittingProblemError(FitBenchmarkException):
+    """
+    Indicates a problem with the fitting problem.
+    """
+    def __init__(self, message=''):
+        super(FittingProblemError, self).__init__(message)
+
+        self._class_message = 'Fitting Problem raised and exception.'
+        self.error_code = 10

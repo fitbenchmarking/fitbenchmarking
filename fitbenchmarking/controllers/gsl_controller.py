@@ -12,6 +12,7 @@ from pygsl import _numobj as numx
 from scipy.optimize._numdiff import approx_derivative
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 
 
 class GSLController(Controller):
@@ -163,7 +164,8 @@ class GSLController(Controller):
                 p)
             self._solver = getattr(multiminimize, self.minimizer)(mysys, p)
         else:
-            raise RuntimeError("An undefined GSL minimizer was selected")
+            raise UnknownMinimizerError(
+                "No {} minimizer for GSL".format(self.minimizer))
 
         # Set up initialization parameters
         #

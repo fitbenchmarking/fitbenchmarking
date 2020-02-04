@@ -13,6 +13,8 @@ except ImportError:
 import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
+from fitbenchmarking.utils.exceptions import FittingProblemError
+
 
 class FittingProblem:
     r"""
@@ -96,7 +98,7 @@ class FittingProblem:
 
     @param_names.setter
     def param_names(self, value):
-        raise ValueError('This property should not be set manually')
+        raise FittingProblemError('param_names should not be edited')
 
     @property
     def sanitised_name(self):
@@ -108,7 +110,7 @@ class FittingProblem:
 
     @sanitised_name.setter
     def sanitised_name(self, value):
-        raise ValueError('This property should not be set manually')
+        raise FittingProblemError('sanitised_name should not be edited')
 
     def eval_f(self, params, x=None):
         """
@@ -123,8 +125,8 @@ class FittingProblem:
         :rtype: numpy array
         """
         if self.function is None:
-            raise AttributeError('Cannot call function before setting'
-                                 'function.')
+            raise FittingProblemError('Cannot call function before setting '
+                                      'function.')
         if x is None:
             x = self.data_x
         return self.function(x, *params)
@@ -151,8 +153,8 @@ class FittingProblem:
             y = self.data_y
             e = self.data_e
         elif x is None or y is None:
-            raise ValueError('Residuals could not be computed with only one'
-                             'of x and y')
+            raise FittingProblemError('Residuals could not be computed with '
+                                      'only one of x and y.')
 
         result = y - self.eval_f(params=params, x=x)
         if e is not None:
@@ -207,8 +209,8 @@ class FittingProblem:
         :rtype: numpy array
         """
         if self.starting_values is None:
-            raise AttributeError('Cannot call function before setting'
-                                 'starting values.')
+            raise FittingProblemError('Cannot call function before setting '
+                                      'starting values.')
         return self.eval_f(self.starting_values[param_set].values())
 
     def get_function_params(self, params):
@@ -233,7 +235,7 @@ class FittingProblem:
         """
         Basic check that minimal set of attributes have been set.
 
-        Raise AttributeError if object is not properly initialised.
+        Raise FittingProblemError if object is not properly initialised.
         """
 
         values = {'data_x': np.ndarray,
@@ -243,13 +245,11 @@ class FittingProblem:
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
             if not isinstance(attr, attr_type):
-                raise TypeError('Attribute "{}" is not the expected type.'
-                                'Expected "{}", got {}.'.format(attr_name,
-                                                                attr_type,
-                                                                type(attr)
-                                                                ))
+                raise FittingProblemError(
+                    'Attribute "{}" is not the expected type. Expected "{}", '
+                    'got "{}".'.format(attr_name, attr_type, type(attr)))
         if self.function is None:
-            raise TypeError('Attribute "function" has not been set.')
+            raise FittingProlemError('Attribute "function" has not been set.')
 
     def correct_data(self, use_errors):
         """

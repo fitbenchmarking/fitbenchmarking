@@ -2,33 +2,33 @@
 This file implements a parser for the Fitbenchmark data format.
 """
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
 
+import os
 from collections import OrderedDict
 
 import numpy as np
-import os
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.utils.exceptions import ParsingError
+from fitbenchmarking.utils.exceptions import MissingSoftwareError, ParsingError
 from fitbenchmarking.utils.logging_setup import logger
 
 import_success = {}
 try:
     import mantid.simpleapi as msapi
-    import_success['mantid'] = True
-except ImportError:
-    import_success['mantid'] = False
+    import_success['mantid'] = (True, None)
+except ImportError as e:
+    import_success['mantid'] = (False, e)
 
 
 try:
     from sasmodels.data import empty_data1D
     from sasmodels.core import load_model
     from sasmodels.bumps_model import Experiment, Model
-    import_success['sasview'] = True
-except ImportError:
-    import_success['sasview'] = False
+    import_success['sasview'] = (True, None)
+except ImportError as e:
+    import_success['sasview'] = (False, e)
 
 
 class FitbenchmarkParser(Parser):
@@ -48,9 +48,10 @@ class FitbenchmarkParser(Parser):
 
         self._entries = self._get_data_problem_entries()
         software = self._entries['software'].lower()
-        if (software not in import_success) or (not import_success[software]):
-            raise ImportError('Could not import necessary modules for software'
-                              ' ({})'.format(software))
+        if not (software in import_success and import_success[software][0]):
+            e = import_success[software][1]
+            raise MissingSoftwareError('Requirements are missing for {} parser'
+                                       ': {}'.format(software, e)
 
         self._parsed_func = self._parse_function()
 
