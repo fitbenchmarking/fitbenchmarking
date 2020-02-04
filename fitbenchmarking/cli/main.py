@@ -15,6 +15,7 @@ import sys
 import webbrowser
 
 import fitbenchmarking
+from fitbenchmarking.cli.exception_handler import exception_handler
 from fitbenchmarking.core.fitting_benchmarking import fitbenchmark_group
 from fitbenchmarking.core.results_output import save_results
 from fitbenchmarking.utils.options import Options
@@ -45,7 +46,7 @@ examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
 
     return parser
 
-
+@exception_handler
 def run(problem_sets, options_file=''):
     """
     Run benchmarking for the problems sets and options file given.
