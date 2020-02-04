@@ -37,7 +37,7 @@ setup(name='FitBenchmarking',
           'help': Help,
       },
       package_data={'fitbenchmarking': ['utils/default_options.ini',
-                                        'HTML_templates/*']}
+                                        'templates/*']}
       )
 
 

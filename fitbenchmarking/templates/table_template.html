@@ -5,6 +5,8 @@
     <link rel="stylesheet" type="text/css" href="{{ css_style_sheet }}" />
     <link rel="stylesheet" type="text/css" href="{{ table_style }}" />
     <link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
+    <link rel="stylesheet" type="text/css" href="{{ maths_style }}" />
+    
     <head>
         <title>Fitbenchmark Results Table</title>
     </head>
@@ -15,6 +17,28 @@
                     <h1>{{ result_name }}</h1>
                     <hr />
                 </div>
+                {% if table_description %}
+                <section class="accordion">
+                    <input type="checkbox" name="collapse" id="handle1" checked="checked">
+                    <h2 class="handle">
+                    <label for="handle1">Table Description</label>
+                    </h2>
+                    <div class="content">
+                        {{ table_description }}
+                    </div>
+                </section>
+                {% endif %}
+                {% if table_format %}
+                    <section class="accordion">
+                        <input type="checkbox" name="collapse" id="handle2" checked="checked">
+                        <h2 class="handle">
+                        <label for="handle2">Table Formatting</label>
+                        </h2>
+                        <div class="content">
+                            {{ table_format }}
+                        </div>
+                    </section>
+                {% endif %}
                 <center>
                 <div class="table">
                     {{ table }}

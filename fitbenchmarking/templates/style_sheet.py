@@ -12,14 +12,14 @@ import wget
 import fitbenchmarking
 
 root = os.path.dirname(inspect.getfile(fitbenchmarking))
-html_page_dir = os.path.join(root, 'HTML_templates')
+template_dir = os.path.join(root, 'templates')
 filename = wget.download(
-    "https://fitbenchmarking.com/assets/css/main.css", html_page_dir)
+    "https://fitbenchmarking.com/assets/css/main.css", template_dir)
 
 with open(filename, 'r') as f:
     expected = f.readlines()
 
-style_sheet = os.path.join(html_page_dir, "main_style.css")
+style_sheet = os.path.join(template_dir, "main_style.css")
 with open(style_sheet, 'r') as f:
     actual = f.readlines()
 

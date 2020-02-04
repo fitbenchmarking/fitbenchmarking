@@ -4,25 +4,16 @@ Functions that create the tables, support pages, figures, and indexes.
 
 from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
+import docutils.core
 import inspect
 import os
+import sys
 
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import plots, support_page, tables
 from fitbenchmarking.utils import create_dirs
-
-ACC_DESCRIPTION = \
-    "The accuracy results are calculated from the final chi squared value."
-RUNTIME_DESCRIPTION = \
-    "The runtime results are calculated using the timeit module in python."
-COMPARE_DESCRIPTION = \
-    "The combined results show the accuracy in the first line of the cell " \
-    "and the runtime on the second line of the cell."
-LOCAL_MIN_DESCRIPTION = \
-    "The local min results show whether the software has converged to a " \
-    " local minimum."
 
 
 def save_results(options, results, group_name):
@@ -43,6 +34,7 @@ def save_results(options, results, group_name):
     """
     _, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
     best_results = preproccess_data(results)
+    table_descriptions = create_table_descriptions(options)
     if options.make_plots:
         create_plots(options, results, best_results, group_name, fig_dir)
     support_page.create(options=options,
@@ -53,8 +45,13 @@ def save_results(options, results, group_name):
                                                results,
                                                best_results,
                                                group_name,
-                                               group_dir)
-    create_problem_level_index(options, table_names, group_name, group_dir)
+                                               group_dir,
+                                               table_descriptions)
+    create_problem_level_index(options,
+                               table_names,
+                               group_name,
+                               group_dir,
+                               table_descriptions)
 
     return group_dir
 
@@ -103,6 +100,42 @@ def preproccess_data(results_per_test):
             r.set_colour_scale()
         output.append(best_result)
     return output
+
+
+def create_table_descriptions(options):
+    """
+    Create a descriptions of the tables and the comparison mode from the file
+    fitbenchmarking/templates/table_descriptions.rst
+
+    : param options: The options used in the fitting problem and plotting
+    : type options: fitbenchmarking.utils.options.Options
+
+    :return: dictionary containing descriptions of the tables and the
+             comparison mode
+    :rtype: dict
+    """
+
+    def find_between(s, start, end):
+        return (s.split(start))[1].split(end)[0]
+
+    description = {}
+    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    template_dir = os.path.join(root, 'templates')
+    # Generates specific table descriptions from docs
+    filename = os.path.join(template_dir, "table_descriptions.rst")
+    with open(filename) as f:
+        output_str = f.read()
+    output_str = output_str.replace(':ref:', '')
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+    for n in options.table_type + [options.comparison_mode]:
+        start = '{}: Start'.format(n)
+        end = '{}: End'.format(n)
+        result = find_between(output_str, start, end)
+        description_page = docutils.core.publish_parts(
+            result, writer_name='html')
+        description[n] = description_page['body']
+    return description
 
 
 def create_plots(options, results, best_results, group_name, figures_dir):
@@ -160,7 +193,8 @@ def create_plots(options, results, best_results, group_name, figures_dir):
                 result.start_figure_link = initial_guess_path
 
 
-def create_problem_level_index(options, table_names, group_name, group_dir):
+def create_problem_level_index(options, table_names, group_name,
+                               group_dir, table_descriptions):
     """
     Generates problem level index page.
 
@@ -172,30 +206,31 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     :type group_name : str
     :param group_dir : Path to the directory where the index should be stored
     :type group_dir : str
-
+    :param table_descriptions : dictionary containing descriptions of the
+                                tables and the comparison mode
+    :type table_descriptions : dict
     """
+
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    html_page_dir = os.path.join(root, 'HTML_templates')
-    env = Environment(loader=FileSystemLoader(html_page_dir))
-    style_css = os.path.join(html_page_dir, 'main_style.css')
-    custom_style = os.path.join(html_page_dir, 'custom_style.css')
+    template_dir = os.path.join(root, 'templates')
+    env = Environment(loader=FileSystemLoader(template_dir))
+    style_css = os.path.join(template_dir, 'main_style.css')
+    custom_style = os.path.join(template_dir, 'custom_style.css')
+    maths_style = os.path.join(template_dir, 'math_style.css')
     template = env.get_template("problem_index_page.html")
 
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
     links = [v + "html" for v in table_names.values()]
     names = table_names.keys()
-    descript_names = [n + "_description" for n in names]
-    description = []
-    for name in descript_names:
-        if name.upper() in globals().keys():
-            description.append(globals()[name.upper()])
-        else:
-            description.append('')
+    description = [table_descriptions[n] for n in names]
+    index = table_descriptions[options.comparison_mode]
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,
             custom_style=custom_style,
+            maths_style=maths_style,
             group_name=group_name,
+            index=index,
             table_type=names,
             links=links,
             description=description,

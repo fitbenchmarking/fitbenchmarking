@@ -9,4 +9,4 @@ Welcome to the documentation for the FitBenchmarking software.
     :caption: Contents:
 
     tables
-    HTML_templates
+    templates
