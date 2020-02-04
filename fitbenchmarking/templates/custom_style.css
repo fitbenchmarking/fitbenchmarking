@@ -1,0 +1,64 @@
+body {
+    background-color:#4D90BA;
+}
+
+div.container {
+    max-width: max-content;
+    width: 80%;
+    padding: 70px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+div.row {
+    text-align: left;
+}
+
+a {
+    text-decoration: none;
+}
+
+
+.accordion > input[type="checkbox"] {
+  position: absolute;
+  left: -100vw;
+}
+
+.accordion .content {
+  overflow-y: hidden;
+  height: 0;
+  transition: height 0.3s ease;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  height: auto;
+  overflow: visible;
+}
+
+.accordion label {
+  display: block;
+}
+
+.accordion .handle {
+  margin: 0;
+  font-size: 1em;
+  line-height: 1em;
+}
+
+.accordion label {
+  color: #333;
+  cursor: pointer;
+  font-weight: normal;
+  padding: 10px;
+  background: #e8e8e8;
+}
+
+.accordion .handle label:before {
+  font-family: 'fontawesome';
+  content: "\f054";
+  margin-right: 10px;
+  font-size: .58em;
+  line-height: 1em;
+  vertical-align: middle;
+}
+

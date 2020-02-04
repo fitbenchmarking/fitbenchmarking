@@ -6,3 +6,4 @@ build/build.log
 FitBenchmarking.egg-info/
 build/lib/build/
 dist/
+docs/build

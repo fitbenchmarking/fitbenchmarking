@@ -17,9 +17,11 @@ ERROR_OPTIONS = {0: "Successfully converged",
                  2: "Software run but didn't converge to solution",
                  3: "Software raised an exception"}
 
+SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
+
 
 def create_results_tables(options, results, best_results, group_name,
-                          group_dir):
+                          group_dir, table_descriptions):
     """
     Saves the results of the fitting to html/txt tables.
 
@@ -36,6 +38,9 @@ def create_results_tables(options, results, best_results, group_name,
     :param group_dir : path to the directory where group results should be
                        stored
     :type group_dir : str
+    :param table_descriptions : dictionary containing descriptions of the
+                                tables and the comparison mode
+    :type table_descriptions : dict
 
     :return: filepaths to each table
              e.g {'acc': <acc-table-filename>, 'runtime': ...}
@@ -43,18 +48,21 @@ def create_results_tables(options, results, best_results, group_name,
     """
     weighted_str = 'weighted' if options.use_errors else 'unweighted'
 
+    table_type = []
     table_names = OrderedDict()
-    for suffix in options.table_type:
-        table_names[suffix] = '{0}_{1}_{2}_table.'.format(group_name,
-                                                          suffix,
-                                                          weighted_str)
-    generate_tables(results, best_results, table_names, options.table_type,
-                    group_dir)
+    for suffix in SORTED_TABLE_NAMES:
+        if suffix in options.table_type:
+            table_type.append(suffix)
+            table_names[suffix] = '{0}_{1}_{2}_table.'.format(group_name,
+                                                              suffix,
+                                                              weighted_str)
+    generate_tables(results, best_results, table_names, table_type,
+                    group_dir, table_descriptions, options)
     return table_names
 
 
 def generate_tables(results_per_test, best_results, table_names, table_suffix,
-                    group_dir):
+                    group_dir, table_descriptions, options):
     """
     Generates accuracy, runtime, and combined accuracy and runtime tables, with
     both normalised and absolute results in both txt and html.
@@ -71,13 +79,18 @@ def generate_tables(results_per_test, best_results, table_names, table_suffix,
     :type table_suffix : str
     :param group_dir: path to group results directory
     :type group_dir: str
+    :param table_descriptions : dictionary containing descriptions of the
+                                tables and the comparison mode
+    :type table_descriptions : dict
+    :param options : The options used in the fitting problem and plotting
+    :type options : fitbenchmarking.utils.options.Options
     """
     table_titles = ["FitBenchmarking: {0} table".format(name)
                     for name in table_suffix]
     results_dict = create_results_dict(results_per_test)
     table = create_pandas_dataframe(results_dict, table_suffix)
     render_pandas_dataframe(table, best_results, table_names, table_titles,
-                            group_dir)
+                            group_dir, table_descriptions, options)
 
 
 def create_results_dict(results_per_test):
@@ -141,7 +154,8 @@ def create_pandas_dataframe(table_data, table_suffix):
 
 
 def render_pandas_dataframe(table_dict, best_results, table_names,
-                            table_title, group_dir):
+                            table_title, group_dir, table_descriptions,
+                            options):
     """
     Generates html and txt page from pandas dataframes.
 
@@ -156,6 +170,11 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
     :type table_title : list
     :param group_dir: path to the group results directory
     :type group_dir: str
+    :param table_descriptions : dictionary containing descriptions of the
+                                tables and the comparison mode
+    :type table_descriptions : dict
+    :param options : The options used in the fitting problem and plotting
+    :type options : fitbenchmarking.utils.options.Options
     """
 
     # Define functions that are used in calls to map over dataframes
@@ -193,6 +212,10 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
 
     for name, title, table in zip(table_names.items(), table_title,
                                   table_dict.values()):
+        description = table_descriptions[name[0]]
+
+        table_format = None if name[0] == 'local_min' \
+            else table_descriptions[options.comparison_mode]
 
         file_path = os.path.join(group_dir, name[1])
         with open(file_path + 'txt', "w") as f:
@@ -212,14 +235,22 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         # Set colour on each cell and add title
         table_style = table.style.applymap(colour_highlight)
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
-        html_page_dir = os.path.join(root, 'HTML_templates')
-        style_css = os.path.join(html_page_dir, 'style_sheet.css')
-        env = Environment(loader=FileSystemLoader(html_page_dir))
+        template_dir = os.path.join(root, 'templates')
+        style_css = os.path.join(template_dir, 'main_style.css')
+        table_css = os.path.join(template_dir, 'table_style.css')
+        custom_style = os.path.join(template_dir, 'custom_style.css')
+        maths_style = os.path.join(template_dir, 'math_style.css')
+        env = Environment(loader=FileSystemLoader(template_dir))
         template = env.get_template("table_template.html")
         output_file = file_path + 'html'
 
         with open(output_file, "w") as f:
             f.write(template.render(css_style_sheet=style_css,
+                                    custom_style=custom_style,
+                                    table_style=table_css,
+                                    maths_style=maths_style,
+                                    table_description=description,
+                                    table_format=table_format,
                                     result_name=title,
                                     table=table_style.render(),
                                     error_message=ERROR_OPTIONS))

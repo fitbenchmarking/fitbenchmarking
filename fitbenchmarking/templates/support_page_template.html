@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="{{ css_style_sheet }}" />
+    <link rel="stylesheet" type="text/css" href="{{ table_style }}" />
+    <link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
+    <head>
+        <title>FitBenchmarking support page</title>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="content">
+                <div class="post-title">
+                    <h1>{{ title }}</h1>
+                    <hr>
+                </div>
+                <h2>Plot of the initial starting guess</h2>
+                <p><em>Functions</em>:</p>
+                <table>
+                    <colgroup>
+                    <col width="45%" />
+                    <col width="55%" />
+                    </colgroup>
+                    <thead valign="bottom">
+                        <tr>
+                            <th class="head">Form</th>
+                            <th class="head">Parameters</th>
+                        </tr>
+                    </thead>
+                    <tbody valign="top">
+                        <tr><td>{{ equation }}</td>
+                        <td>{{ initial_guess }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row">
+                {% if initial_plot_available %}
+                    <img alt={{ initial_plot }} src={{ initial_plot }} />
+                {% else %}
+                    <h3>{{ initial_plot }}</h3>
+                {% endif %}
+            </div>
+            <h2>Plot of the solution found</h2>
+            {% if is_best_fit %}
+                <b>This is the best fit of the minimizers used.</b>
+            {% endif %}
+            <p><em>Minimizer</em>: {{ minimiser }}</p>
+            <p><em>Functions</em>:</p>
+            <table>
+                <colgroup>
+                <col width="36%" />
+                <col width="64%" />
+                </colgroup>
+                <thead valign="bottom">
+                    <tr><th class="head">Form</th>
+                    <th class="head">Parameters</th>
+                </thead>
+                <tbody valign="top">
+                    <tr>
+                        <td>{{ equation }}</td>
+                        <td>{{ min_params }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div align="center" class="figure align-center">
+                {% if fitted_plot_available %}
+                    <img alt={{ fitted_plot }} src={{ fitted_plot }} />
+                {% else %}
+                    <h3>{{ fitted_plot }}</h3>
+                {% endif %}
+                <button class="btn default" onclick="history.go(-1)">
+                <i class="fa fa-arrow-left"></i>
+                </button>
+            </div>
+        </div>
+    </body>
+</html>
