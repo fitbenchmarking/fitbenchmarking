@@ -51,7 +51,7 @@ class FitbenchmarkParser(Parser):
         if not (software in import_success and import_success[software][0]):
             e = import_success[software][1]
             raise MissingSoftwareError('Requirements are missing for {} parser'
-                                       ': {}'.format(software, e)
+                                       ': {}'.format(software, e))
 
         self._parsed_func = self._parse_function()
 

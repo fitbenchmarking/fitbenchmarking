@@ -249,7 +249,7 @@ class FittingProblem:
                     'Attribute "{}" is not the expected type. Expected "{}", '
                     'got "{}".'.format(attr_name, attr_type, type(attr)))
         if self.function is None:
-            raise FittingProlemError('Attribute "function" has not been set.')
+            raise FittingProblemError('Attribute "function" has not been set.')
 
     def correct_data(self, use_errors):
         """
