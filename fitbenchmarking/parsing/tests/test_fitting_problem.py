@@ -51,11 +51,11 @@ class TestFittingProblem(TestCase):
         fitting_problem.function = lambda x, p1, p2: p1 + p2
         try:
             fitting_problem.verify()
-        except TypeError:
+        except exceptions.FittingProblemError:
             self.fail('verify() fails when all required values set.')
 
         fitting_problem.data_x = [1, 2, 3]
-        with self.assertRaises(TypeErrorexceptions.FittingProblemError):
+        with self.assertRaises(exceptions.FittingProblemError):
             fitting_problem.verify()
             self.fail('verify() passes for x values not numpy.')
 
