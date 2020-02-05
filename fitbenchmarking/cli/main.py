@@ -15,8 +15,10 @@ import sys
 import webbrowser
 
 import fitbenchmarking
+from fitbenchmarking.cli.exception_handler import exception_handler
 from fitbenchmarking.core.fitting_benchmarking import fitbenchmark_group
 from fitbenchmarking.core.results_output import save_results
+from fitbenchmarking.utils.exceptions import OptionsError
 from fitbenchmarking.utils.options import Options
 
 
@@ -45,7 +47,7 @@ examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
 
     return parser
 
-
+@exception_handler
 def run(problem_sets, options_file=''):
     """
     Run benchmarking for the problems sets and options file given.
@@ -60,11 +62,10 @@ def run(problem_sets, options_file=''):
     if options_file != '':
         # Read custom minimizer options from file
         glob_options_file = glob.glob(options_file)
-        if glob_options_file == [] or not options_file.endswith(".ini"):
-            raise RuntimeError('Error in user input options file. Please check'
-                               'that the file exist and has an .ini '
-                               'extension, current path to file is '
-                               '{}'.format(options_file))
+        if glob_options_file == []:
+            raise OptionsError('Could not find file {}'.format(options_file))
+        if not options_file.endswith(".ini"):
+            raise OptionsError('Options file must be a ".ini" file')
         else:
             options = Options(glob_options_file)
     else:

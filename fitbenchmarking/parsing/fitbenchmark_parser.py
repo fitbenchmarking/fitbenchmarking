@@ -2,32 +2,33 @@
 This file implements a parser for the Fitbenchmark data format.
 """
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
 
+import os
 from collections import OrderedDict
 
 import numpy as np
-import os
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.utils.exceptions import MissingSoftwareError, ParsingError
 from fitbenchmarking.utils.logging_setup import logger
 
 import_success = {}
 try:
     import mantid.simpleapi as msapi
-    import_success['mantid'] = True
-except ImportError:
-    import_success['mantid'] = False
+    import_success['mantid'] = (True, None)
+except ImportError as e:
+    import_success['mantid'] = (False, e)
 
 
 try:
     from sasmodels.data import empty_data1D
     from sasmodels.core import load_model
     from sasmodels.bumps_model import Experiment, Model
-    import_success['sasview'] = True
-except ImportError:
-    import_success['sasview'] = False
+    import_success['sasview'] = (True, None)
+except ImportError as e:
+    import_success['sasview'] = (False, e)
 
 
 class FitbenchmarkParser(Parser):
@@ -47,9 +48,10 @@ class FitbenchmarkParser(Parser):
 
         self._entries = self._get_data_problem_entries()
         software = self._entries['software'].lower()
-        if (software not in import_success) or (not import_success[software]):
-            raise ImportError('Could not import necessary modules for software'
-                              ' ({})'.format(software))
+        if not (software in import_success and import_success[software][0]):
+            e = import_success[software][1]
+            raise MissingSoftwareError('Requirements are missing for {} parser'
+                                       ': {}'.format(software, e))
 
         self._parsed_func = self._parse_function()
 
@@ -173,14 +175,13 @@ class FitbenchmarkParser(Parser):
                     for _ in range(l_count - r_count):
                         # Cover case where formula mistyped
                         if '=' not in val:
-                            raise ValueError('Could not parse - '
-                                             'Unbalanced brackets in value: '
-                                             '{}'.format(p))
+                            raise ParsingError('Unbalanced brackets in '
+                                               'function value: {}'.format(p))
                         # Must start with brackets
                         if val[0] != '(':
-                            raise ValueError('Could not parse - '
-                                             'Bad placement of opening bracket'
-                                             ': {}'.format(p))
+                            raise ParsingError('Bad placement of opening '
+                                               'bracket in function: '
+                                               '{}'.format(p))
                         # Create new dict for this entry and put at top of
                         # working stack
                         new_dict = OrderedDict()
@@ -199,17 +200,15 @@ class FitbenchmarkParser(Parser):
                             name, val = val.split('=', 1)
                             pop_stack += 1
                         else:
-                            raise ValueError('Could not parse - '
-                                             'Value contains "=": '
-                                             '{}'.format(p))
+                            raise ParsingError('Function value contains '
+                                               'unexpected "=": {}'.format(p))
                 elif l_count < r_count:
                     # exiting brackets
                     pop_stack = r_count - l_count
                     # must end with brackets
                     if val[-pop_stack:] != ')'*pop_stack:
-                        raise ValueError('Could not parse - '
-                                         'Bad placement of closing bracket: '
-                                         '{}'.format(p))
+                        raise ParsingError('Bad placement of closing bracket '
+                                           'in function: {}'.format(p))
                     val = val[:-pop_stack]
 
                 # Parse to an int/float if possible else assume string
@@ -228,15 +227,13 @@ class FitbenchmarkParser(Parser):
 
                 if pop_stack > 0:
                     if len(stack) <= pop_stack:
-                        raise ValueError('Could not parse - '
-                                         'Too many closing brackets: '
-                                         '{}'.format(p))
+                        raise ParsingError('Too many closing brackets in '
+                                           'function: {}'.format(p))
                     stack = stack[:-pop_stack]
                     pop_stack = 0
 
             if len(stack) != 1:
-                raise ValueError('Could not parse - '
-                                 'Not all brackets are closed.')
+                raise ParsingError('Not all brackets are closed in function.')
             function_def.append(params_dict)
 
         return function_def
@@ -286,7 +283,8 @@ class FitbenchmarkParser(Parser):
                 if cur_str.count(lb) > cur_str.count(rb):
                     balanced = False
                 elif cur_str.count(lb) < cur_str.count(rb):
-                    raise ValueError('Could not parse {}: {}'.format(key, r))
+                    raise ParsingError(
+                        'Unbalanced brackets in {}: {}'.format(key, r))
             if balanced:
                 ranges.append(cur_str)
                 cur_str = ''
@@ -303,10 +301,11 @@ class FitbenchmarkParser(Parser):
             try:
                 pair = [float(val[0]), float(val[1])]
             except ValueError:
-                raise ValueError('Could not parse {}: {}'.format(key, r))
+                raise ParsingError('Expected floats in {}: {}'.format(key, r))
 
             if pair[0] >= pair[1]:
-                raise ValueError('Could not parse {}: {}'.format(key, r))
+                raise ParsingError('Min value must be smaller than max value '
+                                   'in {}: {}'.format(key, r))
 
             output_ranges[name] = pair
 
@@ -395,7 +394,7 @@ class FitbenchmarkParser(Parser):
             try:
                 line = data_text[first_row].strip()
             except IndexError:
-                raise ValueError('Could not find data points')
+                raise ParsingError('Could not find data points')
             if line != '':
                 x_val = line.split()[0]
                 try:

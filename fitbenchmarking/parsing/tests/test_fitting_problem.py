@@ -7,6 +7,7 @@ import numpy as np
 from unittest import TestCase
 
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.utils import exceptions
 
 
 class TestFittingProblem(TestCase):
@@ -27,34 +28,34 @@ class TestFittingProblem(TestCase):
         Test that verify only passes if all required values are set.
         """
         fitting_problem = FittingProblem()
-        with self.assertRaises(TypeError):
+        with self.assertRaises(exceptions.FittingProblemError):
             fitting_problem.verify()
             self.fail('verify() passes when no values are set.')
 
         fitting_problem.starting_values = [
             OrderedDict([('p1', 1), ('p2', 2)])]
-        with self.assertRaises(TypeError):
+        with self.assertRaises(exceptions.FittingProblemError):
             fitting_problem.verify()
             self.fail('verify() passes starting values are set.')
 
         fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
-        with self.assertRaises(TypeError):
+        with self.assertRaises(exceptions.FittingProblemError):
             fitting_problem.verify()
             self.fail('verify() passes when data_x is set.')
 
         fitting_problem.data_y = np.array([1, 2, 3, 4, 5])
-        with self.assertRaises(TypeError):
+        with self.assertRaises(exceptions.FittingProblemError):
             fitting_problem.verify()
             self.fail('verify() passes when data_y is set.')
 
         fitting_problem.function = lambda x, p1, p2: p1 + p2
         try:
             fitting_problem.verify()
-        except TypeError:
+        except exceptions.FittingProblemError:
             self.fail('verify() fails when all required values set.')
 
         fitting_problem.data_x = [1, 2, 3]
-        with self.assertRaises(TypeError):
+        with self.assertRaises(exceptions.FittingProblemError):
             fitting_problem.verify()
             self.fail('verify() passes for x values not numpy.')
 
@@ -63,7 +64,7 @@ class TestFittingProblem(TestCase):
         Test that eval_f is running the correct function
         """
         fitting_problem = FittingProblem()
-        self.assertRaises(AttributeError,
+        self.assertRaises(exceptions.FittingProblemError,
                           fitting_problem.eval_f,
                           x=2,
                           params=[1, 2, 3])
@@ -82,7 +83,7 @@ class TestFittingProblem(TestCase):
         Test that eval_r is correct
         """
         fitting_problem = FittingProblem()
-        self.assertRaises(ValueError,
+        self.assertRaises(exceptions.FittingProblemError,
                           fitting_problem.eval_r,
                           params=[1, 2, 3],
                           x=2)
@@ -159,7 +160,7 @@ class TestFittingProblem(TestCase):
         Test that eval_starting_params returns the correct result
         """
         fitting_problem = FittingProblem()
-        self.assertRaises(AttributeError,
+        self.assertRaises(exceptions.FittingProblemError,
                           fitting_problem.eval_starting_params,
                           param_set=0)
         fitting_problem.function = lambda x, p1: x + p1

@@ -7,6 +7,7 @@ from __future__ import absolute_import, division, print_function
 import glob
 import os
 
+from fitbenchmarking.utils.exceptions import NoDataError
 from fitbenchmarking.utils.logging_setup import logger
 
 
@@ -24,9 +25,9 @@ def get_problem_files(data_dir):
 
     test_data = glob.glob(data_dir + '/*.*')
     if test_data == []:
-        raise ValueError('"{}" not recognised as a dataset. '
-                         'Check that it contains problem files '
-                         'and try again.'.format(data_dir))
+        raise NoDataError('"{}" not recognised as a dataset. '
+                          'Check that it contains problem files '
+                          'and try again.'.format(data_dir))
     problems = [os.path.join(data_dir, data)
                 for data in test_data
                 if not data.endswith('META.txt')]

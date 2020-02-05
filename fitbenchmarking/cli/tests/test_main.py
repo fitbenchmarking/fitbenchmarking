@@ -2,9 +2,10 @@ import os
 import unittest
 
 from fitbenchmarking.cli import main
+from fitbenchmarking.utils import exceptions
 
 
-class TestExampleScripts(unittest.TestCase):
+class TestMain(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
@@ -25,12 +26,12 @@ class TestExampleScripts(unittest.TestCase):
         os.chdir(self.cwd)
 
     def test_run_with_wrong_option_file_extension(self):
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(SystemExit):
             main.run(['examples/benchmark_problems/simple_tests'],
                      options_file='README.md')
 
     def test_run_with_wrong_option_file(self):
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(SystemExit):
             main.run(['examples/benchmark_problems/simple_tests'],
                      options_file='options_template.ini')
 

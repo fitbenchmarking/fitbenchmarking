@@ -6,6 +6,8 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 
+from fitbenchmarking.utils.exceptions import ControllerAttributeError
+
 
 class Controller:
     """
@@ -65,8 +67,8 @@ class Controller:
                 list(self.starting_values[self.parameter_set].values())
             self.setup()
         else:
-            raise RuntimeError('Either minimizer or parameter_set is set to'
-                               'None.')
+            raise ControllerAttributeError('Either minimizer or parameter_set '
+                                           'is set to None.')
 
     def eval_chisq(self, params, x=None, y=None, e=None):
         """
@@ -94,19 +96,19 @@ class Controller:
         in software controllers
         """
         values = {'flag': int}
-        # In the FitBenchmarking error handling issue we will change TypeError
-        # and ValueError to be a ControllerAttributeError or similar
+        
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
             if not isinstance(attr, attr_type):
-                raise TypeError('Attribute "{}" in the controller is not '
-                                'the expected type. Expected "{}", got '
-                                '{}.'.format(attr_name, attr_type, type(attr)))
+                raise ControllerAttributeError(
+                    'Attribute "{}" in the controller is not the expected '
+                    'type. Expected "{}", got {}.'.format(
+                        attr_name, attr_type, type(attr)))
             valid_flags = [0, 1, 2, 3]
             if attr_name == 'flag' and attr not in valid_flags:
-                raise ValueError('Attribute flag in the controller needs '
-                                 'to be set to one of {}. Currently given '
-                                 'as {}.'.format(valid_flags, attr))
+                raise ControllerAttributeError(
+                    'Attribute "flag" in the controller must be one of {}.'
+                    ' Got: {}.'.format(valid_flags, attr))
 
     @abstractmethod
     def setup(self):
