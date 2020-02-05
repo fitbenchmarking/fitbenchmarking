@@ -13,11 +13,11 @@ class RALFitController(Controller):
     Controller for the RALFit fitting software.
     """
 
-    def __init__(self, problem, use_errors):
+    def __init__(self, problem):
         """
         Initialises variable used for temporary storage.
         """
-        super(RALFitController, self).__init__(problem, use_errors)
+        super(RALFitController, self).__init__(problem)
 
         self._popt = None
         self._options = {}

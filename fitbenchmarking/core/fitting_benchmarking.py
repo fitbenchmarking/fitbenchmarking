@@ -10,6 +10,7 @@ from fitbenchmarking.utils.logging_setup import logger
 
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import misc
+from fitbenchmarking.utils import output_grabber
 from fitbenchmarking.core.fitbenchmark_one_problem import fitbm_one_prob
 
 
@@ -33,6 +34,7 @@ def fitbenchmark_group(group_name, options, data_dir):
               the problem group and the location of the results
     :rtype: tuple(list, str)
     """
+    grabbed_output = output_grabber.OutputGrabber()
 
     # Extract problem definitions
     problem_group = misc.get_problem_files(data_dir)
@@ -40,12 +42,16 @@ def fitbenchmark_group(group_name, options, data_dir):
     results = []
     template_prob_name = " Running data from: {}"
     for i, p in enumerate(problem_group):
-        parsed_problem = parse_problem_file(p)
+        with grabbed_output:
+            parsed_problem = parse_problem_file(p)
+            parsed_problem.correct_data(options.use_errors)
+
         decorator = '#' * (len(template_prob_name) +
                            len(parsed_problem.name) + 4)
         tmp_prob_name = template_prob_name.format(parsed_problem.name)
         print("\n{0}\n{1} {2}/{3}\n{0}\n".format(decorator, tmp_prob_name,
                                                  i + 1, len(problem_group)))
+
         problem_results = fitbm_one_prob(problem=parsed_problem,
                                          options=options)
 

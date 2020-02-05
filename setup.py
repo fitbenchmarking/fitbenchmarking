@@ -27,6 +27,7 @@ setup(name='FitBenchmarking',
                         'pandas<=0.24.2',
                         'jinja2',
                         'dfogn',
+                        'DFO-LS',
                         'iminuit',
                         'configparser',
                         'jinja2'],
@@ -37,7 +38,7 @@ setup(name='FitBenchmarking',
           'help': Help,
       },
       package_data={'fitbenchmarking': ['utils/default_options.ini',
-                                        'HTML_templates/*']}
+                                        'templates/*']}
       )
 
 

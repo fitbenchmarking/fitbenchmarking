@@ -1,0 +1,25 @@
+table {
+  border-collapse: collapse;
+  margin: auto;
+}
+
+table, th, td {
+  border: 1px solid black;
+  width: auto;
+  overflow: hidden;
+}
+th a, td a {
+  display: block;
+  color: rgb(30, 30, 30);
+  margin-top: -10em;
+  margin-bottom: -10em;
+  padding-top: 10em;
+  padding-bottom: 10em;
+}
+div.table{
+  max-height:800px;
+  max-width: max-content;
+  width: 90%;
+  overflow:auto;
+  padding:10px;
+}

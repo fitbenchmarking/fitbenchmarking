@@ -4,16 +4,15 @@ Set up performance profiles for both accuracy and runtime tables
 from collections import OrderedDict
 import numpy as np
 import os
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
-PROFILER_BOUNDS = [1, 2, 3, 4]
 
-
-def profile(options, results, fig_dir):
+def profile(results, fig_dir):
     """
     Function that generates profiler plots
 
-    :param options : The options used in the fitting problem and plotting
-    :type options : fitbenchmarking.utils.options.Options
     :param results : results nested array of objects
     :type results : list of list of
                     fitbenchmarking.utils.fitbm_result.FittingResult
@@ -23,12 +22,9 @@ def profile(options, results, fig_dir):
     :return : path to acc and runtime profile graphs
     :rtype : tuple(str, str)
     """
-    if options.make_plots:
-        acc_bound, runtime_bound = prepare_profile_data(results)
-        acc_plot_path, runtime_plot_path = plot(
-            acc_bound, runtime_bound, fig_dir)
-    else:
-        acc_plot_path = runtime_plot_path = False
+    acc_bound, runtime_bound = prepare_profile_data(results)
+    acc_plot_path, runtime_plot_path = plot(
+        acc_bound, runtime_bound, fig_dir)
     return acc_plot_path, runtime_plot_path
 
 
@@ -58,9 +54,8 @@ def prepare_profile_data(results):
     runtime_dict = OrderedDict()
 
     for i, m in enumerate(minimizers):
-        acc_dict[m] = [np.sum(b >= acc_array[i][:]) for b in PROFILER_BOUNDS]
-        runtime_dict[m] = [np.sum(b >= runtime_array[i][:])
-                           for b in PROFILER_BOUNDS]
+        acc_dict[m] = acc_array[i][:]
+        runtime_dict[m] = runtime_array[i][:]
     return acc_dict, runtime_dict
 
 
@@ -80,11 +75,18 @@ def plot(acc, runtime, fig_dir):
     """
     name_template = "{}_profile.png"
     figure_path = []
-
     for profile_plot, name in zip([acc, runtime], ["acc", "runtime"]):
         figure_path.append(os.path.join(fig_dir, name_template.format(name)))
-        #######################
-        # Plot profile graphs #
-        #######################
+        max_value = np.max([np.max(v) for v in profile_plot.values()])
+        bins = np.logspace(np.log10(1), np.log10(max_value), 1000)
+        hist_values = [value for value in profile_plot.values()]
+        names = [key for key in acc.keys()]
+        fig = plt.figure()
+        n, bins, patches = plt.hist(hist_values, bins=bins, density=True,
+                                    cumulative=True, histtype="step",
+                                    label=names)
+        plt.title(name)
+        plt.legend()
+        plt.gca().set_xscale("log")
 
     return figure_path[0], figure_path[1]

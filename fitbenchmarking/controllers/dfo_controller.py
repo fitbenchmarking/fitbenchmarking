@@ -1,0 +1,61 @@
+"""
+Implements a controller for DFO-GN
+http://people.maths.ox.ac.uk/robertsl/dfogn/
+"""
+
+import dfogn
+import dfols
+import numpy as np
+
+from fitbenchmarking.controllers.base_controller import Controller
+
+
+class DFOController(Controller):
+    """
+    Controller for the DFO-{GN/LS} fitting software.
+    """
+
+    def __init__(self, problem):
+        """
+        Initialises variable used for temporary storage.
+        """
+        super(DFOController, self).__init__(problem)
+
+        self._soln = None
+        self._popt = None
+        self._pinit = None
+
+    def setup(self):
+        """
+        Setup for DFO-GN
+        """
+        self._pinit = np.asarray(self.initial_params)
+
+    def fit(self):
+        """
+        Run problem with DFO-GN.
+        """
+        if self.minimizer == 'dfogn':
+            self._soln = dfogn.solve(self.problem.eval_r,
+                                     self._pinit)
+        elif self.minimizer == 'dfols':
+            self._soln = dfols.solve(self.problem.eval_r,
+                                     self._pinit)
+
+        self._popt = self._soln.x
+        self._status = self._soln.flag
+
+    def cleanup(self):
+        """
+        Convert the result to a numpy array and populate the variables results
+        will be read from.
+        """
+        if self._status == 0:
+            self.flag = 0
+        elif self._status == 2:
+            self.flag = 1
+        else:
+            self.flag = 2
+
+        self.results = self.problem.eval_f(params=self._popt)
+        self.final_params = self._popt
