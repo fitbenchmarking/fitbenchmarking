@@ -15,11 +15,11 @@ class DFOController(Controller):
     Controller for the DFO-{GN/LS} fitting software.
     """
 
-    def __init__(self, problem, use_errors):
+    def __init__(self, problem):
         """
         Initialises variable used for temporary storage.
         """
-        super(DFOController, self).__init__(problem, use_errors)
+        super(DFOController, self).__init__(problem)
 
         self._soln = None
         self._popt = None

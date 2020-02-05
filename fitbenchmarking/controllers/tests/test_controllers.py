@@ -26,6 +26,7 @@ def make_fitting_problem():
     fname = os.path.join(bench_prob_dir, 'cubic.dat')
 
     fitting_problem = parse_problem_file(fname)
+    fitting_problem.correct_data(True)
     return fitting_problem
 
 
@@ -60,7 +61,7 @@ class BaseControllerTests(TestCase):
         BaseSoftwareController: Test data is read into controller correctly
         """
 
-        controller = DummyController(self.problem, True)
+        controller = DummyController(self.problem)
 
         if self.problem.start_x is not None:
             assert min(controller.data_x) >= self.problem.start_x
@@ -80,18 +81,11 @@ class BaseControllerTests(TestCase):
             self.assertTrue(all(e in self.problem.data_e
                                 for e in controller.data_e))
 
-    def test_no_use_errors(self):
-        """
-        BaseSoftwareController: Test errors are not set when not requested
-        """
-        controller = DummyController(self.problem, False)
-        assert controller.data_e is None
-
     def test_prepare(self):
         """
         BaseSoftwareController: Test prepare function
         """
-        controller = DummyController(self.problem, True)
+        controller = DummyController(self.problem)
         controller.minimizer = 'test'
         controller.parameter_set = 0
         controller.prepare()
@@ -101,7 +95,7 @@ class BaseControllerTests(TestCase):
         """
         BaseSoftwareController: Test eval_chisq function
         """
-        controller = DummyController(self.problem, True)
+        controller = DummyController(self.problem)
 
         params = np.array([1, 2, 3, 4])
         x = np.array([6, 2, 32, 4])
@@ -116,7 +110,7 @@ class BaseControllerTests(TestCase):
         """
         BaseSoftwareController: Test eval_chisq function
         """
-        controller = DummyController(self.problem, True)
+        controller = DummyController(self.problem)
 
         params = np.array([1, 2, 3, 4])
         x = np.array([6, 2, 32, 4])
@@ -132,7 +126,7 @@ class BaseControllerTests(TestCase):
         BaseSoftwareController: Test check_attributes function for flag
                                 attribute
         """
-        controller = DummyController(self.problem, True)
+        controller = DummyController(self.problem)
         controller.flag = 1
         controller.check_attributes()
 
@@ -141,7 +135,7 @@ class BaseControllerTests(TestCase):
         BaseSoftwareController: Test check_attributes function for flag
                                 attribute
         """
-        controller = DummyController(self.problem, True)
+        controller = DummyController(self.problem)
         with self.assertRaises(TypeError):
             controller.check_attributes()
 
@@ -162,7 +156,7 @@ class ControllerTests(TestCase):
         """
         MantidController: Test for output shape
         """
-        controller = MantidController(self.problem, True)
+        controller = MantidController(self.problem)
         controller.minimizer = 'Levenberg-Marquardt'
         self.shared_testing(controller)
 
@@ -177,7 +171,7 @@ class ControllerTests(TestCase):
         """
         SasviewController: Test for output shape
         """
-        controller = SasviewController(self.problem, True)
+        controller = SasviewController(self.problem)
         controller.minimizer = 'amoeba'
         self.shared_testing(controller)
 
@@ -192,7 +186,7 @@ class ControllerTests(TestCase):
         """
         ScipyController: Test for output shape
         """
-        controller = ScipyController(self.problem, True)
+        controller = ScipyController(self.problem)
         controller.minimizer = 'lm'
         self.shared_testing(controller)
 
@@ -207,7 +201,7 @@ class ControllerTests(TestCase):
         """
         DFOController: Tests for output shape
         """
-        controller = DFOController(self.problem, True)
+        controller = DFOController(self.problem)
         # test one from each class
         minimizers = ['dfogn',
                       'dfols']
@@ -226,7 +220,7 @@ class ControllerTests(TestCase):
         """
         GSLController: Tests for output shape
         """
-        controller = GSLController(self.problem, True)
+        controller = GSLController(self.problem)
         # test one from each class
         minimizers = ['lmsder',
                       'nmsimplex',
@@ -246,7 +240,7 @@ class ControllerTests(TestCase):
         """
         RALFitController: Tests for output shape
         """
-        controller = RALFitController(self.problem, True)
+        controller = RALFitController(self.problem)
         minimizers = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg']
         for minimizer in minimizers:
             controller.minimizer = minimizer
@@ -261,7 +255,7 @@ class ControllerTests(TestCase):
         """
         MinuitController: Tests for output shape
         """
-        controller = MinuitController(self.problem, True)
+        controller = MinuitController(self.problem)
         controller.minimizer = 'minuit'
         self.shared_testing(controller)
         controller._status = 0
