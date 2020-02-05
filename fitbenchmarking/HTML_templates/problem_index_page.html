@@ -17,41 +17,16 @@
     </header>
   </section>
   FitBenchmarking is a tool for comparing different fitting software based on their accuracy and runtimes.
+{% for type, link, description in zip(table_type, links, description) %}
 
-  {% if compare %}
-  <header class="large">
-    <h2>Combined accuracy and runtime results</h2>
-  </header>
-  The combined results show the accurary in the first line of the cell and the runtime on the second line of the cell.
+  <h3><tt>{{ type }}</tt> table </h3>
+  {{ description }}
   <h3>
     <form>
-      <button class="btn default" type="submit" formaction={{ clink }}>Table</button>
+      <button class="btn default" type="submit" formaction={{ link }}>Table</button>
     </form>
   </h3>
-  {% endif %}
-
-  {% if acc %}
-  <header class="large">
-    <h2>Accuracy results</h2>
-  </header>
-  The accuracy results are calculated from the final chi squared value.
-  <h3>
-    <form>
-      <button class="btn default" type="submit" formaction={{ alink }}>Table</button>
-    </form>
-  </h3>
-  {% endif %}
-
-  {% if runtime %}
-  <header class="large">
-    <h2>Runtime results</h2>
-  </header>
-  The runtime results are calculated using the timeit module in python
-  <h3>
-    <form>
-      <button class="btn default" type="submit" formaction={{ rlink }}>Table</button>
-    </form>
-  </h3> {% endif %}
+{% endfor %}
 </body>
 
 </html>
