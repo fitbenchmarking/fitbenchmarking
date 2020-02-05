@@ -1,0 +1,8 @@
+# FitBenchmark Problem
+# This is a simple test problem where we interpolate points that lie exactly on a trigonometric function.
+software = 'Mantid'
+name = 'trig_exact-fb'
+input_file = 'trig_exact.txt'
+function = 'name=UserFunction, Formula=A1*cos(2*3.14159265359*x) + A2*sin(2*3.14159653592*x) + A3*x, A1=0.0, A2=0.0, A3=0.0'
+# fit_parameters = {'StartX': 0, 'EndX': 0}
+description = ''

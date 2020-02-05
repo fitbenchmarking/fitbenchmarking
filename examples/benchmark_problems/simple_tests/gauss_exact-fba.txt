@@ -1,0 +1,8 @@
+# FitBenchmark Problem
+# This is a simple test problem where we fit a curve to a Gaussian.
+software = 'Mantid'
+name = 'gauss-exact-fba'
+input_file = 'gauss-exact.txt'
+function = 'name=UserFunction, Formula=A1*exp( -( (A2-x)^2 / (2* (A3^2) ) ) ), A1=1.0, A2=-3.0, A3=14.0'
+# fit_parameters = {'StartX': 0, 'EndX': 0}
+description = ''
