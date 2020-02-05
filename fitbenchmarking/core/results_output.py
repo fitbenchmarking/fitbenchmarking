@@ -4,34 +4,16 @@ Functions that create the tables, support pages, figures, and indexes.
 
 from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
-import copy
+import docutils.core
 import inspect
 import os
+import sys
 
 from jinja2 import Environment, FileSystemLoader
-import pandas as pd
 
 import fitbenchmarking
-from fitbenchmarking.results_processing import plots, support_page
+from fitbenchmarking.results_processing import plots, support_page, tables
 from fitbenchmarking.utils import create_dirs
-
-ERROR_OPTIONS = {0: "Successfully converged",
-                 1: "Software reported maximum number of iterations exceeded",
-                 2: "Software run but didn't converge to solution",
-                 3: "Software raised an exception"}
-
-ACC_DESCRIPTION = \
-    "The accuracy results are calculated from the final chi squared value."
-RUNTIME_DESCRIPTION = \
-    "The runtime results are calculated using the timeit module in python."
-COMPARE_DESCRIPTION = \
-    "The combined results show the accuracy in the first line of the cell " \
-    "and the runtime on the second line of the cell."
-LOCAL_MIN_DESCRIPTION = \
-    "The local min results show whether the software has converged to a " \
-    " local minimum."
-
-SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
 def save_results(options, results, group_name):
@@ -52,18 +34,24 @@ def save_results(options, results, group_name):
     """
     _, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
     best_results = preproccess_data(results)
+    table_descriptions = create_table_descriptions(options)
     if options.make_plots:
         create_plots(options, results, best_results, group_name, fig_dir)
     support_page.create(options=options,
                         results_per_test=results,
                         group_name=group_name,
                         support_pages_dir=supp_dir)
-    table_names = create_results_tables(options,
-                                        results,
-                                        best_results,
-                                        group_name,
-                                        group_dir)
-    create_problem_level_index(options, table_names, group_name, group_dir)
+    table_names = tables.create_results_tables(options,
+                                               results,
+                                               best_results,
+                                               group_name,
+                                               group_dir,
+                                               table_descriptions)
+    create_problem_level_index(options,
+                               table_names,
+                               group_name,
+                               group_dir,
+                               table_descriptions)
 
     return group_dir
 
@@ -112,6 +100,42 @@ def preproccess_data(results_per_test):
             r.set_colour_scale()
         output.append(best_result)
     return output
+
+
+def create_table_descriptions(options):
+    """
+    Create a descriptions of the tables and the comparison mode from the file
+    fitbenchmarking/templates/table_descriptions.rst
+
+    : param options: The options used in the fitting problem and plotting
+    : type options: fitbenchmarking.utils.options.Options
+
+    :return: dictionary containing descriptions of the tables and the
+             comparison mode
+    :rtype: dict
+    """
+
+    def find_between(s, start, end):
+        return (s.split(start))[1].split(end)[0]
+
+    description = {}
+    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    template_dir = os.path.join(root, 'templates')
+    # Generates specific table descriptions from docs
+    filename = os.path.join(template_dir, "table_descriptions.rst")
+    with open(filename) as f:
+        output_str = f.read()
+    output_str = output_str.replace(':ref:', '')
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+    for n in options.table_type + [options.comparison_mode]:
+        start = '{}: Start'.format(n)
+        end = '{}: End'.format(n)
+        result = find_between(output_str, start, end)
+        description_page = docutils.core.publish_parts(
+            result, writer_name='html')
+        description[n] = description_page['body']
+    return description
 
 
 def create_plots(options, results, best_results, group_name, figures_dir):
@@ -169,216 +193,8 @@ def create_plots(options, results, best_results, group_name, figures_dir):
                 result.start_figure_link = initial_guess_path
 
 
-def create_results_tables(options, results, best_results, group_name,
-                          group_dir):
-    """
-    Saves the results of the fitting to html/txt tables.
-
-    :param options : The options used in the fitting problem and plotting
-    :type options : fitbenchmarking.utils.options.Options
-    :param results : results nested array of objects
-    :type results : list of list of
-                    fitbenchmarking.utils.fitbm_result.FittingResult
-    :param best_results: best result for each problem
-    :type best_results: list of
-                        fitbenchmarking.utils.fitbm_result.FittingResult
-    :param group_name : name of the problem group
-    :type group_name : str
-    :param group_dir : path to the directory where group results should be
-                       stored
-    :type group_dir : str
-
-    :return: filepaths to each table
-             e.g {'acc': <acc-table-filename>, 'runtime': ...}
-    :rtype: dict
-    """
-    weighted_str = 'weighted' if options.use_errors else 'unweighted'
-    table_type = []
-    table_names = OrderedDict()
-    for suffix in SORTED_TABLE_NAMES:
-        if suffix in options.table_type:
-            table_type.append(suffix)
-            table_names[suffix] = '{0}_{1}_{2}_table.'.format(group_name,
-                                                              suffix,
-                                                              weighted_str)
-    generate_tables(results, best_results, table_names, table_type,
-                    group_dir)
-    return table_names
-
-
-def generate_tables(results_per_test, best_results, table_names, table_suffix,
-                    group_dir):
-    """
-    Generates accuracy, runtime, and combined accuracy and runtime tables, with
-    both normalised and absolute results in both txt and html.
-
-    :param results_per_test : results nested array of objects
-    :type results_per_test : list of list of
-                             fitbenchmarking.utils.fitbm_result.FittingResult
-    :param best_results: best result for each problem
-    :type best_results: list of
-                        fitbenchmarking.utils.fitbm_result.FittingResult
-    :param table_names : list of table names
-    :type table_names : list
-    :param table_suffix : set output to be runtime or accuracy table
-    :type table_suffix : str
-    :param group_dir: path to group results directory
-    :type group_dir: str
-    """
-    table_titles = ["FitBenchmarking: {0} table".format(name)
-                    for name in table_suffix]
-    results_dict = create_results_dict(results_per_test)
-    table = create_pandas_dataframe(results_dict, table_suffix)
-    render_pandas_dataframe(table, best_results, table_names, table_titles,
-                            group_dir)
-
-
-def create_results_dict(results_per_test):
-    """
-    Generates a dictionary used to create HTML and txt tables.
-
-    :param results_per_test : results nested array of objects
-    :type results_per_test : list of list of
-                             fitbenchmarking.utils.fitbm_result.FittingResult
-
-    :return : A dictionary of results objects
-    :rtype : dict
-    """
-
-    results = OrderedDict()
-
-    name_count = {}
-    for prob_results in results_per_test:
-        name = prob_results[0].problem.name
-        name_count[name] = 1 + name_count.get(name, 0)
-        count = name_count[name]
-
-        prob_name = name + ' ' + str(count)
-        results[prob_name] = prob_results
-    return results
-
-
-def create_pandas_dataframe(table_data, table_suffix):
-    """
-    Generates pandas data frame.
-
-    :param table_data : dictionary containing results, i.e.,
-                            {'prob1': [result1, result2, ...],
-                             'prob2': [result1, result2, ...], ...}
-    :type table_data : dict
-    :param table_suffix : set output to be runtime or accuracy table
-    :type table_suffix : list
-
-
-    :return : dict(tbl, tbl_norm, tbl_combined) dictionary of
-               pandas DataFrames containing results.
-    :rtype : dict{pandas DataFrame, pandas DataFrame}
-    """
-
-    # This function is only used in the mapping, hence, it is defined here.
-    def select_table(value, table_suffix):
-        '''
-        Selects either accuracy or runtime table.
-        '''
-        value.table_type = table_suffix
-        value = copy.copy(value)
-        return value
-
-    tbl = pd.DataFrame.from_dict(table_data, orient='index')
-    # Get minimizers from first row of objects to use as columns
-    tbl.columns = [r.minimizer for r in tbl.iloc[0]]
-    results = OrderedDict()
-    for suffix in table_suffix:
-        results[suffix] = tbl.applymap(lambda x: select_table(x, suffix))
-    return results
-
-
-def render_pandas_dataframe(table_dict, best_results, table_names,
-                            table_title, group_dir):
-    """
-    Generates html and txt page from pandas dataframes.
-
-    :param table_dict : dictionary of DataFrame of the results
-    :type table_dict : dict(pandas DataFrame, ...)
-    :param best_results: best result for each problem
-    :type best_results: list of
-                        fitbenchmarking.utils.fitbm_result.FittingResult
-    :param table_names : list of table names
-    :type table_names : list
-    :param table_title : list of table titles
-    :type table_title : list
-    :param group_dir: path to the group results directory
-    :type group_dir: str
-    """
-
-    # Define functions that are used in calls to map over dataframes
-    def colour_highlight(value):
-        '''
-        Colour mapping for visualisation of table
-        '''
-        colour = value.colour
-        if isinstance(colour, list):
-            # Use 4 colours in gradient to make gradient only change in centre
-            # of cell
-            colour_output = \
-                'background-image: linear-gradient({0},{0},{1},{1})'.format(
-                    colour[0], colour[1])
-        else:
-            colour_output = 'background-color: {0}'.format(colour)
-        return colour_output
-
-    def enable_link(result):
-        '''
-        Enable HTML links in values
-
-        Note: Due to the way applymap works in DataFrames, this cannot make a
-        change based on the state of the value
-
-        :param result: The result object to update
-        :type result: fitbenchmaring.utils.fitbm_result.FittingResult
-
-        :return: The same result object after updating
-        :rtype: fitbenchmarking.utils.fitbm_result.FittingResult
-        '''
-        result.relative_dir = group_dir
-        result.html_print = True
-        return result
-
-    for name, title, table in zip(table_names.items(), table_title,
-                                  table_dict.values()):
-
-        file_path = os.path.join(group_dir, name[1])
-        with open(file_path + 'txt', "w") as f:
-            f.write(table.to_string())
-
-        # Update table indexes to link to the best support page
-        index = []
-        for b, i in zip(best_results, table.index):
-            rel_path = os.path.relpath(path=b.support_page_link,
-                                       start=group_dir)
-            index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
-        table.index = index
-
-        # Update table values to point to individual support pages
-        table.applymap(enable_link)
-
-        # Set colour on each cell and add title
-        table_style = table.style.applymap(colour_highlight)
-        root = os.path.dirname(inspect.getfile(fitbenchmarking))
-        html_page_dir = os.path.join(root, 'HTML_templates')
-        style_css = os.path.join(html_page_dir, 'style_sheet.css')
-        env = Environment(loader=FileSystemLoader(html_page_dir))
-        template = env.get_template("table_template.html")
-        output_file = file_path + 'html'
-
-        with open(output_file, "w") as f:
-            f.write(template.render(css_style_sheet=style_css,
-                                    result_name=title,
-                                    table=table_style.render(),
-                                    error_message=ERROR_OPTIONS))
-
-
-def create_problem_level_index(options, table_names, group_name, group_dir):
+def create_problem_level_index(options, table_names, group_name,
+                               group_dir, table_descriptions):
     """
     Generates problem level index page.
 
@@ -390,28 +206,31 @@ def create_problem_level_index(options, table_names, group_name, group_dir):
     :type group_name : str
     :param group_dir : Path to the directory where the index should be stored
     :type group_dir : str
-
+    :param table_descriptions : dictionary containing descriptions of the
+                                tables and the comparison mode
+    :type table_descriptions : dict
     """
+
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    html_page_dir = os.path.join(root, 'HTML_templates')
-    env = Environment(loader=FileSystemLoader(html_page_dir))
-    style_css = os.path.join(html_page_dir, 'style_sheet.css')
+    template_dir = os.path.join(root, 'templates')
+    env = Environment(loader=FileSystemLoader(template_dir))
+    style_css = os.path.join(template_dir, 'main_style.css')
+    custom_style = os.path.join(template_dir, 'custom_style.css')
+    maths_style = os.path.join(template_dir, 'math_style.css')
     template = env.get_template("problem_index_page.html")
 
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
     links = [v + "html" for v in table_names.values()]
     names = table_names.keys()
-    descript_names = [n + "_description" for n in names]
-    description = []
-    for name in descript_names:
-        if name.upper() in globals().keys():
-            description.append(globals()[name.upper()])
-        else:
-            description.append('')
+    description = [table_descriptions[n] for n in names]
+    index = table_descriptions[options.comparison_mode]
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=style_css,
+            custom_style=custom_style,
+            maths_style=maths_style,
             group_name=group_name,
+            index=index,
             table_type=names,
             links=links,
             description=description,
