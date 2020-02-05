@@ -4,21 +4,22 @@ http://people.maths.ox.ac.uk/robertsl/dfogn/
 """
 
 import dfogn
+import dfols
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 
 
-class DFOGNController(Controller):
+class DFOController(Controller):
     """
-    Controller for the DFO-GN fitting software.
+    Controller for the DFO-{GN/LS} fitting software.
     """
 
     def __init__(self, problem):
         """
         Initialises variable used for temporary storage.
         """
-        super(DFOGNController, self).__init__(problem)
+        super(DFOController, self).__init__(problem)
 
         self._soln = None
         self._popt = None
@@ -34,8 +35,12 @@ class DFOGNController(Controller):
         """
         Run problem with DFO-GN.
         """
-        self._soln = dfogn.solve(self.problem.eval_r,
-                                 self._pinit)
+        if self.minimizer == 'dfogn':
+            self._soln = dfogn.solve(self.problem.eval_r,
+                                     self._pinit)
+        elif self.minimizer == 'dfols':
+            self._soln = dfols.solve(self.problem.eval_r,
+                                     self._pinit)
 
         self._popt = self._soln.x
         self._status = self._soln.flag
