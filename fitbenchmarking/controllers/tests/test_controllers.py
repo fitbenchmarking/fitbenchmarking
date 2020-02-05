@@ -15,6 +15,7 @@ from fitbenchmarking.controllers.sasview_controller import SasviewController
 from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import exceptions
 
 
 def make_fitting_problem():
@@ -136,11 +137,11 @@ class BaseControllerTests(TestCase):
                                 attribute
         """
         controller = DummyController(self.problem)
-        with self.assertRaises(TypeError):
+        with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
 
         controller.flag = 10
-        with self.assertRaises(ValueError):
+        with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
 
 
@@ -328,6 +329,6 @@ class FactoryTests(TestCase):
             self.assertTrue(controller.__name__.lower().startswith(software))
 
         for software in invalid:
-            self.assertRaises(ValueError,
+            self.assertRaises(exceptions.NoControllerError,
                               ControllerFactory.create_controller,
                               software)
