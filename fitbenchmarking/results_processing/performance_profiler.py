@@ -77,7 +77,8 @@ def plot(acc, runtime, fig_dir):
     figure_path = []
     for profile_plot, name in zip([acc, runtime], ["acc", "runtime"]):
         figure_path.append(os.path.join(fig_dir, name_template.format(name)))
-        max_value = np.max([np.max(v) for v in profile_plot.values()])
+        max_value = np.max([np.max(v[v != np.inf])
+                            for v in profile_plot.values()])
         bins = np.logspace(np.log10(1), np.log10(max_value), 1000)
         hist_values = [value for value in profile_plot.values()]
         names = [key for key in acc.keys()]
