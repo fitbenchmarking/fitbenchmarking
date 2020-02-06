@@ -8,6 +8,7 @@ from __future__ import (absolute_import, division, print_function)
 # This import is needed for dynamic scipy function def
 import numpy as np
 
+from fitbenchmarking.utils.exceptions import ParsingError
 
 def nist_func_definition(function, param_names):
     """
@@ -27,7 +28,7 @@ def nist_func_definition(function, param_names):
 
     # Create a function def for each starting set in startvals
     if not is_safe(function_scipy_format):
-        raise ValueError('Error while sanitizing input')
+        raise ParsingError('Error while sanitizing input')
     # Sanitizing of function_scipy_format is done so exec use is valid
     # Param_names is sanitized in get_nist_param_names_and_values
     # pylint: disable=exec-used

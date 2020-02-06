@@ -11,6 +11,7 @@ import re
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.nist_data_functions import nist_func_definition
+from fitbenchmarking.utils.exceptions import ParsingError
 from fitbenchmarking.utils.logging_setup import logger
 
 
@@ -136,7 +137,7 @@ class NISTParser(Parser):
                 idx += 1
 
         if not equation_text:
-            raise RuntimeError("Could not find the equation!")
+            raise ParsingError("Could not find the equation!")
 
         return equation_text, idx
 
@@ -158,7 +159,7 @@ class NISTParser(Parser):
         idx = len(lines)
 
         if not data_text:
-            raise RuntimeError("Could not find the data!")
+            raise ParsingError("Could not find the data!")
 
         return data_text, idx
 
@@ -222,7 +223,7 @@ class NISTParser(Parser):
             match = re.search(r'y\s*=(.+)\s*\+\s*e', eq_text)
             equation = match.group(1).strip()
         else:
-            raise RuntimeError("Unrecognized equation syntax when trying to "
+            raise ParsingError("Unrecognized equation syntax when trying to "
                                "parse a NIST equation: " + eq_text)
 
         equation = self._convert_nist_to_muparser(equation)
@@ -284,7 +285,7 @@ class NISTParser(Parser):
 
             startval_str = line.split()
             if not startval_str[0].isalnum():
-                raise ValueError('Could not parse starting parameters.')
+                raise ParsingError('Could not parse starting parameters.')
 
             alt_values = self._get_startvals_floats(startval_str)
 
@@ -314,7 +315,7 @@ class NISTParser(Parser):
             alt_values = [float(startval_str[2])]
         # In the NIST format this can only contain 5 or 6 columns
         else:
-            raise RuntimeError("Failed to parse this line as starting "
+            raise ParsingError("Failed to parse this line as starting "
                                "values information: {0}".format(startval_str))
 
         return alt_values

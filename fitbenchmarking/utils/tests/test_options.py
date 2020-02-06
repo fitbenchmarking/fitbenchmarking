@@ -5,6 +5,7 @@ import datetime
 import os
 import unittest
 
+from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 
@@ -105,7 +106,7 @@ class OptionsTests(unittest.TestCase):
         self.assertDictEqual(options.__dict__, new_options.__dict__)
 
     def test_make_plots_false(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(exceptions.OptionsError):
             Options(file_name=self.options_file_incorrect)
 
     def test_make_plots_true(self):
@@ -114,7 +115,7 @@ class OptionsTests(unittest.TestCase):
         self.assertEqual(plotting_opts['make_plots'], options.make_plots)
 
     def test_use_errors_false(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(exceptions.OptionsError):
             Options(file_name=self.options_file_incorrect)
 
     def test_use_errors_true(self):
@@ -123,7 +124,7 @@ class OptionsTests(unittest.TestCase):
         self.assertEqual(plotting_opts['use_errors'], options.use_errors)
 
     def test_num_runs_non_int_value(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(exceptions.OptionsError):
             Options(file_name=self.options_file_incorrect)
 
     def test_num_runs_int_value(self):

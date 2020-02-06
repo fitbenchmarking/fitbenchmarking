@@ -51,7 +51,7 @@ FitBenchmarking Package (``fitbenchmarking``)
 The main FitBenchmarking package is split across several directories
 with the intention that it is easily extensible.
 The majority of these directories are source code, with exceptions being
-HTML Templates, Mock Problems, and System Tests.
+Templates, Mock Problems, and System Tests.
 
 Each file that contains source code will have a directory inside it called
 ``tests``, which contains all of the tests for that section of the code.
@@ -85,16 +85,6 @@ For example, this manages calling the correct parser and controller, as well as
 compiling the results into a data object.
 
 
-HTML Templates (``HTML_templates``)
-===================================
-
-As mentioned above, this directory does not hold any source code.
-Files in HTML Templates are used to create the resulting html pages, and are a
-combination of css, html, and python files.
-The python files in this directory are scripts to update the css and html
-assets.
-
-
 Mock Problems (``mock_problems``)
 =================================
 
@@ -125,6 +115,14 @@ Currently the only system tests in FitBenchmarking are regression tests, which
 are used to ensure that code changes do not change the accuracy results for a
 subset of problems.
 
+Templates (``templates``)
+===================================
+
+As mentioned above, this directory does not hold any source code.
+Files in Templates are used to create the resulting html pages, and are a
+combination of css, html, and python files.
+The python files in this directory are scripts to update the css and html
+assets.
 
 Utils (``utils``)
 =================

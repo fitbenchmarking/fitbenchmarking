@@ -4,4 +4,6 @@
 Comparison Table
 ################
 
-Place holder for the compare table.
+.. include:: ../../../../fitbenchmarking/templates/table_descriptions.rst
+    :start-after: compare: Start
+    :end-before: compare: End

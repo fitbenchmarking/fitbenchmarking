@@ -6,7 +6,7 @@ from unittest import TestCase
 from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
-from fitbenchmarking.controllers.dfogn_controller import DFOGNController
+from fitbenchmarking.controllers.dfo_controller import DFOController
 from fitbenchmarking.controllers.gsl_controller import GSLController
 from fitbenchmarking.controllers.mantid_controller import MantidController
 from fitbenchmarking.controllers.minuit_controller import MinuitController
@@ -15,6 +15,7 @@ from fitbenchmarking.controllers.sasview_controller import SasviewController
 from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import exceptions
 
 
 def make_fitting_problem():
@@ -136,11 +137,11 @@ class BaseControllerTests(TestCase):
                                 attribute
         """
         controller = DummyController(self.problem)
-        with self.assertRaises(TypeError):
+        with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
 
         controller.flag = 10
-        with self.assertRaises(ValueError):
+        with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
 
 
@@ -197,20 +198,24 @@ class ControllerTests(TestCase):
         controller._status = -1
         self.check_diverged(controller)
 
-    def test_dfogn(self):
+    def test_dfo(self):
         """
-        DFOGNController: Tests for output shape
+        DFOController: Tests for output shape
         """
-        controller = DFOGNController(self.problem)
-        controller.minimizer = 'dfogn'
-        self.shared_testing(controller)
+        controller = DFOController(self.problem)
+        # test one from each class
+        minimizers = ['dfogn',
+                      'dfols']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_testing(controller)
 
-        controller._status = 0
-        self.check_conveged(controller)
-        controller._status = 2
-        self.check_max_iterations(controller)
-        controller._status = 5
-        self.check_diverged(controller)
+            controller._status = 0
+            self.check_conveged(controller)
+            controller._status = 2
+            self.check_max_iterations(controller)
+            controller._status = 5
+            self.check_diverged(controller)
 
     def test_gsl(self):
         """
@@ -324,6 +329,6 @@ class FactoryTests(TestCase):
             self.assertTrue(controller.__name__.lower().startswith(software))
 
         for software in invalid:
-            self.assertRaises(ValueError,
+            self.assertRaises(exceptions.NoControllerError,
                               ControllerFactory.create_controller,
                               software)

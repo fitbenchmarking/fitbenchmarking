@@ -5,7 +5,8 @@ This file will handle all interaction with the options configuration file.
 import configparser
 
 import os
-import sys
+
+from fitbenchmarking.utils.exceptions import OptionsError
 
 
 class Options(object):
@@ -68,11 +69,7 @@ class Options(object):
         # sys.exit() will be addressed in future FitBenchmarking
         # error handling issue
         if error_message != []:
-            print("ERROR IN OPTIONS FILE:")
-            for error in error_message:
-                print(error)
-            print("Please alter the ini file to reflect this and re-run.")
-            sys.exit()
+            raise OptionsError('\n'.join(error_message))
 
     @property
     def results_dir(self):

@@ -4,4 +4,6 @@
 Local Minimiser Table
 #####################
 
-Place holder for the local minimiser table.
+.. include:: ../../../../fitbenchmarking/templates/table_descriptions.rst
+    :start-after: local_min: Start
+    :end-before: local_min: End

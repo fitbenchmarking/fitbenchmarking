@@ -13,7 +13,7 @@ from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import \
     ParserFactory, parse_problem_file
-
+from fitbenchmarking.utils import exceptions
 
 def pytest_generate_tests(metafunc):
     """
@@ -260,7 +260,7 @@ class TestParserFactory(TestCase):
 
     def test_unknown_parser(self):
         """
-        Tests that the parser factory raises a value error when an erroneous
+        Tests that the parser factory raises a NoParserError when an erroneous
         parser is requested.
         """
         filename = os.path.join(os.getcwd(), 'this_is_a_fake_parser.txt')
@@ -268,7 +268,7 @@ class TestParserFactory(TestCase):
             f.write('this_is_a_fake_parser')
 
         factory = ParserFactory()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(exceptions.NoParserError):
             _ = factory.create_parser(filename)
 
         os.remove(filename)
