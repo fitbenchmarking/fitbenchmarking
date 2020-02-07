@@ -22,7 +22,7 @@ class ScipyController(Controller):
 
     def setup(self):
         """
-        CHANGE LATER!!!!!
+        Setup for SciPy
         """
         if self.minimizer in "lm-scipy":
             self.minimizer = "lm"
