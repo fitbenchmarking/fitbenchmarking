@@ -25,22 +25,22 @@ def create_results_tables(options, results, best_results, group_name,
     """
     Saves the results of the fitting to html/txt tables.
 
-    :param options : The options used in the fitting problem and plotting
-    :type options : fitbenchmarking.utils.options.Options
-    :param results : results nested array of objects
-    :type results : list of list of
-                    fitbenchmarking.utils.fitbm_result.FittingResult
+    :param options: The options used in the fitting problem and plotting
+    :type options: fitbenchmarking.utils.options.Options
+    :param results: results nested array of objects
+    :type results: list of list of
+                   fitbenchmarking.utils.fitbm_result.FittingResult
     :param best_results: best result for each problem
     :type best_results: list of
                         fitbenchmarking.utils.fitbm_result.FittingResult
-    :param group_name : name of the problem group
-    :type group_name : str
-    :param group_dir : path to the directory where group results should be
-                       stored
-    :type group_dir : str
-    :param table_descriptions : dictionary containing descriptions of the
-                                tables and the comparison mode
-    :type table_descriptions : dict
+    :param group_name: name of the problem group
+    :type group_name: str
+    :param group_dir: path to the directory where group results should be
+                      stored
+    :type group_dir: str
+    :param table_descriptions: dictionary containing descriptions of the
+                               tables and the comparison mode
+    :type table_descriptions: dict
 
     :return: filepaths to each table
              e.g {'acc': <acc-table-filename>, 'runtime': ...}
@@ -67,23 +67,23 @@ def generate_tables(results_per_test, best_results, table_names, table_suffix,
     Generates accuracy, runtime, and combined accuracy and runtime tables, with
     both normalised and absolute results in both txt and html.
 
-    :param results_per_test : results nested array of objects
-    :type results_per_test : list of list of
-                             fitbenchmarking.utils.fitbm_result.FittingResult
+    :param results_per_test: results nested array of objects
+    :type results_per_test: list of list of
+                            fitbenchmarking.utils.fitbm_result.FittingResult
     :param best_results: best result for each problem
     :type best_results: list of
                         fitbenchmarking.utils.fitbm_result.FittingResult
-    :param table_names : list of table names
-    :type table_names : list
-    :param table_suffix : set output to be runtime or accuracy table
-    :type table_suffix : str
+    :param table_names: list of table names
+    :type table_names: list
+    :param table_suffix: set output to be runtime or accuracy table
+    :type table_suffix: str
     :param group_dir: path to group results directory
     :type group_dir: str
-    :param table_descriptions : dictionary containing descriptions of the
-                                tables and the comparison mode
-    :type table_descriptions : dict
-    :param options : The options used in the fitting problem and plotting
-    :type options : fitbenchmarking.utils.options.Options
+    :param table_descriptions: dictionary containing descriptions of the
+                               tables and the comparison mode
+    :type table_descriptions: dict
+    :param options: The options used in the fitting problem and plotting
+    :type options: fitbenchmarking.utils.options.Options
     """
     table_titles = ["FitBenchmarking: {0} table".format(name)
                     for name in table_suffix]
@@ -97,12 +97,12 @@ def create_results_dict(results_per_test):
     """
     Generates a dictionary used to create HTML and txt tables.
 
-    :param results_per_test : results nested array of objects
-    :type results_per_test : list of list of
+    :param results_per_test: results nested array of objects
+    :type results_per_test: list of list of
                              fitbenchmarking.utils.fitbm_result.FittingResult
 
-    :return : A dictionary of results objects
-    :rtype : dict
+    :return: Results objects
+    :rtype: dict
     """
 
     results = OrderedDict()
@@ -122,17 +122,16 @@ def create_pandas_dataframe(table_data, table_suffix):
     """
     Generates pandas data frame.
 
-    :param table_data : dictionary containing results, i.e.,
-                            {'prob1': [result1, result2, ...],
-                             'prob2': [result1, result2, ...], ...}
-    :type table_data : dict
-    :param table_suffix : set output to be runtime or accuracy table
-    :type table_suffix : list
+    :param table_data: dictionary containing results, i.e.,
+                       {'prob1': [result1, result2, ...],
+                        'prob2': [result1, result2, ...], ...}
+    :type table_data: dict
+    :param table_suffix: set output to be runtime or accuracy table
+    :type table_suffix: list
 
-
-    :return : dict(tbl, tbl_norm, tbl_combined) dictionary of
-               pandas DataFrames containing results.
-    :rtype : dict{pandas DataFrame, pandas DataFrame}
+    :return: dict(tbl, tbl_norm, tbl_combined) dictionary of
+             pandas DataFrames containing results.
+    :rtype: dict{pandas DataFrame, pandas DataFrame}
     """
 
     # This function is only used in the mapping, hence, it is defined here.
@@ -157,24 +156,25 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
                             table_title, group_dir, table_descriptions,
                             options):
     """
-    Generates html and txt page from pandas dataframes.
+    Generates html and txt page from pandas dataframes,
+    and writes them to files.
 
-    :param table_dict : dictionary of DataFrame of the results
-    :type table_dict : dict(pandas DataFrame, ...)
+    :param table_dict: dictionary of DataFrame of the results
+    :type table_dict: dict(pandas DataFrame, ...)
     :param best_results: best result for each problem
     :type best_results: list of
                         fitbenchmarking.utils.fitbm_result.FittingResult
-    :param table_names : list of table names
-    :type table_names : list
-    :param table_title : list of table titles
-    :type table_title : list
+    :param table_names: list of table names
+    :type table_names: list
+    :param table_title: list of table titles
+    :type table_title: list
     :param group_dir: path to the group results directory
     :type group_dir: str
-    :param table_descriptions : dictionary containing descriptions of the
-                                tables and the comparison mode
-    :type table_descriptions : dict
-    :param options : The options used in the fitting problem and plotting
-    :type options : fitbenchmarking.utils.options.Options
+    :param table_descriptions: dictionary containing descriptions of the
+                               tables and the comparison mode
+    :type table_descriptions: dict
+    :param options: The options used in the fitting problem and plotting
+    :type options: fitbenchmarking.utils.options.Options
     """
 
     # Define functions that are used in calls to map over dataframes

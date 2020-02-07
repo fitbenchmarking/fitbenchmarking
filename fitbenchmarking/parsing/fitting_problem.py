@@ -89,8 +89,8 @@ class FittingProblem:
         """
         Utility function to get the parameter names
 
-        :return: the neames of the parameters
-        :rtype: [type]
+        :return: the names of the parameters
+        :rtype: list of str
         """
         if self._param_names is None:
             self._param_names = list(self.starting_values[0].keys())
@@ -102,6 +102,12 @@ class FittingProblem:
 
     @property
     def sanitised_name(self):
+        """
+        Sanitise the problem name ito one which can be used as a filename.
+        
+        :return: sanitised name
+        :rtype: str
+        """
         if not self._sanitised_name:
             self._sanitised_name = self.name
             self._sanitised_name = self._sanitised_name.replace(',', '')
@@ -190,6 +196,7 @@ class FittingProblem:
         :type params: list
         :param func: Function to find the Jacobian for, defaults to self.eval_r
         :type func: Callable, optional
+
         :return: Approximation of the Jacobian
         :rtype: numpy array
         """
