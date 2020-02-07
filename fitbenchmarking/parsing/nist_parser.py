@@ -22,7 +22,7 @@ class NISTParser(Parser):
 
     def parse(self):
 
-        fitting_problem = FittingProblem()
+        fitting_problem = FittingProblem(self.options)
 
         equation, data, starting_values, name = self._parse_line_by_line()
         data = self._parse_data(data)

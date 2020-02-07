@@ -22,19 +22,27 @@ class ScipyController(Controller):
 
     def setup(self):
         """
-        No setup needed for scipy, so this is a no-op.
+        CHANGE LATER!!!!!
         """
-        if self.minimizer == "lm-scipy":
+        if self.minimizer in "lm-scipy":
             self.minimizer = "lm"
 
     def fit(self):
         """
         Run problem with Scipy.
         """
-        self.result = least_squares(fun=self.problem.eval_r,
-                                    x0=self.initial_params,
-                                    method=self.minimizer,
-                                    max_nfev=500)
+        if self.minimizer == "lm-scipy-no-jac":
+            self.result = least_squares(fun=self.problem.eval_r,
+                                        x0=self.initial_params,
+                                        method="lm",
+                                        max_nfev=500)
+        else:
+            self.result = least_squares(fun=self.problem.eval_r,
+                                        x0=self.initial_params,
+                                        method=self.minimizer,
+                                        jac=self.problem.eval_j,
+                                        max_nfev=500)
+
         self._popt = self.result.x
         self._status = self.result.status
 

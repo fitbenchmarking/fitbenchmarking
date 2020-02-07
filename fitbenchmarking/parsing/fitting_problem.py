@@ -32,7 +32,7 @@ class FittingProblem:
     intial guess for the optimal parameters.
     """
 
-    def __init__(self):
+    def __init__(self, options):
 
         #: *string* Name (title) of the fitting problem
         self.name = None
@@ -83,6 +83,9 @@ class FittingProblem:
 
         # The index for sorting the data (used in plotting)
         self.sorted_index = None
+
+        # Sets the numerical derivative method
+        self.method = options.jac_method
 
     @property
     def param_names(self):
@@ -196,7 +199,10 @@ class FittingProblem:
         if func is None:
             func = self.eval_r
 
-        return approx_derivative(func, params, kwargs=kwargs)
+        return approx_derivative(func, params, method=self.method,
+                                 rel_step=None, f0=func(params),
+                                 bounds=(-np.inf, np.inf),
+                                 kwargs=kwargs)
 
     def eval_starting_params(self, param_set):
         """
@@ -258,7 +264,7 @@ class FittingProblem:
         Modifications happen on member variables.
 
         :param use_errors: Specify whether to set data_e or not
-        :type use_errors: bool 
+        :type use_errors: bool
         """
 
         # fix self.data_e

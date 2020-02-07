@@ -51,6 +51,7 @@ class Options(object):
             self.use_errors = fitting.getboolean('use_errors')
         except ValueError:
             error_message.append(template.format('use_errors', "boolean"))
+        self.jac_method = fitting.getstr('jac_method')
 
         plotting = config['PLOTTING']
         try:

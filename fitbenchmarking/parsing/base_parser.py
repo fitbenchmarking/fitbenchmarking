@@ -13,14 +13,17 @@ class Parser:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, filename):
+    def __init__(self, filename, options):
         """
         Store the filename for use by enter.
 
         :param filename: The path to the file to be parsed
         :type filename: string
+        :param options: all the information specified by the user
+        :type options: fitbenchmarking.utils.options.Options
         """
         self._filename = filename
+        self.options = options
         self.file = None
         self.fitting_problem = None
 

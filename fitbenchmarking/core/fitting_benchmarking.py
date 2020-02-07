@@ -43,7 +43,7 @@ def fitbenchmark_group(group_name, options, data_dir):
     template_prob_name = " Running data from: {}"
     for i, p in enumerate(problem_group):
         with grabbed_output:
-            parsed_problem = parse_problem_file(p)
+            parsed_problem = parse_problem_file(p, options)
             parsed_problem.correct_data(options.use_errors)
 
         decorator = '#' * (len(template_prob_name) +
