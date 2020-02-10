@@ -13,12 +13,18 @@ from fitbenchmarking.controllers.base_controller import Controller
 class MantidController(Controller):
     """
     Controller for the Mantid fitting software.
+
+    Mantid requires subscribing a custom function in a predefined format,
+    so this controller creates that in setup.
     """
 
     def __init__(self, problem):
         """
         Setup workspace, cost_function, ignore_invalid, and initialise vars
         used for temporary storage within the mantid controller
+
+        :param problem: Problem to fit
+        :type problem: FittingProblem
         """
         super(MantidController, self).__init__(problem)
 

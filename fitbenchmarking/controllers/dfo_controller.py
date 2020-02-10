@@ -17,7 +17,10 @@ class DFOController(Controller):
 
     def __init__(self, problem):
         """
-        Initialises variable used for temporary storage.
+        Initialises variables used for temporary storage.
+
+        :param problem: Problem to fit
+        :type problem: FittingProblem
         """
         super(DFOController, self).__init__(problem)
 
@@ -27,13 +30,13 @@ class DFOController(Controller):
 
     def setup(self):
         """
-        Setup for DFO-GN
+        Setup for DFO
         """
         self._pinit = np.asarray(self.initial_params)
 
     def fit(self):
         """
-        Run problem with DFO-GN.
+        Run problem with DFO.
         """
         if self.minimizer == 'dfogn':
             self._soln = dfogn.solve(self.problem.eval_r,

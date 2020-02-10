@@ -21,6 +21,12 @@ class NISTParser(Parser):
     """
 
     def parse(self):
+        """
+        Parse the NIST problem file into a Fitting Problem.
+
+        :return: The fully parsed fitting problem
+        :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
+        """
 
         fitting_problem = FittingProblem()
 
@@ -49,8 +55,8 @@ class NISTParser(Parser):
         """
         Parses the NIST file one line at the time.
 
-        :returns: the equation, data pattern, and starting values
-                  sections of the file
+        :return: the equation, data pattern, and starting values
+                 sections of the file
         :rtype: str, str, list of list of float
         """
         lines = self.file.readlines()
@@ -92,8 +98,8 @@ class NISTParser(Parser):
         :param idx: the line at which the parser is at
         :type idx: int
 
-        :returns: The equation from the NIST file and the
-                  new index
+        :return: The equation from the NIST file and the
+                 new index
         :rtype: str and int
         """
 
@@ -124,8 +130,8 @@ class NISTParser(Parser):
         :param idx: the line at which the parser is at
         :type idx: int
 
-        :returns: The equation from the NIST file and the
-                  new index
+        :return: The equation from the NIST file and the
+                 new index
         :rtype: str and int
         """
 
@@ -150,7 +156,7 @@ class NISTParser(Parser):
         :param idx: the line at which the parser is at
         :type idx: int
 
-        :returns: The data pattern and the new index
+        :return: The data pattern and the new index
         :rtype: (list of str) and int
         """
 
@@ -171,7 +177,7 @@ class NISTParser(Parser):
         :param data_text: The data from the NIST problem file
         :type data_text: list of str
 
-        :returns: The data points of the problem
+        :return: The data points of the problem
         :rtype: np.ndarray
         """
 
@@ -199,7 +205,8 @@ class NISTParser(Parser):
 
         :param data_points: Unsorted data points of the problem
         :type data_points: np.ndarray
-        :returns: sorted data points of the problem
+
+        :return: sorted data points of the problem
         :rtype: np.ndarray
         """
 
@@ -214,7 +221,7 @@ class NISTParser(Parser):
         :param eq_text: The equation
         :type eq_text: str
 
-        :returns: formatted equation
+        :return: formatted equation
         :rtype: str
         """
 
@@ -236,7 +243,7 @@ class NISTParser(Parser):
         :param equation: Raw equation
         :type equation: str
 
-        :returns: formatted muparser equation (mathematical notation)
+        :return: formatted muparser equation (mathematical notation)
         :rtype: str
         """
 
@@ -256,8 +263,8 @@ class NISTParser(Parser):
         :param idx: the line at which the parser is at
         :type idx: int
 
-        :returns: The starting values and the new index
-        :type: (list of OrderedDict) and int
+        :return: The starting values and the new index
+        :rtype: (list of OrderedDict) and int
         """
 
         starting_values = None
@@ -275,7 +282,7 @@ class NISTParser(Parser):
         :param lines: All lines in the imported nist file
         :type lines: list of str
 
-        :returns: The starting values used in NIST problem
+        :return: The starting values used in NIST problem
         :rtype: list of list of float
         """
         starting_vals = []
@@ -303,7 +310,7 @@ class NISTParser(Parser):
         :param startval_str: Unparsed starting values
         :type startval_str: list of str
 
-        :returns: Starting values array of floats
+        :return: Starting values array of floats
         :rtype: list of float
         """
 

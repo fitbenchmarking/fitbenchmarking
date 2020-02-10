@@ -30,8 +30,8 @@ def fitbenchmark_group(group_name, options, data_dir):
                      definition files
     :type date_dir: str
 
-    :returns: prob_results array of fitting results for
-              the problem group and the location of the results
+    :return: prob_results array of fitting results for
+             the problem group and the location of the results
     :rtype: tuple(list, str)
     """
     grabbed_output = output_grabber.OutputGrabber()
