@@ -13,20 +13,30 @@ from fitbenchmarking.utils.fitbm_result import FittingResult
 class PerformanceProfillerTests(unittest.TestCase):
 
     def generate_mock_results(self):
-        self.num_problems = 5
-        self.num_minizers = 3
+        self.num_problems = 4
+        self.num_minizers = 2
         results = []
         options = Options()
+
+        acc_in = [[ 1, float('Inf') ],
+                  [ 7,  float('Inf') ],
+                  [ 10, 8 ],
+                  [ 2,  6 ]]
+            
+        
+        runtime_in = [[ 1.0e-6, 2.2e-3 ],                              
+                      [ 3.0e-10, 5.0e-14 ],
+                      [ 6.9e-7, 4.3e-5 ],
+                      [ 1.6e-13, 1.8e-13 ]]
+            
+        
         acc_expected = []
         runtime_expected = []
         for i in range(self.num_problems):
-            np.random.seed(i)
-            acc_results = np.random.uniform(
-                low=0, high=10000, size=(self.num_minizers,))
-            np.random.seed(i + self.num_problems)
-            runtime_results = np.random.uniform(
-                low=0, high=10000, size=(self.num_minizers,))
+            acc_results = acc_in[i][:]
             acc_expected.append(list(acc_results) / np.min(acc_results))
+
+            runtime_results = runtime_in[i][:]
             runtime_expected.append(
                 list(runtime_results) / np.min(runtime_results))
             prob_results = []
