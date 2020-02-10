@@ -34,6 +34,13 @@ class FittingProblem:
 
     def __init__(self, options):
 
+        """
+        Initialises variable used for temporary storage.
+
+        :param options: all the information specified by the user
+        :type options: fitbenchmarking.utils.options.Options
+        """
+
         #: *string* Name (title) of the fitting problem
         self.name = None
 
