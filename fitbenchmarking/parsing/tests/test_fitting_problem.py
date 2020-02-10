@@ -192,7 +192,7 @@ class TestFittingProblem(TestCase):
         """
         Tests that correct data gives the expected result
         """
-        fitting_problem = FittingProblem()
+        fitting_problem = FittingProblem(self.options)
         x_data = np.array([-0.5, 0.0, 1.0, 0.5, 1.5, 2.0, 2.5, 3.0, 4.0])
         y_data = np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])
         e_data = np.array([1.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 9.0])
@@ -208,7 +208,7 @@ class TestFittingProblem(TestCase):
         fitting_problem.start_x = start_x
         fitting_problem.end_x = end_x
 
-        fitting_problem.correct_data(True)
+        fitting_problem.correct_data()
         self.assertTrue(
             np.isclose(fitting_problem.data_x[fitting_problem.sorted_index],
                        expected_x_data).all())
@@ -218,8 +218,8 @@ class TestFittingProblem(TestCase):
         self.assertTrue(
             np.isclose(fitting_problem.data_e[fitting_problem.sorted_index],
                        expected_e_data).all())
-
-        fitting_problem.correct_data(False)
+        self.options.use_errors = False
+        fitting_problem.correct_data()
         self.assertTrue(
             np.isclose(fitting_problem.data_x[fitting_problem.sorted_index],
                        expected_x_data).all())
