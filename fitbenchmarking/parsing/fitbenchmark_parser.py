@@ -104,9 +104,9 @@ class FitbenchmarkParser(Parser):
         """
         Find/create the (full) path to a data_file specified in a FitBenchmark
         definition file, where the data_file is searched for in the directory
-        of the definition file and subfolders of this file
+        of the definition file and subfolders of this file.
 
-        :returns: (full) path to a data file. Return None if not found
+        :return: (full) path to a data file. Return None if not found
         :rtype: str or None
         """
         data_file = None
@@ -126,7 +126,7 @@ class FitbenchmarkParser(Parser):
         """
         Get the problem entries from a problem definition file.
 
-        :returns: The entries from the file with string values
+        :return: The entries from the file with string values
         :rtype: dict
         """
 
@@ -242,7 +242,7 @@ class FitbenchmarkParser(Parser):
         """
         Get the starting values for the problem
 
-        :returns: Starting values for the function
+        :return: Starting values for the function
         :rtype: list of OrderedDict
         """
         ignore = ['name', 'BinWidth', 'ties', 'Formula']
@@ -316,7 +316,7 @@ class FitbenchmarkParser(Parser):
         Processing the function in the FitBenchmark problem definition into a
         python callable.
 
-        :returns: A callable function
+        :return: A callable function
         :rtype: callable
         """
         fit_function = None

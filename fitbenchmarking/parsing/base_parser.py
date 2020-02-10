@@ -60,7 +60,7 @@ class Parser:
         """
         Parse the file into a FittingProblem.
 
-        :returns: The parsed problem
+        :return: The parsed problem
         :rtype: FittingProblem
         """
         raise NotImplementedError

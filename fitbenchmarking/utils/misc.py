@@ -16,11 +16,13 @@ def get_problem_files(data_dir):
     Gets all the problem definition files from the specified problem
     set directory.
 
-    @param data_dir :: directory containing the problems
+    :param data_dir: directory containing the problems
+    :type data_dir: str 
 
-    @returns :: array containing of paths to the problems
-                e.g. In NIST we would have
-                [low_difficulty/file1.txt, ..., ...]
+    :return: array containing of paths to the problems
+             e.g. In NIST we would have
+             [low_difficulty/file1.txt, ..., ...]
+    :rtype: list of str
     """
 
     test_data = glob.glob(data_dir + '/*.*')

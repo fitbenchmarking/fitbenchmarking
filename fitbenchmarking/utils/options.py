@@ -81,6 +81,12 @@ class Options(object):
         self._results_dir = os.path.abspath(value)
 
     def write(self, file_name):
+        """
+        Write the contents of the options object to a new options file.
+        
+        :param file_name: The path to the new options file
+        :type file_name: str
+        """
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str})
 
@@ -105,4 +111,12 @@ class Options(object):
 
 
 def read_list(s):
+    """
+    Utility function to allow lists to be read by the config parser
+    
+    :param s: string to convert to a list
+    :type s: string
+    :return: list of items
+    :rtype: list of str
+    """
     return str(s).split('\n')

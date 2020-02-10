@@ -22,9 +22,9 @@ class ScipyController(Controller):
 
     def setup(self):
         """
-        Setup for SciPy
+        Setup problem ready to be run with SciPy
         """
-        if self.minimizer in "lm-scipy":
+        if self.minimizer == "lm-scipy":
             self.minimizer = "lm"
 
     def fit(self):
