@@ -192,7 +192,7 @@ class TestFittingProblem(TestCase):
         """
         Tests that correct data gives the expected result
         """
-        fitting_problem = FittingProblem(self.options)
+        fitting_problem = FittingProblem()
         x_data = np.array([-0.5, 0.0, 1.0, 0.5, 1.5, 2.0, 2.5, 3.0, 4.0])
         y_data = np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])
         e_data = np.array([1.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 9.0])
