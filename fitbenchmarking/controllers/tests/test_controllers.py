@@ -16,17 +16,19 @@ from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
+from fitbenchmarking.utils.options import Options
 
 
 def make_fitting_problem():
     """
     Helper function that returns a simple fitting problem
     """
+    options = Options()
 
     bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
     fname = os.path.join(bench_prob_dir, 'cubic.dat')
 
-    fitting_problem = parse_problem_file(fname)
+    fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data(True)
     return fitting_problem
 
