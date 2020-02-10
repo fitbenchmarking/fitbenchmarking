@@ -8,6 +8,7 @@ from unittest import TestCase
 
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
+from fitbenchmarking.utils.options import Options
 
 
 class TestFittingProblem(TestCase):
@@ -15,8 +16,11 @@ class TestFittingProblem(TestCase):
     Class to test the FittingProblem class
     """
 
+    def setUp(self):
+        self.options = Options()
+
     def test_sanitised_name(self):
-        fitting_problem = FittingProblem()
+        fitting_problem = FittingProblem(self.options)
         expected = "test_1"
         fitting_problem.name = "test 1"
         self.assertEqual(fitting_problem.sanitised_name, expected)
@@ -27,7 +31,7 @@ class TestFittingProblem(TestCase):
         """
         Test that verify only passes if all required values are set.
         """
-        fitting_problem = FittingProblem()
+        fitting_problem = FittingProblem(self.options)
         with self.assertRaises(exceptions.FittingProblemError):
             fitting_problem.verify()
             self.fail('verify() passes when no values are set.')
@@ -63,7 +67,7 @@ class TestFittingProblem(TestCase):
         """
         Test that eval_f is running the correct function
         """
-        fitting_problem = FittingProblem()
+        fitting_problem = FittingProblem(self.options)
         self.assertRaises(exceptions.FittingProblemError,
                           fitting_problem.eval_f,
                           x=2,
@@ -82,7 +86,7 @@ class TestFittingProblem(TestCase):
         """
         Test that eval_r is correct
         """
-        fitting_problem = FittingProblem()
+        fitting_problem = FittingProblem(self.options)
         self.assertRaises(exceptions.FittingProblemError,
                           fitting_problem.eval_r,
                           params=[1, 2, 3],
@@ -117,7 +121,7 @@ class TestFittingProblem(TestCase):
         """
         Test that eval_r_norm is correct
         """
-        fitting_problem = FittingProblem()
+        fitting_problem = FittingProblem(self.options)
         fitting_problem.function = lambda x, p1: x + p1
         x_val = np.array([1, 8, 11])
         y_val = np.array([6, 10, 20])
@@ -145,7 +149,7 @@ class TestFittingProblem(TestCase):
             return np.column_stack((-np.exp(p[1] * x),
                                     -x * p[0] * np.exp(p[1] * x)))
 
-        fitting_problem = FittingProblem()
+        fitting_problem = FittingProblem(self.options)
         fitting_problem.function = f
         fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
         fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
@@ -159,7 +163,7 @@ class TestFittingProblem(TestCase):
         """
         Test that eval_starting_params returns the correct result
         """
-        fitting_problem = FittingProblem()
+        fitting_problem = FittingProblem(self.options)
         self.assertRaises(exceptions.FittingProblemError,
                           fitting_problem.eval_starting_params,
                           param_set=0)
@@ -176,7 +180,7 @@ class TestFittingProblem(TestCase):
         """
         Tests that the function params is formatted correctly
         """
-        fitting_problem = FittingProblem()
+        fitting_problem = FittingProblem(self.options)
         expected_function_def = 'a=1, b=2.0, c=3.3, d=4.99999'
         fitting_problem.starting_values = [
             OrderedDict([('a', 0), ('b', 0), ('c', 0), ('d', 0)])]
@@ -188,7 +192,7 @@ class TestFittingProblem(TestCase):
         """
         Tests that correct data gives the expected result
         """
-        fitting_problem = FittingProblem()
+        fitting_problem = FittingProblem(self.options)
         x_data = np.array([-0.5, 0.0, 1.0, 0.5, 1.5, 2.0, 2.5, 3.0, 4.0])
         y_data = np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])
         e_data = np.array([1.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 9.0])
