@@ -8,6 +8,7 @@ import ral_nlls
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 
+
 class RALFitController(Controller):
     """
     Controller for the RALFit fitting software.
@@ -16,6 +17,9 @@ class RALFitController(Controller):
     def __init__(self, problem):
         """
         Initialises variable used for temporary storage.
+
+        :param problem: Problem to fit
+        :type problem: FittingProblem
         """
         super(RALFitController, self).__init__(problem)
 

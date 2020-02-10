@@ -29,7 +29,7 @@ class ControllerFactory:
         :param software: The name of the software to create a controller for
         :type software: string
 
-        :returns: Controller class for the problem
+        :return: Controller class for the problem
         :rtype: fitbenchmarking.fitting.base_controller.Controller subclass
         """
 

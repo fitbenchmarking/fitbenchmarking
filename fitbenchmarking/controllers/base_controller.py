@@ -96,7 +96,7 @@ class Controller:
         in software controllers
         """
         values = {'flag': int}
-        
+
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
             if not isinstance(attr, attr_type):

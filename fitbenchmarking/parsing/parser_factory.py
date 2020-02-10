@@ -28,7 +28,7 @@ class ParserFactory:
         :param filename: The path to the file to be parsed
         :type filename: string
 
-        :returns: Parser for the problem
+        :return: Parser for the problem
         :rtype: fitbenchmarking.parsing.base_parser.Parser subclass
         """
 
@@ -73,7 +73,7 @@ def parse_problem_file(prob_file):
     :param prob_file: path to the problem file
     :type prob_file: string
 
-    :returns: problem object with fitting information
+    :return: problem object with fitting information
     :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
     """
     parser = ParserFactory.create_parser(prob_file)
