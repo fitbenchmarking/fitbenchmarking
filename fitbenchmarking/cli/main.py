@@ -25,6 +25,9 @@ from fitbenchmarking.utils.options import Options
 def get_parser():
     """
     Creates and returns a parser for the args.
+
+    :return: configured argument parser
+    :rtype: argparse.ArgParser
     """
 
     epilog = '''Usage Examples:
@@ -51,6 +54,7 @@ examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
 def run(problem_sets, options_file=''):
     """
     Run benchmarking for the problems sets and options file given.
+    Opens a webbrowser to the results_index after fitting.
 
     :param problem_sets: The paths to directories containing problem_sets
     :type problem_sets: list of str

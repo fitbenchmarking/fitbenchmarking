@@ -18,14 +18,14 @@ def create(results_per_test, group_name, support_pages_dir,
     Iterate through problem results and create a support html page for
     each.
 
-    :param results_per_test : results object
-    :type results_per_test : list[list[list]]
-    :param group_name : name of the problem group
-    :type group_name : str
-    :param support_pages_dir : directory in which the results are saved
-    :type support_pages_dir : str
-    :param options : The options used in the fitting problem and plotting
-    :type options : fitbenchmarking.utils.options.Options
+    :param results_per_test: results object
+    :type results_per_test: list[list[list]]
+    :param group_name: name of the problem group
+    :type group_name: str
+    :param support_pages_dir: directory in which the results are saved
+    :type support_pages_dir: str
+    :param options: The options used in the fitting problem and plotting
+    :type options: fitbenchmarking.utils.options.Options
     """
 
     name_count = {}
@@ -48,18 +48,18 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
     details about the fit for a problem.
     A link to the support page is stored in the results object.
 
-    :param prob_results : problem results objects containing results for
-                          each minimizer and a certain fitting function
-    :type prob_results : list[fitbenchmarking.utils.fitbm_result.FittingResult]
-    :param group_name : name of the problem group
-    :type group_name : str
-    :param support_pages_dir : directory to store the support pages in
-    :type support_pages_dir : str
-    :param count : number of times a problem with the same name was
-                   passed through this function
-    :type count : int
-    :param options : The options used in the fitting problem and plotting
-    :type options : fitbenchmarking.utils.options.Options
+    :param prob_results: problem results objects containing results for
+                         each minimizer and a certain fitting function
+    :type prob_results: list[fitbenchmarking.utils.fitbm_result.FittingResult]
+    :param group_name: name of the problem group
+    :type group_name: str
+    :param support_pages_dir: directory to store the support pages in
+    :type support_pages_dir: str
+    :param count: number of times a problem with the same name was
+                  passed through this function
+    :type count: int
+    :param options: The options used in the fitting problem and plotting
+    :type options: fitbenchmarking.utils.options.Options
     """
 
     for result in prob_results:
@@ -115,14 +115,14 @@ def get_figure_paths(result, count):
     """
     Get the paths to the figures used in the support page.
 
-    :param result : The result to get the figures for
-    :type result : fitbenchmarking.utils.fitbm_result.FittingProblem
-    :param count : number of times a problem with the same name was
-                   passed through this function, consecutively
-    :type count : int
+    :param result: The result to get the figures for
+    :type result: fitbenchmarking.utils.fitbm_result.FittingProblem
+    :param count: number of times a problem with the same name was
+                  passed through this function, consecutively
+    :type count: int
 
-    :return : the paths to the required figures
-    :rtype : tuple(str, str)
+    :return: the paths to the required figures
+    :rtype: tuple(str, str)
     """
 
     figures_dir = "figures"

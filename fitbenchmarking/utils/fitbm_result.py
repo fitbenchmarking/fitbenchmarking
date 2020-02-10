@@ -71,13 +71,20 @@ class FittingResult(object):
         # Used for the support pages
         self.is_best_fit = False
 
-        # Boolian that checks return true or false depending whether
+        # Boolean that checks return true or false depending whether
         # norm(J^T r), norm(J^T r)/norm(r) and/or norm(r) are smaller
         # than a set tolerance
         self._local_min = None
 
     @property
     def local_min(self):
+        """
+        Getter for local_min. This indicates if the result is a
+        local minimum
+
+        :return: Whether the result is a minimum or not
+        :rtype: bool
+        """
         if self.params is not None:
             r = self.problem.eval_r(self.params)
             min_test = np.matmul(self.problem.eval_j(self.params).T, r)
@@ -99,6 +106,13 @@ class FittingResult(object):
         self._local_min = value
 
     def __str__(self):
+        """
+        The string representation of this is used to create the tables.
+        This creates a correct representation for the table that has been set.
+
+        :return: Table dependant string representation
+        :rtype: str
+        """
         if self.table_type is not None:
             output = self.table_output
             if self.html_print:
@@ -120,6 +134,12 @@ class FittingResult(object):
 
     @table_type.setter
     def table_type(self, value):
+        """
+        Switch table types and setup needed values for creating string output
+
+        :param value: The table to set up for
+        :type value: str
+        """
         self._table_type = value
         comp_mode = self.options.comparison_mode
         result_template = self.output_string_type[comp_mode]
@@ -178,6 +198,12 @@ class FittingResult(object):
 
     @min_chi_sq.setter
     def min_chi_sq(self, value):
+        """
+        Stores the min chi squared and updates the normalised value
+
+        :param value: New value for min_chi_sq
+        :type value: float
+        """
         self._min_chi_sq = value
         if not self.chi_sq > 0:
             self.chi_sq = np.inf
@@ -189,5 +215,11 @@ class FittingResult(object):
 
     @min_runtime.setter
     def min_runtime(self, value):
+        """
+        Stores the min runtime and updates the normalised value
+
+        :param value: New value for min_runtime
+        :type value: float
+        """
         self._min_runtime = value
         self.norm_runtime = self.runtime / self.min_runtime

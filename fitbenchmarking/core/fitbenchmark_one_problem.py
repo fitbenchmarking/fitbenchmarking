@@ -24,8 +24,8 @@ def fitbm_one_prob(problem, options):
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
 
-    :returns: nested array of result objects, per function definition
-               containing the fit information
+    :return: nested array of result objects, per function definition
+             containing the fit information
     :rtype: list
     """
     grabbed_output = output_grabber.OutputGrabber()
@@ -76,8 +76,8 @@ def benchmark(controller, minimizers, options):
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
 
-    :returns: results_problem nested array of result objects, per
-              minimizer
+    :return: results_problem nested array of result objects, per
+             minimizer
     :rtype: list
     """
     grabbed_output = output_grabber.OutputGrabber()

@@ -23,6 +23,9 @@ class GSLController(Controller):
     def __init__(self, problem):
         """
         Initializes variable used for temporary storage
+
+        :param problem: Problem to fit
+        :type problem: FittingProblem
         """
         super(GSLController, self).__init__(problem)
 

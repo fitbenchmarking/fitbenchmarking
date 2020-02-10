@@ -13,11 +13,17 @@ from fitbenchmarking.controllers.base_controller import Controller
 class SasviewController(Controller):
     """
     Controller for the Sasview fitting software.
+
+    Sasview requires a model to fit.
+    Setup creates a model with the correct function.
     """
 
     def __init__(self, problem):
         """
         Extract param names for function setup
+
+        :param problem: Problem to fit
+        :type problem: FittingProblem
         """
         super(SasviewController, self).__init__(problem)
 

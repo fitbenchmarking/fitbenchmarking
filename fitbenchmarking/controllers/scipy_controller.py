@@ -22,7 +22,7 @@ class ScipyController(Controller):
 
     def setup(self):
         """
-        No setup needed for scipy, so this is a no-op.
+        Setup problem ready to be run with SciPy
         """
         if self.minimizer == "lm-scipy":
             self.minimizer = "lm"

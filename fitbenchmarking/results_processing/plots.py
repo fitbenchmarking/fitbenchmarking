@@ -127,6 +127,9 @@ class Plot(object):
     def plot_initial_guess(self):
         """
         Plots the initial guess along with the data and stores in a file
+
+        :return: path to the saved file
+        :rtype: str
         """
         ini_guess = self.problem.starting_values[self.count - 1].values()
         self.plot_data(errors=False,
@@ -142,11 +145,15 @@ class Plot(object):
     def plot_best(self, minimizer, params):
         """
         Plots the fit along with the data using the "best_fit" style
+        and saves to a file
 
         :param minimizer: name of the best fit minimizer
         :type minimizer: str
         :param params: fit parameters returned from the best fit minimizer
         :type params: list
+
+        :return: path to the saved file
+        :rtype: str
         """
         label = 'Best Fit ({})'.format(minimizer)
 
@@ -191,6 +198,9 @@ class Plot(object):
         :type minimizer: str
         :param params: fit parameters returned from the best fit minimizer
         :type params: list
+
+        :return: path to the saved file
+        :rtype: str
         """
         plot_options_dict = self.fit_plot_options.copy()
         plot_options_dict['label'] = minimizer
