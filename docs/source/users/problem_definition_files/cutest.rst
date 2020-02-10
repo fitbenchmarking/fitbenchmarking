@@ -2,9 +2,6 @@
 CUTEst File Format
 ##################
 
-**Under Construction**
-
-
 The CUTEst file format is based on the SIF format, and in FitBenchmarking, all
 SIF files are assumed to be CUTEst problems.
 
@@ -33,3 +30,16 @@ the range::
 
      IE MLOWER        <min_idx>
      IE MUPPER        <max_idx>
+
+Defining Variables
+******************
+
+For the free variables in functions, we use the convention of::
+
+     IE N             <num_vars>
+
+This is used to tell FitBenchmarking how many degrees of freedom need to be
+fit.
+In some cases variables will be vectors, and the number of degrees of freedom
+will be greater, most problems use ``NVEC`` as a convention to input the number
+of vectors.
