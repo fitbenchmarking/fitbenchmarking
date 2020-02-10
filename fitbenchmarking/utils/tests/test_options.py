@@ -14,6 +14,8 @@ class OptionsTests(unittest.TestCase):
         '''
         Create an options file and store input
         '''
+        # None of these options should be the defaults in
+        # "fitbenchmarking/utils/default_options.ini"
         config_str = """
             [MINIMIZERS]
             scipy: nonesense
@@ -25,7 +27,7 @@ class OptionsTests(unittest.TestCase):
             num_runs: 2
             software: foo
                       bar
-            jac_method: 2-point
+            jac_method: random_method
 
             [PLOTTING]
             make_plots: no
@@ -49,7 +51,7 @@ class OptionsTests(unittest.TestCase):
                 'FITTING': {'use_errors': False,
                             'num_runs': 2,
                             'software': ['foo', 'bar'],
-                            'jac_method': '2-point'},
+                            'jac_method': 'random_method'},
                 'PLOTTING': {'make_plots': False,
                              'colour_scale': [(17.1, 'b_string?'),
                                               (float('inf'), 'final_string')],

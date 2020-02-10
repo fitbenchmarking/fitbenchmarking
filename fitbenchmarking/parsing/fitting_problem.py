@@ -33,14 +33,13 @@ class FittingProblem:
     """
 
     def __init__(self, options):
-
         """
         Initialises variable used for temporary storage.
 
         :param options: all the information specified by the user
         :type options: fitbenchmarking.utils.options.Options
         """
-
+        self.options = options
         #: *string* Name (title) of the fitting problem
         self.name = None
 
@@ -92,7 +91,7 @@ class FittingProblem:
         self.sorted_index = None
 
         # Sets the numerical derivative method
-        self.method = options.jac_method
+        self._jac_method = self.options.jac_method
 
     @property
     def param_names(self):
@@ -114,7 +113,7 @@ class FittingProblem:
     def sanitised_name(self):
         """
         Sanitise the problem name ito one which can be used as a filename.
-        
+
         :return: sanitised name
         :rtype: str
         """
@@ -213,10 +212,11 @@ class FittingProblem:
         if func is None:
             func = self.eval_r
 
-        return approx_derivative(func, params, method=self.method,
-                                 rel_step=None, f0=func(params),
-                                 bounds=(-np.inf, np.inf),
-                                 kwargs=kwargs)
+        jac = approx_derivative(func, params, method=self._jac_method,
+                                rel_step=None, f0=func(params),
+                                bounds=(-np.inf, np.inf),
+                                kwargs=kwargs)
+        return jac
 
     def eval_starting_params(self, param_set):
         """
@@ -271,18 +271,15 @@ class FittingProblem:
         if self.function is None:
             raise FittingProblemError('Attribute "function" has not been set.')
 
-    def correct_data(self, use_errors):
+    def correct_data(self):
         """
         Strip data that overruns the start and end x_range,
         and approximate errors if not given.
         Modifications happen on member variables.
-
-        :param use_errors: Specify whether to set data_e or not
-        :type use_errors: bool
         """
 
         # fix self.data_e
-        if use_errors:
+        if self.options.use_errors:
             if self.data_e is None:
                 self.data_e = np.sqrt(abs(self.data_y))
 

@@ -31,6 +31,9 @@ class ScipyController(Controller):
         """
         Run problem with Scipy.
         """
+        # The minimizer "lm-scipy-no-jac" uses MINPACK's Jacobian evaluation
+        # whereas we minimizer "lm-scipy" uses problem.eval_j for the Jacobian
+        # evaluation
         if self.minimizer == "lm-scipy-no-jac":
             self.result = least_squares(fun=self.problem.eval_r,
                                         x0=self.initial_params,
