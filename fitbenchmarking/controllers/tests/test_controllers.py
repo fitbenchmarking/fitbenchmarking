@@ -29,7 +29,7 @@ def make_fitting_problem():
     fname = os.path.join(bench_prob_dir, 'cubic.dat')
 
     fitting_problem = parse_problem_file(fname, options)
-    fitting_problem.correct_data(True)
+    fitting_problem.correct_data()
     return fitting_problem
 
 
