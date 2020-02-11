@@ -73,7 +73,7 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
         fit_success = init_success = options.make_plots
 
         if options.make_plots:
-            fig_fit, fig_start = get_figure_paths(result, count)
+            fig_fit, fig_start = get_figure_paths(result)
             if fig_fit == '':
                 fig_fit = result.figure_error
                 fit_success = False
@@ -111,15 +111,12 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
         result.support_page_link = file_path
 
 
-def get_figure_paths(result, count):
+def get_figure_paths(result):
     """
     Get the paths to the figures used in the support page.
 
     :param result: The result to get the figures for
     :type result: fitbenchmarking.utils.fitbm_result.FittingProblem
-    :param count: number of times a problem with the same name was
-                  passed through this function, consecutively
-    :type count: int
 
     :return: the paths to the required figures
     :rtype: tuple(str, str)
