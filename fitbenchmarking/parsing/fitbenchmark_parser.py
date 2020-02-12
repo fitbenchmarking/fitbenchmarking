@@ -245,7 +245,7 @@ class FitbenchmarkParser(Parser):
         :return: Starting values for the function
         :rtype: list of OrderedDict
         """
-        ignore = ['name', 'BinWidth', 'ties', 'Formula']
+        ignore = ['name', 'BinWidth', 'ties', 'Formula', 'constraints']
 
         name_template = '{1}' if len(self._parsed_func) == 1 else 'f{0}_{1}'
         starting_values = [
@@ -328,16 +328,12 @@ class FitbenchmarkParser(Parser):
                 if key in params:
                     params.pop(key)
             tmp_function = msapi.__dict__[name](**params)
+            if 'ties' in f:
+                tmp_function.tie(f['ties'])
             if fit_function is None:
                 fit_function = tmp_function
             else:
                 fit_function += tmp_function
-
-        for i, f in enumerate(self._parsed_func):
-            if 'ties' in f:
-                ties = {'f{}.{}'.format(i, tie): val
-                        for tie, val in f['ties'].items()}
-                fit_function.tie(ties)
 
         return fit_function
 
