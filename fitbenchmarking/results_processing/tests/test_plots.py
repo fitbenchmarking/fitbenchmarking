@@ -5,7 +5,11 @@ import fitbenchmarking.results_processing.plots
 
 
 class PlotTests(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 if __name__ == "__main__":
