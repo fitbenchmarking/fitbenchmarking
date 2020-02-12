@@ -14,6 +14,10 @@ from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import \
     ParserFactory, parse_problem_file
 from fitbenchmarking.utils import exceptions
+from fitbenchmarking.utils.options import Options
+
+OPTIONS = Options()
+
 
 def pytest_generate_tests(metafunc):
     """
@@ -108,7 +112,7 @@ def load_expectation(filename):
     with open(filename, 'r') as f:
         expectation_dict = load(f)
 
-    expectation = FittingProblem()
+    expectation = FittingProblem(OPTIONS)
     expectation.name = expectation_dict['name']
     expectation.start_x = expectation_dict['start_x']
     expectation.end_x = expectation_dict['end_x']
@@ -152,7 +156,7 @@ class TestParsers:
                                                and m is not Parser))[0][1]
 
         # Test parse
-        with parser(test_file) as p:
+        with parser(test_file, OPTIONS) as p:
             fitting_problem = p.parse()
 
         # Allow for problems not supporting certain test cases
@@ -219,7 +223,7 @@ class TestParsers:
             f = os.path.join(format_dir, f)
 
             parser = ParserFactory.create_parser(f)
-            with parser(f) as p:
+            with parser(f, OPTIONS) as p:
                 fitting_problem = p.parse()
 
             for r in tests:
@@ -271,5 +275,5 @@ class TestParserFactory(TestCase):
         filename = os.path.join(os.path.dirname(__file__),
                                 'nist',
                                 'basic.dat')
-        fitting_problem = parse_problem_file(filename)
+        fitting_problem = parse_problem_file(filename, OPTIONS)
         self.assertEqual(fitting_problem.name, 'basic')
