@@ -32,12 +32,14 @@ class CutestParser(Parser):
 
     This parser has some quirks.
     Due to the complex nature of SIF files, we utilise pycutest to generate the
-    function. This function returns the residual `r(f,x,y,e) := (f(x) - y)/e` for some parameters x.
+    function. This function returns the residual `r(f,x,y,e) := (f(x) - y)/e`
+    for some parameters x.
     For consistency we require the value to be `f(x, p)`.
 
-    To avoid having to convert back from the residual in the evaluation, we store
-    the data separately and set y to 0.0, and e to 1.0 for all datapoints.
-    
+    To avoid having to convert back from the residual in the evaluation, we
+    store the data separately and set y to 0.0, and e to 1.0 for all
+    datapoints.
+
     We then accomodate for the missing x argument by caching x against an
     associated function `f_x(p)`.
 
@@ -64,7 +66,7 @@ class CutestParser(Parser):
         self._num_params = None
 
         # get just the short filename (minus the .SIF)
-        fp = FittingProblem()
+        fp = FittingProblem(self.options)
 
         # Collect x and create new file with blank y
         fname, fp.data_x, fp.data_y, fp.data_e = self._setup_data()

@@ -27,6 +27,7 @@ class TestRegression(TestCase):
 
         # Get defaults which should have minimizers for every software
         opts = Options()
+        opts.num_runs = 1
         # Use only the first minimizer for each software
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
         # Get a list of all softwares

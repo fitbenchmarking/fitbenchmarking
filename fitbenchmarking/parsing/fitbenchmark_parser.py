@@ -44,7 +44,7 @@ class FitbenchmarkParser(Parser):
         :return: The fully parsed fitting problem
         :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
         """
-        fitting_problem = FittingProblem()
+        fitting_problem = FittingProblem(self.options)
 
         self._entries = self._get_data_problem_entries()
         software = self._entries['software'].lower()
@@ -206,7 +206,7 @@ class FitbenchmarkParser(Parser):
                     # exiting brackets
                     pop_stack = r_count - l_count
                     # must end with brackets
-                    if val[-pop_stack:] != ')'*pop_stack:
+                    if val[-pop_stack:] != ')' * pop_stack:
                         raise ParsingError('Bad placement of closing bracket '
                                            'in function: {}'.format(p))
                     val = val[:-pop_stack]
@@ -406,7 +406,7 @@ class FitbenchmarkParser(Parser):
             first_row += 1
 
         dim = len(data_text[first_row].split())
-        data_points = np.zeros((len(data_text)-first_row, dim))
+        data_points = np.zeros((len(data_text) - first_row, dim))
 
         for idx, line in enumerate(data_text[first_row:]):
             point_text = line.split()

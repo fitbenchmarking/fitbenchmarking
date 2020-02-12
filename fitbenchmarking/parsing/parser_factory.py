@@ -52,7 +52,7 @@ class ParserFactory:
             module = import_module('.' + module_name, __package__)
         except ImportError as e:
             full_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                     module_name+'.py'))
+                                                     module_name + '.py'))
             if os.path.exists(full_path):
                 raise MissingSoftwareError('Requirements are missing for the '
                                            '{} parser: {}'.format(
@@ -70,18 +70,20 @@ class ParserFactory:
         return classes[0][1]
 
 
-def parse_problem_file(prob_file):
+def parse_problem_file(prob_file, options):
     """
     Loads the problem file into a fitting problem using the correct parser.
 
     :param prob_file: path to the problem file
     :type prob_file: string
+    :param options: all the information specified by the user
+    :type options: fitbenchmarking.utils.options.Options
 
     :return: problem object with fitting information
     :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
     """
     parser = ParserFactory.create_parser(prob_file)
-    with parser(prob_file) as p:
+    with parser(prob_file, options) as p:
         problem = p.parse()
 
     problem.verify()
