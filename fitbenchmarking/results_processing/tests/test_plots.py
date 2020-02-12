@@ -18,7 +18,10 @@ class PlotTests(unittest.TestCase):
     Test the plot object is correct.
     """
     def setUp(self):
-        self.prob = FittingProblem()
+        self.opts = Options()
+        self.opts.use_errors = True
+
+        self.prob = FittingProblem(self.opts)
         self.prob.data_x = np.array([1, 2, 4, 3, 5])
         self.prob.sorted_index = np.array([0, 1, 3, 2, 4])
         self.prob.data_y = np.array([4, 3, 5, 2, 1])
