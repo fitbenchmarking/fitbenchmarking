@@ -5,23 +5,43 @@ import fitbenchmarking.core.results_output
 
 
 class SaveResultsTests(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 class CreateDirectoriesTests(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 class PreproccessDataTests(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 class CreatePlotsTests(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 class CreateProblemLevelIndex(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 if __name__ == "__main__":
