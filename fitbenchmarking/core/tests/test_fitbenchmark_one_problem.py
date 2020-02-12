@@ -5,11 +5,18 @@ import fitbenchmarking.core.fitbenchmark_one_problem
 
 
 class FitbmOneProbTests(unittest.TestCase):
-    pass
-
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 class BenchmarkTests(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 if __name__ == "__main__":

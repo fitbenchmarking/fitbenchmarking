@@ -5,23 +5,43 @@ import fitbenchmarking.results_processing.tables
 
 
 class CreateResultsTablesTests(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 class GenerateTablesTests(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 class CreateResultsDictTests(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 class CreatePandasDataframeTests(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 class RenderPandasDataframeTests(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 if __name__ == "__main__":

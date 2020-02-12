@@ -5,7 +5,11 @@ import fitbenchmarking.core.fitting_benchmarking
 
 
 class FitbenchmarkGroup(unittest.TestCase):
-    pass
+    def test_dummy(self):
+        """
+        Dummy test to appease pytest
+        """
+        pass
 
 
 if __name__ == "__main__":

@@ -51,14 +51,20 @@ jobs:
     - stage: Tests
       name: Unit Tests
       script:
-        # ======= Examples Tests =============== #
+        # ======= CLIs Tests ================ #
         - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
           --cov-report term-missing
-        # ======= Fitting Tests =============== #
+        # ======= Core Tests ================ #
+        - pytest fitbenchmarking/core --cov=fitbenchmarking/core
+          --cov-report term-missing --cov-append
+        # ======= Controllers Tests ========= #
         - pytest fitbenchmarking/controllers --cov=fitbenchmarking/controllers
           --cov-report term-missing --cov-append
-        # ======= Parsing Tests =============== #
+        # ======= Parsing Tests ============= #
         - pytest fitbenchmarking/parsing --cov=fitbenchmarking/parsing
+          --cov-report term-missing --cov-append
+        # ======= Results Tests ============= #
+        - pytest fitbenchmarking/results_processing --cov=fitbenchmarking/results_processing
           --cov-report term-missing --cov-append
         # ======= Utils Tests =============== #
         - pytest fitbenchmarking/utils --cov=fitbenchmarking/utils
