@@ -19,11 +19,11 @@ class CreateTests(unittest.TestCase):
         self.options = Options()
         problems = []
         for _ in range(2):
-            problem = FittingProblem()
+            problem = FittingProblem(self.options)
             problem.sanitised_name = 'problem'
             problems.append(problem)
         for i in range(5):
-            problem = FittingProblem()
+            problem = FittingProblem(self.options)
             problem.sanitised_name = 'prob_{}'.format(i)
             problems.append(problem)
 
@@ -82,7 +82,7 @@ class CreateProbGroupTests(unittest.TestCase):
     """
     def setUp(self):
         self.options = Options()
-        problem = FittingProblem()
+        problem = FittingProblem(self.options)
         problem.sanitised_name = 'prob_a'
         problem.equation = 'equation!'
 
