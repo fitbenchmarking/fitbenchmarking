@@ -54,6 +54,9 @@ jobs:
         # ======= CLIs Tests ================ #
         - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
           --cov-report term-missing
+        # ======= Core Tests ================ #
+        - pytest fitbenchmarking/core --cov=fitbenchmarking/core
+          --cov-report term-missing --cov-append
         # ======= Controllers Tests ========= #
         - pytest fitbenchmarking/controllers --cov=fitbenchmarking/controllers
           --cov-report term-missing --cov-append
