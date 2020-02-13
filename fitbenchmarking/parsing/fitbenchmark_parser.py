@@ -245,6 +245,8 @@ class FitbenchmarkParser(Parser):
         :return: Starting values for the function
         :rtype: list of OrderedDict
         """
+        # Mantid functions can have reserved keywords so ignore these as they
+        # are not parameters.
         ignore = ['name', 'BinWidth', 'ties', 'Formula', 'constraints']
 
         name_template = '{1}' if len(self._parsed_func) == 1 else 'f{0}_{1}'
