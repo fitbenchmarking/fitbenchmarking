@@ -49,6 +49,10 @@ class FitbmResultTests(unittest.TestCase):
         self.comparison_mode = ['abs', 'rel', 'both']
         self.result.set_colour_scale()
 
+        r = self.problem.eval_r(self.params)
+        min_test = np.matmul(self.problem.eval_j(self.params).T, r)
+        self.norm_rel = np.linalg.norm(min_test) / np.linalg.norm(r)
+
     def test_default_print(self):
         """
         Testing defaults printing
@@ -105,13 +109,24 @@ class FitbmResultTests(unittest.TestCase):
         Testing local min table printing when params are given
         """
 
-        r = self.problem.eval_r(self.params)
-        min_test = np.matmul(self.problem.eval_j(self.params).T, r)
-        norm_rel = np.linalg.norm(min_test) / np.linalg.norm(r)
-
         self.result.params = self.params
         assert self.result.local_min == "False"
-        assert self.result.norm_rel == norm_rel
+        assert self.result.norm_rel == self.norm_rel
+
+    def test_local_min_print_colour(self):
+        """
+        Testing local min table colour
+        """
+        self.result.table_type = "local_min"
+        assert self.result.colour == "#b30000"
+
+    def test_local_min_print_table_output(self):
+        """
+        Testing local min table_output
+        """
+        self.result.table_type = "local_min"
+        assert self.result.table_output == "False ({:.4g})".format(
+            self.norm_rel)
 
     def generate_expected_str_output(self, abs_val, rel_val):
         """
