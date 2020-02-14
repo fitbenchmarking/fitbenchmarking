@@ -30,16 +30,40 @@ class MantidController(Controller):
 
         self._param_names = self.problem.param_names
 
-        self._cost_function = 'Least squares' if self.data_e is not None \
+
+        if isinstance(self.data_x[0], np.ndarray):
+            # Multi Fit
+            data_obj = msapi.CreateWorkspace(DataX=self.data_x[0],
+                                             DataY=self.data_y[0],
+                                             DataE=self.data_e[0])
+            other_inputs = [msapi.CreateWorkspace(DataX=self.data_x[0],
+                                                  DataY=self.data_y[0],
+                                                  DataE=self.data_e[0])
+                            for x, y, e in zip(self.data_x[1:],
+                                               self.data_y[1:],
+                                               self.data_e[1:])]
+            self._multi_fit = True
+        else:
+            # Normal Fitting
+            data_obj = msapi.CreateWorkspace(DataX=self.data_x,
+                                             DataY=self.data_y,
+                                             DataE=self.data_e)
+            other_inputs = []
+            self._multi_fit = False
+
+        self._cost_function = 'Least squares' if data_obj.DataE is not None \
             else 'Unweighted least squares'
-
-        data_obj = msapi.CreateWorkspace(DataX=self.data_x,
-                                         DataY=self.data_y,
-                                         DataE=self.data_e)
-
         self._mantid_data = data_obj
         self._mantid_function = None
         self._mantid_results = None
+
+        # Arguments will change if multi-data
+        self._args = {'InputWorkspace': self._mantid_data,
+                      'Output': 'ws_fitting_test',
+                      'CostFunction': self._cost_function}
+
+        self._args.update({'InputWorkspace_{}'.format(i + 1): v
+                           for i, v in enumerate(other_inputs)})
 
     def setup(self):
         """
@@ -51,6 +75,18 @@ class MantidController(Controller):
         # This enables advanced features such as contraints.
         try:
             function_def = self.problem._mantid_equation
+            if self._multi_fit:
+                # Each function must include '$domain=i'
+                domain_str = '$domain=i'
+                function_def = function_def.replace(';', domain_str + ';')
+                function_def = function_def + domain_str
+
+                # Multi fit must have 'composite=MultiDomainFunction' in the
+                # first function.
+                composite_str = 'composite=MultiDomainFunction'
+                if not function_def.contains(composite_str):
+                    function_def = '{};{}'.format(composite_str, function_def)
+
         except AttributeError:
             start_val_list = ['{0}={1}'.format(name, value)
                               for name, value
@@ -79,15 +115,14 @@ class MantidController(Controller):
 
         self._mantid_function = function_def
 
+        self._args.update({'Function': self._mantid_function,
+                           'Minimizer': self.minimizer})
+
     def fit(self):
         """
         Run problem with Mantid.
         """
-        fit_result = msapi.Fit(Function=self._mantid_function,
-                               InputWorkspace=self._mantid_data,
-                               Output='ws_fitting_test',
-                               Minimizer=self.minimizer,
-                               CostFunction=self._cost_function)
+        fit_result = msapi.Fit(**self._args)
 
         self._mantid_results = fit_result
         self._status = self._mantid_results.OutputStatus
