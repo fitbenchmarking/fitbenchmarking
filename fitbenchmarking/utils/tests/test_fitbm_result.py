@@ -1,3 +1,6 @@
+"""
+Tests for FitBenchmarking object
+"""
 from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
@@ -5,11 +8,9 @@ import unittest
 import numpy as np
 
 from fitbenchmarking import mock_problems
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.utils.misc import get_problem_files
 
 
 class FitbmResultTests(unittest.TestCase):
@@ -36,8 +37,8 @@ class FitbmResultTests(unittest.TestCase):
             runtime=self.runtime, minimizer=self.minimizer,
             params=self.params, error_flag=0)
 
-        self.min_chisq = .1
-        self.result.min_chi_sq = self.min_chisq
+        self.min_chi_sq = 0.1
+        self.result.min_chi_sq = self.min_chi_sq
         self.min_runtime = 1
         self.result.min_runtime = self.min_runtime
 
@@ -58,14 +59,14 @@ class FitbmResultTests(unittest.TestCase):
         Testing defaults printing
         """
         name = "Fitting problem class: minimizer = {}".format(self.minimizer)
-        assert self.result.__str__() == name
+        self.assertEqual(self.result.__str__(), name)
 
     def test_acc_print(self):
         """
         Testing accuracy table printing
         """
         abs_val = self.chi_sq
-        rel_val = self.chi_sq / self.min_chisq
+        rel_val = self.chi_sq / self.min_chi_sq
         text_table, html_table = self.generate_expected_str_output([abs_val],
                                                                    [rel_val])
         self.shared_compare('acc', text_table, html_table)
@@ -87,7 +88,7 @@ class FitbmResultTests(unittest.TestCase):
         runtime_abs_val = self.runtime
         runtime_rel_val = self.runtime / self.min_runtime
         acc_abs_val = self.chi_sq
-        acc_rel_val = self.chi_sq / self.min_chisq
+        acc_rel_val = self.chi_sq / self.min_chi_sq
 
         abs_val = [acc_abs_val, runtime_abs_val]
         rel_val = [acc_rel_val, runtime_rel_val]
@@ -101,8 +102,8 @@ class FitbmResultTests(unittest.TestCase):
         Testing local min table printing when params are not given
         """
         self.result.params = None
-        assert self.result.local_min == "False"
-        assert self.result.norm_rel == np.inf
+        self.assertEqual(self.result.local_min, "False")
+        self.assertEqual(self.result.norm_rel, np.inf)
 
     def test_local_min_print_true(self):
         """
@@ -110,28 +111,27 @@ class FitbmResultTests(unittest.TestCase):
         """
 
         self.result.params = self.params
-        assert self.result.local_min == "False"
-        assert self.result.norm_rel == self.norm_rel
+        self.assertEqual(self.result.local_min, "False")
+        self.assertEqual(self.result.norm_rel, self.norm_rel)
 
     def test_local_min_print_colour(self):
         """
         Testing local min table colour
         """
         self.result.table_type = "local_min"
-        assert self.result.colour == "#b30000"
+        self.assertEqual(self.result.colour, "#b30000")
 
     def test_local_min_print_table_output(self):
         """
         Testing local min table_output
         """
         self.result.table_type = "local_min"
-        assert self.result.table_output == "False ({:.4g})".format(
-            self.norm_rel)
+        self.assertEqual(self.result.table_output,
+                         "False ({:.4g})".format(self.norm_rel))
 
     def generate_expected_str_output(self, abs_val, rel_val):
         """
         Shared function which computes expected string output
-
 
         :param abs_val: list of absolute values (e.g. [acc] and [acc, runtime])
         :type abs_val: list
@@ -169,9 +169,9 @@ class FitbmResultTests(unittest.TestCase):
             # modes to be set
             self.result.table_type = table_type
             self.result.html_print = False
-            assert self.result.__str__() == text
+            self.assertEqual(self.result.__str__(), text)
             self.result.html_print = True
-            assert self.result.__str__() == html
+            self.assertEqual(self.result.__str__(), html)
 
 
 if __name__ == "__main__":
