@@ -1,0 +1,126 @@
+***************************
+* SET UP THE INITIAL DATA *
+***************************
+
+NAME          basic
+
+*   Problem :
+*   *********
+
+*   This is meaningless data, created to test the CUTEST parser.
+
+*   Fit: y = b1*(1-exp[-b2*x]) + e
+
+
+*   Number of data values
+
+ IE M                   5
+
+*   Number of variables
+
+ IE N                   2
+
+*   Useful parameters
+
+ IE 1                   1
+
+*  Data values
+
+ RE X1                  0.5
+ RE X2                  1.0
+ RE X3                  1.5
+ RE X4                  2.0
+ RE X5                  2.5
+
+ RE Y1                  33.5
+ RE Y2                  1.0
+ RE Y3                  0.1
+ RE Y4                  -2.0
+ RE Y5                  0.0
+
+VARIABLES
+
+ DO I         1                        N
+ X  B(I)
+ ND
+
+GROUPS
+
+ DO I         1                        M
+ XE F(I)      B1        1.0
+ ND
+
+CONSTANTS
+
+ DO I         1                        M
+ Z  basic     F(I)                     Y(I)
+ ND        
+
+BOUNDS
+
+ FR basic     'DEFAULT'
+
+START POINT
+
+    START1    B1        0.0
+    START1    B2        1.0
+
+
+
+ELEMENT TYPE
+
+ EV E2        V1
+ EV E2        V2
+ EP E2        X
+
+ELEMENT USES
+
+ DO I         1                        M
+ XT E(I)      E2
+ ZV E(I)      V1                       B1
+ ZV E(I)      V2                       B2
+ ZP E(I)      X                        X(I)
+ ND
+
+GROUP USES
+
+ DO I         1                        M
+ XE F(I)      E(I)      -1.0
+ ND
+
+OBJECT BOUND
+
+*   Least square problems are bounded below by zero
+
+ LO basic               0.0
+
+*   Solution
+
+*LO SOLTN               
+
+ENDATA
+
+***********************
+* SET UP THE FUNCTION *
+* AND RANGE ROUTINES  *
+***********************
+
+ELEMENTS      basic
+
+TEMPORARIES
+
+ R  E
+ M  EXP
+
+INDIVIDUALS
+
+ T  E2
+ A  E                   EXP( - V2 * X )
+ F                      V1 * E
+ G  V1                  E
+ G  V2                  - V1 * X * E
+ H  V1        V2        - X * E
+ H  V2        V2        V1 * X * X * E
+
+ENDATA
+
