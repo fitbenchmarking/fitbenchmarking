@@ -14,7 +14,6 @@ from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.create_dirs import del_contents_of_dir
 from fitbenchmarking.utils.exceptions import ParsingError
-from fitbenchmarking.utils.logging_setup import logger
 
 try:
     from tempfile import TemporaryDirectory
@@ -25,6 +24,8 @@ except ImportError:
 # Empty the cache
 del_contents_of_dir(os.environ["PYCUTEST_CACHE"])
 
+
+# pylint: disable=attribute-defined-outside-init, too-few-public-methods
 
 class CutestParser(Parser):
     """
@@ -71,7 +72,7 @@ class CutestParser(Parser):
         # Collect x and create new file with blank y
         fname, fp.data_x, fp.data_y, fp.data_e = self._setup_data()
 
-        self._p = self._import_problem(fname)
+        self._p = _import_problem(fname)
 
         fp.name = self._p.name
 
@@ -86,21 +87,6 @@ class CutestParser(Parser):
         self._cache = [(fp.data_x, self._p.objcons)]
 
         return fp
-
-    def _import_problem(self, file_name):
-        """
-        Import the problem using cutest
-
-        :param file_name: The path to the file
-        :type file_name: str
-        :return: The parsed problem
-        :rtype: pycutest.CUTEstProblem
-        """
-
-        problem_ext = os.path.basename(file_name)
-        problem, _ = os.path.splitext(problem_ext)
-
-        return pycutest.import_problem(problem)
 
     def _function(self, x, *params):
         """
@@ -120,7 +106,7 @@ class CutestParser(Parser):
                 break
         else:
             fname, _, _, _ = self._setup_data(x)
-            p = self._import_problem(fname)
+            p = _import_problem(fname)
             f = p.objcons
             self._cache.append((x, f))
         _, fx = f(np.asarray(params))
@@ -140,8 +126,9 @@ class CutestParser(Parser):
 
     def _setup_data(self, x=None):
         """
-        Reads datapoints from CUTEst SIF files and rewrites values where needed.
-        
+        Reads datapoints from CUTEst SIF files and rewrites values where
+        needed.
+
         With x=None, read all data from file into x_data, y_data, and e_data,
         then create a new file with y values of 0.0, and e values of 1.0.
 
@@ -163,88 +150,13 @@ class CutestParser(Parser):
         else:
             lines = self.file.readlines()
 
-        if x is not None and len(x.shape) == 0:
-            x = np.array([x])
-
-        x_idx, y_idx, e_idx = 0, 0, 0
-        data_x, data_y, data_e = None, None, None
-
-        # SIF requires columns of 25 chars, so line[:col_width-1] will be 1
-        # column of data
-        col_width = 25
-
-        written_x = False
-
-        to_write = []
-
-        for line in lines:
-
-            if "IE M " in line:
-                if x is None:
-                    data_count = int(line.split()[2])
-                    # this will always come before x/y data
-                    # so allocate space for these now
-                    data_x = np.zeros(data_count)
-                    data_y = np.zeros(data_count)
-                    data_e = np.zeros(data_count)
-                    # initialize index parameters for x and y
-                else:
-                    line = line[:col_width-1] + str(len(x))
-                    data_count = len(x)
-
-            elif "IE MLOWER" in line and x is not None:
-                line = line[:col_width-1] + '1\n'
-
-            elif "IE MUPPER" in line and x is not None:
-                line = line[:col_width-1] + str(len(x))
-
-            elif "IE N " in line:
-                self._num_params = int(line.split()[2])
-
-            elif "RE X" in line:
-                if x is None:
-                    data_x[x_idx] = float(line.split()[2])
-                    x_idx += 1
-                else:
-                    if written_x:
-                        continue
-
-                    line = ''
-                    new_lines = []
-                    for i, val in enumerate(x):
-                        idx = i+1
-                        tmp_line_x = ' RE X{}'.format(idx)
-                        spacing = ' '*(col_width - (5 + len(str(idx))))
-                        tmp_line_x += spacing + str(val)
-                        tmp_line_y = ' RE Y{}{}0.0'.format(idx, spacing)
-                        tmp_line_e = ' RE E{}{}1.0'.format(idx, spacing)
-                        new_lines.extend([tmp_line_x,
-                                          tmp_line_y,
-                                          tmp_line_e])
-                    x_idx = y_idx = e_idx = len(new_lines) / 3
-                    line = '\n'.join(new_lines)
-                    written_x = True
-
-            elif "RE Y" in line:
-                if x is None:
-                    data_y[y_idx] = float(line.split()[2])
-                    y_idx += 1
-                    line = line[:col_width-1] + '0.0'
-                else:
-                    continue
-
-            elif 'RE E' in line:
-                if x is None:
-                    data_e[e_idx] = float(line.split()[2])
-                    e_idx += 1
-                    line = line[:col_width-1] + '1.0'
-                else:
-                    continue
-
-            to_write.append(line + '\n')
-
         if x is None:
-            x = data_x
+            x, y, e, to_write, n = _read_x(lines)
+            self._num_params = n
+        else:
+            if not x.shape:
+                x = np.array([x])
+            x, y, e, to_write = _write_x(lines, x)
 
         file_path = os.path.join(self.mastsif_dir.name,
                                  '{}.SIF'.format(str(id(x))[-10:]))
@@ -252,17 +164,141 @@ class CutestParser(Parser):
         with open(file_path, 'w') as f:
             f.writelines(to_write)
 
-        # check the data is right
-        if x_idx != data_count:
-            raise ParsingError('Wrong number of x data points. Got {}, '
-                               'expected {}'.format(x_idx, data_count))
-        if y_idx != data_count:
-            raise ParsingError('Wrong number of y data points. Got {}, '
-                               'expected {}'.format(y_idx, data_count))
-        if e_idx == 0:
-            data_e = None
-        elif e_idx != data_count:
-            raise ParsingError('Wrong number of e data points. Got {}, '
-                               'expected {}'.format(e_idx, data_count))
+        return file_path, x, y, e
 
-        return file_path, data_x, data_y, data_e
+
+def _read_x(lines):
+    """
+    Read data from the list of lines from the file.
+    Overwrite the Y and E values with 0.0 and 1.0 respectively, and return a
+    new list of lines of text.
+
+    :param lines: The text to parse data from.
+    :type lines: list of str
+    :return: x, y, and error data, list of text to write, and number of
+             parameters from the file.
+    :rtype: numpy array, numpy array, numpy array, list of str, int
+    """
+    to_write = []
+    # SIF requires columns of 25 chars, so line[:col_width-1] will be 1 column
+    col_width = 25
+
+    x_idx, y_idx, e_idx = 0, 0, 0
+
+    for line in lines:
+        if "IE M " in line:
+            data_count = int(line.split()[2])
+            # this will always come before x/y data so allocate space now
+            data_x = np.zeros(data_count)
+            data_y = np.zeros(data_count)
+            data_e = np.zeros(data_count)
+        elif "IE N " in line:
+            num_params = int(line.split()[2])
+        elif "RE X" in line:
+            data_x[x_idx] = float(line.split()[2])
+            x_idx += 1
+        elif "RE Y" in line:
+            data_y[y_idx] = float(line.split()[2])
+            y_idx += 1
+            line = line[:col_width-1] + '0.0'
+        elif 'RE E' in line:
+            data_e[e_idx] = float(line.split()[2])
+            e_idx += 1
+            line = line[:col_width-1] + '1.0'
+        to_write.append(line + '\n')
+
+    _check_data(data_count, x_idx, y_idx, e_idx)
+    return data_x, data_y, data_e, to_write, num_params
+
+
+def _write_x(lines, x):
+    """
+    Overwrite x values in the list of lines from the file with values from a
+    numpy array.
+    Use Y=0.0 and E=1.0, and return the new list of lines of text.
+
+    :param lines: The text to parse data from.
+    :type lines: list of str
+    :param x: The data to write in place of the data in file
+    :type x: numpy array
+    :return: x, y, and error data, list of text to write.
+    :rtype: numpy array, numpy array, numpy array, list of str
+    """
+    to_write = []
+    # SIF requires columns of 25 chars, so line[:col_width-1] will be 1 column
+    col_width = 25
+
+    written = False
+
+    for line in lines:
+        if "IE M " in line:
+            line = line[:col_width-1] + str(len(x))
+        elif "IE MLOWER" in line:
+            line = line[:col_width-1] + '1\n'
+        elif "IE MUPPER" in line:
+            line = line[:col_width-1] + str(len(x))
+        elif "RE X" in line:
+            # Only write data once.
+            # Once written can skip all x entries
+            if written:
+                continue
+            line = ''
+            new_lines = []
+            for i, val in enumerate(x):
+                idx = i+1
+                spacing = ' '*(col_width - (5 + len(str(idx))))
+                new_lines.extend([' RE X{}{}{}'.format(idx, spacing, val),
+                                  ' RE Y{}{}0.0'.format(idx, spacing),
+                                  ' RE E{}{}1.0'.format(idx, spacing)])
+            x_idx = y_idx = e_idx = len(new_lines) / 3
+            line = '\n'.join(new_lines)
+            written = True
+        elif "RE Y" in line or 'RE E' in line:
+            # These should be ignored as they are written when X is found.
+            continue
+        to_write.append(line + '\n')
+
+    _check_data(len(x), x_idx, y_idx, e_idx)
+    return x, np.zeros_like(x), np.ones_like(x), to_write
+
+
+def _check_data(count, x, y, e):
+    """
+    Check that then number of data points for x, y, and errors are consistent.
+    
+    :param count: Expected number of datapoints
+    :type count: int
+    :param x: Number of x data points
+    :type x: int
+    :param y: Number of y data points
+    :type y: int
+    :param e: Number of error data points
+    :type e: int
+    :raises ParsingError: If x, y, or e does not match count. (e can also be 0)
+    """
+
+    if x != count:
+        raise ParsingError('Wrong number of x data points. Got {}, '
+                           'expected {}'.format(x, count))
+    if y != count:
+        raise ParsingError('Wrong number of y data points. Got {}, '
+                           'expected {}'.format(y, count))
+    if e not in (0, count):
+        raise ParsingError('Wrong number of e data points. Got {}, '
+                           'expected {}'.format(e, count))
+
+
+def _import_problem(file_name):
+    """
+    Import the problem using cutest
+
+    :param file_name: The path to the file
+    :type file_name: str
+    :return: The parsed problem
+    :rtype: pycutest.CUTEstProblem
+    """
+
+    problem_ext = os.path.basename(file_name)
+    problem, _ = os.path.splitext(problem_ext)
+
+    return pycutest.import_problem(problem)
