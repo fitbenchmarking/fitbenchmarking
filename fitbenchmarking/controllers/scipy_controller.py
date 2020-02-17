@@ -22,7 +22,7 @@ class ScipyController(Controller):
 
     def setup(self):
         """
-        No setup needed for scipy, so this is a no-op.
+        Setup problem ready to be run with SciPy
         """
         if self.minimizer == "lm-scipy":
             self.minimizer = "lm"
@@ -31,10 +31,24 @@ class ScipyController(Controller):
         """
         Run problem with Scipy.
         """
-        self.result = least_squares(fun=self.problem.eval_r,
-                                    x0=self.initial_params,
-                                    method=self.minimizer,
-                                    max_nfev=500)
+        # The minimizer "lm-scipy-no-jac" uses MINPACK's Jacobian evaluation
+        # which are significantly faster and gives different results than
+        # using the minimizer "lm-scipy" which uses problem.eval_j for the
+        # Jacobian evaluation. We do not see significant speed changes or
+        # difference in the accuracy results when running trf or dogbox with
+        # or without problem.eval_j for the Jacobian evaluation
+        if self.minimizer == "lm-scipy-no-jac":
+            self.result = least_squares(fun=self.problem.eval_r,
+                                        x0=self.initial_params,
+                                        method="lm",
+                                        max_nfev=500)
+        else:
+            self.result = least_squares(fun=self.problem.eval_r,
+                                        x0=self.initial_params,
+                                        method=self.minimizer,
+                                        jac=self.problem.eval_j,
+                                        max_nfev=500)
+
         self._popt = self.result.x
         self._status = self.result.status
 

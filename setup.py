@@ -30,7 +30,8 @@ setup(name='FitBenchmarking',
                         'DFO-LS',
                         'iminuit',
                         'configparser',
-                        'jinja2'],
+                        'jinja2',
+                        'backports.tempfile'],
       zip_safe=False,
 
       cmdclass={

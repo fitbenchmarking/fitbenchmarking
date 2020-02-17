@@ -8,16 +8,17 @@ from __future__ import (absolute_import, division, print_function)
 # This import is needed for dynamic scipy function def
 import numpy as np
 
+from fitbenchmarking.utils.exceptions import ParsingError
 
 def nist_func_definition(function, param_names):
     """
     Processing a function plus different set of starting values as specified in
     the NIST problem definition file into a callable
 
-    :param function : function string as defined in a NIST problem definition
-                      file
+    :param function: function string as defined in a NIST problem definition
+                     file
     :type function: str
-    :param startvals: names of the parameters in the function
+    :param param_names: names of the parameters in the function
     :type param_names: list
 
     :return: callable function
@@ -27,7 +28,7 @@ def nist_func_definition(function, param_names):
 
     # Create a function def for each starting set in startvals
     if not is_safe(function_scipy_format):
-        raise ValueError('Error while sanitizing input')
+        raise ParsingError('Error while sanitizing input')
     # Sanitizing of function_scipy_format is done so exec use is valid
     # Param_names is sanitized in get_nist_param_names_and_values
     # pylint: disable=exec-used
@@ -43,6 +44,12 @@ def nist_func_definition(function, param_names):
 def format_function_scipy(function):
     """
     Formats the function string such that it is scipy-ready.
+
+    :param function: The function to be formatted
+    :type function: str
+
+    :return: The formatted function
+    :rtype: str
     """
 
     function = function.replace("exp", "np.exp")
@@ -63,7 +70,7 @@ def is_safe(func_str):
     :param func_str: The function to be checked
     :type func_str: string
 
-    :returns: Whether the string is of the expected format for an equation
+    :return: Whether the string is of the expected format for an equation
     :rtype: bool
     """
     # Remove whitespace

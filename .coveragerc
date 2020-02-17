@@ -1,20 +1,9 @@
 [run]
 omit =
-	# utils omits
-    fitbenchmarking/utils/fitbm_problem.py
-    fitbenchmarking/utils/fitbm_result.py
-    fitbenchmarking/utils/logging_setup.py
-    fitbenchmarking/utils/user_input.py
-    # resproc omits
-    fitbenchmarking/resproc/visual_pages.py
-    fitbenchmarking/resproc/parse.py
-    # fitting omits
-    fitbenchmarking/fitting/plotting/*
-    fitbenchmarking/fitting/prerequisites.py
-    fitbenchmarking/fitting/mantid/externals.py
+    */tests/*
 
 
 [report]
 omit =
     *__init__*
-    *test_*
+    */test_*

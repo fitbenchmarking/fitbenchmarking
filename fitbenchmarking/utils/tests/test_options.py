@@ -5,6 +5,7 @@ import datetime
 import os
 import unittest
 
+from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 
@@ -13,6 +14,8 @@ class OptionsTests(unittest.TestCase):
         '''
         Create an options file and store input
         '''
+        # None of these options should be the defaults in
+        # "fitbenchmarking/utils/default_options.ini"
         config_str = """
             [MINIMIZERS]
             scipy: nonesense
@@ -24,6 +27,7 @@ class OptionsTests(unittest.TestCase):
             num_runs: 2
             software: foo
                       bar
+            jac_method: random_method
 
             [PLOTTING]
             make_plots: no
@@ -46,7 +50,8 @@ class OptionsTests(unittest.TestCase):
                                'dfogn': ['test']},
                 'FITTING': {'use_errors': False,
                             'num_runs': 2,
-                            'software': ['foo', 'bar']},
+                            'software': ['foo', 'bar'],
+                            'jac_method': 'random_method'},
                 'PLOTTING': {'make_plots': False,
                              'colour_scale': [(17.1, 'b_string?'),
                                               (float('inf'), 'final_string')],
@@ -80,6 +85,7 @@ class OptionsTests(unittest.TestCase):
 
         fitting_opts = self.options['FITTING']
         self.assertEqual(fitting_opts['software'], options.software)
+        self.assertEqual(fitting_opts['jac_method'], options.jac_method)
 
         plotting_opts = self.options['PLOTTING']
         self.assertEqual(plotting_opts['colour_scale'], options.colour_scale)
@@ -105,7 +111,7 @@ class OptionsTests(unittest.TestCase):
         self.assertDictEqual(options.__dict__, new_options.__dict__)
 
     def test_make_plots_false(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(exceptions.OptionsError):
             Options(file_name=self.options_file_incorrect)
 
     def test_make_plots_true(self):
@@ -114,7 +120,7 @@ class OptionsTests(unittest.TestCase):
         self.assertEqual(plotting_opts['make_plots'], options.make_plots)
 
     def test_use_errors_false(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(exceptions.OptionsError):
             Options(file_name=self.options_file_incorrect)
 
     def test_use_errors_true(self):
@@ -123,7 +129,7 @@ class OptionsTests(unittest.TestCase):
         self.assertEqual(plotting_opts['use_errors'], options.use_errors)
 
     def test_num_runs_non_int_value(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(exceptions.OptionsError):
             Options(file_name=self.options_file_incorrect)
 
     def test_num_runs_int_value(self):

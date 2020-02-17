@@ -30,8 +30,8 @@ def fitbenchmark_group(group_name, options, data_dir):
                      definition files
     :type date_dir: str
 
-    :returns: prob_results array of fitting results for
-              the problem group and the location of the results
+    :return: prob_results array of fitting results for
+             the problem group and the location of the results
     :rtype: tuple(list, str)
     """
     grabbed_output = output_grabber.OutputGrabber()
@@ -43,8 +43,8 @@ def fitbenchmark_group(group_name, options, data_dir):
     template_prob_name = " Running data from: {}"
     for i, p in enumerate(problem_group):
         with grabbed_output:
-            parsed_problem = parse_problem_file(p)
-            parsed_problem.correct_data(options.use_errors)
+            parsed_problem = parse_problem_file(p, options)
+            parsed_problem.correct_data()
 
         decorator = '#' * (len(template_prob_name) +
                            len(parsed_problem.name) + 4)

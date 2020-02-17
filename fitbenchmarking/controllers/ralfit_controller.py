@@ -6,6 +6,7 @@ https://github.com/ralna/RALFit
 import ral_nlls
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 
 
 class RALFitController(Controller):
@@ -16,6 +17,9 @@ class RALFitController(Controller):
     def __init__(self, problem):
         """
         Initialises variable used for temporary storage.
+
+        :param problem: Problem to fit
+        :type problem: FittingProblem
         """
         super(RALFitController, self).__init__(problem)
 
@@ -43,7 +47,8 @@ class RALFitController(Controller):
             self._options[b"model"] = 3
             self._options[b"type_of_method"] = 2
         else:
-            raise RuntimeError("An undefined RALFit minmizer was selected")
+            raise UnknownMinimizerError(
+                "No {} minimizer for RALFit".format(self.minimizer))
 
     def fit(self):
         """

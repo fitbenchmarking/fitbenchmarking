@@ -11,6 +11,7 @@ import re
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.nist_data_functions import nist_func_definition
+from fitbenchmarking.utils.exceptions import ParsingError
 from fitbenchmarking.utils.logging_setup import logger
 
 
@@ -20,8 +21,14 @@ class NISTParser(Parser):
     """
 
     def parse(self):
+        """
+        Parse the NIST problem file into a Fitting Problem.
 
-        fitting_problem = FittingProblem()
+        :return: The fully parsed fitting problem
+        :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
+        """
+
+        fitting_problem = FittingProblem(self.options)
 
         equation, data, starting_values, name = self._parse_line_by_line()
         data = self._parse_data(data)
@@ -48,8 +55,8 @@ class NISTParser(Parser):
         """
         Parses the NIST file one line at the time.
 
-        :returns: the equation, data pattern, and starting values
-                  sections of the file
+        :return: the equation, data pattern, and starting values
+                 sections of the file
         :rtype: str, str, list of list of float
         """
         lines = self.file.readlines()
@@ -91,8 +98,8 @@ class NISTParser(Parser):
         :param idx: the line at which the parser is at
         :type idx: int
 
-        :returns: The equation from the NIST file and the
-                  new index
+        :return: The equation from the NIST file and the
+                 new index
         :rtype: str and int
         """
 
@@ -123,8 +130,8 @@ class NISTParser(Parser):
         :param idx: the line at which the parser is at
         :type idx: int
 
-        :returns: The equation from the NIST file and the
-                  new index
+        :return: The equation from the NIST file and the
+                 new index
         :rtype: str and int
         """
 
@@ -136,7 +143,7 @@ class NISTParser(Parser):
                 idx += 1
 
         if not equation_text:
-            raise RuntimeError("Could not find the equation!")
+            raise ParsingError("Could not find the equation!")
 
         return equation_text, idx
 
@@ -149,7 +156,7 @@ class NISTParser(Parser):
         :param idx: the line at which the parser is at
         :type idx: int
 
-        :returns: The data pattern and the new index
+        :return: The data pattern and the new index
         :rtype: (list of str) and int
         """
 
@@ -158,7 +165,7 @@ class NISTParser(Parser):
         idx = len(lines)
 
         if not data_text:
-            raise RuntimeError("Could not find the data!")
+            raise ParsingError("Could not find the data!")
 
         return data_text, idx
 
@@ -170,7 +177,7 @@ class NISTParser(Parser):
         :param data_text: The data from the NIST problem file
         :type data_text: list of str
 
-        :returns: The data points of the problem
+        :return: The data points of the problem
         :rtype: np.ndarray
         """
 
@@ -198,7 +205,8 @@ class NISTParser(Parser):
 
         :param data_points: Unsorted data points of the problem
         :type data_points: np.ndarray
-        :returns: sorted data points of the problem
+
+        :return: sorted data points of the problem
         :rtype: np.ndarray
         """
 
@@ -213,7 +221,7 @@ class NISTParser(Parser):
         :param eq_text: The equation
         :type eq_text: str
 
-        :returns: formatted equation
+        :return: formatted equation
         :rtype: str
         """
 
@@ -222,7 +230,7 @@ class NISTParser(Parser):
             match = re.search(r'y\s*=(.+)\s*\+\s*e', eq_text)
             equation = match.group(1).strip()
         else:
-            raise RuntimeError("Unrecognized equation syntax when trying to "
+            raise ParsingError("Unrecognized equation syntax when trying to "
                                "parse a NIST equation: " + eq_text)
 
         equation = self._convert_nist_to_muparser(equation)
@@ -235,7 +243,7 @@ class NISTParser(Parser):
         :param equation: Raw equation
         :type equation: str
 
-        :returns: formatted muparser equation (mathematical notation)
+        :return: formatted muparser equation (mathematical notation)
         :rtype: str
         """
 
@@ -255,8 +263,8 @@ class NISTParser(Parser):
         :param idx: the line at which the parser is at
         :type idx: int
 
-        :returns: The starting values and the new index
-        :type: (list of OrderedDict) and int
+        :return: The starting values and the new index
+        :rtype: (list of OrderedDict) and int
         """
 
         starting_values = None
@@ -274,7 +282,7 @@ class NISTParser(Parser):
         :param lines: All lines in the imported nist file
         :type lines: list of str
 
-        :returns: The starting values used in NIST problem
+        :return: The starting values used in NIST problem
         :rtype: list of list of float
         """
         starting_vals = []
@@ -284,7 +292,7 @@ class NISTParser(Parser):
 
             startval_str = line.split()
             if not startval_str[0].isalnum():
-                raise ValueError('Could not parse starting parameters.')
+                raise ParsingError('Could not parse starting parameters.')
 
             alt_values = self._get_startvals_floats(startval_str)
 
@@ -302,7 +310,7 @@ class NISTParser(Parser):
         :param startval_str: Unparsed starting values
         :type startval_str: list of str
 
-        :returns: Starting values array of floats
+        :return: Starting values array of floats
         :rtype: list of float
         """
 
@@ -314,7 +322,7 @@ class NISTParser(Parser):
             alt_values = [float(startval_str[2])]
         # In the NIST format this can only contain 5 or 6 columns
         else:
-            raise RuntimeError("Failed to parse this line as starting "
+            raise ParsingError("Failed to parse this line as starting "
                                "values information: {0}".format(startval_str))
 
         return alt_values

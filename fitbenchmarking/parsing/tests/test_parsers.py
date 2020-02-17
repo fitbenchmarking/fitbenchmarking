@@ -13,6 +13,10 @@ from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import \
     ParserFactory, parse_problem_file
+from fitbenchmarking.utils import exceptions
+from fitbenchmarking.utils.options import Options
+
+OPTIONS = Options()
 
 
 def pytest_generate_tests(metafunc):
@@ -108,7 +112,7 @@ def load_expectation(filename):
     with open(filename, 'r') as f:
         expectation_dict = load(f)
 
-    expectation = FittingProblem()
+    expectation = FittingProblem(OPTIONS)
     expectation.name = expectation_dict['name']
     expectation.start_x = expectation_dict['start_x']
     expectation.end_x = expectation_dict['end_x']
@@ -142,6 +146,11 @@ class TestParsers:
         assert (test_file is not None), \
             'No test file for {}'.format(file_format)
 
+        with open(test_file) as f:
+            if f.readline() == 'NA':
+                # Test File cannot be written
+                return
+
         # Test import
         module = import_module(name='.{}_parser'.format(file_format),
                                package='fitbenchmarking.parsing')
@@ -152,7 +161,7 @@ class TestParsers:
                                                and m is not Parser))[0][1]
 
         # Test parse
-        with parser(test_file) as p:
+        with parser(test_file, OPTIONS) as p:
             fitting_problem = p.parse()
 
         # Allow for problems not supporting certain test cases
@@ -219,12 +228,14 @@ class TestParsers:
             f = os.path.join(format_dir, f)
 
             parser = ParserFactory.create_parser(f)
-            with parser(f) as p:
+            with parser(f, OPTIONS) as p:
                 fitting_problem = p.parse()
 
             for r in tests:
-                actual = fitting_problem.eval_f(x=np.array(r[0]),
+                x = np.array(r[0])
+                actual = fitting_problem.eval_f(x=x,
                                                 params=r[1])
+                print(r, actual)
                 assert np.isclose(actual, r[2]).all()
 
     def test_factory(self, file_format, test_file):
@@ -239,7 +250,9 @@ class TestParsers:
 
         parser = ParserFactory.create_parser(test_file)
         assert (parser.__name__.lower().startswith(file_format.lower())), \
-            'Factory failed to get associated parser for {}'.format(test_file)
+            'Factory failed to get associated parser for {0}: got {1},' \
+            'required starting with {1}'.format(test_file,
+                                                parser.__name__.lower())
 
 
 class TestParserFactory(TestCase):
@@ -251,7 +264,7 @@ class TestParserFactory(TestCase):
 
     def test_unknown_parser(self):
         """
-        Tests that the parser factory raises a value error when an erroneous
+        Tests that the parser factory raises a NoParserError when an erroneous
         parser is requested.
         """
         filename = os.path.join(os.getcwd(), 'this_is_a_fake_parser.txt')
@@ -259,7 +272,7 @@ class TestParserFactory(TestCase):
             f.write('this_is_a_fake_parser')
 
         factory = ParserFactory()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(exceptions.NoParserError):
             _ = factory.create_parser(filename)
 
         os.remove(filename)
@@ -271,5 +284,5 @@ class TestParserFactory(TestCase):
         filename = os.path.join(os.path.dirname(__file__),
                                 'nist',
                                 'basic.dat')
-        fitting_problem = parse_problem_file(filename)
+        fitting_problem = parse_problem_file(filename, OPTIONS)
         self.assertEqual(fitting_problem.name, 'basic')

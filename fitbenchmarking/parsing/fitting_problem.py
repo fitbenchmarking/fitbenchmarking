@@ -13,6 +13,8 @@ except ImportError:
 import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
+from fitbenchmarking.utils.exceptions import FittingProblemError
+
 
 class FittingProblem:
     r"""
@@ -30,8 +32,14 @@ class FittingProblem:
     intial guess for the optimal parameters.
     """
 
-    def __init__(self):
+    def __init__(self, options):
+        """
+        Initialises variable used for temporary storage.
 
+        :param options: all the information specified by the user
+        :type options: fitbenchmarking.utils.options.Options
+        """
+        self.options = options
         #: *string* Name (title) of the fitting problem
         self.name = None
 
@@ -82,13 +90,16 @@ class FittingProblem:
         # The index for sorting the data (used in plotting)
         self.sorted_index = None
 
+        # Sets the numerical derivative method
+        self._jac_method = self.options.jac_method
+
     @property
     def param_names(self):
         """
         Utility function to get the parameter names
 
-        :return: the neames of the parameters
-        :rtype: [type]
+        :return: the names of the parameters
+        :rtype: list of str
         """
         if self._param_names is None:
             self._param_names = list(self.starting_values[0].keys())
@@ -96,10 +107,16 @@ class FittingProblem:
 
     @param_names.setter
     def param_names(self, value):
-        raise ValueError('This property should not be set manually')
+        raise FittingProblemError('param_names should not be edited')
 
     @property
     def sanitised_name(self):
+        """
+        Sanitise the problem name ito one which can be used as a filename.
+
+        :return: sanitised name
+        :rtype: str
+        """
         if not self._sanitised_name:
             self._sanitised_name = self.name
             self._sanitised_name = self._sanitised_name.replace(',', '')
@@ -108,7 +125,7 @@ class FittingProblem:
 
     @sanitised_name.setter
     def sanitised_name(self, value):
-        raise ValueError('This property should not be set manually')
+        raise FittingProblemError('sanitised_name should not be edited')
 
     def eval_f(self, params, x=None):
         """
@@ -123,8 +140,8 @@ class FittingProblem:
         :rtype: numpy array
         """
         if self.function is None:
-            raise AttributeError('Cannot call function before setting'
-                                 'function.')
+            raise FittingProblemError('Cannot call function before setting '
+                                      'function.')
         if x is None:
             x = self.data_x
         return self.function(x, *params)
@@ -151,8 +168,8 @@ class FittingProblem:
             y = self.data_y
             e = self.data_e
         elif x is None or y is None:
-            raise ValueError('Residuals could not be computed with only one'
-                             'of x and y')
+            raise FittingProblemError('Residuals could not be computed with '
+                                      'only one of x and y.')
 
         result = y - self.eval_f(params=params, x=x)
         if e is not None:
@@ -188,13 +205,18 @@ class FittingProblem:
         :type params: list
         :param func: Function to find the Jacobian for, defaults to self.eval_r
         :type func: Callable, optional
+
         :return: Approximation of the Jacobian
         :rtype: numpy array
         """
         if func is None:
             func = self.eval_r
 
-        return approx_derivative(func, params, kwargs=kwargs)
+        jac = approx_derivative(func, params, method=self._jac_method,
+                                rel_step=None, f0=func(params),
+                                bounds=(-np.inf, np.inf),
+                                kwargs=kwargs)
+        return jac
 
     def eval_starting_params(self, param_set):
         """
@@ -207,8 +229,8 @@ class FittingProblem:
         :rtype: numpy array
         """
         if self.starting_values is None:
-            raise AttributeError('Cannot call function before setting'
-                                 'starting values.')
+            raise FittingProblemError('Cannot call function before setting '
+                                      'starting values.')
         return self.eval_f(self.starting_values[param_set].values())
 
     def get_function_params(self, params):
@@ -233,7 +255,7 @@ class FittingProblem:
         """
         Basic check that minimal set of attributes have been set.
 
-        Raise AttributeError if object is not properly initialised.
+        Raise FittingProblemError if object is not properly initialised.
         """
 
         values = {'data_x': np.ndarray,
@@ -243,26 +265,21 @@ class FittingProblem:
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
             if not isinstance(attr, attr_type):
-                raise TypeError('Attribute "{}" is not the expected type.'
-                                'Expected "{}", got {}.'.format(attr_name,
-                                                                attr_type,
-                                                                type(attr)
-                                                                ))
+                raise FittingProblemError(
+                    'Attribute "{}" is not the expected type. Expected "{}", '
+                    'got "{}".'.format(attr_name, attr_type, type(attr)))
         if self.function is None:
-            raise TypeError('Attribute "function" has not been set.')
+            raise FittingProblemError('Attribute "function" has not been set.')
 
-    def correct_data(self, use_errors):
+    def correct_data(self):
         """
         Strip data that overruns the start and end x_range,
         and approximate errors if not given.
         Modifications happen on member variables.
-
-        :param use_errors: Specify whether to set data_e or not
-        :type use_errors: bool 
         """
 
         # fix self.data_e
-        if use_errors:
+        if self.options.use_errors:
             if self.data_e is None:
                 self.data_e = np.sqrt(abs(self.data_y))
 

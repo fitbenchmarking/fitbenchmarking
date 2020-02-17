@@ -5,7 +5,8 @@ This file will handle all interaction with the options configuration file.
 import configparser
 
 import os
-import sys
+
+from fitbenchmarking.utils.exceptions import OptionsError
 
 
 class Options(object):
@@ -50,6 +51,7 @@ class Options(object):
             self.use_errors = fitting.getboolean('use_errors')
         except ValueError:
             error_message.append(template.format('use_errors', "boolean"))
+        self.jac_method = fitting.getstr('jac_method')
 
         plotting = config['PLOTTING']
         try:
@@ -68,11 +70,7 @@ class Options(object):
         # sys.exit() will be addressed in future FitBenchmarking
         # error handling issue
         if error_message != []:
-            print("ERROR IN OPTIONS FILE:")
-            for error in error_message:
-                print(error)
-            print("Please alter the ini file to reflect this and re-run.")
-            sys.exit()
+            raise OptionsError('\n'.join(error_message))
 
     @property
     def results_dir(self):
@@ -83,6 +81,12 @@ class Options(object):
         self._results_dir = os.path.abspath(value)
 
     def write(self, file_name):
+        """
+        Write the contents of the options object to a new options file.
+
+        :param file_name: The path to the new options file
+        :type file_name: str
+        """
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str})
 
@@ -93,7 +97,8 @@ class Options(object):
                                 for k, m in self.minimizers.items()}
         config['FITTING'] = {'num_runs': self.num_runs,
                              'software': list_to_string(self.software),
-                             'use_errors': self.use_errors}
+                             'use_errors': self.use_errors,
+                             'jac_method': self.jac_method}
         cs = list_to_string(['{0}, {1}'.format(*pair)
                              for pair in self.colour_scale])
         config['PLOTTING'] = {'colour_scale': cs,
@@ -107,4 +112,12 @@ class Options(object):
 
 
 def read_list(s):
+    """
+    Utility function to allow lists to be read by the config parser
+
+    :param s: string to convert to a list
+    :type s: string
+    :return: list of items
+    :rtype: list of str
+    """
     return str(s).split('\n')

@@ -21,13 +21,13 @@ def save_results(options, results, group_name):
     Create all results files and store them.
     Result files are plots, support pages, tables, and index pages.
 
-    :param options : The options used in the fitting problem and plotting
-    :type options : fitbenchmarking.utils.options.Options
-    :param results : results nested array of objects
-    :type results : list of list of
+    :param options: The options used in the fitting problem and plotting
+    :type options: fitbenchmarking.utils.options.Options
+    :param results: results nested array of objects
+    :type results: list of list of
                     fitbenchmarking.utils.fitbm_result.FittingResult
-    :param group_name : name of the problem group
-    :type group_name : str
+    :param group_name: name of the problem group
+    :type group_name: str
 
     :return: Path to directory of group results
     :rtype: str
@@ -84,8 +84,8 @@ def preproccess_data(results_per_test):
     for each problem
 
     :param results_per_test: results nested array of objects
-    :type results_per_test : list of list of
-                             fitbenchmarking.utils.fitbm_result.FittingResult
+    :type results_per_test: list of list of
+                            fitbenchmarking.utils.fitbm_result.FittingResult
 
     :return: The best result for each problem
     :rtype: list of fitbenchmarking.utils.fitbm_result.FittingResult
@@ -110,8 +110,8 @@ def create_table_descriptions(options):
     Create a descriptions of the tables and the comparison mode from the file
     fitbenchmarking/templates/table_descriptions.rst
 
-    : param options: The options used in the fitting problem and plotting
-    : type options: fitbenchmarking.utils.options.Options
+    :param options: The options used in the fitting problem and plotting
+    :type options: fitbenchmarking.utils.options.Options
 
     :return: dictionary containing descriptions of the tables and the
              comparison mode
@@ -148,8 +148,8 @@ def create_plots(options, results, best_results, group_name, figures_dir):
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
     :param results: results nested array of objects
-    :type results : list of list of
-                    fitbenchmarking.utils.fitbm_result.FittingResult
+    :type results: list of list of
+                   fitbenchmarking.utils.fitbm_result.FittingResult
     :param best_results: best result for each problem
     :type best_results: list of
                         fitbenchmarking.utils.fitbm_result.FittingResult
@@ -201,17 +201,17 @@ def create_problem_level_index(options, table_names, group_name,
     """
     Generates problem level index page.
 
-    :param options : The options used in the fitting problem and plotting
-    :type options : fitbenchmarking.utils.options.Options
-    :param table_names : list of table names
-    :type table_names : list
-    :param group_name : name of the problem group
-    :type group_name : str
-    :param group_dir : Path to the directory where the index should be stored
-    :type group_dir : str
-    :param table_descriptions : dictionary containing descriptions of the
-                                tables and the comparison mode
-    :type table_descriptions : dict
+    :param options: The options used in the fitting problem and plotting
+    :type options: fitbenchmarking.utils.options.Options
+    :param table_names: list of table names
+    :type table_names: list
+    :param group_name: name of the problem group
+    :type group_name: str
+    :param group_dir: Path to the directory where the index should be stored
+    :type group_dir: str
+    :param table_descriptions: dictionary containing descriptions of the
+                               tables and the comparison mode
+    :type table_descriptions: dict
     """
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))

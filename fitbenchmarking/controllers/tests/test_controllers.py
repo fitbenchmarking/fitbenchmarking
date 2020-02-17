@@ -15,18 +15,21 @@ from fitbenchmarking.controllers.sasview_controller import SasviewController
 from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import exceptions
+from fitbenchmarking.utils.options import Options
 
 
 def make_fitting_problem():
     """
     Helper function that returns a simple fitting problem
     """
+    options = Options()
 
     bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
     fname = os.path.join(bench_prob_dir, 'cubic.dat')
 
-    fitting_problem = parse_problem_file(fname)
-    fitting_problem.correct_data(True)
+    fitting_problem = parse_problem_file(fname, options)
+    fitting_problem.correct_data()
     return fitting_problem
 
 
@@ -136,11 +139,11 @@ class BaseControllerTests(TestCase):
                                 attribute
         """
         controller = DummyController(self.problem)
-        with self.assertRaises(TypeError):
+        with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
 
         controller.flag = 10
-        with self.assertRaises(ValueError):
+        with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
 
 
@@ -328,6 +331,6 @@ class FactoryTests(TestCase):
             self.assertTrue(controller.__name__.lower().startswith(software))
 
         for software in invalid:
-            self.assertRaises(ValueError,
+            self.assertRaises(exceptions.NoControllerError,
                               ControllerFactory.create_controller,
                               software)

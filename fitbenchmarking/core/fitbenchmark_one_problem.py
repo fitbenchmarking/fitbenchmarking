@@ -11,6 +11,7 @@ import warnings
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.utils import output_grabber
+from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 
 
 def fitbm_one_prob(problem, options):
@@ -23,8 +24,8 @@ def fitbm_one_prob(problem, options):
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
 
-    :returns: nested array of result objects, per function definition
-               containing the fit information
+    :return: nested array of result objects, per function definition
+             containing the fit information
     :rtype: list
     """
     grabbed_output = output_grabber.OutputGrabber()
@@ -46,8 +47,8 @@ def fitbm_one_prob(problem, options):
             try:
                 minimizers = options.minimizers[s]
             except KeyError:
-                raise ValueError(
-                    'Minimizers could not be found for software: {}'.format(s))
+                raise UnknownMinimizerError(
+                    'No minimizer given for software: {}'.format(s))
 
             with grabbed_output:
                 controller_cls = ControllerFactory.create_controller(
@@ -75,8 +76,8 @@ def benchmark(controller, minimizers, options):
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
 
-    :returns: results_problem nested array of result objects, per
-              minimizer
+    :return: results_problem nested array of result objects, per
+             minimizer
     :rtype: list
     """
     grabbed_output = output_grabber.OutputGrabber()

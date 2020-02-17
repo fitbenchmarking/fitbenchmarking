@@ -3,8 +3,7 @@ Implements a controller for the Mantid fitting software.
 """
 
 from mantid import simpleapi as msapi
-from mantid.api import *
-from mantid.fitfunctions import *
+from mantid.fitfunctions import FunctionFactory, FunctionWrapper, IFunction1D
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
@@ -13,12 +12,18 @@ from fitbenchmarking.controllers.base_controller import Controller
 class MantidController(Controller):
     """
     Controller for the Mantid fitting software.
+
+    Mantid requires subscribing a custom function in a predefined format,
+    so this controller creates that in setup.
     """
 
     def __init__(self, problem):
         """
         Setup workspace, cost_function, ignore_invalid, and initialise vars
         used for temporary storage within the mantid controller
+
+        :param problem: Problem to fit
+        :type problem: FittingProblem
         """
         super(MantidController, self).__init__(problem)
 
@@ -41,9 +46,11 @@ class MantidController(Controller):
 
         Adds a custom function to Mantid for calling in fit().
         """
-        if isinstance(self.problem.function, FunctionWrapper):
-            function_def = self.problem.function
-        else:
+        # Use the raw string format if this is from a Mantid problem.
+        # This enables advanced features such as contraints.
+        try:
+            function_def = self.problem._mantid_equation
+        except AttributeError:
             start_val_list = ['{0}={1}'.format(name, value)
                               for name, value
                               in zip(self._param_names, self.initial_params)]
