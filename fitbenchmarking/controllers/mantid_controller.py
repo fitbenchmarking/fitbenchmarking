@@ -46,9 +46,11 @@ class MantidController(Controller):
 
         Adds a custom function to Mantid for calling in fit().
         """
-        if isinstance(self.problem.function, FunctionWrapper):
-            function_def = self.problem.function
-        else:
+        # Use the raw string format if this is from a Mantid problem.
+        # This enables advanced features such as contraints.
+        try:
+            function_def = self.problem._mantid_equation
+        except AttributeError:
             start_val_list = ['{0}={1}'.format(name, value)
                               for name, value
                               in zip(self._param_names, self.initial_params)]
