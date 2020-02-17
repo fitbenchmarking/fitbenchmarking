@@ -9,6 +9,9 @@ The SIF file format is very powerful, and CUTEst will work with arbitrary
 variable names, however for FitBenchmarking, these must match a set of expected
 variable names.
 
+**Note: Upon completion, there will be a warning about implcicit deletion of
+temporary directories. This is expected and will not affect results.**
+
 Defining Data
 *************
 

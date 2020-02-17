@@ -49,3 +49,11 @@ When comparing the minimizers of a particular software against a particular type
 
 The stopping criterion of each minimizer is set to the default value.
 An experienced user can change this.
+
+
+*******
+Parsers
+*******
+
+The CUTEst parser is known to give several warnings about implicitly deleting
+temporary directories. This is expected and will not affect the results.
