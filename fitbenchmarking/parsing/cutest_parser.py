@@ -208,6 +208,8 @@ def _read_x(lines):
         to_write.append(line + '\n')
 
     _check_data(data_count, x_idx, y_idx, e_idx)
+    if not e_idx:
+        data_e = None
     return data_x, data_y, data_e, to_write, num_params
 
 
@@ -265,7 +267,7 @@ def _write_x(lines, x):
 def _check_data(count, x, y, e):
     """
     Check that then number of data points for x, y, and errors are consistent.
-    
+
     :param count: Expected number of datapoints
     :type count: int
     :param x: Number of x data points
