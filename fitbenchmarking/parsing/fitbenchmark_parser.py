@@ -46,13 +46,15 @@ class FitbenchmarkParser(Parser):
         """
         fitting_problem = FittingProblem(self.options)
 
+        # pylint: disable=attribute-defined-outside-init
         self._entries = self._get_data_problem_entries()
         software = self._entries['software'].lower()
         if not (software in import_success and import_success[software][0]):
-            e = import_success[software][1]
+            error = import_success[software][1]
             raise MissingSoftwareError('Requirements are missing for {} parser'
-                                       ': {}'.format(software, e))
+                                       ': {}'.format(software, error))
 
+        # pylint: disable=attribute-defined-outside-init
         self._parsed_func = self._parse_function()
 
         # NAME
@@ -79,6 +81,7 @@ class FitbenchmarkParser(Parser):
             fitting_problem.equation = '{} Functions'.format(equation_count)
 
         if software == 'mantid':
+            # pylint: disable=protected-access
             # String containing the function name(s) and the starting parameter
             # values for each function
             fitting_problem._mantid_equation = self._entries['function']

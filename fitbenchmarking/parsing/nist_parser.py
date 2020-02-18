@@ -5,8 +5,8 @@ This file implements a parser for the NIST style data format.
 from __future__ import (absolute_import, division, print_function)
 
 from collections import OrderedDict
-import numpy as np
 import re
+import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem

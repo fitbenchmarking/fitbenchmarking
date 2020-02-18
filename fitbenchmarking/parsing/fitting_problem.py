@@ -102,6 +102,7 @@ class FittingProblem:
         :rtype: list of str
         """
         if self._param_names is None:
+            # pylint: disable=unsubscriptable-object
             self._param_names = list(self.starting_values[0].keys())
         return self._param_names
 
@@ -144,7 +145,9 @@ class FittingProblem:
                                       'function.')
         if x is None:
             x = self.data_x
-        return self.function(x, *params)
+        # pylint: disable=not-callable
+        out = self.function(x, *params)
+        return out
 
     def eval_r(self, params, x=None, y=None, e=None):
         """
@@ -231,6 +234,7 @@ class FittingProblem:
         if self.starting_values is None:
             raise FittingProblemError('Cannot call function before setting '
                                       'starting values.')
+        # pylint: disable=unsubscriptable-object
         return self.eval_f(self.starting_values[param_set].values())
 
     def get_function_params(self, params):

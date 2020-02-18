@@ -5,9 +5,9 @@ This file contains tests for the parsers.
 from importlib import import_module
 from inspect import isclass, isabstract, getmembers
 from json import load
-import numpy as np
-import os
 from unittest import TestCase
+import os
+import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem

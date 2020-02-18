@@ -3,8 +3,8 @@ Test file to test the fitting_problem file.
 """
 
 from collections import OrderedDict
-import numpy as np
 from unittest import TestCase
+import numpy as np
 
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
@@ -17,9 +17,15 @@ class TestFittingProblem(TestCase):
     """
 
     def setUp(self):
+        """
+        Setting up FittingProblem tests
+        """
         self.options = Options()
 
     def test_sanitised_name(self):
+        """
+        Tests for sanitised name
+        """
         fitting_problem = FittingProblem(self.options)
         expected = "test_1"
         fitting_problem.name = "test 1"

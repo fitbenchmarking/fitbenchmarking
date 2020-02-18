@@ -61,7 +61,7 @@ def format_function_scipy(function):
 
     return function
 
-
+# pylint: disable=too-many-return-statements
 def is_safe(func_str):
     """
     Verifies that a string is safe to be passed to exec in the context of an

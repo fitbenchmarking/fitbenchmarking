@@ -39,7 +39,7 @@ class ParserFactory:
         extension = os.path.splitext(filename)[1]
         if "SIF" in extension.upper():
             parser_name = 'cutest'
-        else: # Otherwse, take the first section of text
+        else:  # Otherwse, take the first section of text
             parser_name = ''
             for l in line.strip('#').strip():
                 if not l.isalpha():
@@ -53,6 +53,7 @@ class ParserFactory:
         except ImportError as e:
             full_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                      module_name + '.py'))
+            # pylint: disable=no-else-raise
             if os.path.exists(full_path):
                 raise MissingSoftwareError('Requirements are missing for the '
                                            '{} parser: {}'.format(
