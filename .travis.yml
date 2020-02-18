@@ -45,8 +45,8 @@ install:
   - export SIFDECODE=$HOME/cutest/sifdecode/
   - export MASTSIF=$HOME/cutest/cutest/sif/
   - export CUTEST=$HOME/cutest/cutest/
-  - export MYARCH="pc64.lnx.gfo"	
-  
+  - export MYARCH="pc64.lnx.gfo"
+
   - pip install -r requirements.txt
   - pip install .
   - python setup.py externals
@@ -64,6 +64,11 @@ install:
 
 jobs:
   include:
+    - stage: PEP8
+      name: PEP8 linting
+      env: OPTIONAL=true
+      script:
+        - pylint fitbenchmarking/*
     - stage: Tests
       name: Unit Tests
       script:
