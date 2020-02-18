@@ -64,11 +64,6 @@ install:
 
 jobs:
   include:
-    - stage: PEP8
-      name: PEP8 linting
-      env: OPTIONAL=true
-      script:
-        - pylint fitbenchmarking/*
     - stage: Tests
       name: Unit Tests
       script:
@@ -96,3 +91,7 @@ jobs:
       script:
         # ======= System Test =============== #
         - pytest fitbenchmarking/systests
+    - name: PEP8 linting
+      env: OPTIONAL=true
+      script:
+        - pylint fitbenchmarking/*
