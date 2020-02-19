@@ -32,7 +32,8 @@ setup(name='FitBenchmarking',
                         'configparser',
                         'jinja2',
                         'backports.tempfile',
-                        'pylint'],
+                        'pylint',
+                        'flake8'],
       zip_safe=False,
 
       cmdclass={
