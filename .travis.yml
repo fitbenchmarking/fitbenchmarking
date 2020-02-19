@@ -14,7 +14,6 @@ notifications:
     on_failure: always
 
 stages:
-  - name: Linting
   - name: Tests
 
 before_install:
@@ -61,35 +60,59 @@ install:
 
   - pip install pycutest
   - pip install backports.tempfile
+  - pip install pylint
 
+env:
+  - COVERALLS_PARALLEL=true
 
 jobs:
   include:
-    - stage: Linting
-      name: PyLint
-      script:
-        - pylint fitbenchmarking/parsing/*
-    - name: Flake8
-      script:
-        - flake8 fitbenchmarking/parsing/*
     - stage: Tests
-      name: Unit Tests
+      name: PyLint parsing
+      script:
+        # ======= pylinting parsers ========= #
+        - pylint fitbenchmarking/parsing/*
+    - name: Flake8 parsing
+      script:
+        # ======= flake8 parsers ============ #
+        - flake8 fitbenchmarking/parsing/*
+    - name: CLI Tests
       script:
         # ======= CLIs Tests ================ #
         - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
           --cov-report term-missing
+      after_success:
+        - coveralls
+    - name: Core Tests
+      script:
         # ======= Core Tests ================ #
         - pytest fitbenchmarking/core --cov=fitbenchmarking/core
           --cov-report term-missing --cov-append
+      after_success:
+        - coveralls
+    - name: Controllers Tests
+      script:
         # ======= Controllers Tests ========= #
         - pytest fitbenchmarking/controllers --cov=fitbenchmarking/controllers
           --cov-report term-missing --cov-append
+      after_success:
+        - coveralls
+    - name: Parsing Tests
+      script:
         # ======= Parsing Tests ============= #
         - pytest fitbenchmarking/parsing --cov=fitbenchmarking/parsing
           --cov-report term-missing --cov-append
+      after_success:
+        - coveralls
+    - name: Results Tests
+      script:
         # ======= Results Tests ============= #
         - pytest fitbenchmarking/results_processing --cov=fitbenchmarking/results_processing
           --cov-report term-missing --cov-append
+      after_success:
+        - coveralls
+    - name: Utils Tests
+      script:
         # ======= Utils Tests =============== #
         - pytest fitbenchmarking/utils --cov=fitbenchmarking/utils
           --cov-report term-missing --cov-append

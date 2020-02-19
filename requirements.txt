@@ -1,3 +1,5 @@
+pylint<=1.6.4
+flake8
 pytest>=3.6
 pytest-cov
 coveralls
