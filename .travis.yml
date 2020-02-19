@@ -14,8 +14,8 @@ notifications:
     on_failure: always
 
 stages:
-  - name: Tests
   - name: Linting
+  - name: Tests
 
 before_install:
   # Adding RALfit packages
@@ -34,12 +34,12 @@ before_install:
 install:
   # Builds RALfit
   - ./build_ralfit.sh
-    # To access RALfit
+  # To access RALfit
   - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
 
-    # Builds cutest
+  # Builds cutest
   - source build_cutest.sh
-    # to access cutest
+  # to access cutest
   - export PATH="${SIFDECODE}/bin:${CUTEST}/bin:$PATH"
   # let's ensure the environment variables are set
   - export ARCHDEFS=$HOME/cutest/archdefs/
@@ -72,30 +72,30 @@ jobs:
     - name: Flake8
       script:
         - flake8 fitbenchmarking/parsing/*
-    # - stage: Tests
-    #   name: Unit Tests
-    #   script:
-    #     # ======= CLIs Tests ================ #
-    #     - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
-    #       --cov-report term-missing
-    #     # ======= Core Tests ================ #
-    #     - pytest fitbenchmarking/core --cov=fitbenchmarking/core
-    #       --cov-report term-missing --cov-append
-    #     # ======= Controllers Tests ========= #
-    #     - pytest fitbenchmarking/controllers --cov=fitbenchmarking/controllers
-    #       --cov-report term-missing --cov-append
-    #     # ======= Parsing Tests ============= #
-    #     - pytest fitbenchmarking/parsing --cov=fitbenchmarking/parsing
-    #       --cov-report term-missing --cov-append
-    #     # ======= Results Tests ============= #
-    #     - pytest fitbenchmarking/results_processing --cov=fitbenchmarking/results_processing
-    #       --cov-report term-missing --cov-append
-    #     # ======= Utils Tests =============== #
-    #     - pytest fitbenchmarking/utils --cov=fitbenchmarking/utils
-    #       --cov-report term-missing --cov-append
-    #   after_success:
-    #     - coveralls
-    # - name: System Tests
-    #   script:
-    #     # ======= System Test =============== #
-    #     - pytest fitbenchmarking/systests
+    - stage: Tests
+      name: Unit Tests
+      script:
+        # ======= CLIs Tests ================ #
+        - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
+          --cov-report term-missing
+        # ======= Core Tests ================ #
+        - pytest fitbenchmarking/core --cov=fitbenchmarking/core
+          --cov-report term-missing --cov-append
+        # ======= Controllers Tests ========= #
+        - pytest fitbenchmarking/controllers --cov=fitbenchmarking/controllers
+          --cov-report term-missing --cov-append
+        # ======= Parsing Tests ============= #
+        - pytest fitbenchmarking/parsing --cov=fitbenchmarking/parsing
+          --cov-report term-missing --cov-append
+        # ======= Results Tests ============= #
+        - pytest fitbenchmarking/results_processing --cov=fitbenchmarking/results_processing
+          --cov-report term-missing --cov-append
+        # ======= Utils Tests =============== #
+        - pytest fitbenchmarking/utils --cov=fitbenchmarking/utils
+          --cov-report term-missing --cov-append
+      after_success:
+        - coveralls
+    - name: System Tests
+      script:
+        # ======= System Test =============== #
+        - pytest fitbenchmarking/systests
