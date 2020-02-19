@@ -11,7 +11,7 @@ from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.utils.exceptions import (MissingSoftwareError,
                                               NoParserError)
 
-
+# pylint: disable=no-else-raise, bad-option-value
 class ParserFactory:
     """
     A factory for creating parsers.
@@ -53,7 +53,6 @@ class ParserFactory:
         except ImportError as e:
             full_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                      module_name + '.py'))
-            # pylint: disable=no-else-raise
             if os.path.exists(full_path):
                 raise MissingSoftwareError('Requirements are missing for the '
                                            '{} parser: {}'.format(
