@@ -47,6 +47,10 @@ examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
     parser.add_argument('problem_sets',
                         nargs='+',
                         help='Paths to directories containing problem sets.')
+    parser.add_argument('-d', '--debug-mode',
+                        default=False,
+                        action='store_true',
+                        help='Enable debug mode (prints traceback)',)
 
     return parser
 
@@ -144,7 +148,7 @@ def main():
 
     args = parser.parse_args(sys.argv[1:])
 
-    run(problem_sets=args.problem_sets, options_file=args.options_file)
+    run(problem_sets=args.problem_sets, options_file=args.options_file, debug=args.debug_mode)
 
 
 if __name__ == '__main__':
