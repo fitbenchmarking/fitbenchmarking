@@ -30,40 +30,66 @@ class MantidController(Controller):
 
         self._param_names = self.problem.param_names
 
-
         if isinstance(self.data_x[0], np.ndarray):
             # Multi Fit
+            use_errors = self.data_e[0] is not None
             data_obj = msapi.CreateWorkspace(DataX=self.data_x[0],
                                              DataY=self.data_y[0],
-                                             DataE=self.data_e[0])
-            other_inputs = [msapi.CreateWorkspace(DataX=self.data_x[0],
-                                                  DataY=self.data_y[0],
-                                                  DataE=self.data_e[0])
-                            for x, y, e in zip(self.data_x[1:],
-                                               self.data_y[1:],
-                                               self.data_e[1:])]
-            self._multi_fit = True
+                                             DataE=self.data_e[0],
+                                             OutputWorkspace='ws0')
+            other_inputs = [
+                msapi.CreateWorkspace(DataX=x, DataY=y, DataE=e,
+                                      OutputWorkspace='ws{}'.format(i+1))
+                for i, (x, y, e) in enumerate(zip(self.data_x[1:],
+                                                  self.data_y[1:],
+                                                  self.data_e[1:]))]
+            self._multi_fit = len(other_inputs) + 1
         else:
             # Normal Fitting
+            use_errors = self.data_e is not None
             data_obj = msapi.CreateWorkspace(DataX=self.data_x,
                                              DataY=self.data_y,
                                              DataE=self.data_e)
             other_inputs = []
-            self._multi_fit = False
+            self._multi_fit = 0
 
-        self._cost_function = 'Least squares' if data_obj.DataE is not None \
+        self._cost_function = 'Least squares' if use_errors \
             else 'Unweighted least squares'
         self._mantid_data = data_obj
         self._mantid_function = None
         self._mantid_results = None
 
-        # Arguments will change if multi-data
-        self._args = {'InputWorkspace': self._mantid_data,
-                      'Output': 'ws_fitting_test',
-                      'CostFunction': self._cost_function}
+        # Use the raw string format if this is from a Mantid problem.
+        # This enables advanced features such as contraints.
+        try:
+            function_def = self.problem.additional_info['mantid_equation']
+            if self._multi_fit:
+                # Each function must include '$domains=i'
+                if ';' in function_def:
+                    function_def = ' (composite=CompositeFunction, '\
+                                   + 'NumDeriv=false, $domains=i; '\
+                                   + '{});'.format(function_def)
+                else:
+                    function_def += ', $domains=i; '
 
-        self._args.update({'InputWorkspace_{}'.format(i + 1): v
-                           for i, v in enumerate(other_inputs)})
+                # Multi fit must have 'composite=MultiDomainFunction' in the
+                # first function.
+                composite_str = 'composite=MultiDomainFunction, NumDeriv=1;'
+                function_def = composite_str + function_def * self._multi_fit
+                ties = ','.join('f{0}.{1}=f0.{1}'.format(i, p)
+                                for p in self.problem.additional_info[
+                                    'mantid_ties']
+                                for i in range(1, self._multi_fit))
+                function_def += 'ties=({})'.format(ties)
+
+            self._mantid_function = function_def
+        except KeyError:
+            # This will be completed in setup as it requires initial params
+            self._mantid_function = None
+
+        # Arguments will change if multi-data
+        self._added_args = {'InputWorkspace_{}'.format(i + 1): v
+                            for i, v in enumerate(other_inputs)}
 
     def setup(self):
         """
@@ -71,23 +97,8 @@ class MantidController(Controller):
 
         Adds a custom function to Mantid for calling in fit().
         """
-        # Use the raw string format if this is from a Mantid problem.
-        # This enables advanced features such as contraints.
-        try:
-            function_def = self.problem._mantid_equation
-            if self._multi_fit:
-                # Each function must include '$domain=i'
-                domain_str = '$domain=i'
-                function_def = function_def.replace(';', domain_str + ';')
-                function_def = function_def + domain_str
 
-                # Multi fit must have 'composite=MultiDomainFunction' in the
-                # first function.
-                composite_str = 'composite=MultiDomainFunction'
-                if not function_def.contains(composite_str):
-                    function_def = '{};{}'.format(composite_str, function_def)
-
-        except AttributeError:
+        if self._mantid_function is None:
             start_val_list = ['{0}={1}'.format(name, value)
                               for name, value
                               in zip(self._param_names, self.initial_params)]
@@ -113,16 +124,18 @@ class MantidController(Controller):
 
             FunctionFactory.subscribe(fitFunction)
 
-        self._mantid_function = function_def
-
-        self._args.update({'Function': self._mantid_function,
-                           'Minimizer': self.minimizer})
+            self._mantid_function = function_def
 
     def fit(self):
         """
         Run problem with Mantid.
         """
-        fit_result = msapi.Fit(**self._args)
+        fit_result = msapi.Fit(Function=self._mantid_function,
+                               CostFunction=self._cost_function,
+                               Minimizer=self.minimizer,
+                               InputWorkspace=self._mantid_data,
+                               Output='fit',
+                               **self._added_args)
 
         self._mantid_results = fit_result
         self._status = self._mantid_results.OutputStatus
@@ -139,7 +152,45 @@ class MantidController(Controller):
         else:
             self.flag = 2
 
-        ws = self._mantid_results.OutputWorkspace
-        self.results = ws.readY(1)
-        final_params = self._mantid_results.OutputParameters.column(1)
-        self.final_params = final_params[:len(self.initial_params)]
+        # Mantid gives chi sq as last elem in params
+        final_params = self._mantid_results.OutputParameters.column(1)[:-1]
+        num_params = len(self.initial_params)
+        if self._multi_fit:
+            self.final_params = [final_params[i*num_params:(i+1)*num_params]
+                                 for i in range(len(self.data_x))]
+        else:
+            self.final_params = final_params
+
+    # Override if multi-fit
+    # =====================
+    def eval_chisq(self, params, x=None, y=None, e=None):
+        """
+        Computes the chisq value.
+        If multi-fit inputs will be lists and this will return a list of chi
+        squared of params[i], x[i], y[i], and e[i].
+
+        :param params: The parameters to calculate residuals for
+        :type params: list of float or list of list of float
+        :param x: x data points, defaults to self.data_x
+        :type x: numpy array or list of numpy arrays, optional
+        :param y: y data points, defaults to self.data_y
+        :type y: numpy array or list of numpy arrays, optional
+        :param e: error at each data point, defaults to self.data_e
+        :type e: numpy array or list of numpy arrays, optional
+
+        :return: The sum of squares of residuals for the datapoints at the
+                 given parameters
+        :rtype: numpy array
+        """
+        if isinstance(params[0], float):
+            return super(MantidController, self).eval_chisq(params, x, y, e)
+        else:
+            num_inps = len(params)
+            if x is None:
+                x = [None for _ in range(num_inps)]
+            if y is None:
+                y = [None for _ in range(num_inps)]
+            if e is None:
+                e = [None for _ in range(num_inps)]
+            return [super(MantidController, self).eval_chisq(p, xi, yi, ei)
+                    for p, xi, yi, ei in zip(params, x, y, e)]

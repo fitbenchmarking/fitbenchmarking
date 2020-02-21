@@ -10,7 +10,8 @@ from collections import OrderedDict
 import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.parsing.fitting_problem import (correct_data,
+                                                     FittingProblem)
 from fitbenchmarking.utils.exceptions import MissingSoftwareError, ParsingError
 from fitbenchmarking.utils.logging_setup import logger
 
@@ -18,8 +19,10 @@ import_success = {}
 try:
     import mantid.simpleapi as msapi
     import_success['mantid'] = (True, None)
+    import_success['mantid multifit'] = (True, None)
 except ImportError as e:
     import_success['mantid'] = (False, e)
+    import_success['mantid multifit'] = (False, e)
 
 
 try:
@@ -59,14 +62,22 @@ class FitbenchmarkParser(Parser):
         fitting_problem.name = self._entries['name']
 
         # DATA
-        data_points = self._get_data_points()
-        fitting_problem.data_x = data_points[:, 0]
-        fitting_problem.data_y = data_points[:, 1]
-        if data_points.shape[1] > 2:
-            fitting_problem.data_e = data_points[:, 2]
+        data_points = [_get_data_points(p) for p in self._get_data_file()]
+        if software != 'mantid multifit':
+            data_points = data_points[0]
+            fitting_problem.data_x = data_points[:, 0]
+            fitting_problem.data_y = data_points[:, 1]
+            if data_points.shape[1] > 2:
+                fitting_problem.data_e = data_points[:, 2]
+        else:
+            num_files = len(data_points)
+            fitting_problem.data_x = [d[:, 0] for d in data_points]
+            fitting_problem.data_y = [d[:, 1] for d in data_points]
+            fitting_problem.data_e = [d[:, 2] if d.shape[1] > 2 else None
+                                      for d in data_points]
 
         # FUNCTION
-        if software == 'mantid':
+        if software in ['mantid', 'mantid multifit']:
             fitting_problem.function = self._create_mantid_function()
         elif software == 'sasview':
             fitting_problem.function = self._create_sasview_function()
@@ -78,25 +89,54 @@ class FitbenchmarkParser(Parser):
         else:
             fitting_problem.equation = '{} Functions'.format(equation_count)
 
-        if software == 'mantid':
+        if software in ['mantid', 'mantid multifit']:
             # String containing the function name(s) and the starting parameter
-            # values for each function
-            fitting_problem._mantid_equation = self._entries['function']
+            # values for each function.
+            fitting_problem.additional_info['mantid_equation'] \
+                = self._entries['function']
+
+        if software == 'mantid multifit':
+            try:
+                ties = []
+                for t in self._entries['ties'].split(','):
+                    # Strip out these chars
+                    for s in '[] "\'':
+                        t = t.replace(s, '')
+                    ties.append(t)
+
+            except KeyError:
+                ties = []
+            fitting_problem.additional_info['mantid_ties'] = ties
 
         # STARTING VALUES
         fitting_problem.starting_values = self._get_starting_values()
 
         # PARAMETER RANGES
-        vr = self._parse_range('parameter_ranges')
+        vr = _parse_range(self._entries.get('parameter_ranges', ''))
         fitting_problem.value_ranges = vr if vr != {} else None
 
         # FIT RANGES
-        fit_ranges = self._parse_range('fit_ranges')
-        try:
-            fitting_problem.start_x = fit_ranges['x'][0]
-            fitting_problem.end_x = fit_ranges['x'][1]
-        except KeyError:
-            pass
+        fit_ranges_str = self._entries.get('fit_ranges', '')
+        # this creates a list of strs like '{key: val, ...}' and parses each
+        fit_ranges = [_parse_range('{' + r.split('}')[0] + '}')
+                      for r in fit_ranges_str.split('{')[1:]]
+        if software != 'mantid multifit':
+            if fit_ranges:
+                try:
+                    fitting_problem.start_x = fit_ranges['x'][0]
+                    fitting_problem.end_x = fit_ranges['x'][1]
+                except KeyError:
+                    pass
+        else:
+            start_x = [f['x'][0] if 'x' in f else None for f in fit_ranges]
+            end_x = [f['x'][1] if 'x' in f else None for f in fit_ranges]
+
+            if not start_x:
+                start_x = [None]*num_files
+            if not end_x:
+                end_x = [None]*num_files
+            fitting_problem.start_x = start_x
+            fitting_problem.end_x = end_x
 
         return fitting_problem
 
@@ -109,18 +149,30 @@ class FitbenchmarkParser(Parser):
         :return: (full) path to a data file. Return None if not found
         :rtype: str or None
         """
-        data_file = None
         data_file_name = self._entries['input_file']
+        if data_file_name.startswith('['):
+            # Parse list assuming filenames do not have quote symbols or commas
+            data_file_names = [
+                d.replace('"', '').replace("'", '').strip('[').strip(']')
+                for d in data_file_name.split(',')]
+        else:
+            data_file_names = [data_file_name]
+
         # find or search for path for data_file_name
-        for root, _, files in os.walk(os.path.dirname(self._filename)):
-            for name in files:
-                if data_file_name == name:
-                    data_file = os.path.join(root, data_file_name)
+        data_files = []
+        for data_file_name in data_file_names:
+            data_file = None
+            for root, _, files in os.walk(os.path.dirname(self._filename)):
+                for name in files:
+                    if data_file_name == name:
+                        data_file = os.path.join(root, data_file_name)
 
-        if data_file is None:
-            logger.error("Data file %s not found", data_file_name)
+            if data_file is None:
+                logger.error("Data file %s not found", data_file_name)
 
-        return data_file
+            data_files.append(data_file)
+
+        return data_files
 
     def _get_data_problem_entries(self):
         """
@@ -258,61 +310,6 @@ class FitbenchmarkParser(Parser):
 
         return starting_values
 
-    def _parse_range(self, key):
-        """
-        Parse a range string for the problem into a dict
-
-        :param key: The key in self._entries to parse
-        :type key: string
-
-        :return: The ranges in a dictionary with key as the var and value as a
-                 list with min and max
-                 e.g. {'x': [0, 10]}
-        :rtype: dict
-        """
-        if key not in self._entries:
-            return {}
-
-        output_ranges = {}
-        range_str = self._entries[key].strip('{').strip('}')
-        tmp_ranges = range_str.split(',')
-        ranges = []
-        cur_str = ''
-        for r in tmp_ranges:
-            cur_str += r
-            balanced = True
-            for lb, rb in ['[]', '{}', '()']:
-                if cur_str.count(lb) > cur_str.count(rb):
-                    balanced = False
-                elif cur_str.count(lb) < cur_str.count(rb):
-                    raise ParsingError(
-                        'Unbalanced brackets in {}: {}'.format(key, r))
-            if balanced:
-                ranges.append(cur_str)
-                cur_str = ''
-            else:
-                cur_str += ','
-
-        for r in ranges:
-            name, val = r.split(':')
-            name = name.strip().strip('"').strip("'").lower()
-
-            # Strip off brackets and split on comma
-            val = val.strip(' ')[1:-1].split(',')
-            val = [v.strip() for v in val]
-            try:
-                pair = [float(val[0]), float(val[1])]
-            except ValueError:
-                raise ParsingError('Expected floats in {}: {}'.format(key, r))
-
-            if pair[0] >= pair[1]:
-                raise ParsingError('Min value must be smaller than max value '
-                                   'in {}: {}'.format(key, r))
-
-            output_ranges[name] = pair
-
-        return output_ranges
-
     def _create_mantid_function(self):
         """
         Processing the function in the FitBenchmark problem definition into a
@@ -348,7 +345,7 @@ class FitbenchmarkParser(Parser):
         """
         equation = self._parsed_func[0]['name']
         starting_values = self._get_starting_values()
-        value_ranges = self._parse_range('parameter_ranges')
+        value_ranges = _parse_range(self._entries.get('parameter_ranges', ''))
         param_names = starting_values[0].keys()
 
         def fitFunction(x, *tmp_params):
@@ -370,52 +367,111 @@ class FitbenchmarkParser(Parser):
 
         return fitFunction
 
-    def _get_data_points(self):
-        """
-        Get the data points of the problem from the data file.
 
-        :return: data points
-        :rtype: np.ndarray
-        """
+def _parse_range(range_str):
+    """
+    Parse a range string for the problem into a dict or list of dict if
+    multi-fit.
 
-        data_file_path = self._get_data_file()
+    :param range_str: The a string to parse
+    :type range_str: string
 
-        with open(data_file_path, 'r') as f:
-            data_text = f.readlines()
+    :return: The ranges in a dictionary with key as the var and value as a
+             list with min and max
+             e.g. {'x': [0, 10]}
+    :rtype: dict
+    """
+    if not range_str:
+        return {}
 
-        # Find the line where data starts
-        # i.e. the first line with a float on it
-        first_row = 0
+    output_ranges = {}
+    range_str = range_str.strip('{').strip('}')
+    tmp_ranges = range_str.split(',')
+    ranges = []
+    cur_str = ''
+    for r in tmp_ranges:
+        cur_str += r
+        balanced = True
+        for lb, rb in ['[]', '{}', '()']:
+            if cur_str.count(lb) > cur_str.count(rb):
+                balanced = False
+            elif cur_str.count(lb) < cur_str.count(rb):
+                raise ParsingError(
+                    'Unbalanced brackets in range: {}'.format(r))
+        if balanced:
+            ranges.append(cur_str)
+            cur_str = ''
+        else:
+            cur_str += ','
 
-        # Loop until break statement
-        while True:
+    for r in ranges:
+        name, val = r.split(':')
+        name = name.strip().strip('"').strip("'").lower()
+
+        # Strip off brackets and split on comma
+        val = val.strip(' ')[1:-1].split(',')
+        val = [v.strip() for v in val]
+        try:
+            pair = [float(val[0]), float(val[1])]
+        except ValueError:
+            raise ParsingError('Expected floats in range: {}'.format(r))
+
+        if pair[0] >= pair[1]:
+            raise ParsingError('Min value must be smaller than max value '
+                               'in range: {}'.format(r))
+
+        output_ranges[name] = pair
+
+    return output_ranges
+
+
+def _get_data_points(data_file_path):
+    """
+    Get the data points of the problem from the data file.
+
+    :param data_file_path: The path to the file to load the points from
+    :type data_file_path: str
+
+    :return: data points
+    :rtype: np.ndarray
+    """
+
+    with open(data_file_path, 'r') as f:
+        data_text = f.readlines()
+
+    # Find the line where data starts
+    # i.e. the first line with a float on it
+    first_row = 0
+
+    # Loop until break statement
+    while True:
+        try:
+            line = data_text[first_row].strip()
+        except IndexError:
+            raise ParsingError('Could not find data points')
+        if line != '':
+            x_val = line.split()[0]
             try:
-                line = data_text[first_row].strip()
-            except IndexError:
-                raise ParsingError('Could not find data points')
-            if line != '':
-                x_val = line.split()[0]
-                try:
-                    _ = float(x_val)
-                except ValueError:
-                    pass
-                else:
-                    break
-            first_row += 1
-
-        dim = len(data_text[first_row].split())
-        data_points = np.zeros((len(data_text) - first_row, dim))
-
-        for idx, line in enumerate(data_text[first_row:]):
-            point_text = line.split()
-            # Skip any values that can't be represented
-            try:
-                point = [float(val) for val in point_text]
+                _ = float(x_val)
             except ValueError:
-                point = [np.nan for val in point_text]
-            data_points[idx, :] = point
+                pass
+            else:
+                break
+        first_row += 1
 
-        # Strip all np.nan entries
-        data_points = data_points[~np.isnan(data_points[:, 0]), :]
+    dim = len(data_text[first_row].split())
+    data_points = np.zeros((len(data_text) - first_row, dim))
 
-        return data_points
+    for idx, line in enumerate(data_text[first_row:]):
+        point_text = line.split()
+        # Skip any values that can't be represented
+        try:
+            point = [float(val) for val in point_text]
+        except ValueError:
+            point = [np.nan for val in point_text]
+        data_points[idx, :] = point
+
+    # Strip all np.nan entries
+    data_points = data_points[~np.isnan(data_points[:, 0]), :]
+
+    return data_points

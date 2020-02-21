@@ -40,26 +40,52 @@ def fitbenchmark_group(group_name, options, data_dir):
     problem_group = misc.get_problem_files(data_dir)
 
     results = []
+    name_count = {}
     template_prob_name = " Running data from: {}"
     for i, p in enumerate(problem_group):
         with grabbed_output:
             parsed_problem = parse_problem_file(p, options)
-            parsed_problem.correct_data()
+        parsed_problem.correct_data()
 
-        decorator = '#' * (len(template_prob_name) +
-                           len(parsed_problem.name) + 4)
-        tmp_prob_name = template_prob_name.format(parsed_problem.name)
+        name = parsed_problem.name
+        name_count[name] = 1 + name_count.get(name, 0)
+        count = name_count[name]
+
+        # Put in placeholder for the count.
+        # This will be fixed in the results after all problems have ran
+        parsed_problem.name = name + '<count> {}</count>'.format(count)
+
+        tmp_prob_name = template_prob_name.format(name + ' ' + str(count))
+        decorator = '#' * (3 + len(
+            tmp_prob_name + str(i + 1) + str(len(problem_group))))
         print("\n{0}\n{1} {2}/{3}\n{0}\n".format(decorator, tmp_prob_name,
                                                  i + 1, len(problem_group)))
 
         problem_results = fitbm_one_prob(problem=parsed_problem,
                                          options=options)
+        results.extend(problem_results)
 
-        # Convert from list of dict to list of list and store
-        for r in problem_results:
-            tmp_result = []
-            for s in options.software:
-                tmp_result.extend(r[s])
-            results.append(tmp_result)
+    # Used to group elements in list by name
+    results_dict = {}
+    # Get list of names which need an index so they are unique
+    names_to_update = [name for name in name_count if name_count[name] > 1]
+
+    for problem_result in results:
+        # First fix name
+        name_segs = problem_result.name.split('<count>')
+        if name_segs[0] in names_to_update:
+            name = name_segs[0] + name_segs[1].replace('</count>', '')
+        else:
+            name = name_segs[0] + name_segs[1].split('</count>')[1]
+        problem_result.name = name
+
+        # Now group by name
+        try:
+            results_dict[name].append(problem_result)
+        except KeyError:
+            results_dict[name] = [problem_result]
+
+    results = [sorted(results_dict[r], key=lambda x: x.minimizer)
+               for r in sorted(results_dict.keys())]
 
     return results
