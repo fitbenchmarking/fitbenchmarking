@@ -7,6 +7,7 @@ import os
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from textwrap import wrap
 
 
 def profile(results, fig_dir):
@@ -76,7 +77,8 @@ def plot(acc, runtime, fig_dir):
     name_template = "{}_profile.png"
     figure_path = []
     for profile_plot, name in zip([acc, runtime], ["acc", "runtime"]):
-        figure_path.append(os.path.join(fig_dir, name_template.format(name)))
+        this_filename = os.path.join(fig_dir, name_template.format(name))
+        figure_path.append(this_filename)
 
         step_values = []
         for value in profile_plot.values():
@@ -97,27 +99,83 @@ def plot(acc, runtime, fig_dir):
         for i, solver in enumerate(labels):
             if no_failures[i]:
                 labels[i] = "{} ({} failures)".format(solver,no_failures[i])
-        fig = plt.figure()
+
+        max_value = np.max([np.max(v)
+                            for v in profile_plot.values()])
+        linear_upper_limit = 10
+
+        use_log_plot = True
+        if max_value < linear_upper_limit:
+            # if we don't need a log plot, then don't print one
+            fig, ax = plt.subplots(1, 2,
+                                   gridspec_kw={
+                                       'width_ratios': [30, 7],
+                                       'wspace':0.01})
+            legend_ax = 1
+            use_log_plot = False
+        else:
+            fig, ax = plt.subplots(1, 3,
+                                   sharey=True,
+                                   gridspec_kw={
+                                    'width_ratios': [10, 20, 7],
+                                    'wspace':0.01})
+            legend_ax = 2
         lines = [ "-", "-.", "--",":"]
         colors = ["g", "r", "b", "k", "c","m"]
+        
+        
+        # Plot linear performance profile
         for s, step_value in enumerate(step_values):
-            plt.step(step_value,
+            ax[0].step(step_value,
                      uniform_steps,
                      label=labels[s],
                      color=colors[(s % len(colors))],
                      linestyle=lines[(s % len(lines))],
-                     lw=1.5,
+                     lw=2.0,
                      where='post')
-        plt.title("{}".format(name))
+        ax[0].set_xlim(1,linear_upper_limit)
+        ax[0].set_xticks([1,2,4,6,8,10])
+        ax[0].set_xticklabels(['$1$','$2$','$4$','$6$','$8$','$10$'])
+        ax[0].yaxis.set_ticks_position('left')
+        
+        if use_log_plot:
+            # Plot log performance profile
+            for s, step_value in enumerate(step_values):
+                ax[1].step(step_value,
+                           uniform_steps,
+                           label=labels[s],
+                           color=colors[(s % len(colors))],
+                           linestyle=lines[(s % len(lines))],
+                           lw=2.0,
+                           where='post')
+            fig.suptitle("{}".format(name))
+            ax[1].set_xlim(
+                linear_upper_limit,
+                min(max_value+1,10000))
+            ax[1].set_xscale('log')
+            ax[1].set_xticks([100,1000,10000])
+            ax[1].set_xticklabels(['$10^2$','$10^3$','$10^4$'])
+            ax[1].yaxis.set_ticks_position('right')
+            ax[1].tick_params(axis='y', labelcolor='white')
+        
+        # legend
+        ax[legend_ax].axis('off')
+        handles, labels = ax[0].get_legend_handles_labels()
+        wrapped_labels = [ '\n'.join(wrap(l,22)) for l in labels]
+        ax[legend_ax].legend(handles, wrapped_labels, loc=2, prop={'size':8})
+        
+        # Common parts
         plt.ylim(0.0,1.0)
-        plt.ylabel("fractions for which solver within f of best")
-        max_value = np.max([np.max(v)
-                             for v in profile_plot.values()])
-        plt.xlim(1,min(max_value+1,10))
-        plt.xlabel("f")
-        plt.legend(loc=4)
-        #plt.gca().set_xscale("log")
-        plt.savefig(name_template.format(name))
+        fig.suptitle("Performance profile - {}".format(name))
+        
+        # add a big axis, hide frame
+        fig.add_subplot(111, frameon=False)
+        # hide tick and tick label of the big axis
+        plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+        plt.xlabel("f                       ")
+        plt.ylabel("fraction for which solver within f of best")
+        
+        plt.savefig(this_filename)
         
     return figure_path[0], figure_path[1]
 

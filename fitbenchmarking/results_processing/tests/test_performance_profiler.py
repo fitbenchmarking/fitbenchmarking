@@ -18,13 +18,13 @@ class PerformanceProfillerTests(unittest.TestCase):
         results = []
         options = Options()
 
-        acc_in = [[ 1, float('Inf') ],
-                  [ 7,  float('Inf') ],
+        acc_in = [[ 1, 5 ],
+                  [ 7,  3 ],
                   [ 10, 8 ],
-                  [ 2,  6 ]]
+                  [ 2,  3 ]]
             
         
-        runtime_in = [[ 1.0e-6, 2.2e-3 ],                              
+        runtime_in = [[ float('Inf'), 2.2e-3 ],                              
                       [ 3.0e-10, 5.0e-14 ],
                       [ 6.9e-7, 4.3e-5 ],
                       [ 1.6e-13, 1.8e-13 ]]
