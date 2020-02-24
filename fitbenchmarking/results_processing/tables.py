@@ -21,7 +21,7 @@ SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
 def create_results_tables(options, results, best_results, group_name,
-                          group_dir, table_descriptions):
+                          group_dir, table_descriptions, pp_locations):
     """
     Saves the results of the fitting to html/txt tables.
 
@@ -41,6 +41,10 @@ def create_results_tables(options, results, best_results, group_name,
     :param table_descriptions: dictionary containing descriptions of the
                                tables and the comparison mode
     :type table_descriptions: dict
+    :param pp_locations: tuple containing the locations of the
+                         performance profiles (acc then runtime)
+    :type pp_locations: tuple(str,str)
+
 
     :return: filepaths to each table
              e.g {'acc': <acc-table-filename>, 'runtime': ...}
@@ -57,12 +61,12 @@ def create_results_tables(options, results, best_results, group_name,
                                                               suffix,
                                                               weighted_str)
     generate_tables(results, best_results, table_names, table_type,
-                    group_dir, table_descriptions, options)
+                    group_dir, table_descriptions, options, pp_locations)
     return table_names
 
 
 def generate_tables(results_per_test, best_results, table_names, table_suffix,
-                    group_dir, table_descriptions, options):
+                    group_dir, table_descriptions, options, pp_locations):
     """
     Generates accuracy, runtime, and combined accuracy and runtime tables, with
     both normalised and absolute results in both txt and html.
@@ -84,13 +88,17 @@ def generate_tables(results_per_test, best_results, table_names, table_suffix,
     :type table_descriptions: dict
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
+    :param pp_locations: tuple containing the locations of the
+                         performance profiles (acc then runtime)
+    :type pp_locations: tuple(str,str)
+
     """
     table_titles = ["FitBenchmarking: {0} table".format(name)
                     for name in table_suffix]
     results_dict = create_results_dict(results_per_test)
     table = create_pandas_dataframe(results_dict, table_suffix)
     render_pandas_dataframe(table, best_results, table_names, table_titles,
-                            group_dir, table_descriptions, options)
+                            group_dir, table_descriptions, options, pp_locations)
 
 
 def create_results_dict(results_per_test):
@@ -154,7 +162,7 @@ def create_pandas_dataframe(table_data, table_suffix):
 
 def render_pandas_dataframe(table_dict, best_results, table_names,
                             table_title, group_dir, table_descriptions,
-                            options):
+                            options, pp_locations):
     """
     Generates html and txt page from pandas dataframes,
     and writes them to files.
@@ -175,6 +183,9 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
     :type table_descriptions: dict
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
+    :param pp_locations: tuple containing the locations of the
+                         performance profiles (acc then runtime)
+    :type pp_locations: tuple(str,str)
     """
 
     # Define functions that are used in calls to map over dataframes
@@ -233,14 +244,16 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         table.applymap(enable_link)
 
         # add performance profile information
-        has_pp = False
-        print("title = {}".format(name[0]))
         if name[0] in 'acc':
             has_pp = True
+            pp_location = pp_locations[0]
         elif name[0] in 'runtime':
             has_pp = True
-            
-        pp_location = ''
+            pp_location = pp_locations[1]
+        else: 
+            has_pp = False
+            pp_location = ''
+           
         
         # Set colour on each cell and add title
         table_style = table.style.applymap(colour_highlight)

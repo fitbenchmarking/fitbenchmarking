@@ -48,7 +48,8 @@ def save_results(options, results, group_name):
                                                best_results,
                                                group_name,
                                                group_dir,
-                                               table_descriptions)
+                                               table_descriptions,
+                                               pp_locations)
     create_problem_level_index(options,
                                table_names,
                                group_name,
