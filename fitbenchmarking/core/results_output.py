@@ -34,8 +34,7 @@ def save_results(options, results, group_name):
     """
     _, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
     best_results = preproccess_data(results)
-    acc_profile, runtime_profile = \
-        performance_profiler.profile(results, fig_dir)
+    pp_locations = performance_profiler.profile(results, fig_dir)
 
     table_descriptions = create_table_descriptions(options)
     if options.make_plots:

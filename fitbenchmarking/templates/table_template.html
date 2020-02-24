@@ -68,6 +68,17 @@
                         </tr>
                     {% endfor %}
                 </table>
+		{% if has_pp %}
+		<section class="accordion">
+                    <input type="checkbox" name="collapse" id="handle3" checked="checked">
+                    <h2 class="handle">
+                    <label for="handle3">Performance profile</label>
+                    </h2>
+                    <div class="content">
+		      <img alt={{ pp_location }} src={{ pp_location }} />
+                    </div>
+                </section>
+		{% endif %}
                 <center>
                 <button class="btn default" onclick="history.go(-1)">
                 <i class="fa fa-arrow-left"></i>

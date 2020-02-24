@@ -232,6 +232,16 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         # Update table values to point to individual support pages
         table.applymap(enable_link)
 
+        # add performance profile information
+        has_pp = False
+        print("title = {}".format(name[0]))
+        if name[0] in 'acc':
+            has_pp = True
+        elif name[0] in 'runtime':
+            has_pp = True
+            
+        pp_location = ''
+        
         # Set colour on each cell and add title
         table_style = table.style.applymap(colour_highlight)
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
@@ -252,5 +262,7 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
                                     table_description=description,
                                     table_format=table_format,
                                     result_name=title,
+                                    has_pp=has_pp,
+                                    pp_location=pp_location,
                                     table=table_style.render(),
                                     error_message=ERROR_OPTIONS))
