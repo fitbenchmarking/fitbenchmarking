@@ -1,7 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
-import numpy as np
 import unittest
+import numpy as np
 
 from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.results_processing import performance_profiler
@@ -18,9 +18,9 @@ class PerformanceProfillerTests(unittest.TestCase):
         options = Options()
 
         acc_in = [[1, 5],
-                  [7,  3],
+                  [7, 3],
                   [10, 8],
-                  [2,  3]]
+                  [2, 3]]
 
         runtime_in = [[float('Inf'), 2.2e-3],
                       [3.0e-10, 5.0e-14],

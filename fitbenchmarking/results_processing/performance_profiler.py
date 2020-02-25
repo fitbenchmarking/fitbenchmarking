@@ -2,14 +2,13 @@
 Set up performance profiles for both accuracy and runtime tables
 """
 from collections import OrderedDict
-import matplotlib
-import matplotlib.pyplot as plt
-import numpy as np
 import os
 from textwrap import wrap
 
+import matplotlib
 matplotlib.use('Agg')
-
+import matplotlib.pyplot as plt
+import numpy as np
 
 def profile(results, fig_dir):
     """
@@ -25,9 +24,8 @@ def profile(results, fig_dir):
     :rtype : tuple(str, str)
     """
     acc_bound, runtime_bound = prepare_profile_data(results)
-    acc_plot_path, runtime_plot_path = plot(
-        acc_bound, runtime_bound, fig_dir)
-    return acc_plot_path, runtime_plot_path
+    plot_path = plot(acc_bound, runtime_bound, fig_dir)
+    return plot_path
 
 
 def prepare_profile_data(results):
@@ -75,31 +73,15 @@ def plot(acc, runtime, fig_dir):
     :return : path to acc and runtime profile graphs
     :rtype : tuple(str, str)
     """
-    name_template = "{}_profile.png"
     figure_path = []
     for profile_plot, name in zip([acc, runtime], ["acc", "runtime"]):
-        this_filename = os.path.join(fig_dir, name_template.format(name))
+        this_filename = os.path.join(fig_dir, "{}_profile.png".format(name))
         figure_path.append(this_filename)
 
         step_values = []
         for value in profile_plot.values():
             sorted_list = np.sort(value)
             step_values.append(np.insert(sorted_list, 0, 0.0))
-
-        no_failures = np.zeros(len(step_values), dtype=np.int8)
-        huge = 1.0e20  # set a large value as a proxy for infinity
-        for i, solver_values in enumerate(step_values):
-            inf_indices = np.where(solver_values > huge)
-            solver_values[inf_indices] = huge
-            if inf_indices:
-                no_failures[i] = len(inf_indices[0])
-
-                uniform_steps = np.linspace(0.0, 1.0, step_values[0].size)
-
-        labels = [key for key in acc.keys()]
-        for i, solver in enumerate(labels):
-            if no_failures[i]:
-                labels[i] = "{} ({} failures)".format(solver, no_failures[i])
 
         max_value = np.max([np.max(v)
                             for v in profile_plot.values()])
@@ -118,21 +100,12 @@ def plot(acc, runtime, fig_dir):
             fig, ax = plt.subplots(1, 3,
                                    sharey=True,
                                    gridspec_kw={
-                                    'width_ratios': [10, 20, 7],
-                                    'wspace': 0.01})
+                                       'width_ratios': [10, 20, 7],
+                                       'wspace': 0.01})
             legend_ax = 2
-        lines = ["-", "-.", "--", ":"]
-        colors = ["g", "r", "b", "k", "c", "m"]
 
         # Plot linear performance profile
-        for s, step_value in enumerate(step_values):
-            ax[0].step(step_value,
-                       uniform_steps,
-                       label=labels[s],
-                       color=colors[(s % len(colors))],
-                       linestyle=lines[(s % len(lines))],
-                       lw=2.0,
-                       where='post')
+        create_plot(ax[0], step_values, acc.keys())
         ax[0].set_xlim(1, linear_upper_limit)
         ax[0].set_xticks([1, 2, 4, 6, 8, 10])
         ax[0].set_xticklabels(['$1$', '$2$', '$4$', '$6$', '$8$', '$10$'])
@@ -140,15 +113,7 @@ def plot(acc, runtime, fig_dir):
 
         if use_log_plot:
             # Plot log performance profile
-            for s, step_value in enumerate(step_values):
-                ax[1].step(step_value,
-                           uniform_steps,
-                           label=labels[s],
-                           color=colors[(s % len(colors))],
-                           linestyle=lines[(s % len(lines))],
-                           lw=2.0,
-                           where='post')
-            fig.suptitle("{}".format(name))
+            create_plot(ax[1], step_values, acc.keys())
             ax[1].set_xlim(
                 linear_upper_limit,
                 min(max_value+1, 10000))
@@ -158,13 +123,14 @@ def plot(acc, runtime, fig_dir):
             ax[1].yaxis.set_ticks_position('right')
             ax[1].tick_params(axis='y', labelcolor='white')
 
-            # legend
+        # legend
         ax[legend_ax].axis('off')
         handles, labels = ax[0].get_legend_handles_labels()
         wrapped_labels = ['\n'.join(wrap(l, 22)) for l in labels]
         ax[legend_ax].legend(handles, wrapped_labels, loc=2, prop={'size': 8})
 
         # Common parts
+        fig.suptitle("{}".format(name))
         plt.ylim(0.0, 1.0)
         fig.suptitle("Performance profile - {}".format(name))
 
@@ -181,4 +147,44 @@ def plot(acc, runtime, fig_dir):
 
         plt.savefig(this_filename)
 
-    return figure_path[0], figure_path[1]
+    return figure_path
+
+def create_plot(ax, step_values, keys):
+    """
+    Function to draw the profile on a matplotlib axis
+
+    :param ax : A matplotlib axis
+    :type ax : ???
+    :param step_values : runtime dictionary containing number of occurrences
+    :type step_values : ???
+
+    :return : A filled matplotlib axis
+    :rtype : ???
+    """
+
+    lines = ["-", "-.", "--", ":"]
+    colors = ["g", "r", "b", "k", "c", "m"]
+
+    no_failures = np.zeros(len(step_values), dtype=np.int8)
+    huge = 1.0e20  # set a large value as a proxy for infinity
+    for i, solver_values in enumerate(step_values):
+        inf_indices = np.where(solver_values > huge)
+        solver_values[inf_indices] = huge
+        if inf_indices:
+            no_failures[i] = len(inf_indices[0])
+
+    labels = [key for key in keys]
+    for i, solver in enumerate(labels):
+        if no_failures[i]:
+            labels[i] = "{} ({} failures)".format(solver, no_failures[i])
+
+    for s, step_value in enumerate(step_values):
+        ax.step(step_value,
+                np.linspace(0.0, 1.0, step_values[0].size),
+                label=labels[s],
+                color=colors[(s % len(colors))],
+                linestyle=lines[(s % len(lines))],
+                lw=2.0,
+                where='post')
+
+    return ax
