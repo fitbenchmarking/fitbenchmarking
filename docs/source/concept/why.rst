@@ -56,7 +56,7 @@ FitBenchmarking will help the scientist make an informed choice by
 comparing runtime and accuracy of all available minimizers, on their
 specific hardware, on problems from their science area, which will
 ensure they are using the best tool for the job. We discuss the specific
-FitBenchmarking paradigm in Section `how`_.
+FitBenchmarking paradigm in the Section :ref:`how`.
 
 We have written FitBenchmarking to be useful to
 
