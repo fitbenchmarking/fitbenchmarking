@@ -153,18 +153,19 @@ def create_plot(ax, step_values, keys):
     """
     Function to draw the profile on a matplotlib axis
 
-    :param ax : A matplotlib axis
-    :type ax : ???
-    :param step_values : runtime dictionary containing number of occurrences
-    :type step_values : ???
-
-    :return : A filled matplotlib axis
-    :rtype : ???
+    :param ax : A matplotlib axis to be filled
+    :type ax :  an `.axes.SubplotBase` subclass of `~.axes.Axes` \ 
+                (or a subclass of `~.axes.Axes`)
+    :param step_values : a sorted list of the values of the metric \ 
+                         being profiled
+    :type step_values : list of float
     """
 
     lines = ["-", "-.", "--", ":"]
     colors = ["g", "r", "b", "k", "c", "m"]
 
+    print(type(ax))
+    print(type(step_values))
     no_failures = np.zeros(len(step_values), dtype=np.int8)
     huge = 1.0e20  # set a large value as a proxy for infinity
     for i, solver_values in enumerate(step_values):
@@ -187,4 +188,3 @@ def create_plot(ax, step_values, keys):
                 lw=2.0,
                 where='post')
 
-    return ax
