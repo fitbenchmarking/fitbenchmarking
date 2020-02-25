@@ -12,5 +12,6 @@ More information on the supported formats can be found on the following pages.
     :titlesonly:
     :caption: File Formats:
 
+    cutest
     native
     nist

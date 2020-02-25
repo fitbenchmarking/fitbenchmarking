@@ -6,4 +6,4 @@ omit =
 [report]
 omit =
     *__init__*
-    *test_*
+    */test_*

@@ -14,6 +14,7 @@ you must install them with the following guides:
     :titlesonly:
     :caption: Softwares:
 
+    cutest
     gsl
     mantid
     ralfit

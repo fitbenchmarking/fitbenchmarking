@@ -146,6 +146,11 @@ class TestParsers:
         assert (test_file is not None), \
             'No test file for {}'.format(file_format)
 
+        with open(test_file) as f:
+            if f.readline() == 'NA':
+                # Test File cannot be written
+                return
+
         # Test import
         module = import_module(name='.{}_parser'.format(file_format),
                                package='fitbenchmarking.parsing')
@@ -227,8 +232,10 @@ class TestParsers:
                 fitting_problem = p.parse()
 
             for r in tests:
-                actual = fitting_problem.eval_f(x=np.array(r[0]),
+                x = np.array(r[0])
+                actual = fitting_problem.eval_f(x=x,
                                                 params=r[1])
+                print(r, actual)
                 assert np.isclose(actual, r[2]).all()
 
     def test_factory(self, file_format, test_file):
@@ -243,7 +250,9 @@ class TestParsers:
 
         parser = ParserFactory.create_parser(test_file)
         assert (parser.__name__.lower().startswith(file_format.lower())), \
-            'Factory failed to get associated parser for {}'.format(test_file)
+            'Factory failed to get associated parser for {0}: got {1},' \
+            'required starting with {1}'.format(test_file,
+                                                parser.__name__.lower())
 
 
 class TestParserFactory(TestCase):
