@@ -68,8 +68,8 @@ We have written FitBenchmarking to be useful to
    the default solver, and if it’s worth implementing a new method in
    their software; and
 
--  **Mathematicians** and **computer scientists**, who want to understand the
-   types of problems where the current algorithms are not performing,
+-  **Mathematicians** and **numerical software developers**, who want to understand the
+   types of problems on which current algorithms do not perform well,
    and to have a route to expose newly developed methods to users.
 
 FitBenchmarking is being developed by representatives from each of these
