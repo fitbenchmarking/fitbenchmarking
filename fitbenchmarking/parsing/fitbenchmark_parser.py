@@ -10,8 +10,7 @@ from collections import OrderedDict
 import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
-from fitbenchmarking.parsing.fitting_problem import (correct_data,
-                                                     FittingProblem)
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import MissingSoftwareError, ParsingError
 from fitbenchmarking.utils.logging_setup import logger
 
@@ -20,9 +19,9 @@ try:
     import mantid.simpleapi as msapi
     import_success['mantid'] = (True, None)
     import_success['mantid multifit'] = (True, None)
-except ImportError as e:
-    import_success['mantid'] = (False, e)
-    import_success['mantid multifit'] = (False, e)
+except ImportError as ex:
+    import_success['mantid'] = (False, ex)
+    import_success['mantid multifit'] = (False, ex)
 
 
 try:
@@ -30,10 +29,11 @@ try:
     from sasmodels.core import load_model
     from sasmodels.bumps_model import Experiment, Model
     import_success['sasview'] = (True, None)
-except ImportError as e:
-    import_success['sasview'] = (False, e)
+except ImportError as ex:
+    import_success['sasview'] = (False, ex)
 
 
+# pylint: disable=too-few-public-methods
 class FitbenchmarkParser(Parser):
     """
     Parser for the native FitBenchmarking problem definition (FitBenchmark)
@@ -47,6 +47,7 @@ class FitbenchmarkParser(Parser):
         :return: The fully parsed fitting problem
         :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
         """
+        # pylint: disable=attribute-defined-outside-init
         fitting_problem = FittingProblem(self.options)
 
         self._entries = self._get_data_problem_entries()
@@ -63,18 +64,6 @@ class FitbenchmarkParser(Parser):
 
         # DATA
         data_points = [_get_data_points(p) for p in self._get_data_file()]
-        if software != 'mantid multifit':
-            data_points = data_points[0]
-            fitting_problem.data_x = data_points[:, 0]
-            fitting_problem.data_y = data_points[:, 1]
-            if data_points.shape[1] > 2:
-                fitting_problem.data_e = data_points[:, 2]
-        else:
-            num_files = len(data_points)
-            fitting_problem.data_x = [d[:, 0] for d in data_points]
-            fitting_problem.data_y = [d[:, 1] for d in data_points]
-            fitting_problem.data_e = [d[:, 2] if d.shape[1] > 2 else None
-                                      for d in data_points]
 
         # FUNCTION
         if software in ['mantid', 'mantid multifit']:
@@ -89,25 +78,6 @@ class FitbenchmarkParser(Parser):
         else:
             fitting_problem.equation = '{} Functions'.format(equation_count)
 
-        if software in ['mantid', 'mantid multifit']:
-            # String containing the function name(s) and the starting parameter
-            # values for each function.
-            fitting_problem.additional_info['mantid_equation'] \
-                = self._entries['function']
-
-        if software == 'mantid multifit':
-            try:
-                ties = []
-                for t in self._entries['ties'].split(','):
-                    # Strip out these chars
-                    for s in '[] "\'':
-                        t = t.replace(s, '')
-                    ties.append(t)
-
-            except KeyError:
-                ties = []
-            fitting_problem.additional_info['mantid_ties'] = ties
-
         # STARTING VALUES
         fitting_problem.starting_values = self._get_starting_values()
 
@@ -120,24 +90,39 @@ class FitbenchmarkParser(Parser):
         # this creates a list of strs like '{key: val, ...}' and parses each
         fit_ranges = [_parse_range('{' + r.split('}')[0] + '}')
                       for r in fit_ranges_str.split('{')[1:]]
-        if software != 'mantid multifit':
-            if fit_ranges:
-                try:
-                    fit_ranges = fit_ranges[0]
-                    fitting_problem.start_x = fit_ranges['x'][0]
-                    fitting_problem.end_x = fit_ranges['x'][1]
-                except KeyError:
-                    pass
-        else:
-            start_x = [f['x'][0] if 'x' in f else None for f in fit_ranges]
-            end_x = [f['x'][1] if 'x' in f else None for f in fit_ranges]
 
-            if not start_x:
-                start_x = [None]*num_files
-            if not end_x:
-                end_x = [None]*num_files
-            fitting_problem.start_x = start_x
-            fitting_problem.end_x = end_x
+        if software != 'mantid multifit':
+            fitting_problem.data_x = data_points[0][:, 0]
+            fitting_problem.data_y = data_points[0][:, 1]
+            if data_points[0].shape[1] > 2:
+                fitting_problem.data_e = data_points[0][:, 2]
+
+            if fit_ranges and 'x' in fit_ranges[0]:
+                fitting_problem.start_x = fit_ranges[0]['x'][0]
+                fitting_problem.end_x = fit_ranges[0]['x'][1]
+
+        else:
+            num_files = len(data_points)
+            fitting_problem.data_x = [d[:, 0] for d in data_points]
+            fitting_problem.data_y = [d[:, 1] for d in data_points]
+            fitting_problem.data_e = [d[:, 2] if d.shape[1] > 2 else None
+                                      for d in data_points]
+
+            if not fit_ranges:
+                fit_ranges = [{} for _ in num_files]
+
+            fitting_problem.start_x = [f['x'][0] if 'x' in f else None for f in fit_ranges]
+            fitting_problem.end_x = [f['x'][1] if 'x' in f else None for f in fit_ranges]
+
+        if software in ['mantid', 'mantid multifit']:
+            # String containing the function name(s) and the starting parameter
+            # values for each function.
+            fitting_problem.additional_info['mantid_equation'] \
+                = self._entries['function']
+
+            if software == 'mantid multifit':
+                fitting_problem.additional_info['mantid_ties'] \
+                    = self._parse_ties()
 
         return fitting_problem
 
@@ -204,11 +189,10 @@ class FitbenchmarkParser(Parser):
                  [{name1: value1, name2: value2, ...}, ...]
         :rtype: list of dict
         """
+        # pylint: disable=too-many-branches, too-many-statements
         function_def = []
 
-        functions = self._entries['function'].split(';')
-
-        for f in functions:
+        for f in self._entries['function'].split(';'):
             params_dict = OrderedDict()
             pop_stack = 0
 
@@ -354,9 +338,7 @@ class FitbenchmarkParser(Parser):
             model = load_model(equation)
 
             data = empty_data1D(x)
-            param_dict = {name: value
-                          for name, value
-                          in zip(param_names, tmp_params)}
+            param_dict = dict(zip(param_names, tmp_params))
 
             model_wrapper = Model(model, **param_dict)
             if value_ranges is not None:
@@ -367,6 +349,19 @@ class FitbenchmarkParser(Parser):
             return func_wrapper.theory()
 
         return fitFunction
+
+    def _parse_ties(self):
+        try:
+            ties = []
+            for t in self._entries['ties'].split(','):
+                # Strip out these chars
+                for s in '[] "\'':
+                    t = t.replace(s, '')
+                ties.append(t)
+
+        except KeyError:
+            ties = []
+        return ties
 
 
 def _parse_range(range_str):

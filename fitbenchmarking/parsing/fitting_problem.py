@@ -289,6 +289,7 @@ class FittingProblem:
                 self.data_e[i] = correct_vals[2]
                 self.sorted_index.append(correct_vals[3])
 
+
 def correct_data(x, y, e, startx, endx, use_errors):
     """
     Strip data that overruns the start and end x_range,
