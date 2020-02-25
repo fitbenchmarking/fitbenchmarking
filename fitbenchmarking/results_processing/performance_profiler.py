@@ -2,12 +2,13 @@
 Set up performance profiles for both accuracy and runtime tables
 """
 from collections import OrderedDict
+import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 import os
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 from textwrap import wrap
+
+matplotlib.use('Agg')
 
 
 def profile(results, fig_dir):
@@ -85,20 +86,20 @@ def plot(acc, runtime, fig_dir):
             sorted_list = np.sort(value)
             step_values.append(np.insert(sorted_list, 0, 0.0))
 
-        no_failures = np.zeros(len(step_values),dtype=np.int8)
-        huge = 1.0e20 # set a large value as a proxy for infinity
-        for i,solver_values in enumerate(step_values):
+        no_failures = np.zeros(len(step_values), dtype=np.int8)
+        huge = 1.0e20  # set a large value as a proxy for infinity
+        for i, solver_values in enumerate(step_values):
             inf_indices = np.where(solver_values > huge)
             solver_values[inf_indices] = huge
             if inf_indices:
                 no_failures[i] = len(inf_indices[0])
-        
-        uniform_steps = np.linspace(0.0, 1.0, step_values[0].size)
+
+                uniform_steps = np.linspace(0.0, 1.0, step_values[0].size)
 
         labels = [key for key in acc.keys()]
         for i, solver in enumerate(labels):
             if no_failures[i]:
-                labels[i] = "{} ({} failures)".format(solver,no_failures[i])
+                labels[i] = "{} ({} failures)".format(solver, no_failures[i])
 
         max_value = np.max([np.max(v)
                             for v in profile_plot.values()])
@@ -110,7 +111,7 @@ def plot(acc, runtime, fig_dir):
             fig, ax = plt.subplots(1, 2,
                                    gridspec_kw={
                                        'width_ratios': [30, 7],
-                                       'wspace':0.01})
+                                       'wspace': 0.01})
             legend_ax = 1
             use_log_plot = False
         else:
@@ -118,26 +119,25 @@ def plot(acc, runtime, fig_dir):
                                    sharey=True,
                                    gridspec_kw={
                                     'width_ratios': [10, 20, 7],
-                                    'wspace':0.01})
+                                    'wspace': 0.01})
             legend_ax = 2
-        lines = [ "-", "-.", "--",":"]
-        colors = ["g", "r", "b", "k", "c","m"]
-        
-        
+        lines = ["-", "-.", "--", ":"]
+        colors = ["g", "r", "b", "k", "c", "m"]
+
         # Plot linear performance profile
         for s, step_value in enumerate(step_values):
             ax[0].step(step_value,
-                     uniform_steps,
-                     label=labels[s],
-                     color=colors[(s % len(colors))],
-                     linestyle=lines[(s % len(lines))],
-                     lw=2.0,
-                     where='post')
-        ax[0].set_xlim(1,linear_upper_limit)
-        ax[0].set_xticks([1,2,4,6,8,10])
-        ax[0].set_xticklabels(['$1$','$2$','$4$','$6$','$8$','$10$'])
+                       uniform_steps,
+                       label=labels[s],
+                       color=colors[(s % len(colors))],
+                       linestyle=lines[(s % len(lines))],
+                       lw=2.0,
+                       where='post')
+        ax[0].set_xlim(1, linear_upper_limit)
+        ax[0].set_xticks([1, 2, 4, 6, 8, 10])
+        ax[0].set_xticklabels(['$1$', '$2$', '$4$', '$6$', '$8$', '$10$'])
         ax[0].yaxis.set_ticks_position('left')
-        
+
         if use_log_plot:
             # Plot log performance profile
             for s, step_value in enumerate(step_values):
@@ -151,31 +151,34 @@ def plot(acc, runtime, fig_dir):
             fig.suptitle("{}".format(name))
             ax[1].set_xlim(
                 linear_upper_limit,
-                min(max_value+1,10000))
+                min(max_value+1, 10000))
             ax[1].set_xscale('log')
-            ax[1].set_xticks([100,1000,10000])
-            ax[1].set_xticklabels(['$10^2$','$10^3$','$10^4$'])
+            ax[1].set_xticks([100, 1000, 10000])
+            ax[1].set_xticklabels(['$10^2$', '$10^3$', '$10^4$'])
             ax[1].yaxis.set_ticks_position('right')
             ax[1].tick_params(axis='y', labelcolor='white')
-        
-        # legend
+
+            # legend
         ax[legend_ax].axis('off')
         handles, labels = ax[0].get_legend_handles_labels()
-        wrapped_labels = [ '\n'.join(wrap(l,22)) for l in labels]
-        ax[legend_ax].legend(handles, wrapped_labels, loc=2, prop={'size':8})
-        
+        wrapped_labels = ['\n'.join(wrap(l, 22)) for l in labels]
+        ax[legend_ax].legend(handles, wrapped_labels, loc=2, prop={'size': 8})
+
         # Common parts
-        plt.ylim(0.0,1.0)
+        plt.ylim(0.0, 1.0)
         fig.suptitle("Performance profile - {}".format(name))
-        
+
         # add a big axis, hide frame
         fig.add_subplot(111, frameon=False)
         # hide tick and tick label of the big axis
-        plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+        plt.tick_params(labelcolor='none',
+                        top=False,
+                        bottom=False,
+                        left=False,
+                        right=False)
         plt.xlabel("f                       ")
         plt.ylabel("fraction for which solver within f of best")
-        
-        plt.savefig(this_filename)
-        
-    return figure_path[0], figure_path[1]
 
+        plt.savefig(this_filename)
+
+    return figure_path[0], figure_path[1]

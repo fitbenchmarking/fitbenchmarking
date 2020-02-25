@@ -3,7 +3,6 @@ from collections import OrderedDict
 import numpy as np
 import unittest
 
-from fitbenchmarking import mock_problems
 from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.results_processing import performance_profiler
 from fitbenchmarking.utils.options import Options
@@ -18,18 +17,16 @@ class PerformanceProfillerTests(unittest.TestCase):
         results = []
         options = Options()
 
-        acc_in = [[ 1, 5 ],
-                  [ 7,  3 ],
-                  [ 10, 8 ],
-                  [ 2,  3 ]]
-            
-        
-        runtime_in = [[ float('Inf'), 2.2e-3 ],                              
-                      [ 3.0e-10, 5.0e-14 ],
-                      [ 6.9e-7, 4.3e-5 ],
-                      [ 1.6e-13, 1.8e-13 ]]
-            
-        
+        acc_in = [[1, 5],
+                  [7,  3],
+                  [10, 8],
+                  [2,  3]]
+
+        runtime_in = [[float('Inf'), 2.2e-3],
+                      [3.0e-10, 5.0e-14],
+                      [6.9e-7, 4.3e-5],
+                      [1.6e-13, 1.8e-13]]
+
         acc_expected = []
         runtime_expected = []
         for i in range(self.num_problems):
