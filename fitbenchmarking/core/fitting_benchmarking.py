@@ -85,7 +85,7 @@ def fitbenchmark_group(group_name, options, data_dir):
         except KeyError:
             results_dict[name] = [problem_result]
 
-    results = [sorted(results_dict[r], key=lambda x: x.minimizer)
-               for r in sorted(results_dict.keys())]
+    results = [results_dict[r] for r in
+               sorted(results_dict.keys(), key=str.lower)]
 
     return results

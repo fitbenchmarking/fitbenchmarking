@@ -42,7 +42,7 @@ class TestRegression(TestCase):
                                                os.pardir,
                                                'mock_problems',
                                                'all_parsers_set'))
-        run([problem], options_file=opt_file.name)
+        run([problem], options_file=opt_file.name, debug=True)
 
     def test_results_consistent(self):
         """

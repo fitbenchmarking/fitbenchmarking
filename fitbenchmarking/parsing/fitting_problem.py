@@ -239,13 +239,18 @@ class FittingProblem:
 
         Raise FittingProblemError if object is not properly initialised.
         """
-        values = {'data_x': [list, np.ndarray],
-                  'data_y': [list, np.ndarray],
-                  'starting_values': [list]}
+        values = {'data_x': np.ndarray,
+                  'data_y': np.ndarray,
+                  'starting_values': list}
 
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
-            if not any(isinstance(attr, t) for t in attr_type):
+            type_match = isinstance(attr, attr_type)
+            try:
+                type_match = type_match or isinstance(attr[0], attr_type)  # NOQA; pylint: disable=unsubscriptable-object
+            except (TypeError, IndexError):
+                pass
+            if not type_match:
                 raise FittingProblemError(
                     'Attribute "{}" is not the expected type. Expected "{}", '
                     'got "{}".'.format(attr_name, attr_type, type(attr)))

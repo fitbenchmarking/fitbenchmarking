@@ -14,25 +14,24 @@ class FittingResult(object):
     fitting problem test.
     """
 
-    def __init__(self, options=None, problem=None, name=None, chi_sq=None,
-                 initial_params=None, params=None, runtime=None,
+    def __init__(self, options, problem, initial_params, params,
+                 name=None, chi_sq=None, runtime=None,
                  minimizer=None, error_flag=None, dataset_id=None):
         """
         Initialise the Fitting Result
 
-        :param options: Options used in fitting, defaults to None
-        :type options: utils.options.Options, optional
-        :param problem: The Problem definition for the fit, defaults to None
-        :type problem: parsing.fitting_problem.FittingProblem, optional
+        :param options: Options used in fitting
+        :type options: utils.options.Options
+        :param problem: The Problem definition for the fit
+        :type problem: parsing.fitting_problem.FittingProblem
+        :param initial_params: The starting parameters for the fit
+        :type initial_params: list of float
+        :param params: The parameters found by the fit
+        :type params: list of float or list of list of float
         :param name: Name of the result, defaults to None
         :type name: str, optional
         :param chi_sq: The score for the fitting, defaults to None
         :type chi_sq: float or list of float, optional
-        :param initial_params: The starting parameters for the fit,
-                               defaults to None
-        :type initial_params: list of float, optional
-        :param params: The parameters found by the fit, defaults to None
-        :type params: list of float or list of list of float, optional
         :param runtime: The average runtime of the fit, defaults to None
         :type runtime: float or list of float, optional
         :param minimizer: The name of the minimizer used, defaults to None
@@ -45,7 +44,7 @@ class FittingResult(object):
         """
         self.options = options
         self.problem = problem
-        self.name = name if not (name is None and problem is not None) else \
+        self.name = name if name is not None else \
             problem.name
 
         if dataset_id is None:

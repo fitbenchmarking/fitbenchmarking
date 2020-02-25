@@ -18,18 +18,17 @@ class CreateTests(unittest.TestCase):
     def setUp(self):
         self.options = Options()
         problems = []
-        for _ in range(2):
-            problem = FittingProblem(self.options)
-            problem.sanitised_name = 'problem'
-            problems.append(problem)
         for i in range(5):
             problem = FittingProblem(self.options)
-            problem.sanitised_name = 'prob_{}'.format(i)
+            problem.name = 'prob {}'.format(i)
+            problem.starting_values = [{'x': 1}]
             problems.append(problem)
 
         minimizers = ['min_a', 'min_b', 'min_c']
         self.results = [[FittingResult(options=self.options,
                                        problem=p,
+                                       initial_params=[],
+                                       params=[],
                                        minimizer=m)
                          for m in minimizers]
                         for p in problems]
@@ -53,27 +52,6 @@ class CreateTests(unittest.TestCase):
 
         self.assertListEqual(unique_names, file_names)
 
-    def test_count_correct(self):
-        """
-        Tests that files are generated with the correct name.
-        """
-
-        support_page.create(results_per_test=self.results,
-                            group_name='test_group',
-                            support_pages_dir=self.dir.name,
-                            options=self.options)
-
-        file_names = [r.support_page_link
-                      for pr in self.results
-                      for r in pr]
-
-        self.assertIn(
-            os.path.join(self.dir.name, 'test_group_problem_1_min_a.html'),
-            file_names)
-        self.assertIn(
-            os.path.join(self.dir.name, 'test_group_problem_2_min_a.html'),
-            file_names)
-
 
 class CreateProbGroupTests(unittest.TestCase):
     """
@@ -83,12 +61,15 @@ class CreateProbGroupTests(unittest.TestCase):
     def setUp(self):
         self.options = Options()
         problem = FittingProblem(self.options)
-        problem.sanitised_name = 'prob_a'
+        problem.name = 'prob a'
         problem.equation = 'equation!'
+        problem.starting_values = [{'x': 1}]
 
         minimizers = ['min_a', 'min_b', 'min_c']
         self.results = [FittingResult(options=self.options,
                                       problem=problem,
+                                      initial_params=[],
+                                      params=[],
                                       minimizer=m)
                         for m in minimizers]
 
@@ -101,7 +82,6 @@ class CreateProbGroupTests(unittest.TestCase):
         support_page.create_prob_group(prob_results=self.results,
                                        group_name='test_group',
                                        support_pages_dir=self.dir.name,
-                                       count=1,
                                        options=self.options)
 
         self.assertTrue(all(
@@ -115,13 +95,12 @@ class CreateProbGroupTests(unittest.TestCase):
         support_page.create_prob_group(prob_results=self.results,
                                        group_name='test_group',
                                        support_pages_dir=self.dir.name,
-                                       count=1,
                                        options=self.options)
         file_names = [r.support_page_link for r in self.results]
         expected = [os.path.join(self.dir.name, f)
-                    for f in ['test_group_prob_a_1_min_a.html',
-                              'test_group_prob_a_1_min_b.html',
-                              'test_group_prob_a_1_min_c.html']]
+                    for f in ['test_group_prob_a_min_a.html',
+                              'test_group_prob_a_min_b.html',
+                              'test_group_prob_a_min_c.html']]
         self.assertListEqual(file_names, expected)
 
 
@@ -130,7 +109,16 @@ class GetFigurePathsTests(unittest.TestCase):
     Tests the very simple get_figure_paths function
     """
     def setUp(self):
-        self.result = FittingResult()
+        self.options = Options()
+        problem = FittingProblem(self.options)
+        problem.name = 'prob a'
+        problem.equation = 'equation!'
+        problem.starting_values = [{'x': 1}]
+        self.result = FittingResult(options=self.options,
+                                    problem=problem,
+                                    initial_params=[],
+                                    params=[],
+                                    minimizer='test')
 
     def test_with_links(self):
         """

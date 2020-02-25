@@ -55,15 +55,17 @@ examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
     return parser
 
 @exception_handler
-def run(problem_sets, options_file=''):
+def run(problem_sets, options_file='', debug=False):
     """
     Run benchmarking for the problems sets and options file given.
     Opens a webbrowser to the results_index after fitting.
 
     :param problem_sets: The paths to directories containing problem_sets
     :type problem_sets: list of str
-    :param options_file: he path to an options file, defaults to ''
+    :param options_file: The path to an options file, defaults to ''
     :type options_file: str, optional
+    :param debug: Enable debugging output
+    :type debug: bool 
     """
     # Find the options file
     current_path = os.path.abspath(os.path.curdir)

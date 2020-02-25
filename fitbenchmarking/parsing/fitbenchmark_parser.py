@@ -123,6 +123,7 @@ class FitbenchmarkParser(Parser):
         if software != 'mantid multifit':
             if fit_ranges:
                 try:
+                    fit_ranges = fit_ranges[0]
                     fitting_problem.start_x = fit_ranges['x'][0]
                     fitting_problem.end_x = fit_ranges['x'][1]
                 except KeyError:

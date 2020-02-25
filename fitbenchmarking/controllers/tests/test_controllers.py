@@ -278,7 +278,6 @@ class ControllerTests(TestCase):
         controller.fit()
         controller.cleanup()
 
-        assert len(controller.results) == len(controller.data_y)
         assert len(controller.final_params) == len(controller.initial_params)
 
     def check_conveged(self, controller):
