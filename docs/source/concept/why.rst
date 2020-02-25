@@ -7,7 +7,7 @@ Why?
 
 Consider the following figure:
 
-.. figure:: ../../images/Fit_for_GEM_peak_1_1.png
+.. figure:: ../../images/lm-scipy_fit_for_GEM_peak_1_1.png
    :alt: GEM experiment data
    :width: 100.0%
 
