@@ -32,10 +32,12 @@ class FitbmResultTests(unittest.TestCase):
         self.minimizer = "test_minimizer"
         self.runtime = 0.01
         self.params = np.array([1, 3, 4, 4])
+        self.initial_params = np.array([0, 0, 0, 0])
         self.result = FittingResult(
             options=self.options, problem=self.problem, chi_sq=self.chi_sq,
             runtime=self.runtime, minimizer=self.minimizer,
-            params=self.params, error_flag=0)
+            initial_params=self.initial_params, params=self.params,
+            error_flag=0)
 
         self.min_chi_sq = 0.1
         self.result.min_chi_sq = self.min_chi_sq
