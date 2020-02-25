@@ -73,7 +73,6 @@ We have written FitBenchmarking to be useful to
    and to have a route to expose newly developed methods to users.
 
 FitBenchmarking is being developed by representatives from each of these
-communities, and we hope the tool will not only be used by each of
-these, but will also help foster fruitful interactions and
+communities.  We hope tool will help foster fruitful interactions and
 collaborations across the disciplines.
 
