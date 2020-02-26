@@ -244,10 +244,10 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         table.applymap(enable_link)
 
         # add performance profile information
-        if name[0] in 'acc':
+        if name[0] == 'acc':
             has_pp = True
             pp_location = pp_locations[0]
-        elif name[0] in 'runtime':
+        elif name[0] == 'runtime':
             has_pp = True
             pp_location = pp_locations[1]
         else: 
