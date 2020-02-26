@@ -19,14 +19,14 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 
-def make_fitting_problem():
+def make_fitting_problem(file_name='cubic.dat'):
     """
     Helper function that returns a simple fitting problem
     """
     options = Options()
 
     bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
-    fname = os.path.join(bench_prob_dir, 'cubic.dat')
+    fname = os.path.join(bench_prob_dir, file_name)
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
@@ -164,11 +164,34 @@ class ControllerTests(TestCase):
         self.shared_testing(controller)
 
         controller._status = "success"
-        self.check_conveged(controller)
+        self.check_converged(controller)
         controller._status = "Failed to converge"
         self.check_max_iterations(controller)
         controller._status = "Failed"
         self.check_diverged(controller)
+
+    def test_mantid_multifit(self):
+        """
+        MantidController: Additional bespoke test for multifit
+        """
+        file_path = os.path.join('multifit_set', 'multifit.txt')
+        problem = make_fitting_problem(file_path)
+
+        controller = MantidController(problem)
+        controller.minimizer = 'Levenberg-Marquardt'
+
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        self.assertEqual(len(controller.final_params), len(controller.data_x),
+                         'Multifit did not return a result for each data file')
+
+        self.assertEqual(len(controller.final_params[0]),
+                         len(controller.initial_params),
+                         'Incorrect number of final params.')
+
 
     def test_sasview(self):
         """
@@ -179,7 +202,7 @@ class ControllerTests(TestCase):
         self.shared_testing(controller)
 
         controller._status = 0
-        self.check_conveged(controller)
+        self.check_converged(controller)
         controller._status = 2
         self.check_max_iterations(controller)
         controller._status = 1
@@ -194,7 +217,7 @@ class ControllerTests(TestCase):
         self.shared_testing(controller)
 
         controller._status = 1
-        self.check_conveged(controller)
+        self.check_converged(controller)
         controller._status = 0
         self.check_max_iterations(controller)
         controller._status = -1
@@ -213,7 +236,7 @@ class ControllerTests(TestCase):
             self.shared_testing(controller)
 
             controller._status = 0
-            self.check_conveged(controller)
+            self.check_converged(controller)
             controller._status = 2
             self.check_max_iterations(controller)
             controller._status = 5
@@ -233,7 +256,7 @@ class ControllerTests(TestCase):
             self.shared_testing(controller)
 
             controller.flag = 0
-            self.check_conveged(controller)
+            self.check_converged(controller)
             controller.flag = 1
             self.check_max_iterations(controller)
             controller.flag = 2
@@ -250,7 +273,7 @@ class ControllerTests(TestCase):
             self.shared_testing(controller)
 
             controller._status = 0
-            self.check_conveged(controller)
+            self.check_converged(controller)
             controller._status = 2
             self.check_diverged(controller)
 
@@ -262,7 +285,7 @@ class ControllerTests(TestCase):
         controller.minimizer = 'minuit'
         self.shared_testing(controller)
         controller._status = 0
-        self.check_conveged(controller)
+        self.check_converged(controller)
         controller._status = 2
         self.check_diverged(controller)
 
@@ -280,7 +303,7 @@ class ControllerTests(TestCase):
 
         assert len(controller.final_params) == len(controller.initial_params)
 
-    def check_conveged(self, controller):
+    def check_converged(self, controller):
         """
         Utility function to check controller.cleanup() produces a success flag
 
