@@ -250,7 +250,7 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         elif name[0] == 'runtime':
             has_pp = True
             pp_location = pp_locations[1]
-        else: 
+        else:
             has_pp = False
             pp_location = ''
            

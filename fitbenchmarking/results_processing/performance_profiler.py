@@ -155,9 +155,9 @@ def create_plot(ax, step_values, keys):
     Function to draw the profile on a matplotlib axis
 
     :param ax : A matplotlib axis to be filled
-    :type ax :  an `.axes.SubplotBase` subclass of `~.axes.Axes` \ 
+    :type ax :  an `.axes.SubplotBase` subclass of `~.axes.Axes`
                 (or a subclass of `~.axes.Axes`)
-    :param step_values : a sorted list of the values of the metric \ 
+    :param step_values : a sorted list of the values of the metric
                          being profiled
     :type step_values : list of float
     """
