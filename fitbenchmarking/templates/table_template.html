@@ -69,22 +69,22 @@
                     {% endfor %}
                 </table>
 		{% if has_pp %}
-		<hr>
-		<section class="accordion">
-                    <input type="checkbox" name="collapse" id="handle3" checked="checked">
-                    <h2 class="handle">
-                    <label for="handle3">Performance profile</label>
-                    </h2>
-                    <div class="content">
-		      <img alt="{{ pp_location }}" src="{{ pp_location }}" />
-                      <p>
-			This is a Dolan-Moré performance profile.
-			The solvers appearing in the top left corner may be considered the best
-			performing on this test set.
-			See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.
-		      </p>
-		    </div>
-                </section>
+		   <hr>
+		   <section class="accordion">
+                      <input type="checkbox" name="collapse" id="handle3" checked="checked">
+                      <h2 class="handle">
+			  <label for="handle3">Performance profile</label>
+                      </h2>
+                      <div class="content">
+			  <img alt="{{ pp_location }}" src="{{ pp_location }}" />
+			  <p>
+			    This is a Dolan-Moré performance profile.
+			    The solvers appearing in the top left corner may be considered the best
+			    performing on this test set.
+			    See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.
+			  </p>
+		      </div>
+                   </section>
 		{% endif %}
                 <center>
                 <button class="btn default" onclick="history.go(-1)">
