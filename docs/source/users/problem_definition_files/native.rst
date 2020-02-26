@@ -1,3 +1,5 @@
+.. _native:
+
 ******************
 Native File Format
 ******************
@@ -20,9 +22,12 @@ keys are described below:
 
 software
 ========
-Either 'Mantid' or 'SasView' (case insensitive).
+Either 'Mantid', 'Mandit MultiFit', or 'SasView' (case insensitive).
 This defines which of the softwares to use to generate the function to be used
 in fitting.
+
+The 'Mantid MultiFit' software requires the parameters listed here to be defined slightly differently.
+More information can be found in :ref:`multifit`.
 
 name
 ====
