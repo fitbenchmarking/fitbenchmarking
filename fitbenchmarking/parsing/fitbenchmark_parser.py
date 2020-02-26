@@ -109,10 +109,12 @@ class FitbenchmarkParser(Parser):
                                       for d in data_points]
 
             if not fit_ranges:
-                fit_ranges = [{} for _ in num_files]
+                fit_ranges = [{} for _ in range(num_files)]
 
-            fitting_problem.start_x = [f['x'][0] if 'x' in f else None for f in fit_ranges]
-            fitting_problem.end_x = [f['x'][1] if 'x' in f else None for f in fit_ranges]
+            fitting_problem.start_x = [f['x'][0] if 'x' in f else None
+                                       for f in fit_ranges]
+            fitting_problem.end_x = [f['x'][1] if 'x' in f else None
+                                     for f in fit_ranges]
 
         if software in ['mantid', 'mantid multifit']:
             # String containing the function name(s) and the starting parameter
