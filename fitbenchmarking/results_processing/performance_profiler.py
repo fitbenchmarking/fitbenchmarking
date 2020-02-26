@@ -130,7 +130,6 @@ def plot(acc, runtime, fig_dir):
         ax[legend_ax].legend(handles, wrapped_labels, loc=2, prop={'size': 8})
 
         # Common parts
-        fig.suptitle("{}".format(name))
         plt.ylim(0.0, 1.0)
         fig.suptitle("Performance profile - {}".format(name))
 
