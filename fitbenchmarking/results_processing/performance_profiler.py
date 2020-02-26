@@ -141,6 +141,8 @@ def plot(acc, runtime, fig_dir):
                         bottom=False,
                         left=False,
                         right=False)
+        # the xlabel has added white space to (empirically) make it look
+        # centred under the plots (and not the legend)
         plt.xlabel("f                       ")
         plt.ylabel("fraction for which solver within f of best")
 
