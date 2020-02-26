@@ -32,6 +32,6 @@ def _validate_mantid():
     if os.name == 'nt':
         # No need to validate mantid on windows as it is not required
         return True
-    if os.path.isfile(os.path.join('/opt', 'Mantid', 'bin', 'mantidpython')):
+    if os.path.isfile(os.path.join('/opt', 'mantidnightly-python3', 'bin', 'mantidpython')):
         return True
     return False

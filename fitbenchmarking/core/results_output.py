@@ -126,8 +126,8 @@ def create_table_descriptions(options):
     with open(filename) as f:
         output_str = f.read()
     output_str = output_str.replace(':ref:', '')
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
+    #reload(sys)
+    #sys.setdefaultencoding('utf-8')
     for n in options.table_type + [options.comparison_mode]:
         start = '{}: Start'.format(n)
         end = '{}: End'.format(n)
