@@ -164,8 +164,6 @@ def create_plot(ax, step_values, keys):
 
     lines = ["-", "-.", "--", ":"]
 
-    print(type(ax))
-    print(type(step_values))
     no_failures = np.zeros(len(step_values), dtype=np.int8)
     huge = 1.0e20  # set a large value as a proxy for infinity
     for i, solver_values in enumerate(step_values):
