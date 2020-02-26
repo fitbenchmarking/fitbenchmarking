@@ -163,7 +163,6 @@ def create_plot(ax, step_values, keys):
     """
 
     lines = ["-", "-.", "--", ":"]
-    colors = ["g", "r", "b", "k", "c", "m"]
 
     print(type(ax))
     print(type(step_values))
@@ -184,7 +183,6 @@ def create_plot(ax, step_values, keys):
         ax.step(step_value,
                 np.linspace(0.0, 1.0, step_values[0].size),
                 label=labels[s],
-                color=colors[(s % len(colors))],
                 linestyle=lines[(s % len(lines))],
                 lw=2.0,
                 where='post')
