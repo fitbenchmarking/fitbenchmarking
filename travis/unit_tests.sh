@@ -5,3 +5,4 @@ pytest fitbenchmarking/cli --cov=fitbenchmarking/cli --cov-report term-missing
 for dir in controllers core parsing results_processing utils
 do
     pytest fitbenchmarking/$dir --cov=fitbenchmarking/$dir --cov-report term-missing --cov-append
+done
