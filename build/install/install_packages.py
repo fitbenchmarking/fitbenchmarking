@@ -63,9 +63,7 @@ def install_package(package_name, log_handler):
 
     log_handler.logger.info("Installing %s with script %s" %
                             (package_name, install_script))
-
-    command = 'source ' + install_script
-    if run_process_and_log([command, install_path, unzip_path]) is False:
+    if run_process_and_log([install_script, install_path, unzip_path]) is False:
         log_handler.print_and_log("Error encountered when installing %s. "
                                   "Check the build.log for more information." %
                                   package_name, logging.ERROR)
