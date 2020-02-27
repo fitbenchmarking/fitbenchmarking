@@ -92,7 +92,7 @@ def plot(acc, runtime, fig_dir):
             # if we don't need a log plot, then don't print one
             fig, ax = plt.subplots(1, 2,
                                    gridspec_kw={
-                                       'width_ratios': [30, 7],
+                                       'width_ratios': [30, 7.8],
                                        'wspace': 0.01})
             legend_ax = 1
             use_log_plot = False
@@ -100,7 +100,7 @@ def plot(acc, runtime, fig_dir):
             fig, ax = plt.subplots(1, 3,
                                    sharey=True,
                                    gridspec_kw={
-                                       'width_ratios': [10, 20, 7],
+                                       'width_ratios': [10, 20, 7.8],
                                        'wspace': 0.01})
             legend_ax = 2
 
@@ -127,7 +127,7 @@ def plot(acc, runtime, fig_dir):
         ax[legend_ax].axis('off')
         handles, labels = ax[0].get_legend_handles_labels()
         wrapped_labels = ['\n'.join(wrap(l, 22)) for l in labels]
-        ax[legend_ax].legend(handles, wrapped_labels, loc=2, prop={'size': 8})
+        ax[legend_ax].legend(handles, wrapped_labels, loc=2, prop={'size': 7})
 
         # Common parts
         plt.ylim(0.0, 1.0)
@@ -147,7 +147,7 @@ def plot(acc, runtime, fig_dir):
         plt.ylabel("fraction for which solver within f of best")
         ax[0].set_ylim(0.0, 1.05)
 
-        plt.savefig(this_filename)
+        plt.savefig(this_filename, dpi=150)
 
     return figure_path
 
