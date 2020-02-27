@@ -246,10 +246,13 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
         # add performance profile information
         if name[0] == 'acc':
             has_pp = True
-            pp_location = pp_locations[0]
+            pp_filenames = [pp_locations[0]]
         elif name[0] == 'runtime':
             has_pp = True
-            pp_location = pp_locations[1]
+            pp_filenames = [pp_locations[1]]
+        elif name[0] == 'compare':
+            has_pp = True
+            pp_filenames = pp_locations
         else:
             has_pp = False
             pp_location = ''
@@ -276,6 +279,6 @@ def render_pandas_dataframe(table_dict, best_results, table_names,
                                     table_format=table_format,
                                     result_name=title,
                                     has_pp=has_pp,
-                                    pp_location=pp_location,
+                                    pp_filenames=pp_filenames,
                                     table=table_style.render(),
                                     error_message=ERROR_OPTIONS))
