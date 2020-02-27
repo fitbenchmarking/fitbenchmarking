@@ -21,11 +21,11 @@ sudo apt-add-repository ppa:mantid/mantid -y
 sudo apt-get update
 sudo apt-get install mantidnightly-python3 -y
 
-PYTHONPATH=$PYTHONPATH:/opt/mantidnightly-python3/lib
+export PYTHONPATH=$PYTHONPATH:/opt/mantidnightly-python3/lib:/opt/mantidnightly-python3/bin
 
 # Run simpleapi as this can cause segfaults if not allowed to finish
 # Use mantidpython (not python) as mantidpython waits for completion whereas python exits while still downloading
 /opt/mantidnightly-python3/bin/mantidpython -m  mantid.simpleapi
 
 echo "Mantid is now setup for this session."
-echo "To enable mantid in future sessions we recommend adding 'export PYTHONPATH=$PYTHONPATH:/opt/mantidnightly-python3/lib' to your .bashrc file"
+echo "To enable mantid in future sessions we recommend adding 'export PYTHONPATH=\$PYTHONPATH:/opt/mantidnightly-python3/lib;/opt/mantidnightly-python3/bin' to your .bashrc file"

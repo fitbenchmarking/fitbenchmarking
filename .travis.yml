@@ -1,10 +1,7 @@
-os:
-  - linux
-dist:
-  - bionic
+os: linux
+dist: bionic
 
-language:
-  - python
+language: python
 python:
   - 3.6
   - 3.7
@@ -14,9 +11,6 @@ env:
   - SUITE=UNIT COVERAGE=OFF
   - SUITE=UNIT COVERAGE=ON
   - SUITE=SYSTEM
-
-virtualenv:
-  system_site_packages: true
 
 notifications:
   email:
@@ -57,8 +51,8 @@ install:
   - export CUTEST=$HOME/cutest/cutest/
   - export MYARCH="pc64.lnx.gfo"	
   
-  - python3 -m pip install -r requirements.txt
-  - python3 -m pip install .
+  - pip install -r requirements.txt
+  - pip install .
   - python3 setup.py externals
 
   # To access RALfit
@@ -66,9 +60,9 @@ install:
 
   # Python bindings for GSL
   # --force seems to be necessary to link numpy
-  - python3 -m pip install pygsl --force
+  - pip install pygsl --force
 
-  - python3 -m pip install pycutest
+  - pip install pycutest
 
 script:
   - if [[ $SUITE == "UNIT" ]]; then ./travis/unit_tests.sh  ; fi
@@ -78,7 +72,7 @@ after_success:
   - if [[ $COVERAGE == "ON" ]]; then coveralls; fi
 
 
-matrix:
+jobs:
   exclude:
     - env: SUITE=UNIT COVERAGE=ON
       python: 3.6
