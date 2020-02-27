@@ -145,6 +145,7 @@ def plot(acc, runtime, fig_dir):
         # centred under the plots (and not the legend)
         plt.xlabel("f                       ")
         plt.ylabel("fraction for which solver within f of best")
+        ax[0].set_ylim(0.0, 1.05)
 
         plt.savefig(this_filename)
 
@@ -177,9 +178,13 @@ def create_plot(ax, step_values, keys):
         if no_failures[i]:
             labels[i] = "{} ({} failures)".format(solver, no_failures[i])
 
+    plot_points = np.linspace(0.0, 1.0, step_values[0].size)
     for s, step_value in enumerate(step_values):
+        step_value = np.append(step_value,huge)
+        if s == 0:
+            plot_points = np.append(plot_points,1.0)
         ax.step(step_value,
-                np.linspace(0.0, 1.0, step_values[0].size),
+                plot_points,
                 label=labels[s],
                 linestyle=lines[(s % len(lines))],
                 lw=2.0,
