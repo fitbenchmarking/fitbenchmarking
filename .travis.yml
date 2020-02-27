@@ -1,8 +1,20 @@
-sudo: required
-language: python
+os:
+  - linux
+dist:
+  - bionic
+
+language:
+  - python
 python:
-  - "2.7"
-dist: xenial
+  - 3.6
+  - 3.7
+  - 3.8
+
+env:
+  - SUITE=UNIT COVERAGE=OFF
+  - SUITE=UNIT COVERAGE=ON
+  - SUITE=SYSTEM
+
 virtualenv:
   system_site_packages: true
 
@@ -13,8 +25,6 @@ notifications:
     on_success: never
     on_failure: always
 
-stages:
-  - name: Tests
 
 before_install:
   # Adding RALfit packages
@@ -47,47 +57,34 @@ install:
   - export CUTEST=$HOME/cutest/cutest/
   - export MYARCH="pc64.lnx.gfo"	
   
-  - pip install -r requirements.txt
-  - pip install .
-  - python setup.py externals
+  - python3 -m pip install -r requirements.txt
+  - python3 -m pip install .
+  - python3 setup.py externals
 
   # To access RALfit
   - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
 
   # Python bindings for GSL
   # --force seems to be necessary to link numpy
-  - pip install pygsl --force
+  - python3 -m pip install pygsl --force
 
-  - pip install pycutest
-  - pip install backports.tempfile
+  - python3 -m pip install pycutest
+
+script:
+  - if [[ $SUITE == "UNIT" ]]; then ./travis/unit_tests.sh  ; fi
+  - if [[ $SUITE == "SYSTEM" ]]; then ./travis/system_tests.sh  ; fi
+
+after_success:
+  - if [[ $COVERAGE == "ON" ]]; then coveralls; fi
 
 
-jobs:
+matrix:
   include:
-    - stage: Tests
-      name: Unit Tests
-      script:
-        # ======= CLIs Tests ================ #
-        - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
-          --cov-report term-missing
-        # ======= Core Tests ================ #
-        - pytest fitbenchmarking/core --cov=fitbenchmarking/core
-          --cov-report term-missing --cov-append
-        # ======= Controllers Tests ========= #
-        - pytest fitbenchmarking/controllers --cov=fitbenchmarking/controllers
-          --cov-report term-missing --cov-append
-        # ======= Parsing Tests ============= #
-        - pytest fitbenchmarking/parsing --cov=fitbenchmarking/parsing
-          --cov-report term-missing --cov-append
-        # ======= Results Tests ============= #
-        - pytest fitbenchmarking/results_processing --cov=fitbenchmarking/results_processing
-          --cov-report term-missing --cov-append
-        # ======= Utils Tests =============== #
-        - pytest fitbenchmarking/utils --cov=fitbenchmarking/utils
-          --cov-report term-missing --cov-append
-      after_success:
-        - coveralls
-    - name: System Tests
-      script:
-        # ======= System Test =============== #
-        - pytest fitbenchmarking/systests
+    - env: SUITE=UNIT COVERAGE=OFF
+      python: 3.6
+    - env: SUITE=UNIT COVERAGE=OFF
+      python: 3.7
+    - env: SUITE=UNIT COVERAGE=ON
+      python: 3.8
+    - env: SUITE=SYSTEM
+      python: 3.8
