@@ -164,6 +164,10 @@ def create_plot(ax, step_values, keys):
     """
 
     lines = ["-", "-.", "--", ":"]
+    # use only 9 of matplotlib's colours, as this will give us
+    # 9 * 4 = 36 line/colour combinations, as opposed to
+    # 10 * 4 / 2 = 20 if we used all 10
+    colors = ["C0","C1","C2","C3","C4","C5","C6","C7","C8" ]
 
     no_failures = np.zeros(len(step_values), dtype=np.int8)
     huge = 1.0e20  # set a large value as a proxy for infinity
@@ -187,6 +191,7 @@ def create_plot(ax, step_values, keys):
                 plot_points,
                 label=labels[s],
                 linestyle=lines[(s % len(lines))],
+                color=colors[(s % len(colors))],
                 lw=2.0,
                 where='post')
 
