@@ -79,12 +79,14 @@ after_success:
 
 
 matrix:
-  include:
-    - env: SUITE=UNIT COVERAGE=OFF
-      python: 3.6
-    - env: SUITE=UNIT COVERAGE=OFF
-      python: 3.7
+  exclude:
     - env: SUITE=UNIT COVERAGE=ON
+      python: 3.6
+    - env: SUITE=UNIT COVERAGE=ON
+      python: 3.7
+    - env: SUITE=UNIT COVERAGE=OFF
       python: 3.8
     - env: SUITE=SYSTEM
-      python: 3.8
+      python: 3.6
+    - env: SUITE=SYSTEM
+      python: 3.7
