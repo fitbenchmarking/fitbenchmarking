@@ -1,8 +1,12 @@
+[DESIGN]
+
+# Maximum number of locals for function / method body
+max-locals=20
+
+# Maximum number of lines within a function
+max-statements=60
+
 [MESSAGES CONTROL]
 disable=too-many-instance-attributes,
         invalid-name,
-        too-few-public-methods,
-        no-self-use,
-        too-many-locals,
-        too-many-branches,
-        too-many-statements
+        too-few-public-methodss

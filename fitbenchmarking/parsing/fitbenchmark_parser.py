@@ -31,11 +31,20 @@ except ImportError as e:
     import_success['sasview'] = (False, e)
 
 
+# By design the parsers only have the requirment for one public method and many
+# private methods
+# pylint: disable=too-few-public-methods, too-many-branches
 class FitbenchmarkParser(Parser):
     """
     Parser for the native FitBenchmarking problem definition (FitBenchmark)
     file.
     """
+
+    def __init__(self, filename, options):
+        super(FitbenchmarkParser, self).__init__(filename, options)
+
+        self._entries = None
+        self._parsed_func = None
 
     def parse(self):
         """
@@ -46,7 +55,6 @@ class FitbenchmarkParser(Parser):
         """
         fitting_problem = FittingProblem(self.options)
 
-        # pylint: disable=attribute-defined-outside-init
         self._entries = self._get_data_problem_entries()
         software = self._entries['software'].lower()
         if not (software in import_success and import_success[software][0]):
@@ -54,7 +62,6 @@ class FitbenchmarkParser(Parser):
             raise MissingSoftwareError('Requirements are missing for {} parser'
                                        ': {}'.format(software, error))
 
-        # pylint: disable=attribute-defined-outside-init
         self._parsed_func = self._parse_function()
 
         # NAME
@@ -85,6 +92,7 @@ class FitbenchmarkParser(Parser):
             # String containing the function name(s) and the starting parameter
             # values for each function
             fitting_problem._mantid_equation = self._entries['function']
+            # pylint: enable=protected-access
 
         # STARTING VALUES
         fitting_problem.starting_values = self._get_starting_values()

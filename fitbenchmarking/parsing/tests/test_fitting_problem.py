@@ -4,6 +4,7 @@ Test file to test the fitting_problem file.
 
 from collections import OrderedDict
 from unittest import TestCase
+
 import numpy as np
 
 from fitbenchmarking.parsing.fitting_problem import FittingProblem

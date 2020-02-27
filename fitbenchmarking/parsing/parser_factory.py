@@ -11,7 +11,10 @@ from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.utils.exceptions import (MissingSoftwareError,
                                               NoParserError)
 
-# pylint: disable=no-else-raise, bad-option-value
+# By design the factory parser is a class with only one function
+# pylint: disable=too-few-public-methods, no-self-use
+
+
 class ParserFactory:
     """
     A factory for creating parsers.
@@ -54,13 +57,13 @@ class ParserFactory:
             full_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                      module_name + '.py'))
             if os.path.exists(full_path):
-                raise MissingSoftwareError('Requirements are missing for the '
-                                           '{} parser: {}'.format(
-                                               parser_name, str(e)))
+                MissingSoftwareError('Requirements are missing for the '
+                                     '{} parser: {}'.format(
+                                         parser_name, str(e)))
             else:
-                raise NoParserError('Could not find parser for {}. '
-                                    'Check the input is correct and try '
-                                    'again.'.format(filename))
+                NoParserError('Could not find parser for {}. '
+                              'Check the input is correct and try '
+                              'again.'.format(filename))
 
         classes = getmembers(module, lambda m: (isclass(m)
                                                 and not isabstract(m)

@@ -61,9 +61,7 @@ install:
   - pip install pycutest
   - pip install backports.tempfile
   - pip install pylint
-
-env:
-  - COVERALLS_PARALLEL=true
+  - pip install flake8
 
 jobs:
   include:

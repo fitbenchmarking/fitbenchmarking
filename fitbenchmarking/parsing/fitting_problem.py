@@ -16,6 +16,9 @@ from scipy.optimize._numdiff import approx_derivative
 from fitbenchmarking.utils.exceptions import FittingProblemError
 
 
+# Using property getters and setters means that the setter does not always use
+# self
+# pylint: disable=no-self-use
 class FittingProblem:
     r"""
     Definition of a fitting problem, which will be populated by a parser from a
