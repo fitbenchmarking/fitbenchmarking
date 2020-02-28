@@ -83,6 +83,8 @@ def plot(acc, runtime, fig_dir):
             sorted_list = np.sort(value)
             step_values.append(np.insert(sorted_list, 0, 0.0))
 
+        labels = [key for key in acc.keys()]
+
         max_value = np.max([np.max(v)
                             for v in profile_plot.values()])
         linear_upper_limit = 10
@@ -113,7 +115,7 @@ def plot(acc, runtime, fig_dir):
 
         if use_log_plot:
             # Plot log performance profile
-            create_plot(ax[1], step_values, acc.keys())
+            create_plot(ax[1], step_values, labels)
             ax[1].set_xlim(
                 linear_upper_limit,
                 min(max_value+1, 10000))
@@ -151,7 +153,7 @@ def plot(acc, runtime, fig_dir):
 
     return figure_path
 
-def create_plot(ax, step_values, keys):
+def create_plot(ax, step_values, labels):
     """
     Function to draw the profile on a matplotlib axis
 
@@ -161,6 +163,8 @@ def create_plot(ax, step_values, keys):
     :param step_values : a sorted list of the values of the metric
                          being profiled
     :type step_values : list of float
+    :param labels : A list of the labels for the different solvers
+    :type labels : list of strings
     """
 
     lines = ["-", "-.", "--", ":"]
@@ -176,8 +180,7 @@ def create_plot(ax, step_values, keys):
         solver_values[inf_indices] = huge
         if inf_indices:
             no_failures[i] = len(inf_indices[0])
-
-    labels = [key for key in keys]
+            
     for i, solver in enumerate(labels):
         if no_failures[i]:
             labels[i] = "{} ({} failures)".format(solver, no_failures[i])
