@@ -4,6 +4,7 @@ dist: bionic
 language: python
 python:
   - 3.6
+  - 2.7
   - 3.7
   - 3.8
 
@@ -53,7 +54,13 @@ install:
   
   - pip install -r requirements.txt
   - pip install .
-  - python3 setup.py externals
+  - if [ "$TRAVIS_PYTHON_VERSION" == "2.7" ];
+    then
+      source ./travis/py27_mantid_install.sh;
+    else
+      python setup.py externals;
+    fi
+       
 
   - export PYTHONPATH=$PYTHONPATH:/opt/mantidnightly-python3/lib:/opt/mantidnightly-python3/bin
 
@@ -74,15 +81,22 @@ jobs:
     - env: SUITE=UNIT COVERAGE=OFF
       python: 3.6
     - env: SUITE=UNIT COVERAGE=ON
+      python: 2.7
+    - env: SUITE=UNIT COVERAGE=ON
       python: 3.7
     - env: SUITE=UNIT COVERAGE=ON
       python: 3.8
     - env: SUITE=SYSTEM
+      python: 2.7
+    - env: SUITE=SYSTEM
       python: 3.7
     - env: SUITE=SYSTEM
       python: 3.8
-  # Allow failures as we dont have a mantid build on these python versions
-  allow-failures:
+  allow_failures:
+    # No longer guaranteed but good to know if working.
+    - env: SUITE=UNIT COVERAGE=OFF
+      python: 2.7
+    # Allow failures as we dont have a mantid build on these python versions
     - env: SUITE=UNIT COVERAGE=OFF
       python: 3.7
     - env: SUITE=UNIT COVERAGE=OFF
