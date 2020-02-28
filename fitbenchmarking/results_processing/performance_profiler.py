@@ -183,10 +183,9 @@ def create_plot(ax, step_values, keys):
             labels[i] = "{} ({} failures)".format(solver, no_failures[i])
 
     plot_points = np.linspace(0.0, 1.0, step_values[0].size)
+    plot_points = np.append(plot_points, 1.0)
     for s, step_value in enumerate(step_values):
         step_value = np.append(step_value,huge)
-        if s == 0:
-            plot_points = np.append(plot_points,1.0)
         ax.step(step_value,
                 plot_points,
                 label=labels[s],
@@ -194,4 +193,3 @@ def create_plot(ax, step_values, keys):
                 color=colors[(s % len(colors))],
                 lw=2.0,
                 where='post')
-
