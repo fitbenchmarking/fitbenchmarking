@@ -98,8 +98,9 @@ jobs:
       script:
         # ======= System Test =============== #
         - pytest fitbenchmarking/systests
-  allow_failure:
-    - name: PyLint
+  allow_failures:
+    - stage: Linting
+      name: PyLint
       env: SUITE=LINTING
       script:
         # ======= pylinting parsers ========= #
