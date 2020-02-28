@@ -107,7 +107,7 @@ def plot(acc, runtime, fig_dir):
             legend_ax = 2
 
         # Plot linear performance profile
-        create_plot(ax[0], step_values, acc.keys())
+        create_plot(ax[0], step_values, labels)
         ax[0].set_xlim(1, linear_upper_limit)
         ax[0].set_xticks([1, 2, 4, 6, 8, 10])
         ax[0].set_xticklabels(['$1$', '$2$', '$4$', '$6$', '$8$', '$10$'])
@@ -175,24 +175,20 @@ def create_plot(ax, step_values, labels):
 
     no_failures = np.zeros(len(step_values), dtype=np.int8)
     huge = 1.0e20  # set a large value as a proxy for infinity
-    for i, solver_values in enumerate(step_values):
-        inf_indices = np.where(solver_values > huge)
-        solver_values[inf_indices] = huge
-        if inf_indices:
-            no_failures[i] = len(inf_indices[0])
-            
-    for i, solver in enumerate(labels):
-        if no_failures[i]:
-            labels[i] = "{} ({} failures)".format(solver, no_failures[i])
-
     plot_points = np.linspace(0.0, 1.0, step_values[0].size)
     plot_points = np.append(plot_points, 1.0)
-    for s, step_value in enumerate(step_values):
-        step_value = np.append(step_value,huge)
-        ax.step(step_value,
+    
+    for i, (solver, solver_values) in enumerate(zip(labels, step_values)):
+        inf_indices = np.where(solver_values > huge)
+        solver_values[inf_indices] = huge
+        if inf_indices[0].size > 0:
+            no_failures[i] = len(inf_indices[0])
+            labels[i] = "{} ({} failures)".format(solver, no_failures[i])
+        solver_values = np.append(solver_values,huge)
+        ax.step(solver_values,
                 plot_points,
-                label=labels[s],
-                linestyle=lines[(s % len(lines))],
-                color=colors[(s % len(colors))],
+                label=labels[i],
+                linestyle=lines[(i % len(lines))],
+                color=colors[(i % len(colors))],
                 lw=2.0,
                 where='post')
