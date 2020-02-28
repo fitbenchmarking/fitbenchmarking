@@ -181,9 +181,7 @@ class MantidController(Controller):
                  given parameters
         :rtype: numpy array
         """
-        if isinstance(params[0], float):
-            return super(MantidController, self).eval_chisq(params, x, y, e)
-        else:
+        if np.shape(params[0]):
             num_inps = len(params)
             if x is None:
                 x = [None for _ in range(num_inps)]
@@ -193,3 +191,5 @@ class MantidController(Controller):
                 e = [None for _ in range(num_inps)]
             return [super(MantidController, self).eval_chisq(p, xi, yi, ei)
                     for p, xi, yi, ei in zip(params, x, y, e)]
+        else:
+            return super(MantidController, self).eval_chisq(params, x, y, e)

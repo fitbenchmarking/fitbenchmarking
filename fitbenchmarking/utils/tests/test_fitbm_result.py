@@ -131,6 +131,13 @@ class FitbmResultTests(unittest.TestCase):
         self.assertEqual(self.result.table_output,
                          "False ({:.4g})".format(self.norm_rel))
 
+    def test_sanitised_name(self):
+        """
+        Test that sanitised names are correct.
+        """
+        self.result.name = 'test, name with commas'
+        self.assertEqual(self.result.sanitised_name, 'test_name_with_commas')
+
     def generate_expected_str_output(self, abs_val, rel_val):
         """
         Shared function which computes expected string output
