@@ -83,13 +83,17 @@ class FitbmResultTests(unittest.TestCase):
             initial_params=initial_params, params=params,
             error_flag=0, dataset_id=1)
 
-        self.assertTrue(np.isclose(self.result.data_x, self.problem.data_x[1]))
-        self.assertTrue(np.isclose(self.result.data_y, self.problem.data_y[1]))
-        self.assertTrue(np.isclose(self.result.data_e, self.problem.data_e[1]))
         self.assertTrue(
-            np.isclose(self.result.sorted_index, self.problem.sorted_index[1]))
+            np.isclose(self.result.data_x, self.problem.data_x[1]).all())
+        self.assertTrue(
+            np.isclose(self.result.data_y, self.problem.data_y[1]).all())
+        self.assertTrue(
+            np.isclose(self.result.data_e, self.problem.data_e[1]).all())
+        self.assertTrue(
+            np.isclose(self.result.sorted_index,
+                       self.problem.sorted_index[1]).all())
 
-        self.assertEqual(params[1], self.result.params)
+        self.assertListEqual(params[1], self.result.params)
         self.assertEqual(chi_sq[1], self.result.chi_sq)
 
     def test_default_print(self):
