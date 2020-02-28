@@ -15,6 +15,7 @@ sudo apt-get install mantid -y
 
 export PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib:/opt/Mantid/bin
 
+set +e
 # Run simpleapi as this can cause segfaults if not allowed to finish
 # Use mantidpython (not python) as mantidpython waits for completion whereas python exits while still downloading
 /opt/Mantid/bin/mantidpython -m  mantid.simpleapi
