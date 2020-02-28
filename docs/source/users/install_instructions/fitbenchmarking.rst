@@ -4,9 +4,7 @@
 Installing FitBenchmarking
 ##########################
 
-|Python 2.7+| will be needed for running/installing this.
-
-  Note: If using Python 3, Mantid problems and minimizers will be unavailable.
+|Python 3.6+| will be needed for running/installing this.
 
 1. Download this repository or clone it using
    `git <https://git-scm.com/>`__:
@@ -20,6 +18,6 @@ Installing FitBenchmarking
 4. Install any additional softwares you wish to benchmark.
    See :ref:`external-instructions` for more information on this.
 
-.. |Python 2.7+| image:: https://img.shields.io/badge/python-2.7+-blue.svg
+.. |Python 3.6.+| image:: https://img.shields.io/badge/python-3.6+-blue.svg
    :target: https://www.python.org/downloads/
 
