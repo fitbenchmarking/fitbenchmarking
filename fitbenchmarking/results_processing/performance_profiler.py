@@ -83,8 +83,6 @@ def plot(acc, runtime, fig_dir):
             sorted_list = np.sort(value)
             step_values.append(np.insert(sorted_list, 0, 0.0))
 
-        labels = [key for key in acc.keys()]
-
         max_value = np.max([np.max(v)
                             for v in profile_plot.values()])
         linear_upper_limit = 10
@@ -107,7 +105,7 @@ def plot(acc, runtime, fig_dir):
             legend_ax = 2
 
         # Plot linear performance profile
-        create_plot(ax[0], step_values, labels)
+        create_plot(ax[0], step_values, acc.keys())
         ax[0].set_xlim(1, linear_upper_limit)
         ax[0].set_xticks([1, 2, 4, 6, 8, 10])
         ax[0].set_xticklabels(['$1$', '$2$', '$4$', '$6$', '$8$', '$10$'])
@@ -115,7 +113,7 @@ def plot(acc, runtime, fig_dir):
 
         if use_log_plot:
             # Plot log performance profile
-            create_plot(ax[1], step_values, labels)
+            create_plot(ax[1], step_values, acc.keys())
             ax[1].set_xlim(
                 linear_upper_limit,
                 min(max_value+1, 10000))
