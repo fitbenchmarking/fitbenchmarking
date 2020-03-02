@@ -33,46 +33,54 @@ before_install:
 
 
 install:
-  - if [ "$SUITE" == "LINTING" ];
-    then
-      pip install pylint
-      pip install flake8
-    else
-      # Builds RALfit
-      ./build_ralfit.sh
-      # To access RALfit
-      export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
+  # Builds RALfit
+  - ./build_ralfit.sh
+  # To access RALfit
+  - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
 
-      # Builds cutest
-      source build_cutest.sh
-      # to access cutest
-      export PATH="${SIFDECODE}/bin:${CUTEST}/bin:$PATH"
-      # let's ensure the environment variables are set
-      export ARCHDEFS=$HOME/cutest/archdefs/
-      export SIFDECODE=$HOME/cutest/sifdecode/
-      export MASTSIF=$HOME/cutest/cutest/sif/
-      export CUTEST=$HOME/cutest/cutest/
-      export MYARCH="pc64.lnx.gfo"
+  # Builds cutest
+  - source build_cutest.sh
+  # to access cutest
+  - export PATH="${SIFDECODE}/bin:${CUTEST}/bin:$PATH"
+  # let's ensure the environment variables are set
+  - export ARCHDEFS=$HOME/cutest/archdefs/
+  - export SIFDECODE=$HOME/cutest/sifdecode/
+  - export MASTSIF=$HOME/cutest/cutest/sif/
+  - export CUTEST=$HOME/cutest/cutest/
+  - export MYARCH="pc64.lnx.gfo"
 
-      pip install -r requirements.txt
-      pip install .
-      python setup.py externals
+  - pip install -r requirements.txt
+  - pip install .
+  - python setup.py externals
 
-      # To access RALfit
-      export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
+  # To access RALfit
+  - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
 
-      # Python bindings for GSL
-      # --force seems to be necessary to link numpy
-      pip install pygsl --force
+  # Python bindings for GSL
+  # --force seems to be necessary to link numpy
+  - pip install pygsl --force
 
-      pip install pycutest
-      pip install backports.tempfile
-    fi
+  - pip install pycutest
+  - pip install backports.tempfile
+  - pip install pylint
+  - pip install flake8
 
 jobs:
   include:
     - stage: Tests
-      name: Unit Tests
+      name: PyLint
+      env: SUITE=LINTING
+      script:
+        # ======= pylinting parsers ========= #
+        # At the moment this cannot be put into allow_failures, once switching
+        # to python3 is merged this will be put there.
+        - pylint -r y fitbenchmarking/parsing/* --exit-zero
+    - name: Flake8
+      env: SUITE=LINTING
+      script:
+        # ======= flake8 parsers ============ #
+        - flake8 fitbenchmarking/parsing/*
+    - name: Unit Tests
       script:
         # ======= CLIs Tests ================ #
         - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
@@ -98,15 +106,4 @@ jobs:
       script:
         # ======= System Test =============== #
         - pytest fitbenchmarking/systests
-  allow_failures:
-    - stage: Linting
-      name: PyLint
-      env: SUITE=LINTING
-      script:
-        # ======= pylinting parsers ========= #
-        - pylint -r y fitbenchmarking/parsing/*
-    - name: Flake8
-      env: SUITE=LINTING
-      script:
-        # ======= flake8 parsers ============ #
-        - flake8 fitbenchmarking/parsing/*
+

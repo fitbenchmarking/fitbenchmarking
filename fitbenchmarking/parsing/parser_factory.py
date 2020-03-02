@@ -11,10 +11,9 @@ from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.utils.exceptions import (MissingSoftwareError,
                                               NoParserError)
 
+
 # By design the factory parser is a class with only one function
 # pylint: disable=too-few-public-methods, no-self-use
-
-
 class ParserFactory:
     """
     A factory for creating parsers.
