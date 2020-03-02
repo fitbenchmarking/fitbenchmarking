@@ -172,7 +172,8 @@ def run_apidoc(_):
     Code based on the discussion at
     https://github.com/readthedocs/readthedocs.org/issues/1139
     """
-    code_path = os.path.join(os.pardir, 'fitbenchmarking')
+    file_dir = os.path.dirname(__file__)
+    code_path = os.path.join(file_dir, os.pardir, os.pardir, 'fitbenchmarking')
     ignore_paths = [
         os.path.join(code_path, '*', 'tests'),
         os.path.join(code_path, 'mock_problems'),
@@ -183,7 +184,7 @@ def run_apidoc(_):
         "-f",
         "-T",
         "-e",
-        "-o", os.path.join(os.curdir, 'source', 'contributors', 'module_index'),
+        "-o", os.path.join(file_dir, 'contributors', 'module_index'),
         code_path
     ] + ignore_paths
 
