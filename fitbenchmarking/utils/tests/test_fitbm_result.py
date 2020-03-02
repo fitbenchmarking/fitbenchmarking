@@ -93,7 +93,7 @@ class FitbmResultTests(unittest.TestCase):
             np.isclose(self.result.sorted_index,
                        self.problem.sorted_index[1]).all())
 
-        self.assertListEqual(params[1], self.result.params)
+        self.assertTrue(np.isclose(params[1], self.result.params).all())
         self.assertEqual(chi_sq[1], self.result.chi_sq)
 
     def test_default_print(self):
