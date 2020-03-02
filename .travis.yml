@@ -100,3 +100,5 @@ jobs:
       script:
         # ======= System Test =============== #
         - pytest fitbenchmarking/systests
+  allow_failure:
+    - name: PyLint
