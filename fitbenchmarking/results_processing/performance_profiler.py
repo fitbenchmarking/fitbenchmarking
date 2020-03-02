@@ -10,6 +10,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def profile(results, fig_dir):
     """
     Function that generates profiler plots
@@ -151,6 +152,7 @@ def plot(acc, runtime, fig_dir):
 
     return figure_path
 
+
 def create_plot(ax, step_values, labels):
     """
     Function to draw the profile on a matplotlib axis
@@ -169,12 +171,12 @@ def create_plot(ax, step_values, labels):
     # use only 9 of matplotlib's colours, as this will give us
     # 9 * 4 = 36 line/colour combinations, as opposed to
     # 10 * 4 / 2 = 20 if we used all 10
-    colors = ["C0","C1","C2","C3","C4","C5","C6","C7","C8" ]
+    colors = ["C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"]
 
     huge = 1.0e20  # set a large value as a proxy for infinity
     plot_points = np.linspace(0.0, 1.0, step_values[0].size)
     plot_points = np.append(plot_points, 1.0)
-    
+
     for i, (solver, solver_values) in enumerate(zip(labels, step_values)):
         inf_indices = np.where(solver_values > huge)
         solver_values[inf_indices] = huge
