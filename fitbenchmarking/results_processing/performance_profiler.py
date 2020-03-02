@@ -153,7 +153,7 @@ def plot(acc, runtime, fig_dir):
     return figure_path
 
 
-def create_plot(ax, step_values, labels):
+def create_plot(ax, step_values, solvers):
     """
     Function to draw the profile on a matplotlib axis
 
@@ -163,8 +163,8 @@ def create_plot(ax, step_values, labels):
     :param step_values : a sorted list of the values of the metric
                          being profiled
     :type step_values : list of float
-    :param labels : A list of the labels for the different solvers
-    :type labels : list of strings
+    :param solvers : A list of the labels for the different solvers
+    :type solvers : list of strings
     """
 
     lines = ["-", "-.", "--", ":"]
@@ -176,21 +176,21 @@ def create_plot(ax, step_values, labels):
     huge = 1.0e20  # set a large value as a proxy for infinity
     plot_points = np.linspace(0.0, 1.0, step_values[0].size)
     plot_points = np.append(plot_points, 1.0)
-
-    for i, (solver, solver_values) in enumerate(zip(labels, step_values)):
+    
+    for i, (solver, solver_values) in enumerate(zip(solvers, step_values)):
         inf_indices = np.where(solver_values > huge)
         solver_values[inf_indices] = huge
         if inf_indices[0].size > 0:
             plural_ending = "s"
             if inf_indices[0].size == 1:
                 plural_ending = ""
-            labels[i] = "{} ({} failure{})".format(solver,
-                                                   len(inf_indices[0]),
-                                                   plural_ending)
+            solver = "{} ({} failure{})".format(solver,
+                                                len(inf_indices[0]),
+                                                plural_ending)
         solver_values = np.append(solver_values, huge)
         ax.step(solver_values,
                 plot_points,
-                label=labels[i],
+                label=solver,
                 linestyle=lines[(i % len(lines))],
                 color=colors[(i % len(colors))],
                 lw=2.0,
