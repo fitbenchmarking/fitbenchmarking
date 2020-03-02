@@ -166,4 +166,40 @@ texinfo_documents = [
 ]
 
 
+def run_apidoc(_):
+    """
+    Function to autogenerate module index.
+    Code based on the discussion at
+    https://github.com/readthedocs/readthedocs.org/issues/1139
+    """
+    code_path = os.path.join(os.pardir, 'fitbenchmarking')
+    ignore_paths = [
+        os.path.join(code_path, '*', 'tests'),
+        os.path.join(code_path, 'mock_problems'),
+        os.path.join(code_path, 'systests')
+    ]
 
+    argv = [
+        "-f",
+        "-T",
+        "-e",
+        "-o", os.path.join(os.curdir, 'source', 'contributors', 'module_index'),
+        code_path
+    ] + ignore_paths
+
+    try:
+        # Sphinx 1.7+
+        from sphinx.ext import apidoc
+        apidoc.main(argv)
+    except ImportError:
+        # Sphinx 1.6 (and earlier)
+        from sphinx import apidoc
+        argv.insert(0, apidoc.__file__)
+        apidoc.main(argv)
+
+
+def setup(app):
+    """
+    Override setup to allow automatic module index
+    """
+    app.connect('builder-inited', run_apidoc)

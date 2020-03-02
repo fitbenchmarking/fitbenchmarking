@@ -130,9 +130,10 @@ def create_pandas_dataframe(table_data, table_suffix):
     """
     Generates pandas data frame.
 
-    :param table_data: dictionary containing results, i.e.,
-                       {'prob1': [result1, result2, ...],
-                        'prob2': [result1, result2, ...], ...}
+    :param table_data: dictionary containing results,
+                       i.e::
+                         {'prob1': [result1, result2, ...],
+                          'prob2': [result1, result2, ...], ...}
     :type table_data: dict
     :param table_suffix: set output to be runtime or accuracy table
     :type table_suffix: list

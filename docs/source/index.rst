@@ -14,7 +14,6 @@ Welcome to FitBenchmarking's documentation!
    Users <users/index>
    Extending <extending/index>
    Contributors <contributors/index>
-   Module Index <module_index/modules>
 
 FitBenchmarking is an open source tool for comparing different
 minimizers/fitting frameworks based on their accuracy and runtimes.

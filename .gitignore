@@ -7,3 +7,4 @@ FitBenchmarking.egg-info/
 build/lib/build/
 dist/
 docs/build
+docs/source/contributors/module_index

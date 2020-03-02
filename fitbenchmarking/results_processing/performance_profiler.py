@@ -15,14 +15,14 @@ def profile(results, fig_dir):
     """
     Function that generates profiler plots
 
-    :param results : results nested array of objects
-    :type results : list of list of
+    :param results: results nested array of objects
+    :type results: list of list of
                     fitbenchmarking.utils.fitbm_result.FittingResult
-    :param fig_dir : path to directory containing the figures
-    :type fig_dir : str
+    :param fig_dir: path to directory containing the figures
+    :type fig_dir: str
 
-    :return : path to acc and runtime profile graphs
-    :rtype : tuple(str, str)
+    :return: path to acc and runtime profile graphs
+    :rtype: tuple(str, str)
     """
     acc_bound, runtime_bound = prepare_profile_data(results)
     plot_path = plot(acc_bound, runtime_bound, fig_dir)
@@ -35,12 +35,12 @@ def prepare_profile_data(results):
     contain number of occurrences that the minimizer produces a normalised
     result which is less than the bounds in PROFILER_BOUNDS
 
-    :param results : results nested array of objects
-    :type results : list of list of
-                    fitbenchmarking.utils.fitbm_result.FittingResult
+    :param results: results nested array of objects
+    :type results: list of list of
+                   fitbenchmarking.utils.fitbm_result.FittingResult
 
-    :return : dictionary containing number of occurrences
-    :rtype : tuple(dict, dict)
+    :return: dictionary containing number of occurrences
+    :rtype: tuple(dict, dict)
     """
     out_acc = []
     out_runtime = []
@@ -64,15 +64,15 @@ def plot(acc, runtime, fig_dir):
     """
     Function that generates profiler plots
 
-    :param acc : acc dictionary containing number of occurrences
-    :type acc : dict
-    :param runtime : runtime dictionary containing number of occurrences
-    :type runtime : dict
-    :param fig_dir : path to directory containing the figures
-    :type fig_dir : str
+    :param acc: acc dictionary containing number of occurrences
+    :type acc: dict
+    :param runtime: runtime dictionary containing number of occurrences
+    :type runtime: dict
+    :param fig_dir: path to directory containing the figures
+    :type fig_dir: str
 
-    :return : path to acc and runtime profile graphs
-    :rtype : tuple(str, str)
+    :return: path to acc and runtime profile graphs
+    :rtype: tuple(str, str)
     """
     figure_path = []
     for profile_plot, name in zip([acc, runtime], ["acc", "runtime"]):
@@ -157,14 +157,14 @@ def create_plot(ax, step_values, solvers):
     """
     Function to draw the profile on a matplotlib axis
 
-    :param ax : A matplotlib axis to be filled
-    :type ax :  an `.axes.SubplotBase` subclass of `~.axes.Axes`
-                (or a subclass of `~.axes.Axes`)
-    :param step_values : a sorted list of the values of the metric
-                         being profiled
-    :type step_values : list of float
-    :param solvers : A list of the labels for the different solvers
-    :type solvers : list of strings
+    :param ax: A matplotlib axis to be filled
+    :type ax: an `.axes.SubplotBase` subclass of `~.axes.Axes`
+              (or a subclass of `~.axes.Axes`)
+    :param step_values: a sorted list of the values of the metric
+                        being profiled
+    :type step_values: list of float
+    :param solvers: A list of the labels for the different solvers
+    :type solvers: list of strings
     """
 
     lines = ["-", "-.", "--", ":"]
@@ -176,7 +176,7 @@ def create_plot(ax, step_values, solvers):
     huge = 1.0e20  # set a large value as a proxy for infinity
     plot_points = np.linspace(0.0, 1.0, step_values[0].size)
     plot_points = np.append(plot_points, 1.0)
-    
+
     for i, (solver, solver_values) in enumerate(zip(solvers, step_values)):
         inf_indices = np.where(solver_values > huge)
         solver_values[inf_indices] = huge
