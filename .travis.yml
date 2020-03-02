@@ -69,7 +69,7 @@ jobs:
       name: PyLint
       script:
         # ======= pylinting parsers ========= #
-        - pylint fitbenchmarking/parsing/*
+        - pylint -r y fitbenchmarking/parsing/*
     - name: Flake8
       script:
         # ======= flake8 parsers ============ #

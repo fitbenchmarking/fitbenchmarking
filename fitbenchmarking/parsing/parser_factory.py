@@ -57,13 +57,13 @@ class ParserFactory:
             full_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                      module_name + '.py'))
             if os.path.exists(full_path):
-                MissingSoftwareError('Requirements are missing for the '
-                                     '{} parser: {}'.format(
-                                         parser_name, str(e)))
-            else:
-                NoParserError('Could not find parser for {}. '
-                              'Check the input is correct and try '
-                              'again.'.format(filename))
+                raise MissingSoftwareError('Requirements are missing for the '
+                                           '{} parser: {}'.format(
+                                               parser_name, str(e)))
+
+            raise NoParserError('Could not find parser for {}. '
+                                'Check the input is correct and try '
+                                'again.'.format(filename))
 
         classes = getmembers(module, lambda m: (isclass(m)
                                                 and not isabstract(m)

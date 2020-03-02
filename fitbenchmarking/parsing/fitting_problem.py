@@ -302,7 +302,7 @@ class FittingProblem:
             self.data_e = None
 
         # impose x ranges
-        # pylint: disable=no-member
+        # pylint: disable=no-member, assignment-from-no-return
         if self.start_x is not None and self.end_x is not None:
             mask = np.logical_and(self.data_x >= self.start_x,
                                   self.data_x <= self.end_x)
