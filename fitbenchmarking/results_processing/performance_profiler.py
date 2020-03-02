@@ -173,7 +173,6 @@ def create_plot(ax, step_values, labels):
     # 10 * 4 / 2 = 20 if we used all 10
     colors = ["C0","C1","C2","C3","C4","C5","C6","C7","C8" ]
 
-    no_failures = np.zeros(len(step_values), dtype=np.int8)
     huge = 1.0e20  # set a large value as a proxy for infinity
     plot_points = np.linspace(0.0, 1.0, step_values[0].size)
     plot_points = np.append(plot_points, 1.0)
@@ -182,9 +181,13 @@ def create_plot(ax, step_values, labels):
         inf_indices = np.where(solver_values > huge)
         solver_values[inf_indices] = huge
         if inf_indices[0].size > 0:
-            no_failures[i] = len(inf_indices[0])
-            labels[i] = "{} ({} failures)".format(solver, no_failures[i])
-        solver_values = np.append(solver_values,huge)
+            plural_ending = "s"
+            if inf_indices[0].size == 1:
+                plural_ending = ""
+            labels[i] = "{} ({} failure{})".format(solver,
+                                                   len(inf_indices[0]),
+                                                   plural_ending)
+        solver_values = np.append(solver_values, huge)
         ax.step(solver_values,
                 plot_points,
                 label=labels[i],
