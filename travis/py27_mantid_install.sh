@@ -20,4 +20,4 @@ set +e
 # Use mantidpython (not python) as mantidpython waits for completion whereas python exits while still downloading
 /opt/Mantid/bin/mantidpython -m  mantid.simpleapi
 
-rm -r /opt/mantidnightly-python3
+rm -rf /opt/mantidnightly-python3
