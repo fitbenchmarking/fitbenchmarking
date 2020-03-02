@@ -29,7 +29,7 @@ class MantidController(Controller):
 
         self._param_names = self.problem.param_names
 
-        if isinstance(self.data_x[0], np.ndarray):
+        if self.problem.multifit:
             # Multi Fit
             use_errors = self.data_e[0] is not None
             data_obj = msapi.CreateWorkspace(DataX=self.data_x[0],
@@ -156,7 +156,7 @@ class MantidController(Controller):
         num_params = len(self.initial_params)
         if self._multi_fit:
             self.final_params = [final_params[i*num_params:(i+1)*num_params]
-                                 for i in range(len(self.data_x))]
+                                 for i in range(self._multi_fit)]
         else:
             self.final_params = final_params
 
@@ -181,7 +181,7 @@ class MantidController(Controller):
                  given parameters
         :rtype: numpy array
         """
-        if np.shape(params[0]):
+        if self._multi_fit:
             num_inps = len(params)
             if x is None:
                 x = [None for _ in range(num_inps)]

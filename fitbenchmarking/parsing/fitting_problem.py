@@ -83,15 +83,19 @@ class FittingProblem:
 
         self._param_names = None
 
-        # The index for sorting the data (used in plotting)
+        #: *numpy array* The index for sorting the data (used in plotting)
         self.sorted_index = None
 
         # Sets the numerical derivative method
         self._jac_method = self.options.jac_method
 
-        # Container for software specific information.
-        # This should be avoided if possible.
+        #: *dict*
+        #: Container for software specific information.
+        #: This should be avoided if possible.
         self.additional_info = {}
+
+        #: *bool* Used to check if a problem is using multifit.
+        self.multifit = False
 
     @property
     def param_names(self):

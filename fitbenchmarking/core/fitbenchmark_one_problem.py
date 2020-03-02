@@ -83,6 +83,7 @@ def benchmark(controller, minimizers, options):
     :rtype: list of fibenchmarking.utils.fitbm_result.FittingResult
     """
     grabbed_output = output_grabber.OutputGrabber()
+    problem = controller.problem
 
     results_problem = []
     num_runs = options.num_runs
@@ -104,7 +105,8 @@ def benchmark(controller, minimizers, options):
             print(str(excp))
             runtime = np.inf
             controller.flag = 3
-            controller.final_params = None
+            controller.final_params = None if not problem.multifit \
+                else [None]*len(controller.data_x)
 
         controller.check_attributes()
 
@@ -121,9 +123,9 @@ def benchmark(controller, minimizers, options):
                                            y=controller.data_y,
                                            e=controller.data_e)
         else:
-            chi_sq = np.inf
+            chi_sq = np.inf if not problem.multifit \
+                else [np.inf]*len(controller.data_x)
 
-        problem = controller.problem
 
         result_args = {'options': options,
                        'problem': problem,
@@ -135,7 +137,7 @@ def benchmark(controller, minimizers, options):
                        'error_flag': controller.flag,
                        'name': problem.name}
 
-        try:
+        if problem.multifit:
             # Multi fit (will raise TypeError if these are not iterable)
             for i in range(len(chi_sq)):
 
@@ -144,7 +146,7 @@ def benchmark(controller, minimizers, options):
                                         problem.name, (i + 1))})
                 individual_result = fitbm_result.FittingResult(**result_args)
                 results_problem.append(individual_result)
-        except TypeError:
+        else:
             # Normal fitting
             individual_result = fitbm_result.FittingResult(**result_args)
 

@@ -59,6 +59,9 @@ class FitbenchmarkParser(Parser):
 
         self._parsed_func = self._parse_function()
 
+        if software == 'mantid multifit':
+            fitting_problem.multifit = True
+
         # NAME
         fitting_problem.name = self._entries['name']
 
@@ -66,7 +69,7 @@ class FitbenchmarkParser(Parser):
         data_points = [_get_data_points(p) for p in self._get_data_file()]
 
         # FUNCTION
-        if software in ['mantid', 'mantid multifit']:
+        if software.startswith('mantid'):
             fitting_problem.function = self._create_mantid_function()
         elif software == 'sasview':
             fitting_problem.function = self._create_sasview_function()
@@ -91,17 +94,7 @@ class FitbenchmarkParser(Parser):
         fit_ranges = [_parse_range('{' + r.split('}')[0] + '}')
                       for r in fit_ranges_str.split('{')[1:]]
 
-        if software != 'mantid multifit':
-            fitting_problem.data_x = data_points[0][:, 0]
-            fitting_problem.data_y = data_points[0][:, 1]
-            if data_points[0].shape[1] > 2:
-                fitting_problem.data_e = data_points[0][:, 2]
-
-            if fit_ranges and 'x' in fit_ranges[0]:
-                fitting_problem.start_x = fit_ranges[0]['x'][0]
-                fitting_problem.end_x = fit_ranges[0]['x'][1]
-
-        else:
+        if fitting_problem.multifit:
             num_files = len(data_points)
             fitting_problem.data_x = [d[:, 0] for d in data_points]
             fitting_problem.data_y = [d[:, 1] for d in data_points]
@@ -116,13 +109,23 @@ class FitbenchmarkParser(Parser):
             fitting_problem.end_x = [f['x'][1] if 'x' in f else None
                                      for f in fit_ranges]
 
-        if software in ['mantid', 'mantid multifit']:
+        else:
+            fitting_problem.data_x = data_points[0][:, 0]
+            fitting_problem.data_y = data_points[0][:, 1]
+            if data_points[0].shape[1] > 2:
+                fitting_problem.data_e = data_points[0][:, 2]
+
+            if fit_ranges and 'x' in fit_ranges[0]:
+                fitting_problem.start_x = fit_ranges[0]['x'][0]
+                fitting_problem.end_x = fit_ranges[0]['x'][1]
+
+        if software.startswith('mantid'):
             # String containing the function name(s) and the starting parameter
             # values for each function.
             fitting_problem.additional_info['mantid_equation'] \
                 = self._entries['function']
 
-            if software == 'mantid multifit':
+            if fitting_problem.multifit:
                 fitting_problem.additional_info['mantid_ties'] \
                     = self._parse_ties()
 
