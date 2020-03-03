@@ -37,6 +37,11 @@ class OptionsTests(unittest.TestCase):
             table_type: acc
                         runtime
             results_dir: new_results
+
+            [LOGGING]
+            file_name: THE_LOG.log
+            append: yes
+            level: debug
             """
         incorrect_config_str = """
             [FITTING]
@@ -44,6 +49,8 @@ class OptionsTests(unittest.TestCase):
             num_runs: two
             [PLOTTING]
             make_plots: incorrect_falue
+            [LOGGING]
+            append: sure
             """
         opts = {'MINIMIZERS': {'scipy': ['nonesense',
                                          'another_fake_minimizer'],
@@ -57,8 +64,10 @@ class OptionsTests(unittest.TestCase):
                                               (float('inf'), 'final_string')],
                              'comparison_mode': 'abs',
                              'table_type': ['acc', 'runtime'],
-                             'results_dir': 'new_results'}
-                }
+                             'results_dir': 'new_results'},
+                'LOGGING': {'file_name': 'THE_LOG.log',
+                            'append': 'yes',
+                            'level': 'debug'}}
 
         opts_file = 'test_options_tests_{}.txt'.format(
             datetime.datetime.now())
@@ -111,8 +120,10 @@ class OptionsTests(unittest.TestCase):
         self.assertDictEqual(options.__dict__, new_options.__dict__)
 
     def test_make_plots_false(self):
-        with self.assertRaises(exceptions.OptionsError):
+        with self.assertRaises(exceptions.OptionsError) as cm:
             Options(file_name=self.options_file_incorrect)
+        excep = cm.exception
+        self.assertIn('make_plots', excep.msg)
 
     def test_make_plots_true(self):
         options = Options(file_name=self.options_file)
@@ -120,8 +131,10 @@ class OptionsTests(unittest.TestCase):
         self.assertEqual(plotting_opts['make_plots'], options.make_plots)
 
     def test_use_errors_false(self):
-        with self.assertRaises(exceptions.OptionsError):
+        with self.assertRaises(exceptions.OptionsError) as cm:
             Options(file_name=self.options_file_incorrect)
+        excep = cm.exception
+        self.assertIn('use_errors', excep.msg)
 
     def test_use_errors_true(self):
         options = Options(file_name=self.options_file)
@@ -129,13 +142,26 @@ class OptionsTests(unittest.TestCase):
         self.assertEqual(plotting_opts['use_errors'], options.use_errors)
 
     def test_num_runs_non_int_value(self):
-        with self.assertRaises(exceptions.OptionsError):
+        with self.assertRaises(exceptions.OptionsError) as cm:
             Options(file_name=self.options_file_incorrect)
+        excep = cm.exception
+        self.assertIn('num_runs', excep.msg)
 
     def test_num_runs_int_value(self):
         options = Options(file_name=self.options_file)
         plotting_opts = self.options['FITTING']
         self.assertEqual(plotting_opts['num_runs'], options.num_runs)
+
+    def test_log_append_false(self):
+        with self.assertRaises(exceptions.OptionsError) as cm:
+            Options(file_name=self.options_file_incorrect)
+        excep = cm.exception
+        self.assertIn('append', excep.msg)
+
+    def test_log_append_true(self):
+        options = Options(file_name=self.options_file)
+        logging_opts = self.options['LOGGING']
+        self.assertEqual(logging_opts['append'], options.log_append)
 
 
 if __name__ == '__main__':
