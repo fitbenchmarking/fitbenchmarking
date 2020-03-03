@@ -12,7 +12,9 @@ import numpy as np
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import MissingSoftwareError, ParsingError
-from fitbenchmarking.utils.logging_setup import logger
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 import_success = {}
 try:
@@ -118,7 +120,7 @@ class FitbenchmarkParser(Parser):
                     data_file = os.path.join(root, data_file_name)
 
         if data_file is None:
-            logger.error("Data file %s not found", data_file_name)
+            LOGGER.error("Data file %s not found", data_file_name)
 
         return data_file
 

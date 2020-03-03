@@ -1,6 +1,9 @@
 import os
 import sys
 
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 class OutputGrabber(object):
     """
@@ -45,6 +48,10 @@ class OutputGrabber(object):
 
         # Reads the output and stores it in capturedtext
         self.readOutput()
+
+        if self.capturedtext:
+            LOGGER.info('Captured output: \n%s', self.capturedtext)
+
         # Close the pipe:
         os.close(self.pipe_in)
         os.close(self.pipe_out)
