@@ -16,6 +16,9 @@ from scipy.optimize._numdiff import approx_derivative
 from fitbenchmarking.utils.exceptions import FittingProblemError
 
 
+# Using property getters and setters means that the setter does not always use
+# self
+# pylint: disable=no-self-use
 class FittingProblem:
     r"""
     Definition of a fitting problem, which will be populated by a parser from a
@@ -106,6 +109,7 @@ class FittingProblem:
         :rtype: list of str
         """
         if self._param_names is None:
+            # pylint: disable=unsubscriptable-object
             self._param_names = list(self.starting_values[0].keys())
         return self._param_names
 
@@ -130,7 +134,9 @@ class FittingProblem:
                                       'function.')
         if x is None:
             x = self.data_x
-        return self.function(x, *params)
+        # pylint: disable=not-callable
+        out = self.function(x, *params)
+        return out
 
     def eval_r(self, params, x=None, y=None, e=None):
         """
@@ -217,6 +223,7 @@ class FittingProblem:
         if self.starting_values is None:
             raise FittingProblemError('Cannot call function before setting '
                                       'starting values.')
+        # pylint: disable=unsubscriptable-object
         return self.eval_f(self.starting_values[param_set].values())
 
     def get_function_params(self, params):
@@ -267,7 +274,7 @@ class FittingProblem:
         and approximate errors if not given.
         Modifications happen on member variables.
         """
-        if isinstance(self.data_x[0], float):
+        if not self.multifit:
             correct_vals = correct_data(x=self.data_x,
                                         y=self.data_y,
                                         e=self.data_e,
@@ -329,6 +336,7 @@ def correct_data(x, y, e, startx, endx, use_errors):
         e = None
 
     # impose x ranges
+    # pylint: disable=no-member, assignment-from-no-return
     if startx is not None and endx is not None:
         mask = np.logical_and(x >= startx,
                               x <= endx)

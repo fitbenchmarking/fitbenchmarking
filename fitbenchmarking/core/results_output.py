@@ -12,7 +12,7 @@ import sys
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
-from fitbenchmarking.results_processing import plots, support_page, tables
+from fitbenchmarking.results_processing import performance_profiler, plots, support_page, tables
 from fitbenchmarking.utils import create_dirs
 
 
@@ -34,6 +34,8 @@ def save_results(options, results, group_name):
     """
     _, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
     best_results = preproccess_data(results)
+    pp_locations = performance_profiler.profile(results, fig_dir)
+
     table_descriptions = create_table_descriptions(options)
     if options.make_plots:
         create_plots(options, results, best_results, group_name, fig_dir)
@@ -46,7 +48,8 @@ def save_results(options, results, group_name):
                                                best_results,
                                                group_name,
                                                group_dir,
-                                               table_descriptions)
+                                               table_descriptions,
+                                               pp_locations)
     create_problem_level_index(options,
                                table_names,
                                group_name,
