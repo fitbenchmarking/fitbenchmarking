@@ -31,9 +31,8 @@ except ImportError as e:
     import_success['sasview'] = (False, e)
 
 
-# By design the parsers only have the requirment for one public method and many
-# private methods
-# pylint: disable=too-few-public-methods, too-many-branches
+# By design the parsers may require many the private methods
+# pylint: disable=too-many-branches
 class FitbenchmarkParser(Parser):
     """
     Parser for the native FitBenchmarking problem definition (FitBenchmark)

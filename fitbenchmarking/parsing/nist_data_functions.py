@@ -63,7 +63,7 @@ def format_function_scipy(function):
     return function
 
 
-# Due to the nature of this function it is necessary to beabale to return at
+# Due to the nature of this function it is necessary to be able to return at
 # multiple places
 # pylint: disable=too-many-return-statements, too-many-branches
 def is_safe(func_str):

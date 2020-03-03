@@ -16,9 +16,9 @@ from fitbenchmarking.utils.exceptions import ParsingError
 from fitbenchmarking.utils.logging_setup import logger
 
 
-# By design the parsers only have the requirment for one public method and that
-# functions do not necessarily use self within them
-# pylint: disable=too-few-public-methods, no-self-use
+# By design the parsers may have functions that do not necessarily use self
+# within them
+# pylint: no-self-use
 class NISTParser(Parser):
     """
     Parser for the NIST problem definition file.
