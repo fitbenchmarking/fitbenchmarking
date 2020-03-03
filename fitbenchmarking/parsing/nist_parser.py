@@ -5,8 +5,9 @@ This file implements a parser for the NIST style data format.
 from __future__ import (absolute_import, division, print_function)
 
 from collections import OrderedDict
-import numpy as np
 import re
+
+import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -15,6 +16,9 @@ from fitbenchmarking.utils.exceptions import ParsingError
 from fitbenchmarking.utils.logging_setup import logger
 
 
+# By design the parsers may have functions that do not necessarily use self
+# within them
+# pylint: no-self-use
 class NISTParser(Parser):
     """
     Parser for the NIST problem definition file.

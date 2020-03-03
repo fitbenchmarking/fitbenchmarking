@@ -1,9 +1,11 @@
-from build.commands.installs import InstallExternals
-from build.commands.help import Help
 import glob
 import os
-from setuptools import find_packages, setup
 import shutil
+
+from setuptools import find_packages, setup
+
+from build.commands.help import Help
+from build.commands.installs import InstallExternals
 
 setup(name='FitBenchmarking',
       version='0.1.dev2',
@@ -19,8 +21,8 @@ setup(name='FitBenchmarking',
       packages=find_packages(exclude=('*mock*', '*test*')),
       install_requires=['docutils',
                         'numpy',
-                        'matplotlib',
-                        'scipy',
+                        'matplotlib>=2.0',
+                        'scipy>=0.18',
                         'bumps',
                         'sasmodels',
                         'lxml',
@@ -39,8 +41,7 @@ setup(name='FitBenchmarking',
           'help': Help,
       },
       package_data={'fitbenchmarking': ['utils/default_options.ini',
-                                        'templates/*']}
-      )
+                                        'templates/*']})
 
 
 # Clean up build files
@@ -53,6 +54,6 @@ for path_spec in CLEAN_FILES:
     for path in [str(p) for p in abs_paths]:
         if not path.startswith(CURDIR):
             # Die if path in CLEAN_FILES is absolute + outside this directory
-            raise ValueError("%s is not a path inside %s" % (path, CURDIR))
-        print('removing %s' % os.path.relpath(path))
+            raise ValueError("{} is not a path inside {}".format(path, CURDIR))
+        print('removing {}'.format(os.path.relpath(path)))
         shutil.rmtree(path)

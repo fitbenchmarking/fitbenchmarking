@@ -51,7 +51,7 @@ printf "nnydn" >> cutest.input
 
 ./install_cutest < cutest.input
 
-python3 -m pip install pycutest
+python -m pip install pycutest
 
 cd $SCRIPTPATH
 

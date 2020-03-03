@@ -18,60 +18,77 @@
                     <hr />
                 </div>
                 {% if table_description %}
-                <section class="accordion">
-                    <input type="checkbox" name="collapse" id="handle1" checked="checked">
-                    <h2 class="handle">
-                    <label for="handle1">Table Description</label>
-                    </h2>
-                    <div class="content">
-                        {{ table_description }}
-                    </div>
-                </section>
-                {% endif %}
-                {% if table_format %}
-                    <section class="accordion">
-                        <input type="checkbox" name="collapse" id="handle2" checked="checked">
-                        <h2 class="handle">
-                        <label for="handle2">Table Formatting</label>
-                        </h2>
-                        <div class="content">
-                            {{ table_format }}
-                        </div>
-                    </section>
-                {% endif %}
-                <center>
-                <div class="table">
-                    {{ table }}
+                <div class="content">
+                    {{ table_description }}
                 </div>
-                </center>
-                <p>
-                    Clicking a result in the tables will give more details,
-                    such as graphs of the fit against the data and the parameters that the minimizer found.
-                </p>
-                <p>
-                    Clicking the problem names will take you to details of the best minimizer.
-                </p>
-                <h3>Errors</h3>
-                <p>
-                    The superscripts in the tables denote current error handling within FitBenchmarking.
-                    Currently the errors correspond to:
-                </p>
-                <table style="width:60%">
-                    <tr>
-                        <th>Error flag</th>
-                        <th>Error message</th>
-                    </tr>
-                    {% for flag, message in error_message.items() %}
-                        <tr>
-                            <td>{{ flag }}</td>
-                            <td>{{ message }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
+                {% endif %}
+		<section class="accordion">
+		    
+                    <input type="checkbox" name="collapse" id="handle2" checked="checked">
+			<h2 class="handle">
+                            <label for="handle2">Table</label>
+			</h2>
+			<div class="content">
+                            {% if table_format %}
+			    <p>
+				{{ table_format }}
+			    </p>
+			    {% endif %}
+			    <center>
+				<div class="table">
+				    {{ table }}
+				</div>
+			    </center>
+			    <p>
+				Clicking a result in the tables will give more details,
+				such as graphs of the fit against the data and the parameters that the minimizer found.
+			    </p>
+			    <p>
+				Clicking the problem names will take you to details of the best minimizer.
+			    </p>
+			    <h3>Errors</h3>
+			    <p>
+				The superscripts in the tables denote current error handling within FitBenchmarking.
+				Currently the errors correspond to:
+			    </p>
+			    <table style="width:60%">
+				<tr>
+				    <th>Error flag</th>
+				    <th>Error message</th>
+				</tr>
+				{% for flag, message in error_message.items() %}
+				<tr>
+				    <td>{{ flag }}</td>
+				    <td>{{ message }}</td>
+				</tr>
+				{% endfor %}
+			    </table>
+			</div>
+		</section>
+		{% if has_pp %}
+		<hr>
+		<section class="accordion">
+		    <input type="checkbox" name="collapse" id="handle3" checked="checked">
+			<h2 class="handle">
+			    <label for="handle3">Performance profile</label>
+			</h2>
+			<div class="content">
+			    {% for imgfile in pp_filenames %}
+			        <img alt="{{ imgfile }}" src="{{ imgfile }}" />
+			    {% endfor %}
+			    <p>
+				This is a Dolan-Moré performance profile.
+				The solvers appearing in the top left corner may be considered the best
+				performing on this test set.
+				See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.
+			    </p>
+			</div>
+                </section>
+		{% endif %}
                 <center>
-                <button class="btn default" onclick="history.go(-1)">
-                <i class="fa fa-arrow-left"></i>
-                </button>
+		    <button class="btn default" onclick="history.go(-1)">
+			<i class="fa fa-arrow-left"></i>
+		    </button>
                 </center>
             </div>
         </div>

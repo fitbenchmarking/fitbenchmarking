@@ -12,6 +12,8 @@ env:
   - SUITE=UNIT COVERAGE=OFF
   - SUITE=UNIT COVERAGE=ON
   - SUITE=SYSTEM
+  - SUITE=LINTING
+
 
 notifications:
   email:
@@ -36,45 +38,17 @@ before_install:
 
 
 install:
-  # Builds RALfit
-  - ./build_ralfit.sh
-    # To access RALfit
-  - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
-
-    # Builds cutest
-  - source build_cutest.sh
-    # to access cutest
-  - export PATH="${SIFDECODE}/bin:${CUTEST}/bin:$PATH"
-  # let's ensure the environment variables are set
-  - export ARCHDEFS=$HOME/cutest/archdefs/
-  - export SIFDECODE=$HOME/cutest/sifdecode/
-  - export MASTSIF=$HOME/cutest/cutest/sif/
-  - export CUTEST=$HOME/cutest/cutest/
-  - export MYARCH="pc64.lnx.gfo"	
-  
-  - pip install -r requirements.txt
-  - pip install .
-  - if [ "$TRAVIS_PYTHON_VERSION" == "2.7" ];
-    then
-      source ./travis/py27_mantid_install.sh;
-    else
-      python setup.py externals;
-    fi
-       
-
-  - export PYTHONPATH=$PYTHONPATH:/opt/mantidnightly-python3/lib:/opt/mantidnightly-python3/bin
-
-  # Python bindings for GSL and CUTEst
-  - pip install pygsl
-  - pip install pycutest
+  - if [[ $SUITE == "UNIT" ]]; then source ./travis/full_install.sh; fi
+  - if [[ $SUITE == "SYSTEM" ]]; then source ./travis/full_install.sh; fi
+  - if [[ $SUITE == "LINTING" ]]; then source ./travis/linting_install.sh; fi
 
 script:
-  - if [[ $SUITE == "UNIT" ]]; then ./travis/unit_tests.sh  ; fi
-  - if [[ $SUITE == "SYSTEM" ]]; then ./travis/system_tests.sh  ; fi
+  - if [[ $SUITE == "UNIT" ]]; then ./travis/unit_tests.sh; fi
+  - if [[ $SUITE == "SYSTEM" ]]; then ./travis/system_tests.sh; fi
+  - if [[ $SUITE == "LINTING" ]]; then ./travis/linting_tests.sh;  fi
 
 after_success:
   - if [[ $COVERAGE == "ON" ]]; then coveralls; fi
-
 
 jobs:
   exclude:
@@ -92,9 +66,16 @@ jobs:
       python: 3.7
     - env: SUITE=SYSTEM
       python: 3.8
+    - env: SUITE=LINTING
+      python: 3.6
+    - env: SUITE=LINTING
+      python: 3.7
+      
   allow_failures:
     # No longer guaranteed but good to know if working.
     - env: SUITE=UNIT COVERAGE=OFF
+      python: 2.7
+    - env: SUITE=LINTING
       python: 2.7
     # Allow failures as we dont have a mantid build on these python versions
     - env: SUITE=UNIT COVERAGE=OFF

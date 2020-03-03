@@ -10,6 +10,7 @@ import numpy as np
 
 from fitbenchmarking.utils.exceptions import ParsingError
 
+
 def nist_func_definition(function, param_names):
     """
     Processing a function plus different set of starting values as specified in
@@ -62,6 +63,9 @@ def format_function_scipy(function):
     return function
 
 
+# Due to the nature of this function it is necessary to be able to return at
+# multiple places
+# pylint: disable=too-many-return-statements, too-many-branches
 def is_safe(func_str):
     """
     Verifies that a string is safe to be passed to exec in the context of an
