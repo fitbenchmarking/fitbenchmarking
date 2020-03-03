@@ -72,7 +72,7 @@ class FittingResult(object):
         # Minimizer for a certain problem and its function definition
         self.minimizer = minimizer
 
-        # String interpretaions of the params
+        # String interpretations of the params
         self.ini_function_params = self.problem.get_function_params(
             params=initial_params)
         self.fin_function_params = self.problem.get_function_params(

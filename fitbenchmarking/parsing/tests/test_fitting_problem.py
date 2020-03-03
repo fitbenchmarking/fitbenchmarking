@@ -229,6 +229,7 @@ class TestFittingProblem(TestCase):
         Tests correct data on a multifit problem.
         """
         fitting_problem = FittingProblem(self.options)
+        fitting_problem.multifit = True
         x_data = [np.array([-0.5, 0.0, 1.0, 0.5, 1.5, 2.0, 2.5, 3.0, 4.0]),
                   np.array([-0.5, 0.0, 1.0, 0.5, 1.4, 2.0, 2.5, 3.0, 4.0]),
                   np.array([-0.5, 0.0, 1.0, 0.5, 1.7, 2.0, 2.5, 3.0, 4.0])]

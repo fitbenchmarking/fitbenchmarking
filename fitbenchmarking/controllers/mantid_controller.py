@@ -181,7 +181,14 @@ class MantidController(Controller):
                  given parameters
         :rtype: numpy array
         """
-        if self._multi_fit:
+        if x is not None:
+            # If x[0] is scalar this is false, otherwise x is a list of
+            # datasets
+            multifit = bool(np.shape(x[0]))
+        else:
+            multifit = self._multi_fit
+
+        if multifit:
             num_inps = len(params)
             if x is None:
                 x = [None for _ in range(num_inps)]
