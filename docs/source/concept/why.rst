@@ -108,7 +108,7 @@ art is, and what kinds of data are problematic.  It will give
 them access to real data, and will give a route for novel methods to
 quickly make it into production.
 
-A workflow as described able plays a crucial role in the processing and analysis of
+A workflow as described plays a crucial role in the processing and analysis of
 data at large research facilities in tasks as diverse as instrument
 calibration, refinement of structures, and data analysis methods specific
 to different scientific techniques. FitBenchmarking will ensure that, across
