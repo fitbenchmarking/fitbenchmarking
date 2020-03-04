@@ -5,9 +5,10 @@ This file contains tests for the parsers.
 from importlib import import_module
 from inspect import isclass, isabstract, getmembers
 from json import load
-import numpy as np
 import os
 from unittest import TestCase
+
+import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -19,6 +20,7 @@ from fitbenchmarking.utils.options import Options
 OPTIONS = Options()
 
 
+# pylint: disable=no-self-use
 def pytest_generate_tests(metafunc):
     """
     Function used by pytest to parametrize tests.
@@ -52,8 +54,8 @@ def generate_test_cases():
     formats = [f[:-10] for f in os.listdir(os.path.join(test_dir, os.pardir))
                if f.endswith('_parser.py')
                and f != 'base_parser.py']
-    for known_format in ['nist',
-                         'fitbenchmark']:
+
+    for known_format in ['nist', 'fitbenchmark']:
         if known_format not in formats:
             raise RuntimeError(
                 'Could not find {}'.format(known_format))
