@@ -247,8 +247,8 @@ class TestFittingProblem(TestCase):
         expected_y_data = [np.array([3.0, 2.0, 4.0, 5.0, 6.0]),
                            np.array([24.0, 5.0, 6.0]),
                            np.array([1.0, 3.0, 2.8])]
-        expected_e_data = [np.array([40.0, 30.0, 50.0, 60.0, 70.0]),
-                           np.array([50.0, 60.0, 70.0]),
+        expected_e_data = [np.array([40.0, 30.0, 50.0, 60.0, 1.0]),
+                           np.array([50.0, 60.0, 1.0]),
                            np.array([20.0, 40.0, 30.0])]
 
         fitting_problem.data_x = x_data
