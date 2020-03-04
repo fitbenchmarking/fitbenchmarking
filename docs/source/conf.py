@@ -23,19 +23,19 @@ import tempfile
 
 sys.path.insert(0, os.path.abspath('../../'))
 
-# autodocs appears to try and import all modules when generating the module
-# index. Thus, for the external packages need to be mocked out to generate
-# these pages.
-MOCK_MODULES = ['dfogn', 'dfols', 'pygsl', 'mantid', 'mantid.fitfunctions',
-                'iminuit', 'ral_nlls', 'bumps', 'bumps.fitters', 'bumps.names',
-                'pycutest', 'tempfile']
-for mod_name in MOCK_MODULES:
-    sys.modules[mod_name] = mock.Mock()
 
 # PYCUTEST_CACHE needs to be set to use pycutest
 mock_pycutest_cache = tempfile.mkdtemp()
 os.environ["PYCUTEST_CACHE"] = mock_pycutest_cache
 
+# autodoc appears to try and import all modules when generating the module
+# index. Thus, for the external packages need to be mocked out to generate
+# these pages.
+mock_modules = ['dfogn', 'dfols', 'pygsl', 'mantid', 'mantid.fitfunctions',
+                'iminuit', 'ral_nlls', 'bumps', 'bumps.fitters', 'bumps.names',
+                'pycutest', 'tempfile']
+for mod_name in mock_modules:
+    sys.modules[mod_name] = mock.Mock()
 
 # -- General configuration ------------------------------------------------
 
