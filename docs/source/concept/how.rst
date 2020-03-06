@@ -6,8 +6,17 @@ How does FitBenchmarking work?
 
 FitBenchmarking currently compares the fitting software outlined in the Section Minimizers_.
 Additional minimizers are straightforward to add, see ??.
-Benmarks are done with examples that come from software we support; the currently list is in
-BenchmarkProblems_.
+
+
+Benchmarks are done with examples that come from software we support; the current list is in
+:ref:`BenchmarkProblems`.
+Again, additional sources of fitting problems can be added by following the instructions in ??.
+
+
+Once you've chosen which minimizers you want to compare on which problems, running FitBenchmarking
+will give you a comparison.  The specific benchmarking paradigm we employ is described in 
+:ref:`BenchmarkingParadigm` section.
+
 
 .. _Minimizers:
 
