@@ -4,7 +4,11 @@
 How does FitBenchmarking work?
 ##############################
 
-Place holder for how FitBenchmarking is used.
+FitBenchmarking currently compares the fitting software outlined in the Section Minimizers_.
+Additional minimizers are straightforward to add, see ??.
+Benmarks are done with examples that come from software we support; the currently list is in
+BenchmarkProblems_.
+
 .. _Minimizers:
 
 **********
@@ -159,3 +163,10 @@ suite to encompass new categories. The Fitbenchmarking framework has
 been designed to make it easy to integrate new problem sets, and a any
 new problem set added to the framework can be tested with any and all of
 the available fitting methods.
+
+.. _BenchmarkingParadigm:
+
+*************************
+The Benchmarking Paradigm
+*************************
+
