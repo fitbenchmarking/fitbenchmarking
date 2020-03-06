@@ -19,8 +19,11 @@
 import os
 import sys
 import mock
+import subprocess
 
 sys.path.insert(0, os.path.abspath('../../'))
+subprocess.call(['pip', 'uninstall', 'backports.functools_lru_cache'])
+subprocess.call(['pip', 'install', 'backports.functools_lru_cache'])
 
 # autodoc appears to try and import all modules when generating the module
 # index. Thus, for the external packages need to be mocked out to generate
