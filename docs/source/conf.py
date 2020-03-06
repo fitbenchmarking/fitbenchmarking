@@ -27,8 +27,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 # these pages.
 mock_modules = ['dfogn', 'dfols', 'pygsl', 'mantid', 'mantid.fitfunctions',
                 'iminuit', 'ral_nlls', 'bumps', 'bumps.fitters', 'bumps.names',
-                'pycutest', 'backports', 'backports.tempfile',
-                'configparser', 'functools_lru_cache', 'cbook']
+                'pycutest', 'backports', 'backports.tempfile']
 for mod_name in mock_modules:
     sys.modules[mod_name] = mock.Mock()
 
