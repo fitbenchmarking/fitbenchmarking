@@ -66,7 +66,7 @@ class OptionsTests(unittest.TestCase):
                              'table_type': ['acc', 'runtime'],
                              'results_dir': 'new_results'},
                 'LOGGING': {'file_name': 'THE_LOG.log',
-                            'append': 'yes',
+                            'append': True,
                             'level': 'debug'}}
 
         opts_file = 'test_options_tests_{}.txt'.format(
@@ -123,7 +123,7 @@ class OptionsTests(unittest.TestCase):
         with self.assertRaises(exceptions.OptionsError) as cm:
             Options(file_name=self.options_file_incorrect)
         excep = cm.exception
-        self.assertIn('make_plots', excep.msg)
+        self.assertIn('make_plots', excep._obj_message)
 
     def test_make_plots_true(self):
         options = Options(file_name=self.options_file)
@@ -134,7 +134,7 @@ class OptionsTests(unittest.TestCase):
         with self.assertRaises(exceptions.OptionsError) as cm:
             Options(file_name=self.options_file_incorrect)
         excep = cm.exception
-        self.assertIn('use_errors', excep.msg)
+        self.assertIn('use_errors', excep._obj_message)
 
     def test_use_errors_true(self):
         options = Options(file_name=self.options_file)
@@ -145,7 +145,7 @@ class OptionsTests(unittest.TestCase):
         with self.assertRaises(exceptions.OptionsError) as cm:
             Options(file_name=self.options_file_incorrect)
         excep = cm.exception
-        self.assertIn('num_runs', excep.msg)
+        self.assertIn('num_runs', excep._obj_message)
 
     def test_num_runs_int_value(self):
         options = Options(file_name=self.options_file)
@@ -156,7 +156,7 @@ class OptionsTests(unittest.TestCase):
         with self.assertRaises(exceptions.OptionsError) as cm:
             Options(file_name=self.options_file_incorrect)
         excep = cm.exception
-        self.assertIn('append', excep.msg)
+        self.assertIn('append', excep._obj_message)
 
     def test_log_append_true(self):
         options = Options(file_name=self.options_file)
