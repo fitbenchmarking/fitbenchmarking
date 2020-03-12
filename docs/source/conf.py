@@ -22,16 +22,15 @@ import mock
 import subprocess
 
 sys.path.insert(0, os.path.abspath('../../'))
-subprocess.call(['pip', 'uninstall', 'backports.functools_lru_cache'])
-subprocess.call(['pip', 'install', 'backports.functools_lru_cache'])
+subprocess.call(['pip', 'uninstall', 'matplotlib'])
+subprocess.call(['pip', 'install', 'matplotlib'])
 
 # autodoc appears to try and import all modules when generating the module
 # index. Thus, for the external packages need to be mocked out to generate
 # these pages.
 mock_modules = ['dfogn', 'dfols', 'pygsl', 'mantid', 'mantid.fitfunctions',
                 'iminuit', 'ral_nlls', 'bumps', 'bumps.fitters', 'bumps.names',
-                'pycutest', 'backports', 'backports.tempfile',
-                'backports.functools_lru_cache']
+                'pycutest', 'backports', 'backports.tempfile']
 for mod_name in mock_modules:
     sys.modules[mod_name] = mock.Mock()
 
