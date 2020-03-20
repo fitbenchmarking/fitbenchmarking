@@ -54,7 +54,7 @@ FitBenchmarking currently supports the Bumps minimizers:
   
 * `MINPACK <https://github.com/bumps/bumps/blob/96b5100fc3d5b9485bd4a444c83a33617b74aa9d/bumps/mpfit.py>`_ (:code:`mp`)  This is a translation of `MINPACK` to Python.
 
-**Links** `GitHub <https://github.com/bumps/bumps>`_
+**Links** `GitHub - bumps <https://github.com/bumps/bumps>`_
   
 DFO
 ---
@@ -88,7 +88,7 @@ packages in the `multiminimize <https://www.gnu.org/software/gsl/doc/html/multim
 
 * `Levenberg-Marquardt (unscaled) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multifit_nlin.lmder>`_ (:code:`lmder`)
 
-* `Levenberg-Marquardt <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multifit_nlin.lmsder>`_ (:code:`lmsder`)
+* `Levenberg-Marquardt (scaled) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multifit_nlin.lmsder>`_ (:code:`lmsder`)
   
 * `Nelder-Mead Simplex Algorithm <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.nmsimplex>`_ (:code:`nmsimplex`)
 
@@ -121,7 +121,7 @@ It has support for a number of minimizers, most of which are from GSL.
 
 * `Damped GaussNewton <https://docs.mantidproject.org/nightly/fitting/fitminimizers/DampedGaussNewton.html>`_ (:code:`Damped GaussNewton`)
 
-* `Levenberg-Marquardt <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardt.html>`_ (:code:`Levenberg-Marquardt`)
+* `Levenberg-Marquardt algorithm <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardt.html>`_ (:code:`Levenberg-Marquardt`)
   
 * `Levenberg-Marquardt MD <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardtMD.html>`_ (:code:`Levenberg-MarquardtMD`) - An implementation of Levenberg-Marquardt intended for MD workspaces, where work is divided into chunks to acheive a greater efficiency for a large number of data points.
 
@@ -131,7 +131,7 @@ It has support for a number of minimizers, most of which are from GSL.
   
 * `Trust Region <https://docs.mantidproject.org/nightly/fitting/fitminimizers/TrustRegion.html>`_ (:code:`Trust Region`) - An implementation of one of the algorithms available in RALFit.
 
- **Links** `GitHub <https://github.com/mantidproject/mantid>`_ `Mantid's Fitting Docs <https://docs.mantidproject.org/nightly/algorithms/Fit-v1.html>`_
+ **Links** `GitHub - Mantid <https://github.com/mantidproject/mantid>`_ `Mantid's Fitting Docs <https://docs.mantidproject.org/nightly/algorithms/Fit-v1.html>`_
 
 
 Minuit
@@ -167,12 +167,12 @@ SciPy
 software.  In particular, we use the `least_squares <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares>`_
 solver from the optimization chapter the SciPy's library.
 
-* Levenberg-Marquardt (:code:`lm-scipy`)  - a wrapper around MINPACK
+* Levenberg-Marquardt with supplied Jacobian (:code:`lm-scipy`)  - a wrapper around MINPACK
 * Levenberg-Marquardt with no Jacobian passed (:code:`lm-scipy-no-jac`)  - as above, but using MINPACK's approximate Jacobian
 * The Trust Region Reflective algorithm (:code:`trf`)
 * A dogleg algorithm with rectangular trust regions (:code:`dogbox`)
 
-**Links** `Github <https://github.com/scipy/scipy/blob/master/scipy/optimize/_lsq/least_squares.py>`_
+**Links** `Github - SciPy least_squares <https://github.com/scipy/scipy/blob/master/scipy/optimize/_lsq/least_squares.py>`_
 
 
 .. _BenchmarkProblems:
@@ -191,13 +191,14 @@ together with some real-world
 data sets that have been extracted from `Mantid <https://www.mantidproject.org>`_ and
 `SASView <https://www.sasview.org>`_ usage examples and system tests.
 
-Each of the test problems contain: a data set consisting of points
-:math:`(x_i, y_i)` (with optional errors on :math:`y_i`,
-:math:`\sigma_i`), a definition of the fitting function,
-:math:`f({\boldsymbol{\beta}};x)`, (at least) one set of initial values
-for the function parameters :math:`{\boldsymbol{\beta}}_0`, and an
-optional set of target values that the parameters are expected to reach,
-:math:`{\boldsymbol{\beta}}_*`. If a problem doesn’t have observational
+Each of the test problems contain:
+
+* a data set consisting of points :math:`(x_i, y_i)` (with optional errors on :math:`y_i`, :math:`\sigma_i`)
+* a definition of the fitting function, :math:`f({\boldsymbol{\beta}};x)`
+* (at least) one set of initial values for the function parameters :math:`{\boldsymbol{\beta}}_0`, and
+* an optional set of target values that the parameters are expected to reach, :math:`{\boldsymbol{\beta}}_*`.
+
+If a problem doesn’t have observational
 errors (e.g., the NIST problem set), then FitBenchmarking can
 approximate errors by taking :math:`\sigma_i = \sqrt{y_i}`.
 Alternatively, there is an option to disregard errors and solve the
