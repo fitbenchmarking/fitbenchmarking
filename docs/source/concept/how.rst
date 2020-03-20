@@ -4,18 +4,28 @@
 How does FitBenchmarking work?
 ##############################
 
-FitBenchmarking currently compares the fitting software outlined in the Section Minimizers_.
-Additional minimizers are straightforward to add, see ??.
+FitBenchmarking takes data and models from real world applications
+and data analysis packages, and fits them using a range of
+fitting software.
+
+.. figure:: ../../images/FitBenchmarkingConcept.png  
+   :alt: FitBenchmarking Concept
+   :width: 100.0%
+
+:ref:`Minimizers` contains the fitting software that Fitbenchmarking currently supports,
+and we've made it straightforward to test against new software by
+following the instructions in :ref:`controllers` -- the software just needs
+to be callable from  python.
 
 
-Benchmarks are done with examples that come from software we support; the current list is in
-:ref:`BenchmarkProblems`.
-Again, additional sources of fitting problems can be added by following the instructions in ??.
+:ref:`BenchmarkProblems` gives the current list of data analysis software we support, 
+and again we've made it possible to extend this list by following the steps in 
+:ref:`controllers`.
 
-
-Once you've chosen which minimizers you want to compare on which problems, running FitBenchmarking
-will give you a comparison.  The specific benchmarking paradigm we employ is described in 
-:ref:`BenchmarkingParadigm` section.
+Once you have chosen which minimizers you want to compare on which problems,
+running FitBenchmarking will give you a comparison.
+:ref:`BenchmarkingParadigm` describes what we compare, and how we do
+the comparisons.
 
 
 .. _Minimizers:
@@ -99,6 +109,10 @@ packages in the `multiminimize <https://www.gnu.org/software/gsl/doc/html/multim
 Mantid
 ------
 
+`Mantid <https://www.mantidproject.org>` is a framework created to
+manipulate and analyse neutron scattering and muon spectroscopy data.
+It has support for a number of minimizers, most of which are from GSL.
+
 * `BFGS <https://docs.mantidproject.org/nightly/fitting/fitminimizers/BFGS.html>`_ (:code:`BFGS`)
   
 * `Conjugate gradient (Fletcher-Reeves) <https://docs.mantidproject.org/nightly/fitting/fitminimizers/FletcherReeves.html>`_ (:code:`Conjugate gradient (Fletcher-Reeves imp.)`)
@@ -115,26 +129,50 @@ Mantid
 
 * `SteepestDescent <https://docs.mantidproject.org/nightly/fitting/fitminimizers/Simplex.html>`_ (:code:`SteepestDescent`)
   
-* `Trust Region <https://docs.mantidproject.org/nightly/fitting/fitminimizers/TrustRegion.html>`_ (:code:`Trust Region`)
+* `Trust Region <https://docs.mantidproject.org/nightly/fitting/fitminimizers/TrustRegion.html>`_ (:code:`Trust Region`) - An implementation of one of the algorithms available in RALFit.
+
+ **Links** `GitHub <https://github.com/mantidproject/mantid>`_ `Mantid's Fitting Docs <https://docs.mantidproject.org/nightly/algorithms/Fit-v1.html>`_
 
 
 Minuit
 ------
 
+CERN developed the `Minuit <http://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/>`_ package to find the minimum value of a multi-parameter function, and also to compute the uncertainties.
+We interface via the python interface `iminuit <https://iminuit.readthedocs.io>`_
 
+* `Minuit's MIGRAD <https://root.cern.ch/root/htmldoc/guides/minuit2/Minuit2.pdf>`_ (:code:`minuit`)
 
+**Links** `Github - iminuit <https://github.com/scikit-hep/iminuit>`_
 
 RALFit
 ------
 
+`RALFit <https://ralfit.readthedocs.io/projects/Fortran/en/latest/>`_
+is a nonlinear least-squares solver, the development of which was funded
+by the EPSRC grant `Least-Squares: Fit for the Future`.  RALFit is designed to be able
+to take advantage of higher order derivatives, although only first
+order derivatives are currently utilized in FitBenchmarking.
 
+* Gauss-Newton, trust region method (:code:`gn`)
+* Hybrid Newton/Gauss-Newton, trust region method (:code:`hybrid`)
+* Gauss-Newton, regularization (:code:`gn_reg`)
+* Hybrid Newton/Gauss-Newton, regularization (:code:`hybrid_reg`)
 
+**Links** `Github - RALFit <https://github.com/ralna/ralfit/>`_. RALFit's Documentation on: `Gauss-Newton/Hybrid models <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-models>`_,  `the trust region method <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-trust-region-method>`_ and  `The regularization method <https://ralfit.readthedocs.io/projects/C/en/latest/method.html#regularization>`_
 
 SciPy
 -----
 
+`SciPy <https://www.scipy.org>`_ is the standard python package for mathematical
+software.  In particular, we use the `least_squares <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares>`_
+solver from the optimization chapter the SciPy's library.
 
+* Levenberg-Marquardt (:code:`lm-scipy`)  - a wrapper around MINPACK
+* Levenberg-Marquardt with no Jacobian passed (:code:`lm-scipy-no-jac`)  - as above, but using MINPACK's approximate Jacobian
+* The Trust Region Reflective algorithm (:code:`trf`)
+* A dogleg algorithm with rectangular trust regions (:code:`dogbox`)
 
+**Links** `Github <https://github.com/scipy/scipy/blob/master/scipy/optimize/_lsq/least_squares.py>`_
 
 
 .. _BenchmarkProblems:
