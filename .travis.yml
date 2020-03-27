@@ -25,13 +25,6 @@ before_install:
   - sudo apt-get install libblas-dev
   - sudo apt-get install liblapack-dev
 
-  # Adding gsl pacakges
-  - sudo apt-get install gsl-bin
-  - sudo apt-get install libgsl-dev
-  - sudo apt-get install libgsl-dbg
-
-
-
 install:
   # Builds RALfit
   - ./build_ralfit.sh
@@ -49,6 +42,12 @@ install:
   - export CUTEST=$HOME/cutest/cutest/
   - export MYARCH="pc64.lnx.gfo"
 
+  # Builds GSL
+  - source build_gsl.sh
+  # Python bindings for GSL
+  # --force seems to be necessary to link numpy
+  - pip install pygsl --force
+
   - pip install -r requirements.txt
   - pip install .
   - python setup.py externals
@@ -56,9 +55,6 @@ install:
   # To access RALfit
   - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
 
-  # Python bindings for GSL
-  # --force seems to be necessary to link numpy
-  - pip install pygsl --force
 
   - pip install pycutest
   - pip install backports.tempfile
