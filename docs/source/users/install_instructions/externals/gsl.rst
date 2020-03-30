@@ -11,7 +11,6 @@ After installing GSL, use pip to install the python interface ``pyGSL``::
 
   pip install pygsl
 
-For further details on installing cutest please visit the
+For further details on installing GSL please visit the
 `GSL docs <https://www.gnu.org/software/gsl/>`__.
-
 
