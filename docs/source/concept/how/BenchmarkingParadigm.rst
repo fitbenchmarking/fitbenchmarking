@@ -6,7 +6,8 @@ The Benchmarking Paradigm
 
       
 Once you have chosen which minimizers you want to compare on which problems,
-running FitBenchmarking will give you a comparison.
+running FitBenchmarking will give you a comparison to indicate which of the
+chosen minimizers performs best.
 
 FitBenchmarking will display the results by presenting the user with tables.
 A full list of the metrics we use is given in the section :ref:`output`.

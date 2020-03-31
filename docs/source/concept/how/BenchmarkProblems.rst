@@ -7,7 +7,7 @@ Benchmark problems
 To help choose between the different minimizers, FitBenchmarking
 comes with some curated Benchmark problems—although it’s straightforward
 add custom data sets to the benchmark, if that is more appropriate; see
-:ref:`problem_def` for specifice of how to add additional problems in a
+:ref:`problem_def` for specifics of how to add additional problems in a
 supported file format.
 
 We supply some standard nonlinear least-squares test problems in the

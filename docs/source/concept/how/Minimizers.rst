@@ -30,7 +30,7 @@ FitBenchmarking currently supports the Bumps minimizers:
 DFO
 ---
 
-There are two Deriviate-Free Optimization packages, `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ and
+There are two Derivative-Free Optimization packages, `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ and
 `DFO-GN <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`_.
 They are derivative free optimization solvers that were developed by Lindon Roberts at the University
 of Oxford, in conjunction with NAG.  They are particularly well suited for solving noisy problems.
@@ -81,7 +81,7 @@ Mantid
 ------
 
 `Mantid <https://www.mantidproject.org>` is a framework created to
-manipulate and analyse neutron scattering and muon spectroscopy data.
+manipulate and analyze neutron scattering and muon spectroscopy data.
 It has support for a number of minimizers, most of which are from GSL.
 
 * `BFGS <https://docs.mantidproject.org/nightly/fitting/fitminimizers/BFGS.html>`_ (:code:`BFGS`)
@@ -94,7 +94,7 @@ It has support for a number of minimizers, most of which are from GSL.
 
 * `Levenberg-Marquardt algorithm <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardt.html>`_ (:code:`Levenberg-Marquardt`)
   
-* `Levenberg-Marquardt MD <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardtMD.html>`_ (:code:`Levenberg-MarquardtMD`) - An implementation of Levenberg-Marquardt intended for MD workspaces, where work is divided into chunks to acheive a greater efficiency for a large number of data points.
+* `Levenberg-Marquardt MD <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardtMD.html>`_ (:code:`Levenberg-MarquardtMD`) - An implementation of Levenberg-Marquardt intended for MD workspaces, where work is divided into chunks to achieve a greater efficiency for a large number of data points.
 
 * `Simplex <https://docs.mantidproject.org/nightly/fitting/fitminimizers/Simplex.html>`_ (:code:`simplex`)
 
