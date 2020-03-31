@@ -2,6 +2,9 @@
 Installing Mantid
 #################
 
+**Note: To use Mantid with python3, it is currently required to install a
+nightly build. This nightly build is only available for python 3.6, and is not
+available for windows.**
 
 Windows
 =======
@@ -12,7 +15,6 @@ through it. Mantid can be downloaded
 installation instructions
 page <http://download.mantidproject.org/windows.html>`__:
 
-Note, as of Jan 2020, Mantid is expected to soon add support for Python 3.
 The Windows installation steps below are for guidance only, and may need some
 tweaking.
 
@@ -24,8 +26,8 @@ tweaking.
 
 Mantid ships a version of python with it, which by default it is installed in
 `C:\\MantidInstall\\bin`.
-FitBenchmarking can be installed using that version of Python. Note pip is shipped
-with Mantid in the
+FitBenchmarking can be installed using that version of Python.
+Note pip is shipped with Mantid in the
 `C:\\MantidInstall\\bin\\Scripts` folder.
 
 **Note**: the installer will look for the drive with the most free disk
@@ -52,26 +54,28 @@ If for some reason this does not work for you, a manual installation
 might instead. From the `Mantid installation instructions
 page <http://download.mantidproject.org/ubuntu.html>`__
 
-   1. Open up a terminal
-   2. Run the following commands one line at a time:
+1. Open up a terminal
+2. Run the following commands one line at a time::
 
-::
+      # add the mantid signing key
+      wget -O - http://apt.isis.rl.ac.uk/2E10C193726B7213.asc | sudo apt-key add -
+      sudo apt-add-repository "deb [arch=amd64] http://apt.isis.rl.ac.uk $(lsb_release -c | cut -f 2)-testing main"
+      sudo apt-add-repository ppa:mantid/mantid
 
-   # add the mantid signing key
-   wget -O - http://apt.isis.rl.ac.uk/2E10C193726B7213.asc | sudo apt-key add -
-   sudo apt-add-repository "deb [arch=amd64] http://apt.isis.rl.ac.uk $(lsb_release -c | cut -f 2) main"
-   sudo apt-add-repository ppa:mantid/mantid
+3. Install the package with::
 
-3. Install the package with
+      sudo apt-get update
+      sudo apt-get install mantidnightly-python3
 
-::
+   This will install Mantid into ``/opt/mantidnightly-python3`` and add bash files to
+   ``/etc/profile.d`` so that next time you create a terminal the correct path
+   to MantidPlot will be defined.
 
-   sudo apt-get update
-   sudo apt-get install mantid
+4. Add the location of Mantid's python files to your python path::
 
-This will install Mantid into ``/opt/Mantid`` and add bash files to
-``/etc/profile.d`` so that next time you create a terminal the correct path
-to MantidPlot will be defined.
+      PYTHONPATH=$PYTHONPATH:/opt/mantidnightly-python3/lib/:/opt/mantidnightly-python3/bin/
+
+
 
 Manual Installation - Package
 -----------------------------
