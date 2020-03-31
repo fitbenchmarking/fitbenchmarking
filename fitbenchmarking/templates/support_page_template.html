@@ -36,7 +36,7 @@
             </table>
             <div class="row">
                 {% if initial_plot_available %}
-                    <img alt={{ initial_plot }} src={{ initial_plot }} />
+                    <img alt="{{ initial_plot }}" src="{{ initial_plot }}" />
                 {% else %}
                     <h3>{{ initial_plot }}</h3>
                 {% endif %}
@@ -65,7 +65,7 @@
             </table>
             <div align="center" class="figure align-center">
                 {% if fitted_plot_available %}
-                    <img alt={{ fitted_plot }} src={{ fitted_plot }} />
+                    <img alt="{{ fitted_plot }}" src="{{ fitted_plot }}" />
                 {% else %}
                     <h3>{{ fitted_plot }}</h3>
                 {% endif %}

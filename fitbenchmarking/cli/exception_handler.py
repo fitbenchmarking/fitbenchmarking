@@ -23,9 +23,11 @@ def exception_handler(f):
         except exceptions.FitBenchmarkException as e:
             print('Error while running FitBenchmarking. Exiting. '
                   'See below for more information.')
-            sys.exit(e)
+            print(e)
+            sys.exit(1)
         except Exception as e:
             print('Unknown exception. Exiting.')
-            sys.exit(e)
+            print(e)
+            sys.exit(1)
 
     return wrapped
