@@ -131,7 +131,7 @@ class Plot(object):
         :return: path to the saved file
         :rtype: str
         """
-        ini_guess = self.problem.starting_values[self.count - 1].values()
+        ini_guess = list(self.problem.starting_values[self.count - 1].values())
         self.plot_data(errors=False,
                        plot_options=self.ini_guess_plot_options,
                        y=self.problem.eval_f(ini_guess, self.x))
