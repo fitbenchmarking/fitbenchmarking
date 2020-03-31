@@ -28,8 +28,7 @@ class PlotTests(unittest.TestCase):
         self.prob.data_e = np.array([0.5, 0.2, 0.3, 0.1, 0.4])
         self.prob.starting_values = [{'x': 1, 'y': 2}]
         self.prob.eval_f = lambda x, y: x[0]*y + x[1]
-        self.prob.name = 'name'
-        self.prob.sanitised_name = 'sanitised_name'
+        self.prob.name = 'full name'
 
         self.opts = Options()
         self.opts.use_errors = True
@@ -75,7 +74,7 @@ class PlotTests(unittest.TestCase):
         """
         file_name = self.plot.plot_initial_guess()
 
-        self.assertEqual(file_name, 'start_for_sanitised_name_1.png')
+        self.assertEqual(file_name, 'start_for_full_name_1.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 
@@ -85,7 +84,7 @@ class PlotTests(unittest.TestCase):
         """
         file_name = self.plot.plot_best('best', [0.1, 3])
 
-        self.assertEqual(file_name, 'best_fit_for_sanitised_name_1.png')
+        self.assertEqual(file_name, 'best_fit_for_full_name_1.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 
@@ -95,7 +94,7 @@ class PlotTests(unittest.TestCase):
         """
         file_name = self.plot.plot_fit('fit', [8, 6.2])
 
-        self.assertEqual(file_name, 'fit_fit_for_sanitised_name_1.png')
+        self.assertEqual(file_name, 'fit_fit_for_full_name_1.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 

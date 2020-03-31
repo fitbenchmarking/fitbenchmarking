@@ -1,10 +1,18 @@
-sudo: required
+os: linux
+dist: bionic
+
 language: python
 python:
-  - "2.7"
-dist: xenial
-virtualenv:
-  system_site_packages: true
+  - 3.6
+  - 2.7
+  - 3.7
+  - 3.8
+
+env:
+  - SUITE=UNIT COVERAGE=OFF
+  - SUITE=UNIT COVERAGE=ON
+  - SUITE=SYSTEM
+  - SUITE=LINTING
 
 
 notifications:
@@ -14,8 +22,6 @@ notifications:
     on_success: never
     on_failure: always
 
-stages:
-  - name: Tests
 
 before_install:
   # Adding RALfit packages
@@ -26,80 +32,47 @@ before_install:
   - sudo apt-get install liblapack-dev
 
 install:
-  # Builds RALfit
-  - ./build_ralfit.sh
-  # To access RALfit
-  - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
+  - if [[ $SUITE == "UNIT" ]]; then source ./travis/full_install.sh; fi
+  - if [[ $SUITE == "SYSTEM" ]]; then source ./travis/full_install.sh; fi
+  - if [[ $SUITE == "LINTING" ]]; then source ./travis/linting_install.sh; fi
 
-  # Builds cutest
-  - source build_cutest.sh
-  # to access cutest
-  - export PATH="${SIFDECODE}/bin:${CUTEST}/bin:$PATH"
-  # let's ensure the environment variables are set
-  - export ARCHDEFS=$HOME/cutest/archdefs/
-  - export SIFDECODE=$HOME/cutest/sifdecode/
-  - export MASTSIF=$HOME/cutest/cutest/sif/
-  - export CUTEST=$HOME/cutest/cutest/
-  - export MYARCH="pc64.lnx.gfo"
+script:
+  - if [[ $SUITE == "UNIT" ]]; then ./travis/unit_tests.sh; fi
+  - if [[ $SUITE == "SYSTEM" ]]; then ./travis/system_tests.sh; fi
+  - if [[ $SUITE == "LINTING" ]]; then ./travis/linting_tests.sh;  fi
 
-  # Builds GSL
-  - source build_gsl.sh
-  # Python bindings for GSL
-  # --force seems to be necessary to link numpy
-  - pip install pygsl --force
-
-  - pip install -r requirements.txt
-  - pip install .
-  - python setup.py externals
-
-  # To access RALfit
-  - export LD_LIBRARY_PATH=$HOME/build/fitbenchmarking/fitbenchmarking/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
-
-
-  - pip install pycutest
-  - pip install backports.tempfile
-  - pip install pylint
-  - pip install flake8
+after_success:
+  - if [[ $COVERAGE == "ON" ]]; then coveralls; fi
 
 jobs:
-  include:
-    - stage: Tests
-      name: PyLint
-      env: SUITE=LINTING
-      script:
-        # ======= pylinting parsers ========= #
-        # At the moment this cannot be put into allow_failures, once switching
-        # to python3 is merged this will be put there.
-        - pylint -r y fitbenchmarking/parsing/* --exit-zero
-    - name: Flake8
-      env: SUITE=LINTING
-      script:
-        # ======= flake8 parsers ============ #
-        - flake8 fitbenchmarking/parsing/*
-    - name: Unit Tests
-      script:
-        # ======= CLIs Tests ================ #
-        - pytest fitbenchmarking/cli --cov=fitbenchmarking/cli
-          --cov-report term-missing
-        # ======= Core Tests ================ #
-        - pytest fitbenchmarking/core --cov=fitbenchmarking/core
-          --cov-report term-missing --cov-append
-        # ======= Controllers Tests ========= #
-        - pytest fitbenchmarking/controllers --cov=fitbenchmarking/controllers
-          --cov-report term-missing --cov-append
-        # ======= Parsing Tests ============= #
-        - pytest fitbenchmarking/parsing --cov=fitbenchmarking/parsing
-          --cov-report term-missing --cov-append
-        # ======= Results Tests ============= #
-        - pytest fitbenchmarking/results_processing --cov=fitbenchmarking/results_processing
-          --cov-report term-missing --cov-append
-        # ======= Utils Tests =============== #
-        - pytest fitbenchmarking/utils --cov=fitbenchmarking/utils
-          --cov-report term-missing --cov-append
-      after_success:
-        - coveralls
-    - name: System Tests
-      script:
-        # ======= System Test =============== #
-        - pytest fitbenchmarking/systests
+  exclude:
+    - env: SUITE=UNIT COVERAGE=OFF
+      python: 3.6
+    - env: SUITE=UNIT COVERAGE=ON
+      python: 2.7
+    - env: SUITE=UNIT COVERAGE=ON
+      python: 3.7
+    - env: SUITE=UNIT COVERAGE=ON
+      python: 3.8
+    - env: SUITE=SYSTEM
+      python: 2.7
+    - env: SUITE=SYSTEM
+      python: 3.7
+    - env: SUITE=SYSTEM
+      python: 3.8
+    - env: SUITE=LINTING
+      python: 3.6
+    - env: SUITE=LINTING
+      python: 3.7
 
+  allow_failures:
+    # No longer guaranteed but good to know if working.
+    - env: SUITE=UNIT COVERAGE=OFF
+      python: 2.7
+    - env: SUITE=LINTING
+      python: 2.7
+    # Allow failures as we dont have a mantid build on these python versions
+    - env: SUITE=UNIT COVERAGE=OFF
+      python: 3.7
+    - env: SUITE=UNIT COVERAGE=OFF
+      python: 3.8

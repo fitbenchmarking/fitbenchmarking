@@ -20,11 +20,11 @@ class CreateTests(unittest.TestCase):
         problems = []
         for _ in range(2):
             problem = FittingProblem(self.options)
-            problem.sanitised_name = 'problem'
+            problem.name = 'problem'
             problems.append(problem)
         for i in range(5):
             problem = FittingProblem(self.options)
-            problem.sanitised_name = 'prob_{}'.format(i)
+            problem.name = 'prob {}'.format(i)
             problems.append(problem)
 
         minimizers = ['min_a', 'min_b', 'min_c']
@@ -83,7 +83,7 @@ class CreateProbGroupTests(unittest.TestCase):
     def setUp(self):
         self.options = Options()
         problem = FittingProblem(self.options)
-        problem.sanitised_name = 'prob_a'
+        problem.name = 'prob a'
         problem.equation = 'equation!'
 
         minimizers = ['min_a', 'min_b', 'min_c']
