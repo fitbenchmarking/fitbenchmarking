@@ -10,4 +10,4 @@ Welcome to the documentation for the FitBenchmarking software.
 
     what
     why
-    how
+    how/index
