@@ -31,12 +31,6 @@ before_install:
   - sudo apt-get install libblas-dev
   - sudo apt-get install liblapack-dev
 
-  # Adding gsl pacakges
-  - sudo apt-get install gsl-bin
-  - sudo apt-get install libgsl-dev
-  - sudo apt-get install libgsl-dbg
-
-
 install:
   - if [[ $SUITE == "UNIT" ]]; then source ./travis/full_install.sh; fi
   - if [[ $SUITE == "SYSTEM" ]]; then source ./travis/full_install.sh; fi
@@ -70,7 +64,7 @@ jobs:
       python: 3.6
     - env: SUITE=LINTING
       python: 3.7
-      
+
   allow_failures:
     # No longer guaranteed but good to know if working.
     - env: SUITE=UNIT COVERAGE=OFF
