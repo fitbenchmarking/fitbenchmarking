@@ -80,7 +80,7 @@ packages in the `multiminimize <https://www.gnu.org/software/gsl/doc/html/multim
 Mantid
 ------
 
-`Mantid <https://www.mantidproject.org>` is a framework created to
+`Mantid <https://www.mantidproject.org>`_ is a framework created to
 manipulate and analyze neutron scattering and muon spectroscopy data.
 It has support for a number of minimizers, most of which are from GSL.
 
