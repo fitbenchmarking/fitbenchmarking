@@ -28,4 +28,4 @@ else
   python setup.py externals;
 fi
 
-export PYTHONPATH=$PYTHONPATH:/opt/mantidnightly-python3/lib:/opt/mantidnightly-python3/bin
+export PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib:/opt/Mantid/bin

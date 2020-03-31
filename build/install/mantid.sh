@@ -14,7 +14,6 @@ set -e
 wget -O - http://apt.isis.rl.ac.uk/2E10C193726B7213.asc -q | sudo apt-key add -
 
 # Add GPG key and upstream Mantid repo
-# Note this will install the nightly and should be changed once 4.3 is released.
 sudo apt-add-repository "deb [arch=amd64] http://apt.isis.rl.ac.uk $(lsb_release -c | cut -f 2) main" -y
 sudo apt-add-repository ppa:mantid/mantid -y
 
@@ -28,4 +27,4 @@ export PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib:/opt/Mantid/bin
 /opt/Mantid/bin/mantidpython -m  mantid.simpleapi
 
 echo "Mantid is now setup for this session."
-echo "To enable mantid in future sessions we recommend adding 'export PYTHONPATH=\$PYTHONPATH:/opt/mantidnightly-python3/lib;/opt/mantidnightly-python3/bin' to your .bashrc file"
+echo "To enable mantid in future sessions we recommend adding 'export PYTHONPATH=\$PYTHONPATH:/opt/Mantid/lib;/opt/Mantid/bin' to your .bashrc file"
