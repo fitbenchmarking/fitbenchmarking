@@ -59,7 +59,7 @@ class OutputGrabber(object):
         and save the text in `capturedtext`.
         """
         while True:
-            char = os.read(self.pipe_out, 1)
+            char = os.read(self.pipe_out, 1).decode(sys.stdout.encoding)
             if not char or self.escape_char in char:
                 break
             self.capturedtext += char
