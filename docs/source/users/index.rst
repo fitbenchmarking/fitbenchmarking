@@ -12,7 +12,6 @@ Welcome to the documentation for the FitBenchmarking software.
     running
     output/index
     options
-    tutorials
     problem_definition_files/index
     notes
 
