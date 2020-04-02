@@ -8,6 +8,5 @@ Welcome to the documentation for the FitBenchmarking software.
     :titlesonly:
     :caption: Contents:
 
-    what
     why
     how

@@ -10,3 +10,7 @@ max-statements=60
 disable=too-many-instance-attributes,
         invalid-name,
         too-few-public-methods
+
+[IMPORTS]
+ignored-modules=mantid,
+                ral-nlls

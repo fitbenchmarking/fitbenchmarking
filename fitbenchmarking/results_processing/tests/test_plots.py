@@ -30,7 +30,6 @@ class PlotTests(unittest.TestCase):
         self.prob.starting_values = [{'x': 1, 'y': 2}]
         self.prob.eval_f = lambda x, y: x[0]*y + x[1]
         self.prob.name = 'full name'
-
         self.fr = FittingResult(options=self.opts,
                                 problem=self.prob,
                                 chi_sq=1.0,
