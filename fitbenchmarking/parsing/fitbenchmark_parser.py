@@ -168,7 +168,7 @@ class FitbenchmarkParser(Parser):
                         data_file = os.path.join(root, data_file_name)
 
             if data_file is None:
-                logger.error("Data file %s not found", data_file_name)
+                LOGGER.error("Data file %s not found", data_file_name)
 
             data_files.append(data_file)
 
