@@ -4,14 +4,17 @@ Fit benchmark one problem functions.
 
 from __future__ import absolute_import, division, print_function
 
-import numpy as np
 import timeit
 import warnings
 
+import numpy as np
+
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
-from fitbenchmarking.utils import fitbm_result
-from fitbenchmarking.utils import output_grabber
+from fitbenchmarking.utils import fitbm_result, output_grabber
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 
 def fitbm_one_prob(problem, options):
@@ -43,7 +46,7 @@ def fitbm_one_prob(problem, options):
             problem.name = name + ', Start {}'.format(i + 1)
 
         for s in software:
-            print("        Software: {}".format(s.upper()))
+            LOGGER.info("        Software: %s", s.upper())
             try:
                 minimizers = options.minimizers[s]
             except KeyError:
@@ -88,7 +91,7 @@ def benchmark(controller, minimizers, options):
     results_problem = []
     num_runs = options.num_runs
     for minimizer in minimizers:
-        print("            Minimizer: {}".format(minimizer))
+        LOGGER.info("            Minimizer: %s", minimizer)
 
         controller.minimizer = minimizer
 
@@ -101,12 +104,14 @@ def benchmark(controller, minimizers, options):
                 runtime = sum(runtime_list) / num_runs
                 controller.cleanup()
         # Catching all exceptions as this means runtime cannot be calculated
-        except Exception as excp:  # pylint: disable=broad-except
-            print(str(excp))
+        # pylint: disable=broad-except
+        except Exception as excp:
+            LOGGER.warn(str(excp))
+
             runtime = np.inf
             controller.flag = 3
             controller.final_params = None if not problem.multifit \
-                else [None]*len(controller.data_x)
+                else [None] * len(controller.data_x)
 
         controller.check_attributes()
 
@@ -124,8 +129,7 @@ def benchmark(controller, minimizers, options):
                                            e=controller.data_e)
         else:
             chi_sq = np.inf if not problem.multifit \
-                else [np.inf]*len(controller.data_x)
-
+                else [np.inf] * len(controller.data_x)
 
         result_args = {'options': options,
                        'problem': problem,

@@ -12,7 +12,9 @@ import numpy as np
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import MissingSoftwareError, ParsingError
-from fitbenchmarking.utils.logging_setup import logger
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 import_success = {}
 try:

@@ -5,21 +5,26 @@ or for more general information, see the online docs at
 docs.fitbenchmarking.com.
 """
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
 import argparse
 import glob
 import inspect
-from jinja2 import Environment, FileSystemLoader
 import os
 import sys
 import webbrowser
+
+from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
 from fitbenchmarking.cli.exception_handler import exception_handler
 from fitbenchmarking.core.fitting_benchmarking import fitbenchmark_group
 from fitbenchmarking.core.results_output import save_results
 from fitbenchmarking.utils.exceptions import OptionsError
+from fitbenchmarking.utils.log import get_logger, setup_logger
 from fitbenchmarking.utils.options import Options
+
+LOGGER = get_logger()
 
 
 def get_parser():
@@ -54,6 +59,7 @@ examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
 
     return parser
 
+
 @exception_handler
 def run(problem_sets, options_file='', debug=False):
     """
@@ -80,6 +86,11 @@ def run(problem_sets, options_file='', debug=False):
             options = Options(glob_options_file)
     else:
         options = Options()
+
+    setup_logger(log_file=options.log_file,
+                 append=options.log_append,
+                 level=options.log_level)
+
     groups = []
     result_dir = []
     for sub_dir in problem_sets:
@@ -91,7 +102,7 @@ def run(problem_sets, options_file='', debug=False):
         test_data = glob.glob(data_dir + '/*.*')
 
         if test_data == []:
-            print('Problem set {} not found'.format(data_dir))
+            LOGGER.warning('Problem set %s not found', data_dir)
             continue
 
         # generate group label/name used for problem set
@@ -101,18 +112,18 @@ def run(problem_sets, options_file='', debug=False):
         except IOError:
             label = sub_dir.replace('/', '_')
 
-        print('\nRunning the benchmarking on the {} problem set\n'.format(
-            label))
+        LOGGER.info('Running the benchmarking on the %s problem set',
+                    label)
         results = fitbenchmark_group(group_name=label,
                                      options=options,
                                      data_dir=data_dir)
-        print('\nProducing output for the {} problem set\n'.format(label))
+        LOGGER.info('Producing output for the %s problem set', label)
         # Display the runtime and accuracy results in a table
         group_results_dir = save_results(group_name=label,
                                          results=results,
                                          options=options)
 
-        print('\nCompleted benchmarking for {} problem set\n'.format(sub_dir))
+        LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
         group_results_dir = os.path.relpath(path=group_results_dir,
                                             start=options.results_dir)
         result_dir.append(group_results_dir)

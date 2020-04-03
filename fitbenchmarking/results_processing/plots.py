@@ -140,7 +140,7 @@ class Plot(object):
         self.plot_data(errors=False,
                        plot_options=self.ini_guess_plot_options,
                        x=self.x,
-                       y=self.problem.eval_f(ini_guess, self.x))
+                       y=self.problem.eval_f(list(ini_guess), self.x))
         self.format_plot()
         file = "start_for_{0}.png".format(self.result.sanitised_name)
         file_name = os.path.join(self.figures_dir, file)

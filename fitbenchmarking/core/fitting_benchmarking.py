@@ -4,14 +4,14 @@ lower level functions to fit and benchmark a set of problems
 for a certain fitting software.
 """
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
 
-from fitbenchmarking.utils.logging_setup import logger
-
-from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.utils import misc
-from fitbenchmarking.utils import output_grabber
 from fitbenchmarking.core.fitbenchmark_one_problem import fitbm_one_prob
+from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import misc, output_grabber
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 
 def fitbenchmark_group(group_name, options, data_dir):
@@ -40,13 +40,13 @@ def fitbenchmark_group(group_name, options, data_dir):
     problem_group = misc.get_problem_files(data_dir)
 
     results = []
+
     name_count = {}
     template_prob_name = " Running data from: {}"
     for i, p in enumerate(problem_group):
         with grabbed_output:
             parsed_problem = parse_problem_file(p, options)
         parsed_problem.correct_data()
-
         name = parsed_problem.name
         name_count[name] = 1 + name_count.get(name, 0)
         count = name_count[name]
@@ -60,6 +60,11 @@ def fitbenchmark_group(group_name, options, data_dir):
             tmp_prob_name + str(i + 1) + str(len(problem_group))))
         print("\n{0}\n{1} {2}/{3}\n{0}\n".format(decorator, tmp_prob_name,
                                                  i + 1, len(problem_group)))
+        info_str = " Running data from: {} {}/{}".format(
+            parsed_problem.name, i + 1, len(problem_group))
+        LOGGER.info('#' * len(info_str))
+        LOGGER.info(info_str)
+        LOGGER.info('#' * len(info_str))
 
         problem_results = fitbm_one_prob(problem=parsed_problem,
                                          options=options)
