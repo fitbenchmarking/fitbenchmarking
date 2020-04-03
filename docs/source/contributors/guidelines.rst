@@ -40,3 +40,12 @@ The following should be checked before any code is merged:
  - Tests: Does it pass? Is there adequate coverage for new code?
  - Style: Is the coding style consistent? Is anything overly confusing?
  - Documentation: Is there a suitable change to documentation for this change?
+
+=======
+Logging
+=======
+
+Code should use the logging in ``utils.log``. This uses pythons built in
+`logging module <https://docs.python.org/3.8/library/logging.html>`__,
+and should be used in place of any print statements to ensure that persistent
+logs are kept after runs.

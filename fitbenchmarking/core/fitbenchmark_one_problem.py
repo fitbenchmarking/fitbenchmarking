@@ -4,14 +4,17 @@ Fit benchmark one problem functions.
 
 from __future__ import absolute_import, division, print_function
 
-import numpy as np
 import timeit
 import warnings
 
+import numpy as np
+
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
-from fitbenchmarking.utils import fitbm_result
-from fitbenchmarking.utils import output_grabber
+from fitbenchmarking.utils import fitbm_result, output_grabber
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 
 def fitbm_one_prob(problem, options):
@@ -36,14 +39,14 @@ def fitbm_one_prob(problem, options):
         software = [software]
 
     for i in range(len(problem.starting_values)):
-        print("    Starting value: {0}/{1}".format(
-            i + 1,
-            len(problem.starting_values)))
+        LOGGER.info("    Starting value: %i/%i",
+                    i + 1,
+                    len(problem.starting_values))
         if len(results) <= i:
             results.append({})
 
         for s in software:
-            print("        Software: {}".format(s.upper()))
+            LOGGER.info("        Software: %s", s.upper())
             try:
                 minimizers = options.minimizers[s]
             except KeyError:
@@ -85,7 +88,7 @@ def benchmark(controller, minimizers, options):
     results_problem = []
     num_runs = options.num_runs
     for minimizer in minimizers:
-        print("            Minimizer: {}".format(minimizer))
+        LOGGER.info("            Minimizer: %s", minimizer)
 
         controller.minimizer = minimizer
 
@@ -100,7 +103,7 @@ def benchmark(controller, minimizers, options):
         # Catching all exceptions as this means runtime cannot be calculated
         # pylint: disable=broad-except
         except Exception as excp:
-            print(str(excp))
+            LOGGER.warn(str(excp))
             runtime = np.inf
             controller.flag = 3
             controller.final_params = None
