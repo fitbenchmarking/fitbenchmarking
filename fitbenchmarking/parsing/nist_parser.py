@@ -13,7 +13,9 @@ from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.nist_data_functions import nist_func_definition
 from fitbenchmarking.utils.exceptions import ParsingError
-from fitbenchmarking.utils.logging_setup import logger
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 
 # By design the parsers may have functions that do not necessarily use self
@@ -87,8 +89,8 @@ class NISTParser(Parser):
             else:
                 ignored_lines += 1
 
-        logger.info("%s lines were ignored in this problem file",
-                    ignored_lines)
+        LOGGER.debug("%s lines were ignored in this problem file",
+                     ignored_lines)
 
         return equation_text, data_pattern_text, starting_values, name
 
@@ -115,7 +117,7 @@ class NISTParser(Parser):
 
                 idx += 1
         except IndexError:
-            logger.error("Could not find equation, index went out of bounds!")
+            LOGGER.error("Could not find equation, index went out of bounds!")
             idxerr = True
 
         equation_text, idx = self._get_equation_text(lines, idxerr, idx)

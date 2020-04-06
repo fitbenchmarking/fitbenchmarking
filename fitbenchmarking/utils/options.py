@@ -67,6 +67,14 @@ class Options(object):
         self.table_type = plotting.getlist('table_type')
         self.results_dir = plotting.getstr('results_dir')
 
+        logging = config['LOGGING']
+        try:
+            self.log_append = logging.getboolean('append')
+        except ValueError:
+            error_message.append(template.format('append', "boolean"))
+        self.log_file = logging.getstr('file_name')
+        self.log_level = logging.getstr('level')
+
         # sys.exit() will be addressed in future FitBenchmarking
         # error handling issue
         if error_message != []:
@@ -106,6 +114,9 @@ class Options(object):
                               'make_plots': self.make_plots,
                               'results_dir': self.results_dir,
                               'table_type': list_to_string(self.table_type)}
+        config['LOGGING'] = {'file_name': self.log_file,
+                             'level': self.log_level,
+                             'append': self.log_append}
 
         with open(file_name, 'w') as f:
             config.write(f)
