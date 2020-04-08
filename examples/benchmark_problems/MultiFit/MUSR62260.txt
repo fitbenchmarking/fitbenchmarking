@@ -1,5 +1,5 @@
 # FitBenchmark Problem
-software = 'Mantid MultiFit'
+software = 'Mantid'
 name = 'MUSR62260'
 description = 'Calibration data for mu SR intrument. Run 62260.'
 input_file = ['MUSR62260_bkwd.txt','MUSR62260_bottom.txt','MUSR62260_fwd.txt','MUSR62260_top.txt']

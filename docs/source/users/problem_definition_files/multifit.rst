@@ -33,7 +33,7 @@ keys are described below:
 
 software
 ========
-Either 'Mantid', 'Mandit MultiFit', or 'SasView' (case insensitive).
+Either 'Mantid' or 'SasView' (case insensitive).
 This defines which of the softwares to use to generate the function to be used
 in fitting.
 
@@ -54,6 +54,9 @@ future.
 input_file
 ==========
 The names of the files containing the data to fit.
+This indicates that the input is MultiFit if it contains a list of file names.
+If only a single name is passed, the problem does not use MultiFit.
+
 The files must be in a `data_files` directory, and should have the form::
 
    header
@@ -69,11 +72,9 @@ function
 ========
 This defines the function that will be used as a model for the fitting.
 
-Mantid MultiFit
-^^^^^^^^^^^^^^^
 In FitBenchmarking, any function that can be specified for the 'Mantid'
-software option can be used with the 'Mantid MultiFit' option as the
-boilerplate parts of the function are done automatically.
+software option can be used with MultiFit as the boilerplate parts of the
+function are done automatically.
 
 When fitting, this function will be used for each of the input_files given
 simultaneously.

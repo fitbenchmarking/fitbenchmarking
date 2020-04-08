@@ -20,10 +20,8 @@ import_success = {}
 try:
     import mantid.simpleapi as msapi
     import_success['mantid'] = (True, None)
-    import_success['mantid multifit'] = (True, None)
 except ImportError as ex:
     import_success['mantid'] = (False, ex)
-    import_success['mantid multifit'] = (False, ex)
 
 
 try:
@@ -68,7 +66,7 @@ class FitbenchmarkParser(Parser):
 
         self._parsed_func = self._parse_function()
 
-        if software == 'mantid multifit':
+        if software == 'mantid' and self._entries['input_file'][0] == '[':
             fitting_problem.multifit = True
 
         # NAME
@@ -78,7 +76,7 @@ class FitbenchmarkParser(Parser):
         data_points = [_get_data_points(p) for p in self._get_data_file()]
 
         # FUNCTION
-        if software.startswith('mantid'):
+        if software == 'mantid':
             fitting_problem.function = self._create_mantid_function()
         elif software == 'sasview':
             fitting_problem.function = self._create_sasview_function()
@@ -128,7 +126,7 @@ class FitbenchmarkParser(Parser):
                 fitting_problem.start_x = fit_ranges[0]['x'][0]
                 fitting_problem.end_x = fit_ranges[0]['x'][1]
 
-        if software.startswith('mantid'):
+        if software == 'mantid':
             # String containing the function name(s) and the starting parameter
             # values for each function.
             fitting_problem.additional_info['mantid_equation'] \
