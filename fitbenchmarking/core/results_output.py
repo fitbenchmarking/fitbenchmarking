@@ -100,7 +100,6 @@ def preproccess_data(results_per_test):
         for r in results:
             r.min_chi_sq = min_chi_sq
             r.min_runtime = min_runtime
-            r.set_colour_scale()
         output.append(best_result)
     return output
 
