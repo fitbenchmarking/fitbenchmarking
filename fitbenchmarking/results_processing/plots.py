@@ -13,13 +13,11 @@ class Plot(object):
     Class providing plotting functionality.
     """
 
-    def __init__(self, problem, options, count, figures_dir):
-        self.problem = problem
+    def __init__(self, best_result, options, figures_dir):
+        self.problem = best_result.problem
         self.options = options
 
-        # Count is the a unique number associated with a possibly duplicated
-        # problem name (e.g. in the case of multiple starting points)
-        self.count = count
+        self.result = best_result
 
         self.figures_dir = figures_dir
 
@@ -65,7 +63,7 @@ class Plot(object):
         self.line_plot = None
 
         # Store sorted x values for plotting
-        self.x = self.problem.data_x[self.problem.sorted_index]
+        self.x = self.result.data_x[self.result.sorted_index]
 
     def __del__(self):
         """
@@ -79,7 +77,7 @@ class Plot(object):
         """
         self.ax.set_xlabel(r"Time ($\mu s$)")
         self.ax.set_ylabel("Arbitrary units")
-        self.ax.set_title(self.problem.name + " " + str(self.count),
+        self.ax.set_title(self.result.name,
                           fontsize=self.title_size)
         self.ax.legend(loc=self.legend_location)
         self.fig.set_tight_layout(True)
@@ -99,13 +97,13 @@ class Plot(object):
         :type y: np.array
         """
         if x is None:
-            x = self.problem.data_x
+            x = self.result.data_x
         if y is None:
-            y = self.problem.data_y
+            y = self.result.data_y
         if errors:
             # Plot with errors
             self.ax.clear()
-            self.ax.errorbar(x, y, yerr=self.problem.data_e,
+            self.ax.errorbar(x, y, yerr=self.result.data_e,
                              **plot_options)
         else:
             # Plot without errors
@@ -131,13 +129,20 @@ class Plot(object):
         :return: path to the saved file
         :rtype: str
         """
-        ini_guess = list(self.problem.starting_values[self.count - 1].values())
+        # Parse which starting values to use from result name
+        start_index = self.result.name.partition('Start')[2].split(',')[0]
+        if start_index:
+            start_index = int(start_index.strip())
+        else:
+            start_index = 1
+
+        ini_guess = self.problem.starting_values[start_index - 1].values()
         self.plot_data(errors=False,
                        plot_options=self.ini_guess_plot_options,
-                       y=self.problem.eval_f(ini_guess, self.x))
+                       x=self.x,
+                       y=self.problem.eval_f(list(ini_guess), self.x))
         self.format_plot()
-        file = "start_for_{0}_{1}.png".format(
-            self.problem.sanitised_name, self.count)
+        file = "start_for_{0}.png".format(self.result.sanitised_name)
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
         return file
@@ -171,9 +176,8 @@ class Plot(object):
                        plot_options=plot_options_dict,
                        y=y)
         self.format_plot()
-        file = "{}_fit_for_{}_{}.png".format(minimizer,
-                                             self.problem.sanitised_name,
-                                             self.count)
+        file = "{}_fit_for_{}.png".format(minimizer,
+                                          self.result.sanitised_name)
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
 
@@ -182,6 +186,7 @@ class Plot(object):
         plot_options_dict['label'] = label
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
+                       x=self.x,
                        y=y)
 
         # Make sure line wont be replaced by resetting line_plot
@@ -207,10 +212,11 @@ class Plot(object):
 
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
+                       x=self.x,
                        y=self.problem.eval_f(params, self.x))
         self.format_plot()
-        file = "{}_fit_for_{}_{}.png".format(
-            minimizer, self.problem.sanitised_name, self.count)
+        file = "{}_fit_for_{}.png".format(minimizer,
+                                          self.result.sanitised_name)
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
         return file

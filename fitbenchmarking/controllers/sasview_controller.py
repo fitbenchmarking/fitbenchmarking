@@ -102,4 +102,3 @@ class SasviewController(Controller):
             self.flag = 2
 
         self.final_params = self._bumps_result.x
-        self.results = self._func_wrapper.theory()

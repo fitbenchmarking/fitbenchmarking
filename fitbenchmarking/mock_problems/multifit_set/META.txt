@@ -1,0 +1,3 @@
+multifit_set
+
+This data is used to test multifit seperately from all_parsers_set as Mantid multifit is not compatible with non mantid fitting software.
