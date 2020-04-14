@@ -18,21 +18,9 @@
 #
 import os
 import sys
-import mock
 import subprocess
 
 sys.path.insert(0, os.path.abspath('../../'))
-subprocess.call(['pip', 'uninstall', 'matplotlib'])
-subprocess.call(['pip', 'install', 'matplotlib'])
-
-# autodoc appears to try and import all modules when generating the module
-# index. Thus, for the external packages need to be mocked out to generate
-# these pages.
-mock_modules = ['dfogn', 'dfols', 'pygsl', 'mantid', 'mantid.fitfunctions',
-                'iminuit', 'ral_nlls', 'bumps', 'bumps.fitters', 'bumps.names',
-                'pycutest', 'backports', 'backports.tempfile']
-for mod_name in mock_modules:
-    sys.modules[mod_name] = mock.Mock()
 
 # PYCUTEST_CACHE needs to be set to use pycutest
 mock_name = "mock_cache"
@@ -40,6 +28,13 @@ mock_pycutest_cache = os.path.join("/tmp", mock_name)
 if not os.path.isdir(mock_pycutest_cache):
     os.makedirs(mock_pycutest_cache)
 os.environ["PYCUTEST_CACHE"] = mock_pycutest_cache
+
+# set mock imports
+autodoc_mock_imports = ['mantid','ral_nlls','pycutest']
+#autodoc_mock_imports = ['dfogn', 'dfols', 'pygsl', 'mantid', 'mantid.fitfunctions',
+#                        'iminuit', 'ral_nlls', 'bumps', 'bumps.fitters', 'bumps.names',
+#                        'pycutest', 'backports', 'backports.tempfile']
+
 
 
 # -- General configuration ------------------------------------------------
@@ -116,7 +111,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
