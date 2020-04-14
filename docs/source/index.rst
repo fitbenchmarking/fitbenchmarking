@@ -9,6 +9,7 @@ Welcome to FitBenchmarking's documentation!
 
 .. toctree::
    :titlesonly:
+   :maxdepth: 2
 
    Concept <concept/index>
    Users <users/index>

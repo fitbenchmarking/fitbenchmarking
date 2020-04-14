@@ -13,5 +13,5 @@ Here you will find all you need in order to get started.
 
     guidelines
     structure
-    docstrings
+    Module Index <module_index/fitbenchmarking>
 
