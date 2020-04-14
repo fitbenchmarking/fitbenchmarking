@@ -4,14 +4,17 @@ Fit benchmark one problem functions.
 
 from __future__ import absolute_import, division, print_function
 
-import numpy as np
 import timeit
 import warnings
 
+import numpy as np
+
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
-from fitbenchmarking.utils import fitbm_result
-from fitbenchmarking.utils import output_grabber
+from fitbenchmarking.utils import fitbm_result, output_grabber
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 
 def fitbm_one_prob(problem, options):
@@ -24,9 +27,8 @@ def fitbm_one_prob(problem, options):
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
 
-    :return: nested array of result objects, per function definition
-             containing the fit information
-    :rtype: list
+    :return: list of all results
+    :rtype: list of fibenchmarking.utils.fitbm_result.FittingResult
     """
     grabbed_output = output_grabber.OutputGrabber()
     results = []
@@ -35,15 +37,16 @@ def fitbm_one_prob(problem, options):
     if not isinstance(software, list):
         software = [software]
 
-    for i in range(len(problem.starting_values)):
-        print("    Starting value: {0}/{1}".format(
-            i + 1,
-            len(problem.starting_values)))
-        if len(results) <= i:
-            results.append({})
+    name = problem.name
+    num_start_vals = len(problem.starting_values)
+    for i in range(num_start_vals):
+        print("    Starting value: {0}/{1}".format(i + 1, num_start_vals))
+
+        if num_start_vals > 1:
+            problem.name = name + ', Start {}'.format(i + 1)
 
         for s in software:
-            print("        Software: {}".format(s.upper()))
+            LOGGER.info("        Software: %s", s.upper())
             try:
                 minimizers = options.minimizers[s]
             except KeyError:
@@ -60,7 +63,10 @@ def fitbm_one_prob(problem, options):
                                        minimizers=minimizers,
                                        options=options)
 
-            results[i][s] = problem_result
+            results.extend(problem_result)
+
+    # Reset problem.name
+    problem.name = name
     return results
 
 
@@ -76,16 +82,16 @@ def benchmark(controller, minimizers, options):
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
 
-    :return: results_problem nested array of result objects, per
-             minimizer
-    :rtype: list
+    :return: list of all results
+    :rtype: list of fibenchmarking.utils.fitbm_result.FittingResult
     """
     grabbed_output = output_grabber.OutputGrabber()
+    problem = controller.problem
 
     results_problem = []
     num_runs = options.num_runs
     for minimizer in minimizers:
-        print("            Minimizer: {}".format(minimizer))
+        LOGGER.info("            Minimizer: %s", minimizer)
 
         controller.minimizer = minimizer
 
@@ -100,16 +106,14 @@ def benchmark(controller, minimizers, options):
         # Catching all exceptions as this means runtime cannot be calculated
         # pylint: disable=broad-except
         except Exception as excp:
-            print(str(excp))
+            LOGGER.warn(str(excp))
+
             runtime = np.inf
             controller.flag = 3
-            controller.final_params = None
+            controller.final_params = None if not problem.multifit \
+                else [None] * len(controller.data_x)
 
         controller.check_attributes()
-        init_function_params = controller.problem.get_function_params(
-            params=controller.initial_params)
-        fin_function_params = controller.problem.get_function_params(
-            params=controller.final_params)
 
         if controller.flag <= 2:
             ratio = np.max(runtime_list) / np.min(runtime_list)
@@ -124,17 +128,32 @@ def benchmark(controller, minimizers, options):
                                            y=controller.data_y,
                                            e=controller.data_e)
         else:
-            chi_sq = np.inf
+            chi_sq = np.inf if not problem.multifit \
+                else [np.inf] * len(controller.data_x)
 
-        problem = controller.problem
-        individual_result = fitbm_result.FittingResult(
-            options=options, problem=problem, chi_sq=chi_sq,
-            runtime=runtime, minimizer=minimizer,
-            params=controller.final_params,
-            ini_function_params=init_function_params,
-            fin_function_params=fin_function_params,
-            error_flag=controller.flag)
+        result_args = {'options': options,
+                       'problem': problem,
+                       'chi_sq': chi_sq,
+                       'runtime': runtime,
+                       'minimizer': minimizer,
+                       'initial_params': controller.initial_params,
+                       'params': controller.final_params,
+                       'error_flag': controller.flag,
+                       'name': problem.name}
 
-        results_problem.append(individual_result)
+        if problem.multifit:
+            # Multi fit (will raise TypeError if these are not iterable)
+            for i in range(len(chi_sq)):
+
+                result_args.update({'dataset_id': i,
+                                    'name': '{}, Dataset {}'.format(
+                                        problem.name, (i + 1))})
+                individual_result = fitbm_result.FittingResult(**result_args)
+                results_problem.append(individual_result)
+        else:
+            # Normal fitting
+            individual_result = fitbm_result.FittingResult(**result_args)
+
+            results_problem.append(individual_result)
 
     return results_problem
