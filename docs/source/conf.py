@@ -18,7 +18,6 @@
 #
 import os
 import sys
-import subprocess
 
 sys.path.insert(0, os.path.abspath('../../'))
 
@@ -30,11 +29,9 @@ if not os.path.isdir(mock_pycutest_cache):
 os.environ["PYCUTEST_CACHE"] = mock_pycutest_cache
 
 # set mock imports
-autodoc_mock_imports = ['mantid','ral_nlls','pycutest']
-#autodoc_mock_imports = ['dfogn', 'dfols', 'pygsl', 'mantid', 'mantid.fitfunctions',
-#                        'iminuit', 'ral_nlls', 'bumps', 'bumps.fitters', 'bumps.names',
-#                        'pycutest', 'backports', 'backports.tempfile']
-
+autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfogn', 'dfols',
+                        'pygsl', 'iminuit', 'bumps', 'bumps.fitters',
+                        'tempfile', 'backports', 'backports.tempfile']
 
 
 # -- General configuration ------------------------------------------------
