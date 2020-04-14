@@ -66,7 +66,8 @@ following members of the :class:`~fitbenchmarking.parsing.fitting_problem.Fittin
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
-   :members: eval_f, eval_r, eval_r_norm, eval_j,
-         data_x, data_y, data_e, starting_values
-   :noindex:
+	          :noindex:
+		  :members: eval_f, eval_r, eval_r_norm, eval_j,
+			data_x, data_y, data_e, starting_values
+
 
