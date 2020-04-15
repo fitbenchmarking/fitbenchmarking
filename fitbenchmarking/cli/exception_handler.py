@@ -15,22 +15,32 @@ LOGGER = get_logger()
 def exception_handler(f):
     """
     Decorator to simplify handling exceptions within FitBenchmarking
+    This will strip off any 'debug' inputs.
 
     :param f: The function to wrap
     :type f: python function
     """
     @wraps(f)
     def wrapped(*args, **kwargs):
+        debug = kwargs.get('debug', False)
+
         try:
             return f(*args, **kwargs)
         except exceptions.FitBenchmarkException as e:
+
             LOGGER.error('Error while running FitBenchmarking. Exiting. '
                          'See below for more information.')
-            LOGGER.error(str(e))
-            sys.exit(1)
+            if debug:
+                raise
+            else:
+                LOGGER.error(str(e))
+                sys.exit(1)
         except Exception as e:
             LOGGER.error('Unknown exception. Exiting.')
-            LOGGER.error(str(e))
-            sys.exit(1)
+            if debug:
+                raise
+            else:
+                LOGGER.error(str(e))
+                sys.exit(1)
 
     return wrapped

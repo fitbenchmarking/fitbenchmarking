@@ -28,21 +28,16 @@ def create(results_per_test, group_name, support_pages_dir,
     :type options: fitbenchmarking.utils.options.Options
     """
 
-    name_count = {}
     for prob_result in results_per_test:
-        name = prob_result[0].problem.sanitised_name
-        name_count[name] = 1 + name_count.get(name, 0)
-        count = name_count[name]
 
         create_prob_group(prob_result,
                           group_name,
                           support_pages_dir,
-                          count,
                           options)
 
 
 def create_prob_group(prob_results, group_name, support_pages_dir,
-                      count, options):
+                      options):
     """
     Creates a support page containing figures and other
     details about the fit for a problem.
@@ -55,18 +50,15 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
     :type group_name: str
     :param support_pages_dir: directory to store the support pages in
     :type support_pages_dir: str
-    :param count: number of times a problem with the same name was
-                  passed through this function
-    :type count: int
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
     """
 
     for result in prob_results:
-        prob_name = result.problem.sanitised_name
+        prob_name = result.sanitised_name
 
-        file_name = '{}_{}_{}_{}.html'.format(
-            group_name, prob_name, count, result.minimizer).lower()
+        file_name = '{}_{}_{}.html'.format(
+            group_name, prob_name, result.minimizer).lower()
         file_path = os.path.join(support_pages_dir, file_name)
 
         # Bool for print message/insert image
@@ -97,7 +89,7 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
                 css_style_sheet=style_css,
                 table_style=table_css,
                 custom_style=custom_style,
-                title=result.problem.name,
+                title=result.name,
                 equation=result.problem.equation,
                 initial_guess=result.ini_function_params,
                 minimiser=result.minimizer,

@@ -86,15 +86,19 @@ class FittingProblem:
 
         self._param_names = None
 
-        # the sanitised name strips out commas and white spaces which is used
-        # to define the plot and html links
-        self._sanitised_name = None
-
-        # The index for sorting the data (used in plotting)
+        #: *numpy array* The index for sorting the data (used in plotting)
         self.sorted_index = None
 
         # Sets the numerical derivative method
         self._jac_method = self.options.jac_method
+
+        #: *dict*
+        #: Container for software specific information.
+        #: This should be avoided if possible.
+        self.additional_info = {}
+
+        #: *bool* Used to check if a problem is using multifit.
+        self.multifit = False
 
     @property
     def param_names(self):
@@ -112,24 +116,6 @@ class FittingProblem:
     @param_names.setter
     def param_names(self, value):
         raise FittingProblemError('param_names should not be edited')
-
-    @property
-    def sanitised_name(self):
-        """
-        Sanitise the problem name ito one which can be used as a filename.
-
-        :return: sanitised name
-        :rtype: str
-        """
-        if not self._sanitised_name:
-            self._sanitised_name = self.name
-            self._sanitised_name = self._sanitised_name.replace(',', '')
-            self._sanitised_name = self._sanitised_name.replace(' ', '_')
-        return self._sanitised_name
-
-    @sanitised_name.setter
-    def sanitised_name(self, value):
-        raise FittingProblemError('sanitised_name should not be edited')
 
     def eval_f(self, params, x=None):
         """
@@ -219,7 +205,7 @@ class FittingProblem:
             func = self.eval_r
 
         jac = approx_derivative(func, params, method=self._jac_method,
-                                rel_step=None, f0=func(params),
+                                rel_step=None, f0=func(params, **kwargs),
                                 bounds=(-np.inf, np.inf),
                                 kwargs=kwargs)
         return jac
@@ -264,14 +250,18 @@ class FittingProblem:
 
         Raise FittingProblemError if object is not properly initialised.
         """
-
         values = {'data_x': np.ndarray,
                   'data_y': np.ndarray,
                   'starting_values': list}
 
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
-            if not isinstance(attr, attr_type):
+            type_match = isinstance(attr, attr_type)
+            try:
+                type_match = type_match or isinstance(attr[0], attr_type)  # NOQA; pylint: disable=unsubscriptable-object
+            except (TypeError, IndexError):
+                pass
+            if not type_match:
                 raise FittingProblemError(
                     'Attribute "{}" is not the expected type. Expected "{}", '
                     'got "{}".'.format(attr_name, attr_type, type(attr)))
@@ -284,32 +274,78 @@ class FittingProblem:
         and approximate errors if not given.
         Modifications happen on member variables.
         """
-
-        # fix self.data_e
-        if self.options.use_errors:
-            if self.data_e is None:
-                self.data_e = np.sqrt(abs(self.data_y))
-
-            # The values of data_e are used to divide the residuals.
-            # If these are (close to zero), then this blows up.
-            # This is particularly a problem if trying to fit
-            # counts, which may follow a Poisson distribution.
-            #
-            # Fix this by cutting values less than a certain value
-            trim_value = 1.0e-8
-            self.data_e[self.data_e < trim_value] = trim_value
+        if not self.multifit:
+            correct_vals = correct_data(x=self.data_x,
+                                        y=self.data_y,
+                                        e=self.data_e,
+                                        startx=self.start_x,
+                                        endx=self.end_x,
+                                        use_errors=self.options.use_errors)
+            self.data_x = correct_vals[0]
+            self.data_y = correct_vals[1]
+            self.data_e = correct_vals[2]
+            self.sorted_index = correct_vals[3]
         else:
-            self.data_e = None
+            # Mantid multifit problem
+            self.sorted_index = []
+            for i in range(len(self.data_x)):
+                correct_vals = correct_data(x=self.data_x[i],
+                                            y=self.data_y[i],
+                                            e=self.data_e[i],
+                                            startx=self.start_x[i],
+                                            endx=self.end_x[i],
+                                            use_errors=self.options.use_errors)
+                self.data_x[i] = correct_vals[0]
+                self.data_y[i] = correct_vals[1]
+                self.data_e[i] = correct_vals[2]
+                self.sorted_index.append(correct_vals[3])
 
-        # impose x ranges
-        # pylint: disable=no-member, assignment-from-no-return
-        if self.start_x is not None and self.end_x is not None:
-            mask = np.logical_and(self.data_x >= self.start_x,
-                                  self.data_x <= self.end_x)
-            self.data_x = self.data_x[mask]
-            self.data_y = self.data_y[mask]
-            if self.data_e is not None:
-                self.data_e = self.data_e[mask]
 
-        # Stores the indices of the sorted data
-        self.sorted_index = np.argsort(self.data_x)
+def correct_data(x, y, e, startx, endx, use_errors):
+    """
+    Strip data that overruns the start and end x_range,
+    and approximate errors if not given.
+
+    :param x: x data
+    :type x: np.array
+    :param y: y data
+    :type y: np.array
+    :param e: error data
+    :type e: np.array
+    :param startx: minimum x value
+    :type startx: float
+    :param endx: maximum x value
+    :type endx: float
+    :param use_errors: whether errors should be added if not present
+    :type use_errors: bool
+    """
+    # fix data_e
+    if use_errors:
+        if e is None:
+            e = np.sqrt(abs(y))
+
+        # The values of data_e are used to divide the residuals.
+        # If these are (close to zero), then this blows up.
+        # This is particularly a problem if trying to fit
+        # counts, which may follow a Poisson distribution.
+        #
+        # Fix this by cutting values less than a certain value
+        trim_value = 1.0e-8
+        e[e < trim_value] = trim_value
+    else:
+        e = None
+
+    # impose x ranges
+    # pylint: disable=no-member, assignment-from-no-return
+    if startx is not None and endx is not None:
+        mask = np.logical_and(x >= startx,
+                              x <= endx)
+        x = x[mask]
+        y = y[mask]
+        if e is not None:
+            e = e[mask]
+
+    # Stores the indices of the sorted data
+    sorted_index = np.argsort(x)
+
+    return x, y, e, sorted_index

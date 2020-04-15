@@ -115,14 +115,8 @@ def create_results_dict(results_per_test):
 
     results = OrderedDict()
 
-    name_count = {}
     for prob_results in results_per_test:
-        name = prob_results[0].problem.name
-        name_count[name] = 1 + name_count.get(name, 0)
-        count = name_count[name]
-
-        prob_name = name + ' ' + str(count)
-        results[prob_name] = prob_results
+        results[prob_results[0].name] = prob_results
     return results
 
 
@@ -130,9 +124,9 @@ def create_pandas_dataframe(table_data, table_suffix):
     """
     Generates pandas data frame.
 
-    :param table_data: dictionary containing results, i.e.,
-                       {'prob1': [result1, result2, ...],
-                        'prob2': [result1, result2, ...], ...}
+    :param table_data: dictionary containing results, i.e.
+              {'prob1': [result1, result2, ...], 
+              'prob2': [result1, result2, ...], ...}
     :type table_data: dict
     :param table_suffix: set output to be runtime or accuracy table
     :type table_suffix: list

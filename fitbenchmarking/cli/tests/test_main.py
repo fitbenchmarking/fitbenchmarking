@@ -26,21 +26,25 @@ class TestMain(unittest.TestCase):
         os.chdir(self.cwd)
 
     def test_run_with_wrong_option_file_extension(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(exceptions.OptionsError):
             main.run(['examples/benchmark_problems/simple_tests'],
-                     options_file='README.md')
+                     options_file='README.md',
+                     debug=True)
 
     def test_run_with_wrong_option_file(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(exceptions.OptionsError):
             main.run(['examples/benchmark_problems/simple_tests'],
-                     options_file='options_template.ini')
+                     options_file='options_template.ini',
+                     debug=True)
 
     def test_run_with_options(self):
         main.run(['examples/benchmark_problems/simple_tests'],
-                 options_file='examples/options_template.ini')
+                 options_file='examples/options_template.ini',
+                 debug=True)
 
     def test_run_no_options(self):
-        main.run(['examples/benchmark_problems/simple_tests'])
+        main.run(['examples/benchmark_problems/simple_tests'],
+                 debug=True)
 
     def test_arg_parse(self):
         parser = main.get_parser()

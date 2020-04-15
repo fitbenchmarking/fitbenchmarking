@@ -224,4 +224,3 @@ class GSLController(Controller):
         will be read from
         """
         self.final_params = self._solver.getx()
-        self.results = self.problem.eval_f(params=self.final_params)
