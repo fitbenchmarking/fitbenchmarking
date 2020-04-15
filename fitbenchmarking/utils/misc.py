@@ -8,8 +8,9 @@ import glob
 import os
 
 from fitbenchmarking.utils.exceptions import NoDataError
-from fitbenchmarking.utils.logging_setup import logger
+from fitbenchmarking.utils.log import get_logger
 
+LOGGER = get_logger()
 
 def get_problem_files(data_dir):
     """
@@ -35,6 +36,6 @@ def get_problem_files(data_dir):
                 if not data.endswith('META.txt')]
     problems.sort()
     for problem in problems:
-        logger.info(problem)
+        LOGGER.debug(problem)
 
     return problems

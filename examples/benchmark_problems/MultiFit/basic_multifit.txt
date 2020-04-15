@@ -1,0 +1,7 @@
+# FitBenchmark Problem
+software = 'Mantid'
+name = 'Basic MultiFit'
+description = 'This was copied from the Mantid Fit documentation to test that MultiFit worked in FitBenchmarking'
+input_file = ['basic1.txt','basic2.txt']
+function = 'name=LinearBackground,A0=0,A1=0'
+ties = ['A1']

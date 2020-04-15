@@ -18,7 +18,21 @@
 #
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath('../../'))
+
+# PYCUTEST_CACHE needs to be set to use pycutest
+mock_name = "mock_cache"
+mock_pycutest_cache = os.path.join("/tmp", mock_name)
+if not os.path.isdir(mock_pycutest_cache):
+    os.makedirs(mock_pycutest_cache)
+os.environ["PYCUTEST_CACHE"] = mock_pycutest_cache
+
+# set mock imports
+autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfogn', 'dfols',
+                        'pygsl', 'iminuit', 'bumps', 'bumps.fitters',
+                        'tempfile', 'backports', 'backports.tempfile']
+
 
 # -- General configuration ------------------------------------------------
 
@@ -94,7 +108,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -166,4 +180,41 @@ texinfo_documents = [
 ]
 
 
+def run_apidoc(_):
+    """
+    Function to autogenerate module index.
+    Code based on the discussion at
+    https://github.com/readthedocs/readthedocs.org/issues/1139
+    """
+    file_dir = os.path.dirname(__file__)
+    code_path = os.path.join(file_dir, os.pardir, os.pardir, 'fitbenchmarking')
+    ignore_paths = [
+        os.path.join(code_path, '*', 'tests'),
+        os.path.join(code_path, 'mock_problems'),
+        os.path.join(code_path, 'systests')
+    ]
 
+    argv = [
+        "-f",
+        "-T",
+        "-e",
+        "-o", os.path.join(file_dir, 'contributors', 'module_index'),
+        code_path
+    ] + ignore_paths
+
+    try:
+        # Sphinx 1.7+
+        from sphinx.ext import apidoc
+        apidoc.main(argv)
+    except ImportError:
+        # Sphinx 1.6 (and earlier)
+        from sphinx import apidoc
+        argv.insert(0, apidoc.__file__)
+        apidoc.main(argv)
+
+
+def setup(app):
+    """
+    Override setup to allow automatic module index
+    """
+    app.connect('builder-inited', run_apidoc)

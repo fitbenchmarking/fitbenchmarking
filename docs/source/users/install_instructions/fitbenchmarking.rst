@@ -18,6 +18,8 @@ Installing FitBenchmarking
 4. Install any additional softwares you wish to benchmark.
    See :ref:`external-instructions` for more information on this.
 
-.. |Python 3.6.+| image:: https://img.shields.io/badge/python-3.6+-blue.svg
+.. |Python 3.6+| image:: https://img.shields.io/badge/python-3.6+-blue.svg
+   :alt: Python 3.6+
    :target: https://www.python.org/downloads/
+
 

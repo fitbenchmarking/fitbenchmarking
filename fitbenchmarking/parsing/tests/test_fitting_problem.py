@@ -23,17 +23,6 @@ class TestFittingProblem(TestCase):
         """
         self.options = Options()
 
-    def test_sanitised_name(self):
-        """
-        Tests for sanitised name
-        """
-        fitting_problem = FittingProblem(self.options)
-        expected = "test_1"
-        fitting_problem.name = "test 1"
-        self.assertEqual(fitting_problem.sanitised_name, expected)
-        fitting_problem.name = "test,1"
-        self.assertEqual(fitting_problem.sanitised_name, expected)
-
     def test_verify_problem(self):
         """
         Test that verify only passes if all required values are set.
@@ -195,7 +184,7 @@ class TestFittingProblem(TestCase):
         function_def = fitting_problem.get_function_params(params=params)
         self.assertEqual(function_def, expected_function_def)
 
-    def test_correct_data(self):
+    def test_correct_data_single_fit(self):
         """
         Tests that correct data gives the expected result
         """
@@ -234,3 +223,64 @@ class TestFittingProblem(TestCase):
             np.isclose(fitting_problem.data_y[fitting_problem.sorted_index],
                        expected_y_data).all())
         self.assertIs(fitting_problem.data_e, None)
+
+    def test_correct_data_multi_fit(self):
+        """
+        Tests correct data on a multifit problem.
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.multifit = True
+        x_data = [np.array([-0.5, 0.0, 1.0, 0.5, 1.5, 2.0, 2.5, 3.0, 4.0]),
+                  np.array([-0.5, 0.0, 1.0, 0.5, 1.4, 2.0, 2.5, 3.0, 4.0]),
+                  np.array([-0.5, 0.0, 1.0, 0.5, 1.7, 2.0, 2.5, 3.0, 4.0])]
+        y_data = [np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]),
+                  np.array([0.0, 1.0, 2.0, 3.0, 24.0, 5.0, 6.0, 7.0, 8.0]),
+                  np.array([0.0, 1.0, 2.8, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])]
+        e_data = [np.array([1.0, 20.0, 30.0, 40.0, 50.0, 60.0, 1.0, 6.0, 9.0]),
+                  np.array([1.0, 20.0, 30.0, 40.0, 50.0, 60.0, 1.0, 6.0, 9.0]),
+                  np.array([1.0, 20.0, 30.0, 40.0, 50.0, 60.0, 1.0, 6.0, 9.0])]
+        start_x = [0.5, 1.1, 0.0]
+        end_x = [2.5, 2.6, 1.0]
+        expected_x_data = [np.array([0.5, 1.0, 1.5, 2.0, 2.5]),
+                           np.array([1.4, 2.0, 2.5]),
+                           np.array([0.0, 0.5, 1.0])]
+        expected_y_data = [np.array([3.0, 2.0, 4.0, 5.0, 6.0]),
+                           np.array([24.0, 5.0, 6.0]),
+                           np.array([1.0, 3.0, 2.8])]
+        expected_e_data = [np.array([40.0, 30.0, 50.0, 60.0, 1.0]),
+                           np.array([50.0, 60.0, 1.0]),
+                           np.array([20.0, 40.0, 30.0])]
+
+        fitting_problem.data_x = x_data
+        fitting_problem.data_y = y_data
+        fitting_problem.data_e = e_data
+        fitting_problem.start_x = start_x
+        fitting_problem.end_x = end_x
+
+        fitting_problem.correct_data()
+        for i in range(3):
+            self.assertTrue(
+                np.isclose(
+                    fitting_problem.data_x[i][fitting_problem.sorted_index[i]],
+                    expected_x_data[i]).all())
+            self.assertTrue(
+                np.isclose(
+                    fitting_problem.data_y[i][fitting_problem.sorted_index[i]],
+                    expected_y_data[i]).all())
+            self.assertTrue(
+                np.isclose(
+                    fitting_problem.data_e[i][fitting_problem.sorted_index[i]],
+                    expected_e_data[i]).all())
+
+        self.options.use_errors = False
+        fitting_problem.correct_data()
+        for i in range(3):
+            self.assertTrue(
+                np.isclose(
+                    fitting_problem.data_x[i][fitting_problem.sorted_index[i]],
+                    expected_x_data[i]).all())
+            self.assertTrue(
+                np.isclose(
+                    fitting_problem.data_y[i][fitting_problem.sorted_index[i]],
+                    expected_y_data[i]).all())
+            self.assertIs(fitting_problem.data_e[i], None)
