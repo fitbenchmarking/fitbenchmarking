@@ -1,12 +1,5 @@
 from __future__ import (absolute_import, division, print_function)
 
-import os
-
-import numpy as np
-
-GRAD_TOL = 1e-1
-RES_TOL = 1e-8
-
 
 class FittingResult(object):
     """

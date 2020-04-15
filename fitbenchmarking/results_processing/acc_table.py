@@ -17,7 +17,7 @@ class AccTable(Table):
     """
 
     def __init__(self, results, best_results, options, group_dir,
-                 pp_locations):
+                 pp_locations, table_name):
         """
         Initialise accuracy table class.
 
@@ -29,23 +29,18 @@ class AccTable(Table):
         :type options: fitbenchmarking.utils.options.Options
         """
         self.name = 'acc'
-        super(AccTable, self).__init__(
-            results, best_results, options, group_dir, pp_locations)
+        super(AccTable, self).__init__(results, best_results, options,
+                                       group_dir, pp_locations, table_name)
 
         self.has_pp = True
         self.pp_filenames = [self.pp_locations[0]]
 
-    def get_values(self):
-        colour = {}
+    def get_values(self, results_dict):
         abs_value = {}
         rel_value = {}
-        links = {}
-        for key, value in self.results_dict.items():
+        for key, value in results_dict.items():
             abs_value[key] = [v.chi_sq for v in value]
             min_value = np.min(abs_value[key])
             rel_value[key] = [v.chi_sq / min_value for v in value]
-            colour_index = np.searchsorted(self.colour_bounds, rel_value[key])
-            colour[key] = [self.html_colours[i] for i in colour_index]
-            links[key] = [v.support_page_link for v in value]
 
-        return abs_value, rel_value, colour, links
+        return abs_value, rel_value

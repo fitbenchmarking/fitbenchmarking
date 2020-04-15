@@ -13,7 +13,7 @@ class CompareTable(Table):
     """
 
     def __init__(self, results, best_results, options, group_dir,
-                 pp_locations):
+                 pp_locations, table_name):
         """
         Initialise runtime table class.
 
@@ -25,41 +25,46 @@ class CompareTable(Table):
         :type options: fitbenchmarking.utils.options.Options
         """
         self.name = 'compare'
-        super(CompareTable, self).__init__(
-            results, best_results, options, group_dir, pp_locations)
+        super(CompareTable, self).__init__(results, best_results, options,
+                                           group_dir, pp_locations, table_name)
 
         self.has_pp = True
         self.pp_filenames = pp_locations
 
-    def get_values(self):
-        colour = {}
+    def get_values(self, results_dict):
         abs_value = {}
         rel_value = {}
-        links = {}
-        for key, value in self.results_dict.items():
+        for key, value in results_dict.items():
             acc_abs_value = [v.chi_sq for v in value]
             acc_min_value = np.min(acc_abs_value)
             acc_rel_value = [v.chi_sq / acc_min_value for v in value]
-            acc_colour_index = np.searchsorted(self.colour_bounds,
-                                               acc_rel_value)
-            acc_colour = [self.html_colours[i] for i in acc_colour_index]
 
             runtime_abs_value = [v.runtime for v in value]
             runtime_min_value = np.min(runtime_abs_value)
             runtime_rel_value = [v.runtime / runtime_min_value for v in value]
+
+            abs_value[key] = [acc_abs_value, runtime_abs_value]
+            rel_value[key] = [acc_rel_value, runtime_rel_value]
+
+        return abs_value, rel_value
+
+    def get_colour(self, results):
+        _, rel_value = results
+        colour = {}
+        for key, value in rel_value.items():
+            acc_rel_value, runtime_rel_value = value
+            acc_colour_index = np.searchsorted(self.colour_bounds,
+                                               acc_rel_value)
+            acc_colour = [self.html_colours[i] for i in acc_colour_index]
             runtime_colour_index = np.searchsorted(self.colour_bounds,
                                                    runtime_rel_value)
             runtime_colour = [self.html_colours[i]
                               for i in runtime_colour_index]
-
-            abs_value[key] = [acc_abs_value, runtime_abs_value]
-            rel_value[key] = [acc_rel_value, runtime_rel_value]
             colour[key] = [acc_colour, runtime_colour]
-            links[key] = [v.support_page_link for v in value]
+        return colour
 
-        return abs_value, rel_value, colour, links
-
-    def display_str(self, abs_results, rel_results):
+    def display_str(self, results):
+        abs_results, rel_results = results
         comp_mode = self.options.comparison_mode
         result_template = self.output_string_type[self.options.comparison_mode]
         table_output = {}
@@ -84,11 +89,11 @@ class CompareTable(Table):
                      zip(acc_abs, acc_rel, runtime_abs, runtime_rel)]
         return table_output
 
-    def colour_highlight(self, value):
+    def colour_highlight(self, value, colour):
         color_template = 'background-image: linear-gradient({0},{0},{1},{1})'
         name = value.name.split('>')[1].split('<')[0]
         output_colour = []
-        acc_colour, runtime_colour = self.colour[name]
+        acc_colour, runtime_colour = colour[name]
         for acc, runtime in zip(acc_colour, runtime_colour):
             output_colour.append(color_template.format(acc, runtime))
         return output_colour

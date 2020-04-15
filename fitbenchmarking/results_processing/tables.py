@@ -4,6 +4,7 @@ Set up and build the results tables.
 
 from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
+import copy
 from importlib import import_module
 from inspect import getfile, getmembers, isabstract, isclass
 from jinja2 import Environment, FileSystemLoader
@@ -18,7 +19,6 @@ ERROR_OPTIONS = {0: "Successfully converged",
                  3: "Software raised an exception"}
 
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
-# SORTED_TABLE_NAMES = ["local_min"]
 
 
 def create_results_tables(options, results, best_results, group_name,
@@ -65,12 +65,25 @@ def create_results_tables(options, results, best_results, group_name,
             table = create_table(suffix)
             table = table(results, best_results,
                           options, group_dir,
-                          pp_locations)
-            table.create_data_frame()
-            acc_html = table.to_html()
+                          pp_locations, table_names[suffix])
+
+            results_dict = table.create_results_dict()
+
+            disp_results = table.get_values(results_dict)
+            error = table.get_error(results_dict)
+            links = table.get_links(results_dict)
+            colour = table.get_colour(disp_results)
+            str_results = table.display_str(disp_results)
+
+            pandas_html = table.create_pandas_data_frame(str_results)
+            pandas_txt = copy.copy(pandas_html)
+
+            html_table = table.to_html(pandas_html, colour, links, error)
+            txt_table = table.to_txt(pandas_txt, error)
 
             table_title = table.table_title
-            file_path = os.path.join(group_dir, table_names[suffix])
+            file_path = table.file_path
+
             description = table.get_description(description)
 
             table_format = None if suffix == 'local_min' \
@@ -87,9 +100,13 @@ def create_results_tables(options, results, best_results, group_name,
             maths_style = os.path.join(template_dir, 'math_style.css')
             env = Environment(loader=FileSystemLoader(template_dir))
             template = env.get_template("table_template.html")
-            output_file = file_path + 'html'
+            html_output_file = file_path + 'html'
+            txt_output_file = file_path + 'txt'
 
-            with open(output_file, "w") as f:
+            with open(txt_output_file, "w") as f:
+                f.write(txt_table)
+
+            with open(html_output_file, "w") as f:
                 f.write(template.render(css_style_sheet=style_css,
                                         custom_style=custom_style,
                                         table_style=table_css,
@@ -99,7 +116,7 @@ def create_results_tables(options, results, best_results, group_name,
                                         result_name=table_title,
                                         has_pp=has_pp,
                                         pp_filenames=pp_filenames,
-                                        table=acc_html,
+                                        table=html_table,
                                         error_message=ERROR_OPTIONS))
 
     return table_names, description

@@ -23,7 +23,7 @@ class LocalMinTable(Table):
     """
 
     def __init__(self, results, best_results, options, group_dir,
-                 pp_locations):
+                 pp_locations, table_name):
         """
         Initialise runtime table class.
 
@@ -35,18 +35,18 @@ class LocalMinTable(Table):
         :type options: fitbenchmarking.utils.options.Options
         """
         self.name = 'local_min'
-        super(LocalMinTable, self).__init__(
-            results, best_results, options, group_dir, pp_locations)
+        super(LocalMinTable, self).__init__(results, best_results, options,
+                                            group_dir, pp_locations,
+                                            table_name)
 
         self.has_pp = True
         self.pp_filenames = pp_locations
 
-    def get_values(self):
-        colour = {}
+    def get_values(self, results_dict):
+        self.colour = {}
         local_min = {}
         norm_rel = {}
-        links = {}
-        for key, value in self.results_dict.items():
+        for key, value in results_dict.items():
             res = [v.problem.eval_r(v.params) for v in value]
             jac = [v.problem.eval_j(v.params).T for v in value]
             min_test = [np.matmul(j, r) for j, r in zip(jac, res)]
@@ -56,24 +56,31 @@ class LocalMinTable(Table):
 
             norm_rel[key] = [m / r for m, r in zip(norm_min_test, norm_r)]
             local_min[key] = []
-            colour[key] = []
+            self.colour[key] = []
             for r, m, n in zip(norm_r, norm_min_test, norm_rel[key]):
                 if r <= RES_TOL or m <= GRAD_TOL or n <= GRAD_TOL:
                     local_min[key].append("True")
-                    colour[key].append(self.html_colours[0])
+                    self.colour[key].append(self.html_colours[0])
                 else:
                     local_min[key].append("False")
-                    colour[key].append(self.html_colours[-1])
+                    self.colour[key].append(self.html_colours[-1])
 
-            links[key] = [v.support_page_link for v in value]
+        return local_min, norm_rel
 
-        return local_min, norm_rel, colour, links
+    def get_colour(self, results):
+        local_min, _ = results
+        colour = {key: [self.html_colours[0]
+                        if v == "True" else self.html_colours[-1]
+                        for v in value]
+                  for key, value in local_min.items()}
+        return colour
 
-    def display_str(self, abs_results, rel_results):
+    def display_str(self, results):
+        local_min, norm_rel = results
         template = self.output_string_type['abs']
         table_output = {}
-        for key in abs_results.keys():
+        for key in local_min.keys():
             table_output[key] = [a + " (" + template.format(r) + ")"
-                                 for a, r in zip(abs_results[key],
-                                                 rel_results[key])]
+                                 for a, r in zip(local_min[key],
+                                                 norm_rel[key])]
         return table_output
