@@ -130,14 +130,6 @@ class Table:
                     axis=1)
         return table.to_string()
 
-    def set_error_code(self, str_display, error_code):
-        output = {}
-        for key, value in str_display.items():
-            error = ["<sup>{}</sup>".format(e) if e != 0 else ""
-                     for e in error_code[key]]
-            output[key] = [v + e for v, e in zip(value, error)]
-        return output
-
     def enable_link(self, value, links):
         name = value.name
         support_page_link = links[name]

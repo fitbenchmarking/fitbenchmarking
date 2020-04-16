@@ -12,6 +12,7 @@ import os
 
 import fitbenchmarking
 from fitbenchmarking.results_processing.base_table import Table
+from fitbenchmarking.utils.exceptions import UnknownTableError
 
 ERROR_OPTIONS = {0: "Successfully converged",
                  1: "Software reported maximum number of iterations exceeded",
@@ -62,24 +63,13 @@ def create_results_tables(options, results, best_results, group_name,
                                                               suffix,
                                                               weighted_str)
 
-            table = create_table(suffix)
-            table = table(results, best_results,
-                          options, group_dir,
-                          pp_locations, table_names[suffix])
-
-            results_dict = table.create_results_dict()
-
-            disp_results = table.get_values(results_dict)
-            error = table.get_error(results_dict)
-            links = table.get_links(results_dict)
-            colour = table.get_colour(disp_results)
-            str_results = table.display_str(disp_results)
-
-            pandas_html = table.create_pandas_data_frame(str_results)
-            pandas_txt = copy.copy(pandas_html)
-
-            html_table = table.to_html(pandas_html, colour, links, error)
-            txt_table = table.to_txt(pandas_txt, error)
+            table, html_table, txt_table = generate_table(results,
+                                                          best_results,
+                                                          options,
+                                                          group_dir,
+                                                          pp_locations,
+                                                          table_names[suffix],
+                                                          suffix)
 
             table_title = table.table_title
             file_path = table.file_path
@@ -90,6 +80,7 @@ def create_results_tables(options, results, best_results, group_name,
                 else description[options.comparison_mode]
 
             has_pp = table.has_pp
+
             pp_filenames = table.pp_filenames
 
             root = os.path.dirname(getfile(fitbenchmarking))
@@ -122,7 +113,7 @@ def create_results_tables(options, results, best_results, group_name,
     return table_names, description
 
 
-def create_table(table):
+def load_table(table):
     """
     Create a controller that matches the required software.
 
@@ -138,18 +129,35 @@ def create_table(table):
     try:
         module = import_module('.' + module_name, __package__)
     except ImportError as e:
-        full_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                 module_name + '.py'))
-        if os.path.exists(full_path):
-            raise MissingSoftwareError('Requirements are missing for the '
-                                       '{} controller: {}'.format(
-                                           software, e))
-        else:
-            raise NoControllerError('Could not find controller for {}. '
-                                    'Check the input is correct and try '
-                                    'again.'.format(software))
+        raise UnknownTableError('Given table option {} '
+                                'was not found: {}'.format(table, e))
+
     classes = getmembers(module, lambda m: (isclass(m)
                                             and not isabstract(m)
                                             and issubclass(m, Table)
                                             and m is not Table))
     return classes[0][1]
+
+
+def generate_table(results, best_results, options, group_dir,
+                   pp_locations, table_name, suffix):
+
+    table_module = load_table(suffix)
+    table = table_module(results, best_results,
+                         options, group_dir,
+                         pp_locations, table_name)
+
+    results_dict = table.create_results_dict()
+
+    disp_results = table.get_values(results_dict)
+    error = table.get_error(results_dict)
+    links = table.get_links(results_dict)
+    colour = table.get_colour(disp_results)
+    str_results = table.display_str(disp_results)
+
+    pandas_html = table.create_pandas_data_frame(str_results)
+    pandas_txt = copy.copy(pandas_html)
+
+    html_table = table.to_html(pandas_html, colour, links, error)
+    txt_table = table.to_txt(pandas_txt, error)
+    return table, html_table, txt_table

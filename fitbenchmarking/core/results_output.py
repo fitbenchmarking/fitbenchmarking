@@ -4,10 +4,8 @@ Functions that create the tables, support pages, figures, and indexes.
 
 from __future__ import (absolute_import, division, print_function)
 from collections import OrderedDict
-import docutils.core
 import inspect
 import os
-import sys
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -42,6 +40,7 @@ def save_results(options, results, group_name):
                         results_per_test=results,
                         group_name=group_name,
                         support_pages_dir=supp_dir)
+
     table_names, table_descriptions = \
         tables.create_results_tables(options,
                                      results,
