@@ -9,6 +9,7 @@ except ImportError:
 import unittest
 
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.results_processing import plots
 
@@ -29,12 +30,22 @@ class PlotTests(unittest.TestCase):
         self.prob.starting_values = [{'x': 1, 'y': 2}]
         self.prob.eval_f = lambda x, y: x[0]*y + x[1]
         self.prob.name = 'full name'
+        self.fr = FittingResult(options=self.opts,
+                                problem=self.prob,
+                                chi_sq=1.0,
+                                initial_params=[1.8],
+                                params=[1.2],
+                                runtime=2.0,
+                                minimizer='fit',
+                                error_flag=1)
 
         self.opts = Options()
         self.opts.use_errors = True
 
         self.dir = TemporaryDirectory()
-        self.plot = plots.Plot(self.prob, self.opts, 1, self.dir.name)
+        self.plot = plots.Plot(best_result=self.fr,
+                               options=self.opts,
+                               figures_dir=self.dir.name)
 
     def test_init_creates_line(self):
         """
@@ -74,7 +85,7 @@ class PlotTests(unittest.TestCase):
         """
         file_name = self.plot.plot_initial_guess()
 
-        self.assertEqual(file_name, 'start_for_full_name_1.png')
+        self.assertEqual(file_name, 'start_for_full_name.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 
@@ -84,7 +95,7 @@ class PlotTests(unittest.TestCase):
         """
         file_name = self.plot.plot_best('best', [0.1, 3])
 
-        self.assertEqual(file_name, 'best_fit_for_full_name_1.png')
+        self.assertEqual(file_name, 'best_fit_for_full_name.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 
@@ -94,7 +105,7 @@ class PlotTests(unittest.TestCase):
         """
         file_name = self.plot.plot_fit('fit', [8, 6.2])
 
-        self.assertEqual(file_name, 'fit_fit_for_full_name_1.png')
+        self.assertEqual(file_name, 'fit_fit_for_full_name.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 

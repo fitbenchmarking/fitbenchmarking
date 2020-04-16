@@ -19,14 +19,14 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 
-def make_fitting_problem():
+def make_fitting_problem(file_name='cubic.dat'):
     """
     Helper function that returns a simple fitting problem
     """
     options = Options()
 
     bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
-    fname = os.path.join(bench_prob_dir, 'cubic.dat')
+    fname = os.path.join(bench_prob_dir, file_name)
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
@@ -164,11 +164,81 @@ class ControllerTests(TestCase):
         self.shared_testing(controller)
 
         controller._status = "success"
-        self.check_conveged(controller)
+        self.check_converged(controller)
         controller._status = "Failed to converge"
         self.check_max_iterations(controller)
         controller._status = "Failed"
         self.check_diverged(controller)
+
+    def test_mantid_multifit(self):
+        """
+        MantidController: Additional bespoke test for multifit
+        """
+        file_path = os.path.join('multifit_set', 'multifit.txt')
+        problem = make_fitting_problem(file_path)
+
+        controller = MantidController(problem)
+        controller.minimizer = 'Levenberg-Marquardt'
+
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        self.assertEqual(len(controller.final_params), len(controller.data_x),
+                         'Multifit did not return a result for each data file')
+
+        self.assertEqual(len(controller.final_params[0]),
+                         len(controller.initial_params),
+                         'Incorrect number of final params.')
+
+    def test_mantid_singlefit_chisquared(self):
+        """
+        Test the override in Mantid conroller is working correctly for
+        evaluating chi_squared (SingleFit).
+        """
+        m_controller = MantidController(self.problem)
+        b_controller = DummyController(self.problem)
+        params = np.array([1, 2, 3, 4])
+        x = np.array([6, 2, 32, 4])
+        y = np.array([1, 21, 3, 4])
+        e = np.array([.5, .003, 1, 2])
+
+        expected = b_controller.eval_chisq(params=params, x=x, y=y, e=e)
+        actual = m_controller.eval_chisq(params=params, x=x, y=y, e=e)
+
+        self.assertEqual(expected, actual,
+                         'Mantid controller found a different chi squared'
+                         ' for single fit problem.')
+
+    def test_mantid_multifit_chisquared(self):
+        """
+        Test the override in Mantid conroller is working correctly for
+        evaluating chi_squared (MultiFit).
+        """
+        m_controller = MantidController(self.problem)
+        b_controller = DummyController(self.problem)
+        params = [np.array([1, 2, 3, 4]),
+                  np.array([1, 2, 3, 4]),
+                  np.array([1, 2, 3, 4])]
+        xs = [np.array([6, 2, 32, 4]),
+              np.array([6, 2, 32, 4]),
+              np.array([6, 2, 32, 4])]
+        ys = [np.array([1, 21, 3, 4]),
+              np.array([1, 21, 3, 4]),
+              np.array([1, 21, 3, 4])]
+        es = [np.array([.5, .003, 1, 2]),
+              np.array([.5, .003, 1, 2]),
+              np.array([.5, .003, 1, 2])]
+
+        expected = [b_controller.eval_chisq(params=p, x=x, y=y, e=e)
+                    for x, y, e, p in zip(xs, ys, es, params)]
+        actual = m_controller.eval_chisq(params=params, x=xs, y=ys, e=es)
+
+        self.assertListEqual(
+            expected, actual,
+            'Mantid controller found a different chi squared for multi fit'
+            ' problem.')
 
     def test_sasview(self):
         """
@@ -179,7 +249,7 @@ class ControllerTests(TestCase):
         self.shared_testing(controller)
 
         controller._status = 0
-        self.check_conveged(controller)
+        self.check_converged(controller)
         controller._status = 2
         self.check_max_iterations(controller)
         controller._status = 1
@@ -194,7 +264,7 @@ class ControllerTests(TestCase):
         self.shared_testing(controller)
 
         controller._status = 1
-        self.check_conveged(controller)
+        self.check_converged(controller)
         controller._status = 0
         self.check_max_iterations(controller)
         controller._status = -1
@@ -213,7 +283,7 @@ class ControllerTests(TestCase):
             self.shared_testing(controller)
 
             controller._status = 0
-            self.check_conveged(controller)
+            self.check_converged(controller)
             controller._status = 2
             self.check_max_iterations(controller)
             controller._status = 5
@@ -233,7 +303,7 @@ class ControllerTests(TestCase):
             self.shared_testing(controller)
 
             controller.flag = 0
-            self.check_conveged(controller)
+            self.check_converged(controller)
             controller.flag = 1
             self.check_max_iterations(controller)
             controller.flag = 2
@@ -250,7 +320,7 @@ class ControllerTests(TestCase):
             self.shared_testing(controller)
 
             controller._status = 0
-            self.check_conveged(controller)
+            self.check_converged(controller)
             controller._status = 2
             self.check_diverged(controller)
 
@@ -262,7 +332,7 @@ class ControllerTests(TestCase):
         controller.minimizer = 'minuit'
         self.shared_testing(controller)
         controller._status = 0
-        self.check_conveged(controller)
+        self.check_converged(controller)
         controller._status = 2
         self.check_diverged(controller)
 
@@ -278,10 +348,9 @@ class ControllerTests(TestCase):
         controller.fit()
         controller.cleanup()
 
-        assert len(controller.results) == len(controller.data_y)
         assert len(controller.final_params) == len(controller.initial_params)
 
-    def check_conveged(self, controller):
+    def check_converged(self, controller):
         """
         Utility function to check controller.cleanup() produces a success flag
 

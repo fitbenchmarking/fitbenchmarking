@@ -7,25 +7,71 @@ class FittingResult(object):
     fitting problem test.
     """
 
-    def __init__(self, options=None, problem=None, fit_status=None,
-                 chi_sq=None, params=None, runtime=None, minimizer=None,
-                 ini_function_params=None, fin_function_params=None,
-                 error_flag=None):
+    def __init__(self, options, problem, initial_params, params,
+                 name=None, chi_sq=None, runtime=None,
+                 minimizer=None, error_flag=None, dataset_id=None):
+        """
+        Initialise the Fitting Result
 
+        :param options: Options used in fitting
+        :type options: utils.options.Options
+        :param problem: The Problem definition for the fit
+        :type problem: parsing.fitting_problem.FittingProblem
+        :param initial_params: The starting parameters for the fit
+        :type initial_params: list of float
+        :param params: The parameters found by the fit
+        :type params: list of float or list of list of float
+        :param name: Name of the result, defaults to None
+        :type name: str, optional
+        :param chi_sq: The score for the fitting, defaults to None
+        :type chi_sq: float or list of float, optional
+        :param runtime: The average runtime of the fit, defaults to None
+        :type runtime: float or list of float, optional
+        :param minimizer: The name of the minimizer used, defaults to None
+        :type minimizer: str, optional
+        :param error_flag: [description], defaults to None
+        :type error_flag: [type], optional
+        :param dataset_id: The index of the dataset (Only used for MultiFit),
+                           defaults to None
+        :type dataset_id: int, optional
+        """
         self.options = options
         self.problem = problem
-        self.fit_status = fit_status
-        self.params = params
+        self.name = name if name is not None else \
+            problem.name
 
         self.chi_sq = chi_sq
+        if dataset_id is None:
+            self.data_x = problem.data_x
+            self.data_y = problem.data_y
+            self.data_e = problem.data_e
+            self.sorted_index = problem.sorted_index
 
-        # Time it took to run the Fit algorithm
+            self.params = params
+            self.chi_sq = chi_sq
+
+        else:
+            self.data_x = problem.data_x[dataset_id]
+            self.data_y = problem.data_y[dataset_id]
+            self.data_e = problem.data_e[dataset_id]
+            self.sorted_index = problem.sorted_index[dataset_id]
+
+            self.params = params[dataset_id]
+            self.chi_sq = chi_sq[dataset_id]
+
         self.runtime = runtime
+
+        self._min_chi_sq = None
+        self._min_runtime = None
 
         # Minimizer for a certain problem and its function definition
         self.minimizer = minimizer
-        self.ini_function_params = ini_function_params
-        self.fin_function_params = fin_function_params
+
+        # String interpretations of the params
+        self.ini_function_params = self.problem.get_function_params(
+            params=initial_params)
+        self.fin_function_params = self.problem.get_function_params(
+            params=self.params)
 
         # Controller error handling
         self.error_flag = error_flag
@@ -74,3 +120,17 @@ class FittingResult(object):
         :type value: float
         """
         self._norm_runtime = value
+
+    @property
+    def sanitised_name(self):
+        """
+        Sanitise the problem name ito one which can be used as a filename.
+
+        :return: sanitised name
+        :rtype: str
+        """
+        return self.name.replace(',', '').replace(' ', '_')
+
+    @sanitised_name.setter
+    def sanitised_name(self, value):
+        raise RuntimeError('sanitised_name can not be edited')

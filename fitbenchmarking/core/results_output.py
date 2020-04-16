@@ -120,15 +120,10 @@ def create_plots(options, results, best_results, group_name, figures_dir):
     :param figures_dir: Path to directory to store the figures in
     :type figures_dir: str
     """
-    name_count = {}
     for best, prob_result in zip(best_results, results):
-        name = best.problem.sanitised_name
-        name_count[name] = 1 + name_count.get(name, 0)
-        count = name_count[name]
 
-        plot = plots.Plot(problem=best.problem,
+        plot = plots.Plot(best_result=best,
                           options=options,
-                          count=count,
                           figures_dir=figures_dir)
 
         # Create a plot showing the initial guess and get filename

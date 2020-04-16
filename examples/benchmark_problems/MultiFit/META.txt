@@ -1,0 +1,3 @@
+Mantid_MultiFit
+
+This is a collection of problems to check that the Mantid multi-fit functionality is working.

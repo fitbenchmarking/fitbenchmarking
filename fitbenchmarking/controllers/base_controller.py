@@ -49,9 +49,6 @@ class Controller:
 
         # Final Params: The final values for the params from the minimizer
         self.final_params = None
-        # Results: Stores output results using the final parameters in
-        #          numpy array
-        self.results = None
 
         # Flag: error handling flag
         self.flag = None
