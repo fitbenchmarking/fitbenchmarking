@@ -17,15 +17,26 @@ class RuntimeTable(Table):
     def __init__(self, results, best_results, options, group_dir,
                  pp_locations, table_name):
         """
-        Initialise runtime table class.
+        Initialise the runtime table which shows the average runtime results
 
-        :param results: dictionary containing results, i.e.,
-                           {'prob1': [result1, result2, ...],
-                            'prob2': [result1, result2, ...], ...}
-        :type results: dict
-        :param options: The options used in the fitting problem and plotting
-        :type options: fitbenchmarking.utils.options.Options
+        :param results: results nested array of objects
+        :type results: list of list of
+                       fitbenchmarking.utils.fitbm_result.FittingResult
+        :param best_results: best result for each problem
+        :type best_results: list of
+                        fitbenchmarking.utils.fitbm_result.FittingResult
+        :param options: Options used in fitting
+        :type options: utils.options.Options
+        :param group_dir: path to the directory where group results should be
+                          stored
+        :type group_dir: str
+        :param pp_locations: tuple containing the locations of the
+                             performance profiles (acc then runtime)
+        :type pp_locations: tuple(str,str)
+        :param table_name: Name of the table
+        :type table_name: str
         """
+
         self.name = 'runtime'
         super(RuntimeTable, self).__init__(results, best_results, options,
                                            group_dir, pp_locations, table_name)
@@ -34,6 +45,18 @@ class RuntimeTable(Table):
         self.pp_filenames = [self.pp_locations[1]]
 
     def get_values(self, results_dict):
+        """
+        Gets the main values to be reported in the tables
+
+        :param results_dict: dictionary containing results where the keys
+                             are the problem sets and the values are lists
+                             of results objects
+        :type results_dict: dictionary
+
+        :return: two dictionaries containing the absolute runtime and the
+                 normalised runtime with respect to the quickest time.
+        :rtype: tuple(dict, dict)
+        """
         abs_value = {}
         rel_value = {}
         for key, value in results_dict.items():

@@ -6,6 +6,7 @@ from inspect import getfile
 import shutil
 
 import fitbenchmarking
+from fitbenchmarking.results_processing.tables import SORTED_TABLE_NAMES
 from fitbenchmarking.results_processing.tables import generate_table
 from fitbenchmarking.results_processing.tables import create_results_tables
 from fitbenchmarking.core.results_output import preproccess_data
@@ -14,14 +15,37 @@ from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
 
-SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
-
-
 def fitting_function_1(data, x1, x2):
+    """
+    Fitting function evaluator
+
+    :param data: x data
+    :type data: numpy array
+    :param x1: fitting parameter
+    :type x1: float
+    :param x2: fitting parameter
+    :type x2: float
+
+    :return: y data values evaluated from the function of the problem
+    :rtype: numpy array
+    """
     return x1 * np.sin(x2)
 
 
 def fitting_function_2(data, x1, x2):
+    """
+    Fitting function evaluator
+
+    :param data: x data
+    :type data: numpy array
+    :param x1: fitting parameter
+    :type x1: float
+    :param x2: fitting parameter
+    :type x2: float
+
+    :return: y data values evaluated from the function of the problem
+    :rtype: numpy array
+    """
     return x1 * x2
 
 
@@ -29,11 +53,11 @@ def generate_mock_results():
     """
     Generates results to test against
 
-    :return: A list of results objects along with expected values for
-             normallised accuracy and runtimes
-    :rtype: tuple(list of FittingResults,
-                  list of list of float,
-                  list of list of float)
+    :return: best results calculated using the chi_sq value, list of results
+             and the options
+    :rtype: tuple(list of best results,
+                  list of list fitting results,
+                  Options object)
     """
     software = 'scipy'
     options = Options()
@@ -47,6 +71,8 @@ def generate_mock_results():
 
     params_in = [[[.3, .11], [.04, 2], [3, 1], [5, 0]],
                  [[4, 2], [3, .006], [.3, 10], [9, 0]]]
+
+    starting_values = [{"a": .3, "b": .11}, {"a": 0, "b": 0}]
     error_in = [[1, 0, 2, 0],
                 [0, 1, 3, 1]]
     link_in = [['link1', 'link2', 'link3', 'link4'],
@@ -65,14 +91,13 @@ def generate_mock_results():
         p.name = "prob_{}".format(i)
         results = []
         for j in range(num_min):
-            r = FittingResult()
-            r.problem = p
+            p.starting_values = starting_values
+            r = FittingResult(options, p, starting_values, params_in[i][j])
             r.chi_sq = acc_in[i][j]
             r.runtime = runtime_in[i][j]
             r.error_flag = error_in[i][j]
             r.support_page_link = link_in[i][j]
             r.minimizer = options.minimizers[software][j]
-            r.params = params_in[i][j]
             results.append(r)
         results_out.append(results)
     best = preproccess_data(results_out)
@@ -80,8 +105,15 @@ def generate_mock_results():
 
 
 class GenerateTableTests(unittest.TestCase):
+    """
+    Class that tests the generate_table function within
+    fitbenchmarking.results_processing.tables
+    """
 
     def setUp(self):
+        """
+        Setup up method for test
+        """
         self.best, self.results, self.options = generate_mock_results()
         root = os.path.dirname(getfile(fitbenchmarking))
 
@@ -89,6 +121,10 @@ class GenerateTableTests(unittest.TestCase):
                                                  'tests', 'expected_results')
 
     def test_tables_correct(self):
+        """
+        Test that the tables are equal to the expected output stored in
+        fitbenchmarking/results_processing/tests/expected_results
+        """
         for suffix in SORTED_TABLE_NAMES:
             table, html_table, txt_table = generate_table(
                 self.results, self.best, self.options, "group_dir",
@@ -102,22 +138,28 @@ class GenerateTableTests(unittest.TestCase):
                             [html_table, txt_table]):
                 self.compare_files(f, t)
 
-    def compare_files(self, expected_file, table):
-        with open(expected_file, 'r') as f:
+    def compare_files(self, expected_table, table):
+        """
+        Compares two tables line by line
+
+        :param expected_table: imported html output from expected results in
+                               fitbenchmarking/results_processing/tests/
+                               expected_results
+        :type expected_table: str
+        :param table: table generated using generate_table in
+                      fitbenchmarking.results_processing.tables
+        :type table: str
+        """
+        with open(expected_table, 'r') as f:
             expected = f.readlines()
 
-        file_extension = expected_file.split('.')[1]
+        file_extension = expected_table.split('.')[1]
         if file_extension == 'txt':
             html_id_expected = ''
             html_id = ''
         elif file_extension == 'html':
-            split_str = expected[1].strip(' ').split('_')
-            html_id_expected = '{}_{}_{}'.format(
-                split_str[0], split_str[1], split_str[2]).strip('#')
-            split_str = table.splitlines()[1].strip(' ').split('_')
-            html_id = '{}_{}_{}'.format(
-                split_str[0], split_str[1], split_str[2]).strip('#')
-
+            html_id_expected = expected[1].strip(' ').split('row')[0][1:]
+            html_id = table.splitlines()[1].strip(' ').split('row')[0][1:]
         diff = []
         for act_line, exp_line in zip(table.splitlines(), expected):
             exp_line = '' if exp_line is None else exp_line.strip('\n')
@@ -125,13 +167,15 @@ class GenerateTableTests(unittest.TestCase):
             exp_line = exp_line.replace(html_id_expected, html_id)
             if act_line != exp_line:
                 diff.append([exp_line, act_line])
-
         self.assertListEqual([], diff)
 
 
 class CreateReultsTableTests(unittest.TestCase):
 
     def setUp(self):
+        """
+        Setup up method for test
+        """
         self.best, self.results, self.options = generate_mock_results()
         root = os.path.dirname(getfile(fitbenchmarking))
 
@@ -141,10 +185,16 @@ class CreateReultsTableTests(unittest.TestCase):
         self.group_name = 'test_name'
 
     def tearDown(self):
+        """
+        Deletes temporary folder and results produced
+        """
         if os.path.exists(self.group_dir):
             shutil.rmtree(self.group_dir)
 
     def test_generate_table_page(self):
+        """
+        Checks to see whether files with the correct name are produced.
+        """
         create_results_tables(self.options, self.results, self.best,
                               self.group_name, self.group_dir,
                               ["pp_1", "pp_2"])

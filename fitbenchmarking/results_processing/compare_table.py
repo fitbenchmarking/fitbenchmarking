@@ -15,14 +15,25 @@ class CompareTable(Table):
     def __init__(self, results, best_results, options, group_dir,
                  pp_locations, table_name):
         """
-        Initialise runtime table class.
+        Initialise the compare table which shows both accuracy and runtime
+        results
 
-        :param results: dictionary containing results, i.e.,
-                           {'prob1': [result1, result2, ...],
-                            'prob2': [result1, result2, ...], ...}
-        :type results: dict
-        :param options: The options used in the fitting problem and plotting
-        :type options: fitbenchmarking.utils.options.Options
+        :param results: results nested array of objects
+        :type results: list of list of
+                       fitbenchmarking.utils.fitbm_result.FittingResult
+        :param best_results: best result for each problem
+        :type best_results: list of
+                        fitbenchmarking.utils.fitbm_result.FittingResult
+        :param options: Options used in fitting
+        :type options: utils.options.Options
+        :param group_dir: path to the directory where group results should be
+                          stored
+        :type group_dir: str
+        :param pp_locations: tuple containing the locations of the
+                             performance profiles (acc then runtime)
+        :type pp_locations: tuple(str,str)
+        :param table_name: Name of the table
+        :type table_name: str
         """
         self.name = 'compare'
         super(CompareTable, self).__init__(results, best_results, options,
@@ -32,6 +43,19 @@ class CompareTable(Table):
         self.pp_filenames = pp_locations
 
     def get_values(self, results_dict):
+        """
+        Gets the main values to be reported in the tables
+
+        :param results_dict: dictionary containing results where the keys
+                             are the problem sets and the values are lists
+                             of results objects
+        :type results_dict: dictionary
+
+        :return: First dictionary containing the absolute chi_sq and runtime
+                 results and the second contains the normalised chi_sq and
+                 runtime results with respect to the smallest values.
+        :rtype: tuple(dict, dict)
+        """
         abs_value = {}
         rel_value = {}
         for key, value in results_dict.items():
@@ -48,22 +72,18 @@ class CompareTable(Table):
 
         return abs_value, rel_value
 
-    def get_colour(self, results):
-        _, rel_value = results
-        colour = {}
-        for key, value in rel_value.items():
-            acc_rel_value, runtime_rel_value = value
-            acc_colour_index = np.searchsorted(self.colour_bounds,
-                                               acc_rel_value)
-            acc_colour = [self.html_colours[i] for i in acc_colour_index]
-            runtime_colour_index = np.searchsorted(self.colour_bounds,
-                                                   runtime_rel_value)
-            runtime_colour = [self.html_colours[i]
-                              for i in runtime_colour_index]
-            colour[key] = [acc_colour, runtime_colour]
-        return colour
-
     def display_str(self, results):
+        """
+        Function that combines the accuracy and runtime results into the
+        string representation.
+
+        :param results: tuple containing absolute and relative values
+        :type results: tuple
+
+        :return: dictionary containing the string representation of the values
+                 in the table.
+        :rtype: dict
+        """
         abs_results, rel_results = results
         comp_mode = self.options.comparison_mode
         result_template = self.output_string_type[self.options.comparison_mode]
@@ -90,8 +110,19 @@ class CompareTable(Table):
         return table_output
 
     def colour_highlight(self, value, colour):
+        """
+        Enable HTML colours in the HTML output.
+
+        :param value: Row data from the pandas array
+        :type value: pandas.core.series.Series
+        :param colour: dictionary containing error codes from the minimizers
+        :type colour: dict
+
+        :return: list of HTML colours
+        :rtype: list
+        """
         color_template = 'background-image: linear-gradient({0},{0},{1},{1})'
-        name = value.name.split('>')[1].split('<')[0]
+        name = value.name.split('"')[2].replace("</a>", "")[1:]
         output_colour = []
         acc_colour, runtime_colour = colour[name]
         for acc, runtime in zip(acc_colour, runtime_colour):

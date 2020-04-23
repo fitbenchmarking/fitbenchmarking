@@ -25,14 +25,26 @@ class LocalMinTable(Table):
     def __init__(self, results, best_results, options, group_dir,
                  pp_locations, table_name):
         """
-        Initialise runtime table class.
+        Initialise the local minimizer table which shows given the
+        conditioners stated in the doc string whether the final parameters
+        are a local minimum
 
-        :param results: dictionary containing results, i.e.,
-                           {'prob1': [result1, result2, ...],
-                            'prob2': [result1, result2, ...], ...}
-        :type results: dict
-        :param options: The options used in the fitting problem and plotting
-        :type options: fitbenchmarking.utils.options.Options
+        :param results: results nested array of objects
+        :type results: list of list of
+                       fitbenchmarking.utils.fitbm_result.FittingResult
+        :param best_results: best result for each problem
+        :type best_results: list of
+                        fitbenchmarking.utils.fitbm_result.FittingResult
+        :param options: Options used in fitting
+        :type options: utils.options.Options
+        :param group_dir: path to the directory where group results should be
+                          stored
+        :type group_dir: str
+        :param pp_locations: tuple containing the locations of the
+                             performance profiles (acc then runtime)
+        :type pp_locations: tuple(str,str)
+        :param table_name: Name of the table
+        :type table_name: str
         """
         self.name = 'local_min'
         super(LocalMinTable, self).__init__(results, best_results, options,
@@ -43,6 +55,19 @@ class LocalMinTable(Table):
         self.pp_filenames = pp_locations
 
     def get_values(self, results_dict):
+        """
+        Gets the main values to be reported in the tables
+
+        :param results_dict: dictionary containing results where the keys
+                             are the problem sets and the values are lists
+                             of results objects
+        :type results_dict: dictionary
+
+        :return: a dictionary containing true or false values whether the
+                 return parameters is a local minimizer and a dictionary
+                 containing :math:`\\frac{|| J^T r||}{||r||}` values
+        :rtype: tuple(dict, dict)
+        """
         self.colour = {}
         local_min = {}
         norm_rel = {}
@@ -68,6 +93,18 @@ class LocalMinTable(Table):
         return local_min, norm_rel
 
     def get_colour(self, results):
+        """
+        Uses the local minimiser dictionary values to set the HTML colour
+
+        :param results: a dictionary containing true or false values whether
+                        the return parameters is a local minimizer and a
+                        dictionary containing
+                        :math:`\\frac{|| J^T r||}{||r||}` values
+        :type results: tuple
+
+        :return: dictionary containing error codes from the minimizers
+        :rtype: dict
+        """
         local_min, _ = results
         colour = {key: [self.html_colours[0]
                         if v == "True" else self.html_colours[-1]
@@ -76,6 +113,20 @@ class LocalMinTable(Table):
         return colour
 
     def display_str(self, results):
+        """
+        Function that combines the True and False value from variable local_min
+        with the normalised residual
+
+        :param results: a dictionary containing true or false values whether
+                        the return parameters is a local minimizer and a
+                        dictionary containing
+                        :math:`\\frac{|| J^T r||}{||r||}` values
+        :type results: tuple
+
+        :return: dictionary containing the string representation of the values
+                 in the table.
+        :rtype: dict
+        """
         local_min, norm_rel = results
         template = self.output_string_type['abs']
         table_output = {}

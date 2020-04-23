@@ -50,7 +50,8 @@ def create_results_tables(options, results, best_results, group_name,
 
     :return: filepaths to each table
              e.g {'acc': <acc-table-filename>, 'runtime': ...}
-    :rtype: dict
+             and dictionary of table descriptions
+    :rtype: tuple(dict, dict)
     """
 
     weighted_str = 'weighted' if options.use_errors else 'unweighted'
@@ -115,13 +116,13 @@ def create_results_tables(options, results, best_results, group_name,
 
 def load_table(table):
     """
-    Create a controller that matches the required software.
+    Create a table object.
 
-    :param software: The name of the software to create a controller for
-    :type software: string
+    :param table: The name of the table to create a table for
+    :type table: string
 
-    :return: Controller class for the problem
-    :rtype: fitbenchmarking.fitting.base_controller.Controller subclass
+    :return: Table class for the problem
+    :rtype: fitbenchmarking/results_processing/tables.Table subclass
     """
 
     module_name = '{}_table'.format(table.lower())
@@ -141,7 +142,32 @@ def load_table(table):
 
 def generate_table(results, best_results, options, group_dir,
                    pp_locations, table_name, suffix):
+    """
+    Saves the results of the fitting to html/txt tables.
 
+    :param results: results nested array of objects
+    :type results: list of list of
+                   fitbenchmarking.utils.fitbm_result.FittingResult
+    :param best_results: best result for each problem
+    :type best_results: list of
+                        fitbenchmarking.utils.fitbm_result.FittingResult
+    :param options: The options used in the fitting problem and plotting
+    :type options: fitbenchmarking.utils.options.Options
+    :param group_dir: path to the directory where group results should be
+                      stored
+    :type group_dir: str
+    :param pp_locations: tuple containing the locations of the
+                         performance profiles (acc then runtime)
+    :type pp_locations: tuple(str,str)
+    :param table_name: name of the table
+    :type table_name: str
+    :param suffix: table suffix
+    :type suffix: str
+
+
+    :return: Table object, HTML string of table and text string of table.
+    :rtype: tuple(Table object, str, str)
+    """
     table_module = load_table(suffix)
     table = table_module(results, best_results,
                          options, group_dir,

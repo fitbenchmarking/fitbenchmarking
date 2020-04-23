@@ -19,6 +19,23 @@ class Table:
                  pp_locations, table_name):
         """
         Initialise the class.
+
+        :param results: results nested array of objects
+        :type results: list of list of
+                       fitbenchmarking.utils.fitbm_result.FittingResult
+        :param best_results: best result for each problem
+        :type best_results: list of
+                        fitbenchmarking.utils.fitbm_result.FittingResult
+        :param options: Options used in fitting
+        :type options: utils.options.Options
+        :param group_dir: path to the directory where group results should be
+                          stored
+        :type group_dir: str
+        :param pp_locations: tuple containing the locations of the
+                             performance profiles (acc then runtime)
+        :type pp_locations: tuple(str,str)
+        :param table_name: Name of the table
+        :type table_name: str
         """
         self.results = results
         self.options = options
@@ -61,10 +78,36 @@ class Table:
         return results_dict
 
     @abstractmethod
-    def get_table_data(self):
+    def get_values(self):
+        """
+        Gets the main values to be reported in the tables
+
+        :param results_dict: dictionary containing results where the keys
+                             are the problem sets and the values are lists
+                             of results objects
+        :type results_dict: dictionary
+
+        :return: tuple of dictionaries which contain the main values in the
+                 tables
+        :rtype: tuple
+        """
         raise NotImplementedError
 
     def display_str(self, results):
+        """
+        Function which converts the results from `self.get_values()` into
+        a string format used in the tables. Base class implementation takes
+        the absolute and relative values and uses `self.output_string_type`
+        as a template for the string format. This can be overwritten to
+        adequately display the results.
+
+        :param results: tuple containing absolute and relative values
+        :type results: tuple
+
+        :return: dictionary containing the string representation of the values
+                 in the table.
+        :rtype: dict
+        """
         abs_results, rel_results = results
         comp_mode = self.options.comparison_mode
         result_template = self.output_string_type[self.options.comparison_mode]
@@ -83,24 +126,70 @@ class Table:
         return table_output
 
     def get_links(self, results_dict):
+        """
+        Pulls out links to the individual support pages from the results
+        object
+
+        :param results: tuple containing absolute and relative values
+        :type results: tuple
+
+        :return: dictionary containing links to the support pages
+        :rtype: dict
+        """
         links = {key: [v.support_page_link for v in value]
                  for key, value in results_dict.items()}
         return links
 
     def get_error(self, results_dict):
+        """
+        Pulls out error code from the results object
+
+        :param results: tuple containing absolute and relative values
+        :type results: tuple
+
+        :return: dictionary containing error codes from the minimizers
+        :rtype: dict
+        """
         error = {key: [v.error_flag for v in value]
                  for key, value in results_dict.items()}
         return error
 
     def get_colour(self, results):
+        """
+        Uses the relative values to set the HTML colours
+
+        :param results: tuple containing absolute and relative values
+        :type results: tuple
+
+        :return: dictionary containing error codes from the minimizers
+        :rtype: dict
+        """
         _, rel_value = results
         colour = {}
         for key, value in rel_value.items():
-            colour_index = np.searchsorted(self.colour_bounds, value)
-            colour[key] = [self.html_colours[i] for i in colour_index]
+            if not all(isinstance(elem, list) for elem in value):
+                colour_index = np.searchsorted(self.colour_bounds, value)
+                colour[key] = [self.html_colours[i]
+                               for i in colour_index]
+            else:
+                colour[key] = []
+                for v in value:
+                    colour_index = np.searchsorted(self.colour_bounds, v)
+                    colour[key].append([self.html_colours[i]
+                                        for i in colour_index])
         return colour
 
     def create_pandas_data_frame(self, str_results):
+        """
+        Converts dictionary of results into a pandas data frame
+
+        :param str_results: dictionary containing the string representation of
+                            the values in the table.
+        :type str_results: dict
+
+        :return: pandas data frame with from results
+        :rtype: Pandas DataFrame
+        """
         table = pd.DataFrame.from_dict(str_results, orient='index')
         minimizers_list = [(s, m) for s in self.options.software
                            for m in self.options.minimizers[s]]
@@ -109,7 +198,21 @@ class Table:
         return table
 
     def to_html(self, table, colour, links, error):
+        """
+        Takes Pandas data frame and converts it into the HTML table output
 
+        :param table: pandas data frame with from results
+        :type table: Pandas DataFrame
+        :param colour: dictionary containing error codes from the minimizers
+        :type colour: dict
+        :param links: dictionary containing links to the support pages
+        :type links: dict
+        :param error: dictionary containing error codes from the minimizers
+        :type error: dict
+
+        :return: HTLM table output
+        :rtype: str
+        """
         table.apply(lambda x: self.enable_error(x, error, "<sup>{}</sup>"),
                     axis=1)
         table.apply(lambda x: self.enable_link(x, links), axis=1)
@@ -126,11 +229,34 @@ class Table:
         return table_style.render()
 
     def to_txt(self, table, error):
+        """
+        Takes Pandas data frame and converts it into the plain text table
+        output
+
+        :param table: pandas data frame with from results
+        :type table: Pandas DataFrame
+        :param error: dictionary containing error codes from the minimizers
+        :type error: dict
+
+        :return: plain text table output
+        :rtype: str
+        """
         table.apply(lambda x: self.enable_error(x, error, "[{}]"),
                     axis=1)
         return table.to_string()
 
     def enable_link(self, value, links):
+        """
+        Enable HTML links in values
+
+        :param value: Row data from the pandas array
+        :type value: pandas.core.series.Series
+        :param links: dictionary containing links to the support pages
+        :type links: dict
+
+        :return: Row data from the pandas array with links enabled
+        :rtype: pandas.core.series.Series
+        """
         name = value.name
         support_page_link = links[name]
         i = 0
@@ -142,6 +268,17 @@ class Table:
         return value
 
     def enable_error(self, value, error, template):
+        """
+        Enable error codes in table
+
+        :param value: Row data from the pandas array
+        :type value: pandas.core.series.Series
+        :param error: dictionary containing error codes from the minimizers
+        :type error: dict
+
+        :return: Row data from the pandas array with error codes enabled
+        :rtype: pandas.core.series.Series
+        """
         name = value.name
         error_code = [template.format(e) if e != 0 else ""
                       for e in error[name]]
@@ -152,8 +289,19 @@ class Table:
         return value
 
     def colour_highlight(self, value, colour):
+        """
+        Enable HTML colours in the HTML output
+
+        :param value: Row data from the pandas array
+        :type value: pandas.core.series.Series
+        :param colour: dictionary containing error codes from the minimizers
+        :type colour: dict
+
+        :return: list of HTML colours
+        :rtype: list
+        """
         color_template = 'background-color: {0}'
-        name = value.name.split('>')[1].split('<')[0]
+        name = value.name.split('"')[2].replace("</a>", "")[1:]
         colour_style = colour[name]
         output_colour = []
         for c in colour_style:
@@ -161,6 +309,16 @@ class Table:
         return output_colour
 
     def get_description(self, html_description):
+        """
+        Generates table description from class docstrings and converts them
+        into html
+
+        :param html_description: Dictionary containing table descriptions
+        :type html_description: dict
+
+        :return: Dictionary containing table descriptions
+        :rtype: dict
+        """
         self.rst_description[self.name] = self.__doc__
         for name in [self.name, self.options.comparison_mode]:
             descrip = self.rst_description[name]
@@ -174,20 +332,44 @@ class Table:
 
     @property
     def table_title(self):
+        """
+        Getter function for table name if self._table_title is None
+
+        :return: name of table
+        :rtype: str
+        """
         if self._table_title is None:
             self._table_title = "FitBenchmarking: {0} table".format(self.name)
         return self._table_title
 
     @table_title.setter
     def table_title(self, value):
+        """
+        Setting function to set the name of the table
+
+        :param value: name of table
+        :type value: str
+        """
         self._table_title = value
 
     @property
     def file_path(self):
+        """
+        Getter function for the path to the table
+
+        :return: path to table
+        :rtype: str
+        """
         if self._file_path is None:
             self._file_path = os.path.join(self.group_dir, self.table_name)
         return self._file_path
 
     @file_path.setter
     def file_path(self, value):
+        """
+        Setting function to set the path to the table
+
+        :param value: path to table
+        :type value: str
+        """
         self._file_path = value
