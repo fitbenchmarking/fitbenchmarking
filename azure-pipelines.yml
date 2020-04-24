@@ -21,13 +21,11 @@ steps:
   displayName: 'Use Python $(python.version)'
 
 - script: |
-    # note sure if needed / relevant but here upgrade pip first 
-    python -m pip install --upgrade pip
     pip install .
   displayName: 'Install FitBenchmarking'
 
 - script: |
     pip install pytest pytest-azurepipelines
     pytest fitbenchmarking\utils\tests\test_logger.py
-    # pytest fitbenchmarking\utils\tests\test_fitbm_result.py (breaks in first azure pipeline install)
+#    pytest fitbenchmarking\utils\tests\test_fitbm_result.py (breaks in first azure pipeline install)
   displayName: 'pytest utils tests'
