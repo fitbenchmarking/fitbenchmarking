@@ -1,7 +1,6 @@
-# Python package
-# Create and test a Python package on multiple Python versions.
-# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+# CI for Windows
+# Here not repeating LINTING and similar done with Travis (only this may make sense later)
+# For info syntax used in this file see: https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
 - master
@@ -22,13 +21,13 @@ steps:
   displayName: 'Use Python $(python.version)'
 
 - script: |
+    # note sure if needed / relevant but here upgrade pip first 
+    python -m pip install --upgrade pip
     pip install .
-#    python -m pip install --upgrade pip
-#    pip install -r requirements.txt
-  displayName: 'Install dependencies'
+  displayName: 'Install FitBenchmarking'
 
 - script: |
     pip install pytest pytest-azurepipelines
     pytest fitbenchmarking\utils\tests\test_logger.py
-    pytest fitbenchmarking\utils\tests\test_fitbm_result.py
-  displayName: 'pytest'
+    # pytest fitbenchmarking\utils\tests\test_fitbm_result.py (breaks in first azure pipeline install)
+  displayName: 'pytest utils tests'
