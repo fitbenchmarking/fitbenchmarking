@@ -7,12 +7,17 @@ import pandas as pd
 import os
 import numpy as np
 
+FORMAT_DESCRIPTION = \
+    {'abs': 'Absolute values are displayed in the table.',
+     'rel': 'Relative values are displayed in the table.',
+     'both': 'Absolute and relative values are displayed in '
+     'the table in the format ``abs (rel)``'}
+
 
 class Table:
     """
-    Base class for the tables.
+    Base class for the FitBenchmarking HTML and text output tables.
     """
-
     __metaclass__ = ABCMeta
 
     def __init__(self, results, best_results, options, group_dir,
@@ -54,17 +59,17 @@ class Table:
                                    "both": '{0:.4g} ({1:.4g})'}
         self.has_pp = False
         self.pp_location = ''
-        self.rst_description = \
-            {'abs': 'Absolute values are displayed in the table.',
-             'rel': 'Relative values are displayed in the table.',
-             'both': 'Absolute and relative values are displayed in '
-             'the table in the format ``abs (rel)``'}
         self._table_title = None
         self._file_path = None
 
     def create_results_dict(self):
         """
         Generates a dictionary used to create HTML and txt tables.
+
+        :return: dictionary containing results where the keys
+                 are the problem sets and the values are lists
+                 of results objects
+        :rtype: dictionary
         """
         results_dict = {}
         name_count = {}
@@ -125,6 +130,31 @@ class Table:
                                                        rel_results[key])]
         return table_output
 
+    def get_colour(self, results):
+        """
+        Uses the relative values to set the HTML colours
+
+        :param results: tuple containing absolute and relative values
+        :type results: tuple
+
+        :return: dictionary containing HTML colours for the table
+        :rtype: dict
+        """
+        _, rel_value = results
+        colour = {}
+        for key, value in rel_value.items():
+            if not all(isinstance(elem, list) for elem in value):
+                colour_index = np.searchsorted(self.colour_bounds, value)
+                colour[key] = [self.html_colours[i]
+                               for i in colour_index]
+            else:
+                colour[key] = []
+                for v in value:
+                    colour_index = np.searchsorted(self.colour_bounds, v)
+                    colour[key].append([self.html_colours[i]
+                                        for i in colour_index])
+        return colour
+
     def get_links(self, results_dict):
         """
         Pulls out links to the individual support pages from the results
@@ -153,31 +183,6 @@ class Table:
         error = {key: [v.error_flag for v in value]
                  for key, value in results_dict.items()}
         return error
-
-    def get_colour(self, results):
-        """
-        Uses the relative values to set the HTML colours
-
-        :param results: tuple containing absolute and relative values
-        :type results: tuple
-
-        :return: dictionary containing error codes from the minimizers
-        :rtype: dict
-        """
-        _, rel_value = results
-        colour = {}
-        for key, value in rel_value.items():
-            if not all(isinstance(elem, list) for elem in value):
-                colour_index = np.searchsorted(self.colour_bounds, value)
-                colour[key] = [self.html_colours[i]
-                               for i in colour_index]
-            else:
-                colour[key] = []
-                for v in value:
-                    colour_index = np.searchsorted(self.colour_bounds, v)
-                    colour[key].append([self.html_colours[i]
-                                        for i in colour_index])
-        return colour
 
     def create_pandas_data_frame(self, str_results):
         """
@@ -319,9 +324,9 @@ class Table:
         :return: Dictionary containing table descriptions
         :rtype: dict
         """
-        self.rst_description[self.name] = self.__doc__
+        FORMAT_DESCRIPTION[self.name] = self.__doc__
         for name in [self.name, self.options.comparison_mode]:
-            descrip = self.rst_description[name]
+            descrip = FORMAT_DESCRIPTION[name]
             descrip = descrip.replace(':ref:', '')
             description_page = docutils.core.publish_parts(
                 descrip, writer_name='html')
