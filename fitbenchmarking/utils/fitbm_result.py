@@ -61,8 +61,8 @@ class FittingResult(object):
 
         self.runtime = runtime
 
-        self._min_chi_sq = None
-        self._min_runtime = None
+        self.min_chi_sq = None
+        self.min_runtime = None
 
         # Minimizer for a certain problem and its function definition
         self.minimizer = minimizer

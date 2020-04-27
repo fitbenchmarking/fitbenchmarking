@@ -72,23 +72,33 @@ class LocalMinTable(Table):
         local_min = {}
         norm_rel = {}
         for key, value in results_dict.items():
-            res = [v.problem.eval_r(v.params) for v in value]
-            jac = [v.problem.eval_j(v.params).T for v in value]
-            min_test = [np.matmul(j, r) for j, r in zip(jac, res)]
-
-            norm_r = [np.linalg.norm(r) for r in res]
-            norm_min_test = [np.linalg.norm(m) for m in min_test]
-
-            norm_rel[key] = [m / r for m, r in zip(norm_min_test, norm_r)]
-            local_min[key] = []
             self.colour[key] = []
-            for r, m, n in zip(norm_r, norm_min_test, norm_rel[key]):
-                if r <= RES_TOL or m <= GRAD_TOL or n <= GRAD_TOL:
-                    local_min[key].append("True")
-                    self.colour[key].append(self.html_colours[0])
-                else:
+            local_min[key] = []
+            norm_rel[key] = []
+            for i, v in enumerate(value):
+                if v.params is None:
+                    norm_rel[key].append(np.inf)
                     local_min[key].append("False")
                     self.colour[key].append(self.html_colours[-1])
+                else:
+                    res = v.problem.eval_r(v.params)
+                    jac = v.problem.eval_j(v.params)
+                    min_test = np.matmul(res, jac)
+
+                    norm_r = np.linalg.norm(res)
+                    norm_min_test = np.linalg.norm(min_test)
+
+                    norm_rel[key].append(norm_min_test / norm_r)
+
+                    for r, m, n in zip([norm_r],
+                                       [norm_min_test],
+                                       [norm_rel[key][i]]):
+                        if r <= RES_TOL or m <= GRAD_TOL or n <= GRAD_TOL:
+                            local_min[key].append("True")
+                            self.colour[key].append(self.html_colours[0])
+                        else:
+                            local_min[key].append("False")
+                            self.colour[key].append(self.html_colours[-1])
 
         return local_min, norm_rel
 
