@@ -81,8 +81,8 @@ class LocalMinTable(Table):
                     local_min[key].append("False")
                     self.colour[key].append(self.html_colours[-1])
                 else:
-                    res = v.problem.eval_r(v.params)
-                    jac = v.problem.eval_j(v.params)
+                    res = v.problem.eval_r(list(v.params))
+                    jac = v.problem.eval_j(list(v.params))
                     min_test = np.matmul(res, jac)
 
                     norm_r = np.linalg.norm(res)

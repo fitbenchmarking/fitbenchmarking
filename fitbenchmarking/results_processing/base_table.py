@@ -219,8 +219,9 @@ class Table:
         :rtype: str
         """
         table.apply(lambda x: self.enable_error(x, error, "<sup>{}</sup>"),
-                    axis=1)
-        table.apply(lambda x: self.enable_link(x, links), axis=1)
+                    axis=1, result_type='expand')
+        table.apply(lambda x: self.enable_link(x, links), axis=1,
+                    result_type='expand')
 
         index = []
         for b, i in zip(self.best_results, table.index):
