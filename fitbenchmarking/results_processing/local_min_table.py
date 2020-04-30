@@ -68,21 +68,19 @@ class LocalMinTable(Table):
                  containing :math:`\\frac{|| J^T r||}{||r||}` values
         :rtype: tuple(dict, dict)
         """
-        self.colour = {}
         local_min = {}
         norm_rel = {}
         for key, value in results_dict.items():
-            self.colour[key] = []
+            print(value)
             local_min[key] = []
             norm_rel[key] = []
             for i, v in enumerate(value):
                 if v.params is None:
                     norm_rel[key].append(np.inf)
                     local_min[key].append("False")
-                    self.colour[key].append(self.html_colours[-1])
                 else:
-                    res = v.problem.eval_r(list(v.params))
-                    jac = v.problem.eval_j(list(v.params))
+                    res = v.problem.eval_r(v.params)
+                    jac = v.problem.eval_j(v.params)
                     min_test = np.matmul(res, jac)
 
                     norm_r = np.linalg.norm(res)
@@ -95,10 +93,8 @@ class LocalMinTable(Table):
                                        [norm_rel[key][i]]):
                         if r <= RES_TOL or m <= GRAD_TOL or n <= GRAD_TOL:
                             local_min[key].append("True")
-                            self.colour[key].append(self.html_colours[0])
                         else:
                             local_min[key].append("False")
-                            self.colour[key].append(self.html_colours[-1])
 
         return local_min, norm_rel
 
