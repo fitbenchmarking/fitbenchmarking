@@ -71,7 +71,6 @@ class LocalMinTable(Table):
         local_min = {}
         norm_rel = {}
         for key, value in results_dict.items():
-            print(value)
             local_min[key] = []
             norm_rel[key] = []
             for i, v in enumerate(value):
@@ -79,8 +78,10 @@ class LocalMinTable(Table):
                     norm_rel[key].append(np.inf)
                     local_min[key].append("False")
                 else:
-                    res = v.problem.eval_r(v.params)
-                    jac = v.problem.eval_j(v.params)
+                    res = v.problem.eval_r(
+                        v.params, v.data_x, v.data_y, v.data_e)
+                    jac = v.problem.eval_j(v.params, v.problem.eval_r,
+                                           x=v.data_x, y=v.data_y, e=v.data_e)
                     min_test = np.matmul(res, jac)
 
                     norm_r = np.linalg.norm(res)

@@ -74,7 +74,7 @@ class Table:
         results_dict = {}
         name_count = {}
         for prob_results in self.results:
-            name = prob_results[0].problem.name
+            name = prob_results[0].name
             name_count[name] = 1 + name_count.get(name, 0)
             count = name_count[name]
 
@@ -248,7 +248,7 @@ class Table:
         :rtype: str
         """
         table.apply(lambda x: self.enable_error(x, error, "[{}]"),
-                    axis=1)
+                    axis=1, result_type='expand')
         return table.to_string()
 
     def enable_link(self, value, links):

@@ -110,11 +110,8 @@ def benchmark(controller, minimizers, options):
 
             runtime = np.inf
             controller.flag = 3
-            final_params = None
-            controller.final_params = final_params if not problem.multifit \
-                else final_params * len(controller.data_x)
-            chi_sq = np.inf if not problem.multifit \
-                else [np.inf] * len(controller.data_x)
+            controller.final_params = None if not problem.multifit \
+                else [None] * len(controller.data_x)
 
         controller.check_attributes()
 
@@ -130,6 +127,9 @@ def benchmark(controller, minimizers, options):
                                            x=controller.data_x,
                                            y=controller.data_y,
                                            e=controller.data_e)
+        else:
+            chi_sq = np.inf if not problem.multifit \
+                else [np.inf] * len(controller.data_x)
 
         result_args = {'options': options,
                        'problem': problem,
@@ -140,6 +140,7 @@ def benchmark(controller, minimizers, options):
                        'params': controller.final_params,
                        'error_flag': controller.flag,
                        'name': problem.name}
+
         if problem.multifit:
             # Multi fit (will raise TypeError if these are not iterable)
             for i in range(len(chi_sq)):
