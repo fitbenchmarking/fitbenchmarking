@@ -1,0 +1,31 @@
+# CI for Windows
+# Here not repeating LINTING and similar done with Travis (only this may make sense later)
+# For info syntax used in this file see: https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+strategy:
+  matrix:
+    Python36:
+      python.version: '3.6'
+    Python37:
+      python.version: '3.7'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+
+- script: |
+    pip install .
+  displayName: 'Install FitBenchmarking'
+
+- script: |
+    pip install pytest pytest-azurepipelines
+    pytest fitbenchmarking\utils\tests\test_logger.py
+#    pytest fitbenchmarking\utils\tests\test_fitbm_result.py (breaks in first azure pipeline install)
+  displayName: 'pytest utils tests'
