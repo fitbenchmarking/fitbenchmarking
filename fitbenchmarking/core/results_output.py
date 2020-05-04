@@ -3,14 +3,13 @@ Functions that create the tables, support pages, figures, and indexes.
 """
 
 from __future__ import (absolute_import, division, print_function)
-from collections import OrderedDict
 import inspect
 import os
-
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
-from fitbenchmarking.results_processing import performance_profiler, plots, support_page, tables
+from fitbenchmarking.results_processing import performance_profiler, plots, \
+    support_page, tables
 from fitbenchmarking.utils import create_dirs
 
 
@@ -35,7 +34,7 @@ def save_results(options, results, group_name):
     pp_locations = performance_profiler.profile(results, fig_dir)
 
     if options.make_plots:
-        create_plots(options, results, best_results, group_name, fig_dir)
+        create_plots(options, results, best_results, fig_dir)
     support_page.create(options=options,
                         results_per_test=results,
                         group_name=group_name,
@@ -103,7 +102,7 @@ def preproccess_data(results_per_test):
     return output
 
 
-def create_plots(options, results, best_results, group_name, figures_dir):
+def create_plots(options, results, best_results, figures_dir):
     """
     Create a plot for each result and store in the figures directory
 
@@ -115,8 +114,6 @@ def create_plots(options, results, best_results, group_name, figures_dir):
     :param best_results: best result for each problem
     :type best_results: list of
                         fitbenchmarking.utils.fitbm_result.FittingResult
-    :param group_name: name of he problem group
-    :type group_name: str
     :param figures_dir: Path to directory to store the figures in
     :type figures_dir: str
     """

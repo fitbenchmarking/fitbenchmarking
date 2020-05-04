@@ -1,19 +1,29 @@
+"""
+Module which allows access to variables in the code
+"""
+
+from pprint import pformat
+from importlib import import_module
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
-from importlib import import_module
-from pprint import pformat
 
 
 class PrettyPrintModuleValue(Directive):
+    """
+    Class which enables documentation to access variables from code base
+    """
 
     has_content = False
-    optional_arguments = 3
+    optional_arguments = 2
     option_spec = {
         'module': directives.unchanged_required,
         'var': directives.unchanged_required,
     }
 
     def run(self):
+        """
+        Accesses variable
+        """
         inp_module = self.options['module']
         inp_var = self.options['var']
 
@@ -27,6 +37,9 @@ class PrettyPrintModuleValue(Directive):
 
 
 def setup(app):
+    """
+    Setup PrettyPrintModuleValue for use in docs
+    """
     app.add_directive("prettyprintmodulevalue", PrettyPrintModuleValue)
 
     return {

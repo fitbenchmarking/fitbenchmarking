@@ -1,7 +1,13 @@
+"""
+FitBenchmarking results object
+"""
+
 from __future__ import (absolute_import, division, print_function)
 
-
-class FittingResult(object):
+# To store the results in the object requires more than the default
+# max arguments and sanitised_name setter requires no use of self
+# pylint: disable=too-many-arguments, no-self-use
+class FittingResult:
     """
     Minimal definition of a class to hold results from a
     fitting problem test.
@@ -91,6 +97,12 @@ class FittingResult(object):
 
     @property
     def norm_acc(self):
+        """
+        Getting function for norm_acc attribute
+
+        :return: normalised accuracy value
+        :rtype: float
+        """
         if self._norm_acc is None:
             self._norm_acc = self.chi_sq / self.min_chi_sq
         return self._norm_acc
@@ -107,6 +119,12 @@ class FittingResult(object):
 
     @property
     def norm_runtime(self):
+        """
+        Getting function for norm_runtime attribute
+
+        :return: normalised runtime value
+        :rtype: float
+        """
         if self._norm_runtime is None:
             self._norm_runtime = self.runtime / self.min_runtime
         return self._norm_runtime

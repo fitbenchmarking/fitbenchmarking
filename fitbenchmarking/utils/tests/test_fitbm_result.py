@@ -44,18 +44,10 @@ class FitbmResultTests(unittest.TestCase):
         self.min_runtime = 1
         self.result.min_runtime = self.min_runtime
 
-        # self.support_page_link = 'random_path_to_nothing'
-        # self.relative_dir = 'relative_random_path_to_nothing'
-
-        # self.result.support_page_link = self.support_page_link
-        # self.result.relative_dir = self.relative_dir
-        # self.comparison_mode = ['abs', 'rel', 'both']
-
-        # r = self.problem.eval_r(self.params)
-        # min_test = np.matmul(self.problem.eval_j(self.params).T, r)
-        # self.norm_rel = np.linalg.norm(min_test) / np.linalg.norm(r)
-
     def test_init_with_dataset_id(self):
+        """
+        Tests to check that the multifit id is setup correctly
+        """
         chi_sq = [10, 5, 1]
         minimizer = "test_minimizer"
         runtime = 0.01
@@ -107,7 +99,6 @@ class FitbmResultTests(unittest.TestCase):
         Test that sanitised names are correct.
         """
         expected = self.runtime / self.min_runtime
-        self.result.norm_acc
         self.assertEqual(self.result.norm_runtime, expected)
 
     def test_sanitised_name(self):

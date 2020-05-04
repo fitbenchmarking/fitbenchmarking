@@ -2,16 +2,20 @@
 Implements the base class for the tables.
 """
 from abc import ABCMeta, abstractmethod
+import os
 import docutils.core
 import pandas as pd
-import os
 import numpy as np
 
 FORMAT_DESCRIPTION = \
     {'abs': 'Absolute values are displayed in the table.',
      'rel': 'Relative values are displayed in the table.',
      'both': 'Absolute and relative values are displayed in '
-     'the table in the format ``abs (rel)``'}
+             'the table in the format ``abs (rel)``'}
+
+# The use of Pandas maps means that certain functions do not require use
+# of self
+# pylint: disable=no-self-use
 
 
 class Table:
@@ -83,7 +87,7 @@ class Table:
         return results_dict
 
     @abstractmethod
-    def get_values(self):
+    def get_values(self, results_dict):
         """
         Gets the main values to be reported in the tables
 

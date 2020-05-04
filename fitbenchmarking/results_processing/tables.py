@@ -3,12 +3,11 @@ Set up and build the results tables.
 """
 
 from __future__ import (absolute_import, division, print_function)
-from collections import OrderedDict
 import copy
 from importlib import import_module
 from inspect import getfile, getmembers, isabstract, isclass
-from jinja2 import Environment, FileSystemLoader
 import os
+from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
 from fitbenchmarking.results_processing.base_table import Table

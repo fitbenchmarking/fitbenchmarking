@@ -1,9 +1,13 @@
+"""
+Table tests
+"""
+
 from __future__ import (absolute_import, division, print_function)
 import unittest
-import numpy as np
-import os
 from inspect import getfile
+import os
 import shutil
+import numpy as np
 
 import fitbenchmarking
 from fitbenchmarking.results_processing.tables import SORTED_TABLE_NAMES
@@ -15,6 +19,9 @@ from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
 
+# By design both fitting_function_1 and fitting_function_2 need data as an
+# argument
+# pylint: disable=unused-argument
 def fitting_function_1(data, x1, x2):
     """
     Fitting function evaluator
@@ -48,7 +55,7 @@ def fitting_function_2(data, x1, x2):
     """
     return x1 * x2
 
-
+# pylint: enable=unused-argument
 def generate_mock_results():
     """
     Generates results to test against
@@ -126,7 +133,7 @@ class GenerateTableTests(unittest.TestCase):
         fitbenchmarking/results_processing/tests/expected_results
         """
         for suffix in SORTED_TABLE_NAMES:
-            table, html_table, txt_table = generate_table(
+            _, html_table, txt_table = generate_table(
                 self.results, self.best, self.options, "group_dir",
                 ["pp_1", "pp_2"], "table_name", suffix)
             html_table_name = os.path.join(self.expected_results_dir,
@@ -171,6 +178,10 @@ class GenerateTableTests(unittest.TestCase):
 
 
 class CreateReultsTableTests(unittest.TestCase):
+    """
+    Class that tests the generate_table function within
+    fitbenchmarking.results_processing.create_results_tables
+    """
 
     def setUp(self):
         """
