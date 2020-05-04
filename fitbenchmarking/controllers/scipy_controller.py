@@ -12,11 +12,11 @@ class ScipyController(Controller):
     Controller for the Scipy fitting software.
     """
 
-    def __init__(self, problem):
+    def __init__(self, problem, jacobian):
         """
         Initialises variable used for temporary storage.
         """
-        super(ScipyController, self).__init__(problem)
+        super(ScipyController, self).__init__(problem, jacobian)
 
         self._popt = None
 
@@ -46,7 +46,7 @@ class ScipyController(Controller):
             self.result = least_squares(fun=self.problem.eval_r,
                                         x0=self.initial_params,
                                         method=self.minimizer,
-                                        jac=self.problem.eval_j,
+                                        jac=self.jac.eval,
                                         max_nfev=500)
 
         self._popt = self.result.x

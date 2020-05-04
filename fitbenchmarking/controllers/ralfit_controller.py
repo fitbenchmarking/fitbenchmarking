@@ -14,14 +14,14 @@ class RALFitController(Controller):
     Controller for the RALFit fitting software.
     """
 
-    def __init__(self, problem):
+    def __init__(self, problem, jacobian):
         """
         Initialises variable used for temporary storage.
 
         :param problem: Problem to fit
         :type problem: FittingProblem
         """
-        super(RALFitController, self).__init__(problem)
+        super(RALFitController, self).__init__(problem, jacobian)
 
         self._popt = None
         self._options = {}
@@ -56,7 +56,7 @@ class RALFitController(Controller):
         """
         self._popt = ral_nlls.solve(self.initial_params,
                                     self.problem.eval_r,
-                                    self.problem.eval_j,
+                                    self.jac.eval,
                                     options=self._options)[0]
         self._status = 0 if self._popt is not None else 1
 

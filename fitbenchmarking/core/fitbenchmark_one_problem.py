@@ -17,7 +17,7 @@ from fitbenchmarking.utils.log import get_logger
 LOGGER = get_logger()
 
 
-def fitbm_one_prob(problem, options):
+def fitbm_one_prob(problem, options, jacobian):
     """
     Sets up the controller for a particular problem and fits the models
     provided in the problem object.
@@ -26,6 +26,8 @@ def fitbm_one_prob(problem, options):
     :type problem: FittingProblem
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
+    :param jacobian: Jacobian class for the problem
+    :type jacobian: fitbenchmarking.jacobian.base_controller.Jacobian subclass
 
     :return: list of all results
     :rtype: list of fibenchmarking.utils.fitbm_result.FittingResult
@@ -52,11 +54,11 @@ def fitbm_one_prob(problem, options):
             except KeyError:
                 raise UnknownMinimizerError(
                     'No minimizer given for software: {}'.format(s))
-
             with grabbed_output:
                 controller_cls = ControllerFactory.create_controller(
                     software=s)
-                controller = controller_cls(problem=problem)
+                controller = controller_cls(problem=problem,
+                                            jacobian=jacobian)
 
             controller.parameter_set = i
             problem_result = benchmark(controller=controller,
@@ -87,6 +89,7 @@ def benchmark(controller, minimizers, options):
     """
     grabbed_output = output_grabber.OutputGrabber()
     problem = controller.problem
+    jac = controller.jac
 
     results_problem = []
     num_runs = options.num_runs
@@ -133,6 +136,7 @@ def benchmark(controller, minimizers, options):
 
         result_args = {'options': options,
                        'problem': problem,
+                       'jac': jac,
                        'chi_sq': chi_sq,
                        'runtime': runtime,
                        'minimizer': minimizer,

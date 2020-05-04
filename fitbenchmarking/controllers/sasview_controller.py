@@ -18,14 +18,14 @@ class SasviewController(Controller):
     Setup creates a model with the correct function.
     """
 
-    def __init__(self, problem):
+    def __init__(self, problem, jacobian):
         """
         Extract param names for function setup
 
         :param problem: Problem to fit
         :type problem: FittingProblem
         """
-        super(SasviewController, self).__init__(problem)
+        super(SasviewController, self).__init__(problem, jacobian)
 
         self._param_names = self.problem.param_names
 

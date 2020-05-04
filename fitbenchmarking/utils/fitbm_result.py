@@ -14,7 +14,7 @@ class FittingResult(object):
     fitting problem test.
     """
 
-    def __init__(self, options, problem, initial_params, params,
+    def __init__(self, options, problem, jac, initial_params, params,
                  name=None, chi_sq=None, runtime=None,
                  minimizer=None, error_flag=None, dataset_id=None):
         """
@@ -24,6 +24,8 @@ class FittingResult(object):
         :type options: utils.options.Options
         :param problem: The Problem definition for the fit
         :type problem: parsing.fitting_problem.FittingProblem
+        :param jac: The Jacobian definition
+        :type jac: fitbenchmarking.jacobian.base_controller.Jacobian subclass
         :param initial_params: The starting parameters for the fit
         :type initial_params: list of float
         :param params: The parameters found by the fit
@@ -44,6 +46,7 @@ class FittingResult(object):
         """
         self.options = options
         self.problem = problem
+        self.jac = jac
         self.name = name if name is not None else \
             problem.name
 
@@ -132,10 +135,10 @@ class FittingResult(object):
                                     x=self.data_x,
                                     y=self.data_y,
                                     e=self.data_e)
-            j = self.problem.eval_j(self.params,
-                                    x=self.data_x,
-                                    y=self.data_y,
-                                    e=self.data_e)
+            j = self.jac.eval(self.params,
+                              x=self.data_x,
+                              y=self.data_y,
+                              e=self.data_e)
             min_test = np.matmul(j.T, r)
             norm_r = np.linalg.norm(r)
             norm_min_test = np.linalg.norm(min_test)

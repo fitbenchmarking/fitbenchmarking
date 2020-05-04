@@ -19,7 +19,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, problem):
+    def __init__(self, problem, jac):
         """
         Initialise the class.
         Sets up data as defined by the problem and use_errors variables,
@@ -31,6 +31,7 @@ class Controller:
 
         # Problem: The problem object from parsing
         self.problem = problem
+        self.jac = jac
 
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)

@@ -89,9 +89,6 @@ class FittingProblem:
         #: *numpy array* The index for sorting the data (used in plotting)
         self.sorted_index = None
 
-        # Sets the numerical derivative method
-        self._jac_method = self.options.jac_method
-
         #: *dict*
         #: Container for software specific information.
         #: This should be avoided if possible.
@@ -187,28 +184,6 @@ class FittingProblem:
         """
         r = self.eval_r(params=params, x=x, y=y, e=e)
         return np.dot(r, r)
-
-    def eval_j(self, params, func=None, **kwargs):
-        """
-        Approximate the Jacobian using scipy for a given function at a given
-        point.
-
-        :param params: The parameter values to find the Jacobian at
-        :type params: list
-        :param func: Function to find the Jacobian for, defaults to self.eval_r
-        :type func: Callable, optional
-
-        :return: Approximation of the Jacobian
-        :rtype: numpy array
-        """
-        if func is None:
-            func = self.eval_r
-
-        jac = approx_derivative(func, params, method=self._jac_method,
-                                rel_step=None, f0=func(params, **kwargs),
-                                bounds=(-np.inf, np.inf),
-                                kwargs=kwargs)
-        return jac
 
     def eval_starting_params(self, param_set):
         """
