@@ -1,20 +1,18 @@
 """
 Module which calculates SciPy complex steps numerical method
 """
-from abc import ABCMeta, abstractmethod
-
 import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 
 
+# pylint: disable=useless-super-delegation
 class ScipyCS(Jacobian):
     """
     Implements SciPy complex steps numerical method for calculating the
     derivative
     """
-    __metaclass__ = ABCMeta
 
     def __init__(self, problem):
         super(ScipyCS, self).__init__(problem)

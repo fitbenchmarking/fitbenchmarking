@@ -1,19 +1,16 @@
-from abc import ABCMeta, abstractmethod
-
-import numpy as np
 """
 Module which calculates SciPy 3 point finite difference approximation
 """
+import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 
-
+# pylint: disable=useless-super-delegation
 class ScipyThreePoint(Jacobian):
     """
     Implements SciPy 3 point finite difference approximation to the derivative
     """
-    __metaclass__ = ABCMeta
 
     def __init__(self, problem):
         super(ScipyThreePoint, self).__init__(problem)

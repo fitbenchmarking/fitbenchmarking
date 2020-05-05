@@ -1,9 +1,12 @@
+"""
+Implements the base class for the Jacobian.
+"""
 from abc import ABCMeta, abstractmethod
 
 
 class Jacobian:
     """
-    Jacobian base class
+    Base class for Jacobian.
     """
     __metaclass__ = ABCMeta
 
@@ -11,5 +14,8 @@ class Jacobian:
         self.problem = problem
 
     @abstractmethod
-    def eval(self):
-        pass
+    def eval(self, params, func=None, **kwargs):
+        """
+        Evaluate Jacobian
+        """
+        return NotImplementedError
