@@ -5,7 +5,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class Jacobian:
-    """
+    r"""
     Base class for Jacobian.
     """
     __metaclass__ = ABCMeta
@@ -16,6 +16,15 @@ class Jacobian:
     @abstractmethod
     def eval(self, params, func=None, **kwargs):
         """
-        Evaluate Jacobian
+        Evaluates Jacobian
+
+        :param params: The parameter values to find the Jacobian at
+        :type params: list
+        :param func: Function to find the Jacobian for, defaults to
+                     problem.eval_r
+        :type func: Callable, optional
+
+        :return: Approximation of the Jacobian
+        :rtype: numpy array
         """
         return NotImplementedError

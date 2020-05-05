@@ -13,5 +13,6 @@ Welcome to the documentation for the FitBenchmarking software.
     output/index
     options
     problem_definition_files/index
+    jacobian
     notes
 
