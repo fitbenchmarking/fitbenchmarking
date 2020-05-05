@@ -11,7 +11,6 @@ except ImportError:
     # python3
     from itertools import zip_longest as izip_longest
 import numpy as np
-from scipy.optimize._numdiff import approx_derivative
 
 from fitbenchmarking.utils.exceptions import FittingProblemError
 

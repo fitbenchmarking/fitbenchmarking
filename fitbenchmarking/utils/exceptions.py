@@ -138,11 +138,11 @@ class FittingProblemError(FitBenchmarkException):
 
 class NoJacobianError(FitBenchmarkException):
     """
-    Indicates a problem with the fitting problem.
+    Indicates a problem with the Jacobian import.
     """
 
     def __init__(self, message=''):
-        super(FittingProblemError, self).__init__(message)
+        super(NoJacobianError, self).__init__(message)
 
         self._class_message = 'Could not find Jacobian class'
         self.error_code = 11
