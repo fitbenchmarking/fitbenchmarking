@@ -9,6 +9,7 @@ except ImportError:
 import unittest
 
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.jacobian.numerical_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.results_processing import plots
@@ -18,6 +19,7 @@ class PlotTests(unittest.TestCase):
     """
     Test the plot object is correct.
     """
+
     def setUp(self):
         self.opts = Options()
         self.opts.use_errors = True
@@ -28,10 +30,12 @@ class PlotTests(unittest.TestCase):
         self.prob.data_y = np.array([4, 3, 5, 2, 1])
         self.prob.data_e = np.array([0.5, 0.2, 0.3, 0.1, 0.4])
         self.prob.starting_values = [{'x': 1, 'y': 2}]
-        self.prob.eval_f = lambda x, y: x[0]*y + x[1]
+        self.prob.eval_f = lambda x, y: x[0] * y + x[1]
         self.prob.name = 'full name'
+        jac = ScipyTwoPoint(self.prob)
         self.fr = FittingResult(options=self.opts,
                                 problem=self.prob,
+                                jac=jac,
                                 chi_sq=1.0,
                                 initial_params=[1.8],
                                 params=[1.2],

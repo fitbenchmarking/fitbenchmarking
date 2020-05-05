@@ -9,6 +9,7 @@ from collections import OrderedDict
 import numpy as np
 
 from fitbenchmarking.core.results_output import preproccess_data
+from fitbenchmarking.jacobian.numerical_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing import performance_profiler
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -23,7 +24,7 @@ class PerformanceProfillerTests(unittest.TestCase):
     def generate_mock_results(self):
         """
         Generates results to test against
-        
+
         :return: A list of results objects along with expected values for
                  normallised accuracy and runtimes
         :rtype: tuple(list of FittingResults,
@@ -57,10 +58,12 @@ class PerformanceProfillerTests(unittest.TestCase):
             runtime_expected.append(
                 list(runtime_results) / np.min(runtime_results))
             prob_results = []
+            jac = ScipyTwoPoint(problem)
             for j in range(self.num_minimizers):
                 minimizer = 'min_{}'.format(j)
                 prob_results.append(FittingResult(options=options,
                                                   problem=problem,
+                                                  jac=jac,
                                                   initial_params=[1, 2, 3],
                                                   params=[1, 2, 3],
                                                   chi_sq=acc_results[j],

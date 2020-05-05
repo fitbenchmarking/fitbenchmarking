@@ -17,6 +17,7 @@ from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.jacobian.numerical_2point_jacobian import ScipyTwoPoint
 
 
 def make_fitting_problem(file_name='cubic.dat'):
@@ -30,7 +31,8 @@ def make_fitting_problem(file_name='cubic.dat'):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    return fitting_problem
+    jac = ScipyTwoPoint(fitting_problem)
+    return fitting_problem, jac
 
 
 class DummyController(Controller):
@@ -57,14 +59,14 @@ class BaseControllerTests(TestCase):
     """
 
     def setUp(self):
-        self.problem = make_fitting_problem()
+        self.problem, self.jac = make_fitting_problem()
 
     def test_data(self):
         """
         BaseSoftwareController: Test data is read into controller correctly
         """
 
-        controller = DummyController(self.problem)
+        controller = DummyController(self.problem, self.jac)
 
         if self.problem.start_x is not None:
             assert min(controller.data_x) >= self.problem.start_x
@@ -88,7 +90,7 @@ class BaseControllerTests(TestCase):
         """
         BaseSoftwareController: Test prepare function
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.problem, self.jac)
         controller.minimizer = 'test'
         controller.parameter_set = 0
         controller.prepare()
@@ -98,7 +100,7 @@ class BaseControllerTests(TestCase):
         """
         BaseSoftwareController: Test eval_chisq function
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.problem, self.jac)
 
         params = np.array([1, 2, 3, 4])
         x = np.array([6, 2, 32, 4])
@@ -113,7 +115,7 @@ class BaseControllerTests(TestCase):
         """
         BaseSoftwareController: Test eval_chisq function
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.problem, self.jac)
 
         params = np.array([1, 2, 3, 4])
         x = np.array([6, 2, 32, 4])
@@ -129,7 +131,7 @@ class BaseControllerTests(TestCase):
         BaseSoftwareController: Test check_attributes function for flag
                                 attribute
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.problem, self.jac)
         controller.flag = 1
         controller.check_attributes()
 
@@ -138,7 +140,7 @@ class BaseControllerTests(TestCase):
         BaseSoftwareController: Test check_attributes function for flag
                                 attribute
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.problem, self.jac)
         with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
 
@@ -153,13 +155,13 @@ class ControllerTests(TestCase):
     """
 
     def setUp(self):
-        self.problem = make_fitting_problem()
+        self.problem, self.jac = make_fitting_problem()
 
     def test_mantid(self):
         """
         MantidController: Test for output shape
         """
-        controller = MantidController(self.problem)
+        controller = MantidController(self.problem, self.jac)
         controller.minimizer = 'Levenberg-Marquardt'
         self.shared_testing(controller)
 
@@ -175,9 +177,9 @@ class ControllerTests(TestCase):
         MantidController: Additional bespoke test for multifit
         """
         file_path = os.path.join('multifit_set', 'multifit.txt')
-        problem = make_fitting_problem(file_path)
+        problem, jac = make_fitting_problem(file_path)
 
-        controller = MantidController(problem)
+        controller = MantidController(problem, jac)
         controller.minimizer = 'Levenberg-Marquardt'
 
         controller.parameter_set = 0
@@ -197,8 +199,8 @@ class ControllerTests(TestCase):
         Test the override in Mantid conroller is working correctly for
         evaluating chi_squared (SingleFit).
         """
-        m_controller = MantidController(self.problem)
-        b_controller = DummyController(self.problem)
+        m_controller = MantidController(self.problem, self.jac)
+        b_controller = DummyController(self.problem, self.jac)
         params = np.array([1, 2, 3, 4])
         x = np.array([6, 2, 32, 4])
         y = np.array([1, 21, 3, 4])
@@ -216,8 +218,8 @@ class ControllerTests(TestCase):
         Test the override in Mantid conroller is working correctly for
         evaluating chi_squared (MultiFit).
         """
-        m_controller = MantidController(self.problem)
-        b_controller = DummyController(self.problem)
+        m_controller = MantidController(self.problem, self.jac)
+        b_controller = DummyController(self.problem, self.jac)
         params = [np.array([1, 2, 3, 4]),
                   np.array([1, 2, 3, 4]),
                   np.array([1, 2, 3, 4])]
@@ -244,7 +246,7 @@ class ControllerTests(TestCase):
         """
         SasviewController: Test for output shape
         """
-        controller = SasviewController(self.problem)
+        controller = SasviewController(self.problem, self.jac)
         controller.minimizer = 'amoeba'
         self.shared_testing(controller)
 
@@ -259,7 +261,7 @@ class ControllerTests(TestCase):
         """
         ScipyController: Test for output shape
         """
-        controller = ScipyController(self.problem)
+        controller = ScipyController(self.problem, self.jac)
         controller.minimizer = 'lm'
         self.shared_testing(controller)
 
@@ -274,7 +276,7 @@ class ControllerTests(TestCase):
         """
         DFOController: Tests for output shape
         """
-        controller = DFOController(self.problem)
+        controller = DFOController(self.problem, self.jac)
         # test one from each class
         minimizers = ['dfogn',
                       'dfols']
@@ -293,7 +295,7 @@ class ControllerTests(TestCase):
         """
         GSLController: Tests for output shape
         """
-        controller = GSLController(self.problem)
+        controller = GSLController(self.problem, self.jac)
         # test one from each class
         minimizers = ['lmsder',
                       'nmsimplex',
@@ -313,7 +315,7 @@ class ControllerTests(TestCase):
         """
         RALFitController: Tests for output shape
         """
-        controller = RALFitController(self.problem)
+        controller = RALFitController(self.problem, self.jac)
         minimizers = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg']
         for minimizer in minimizers:
             controller.minimizer = minimizer
@@ -328,7 +330,7 @@ class ControllerTests(TestCase):
         """
         MinuitController: Tests for output shape
         """
-        controller = MinuitController(self.problem)
+        controller = MinuitController(self.problem, self.jac)
         controller.minimizer = 'minuit'
         self.shared_testing(controller)
         controller._status = 0

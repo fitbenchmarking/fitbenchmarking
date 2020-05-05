@@ -8,6 +8,7 @@ except ImportError:
 import unittest
 
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.jacobian.numerical_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.results_processing import support_page
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
@@ -27,6 +28,7 @@ class CreateTests(unittest.TestCase):
         minimizers = ['min_a', 'min_b', 'min_c']
         self.results = [[FittingResult(options=self.options,
                                        problem=p,
+                                       jac=ScipyTwoPoint(p),
                                        initial_params=[],
                                        params=[],
                                        minimizer=m)
@@ -58,6 +60,7 @@ class CreateProbGroupTests(unittest.TestCase):
     Tests that the correct files are created by group tests.
     Does not test the content of the file currently.
     """
+
     def setUp(self):
         self.options = Options()
         problem = FittingProblem(self.options)
@@ -68,6 +71,7 @@ class CreateProbGroupTests(unittest.TestCase):
         minimizers = ['min_a', 'min_b', 'min_c']
         self.results = [FittingResult(options=self.options,
                                       problem=problem,
+                                      jac=ScipyTwoPoint(problem),
                                       initial_params=[],
                                       params=[],
                                       minimizer=m)
@@ -108,6 +112,7 @@ class GetFigurePathsTests(unittest.TestCase):
     """
     Tests the very simple get_figure_paths function
     """
+
     def setUp(self):
         self.options = Options()
         problem = FittingProblem(self.options)
@@ -116,6 +121,7 @@ class GetFigurePathsTests(unittest.TestCase):
         problem.starting_values = [{'x': 1}]
         self.result = FittingResult(options=self.options,
                                     problem=problem,
+                                    jac=ScipyTwoPoint(problem),
                                     initial_params=[],
                                     params=[],
                                     minimizer='test')
