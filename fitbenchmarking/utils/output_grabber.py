@@ -1,9 +1,11 @@
 import os
 import sys
+import platform
 
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
+
 
 class OutputGrabber(object):
     """
@@ -11,18 +13,25 @@ class OutputGrabber(object):
     """
     escape_char = "\b"
 
-    def __init__(self):
+    def __init__(self, options):
 
         self.origstream = sys.stdout
         self.origstreamfd = self.origstream.fileno()
         self.capturedtext = ""
+        # From issue 500 the output grabber does not currently on windows, thus
+        # we set the __enter__ and __exit__ functions to pass through for this
+        # case
+        self.system = platform.system() != "Windows"
+        self.external_output = options.external_output
 
     def __enter__(self):
-        self.start()
+        if self.system and self.external_output:
+            self.start()
         return self
 
     def __exit__(self, type, value, traceback):
-        self.stop()
+        if self.system and self.external_output:
+            self.stop()
 
     def start(self):
         """

@@ -42,6 +42,7 @@ class OptionsTests(unittest.TestCase):
             file_name: THE_LOG.log
             append: yes
             level: debug
+            external_output: no
             """
         incorrect_config_str = """
             [FITTING]
@@ -51,6 +52,7 @@ class OptionsTests(unittest.TestCase):
             make_plots: incorrect_falue
             [LOGGING]
             append: sure
+            external_output: maybe
             """
         opts = {'MINIMIZERS': {'scipy': ['nonesense',
                                          'another_fake_minimizer'],
@@ -67,7 +69,8 @@ class OptionsTests(unittest.TestCase):
                              'results_dir': 'new_results'},
                 'LOGGING': {'file_name': 'THE_LOG.log',
                             'append': True,
-                            'level': 'debug'}}
+                            'level': 'debug',
+                            'external_output': False}}
 
         opts_file = 'test_options_tests_{}.txt'.format(
             datetime.datetime.now())
@@ -162,6 +165,18 @@ class OptionsTests(unittest.TestCase):
         options = Options(file_name=self.options_file)
         logging_opts = self.options['LOGGING']
         self.assertEqual(logging_opts['append'], options.log_append)
+
+    def test_log_external_output_false(self):
+        with self.assertRaises(exceptions.OptionsError) as cm:
+            Options(file_name=self.options_file_incorrect)
+        excep = cm.exception
+        self.assertIn('external_output', excep._obj_message)
+
+    def test_log_external_output_true(self):
+        options = Options(file_name=self.options_file)
+        logging_opts = self.options['LOGGING']
+        self.assertEqual(logging_opts['external_output'],
+                         options.external_output)
 
 
 if __name__ == '__main__':

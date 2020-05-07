@@ -34,7 +34,7 @@ def fitbenchmark_group(group_name, options, data_dir):
              the problem group and the location of the results
     :rtype: tuple(list, str)
     """
-    grabbed_output = output_grabber.OutputGrabber()
+    grabbed_output = output_grabber.OutputGrabber(options)
 
     # Extract problem definitions
     problem_group = misc.get_problem_files(data_dir)

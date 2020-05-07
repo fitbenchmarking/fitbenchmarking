@@ -75,6 +75,11 @@ class Options(object):
         self.log_file = logging.getstr('file_name')
         self.log_level = logging.getstr('level')
 
+        try:
+            self.external_output = logging.getboolean('external_output')
+        except ValueError:
+            error_message.append(template.format('external_output', "boolean"))
+
         # sys.exit() will be addressed in future FitBenchmarking
         # error handling issue
         if error_message != []:
@@ -116,7 +121,8 @@ class Options(object):
                               'table_type': list_to_string(self.table_type)}
         config['LOGGING'] = {'file_name': self.log_file,
                              'level': self.log_level,
-                             'append': self.log_append}
+                             'append': self.log_append,
+                             'external_output': self.external_output}
 
         with open(file_name, 'w') as f:
             config.write(f)
