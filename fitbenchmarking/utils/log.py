@@ -47,6 +47,7 @@ def setup_logger(log_file='./fitbenchmarking.log', name='fitbenchmarking',
     console = logging.StreamHandler(sys.stdout)
     console.setLevel(log_level)
     logger.addHandler(console)
+    logger.propagate = False
 
 
 def get_logger(name='fitbenchmarking'):
