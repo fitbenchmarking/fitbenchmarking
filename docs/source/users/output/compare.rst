@@ -4,6 +4,5 @@
 Comparison Table
 ################
 
-.. include:: ../../../../fitbenchmarking/templates/table_descriptions.rst
-    :start-after: compare: Start
-    :end-before: compare: End
+.. currentmodule:: fitbenchmarking.results_processing.compare_table
+.. autoclass:: fitbenchmarking.results_processing.compare_table.CompareTable

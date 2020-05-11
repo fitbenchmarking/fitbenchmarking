@@ -4,6 +4,5 @@
 Runtime Table
 #############
 
-.. include:: ../../../../fitbenchmarking/templates/table_descriptions.rst
-    :start-after: runtime: Start
-    :end-before: runtime: End
+.. currentmodule:: fitbenchmarking.results_processing.runtime_table
+.. autoclass:: fitbenchmarking.results_processing.runtime_table.RuntimeTable

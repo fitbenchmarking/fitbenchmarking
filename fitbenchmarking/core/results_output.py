@@ -3,16 +3,13 @@ Functions that create the tables, support pages, figures, and indexes.
 """
 
 from __future__ import (absolute_import, division, print_function)
-from collections import OrderedDict
-import docutils.core
 import inspect
 import os
-import sys
-
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
-from fitbenchmarking.results_processing import performance_profiler, plots, support_page, tables
+from fitbenchmarking.results_processing import performance_profiler, plots, \
+    support_page, tables
 from fitbenchmarking.utils import create_dirs
 
 
@@ -36,20 +33,21 @@ def save_results(options, results, group_name):
     best_results = preproccess_data(results)
     pp_locations = performance_profiler.profile(results, fig_dir)
 
-    table_descriptions = create_table_descriptions(options)
     if options.make_plots:
-        create_plots(options, results, best_results, group_name, fig_dir)
+        create_plots(options, results, best_results, fig_dir)
     support_page.create(options=options,
                         results_per_test=results,
                         group_name=group_name,
                         support_pages_dir=supp_dir)
-    table_names = tables.create_results_tables(options,
-                                               results,
-                                               best_results,
-                                               group_name,
-                                               group_dir,
-                                               table_descriptions,
-                                               pp_locations)
+
+    table_names, table_descriptions = \
+        tables.create_results_tables(options,
+                                     results,
+                                     best_results,
+                                     group_name,
+                                     group_dir,
+                                     pp_locations)
+
     create_problem_level_index(options,
                                table_names,
                                group_name,
@@ -100,48 +98,11 @@ def preproccess_data(results_per_test):
         for r in results:
             r.min_chi_sq = min_chi_sq
             r.min_runtime = min_runtime
-            r.set_colour_scale()
         output.append(best_result)
     return output
 
 
-def create_table_descriptions(options):
-    """
-    Create a descriptions of the tables and the comparison mode from the file
-    fitbenchmarking/templates/table_descriptions.rst
-
-    :param options: The options used in the fitting problem and plotting
-    :type options: fitbenchmarking.utils.options.Options
-
-    :return: dictionary containing descriptions of the tables and the
-             comparison mode
-    :rtype: dict
-    """
-
-    def find_between(s, start, end):
-        return (s.split(start))[1].split(end)[0]
-
-    description = {}
-    root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    template_dir = os.path.join(root, 'templates')
-    # Generates specific table descriptions from docs
-    filename = os.path.join(template_dir, "table_descriptions.rst")
-    with open(filename) as f:
-        output_str = f.read()
-    output_str = output_str.replace(':ref:', '')
-    #reload(sys)
-    #sys.setdefaultencoding('utf-8')
-    for n in options.table_type + [options.comparison_mode]:
-        start = '{}: Start'.format(n)
-        end = '{}: End'.format(n)
-        result = find_between(output_str, start, end)
-        description_page = docutils.core.publish_parts(
-            result, writer_name='html')
-        description[n] = description_page['body']
-    return description
-
-
-def create_plots(options, results, best_results, group_name, figures_dir):
+def create_plots(options, results, best_results, figures_dir):
     """
     Create a plot for each result and store in the figures directory
 
@@ -153,8 +114,6 @@ def create_plots(options, results, best_results, group_name, figures_dir):
     :param best_results: best result for each problem
     :type best_results: list of
                         fitbenchmarking.utils.fitbm_result.FittingResult
-    :param group_name: name of he problem group
-    :type group_name: str
     :param figures_dir: Path to directory to store the figures in
     :type figures_dir: str
     """
