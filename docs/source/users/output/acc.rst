@@ -4,6 +4,5 @@
 Accuracy Table
 ##############
 
-.. include:: ../../../../fitbenchmarking/templates/table_descriptions.rst
-    :start-after: acc: Start
-    :end-before: acc: End
+.. currentmodule:: fitbenchmarking.results_processing.acc_table
+.. autoclass:: fitbenchmarking.results_processing.acc_table.AccTable

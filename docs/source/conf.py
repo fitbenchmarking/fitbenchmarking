@@ -19,6 +19,7 @@
 import os
 import sys
 
+sys.path.append(os.path.abspath("./_ext"))
 sys.path.insert(0, os.path.abspath('../../'))
 
 # PYCUTEST_CACHE needs to be set to use pycutest
@@ -45,7 +46,8 @@ autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfogn', 'dfols',
 # ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.todo',
-              'sphinx.ext.imgmath']
+              'sphinx.ext.imgmath',
+              'prettyprintvalue']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
