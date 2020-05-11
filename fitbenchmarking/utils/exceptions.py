@@ -32,6 +32,7 @@ class OptionsError(FitBenchmarkException):
     """
     Indicates an error during processing options.
     """
+
     def __init__(self, message=''):
         super(OptionsError, self).__init__(message)
 
@@ -43,6 +44,7 @@ class ParsingError(FitBenchmarkException):
     """
     Indicates an error during parsing.
     """
+
     def __init__(self, message=''):
         super(ParsingError, self).__init__(message)
 
@@ -54,6 +56,7 @@ class NoParserError(FitBenchmarkException):
     """
     Indicates a parser could not be found.
     """
+
     def __init__(self, message=''):
         super(NoParserError, self).__init__(message)
 
@@ -65,6 +68,7 @@ class MissingSoftwareError(FitBenchmarkException):
     """
     Indicates that the requirements for a software package are not available.
     """
+
     def __init__(self, message=''):
         super(MissingSoftwareError, self).__init__(message)
 
@@ -76,6 +80,7 @@ class NoControllerError(FitBenchmarkException):
     """
     Indicates a controller could not be found
     """
+
     def __init__(self, message=''):
         super(NoControllerError, self).__init__(message)
 
@@ -87,6 +92,7 @@ class ControllerAttributeError(FitBenchmarkException):
     """
     Indicates an issue with the attributes within a controller
     """
+
     def __init__(self, message=''):
         super(ControllerAttributeError, self).__init__(message)
 
@@ -98,6 +104,7 @@ class NoDataError(FitBenchmarkException):
     """
     Indicates that no data could be found.
     """
+
     def __init__(self, message=''):
         super(NoDataError, self).__init__(message)
 
@@ -109,6 +116,7 @@ class UnknownMinimizerError(FitBenchmarkException):
     """
     Indicates that the controller does not support a given minimizer.
     """
+
     def __init__(self, message=''):
         super(UnknownMinimizerError, self).__init__(message)
 
@@ -120,8 +128,21 @@ class FittingProblemError(FitBenchmarkException):
     """
     Indicates a problem with the fitting problem.
     """
+
     def __init__(self, message=''):
         super(FittingProblemError, self).__init__(message)
 
         self._class_message = 'Fitting Problem raised and exception.'
         self.error_code = 10
+
+
+class UnknownTableError(FitBenchmarkException):
+    """
+    Indicates a problem with the fitting problem.
+    """
+
+    def __init__(self, message=''):
+        super(UnknownTableError, self).__init__(message)
+
+        self._class_message = 'Set table option could not be found'
+        self.error_code = 11

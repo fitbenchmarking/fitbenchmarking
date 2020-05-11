@@ -1,0 +1,4 @@
+                      scipy                                                   
+            lm-scipy-no-jac        lm-scipy               trf           dogbox
+prob_0 1  False (0.5174)[1]    False (1.48)  False (2.941)[2]    False (8.165)
+prob_1 1      False (6.708)  False (4.5)[1]  False (15.01)[3]  False (13.5)[1]

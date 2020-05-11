@@ -71,7 +71,7 @@ def run(problem_sets, options_file='', debug=False):
     :param options_file: The path to an options file, defaults to ''
     :type options_file: str, optional
     :param debug: Enable debugging output
-    :type debug: bool 
+    :type debug: bool
     """
     # Find the options file
     current_path = os.path.abspath(os.path.curdir)
@@ -161,7 +161,8 @@ def main():
 
     args = parser.parse_args(sys.argv[1:])
 
-    run(problem_sets=args.problem_sets, options_file=args.options_file, debug=args.debug_mode)
+    run(problem_sets=args.problem_sets,
+        options_file=args.options_file, debug=args.debug_mode)
 
 
 if __name__ == '__main__':

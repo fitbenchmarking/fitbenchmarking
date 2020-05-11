@@ -1,10 +1,13 @@
 [DESIGN]
 
 # Maximum number of locals for function / method body
-max-locals=20
+max-locals=30
 
 # Maximum number of lines within a function
 max-statements=60
+
+# Certain functions require more arguments due to design
+max-args=10
 
 [MESSAGES CONTROL]
 disable=too-many-instance-attributes,
