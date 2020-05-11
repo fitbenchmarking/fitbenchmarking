@@ -30,7 +30,7 @@ def fitbm_one_prob(problem, options):
     :return: list of all results
     :rtype: list of fibenchmarking.utils.fitbm_result.FittingResult
     """
-    grabbed_output = output_grabber.OutputGrabber()
+    grabbed_output = output_grabber.OutputGrabber(options)
     results = []
 
     software = options.software
@@ -85,7 +85,7 @@ def benchmark(controller, minimizers, options):
     :return: list of all results
     :rtype: list of fibenchmarking.utils.fitbm_result.FittingResult
     """
-    grabbed_output = output_grabber.OutputGrabber()
+    grabbed_output = output_grabber.OutputGrabber(options)
     problem = controller.problem
 
     results_problem = []

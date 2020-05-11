@@ -3,14 +3,15 @@ Set up and build the results tables.
 """
 
 from __future__ import (absolute_import, division, print_function)
-from collections import OrderedDict
 import copy
-import inspect
-from jinja2 import Environment, FileSystemLoader
+from importlib import import_module
+from inspect import getfile, getmembers, isabstract, isclass
 import os
-import pandas as pd
+from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
+from fitbenchmarking.results_processing.base_table import Table
+from fitbenchmarking.utils.exceptions import UnknownTableError
 
 ERROR_OPTIONS = {0: "Successfully converged",
                  1: "Software reported maximum number of iterations exceeded",
@@ -21,7 +22,7 @@ SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
 def create_results_tables(options, results, best_results, group_name,
-                          group_dir, table_descriptions, pp_locations):
+                          group_dir, pp_locations):
     """
     Saves the results of the fitting to html/txt tables.
 
@@ -48,231 +49,140 @@ def create_results_tables(options, results, best_results, group_name,
 
     :return: filepaths to each table
              e.g {'acc': <acc-table-filename>, 'runtime': ...}
-    :rtype: dict
+             and dictionary of table descriptions
+    :rtype: tuple(dict, dict)
     """
+
     weighted_str = 'weighted' if options.use_errors else 'unweighted'
 
-    table_type = []
-    table_names = OrderedDict()
+    table_names = {}
+    description = {}
     for suffix in SORTED_TABLE_NAMES:
         if suffix in options.table_type:
-            table_type.append(suffix)
             table_names[suffix] = '{0}_{1}_{2}_table.'.format(group_name,
                                                               suffix,
                                                               weighted_str)
-    generate_tables(results, best_results, table_names, table_type,
-                    group_dir, table_descriptions, options, pp_locations)
-    return table_names
+
+            table, html_table, txt_table = generate_table(results,
+                                                          best_results,
+                                                          options,
+                                                          group_dir,
+                                                          pp_locations,
+                                                          table_names[suffix],
+                                                          suffix)
+
+            table_title = table.table_title
+            file_path = table.file_path
+
+            description = table.get_description(description)
+
+            table_format = None if suffix == 'local_min' \
+                else description[options.comparison_mode]
+
+            has_pp = table.has_pp
+
+            pp_filenames = table.pp_filenames
+
+            root = os.path.dirname(getfile(fitbenchmarking))
+            template_dir = os.path.join(root, 'templates')
+            style_css = os.path.join(template_dir, 'main_style.css')
+            table_css = os.path.join(template_dir, 'table_style.css')
+            custom_style = os.path.join(template_dir, 'custom_style.css')
+            maths_style = os.path.join(template_dir, 'math_style.css')
+            env = Environment(loader=FileSystemLoader(template_dir))
+            template = env.get_template("table_template.html")
+            html_output_file = file_path + 'html'
+            txt_output_file = file_path + 'txt'
+
+            with open(txt_output_file, "w") as f:
+                f.write(txt_table)
+
+            with open(html_output_file, "w") as f:
+                f.write(template.render(css_style_sheet=style_css,
+                                        custom_style=custom_style,
+                                        table_style=table_css,
+                                        maths_style=maths_style,
+                                        table_description=description[suffix],
+                                        table_format=table_format,
+                                        result_name=table_title,
+                                        has_pp=has_pp,
+                                        pp_filenames=pp_filenames,
+                                        table=html_table,
+                                        error_message=ERROR_OPTIONS))
+
+    return table_names, description
 
 
-def generate_tables(results_per_test, best_results, table_names, table_suffix,
-                    group_dir, table_descriptions, options, pp_locations):
+def load_table(table):
     """
-    Generates accuracy, runtime, and combined accuracy and runtime tables, with
-    both normalised and absolute results in both txt and html.
+    Create a table object.
 
-    :param results_per_test: results nested array of objects
-    :type results_per_test: list of list of
-                            fitbenchmarking.utils.fitbm_result.FittingResult
+    :param table: The name of the table to create a table for
+    :type table: string
+
+    :return: Table class for the problem
+    :rtype: fitbenchmarking/results_processing/tables.Table subclass
+    """
+
+    module_name = '{}_table'.format(table.lower())
+
+    try:
+        module = import_module('.' + module_name, __package__)
+    except ImportError as e:
+        raise UnknownTableError('Given table option {} '
+                                'was not found: {}'.format(table, e))
+
+    classes = getmembers(module, lambda m: (isclass(m)
+                                            and not isabstract(m)
+                                            and issubclass(m, Table)
+                                            and m is not Table))
+    return classes[0][1]
+
+
+def generate_table(results, best_results, options, group_dir,
+                   pp_locations, table_name, suffix):
+    """
+    Saves the results of the fitting to html/txt tables.
+
+    :param results: results nested array of objects
+    :type results: list of list of
+                   fitbenchmarking.utils.fitbm_result.FittingResult
     :param best_results: best result for each problem
     :type best_results: list of
                         fitbenchmarking.utils.fitbm_result.FittingResult
-    :param table_names: list of table names
-    :type table_names: list
-    :param table_suffix: set output to be runtime or accuracy table
-    :type table_suffix: str
-    :param group_dir: path to group results directory
-    :type group_dir: str
-    :param table_descriptions: dictionary containing descriptions of the
-                               tables and the comparison mode
-    :type table_descriptions: dict
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
+    :param group_dir: path to the directory where group results should be
+                      stored
+    :type group_dir: str
     :param pp_locations: tuple containing the locations of the
                          performance profiles (acc then runtime)
     :type pp_locations: tuple(str,str)
+    :param table_name: name of the table
+    :type table_name: str
+    :param suffix: table suffix
+    :type suffix: str
 
+
+    :return: Table object, HTML string of table and text string of table.
+    :rtype: tuple(Table object, str, str)
     """
-    table_titles = ["FitBenchmarking: {0} table".format(name)
-                    for name in table_suffix]
-    results_dict = create_results_dict(results_per_test)
-    table = create_pandas_dataframe(results_dict, table_suffix)
-    render_pandas_dataframe(table, best_results, table_names, table_titles,
-                            group_dir, table_descriptions, options, pp_locations)
+    table_module = load_table(suffix)
+    table = table_module(results, best_results,
+                         options, group_dir,
+                         pp_locations, table_name)
 
+    results_dict = table.create_results_dict()
 
-def create_results_dict(results_per_test):
-    """
-    Generates a dictionary used to create HTML and txt tables.
+    disp_results = table.get_values(results_dict)
+    error = table.get_error(results_dict)
+    links = table.get_links(results_dict)
+    colour = table.get_colour(disp_results)
+    str_results = table.display_str(disp_results)
 
-    :param results_per_test: results nested array of objects
-    :type results_per_test: list of list of
-                             fitbenchmarking.utils.fitbm_result.FittingResult
+    pandas_html = table.create_pandas_data_frame(str_results)
+    pandas_txt = copy.copy(pandas_html)
 
-    :return: Results objects
-    :rtype: dict
-    """
-
-    results = OrderedDict()
-
-    for prob_results in results_per_test:
-        results[prob_results[0].name] = prob_results
-    return results
-
-
-def create_pandas_dataframe(table_data, table_suffix):
-    """
-    Generates pandas data frame.
-
-    :param table_data: dictionary containing results, i.e.
-              {'prob1': [result1, result2, ...], 
-              'prob2': [result1, result2, ...], ...}
-    :type table_data: dict
-    :param table_suffix: set output to be runtime or accuracy table
-    :type table_suffix: list
-
-    :return: dict(tbl, tbl_norm, tbl_combined) dictionary of
-             pandas DataFrames containing results.
-    :rtype: dict{pandas DataFrame, pandas DataFrame}
-    """
-
-    # This function is only used in the mapping, hence, it is defined here.
-    def select_table(value, table_suffix):
-        '''
-        Selects either accuracy or runtime table.
-        '''
-        value.table_type = table_suffix
-        value = copy.copy(value)
-        return value
-
-    tbl = pd.DataFrame.from_dict(table_data, orient='index')
-    # Get minimizers from first row of objects to use as columns
-    tbl.columns = [r.minimizer for r in tbl.iloc[0]]
-    results = OrderedDict()
-    for suffix in table_suffix:
-        results[suffix] = tbl.applymap(lambda x: select_table(x, suffix))
-    return results
-
-
-def render_pandas_dataframe(table_dict, best_results, table_names,
-                            table_title, group_dir, table_descriptions,
-                            options, pp_locations):
-    """
-    Generates html and txt page from pandas dataframes,
-    and writes them to files.
-
-    :param table_dict: dictionary of DataFrame of the results
-    :type table_dict: dict(pandas DataFrame, ...)
-    :param best_results: best result for each problem
-    :type best_results: list of
-                        fitbenchmarking.utils.fitbm_result.FittingResult
-    :param table_names: list of table names
-    :type table_names: list
-    :param table_title: list of table titles
-    :type table_title: list
-    :param group_dir: path to the group results directory
-    :type group_dir: str
-    :param table_descriptions: dictionary containing descriptions of the
-                               tables and the comparison mode
-    :type table_descriptions: dict
-    :param options: The options used in the fitting problem and plotting
-    :type options: fitbenchmarking.utils.options.Options
-    :param pp_locations: tuple containing the locations of the
-                         performance profiles (acc then runtime)
-    :type pp_locations: tuple(str,str)
-    """
-
-    # Define functions that are used in calls to map over dataframes
-    def colour_highlight(value):
-        '''
-        Colour mapping for visualisation of table
-        '''
-        colour = value.colour
-        if isinstance(colour, list):
-            # Use 4 colours in gradient to make gradient only change in centre
-            # of cell
-            colour_output = \
-                'background-image: linear-gradient({0},{0},{1},{1})'.format(
-                    colour[0], colour[1])
-        else:
-            colour_output = 'background-color: {0}'.format(colour)
-        return colour_output
-
-    def enable_link(result):
-        '''
-        Enable HTML links in values
-
-        Note: Due to the way applymap works in DataFrames, this cannot make a
-        change based on the state of the value
-
-        :param result: The result object to update
-        :type result: fitbenchmaring.utils.fitbm_result.FittingResult
-
-        :return: The same result object after updating
-        :rtype: fitbenchmarking.utils.fitbm_result.FittingResult
-        '''
-        result.relative_dir = group_dir
-        result.html_print = True
-        return result
-
-    for name, title, table in zip(table_names.items(), table_title,
-                                  table_dict.values()):
-        description = table_descriptions[name[0]]
-
-        table_format = None if name[0] == 'local_min' \
-            else table_descriptions[options.comparison_mode]
-
-        file_path = os.path.join(group_dir, name[1])
-        with open(file_path + 'txt', "w") as f:
-            f.write(table.to_string())
-
-        # Update table indexes to link to the best support page
-        index = []
-        for b, i in zip(best_results, table.index):
-            rel_path = os.path.relpath(path=b.support_page_link,
-                                       start=group_dir)
-            index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
-        table.index = index
-
-        # Update table values to point to individual support pages
-        table.applymap(enable_link)
-
-        # add performance profile information
-        if name[0] == 'acc':
-            has_pp = True
-            pp_filenames = [pp_locations[0]]
-        elif name[0] == 'runtime':
-            has_pp = True
-            pp_filenames = [pp_locations[1]]
-        elif name[0] == 'compare':
-            has_pp = True
-            pp_filenames = pp_locations
-        else:
-            has_pp = False
-            pp_location = ''
-           
-        
-        # Set colour on each cell and add title
-        table_style = table.style.applymap(colour_highlight)
-        root = os.path.dirname(inspect.getfile(fitbenchmarking))
-        template_dir = os.path.join(root, 'templates')
-        style_css = os.path.join(template_dir, 'main_style.css')
-        table_css = os.path.join(template_dir, 'table_style.css')
-        custom_style = os.path.join(template_dir, 'custom_style.css')
-        maths_style = os.path.join(template_dir, 'math_style.css')
-        env = Environment(loader=FileSystemLoader(template_dir))
-        template = env.get_template("table_template.html")
-        output_file = file_path + 'html'
-
-        with open(output_file, "w") as f:
-            f.write(template.render(css_style_sheet=style_css,
-                                    custom_style=custom_style,
-                                    table_style=table_css,
-                                    maths_style=maths_style,
-                                    table_description=description,
-                                    table_format=table_format,
-                                    result_name=title,
-                                    has_pp=has_pp,
-                                    pp_filenames=pp_filenames,
-                                    table=table_style.render(),
-                                    error_message=ERROR_OPTIONS))
+    html_table = table.to_html(pandas_html, colour, links, error)
+    txt_table = table.to_txt(pandas_txt, error)
+    return table, html_table, txt_table
