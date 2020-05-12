@@ -9,7 +9,7 @@ except ImportError:
 import unittest
 
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.jacobian.numerical_2point_jacobian import ScipyTwoPoint
+from fitbenchmarking.jacobian.scipy_fd_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.results_processing import plots

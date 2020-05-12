@@ -17,7 +17,7 @@ from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.numerical_2point_jacobian import ScipyTwoPoint
+from fitbenchmarking.jacobian.scipy_fd_2point_jacobian import ScipyTwoPoint
 
 
 def make_fitting_problem(file_name='cubic.dat'):

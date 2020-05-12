@@ -9,7 +9,7 @@ import numpy as np
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.jacobian.numerical_2point_jacobian import ScipyTwoPoint
+from fitbenchmarking.jacobian.scipy_fd_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
