@@ -5,7 +5,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class Jacobian:
-    r"""
+    """
     Base class for Jacobian.
     """
     __metaclass__ = ABCMeta
