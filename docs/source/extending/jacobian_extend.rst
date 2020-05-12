@@ -10,15 +10,20 @@ within FitBenchmark.*
 In order to add a new Jacobian evaluation method, you will need to:
 
 1. Give the Jacobian a name using the following convention `<jac_method>` and
-   `<num_method>`.
+   `<num_method>`. An example could be `scipy_fd` for `<jac_method>` and
+   `2point` for `<num_method>` which would call the SciPy's 2-point finite
+   difference approximation.
+
 2. Create ``fitbenchmarking/jacobian/<jac_method>_<num_method>_jacobian.py``
    which contains a new subclass of ``Jacobian``
    (from ``base_jacobian.py``).
    Then implement the method ``eval()``, which evaluates the Jacobian.
+   fire
 
-3. Document the available Jacobians by: 
-  * updating the docs for :ref:`jacobian` in ``docs/source/users/jacobian.rst`` 
-  * updating ``fitbenchmarking/utils/default_options.ini`` 
+3. Document the available Jacobians by:
+
+  * updating the docs for :ref:`jacobian` in ``docs/source/users/jacobian.rst``
+  * updating ``fitbenchmarking/utils/default_options.ini``
   * updating any example files in the ``example_scripts`` directory
 
 4. Create tests for the Jacobian evaluation in

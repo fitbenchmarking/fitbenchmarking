@@ -84,6 +84,12 @@ This directory holds all code central to FitBenchmarking.
 For example, this manages calling the correct parser and controller, as well as
 compiling the results into a data object.
 
+Jacobian (``jacobian``)
+=======================
+
+This directory holds the Jacobian classes use for the controllers for the
+fitting algorithm.
+
 
 Mock Problems (``mock_problems``)
 =================================
