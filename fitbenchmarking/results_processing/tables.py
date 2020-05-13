@@ -97,7 +97,7 @@ def create_results_tables(options, results, best_results, group_name,
             with open(txt_output_file, "w") as f:
                 f.write(txt_table)
 
-            with open(html_output_file, "w") as f:
+            with open(html_output_file, "w", encoding="utf-8") as f:
                 f.write(template.render(css_style_sheet=style_css,
                                         custom_style=custom_style,
                                         table_style=table_css,
