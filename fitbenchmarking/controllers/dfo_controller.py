@@ -15,14 +15,14 @@ class DFOController(Controller):
     Controller for the DFO-{GN/LS} fitting software.
     """
 
-    def __init__(self, problem, jacobian):
+    def __init__(self, problem):
         """
         Initialises variables used for temporary storage.
 
         :param problem: Problem to fit
         :type problem: FittingProblem
         """
-        super(DFOController, self).__init__(problem, jacobian)
+        super(DFOController, self).__init__(problem)
 
         self._soln = None
         self._popt = None

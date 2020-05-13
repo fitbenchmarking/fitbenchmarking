@@ -20,14 +20,14 @@ class GSLController(Controller):
     Controller for the GSL fitting software
     """
 
-    def __init__(self, problem, jacobian):
+    def __init__(self, problem):
         """
         Initializes variable used for temporary storage
 
         :param problem: Problem to fit
         :type problem: FittingProblem
         """
-        super(GSLController, self).__init__(problem, jacobian)
+        super(GSLController, self).__init__(problem)
 
         self._solver = None
         self._residual_methods = None
@@ -62,7 +62,7 @@ class GSLController(Controller):
         :return: result from jac.eval
         :rtype: numpy array
         """
-        return self.jac.eval(p)
+        return self.problem.jac.eval(p)
 
     def _fdf(self, p, data=None):
         """
@@ -76,7 +76,7 @@ class GSLController(Controller):
         :rtype: (numpy array, numpy array)
         """
         f = self.problem.eval_r(p)
-        df = self.jac.eval(p)
+        df = self.problem.jac.eval(p)
         return f, df
 
     def _chi_squared(self, p, data=None):

@@ -17,7 +17,7 @@ class MantidController(Controller):
     so this controller creates that in setup.
     """
 
-    def __init__(self, problem, jacobian):
+    def __init__(self, problem):
         """
         Setup workspace, cost_function, ignore_invalid, and initialise vars
         used for temporary storage within the mantid controller
@@ -25,7 +25,7 @@ class MantidController(Controller):
         :param problem: Problem to fit
         :type problem: FittingProblem
         """
-        super(MantidController, self).__init__(problem, jacobian)
+        super(MantidController, self).__init__(problem)
 
         self._param_names = self.problem.param_names
 

@@ -17,7 +17,7 @@ from fitbenchmarking.utils.log import get_logger
 LOGGER = get_logger()
 
 
-def fitbm_one_prob(problem, options, jacobian):
+def fitbm_one_prob(problem, options):
     """
     Sets up the controller for a particular problem and fits the models
     provided in the problem object.
@@ -26,8 +26,6 @@ def fitbm_one_prob(problem, options, jacobian):
     :type problem: FittingProblem
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
-    :param jacobian: Jacobian class for the problem
-    :type jacobian: fitbenchmarking.jacobian.base_controller.Jacobian subclass
 
     :return: list of all results
     :rtype: list of fibenchmarking.utils.fitbm_result.FittingResult
@@ -57,8 +55,7 @@ def fitbm_one_prob(problem, options, jacobian):
             with grabbed_output:
                 controller_cls = ControllerFactory.create_controller(
                     software=s)
-                controller = controller_cls(problem=problem,
-                                            jacobian=jacobian)
+                controller = controller_cls(problem=problem)
 
             controller.parameter_set = i
             problem_result = benchmark(controller=controller,
@@ -89,7 +86,7 @@ def benchmark(controller, minimizers, options):
     """
     grabbed_output = output_grabber.OutputGrabber(options)
     problem = controller.problem
-    jac = controller.jac
+    jac = controller.problem.jac
 
     results_problem = []
     num_runs = options.num_runs

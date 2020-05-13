@@ -15,14 +15,14 @@ class MinuitController(Controller):
     Controller for the Minuit fitting software
     """
 
-    def __init__(self, problem, jacobian):
+    def __init__(self, problem):
         """
         Initializes variable used for temporary storage.
 
         :param problem: Problem to fit
         :type problem: FittingProblem
         """
-        super(MinuitController, self).__init__(problem, jacobian)
+        super(MinuitController, self).__init__(problem)
         self._popt = None
         self._initial_step = None
         self._minuit_problem = None
