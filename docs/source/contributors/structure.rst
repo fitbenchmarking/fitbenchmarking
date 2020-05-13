@@ -87,7 +87,7 @@ compiling the results into a data object.
 Jacobian (``jacobian``)
 =======================
 
-This directory holds the Jacobian classes use for the controllers for the
+This directory holds the Jacobian classes used for the controllers for the
 fitting algorithm.
 
 
