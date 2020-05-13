@@ -9,7 +9,7 @@ from collections import OrderedDict
 import numpy as np
 
 from fitbenchmarking.core.results_output import preproccess_data
-from fitbenchmarking.jacobian.scipy_fd_2point_jacobian import ScipyTwoPoint
+from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing import performance_profiler
 from fitbenchmarking.utils.fitbm_result import FittingResult

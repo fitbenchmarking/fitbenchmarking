@@ -7,9 +7,9 @@ import numpy as np
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils import exceptions
-from fitbenchmarking.jacobian.scipy_fd_2point_jacobian import ScipyTwoPoint
-from fitbenchmarking.jacobian.scipy_fd_3point_jacobian import ScipyThreePoint
-from fitbenchmarking.jacobian.scipy_fd_cs_jacobian import ScipyCS
+from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
+from fitbenchmarking.jacobian.SciPyFD_3point_jacobian import ScipyThreePoint
+from fitbenchmarking.jacobian.SciPyFD_cs_jacobian import ScipyCS
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 
 
