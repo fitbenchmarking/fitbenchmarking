@@ -5,7 +5,6 @@ Adding new Jacobians
 ####################
 
 *This section describes how to add further methods to approximate the Jacobian within FitBenchmarking*
-within FitBenchmark.*
 
 In order to add a new Jacobian evaluation method, you will need to:
 
