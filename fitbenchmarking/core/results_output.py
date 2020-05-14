@@ -181,7 +181,7 @@ def create_problem_level_index(options, table_names, group_name,
     names = table_names.keys()
     description = [table_descriptions[n] for n in names]
     index = table_descriptions[options.comparison_mode]
-    with open(output_file, 'w') as fh:
+    with open(output_file, 'w', encoding="utf-8") as fh:
         fh.write(template.render(
             css_style_sheet=style_css,
             custom_style=custom_style,
