@@ -77,6 +77,12 @@ packages in the `multiminimize <https://www.gnu.org/software/gsl/doc/html/multim
 
 **Links** `SourceForge PyGSL <http://pygsl.sourceforge.net/>`_
 
+.. warning::
+   The external packages GSL and pygsl must be installed to use these minimizers.
+   See :ref:`InstallGSL`
+
+.. _MantidMinimizers:
+
 Mantid
 ------
 
@@ -105,6 +111,11 @@ It has support for a number of minimizers, most of which are from GSL.
  **Links** `GitHub - Mantid <https://github.com/mantidproject/mantid>`_ `Mantid's Fitting Docs <https://docs.mantidproject.org/nightly/algorithms/Fit-v1.html>`_
 
 
+.. warning::
+   The external package Mantid must be installed to use these minimizers.
+   See :ref:`InstallMantid`
+
+ 
 Minuit
 ------
 
@@ -131,6 +142,10 @@ order derivatives are currently utilized in FitBenchmarking.
 
 **Links** `Github - RALFit <https://github.com/ralna/ralfit/>`_. RALFit's Documentation on: `Gauss-Newton/Hybrid models <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-models>`_,  `the trust region method <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-trust-region-method>`_ and  `The regularization method <https://ralfit.readthedocs.io/projects/C/en/latest/method.html#regularization>`_
 
+.. warning::
+   The external package RALFit must be installed to use these minimizers.
+   See :ref:`RALFitMinimizer`
+
 SciPy
 -----
 
@@ -152,3 +167,4 @@ Other software?
 We've made it straightforward to add new software by
 following the instructions in :ref:`controllers` -- the software just needs
 to be callable from  Python.
+
