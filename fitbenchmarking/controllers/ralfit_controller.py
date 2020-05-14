@@ -25,6 +25,11 @@ class RALFitController(Controller):
 
         self._popt = None
         self._options = {}
+        self.algorithm_check = {
+            'all': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
+            'ls': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
+            'deriv_free': [None],
+            'general': [None]}
 
     def setup(self):
         """

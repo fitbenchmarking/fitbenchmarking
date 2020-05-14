@@ -27,6 +27,11 @@ class DFOController(Controller):
         self._soln = None
         self._popt = None
         self._pinit = None
+        self.algorithm_check = {
+            'all': ['dfogn', 'dfols'],
+            'ls': ['dfogn', 'dfols'],
+            'deriv_free': ['dfogn', 'dfols'],
+            'general': [None]}
 
     def setup(self):
         """

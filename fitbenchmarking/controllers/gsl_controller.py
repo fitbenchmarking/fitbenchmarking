@@ -37,6 +37,15 @@ class GSLController(Controller):
         self._abserror = None
         self._relerror = None
         self._maxits = None
+        self.algorithm_check = {
+            'all': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
+                    'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
+                    'vector_bfgs2', 'steepest_descent'],
+            'ls': ['lmsder', 'lmder'],
+            'deriv_free': ['nmsimplex', 'nmsimplex2'],
+            'general': ['nmsimplex', 'nmsimplex2', 'conjugate_pr',
+                        'conjugate_fr', 'vector_bfgs', 'vector_bfgs2',
+                        'steepest_descent']}
 
     def _prediction_error(self, p, data=None):
         """

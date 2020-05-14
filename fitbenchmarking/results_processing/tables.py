@@ -22,7 +22,7 @@ SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
 def create_results_tables(options, results, best_results, group_name,
-                          group_dir, pp_locations):
+                          group_dir, pp_locations, failed_problems):
     """
     Saves the results of the fitting to html/txt tables.
 
@@ -45,6 +45,9 @@ def create_results_tables(options, results, best_results, group_name,
     :param pp_locations: tuple containing the locations of the
                          performance profiles (acc then runtime)
     :type pp_locations: tuple(str,str)
+    :param failed_problems: list of failed problems to be reported in the
+                            html output
+    :type failed_problems: list
 
 
     :return: filepaths to each table
@@ -108,7 +111,8 @@ def create_results_tables(options, results, best_results, group_name,
                                         has_pp=has_pp,
                                         pp_filenames=pp_filenames,
                                         table=html_table,
-                                        error_message=ERROR_OPTIONS))
+                                        error_message=ERROR_OPTIONS,
+                                        failed_problems=failed_problems))
 
     return table_names, description
 

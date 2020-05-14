@@ -28,6 +28,18 @@ class MantidController(Controller):
         super(MantidController, self).__init__(problem)
 
         self._param_names = self.problem.param_names
+        self.algorithm_check = {
+            'all': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
+                    'Conjugate gradient (Polak-Ribiere imp.)',
+                    'Damped GaussNewton', 'Levenberg-Marquardt',
+                    'Levenberg-MarquardtMD', 'Simplex', 'SteepestDescent',
+                    'Trust Region'],
+            'ls': ['Levenberg-Marquardt', 'Levenberg-MarquardtMD',
+                   'Trust Region'],
+            'deriv_free': ['Simplex'],
+            'general': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
+                        'Conjugate gradient (Polak-Ribiere imp.)',
+                        'Damped GaussNewton', 'Simplex', 'SteepestDescent']}
 
         if self.problem.multifit:
             # Multi Fit
@@ -38,7 +50,7 @@ class MantidController(Controller):
                                              OutputWorkspace='ws0')
             other_inputs = [
                 msapi.CreateWorkspace(DataX=x, DataY=y, DataE=e,
-                                      OutputWorkspace='ws{}'.format(i+1))
+                                      OutputWorkspace='ws{}'.format(i + 1))
                 for i, (x, y, e) in enumerate(zip(self.data_x[1:],
                                                   self.data_y[1:],
                                                   self.data_e[1:]))]
@@ -155,7 +167,7 @@ class MantidController(Controller):
         final_params = self._mantid_results.OutputParameters.column(1)[:-1]
         num_params = len(self.initial_params)
         if self._multi_fit:
-            self.final_params = [final_params[i*num_params:(i+1)*num_params]
+            self.final_params = [final_params[i * num_params:(i + 1) * num_params]
                                  for i in range(self._multi_fit)]
         else:
             self.final_params = final_params

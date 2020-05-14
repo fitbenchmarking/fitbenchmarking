@@ -27,8 +27,9 @@ def fitbm_one_prob(problem, options):
     :param options: all the information specified by the user
     :type options: fitbenchmarking.utils.options.Options
 
-    :return: list of all results
-    :rtype: list of fibenchmarking.utils.fitbm_result.FittingResult
+    :return: list of all results and failed problem names
+    :rtype: tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
+                  list of failed problem names)
     """
     grabbed_output = output_grabber.OutputGrabber(options)
     results = []
@@ -39,12 +40,14 @@ def fitbm_one_prob(problem, options):
 
     name = problem.name
     num_start_vals = len(problem.starting_values)
+    problem_fails = []
     for i in range(num_start_vals):
-        print("    Starting value: {0}/{1}".format(i + 1, num_start_vals))
+        LOGGER.info("    Starting value: {0}/{1}".format(i + 1,
+                                                         num_start_vals))
 
         if num_start_vals > 1:
             problem.name = name + ', Start {}'.format(i + 1)
-
+        software_results = []
         for s in software:
             LOGGER.info("        Software: %s", s.upper())
             try:
@@ -63,11 +66,19 @@ def fitbm_one_prob(problem, options):
                                        minimizers=minimizers,
                                        options=options)
 
-            results.extend(problem_result)
+            software_results.extend(problem_result)
+
+        # Checks to see if all of the minimizers raise and exception and
+        # records the problems name for that case
+        software_check = [np.isinf(v.chi_sq) for v in software_results]
+        if all(software_check):
+            software_results = []
+            problem_fails.append(problem.name)
+        results.extend(software_results)
 
     # Reset problem.name
     problem.name = name
-    return results
+    return results, problem_fails
 
 
 def benchmark(controller, minimizers, options):
@@ -90,13 +101,15 @@ def benchmark(controller, minimizers, options):
 
     results_problem = []
     num_runs = options.num_runs
+    algorithm_type = options.algorithm_type
+
     for minimizer in minimizers:
         LOGGER.info("            Minimizer: %s", minimizer)
 
         controller.minimizer = minimizer
-
         try:
             with grabbed_output:
+                controller.validate_minimizer(minimizer, algorithm_type)
                 # Calls timeit repeat with repeat = num_runs and number = 1
                 runtime_list = \
                     timeit.Timer(setup=controller.prepare,
@@ -112,6 +125,8 @@ def benchmark(controller, minimizers, options):
             controller.flag = 3
             controller.final_params = None if not problem.multifit \
                 else [None] * len(controller.data_x)
+            chi_sq = np.inf if not problem.multifit \
+                else [np.inf] * len(controller.data_x)
 
         controller.check_attributes()
 
@@ -127,9 +142,6 @@ def benchmark(controller, minimizers, options):
                                            x=controller.data_x,
                                            y=controller.data_y,
                                            e=controller.data_e)
-        else:
-            chi_sq = np.inf if not problem.multifit \
-                else [np.inf] * len(controller.data_x)
 
         result_args = {'options': options,
                        'problem': problem,
@@ -155,5 +167,4 @@ def benchmark(controller, minimizers, options):
             individual_result = fitbm_result.FittingResult(**result_args)
 
             results_problem.append(individual_result)
-
     return results_problem

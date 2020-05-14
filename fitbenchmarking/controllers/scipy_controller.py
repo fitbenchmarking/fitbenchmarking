@@ -19,6 +19,11 @@ class ScipyController(Controller):
         super(ScipyController, self).__init__(problem)
 
         self._popt = None
+        self.algorithm_check = {
+            'all': ['lm-scipy-no-jac', 'lm-scipy', 'trf', 'dogbox'],
+            'ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf', 'dogbox'],
+            'deriv_free': [None],
+            'general': [None]}
 
     def setup(self):
         """
