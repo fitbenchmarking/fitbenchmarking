@@ -43,7 +43,6 @@ def fitbenchmark_group(group_name, options, data_dir):
     results = []
 
     name_count = {}
-    template_prob_name = " Running data from: {}"
     for i, p in enumerate(problem_group):
         with grabbed_output:
             parsed_problem = parse_problem_file(p, options)
@@ -65,16 +64,11 @@ def fitbenchmark_group(group_name, options, data_dir):
         # This will be fixed in the results after all problems have ran
         parsed_problem.name = name + '<count> {}</count>'.format(count)
 
-        tmp_prob_name = template_prob_name.format(name + ' ' + str(count))
-        decorator = '#' * (3 + len(
-            tmp_prob_name + str(i + 1) + str(len(problem_group))))
-        print("\n{0}\n{1} {2}/{3}\n{0}\n".format(decorator, tmp_prob_name,
-                                                 i + 1, len(problem_group)))
         info_str = " Running data from: {} {}/{}".format(
-            parsed_problem.name, i + 1, len(problem_group))
-        LOGGER.info('#' * len(info_str))
+            name, i + 1, len(problem_group))
+        LOGGER.info('#' * (len(info_str) + 1))
         LOGGER.info(info_str)
-        LOGGER.info('#' * len(info_str))
+        LOGGER.info('#' * (len(info_str) + 1))
 
         problem_results = fitbm_one_prob(problem=parsed_problem,
                                          options=options)
@@ -93,7 +87,6 @@ def fitbenchmark_group(group_name, options, data_dir):
         else:
             name = name_segs[0] + name_segs[1].split('</count>')[1]
         problem_result.name = name
-
         # Now group by name
         try:
             results_dict[name].append(problem_result)

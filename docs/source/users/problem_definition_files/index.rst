@@ -1,3 +1,5 @@
+.. _problem_def:
+
 ************************
 Problem Definition Files
 ************************
