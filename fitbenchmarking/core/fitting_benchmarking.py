@@ -42,19 +42,12 @@ def fitbenchmark_group(group_name, options, data_dir):
 
     results = []
 
-    name_count = {}
     failed_problems = []
     for i, p in enumerate(problem_group):
         with grabbed_output:
             parsed_problem = parse_problem_file(p, options)
         parsed_problem.correct_data()
         name = parsed_problem.name
-        name_count[name] = 1 + name_count.get(name, 0)
-        count = name_count[name]
-
-        # Put in placeholder for the count.
-        # This will be fixed in the results after all problems have ran
-        parsed_problem.name = name + ' {}'.format(count)
 
         info_str = " Running data from: {} {}/{}".format(
             name, i + 1, len(problem_group))
@@ -80,7 +73,6 @@ def fitbenchmark_group(group_name, options, data_dir):
     results_dict = {}
     for problem_result in results:
         name = problem_result.name
-
         # group by name
         try:
             results_dict[name].append(problem_result)
