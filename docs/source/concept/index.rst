@@ -9,4 +9,4 @@ Welcome to the documentation for the FitBenchmarking software.
     :caption: Contents:
 
     why
-    how
+    how/index

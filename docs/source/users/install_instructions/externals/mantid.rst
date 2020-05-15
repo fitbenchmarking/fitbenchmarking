@@ -1,3 +1,5 @@
+.. _InstallMantid:
+
 #################
 Installing Mantid
 #################
