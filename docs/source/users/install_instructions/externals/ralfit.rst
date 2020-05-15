@@ -1,3 +1,5 @@
+.. _RALFitMinimizer:
+
 #################
 Installing RALFit
 #################
