@@ -76,14 +76,9 @@ class Table:
         :rtype: dictionary
         """
         results_dict = {}
-        name_count = {}
         for prob_results in self.results:
             name = prob_results[0].name
-            name_count[name] = 1 + name_count.get(name, 0)
-            count = name_count[name]
-
-            prob_name = name + ' ' + str(count)
-            results_dict[prob_name] = prob_results
+            results_dict[name] = prob_results
         return results_dict
 
     @abstractmethod
