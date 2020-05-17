@@ -27,4 +27,6 @@ steps:
 - script: |
     pip install pytest pytest-azurepipelines
     pytest fitbenchmarking\utils
+    pytest fitbenchmarking\core
+    pytest fitbenchmarking\results_processing
   displayName: 'pytest utils tests'
