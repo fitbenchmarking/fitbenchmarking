@@ -56,6 +56,8 @@ def fitting_function_2(data, x1, x2):
     return x1 * x2
 
 # pylint: enable=unused-argument
+
+
 def generate_mock_results():
     """
     Generates results to test against

@@ -1,4 +1,4 @@
-                                   mantid
-                                     BFGS
-Basic MultiFit, Dataset 1 1  10.73 (1)[2]
-Basic MultiFit, Dataset 2 1  16.08 (1)[2]
+                                 mantid
+                                   BFGS
+Basic MultiFit, Dataset 1  10.73 (1)[2]
+Basic MultiFit, Dataset 2  16.08 (1)[2]
