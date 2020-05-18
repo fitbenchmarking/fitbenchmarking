@@ -46,6 +46,27 @@
 			    <p>
 				Clicking the problem names will take you to details of the best minimizer.
 			    </p>
+                {% if report_failed_min %}
+                    <h3>Failed minimizers</h3>
+                    <p>
+                    The `algorithm_type` has been selected to be
+                    <strong>{{algorithm_type}}</strong>. Please review
+                    current options setup and re-run FitBenmarking.
+                    </p>
+                    <p>
+                    {% for software, minimizer in unselected_minimzers.items() %}
+                        Withing <strong>{{software}}</strong> the following
+                        minimizers we were not run due to the selected
+                        minimizers:
+                        <ol>
+                            {% for m in minimizer -%}
+                                {{ m }} <br/>
+                            {%- endfor %}
+                        </ol>
+                    {% endfor %}
+                    </p>
+                {% endif %}
+
                 {% if failed_problems != [] %}
                     <h3>Failed problems</h3>
                     <p>
@@ -54,7 +75,7 @@
                     </p>
                     <ol>
                         {% for problem in failed_problems %}
-                            <h4>{{problem}}</h4>
+                            {{ problem }} <br/>
                         {% endfor %}
                     </ol>
                     <p>

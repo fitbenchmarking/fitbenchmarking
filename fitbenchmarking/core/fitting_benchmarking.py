@@ -31,9 +31,9 @@ def fitbenchmark_group(group_name, options, data_dir):
                      definition files
     :type date_dir: str
 
-    :return: prob_results array of fitting results for
-             the problem group and list of failed problems
-    :rtype: tuple(list, list)
+    :return: prob_results array of fitting results for the problem group,
+             list of failed problems and dictionary of unselected minimizers
+    :rtype: tuple(list, list, dict)
     """
     grabbed_output = output_grabber.OutputGrabber(options)
 
@@ -55,11 +55,17 @@ def fitbenchmark_group(group_name, options, data_dir):
         LOGGER.info(info_str)
         LOGGER.info('#' * (len(info_str) + 1))
 
-        problem_results, problem_fails = fitbm_one_prob(problem=parsed_problem,
-                                                        options=options)
+        problem_results, problem_fails, unselected_minimzers = \
+            fitbm_one_prob(problem=parsed_problem,
+                           options=options)
         results.extend(problem_results)
         failed_problems.extend(problem_fails)
 
+    for keys, minimzers in unselected_minimzers.items():
+        minimizers_all = options.minimizers[keys]
+        options.minimizers[keys] = list(set(minimizers_all) - set(minimzers))
+
+    # options.minimizers = converge_minimizers
     # If the results are and empty list then this means that all minimizers
     # raise an exception and the tables will produce errors if they run.
     if results == []:
@@ -82,4 +88,4 @@ def fitbenchmark_group(group_name, options, data_dir):
     results = [results_dict[r] for r in
                sorted(results_dict.keys(), key=str.lower)]
 
-    return results, failed_problems
+    return results, failed_problems, unselected_minimzers
