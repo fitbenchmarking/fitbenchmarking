@@ -210,7 +210,7 @@ class CreateResultsTableTests(unittest.TestCase):
         """
         create_results_tables(self.options, self.results, self.best,
                               self.group_name, self.group_dir,
-                              ["pp_1", "pp_2"], [])
+                              ["pp_1", "pp_2"], [], {'min1': []})
         for suffix in SORTED_TABLE_NAMES:
 
             for table_type in ['html', 'txt']:
