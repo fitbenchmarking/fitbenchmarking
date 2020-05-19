@@ -85,8 +85,8 @@ class LocalMinTable(Table):
                 else:
                     res = v.problem.eval_r(
                         v.params, v.data_x, v.data_y, v.data_e)
-                    jac = v.problem.eval_j(v.params, v.problem.eval_r,
-                                           x=v.data_x, y=v.data_y, e=v.data_e)
+                    jac = v.jac.eval(v.params, v.problem.eval_r,
+                                     x=v.data_x, y=v.data_y, e=v.data_e)
                     min_test = np.matmul(res, jac)
 
                     norm_r = np.linalg.norm(res)

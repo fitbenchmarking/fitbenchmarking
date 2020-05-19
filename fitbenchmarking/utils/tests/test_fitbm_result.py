@@ -9,6 +9,7 @@ import numpy as np
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
@@ -33,9 +34,10 @@ class FitbmResultTests(unittest.TestCase):
         self.runtime = 0.01
         self.params = np.array([1, 3, 4, 4])
         self.initial_params = np.array([0, 0, 0, 0])
+        self.jac = ScipyTwoPoint(self.problem)
         self.result = FittingResult(
-            options=self.options, problem=self.problem, chi_sq=self.chi_sq,
-            runtime=self.runtime, minimizer=self.minimizer,
+            options=self.options, problem=self.problem, jac=self.jac,
+            chi_sq=self.chi_sq, runtime=self.runtime, minimizer=self.minimizer,
             initial_params=self.initial_params, params=self.params,
             error_flag=0)
 
@@ -68,9 +70,10 @@ class FitbmResultTests(unittest.TestCase):
         self.problem.sorted_index = [np.array([2, 1, 0, 3]),
                                      np.array([1, 2, 3, 0]),
                                      np.array([3, 0, 1, 2])]
+        jac = ScipyTwoPoint(self.problem)
         self.result = FittingResult(
-            options=self.options, problem=self.problem, chi_sq=chi_sq,
-            runtime=runtime, minimizer=minimizer,
+            options=self.options, problem=self.problem, jac=jac,
+            chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
             initial_params=initial_params, params=params,
             error_flag=0, dataset_id=1)
 

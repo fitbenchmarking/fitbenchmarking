@@ -52,7 +52,6 @@ def fitbm_one_prob(problem, options):
             except KeyError:
                 raise UnknownMinimizerError(
                     'No minimizer given for software: {}'.format(s))
-
             with grabbed_output:
                 controller_cls = ControllerFactory.create_controller(
                     software=s)
@@ -87,6 +86,7 @@ def benchmark(controller, minimizers, options):
     """
     grabbed_output = output_grabber.OutputGrabber(options)
     problem = controller.problem
+    jac = controller.problem.jac
 
     results_problem = []
     num_runs = options.num_runs
@@ -133,6 +133,7 @@ def benchmark(controller, minimizers, options):
 
         result_args = {'options': options,
                        'problem': problem,
+                       'jac': jac,
                        'chi_sq': chi_sq,
                        'runtime': runtime,
                        'minimizer': minimizer,
