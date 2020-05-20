@@ -5,13 +5,13 @@ from unittest import TestCase
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.controllers.bumps_controller import BumpsController
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.controllers.dfo_controller import DFOController
 from fitbenchmarking.controllers.gsl_controller import GSLController
 from fitbenchmarking.controllers.mantid_controller import MantidController
 from fitbenchmarking.controllers.minuit_controller import MinuitController
 from fitbenchmarking.controllers.ralfit_controller import RALFitController
-from fitbenchmarking.controllers.sasview_controller import SasviewController
 from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
@@ -240,11 +240,11 @@ class ControllerTests(TestCase):
             'Mantid controller found a different chi squared for multi fit'
             ' problem.')
 
-    def test_sasview(self):
+    def test_bumps(self):
         """
-        SasviewController: Test for output shape
+        BumpsController: Test for output shape
         """
-        controller = SasviewController(self.problem)
+        controller = BumpsController(self.problem)
         controller.minimizer = 'amoeba'
         self.shared_testing(controller)
 
@@ -392,7 +392,7 @@ class FactoryTests(TestCase):
         Test that the factory returns the correct class for inputs
         """
 
-        valid = ['scipy', 'mantid', 'sasview', 'ralfit']
+        valid = ['scipy', 'mantid', 'bumps', 'ralfit']
         invalid = ['foo', 'bar', 'hello', 'r2d2']
 
         for software in valid:

@@ -10,7 +10,7 @@ import numpy as np
 from fitbenchmarking.controllers.base_controller import Controller
 
 
-class SasviewController(Controller):
+class BumpsController(Controller):
     """
     Controller for the Sasview fitting software.
 
@@ -25,7 +25,7 @@ class SasviewController(Controller):
         :param problem: Problem to fit
         :type problem: FittingProblem
         """
-        super(SasviewController, self).__init__(problem)
+        super(BumpsController, self).__init__(problem)
 
         self._param_names = self.problem.param_names
 

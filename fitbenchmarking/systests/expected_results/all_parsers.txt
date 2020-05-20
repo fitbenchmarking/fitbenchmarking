@@ -1,4 +1,4 @@
-                                  dfo                   gsl                 mantid                 minuit                 ralfit                sasview                 scipy
+                                  dfo                   gsl                 mantid                 minuit                 ralfit                  bumps                 scipy
                                 dfogn                lmsder                   BFGS                 minuit                     gn                 amoeba       lm-scipy-no-jac
 BENNETT5                 inf (inf)[3]  1.639e-05 (1.021)[1]      0.02038 (1269)[2]      2.114e-05 (1.316)          1.606e-05 (1)      1.608e-05 (1.001)  1.905e-05 (1.186)[1]
 cubic, Start 1  5.244e-14 (1.358e+08)         3.861e-22 (1)   1.85e-12 (4.792e+09)  3.586e-11 (9.288e+10)  6.723e-13 (1.741e+09)  1.119e-14 (2.899e+07)         3.861e-22 (1)
