@@ -218,7 +218,7 @@ class Table:
         :rtype: str
         """
         link_template = '<a href="https://fitbenchmarking.readthedocs.io/en/'\
-            'latest/concept/how/Minimizers.html#{0}">{0}</a>'
+            'latest/concept/how/Minimizers.html#{0}" target="_blank">{0}</a>'
         table.apply(lambda x: self.enable_error(x, error, "<sup>{}</sup>"),
                     axis=1, result_type='expand')
         table.apply(lambda x: self.enable_link(x, links), axis=1,
