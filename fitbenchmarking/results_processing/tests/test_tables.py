@@ -13,6 +13,7 @@ import fitbenchmarking
 from fitbenchmarking.results_processing.tables import SORTED_TABLE_NAMES
 from fitbenchmarking.results_processing.tables import generate_table
 from fitbenchmarking.results_processing.tables import create_results_tables
+from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -101,7 +102,10 @@ def generate_mock_results():
         results = []
         for j in range(num_min):
             p.starting_values = starting_values
-            r = FittingResult(options, p, starting_values, params_in[i][j])
+            jac = ScipyTwoPoint(p)
+            r = FittingResult(options=options, problem=p, jac=jac,
+                              initial_params=starting_values,
+                              params=params_in[i][j])
             r.chi_sq = acc_in[i][j]
             r.runtime = runtime_in[i][j]
             r.error_flag = error_in[i][j]

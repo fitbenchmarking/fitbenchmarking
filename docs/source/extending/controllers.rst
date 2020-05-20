@@ -13,7 +13,7 @@ that the fitting software can use, and converting the result back to a
 standardised format (numpy arrays). As well as this, the controller must be
 written so that the fitting is separated from the preparation wherever possible
 in order to give accurate timings for the fitting. Examples of these
-controllers can be found in ``fitbenchmarking/fitting/controllers``.
+controllers can be found in ``fitbenchmarking/controllers``.
 
 Fitting software requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -22,7 +22,7 @@ In order to add a new controller, you will need to:
 
 1. Give the software a name `<software_name>` this will be used by users when
    selecting this software.
-2. Create ``fitbenchmarking/fitting/controllers/<software_name>_controller.py``
+2. Create ``fitbenchmarking/controllers/<software_name>_controller.py``
    which contains a new subclass of ``BaseSoftwareController``
    (from ``base_controller.py``).
    This should implement 4 functions:
@@ -50,7 +50,7 @@ In order to add a new controller, you will need to:
    the ``example_scripts`` directory)
 
 5. Create tests for the software in
-   ``fitbenchmarking/fitting/tests/test_controllers.py``.
+   ``fitbenchmarking/controllers/tests/test_controllers.py``.
    Unless the new controller is more complicated than the currently available
    controllers, this can be done by following the example of the others.
 
@@ -58,16 +58,19 @@ In order to add a new controller, you will need to:
    For ease of maintenance, please add new controllers to a list of software in alphabetical order.
 
 
-The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` class
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and :class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian` classes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When adding new minimizers, you will find it helpful to make use of the
-following members of the :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` class:
+following members of the :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and subclasses of :class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian` classes:
+
+
+.. currentmodule:: fitbenchmarking.jacobian.base_jacobian
+.. autoclass:: fitbenchmarking.jacobian.base_jacobian.Jacobian
+          :members: eval
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
 	          :noindex:
-		  :members: eval_f, eval_r, eval_r_norm, eval_j,
+		  :members: eval_f, eval_r, eval_r_norm,
 			data_x, data_y, data_e, starting_values
-
-
