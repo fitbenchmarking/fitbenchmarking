@@ -68,7 +68,7 @@ def generate_mock_results():
                   list of list fitting results,
                   Options object)
     """
-    software = 'scipy'
+    software = 'scipy_ls'
     options = Options()
     options.software = [software]
     num_min = len(options.minimizers[options.software[0]])
@@ -174,6 +174,8 @@ class GenerateTableTests(unittest.TestCase):
             exp_line = '' if exp_line is None else exp_line.strip('\n')
             act_line = '' if act_line is None else act_line.strip('\n')
             exp_line = exp_line.replace(html_id_expected, html_id)
+            # to pass on windows need to first do this before comparing
+            act_line = act_line.replace('href=\"..\\', 'href=\"../')
             if act_line != exp_line:
                 diff.append([exp_line, act_line])
         self.assertListEqual([], diff)

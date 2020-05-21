@@ -16,17 +16,17 @@ It came out of the University of Maryland and NIST as part of the DANSE
 FitBenchmarking currently supports the Bumps minimizers:
 
 * `Nelder-Mead Simplex <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#nelder-mead-simplex>`_ (:code:`amoeba`)
-  
+
 * `Levenberg-Marquardt <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#fit-lm>`_  (:code:`lm`)
-  
+
 * `Quasi-Newton BFGS <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#quasi-newton-bfgs>`_ (:code:`newton`)
-  
+
 * `Differential Evolution <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#differential-evolution>`_ (:code:`de`)
-  
+
 * `MINPACK <https://github.com/bumps/bumps/blob/96b5100fc3d5b9485bd4a444c83a33617b74aa9d/bumps/mpfit.py>`_ (:code:`mp`)  This is a translation of `MINPACK` to Python.
 
 **Links** `GitHub - bumps <https://github.com/bumps/bumps>`_
-  
+
 DFO
 ---
 
@@ -38,7 +38,7 @@ of Oxford, in conjunction with NAG.  They are particularly well suited for solvi
 FitBenchmarking currently supports the DFO minimizers:
 
 * `Derivative-Free Optimizer for Least Squares <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ (:code:`dfols`)
-  
+
 * `Derivative-Free Gauss-Newton Solver <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ (:code:`dfogn`)
 
  **Links** `GitHub - DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn>`_ `GitHub - DFO-LS <https://github.com/numericalalgorithmsgroup/dfols>`_
@@ -51,7 +51,7 @@ provides a wide range of mathematical routines.  We call GSL using  the `pyGSL P
 <https://sourceforge.net/projects/pygsl/>`_.
 
 The GSL routines have a number of parameters that need to be chosen, often without default suggestions.
-We have taken the values as used by Mantid. 
+We have taken the values as used by Mantid.
 
 We provide implementations for the following
 packages in the `multiminimize <https://www.gnu.org/software/gsl/doc/html/multimin.html>`_ and `multifit <https://www.gnu.org/software/gsl/doc/html/nls.html>`_ sections of the library:
@@ -60,19 +60,19 @@ packages in the `multiminimize <https://www.gnu.org/software/gsl/doc/html/multim
 * `Levenberg-Marquardt (unscaled) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multifit_nlin.lmder>`_ (:code:`lmder`)
 
 * `Levenberg-Marquardt (scaled) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multifit_nlin.lmsder>`_ (:code:`lmsder`)
-  
+
 * `Nelder-Mead Simplex Algorithm <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.nmsimplex>`_ (:code:`nmsimplex`)
 
 * `Nelder-Mead Simplex Algorithm (version 2) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.nmsimplex2>`_ (:code:`nmsimplex2`)
-  
+
 * `Polak-Ribiere Conjugate Gradient Algorithm <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.conjugate_pr>`_ (:code:`conjugate_pr`)
-  
+
 * `Fletcher-Reeves Conjugate-Gradient <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.conjugate_fr>`_ (:code:`conjugate_fr`)
-  
+
 * `The vector quasi-Newton BFGS method <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.vector_bfgs>`_ (:code:`vector_bfgs`)
-  
+
 * `The vector quasi-Newton BFGS method (version 2) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.vector_bfgs2>`_ (:code:`vector_bfgs2`)
-  
+
 * `Steepest Descent <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.steepest_descent>`_ (:code:`steepest_descent`)
 
 **Links** `SourceForge PyGSL <http://pygsl.sourceforge.net/>`_
@@ -91,7 +91,7 @@ manipulate and analyze neutron scattering and muon spectroscopy data.
 It has support for a number of minimizers, most of which are from GSL.
 
 * `BFGS <https://docs.mantidproject.org/nightly/fitting/fitminimizers/BFGS.html>`_ (:code:`BFGS`)
-  
+
 * `Conjugate gradient (Fletcher-Reeves) <https://docs.mantidproject.org/nightly/fitting/fitminimizers/FletcherReeves.html>`_ (:code:`Conjugate gradient (Fletcher-Reeves imp.)`)
 
 * `Conjugate gradient (Polak-Ribiere) <https://docs.mantidproject.org/nightly/fitting/fitminimizers/PolakRibiere.html>`_ (:code:`Conjugate gradient (Polak-Ribiere imp.)`)
@@ -99,13 +99,13 @@ It has support for a number of minimizers, most of which are from GSL.
 * `Damped GaussNewton <https://docs.mantidproject.org/nightly/fitting/fitminimizers/DampedGaussNewton.html>`_ (:code:`Damped GaussNewton`)
 
 * `Levenberg-Marquardt algorithm <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardt.html>`_ (:code:`Levenberg-Marquardt`)
-  
+
 * `Levenberg-Marquardt MD <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardtMD.html>`_ (:code:`Levenberg-MarquardtMD`) - An implementation of Levenberg-Marquardt intended for MD workspaces, where work is divided into chunks to achieve a greater efficiency for a large number of data points.
 
 * `Simplex <https://docs.mantidproject.org/nightly/fitting/fitminimizers/Simplex.html>`_ (:code:`simplex`)
 
 * `SteepestDescent <https://docs.mantidproject.org/nightly/fitting/fitminimizers/Simplex.html>`_ (:code:`SteepestDescent`)
-  
+
 * `Trust Region <https://docs.mantidproject.org/nightly/fitting/fitminimizers/TrustRegion.html>`_ (:code:`Trust Region`) - An implementation of one of the algorithms available in RALFit.
 
  **Links** `GitHub - Mantid <https://github.com/mantidproject/mantid>`_ `Mantid's Fitting Docs <https://docs.mantidproject.org/nightly/algorithms/Fit-v1.html>`_
@@ -115,7 +115,7 @@ It has support for a number of minimizers, most of which are from GSL.
    The external package Mantid must be installed to use these minimizers.
    See :ref:`InstallMantid`
 
- 
+
 Minuit
 ------
 
@@ -150,8 +150,29 @@ SciPy
 -----
 
 `SciPy <https://www.scipy.org>`_ is the standard python package for mathematical
+software.  In particular, we use the `minimize <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html>`_
+solver for general minimization problems from the optimization chapter the
+SciPy's library. Currently we only use the algorithms that do not require
+Hessian information as inputs.
+
+* `Nelder-Mead algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-neldermead.html>`_ (:code:`Nelder-Mead`)
+* `Powell algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-powell.html>`_ (:code:`Powell`)
+* `Conjugate gradient algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-cg.html>`_ (:code:`CG`)
+* `BFGS algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-bfgs.html>`_ (:code:`BFGS`)
+* `Newton-CG algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-newtoncg.html>`_  (:code:`Newton-CG`)
+* `L-BFGS-B algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-lbfgsb.html>`_ (:code:`L-BFGS-B`)
+* `Truncated Newton (TNC) algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-tnc.html>`_ (:code:`TNC`)
+* `Sequential Least SQuares Programming <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html>`_ (:code:`SLSQP`)
+
+**Links** `Github - SciPy minimize <https://github.com/scipy/scipy/blob/master/scipy/optimize/_minimize.py>`_
+
+SciPy LS
+--------
+
+`SciPy <https://www.scipy.org>`_ is the standard python package for mathematical
 software.  In particular, we use the `least_squares <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares>`_
-solver from the optimization chapter the SciPy's library.
+solver for Least-Squares minimization problems from the optimization chapter
+the SciPy's library.
 
 * Levenberg-Marquardt with supplied Jacobian (:code:`lm-scipy`)  - a wrapper around MINPACK
 * Levenberg-Marquardt with no Jacobian passed (:code:`lm-scipy-no-jac`)  - as above, but using MINPACK's approximate Jacobian

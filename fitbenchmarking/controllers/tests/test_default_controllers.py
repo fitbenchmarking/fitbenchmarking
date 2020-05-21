@@ -1,3 +1,4 @@
+# Tests for the controllers available from a default fitbenchmarking install
 import inspect
 import numpy as np
 import os
@@ -7,12 +8,10 @@ from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.controllers.dfo_controller import DFOController
-from fitbenchmarking.controllers.gsl_controller import GSLController
-from fitbenchmarking.controllers.mantid_controller import MantidController
 from fitbenchmarking.controllers.minuit_controller import MinuitController
-from fitbenchmarking.controllers.ralfit_controller import RALFitController
 from fitbenchmarking.controllers.sasview_controller import SasviewController
 from fitbenchmarking.controllers.scipy_controller import ScipyController
+from fitbenchmarking.controllers.scipy_ls_controller import ScipyLSController
 
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
@@ -155,91 +154,6 @@ class ControllerTests(TestCase):
     def setUp(self):
         self.problem = make_fitting_problem()
 
-    def test_mantid(self):
-        """
-        MantidController: Test for output shape
-        """
-        controller = MantidController(self.problem)
-        controller.minimizer = 'Levenberg-Marquardt'
-        self.shared_testing(controller)
-
-        controller._status = "success"
-        self.check_converged(controller)
-        controller._status = "Failed to converge"
-        self.check_max_iterations(controller)
-        controller._status = "Failed"
-        self.check_diverged(controller)
-
-    def test_mantid_multifit(self):
-        """
-        MantidController: Additional bespoke test for multifit
-        """
-        file_path = os.path.join('multifit_set', 'multifit.txt')
-        problem = make_fitting_problem(file_path)
-
-        controller = MantidController(problem)
-        controller.minimizer = 'Levenberg-Marquardt'
-
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        self.assertEqual(len(controller.final_params), len(controller.data_x),
-                         'Multifit did not return a result for each data file')
-
-        self.assertEqual(len(controller.final_params[0]),
-                         len(controller.initial_params),
-                         'Incorrect number of final params.')
-
-    def test_mantid_singlefit_chisquared(self):
-        """
-        Test the override in Mantid conroller is working correctly for
-        evaluating chi_squared (SingleFit).
-        """
-        m_controller = MantidController(self.problem)
-        b_controller = DummyController(self.problem)
-        params = np.array([1, 2, 3, 4])
-        x = np.array([6, 2, 32, 4])
-        y = np.array([1, 21, 3, 4])
-        e = np.array([.5, .003, 1, 2])
-
-        expected = b_controller.eval_chisq(params=params, x=x, y=y, e=e)
-        actual = m_controller.eval_chisq(params=params, x=x, y=y, e=e)
-
-        self.assertEqual(expected, actual,
-                         'Mantid controller found a different chi squared'
-                         ' for single fit problem.')
-
-    def test_mantid_multifit_chisquared(self):
-        """
-        Test the override in Mantid conroller is working correctly for
-        evaluating chi_squared (MultiFit).
-        """
-        m_controller = MantidController(self.problem)
-        b_controller = DummyController(self.problem)
-        params = [np.array([1, 2, 3, 4]),
-                  np.array([1, 2, 3, 4]),
-                  np.array([1, 2, 3, 4])]
-        xs = [np.array([6, 2, 32, 4]),
-              np.array([6, 2, 32, 4]),
-              np.array([6, 2, 32, 4])]
-        ys = [np.array([1, 21, 3, 4]),
-              np.array([1, 21, 3, 4]),
-              np.array([1, 21, 3, 4])]
-        es = [np.array([.5, .003, 1, 2]),
-              np.array([.5, .003, 1, 2]),
-              np.array([.5, .003, 1, 2])]
-
-        expected = [b_controller.eval_chisq(params=p, x=x, y=y, e=e)
-                    for x, y, e, p in zip(xs, ys, es, params)]
-        actual = m_controller.eval_chisq(params=params, x=xs, y=ys, e=es)
-
-        self.assertListEqual(
-            expected, actual,
-            'Mantid controller found a different chi squared for multi fit'
-            ' problem.')
-
     def test_sasview(self):
         """
         SasviewController: Test for output shape
@@ -255,12 +169,27 @@ class ControllerTests(TestCase):
         controller._status = 1
         self.check_diverged(controller)
 
+    def test_scipy_ls(self):
+        """
+        ScipyController: Test for output shape
+        """
+        controller = ScipyLSController(self.problem)
+        controller.minimizer = 'lm'
+        self.shared_testing(controller)
+
+        controller._status = 1
+        self.check_converged(controller)
+        controller._status = 0
+        self.check_max_iterations(controller)
+        controller._status = -1
+        self.check_diverged(controller)
+
     def test_scipy(self):
         """
         ScipyController: Test for output shape
         """
         controller = ScipyController(self.problem)
-        controller.minimizer = 'lm'
+        controller.minimizer = 'CG'
         self.shared_testing(controller)
 
         controller._status = 1
@@ -287,41 +216,6 @@ class ControllerTests(TestCase):
             controller._status = 2
             self.check_max_iterations(controller)
             controller._status = 5
-            self.check_diverged(controller)
-
-    def test_gsl(self):
-        """
-        GSLController: Tests for output shape
-        """
-        controller = GSLController(self.problem)
-        # test one from each class
-        minimizers = ['lmsder',
-                      'nmsimplex',
-                      'conjugate_pr']
-        for minimizer in minimizers:
-            controller.minimizer = minimizer
-            self.shared_testing(controller)
-
-            controller.flag = 0
-            self.check_converged(controller)
-            controller.flag = 1
-            self.check_max_iterations(controller)
-            controller.flag = 2
-            self.check_diverged(controller)
-
-    def test_ralfit(self):
-        """
-        RALFitController: Tests for output shape
-        """
-        controller = RALFitController(self.problem)
-        minimizers = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg']
-        for minimizer in minimizers:
-            controller.minimizer = minimizer
-            self.shared_testing(controller)
-
-            controller._status = 0
-            self.check_converged(controller)
-            controller._status = 2
             self.check_diverged(controller)
 
     def test_minuit(self):
@@ -392,12 +286,14 @@ class FactoryTests(TestCase):
         Test that the factory returns the correct class for inputs
         """
 
-        valid = ['scipy', 'mantid', 'sasview', 'ralfit']
+        valid = ['scipy_ls', 'mantid', 'sasview', 'ralfit']
+        valid_names = ['scipyls', 'mantid', 'sasview', 'ralfit']
         invalid = ['foo', 'bar', 'hello', 'r2d2']
 
-        for software in valid:
+        for software, v in zip(valid, valid_names):
             controller = ControllerFactory.create_controller(software)
-            self.assertTrue(controller.__name__.lower().startswith(software))
+            print(controller.__name__.lower())
+            self.assertTrue(controller.__name__.lower().startswith(v))
 
         for software in invalid:
             self.assertRaises(exceptions.NoControllerError,

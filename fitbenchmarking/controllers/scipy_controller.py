@@ -1,8 +1,9 @@
 """
 Implements a controller for the scipy fitting software.
+In particular, here for the scipy minimize solver for general minimization problems
 """
 
-from scipy.optimize import least_squares
+from scipy.optimize import minimize
 
 from fitbenchmarking.controllers.base_controller import Controller
 
@@ -27,27 +28,41 @@ class ScipyController(Controller):
         if self.minimizer == "lm-scipy":
             self.minimizer = "lm"
 
+        self.options = {'maxiter': 500}
+
+    def eval_jac(self, x, *args):
+        """
+        Wrapper for problem.eval_j to form the approximate Jacobian for
+        problem.eval_r_norm
+
+        :param x: The parameter values to find the Jacobian at
+        :type x: list
+
+        :return: Approximation of the Jacobian
+        :rtype: numpy array
+        """
+        out = self.problem.eval_j(params=x,
+                                  func=self.problem.eval_r_norm,
+                                  *args)
+        return out
+
     def fit(self):
         """
         Run problem with Scipy.
         """
-        # The minimizer "lm-scipy-no-jac" uses MINPACK's Jacobian evaluation
-        # which are significantly faster and gives different results than
-        # using the minimizer "lm-scipy" which uses problem.eval_j for the
-        # Jacobian evaluation. We do not see significant speed changes or
-        # difference in the accuracy results when running trf or dogbox with
-        # or without problem.eval_j for the Jacobian evaluation
-        if self.minimizer == "lm-scipy-no-jac":
-            self.result = least_squares(fun=self.problem.eval_r,
-                                        x0=self.initial_params,
-                                        method="lm",
-                                        max_nfev=500)
+        # Neither the Nelder-Mead or Powell minimizers require a Jacobian
+        # so are run without that argument.
+        if self.minimizer == "Nelder-Mead" or self.minimizer == "Powell":
+            self.result = minimize(fun=self.problem.eval_r_norm,
+                                   x0=self.initial_params,
+                                   method=self.minimizer,
+                                   options=self.options)
         else:
-            self.result = least_squares(fun=self.problem.eval_r,
-                                        x0=self.initial_params,
-                                        method=self.minimizer,
-                                        jac=self.problem.eval_j,
-                                        max_nfev=500)
+            self.result = minimize(fun=self.problem.eval_r_norm,
+                                   x0=self.initial_params,
+                                   method=self.minimizer,
+                                   jac=self.eval_jac,
+                                   options=self.options)
 
         self._popt = self.result.x
         self._status = self.result.status
