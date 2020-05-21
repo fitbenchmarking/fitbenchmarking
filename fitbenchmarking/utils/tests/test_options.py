@@ -75,14 +75,14 @@ class OptionsTests(unittest.TestCase):
                             'external_output': False}}
 
         opts_file = 'test_options_tests_{}.txt'.format(
-            datetime.datetime.now())
+            datetime.datetime.now().strftime('%Y-%m-%d %H %M %S %f'))
         with open(opts_file, 'w') as f:
             f.write(config_str)
         self.options = opts
         self.options_file = opts_file
 
         opts_file_incorrect = 'test_incorrect_options_tests_{}.txt'.format(
-            datetime.datetime.now())
+            datetime.datetime.now().strftime('%Y-%m-%d %H %M %S %f'))
         with open(opts_file_incorrect, 'w') as f:
             f.write(incorrect_config_str)
         self.options_file_incorrect = opts_file_incorrect

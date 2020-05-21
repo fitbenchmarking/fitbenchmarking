@@ -54,6 +54,12 @@ In order to add a new controller, you will need to:
    Unless the new controller is more complicated than the currently available
    controllers, this can be done by following the example of the others.
 
+6. In the :ref:`Minimizers` page of the :ref:`how` page, update with the new
+   software and minimzers following the structure there.
+
+7. At the bottom of :doc:`main index page <../index>`, add the logo of the
+   of the software package in the `Currently Benchmarking` section.
+
 .. note::
    For ease of maintenance, please add new controllers to a list of software in alphabetical order.
 

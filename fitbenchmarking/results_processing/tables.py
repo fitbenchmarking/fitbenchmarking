@@ -127,7 +127,7 @@ def create_results_tables(options, results, best_results, group_name,
 
 def load_table(table):
     """
-    Create a table object.
+    Create and return table object.
 
     :param table: The name of the table to create a table for
     :type table: string
@@ -154,7 +154,7 @@ def load_table(table):
 def generate_table(results, best_results, options, group_dir,
                    pp_locations, table_name, suffix):
     """
-    Saves the results of the fitting to html/txt tables.
+    Generate html/txt tables.
 
     :param results: results nested array of objects
     :type results: list of list of
