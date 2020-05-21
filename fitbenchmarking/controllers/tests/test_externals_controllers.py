@@ -1,3 +1,5 @@
+# Tests for controllers for externals, i.e. those available in addition
+# to those from a default fitbenchmarking install
 import inspect
 import numpy as np
 import os
@@ -6,13 +8,9 @@ from unittest import TestCase
 from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
-from fitbenchmarking.controllers.dfo_controller import DFOController
 from fitbenchmarking.controllers.gsl_controller import GSLController
 from fitbenchmarking.controllers.mantid_controller import MantidController
-from fitbenchmarking.controllers.minuit_controller import MinuitController
 from fitbenchmarking.controllers.ralfit_controller import RALFitController
-from fitbenchmarking.controllers.sasview_controller import SasviewController
-from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
@@ -49,102 +47,6 @@ class DummyController(Controller):
 
     def error_flags(self):
         raise NotImplementedError
-
-
-class BaseControllerTests(TestCase):
-    """
-    Tests for base software controller class methods.
-    """
-
-    def setUp(self):
-        self.problem = make_fitting_problem()
-
-    def test_data(self):
-        """
-        BaseSoftwareController: Test data is read into controller correctly
-        """
-
-        controller = DummyController(self.problem)
-
-        if self.problem.start_x is not None:
-            assert min(controller.data_x) >= self.problem.start_x
-        if self.problem.end_x is not None:
-            assert max(controller.data_x) <= self.problem.end_x
-
-        assert len(controller.data_e) == len(controller.data_x)
-        assert len(controller.data_e) == len(controller.data_y)
-
-        self.assertTrue(all(x in self.problem.data_x
-                            for x in controller.data_x))
-        self.assertTrue(all(y in self.problem.data_y
-                            for y in controller.data_y))
-
-        e_is_default = self.problem.data_e is None
-        if not e_is_default:
-            self.assertTrue(all(e in self.problem.data_e
-                                for e in controller.data_e))
-
-    def test_prepare(self):
-        """
-        BaseSoftwareController: Test prepare function
-        """
-        controller = DummyController(self.problem)
-        controller.minimizer = 'test'
-        controller.parameter_set = 0
-        controller.prepare()
-        assert controller.setup_result == 53
-
-    def test_eval_chisq_no_errors(self):
-        """
-        BaseSoftwareController: Test eval_chisq function
-        """
-        controller = DummyController(self.problem)
-
-        params = np.array([1, 2, 3, 4])
-        x = np.array([6, 2, 32, 4])
-        y = np.array([1, 21, 3, 4])
-        e = None
-
-        result = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
-
-        assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
-
-    def test_eval_chisq_with_errors(self):
-        """
-        BaseSoftwareController: Test eval_chisq function
-        """
-        controller = DummyController(self.problem)
-
-        params = np.array([1, 2, 3, 4])
-        x = np.array([6, 2, 32, 4])
-        y = np.array([1, 21, 3, 4])
-        e = np.array([.5, .003, 1, 2])
-
-        result = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
-
-        assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
-
-    def test_check_flag_attr_true(self):
-        """
-        BaseSoftwareController: Test check_attributes function for flag
-                                attribute
-        """
-        controller = DummyController(self.problem)
-        controller.flag = 1
-        controller.check_attributes()
-
-    def test_check_flag_attr_false(self):
-        """
-        BaseSoftwareController: Test check_attributes function for flag
-                                attribute
-        """
-        controller = DummyController(self.problem)
-        with self.assertRaises(exceptions.ControllerAttributeError):
-            controller.check_attributes()
-
-        controller.flag = 10
-        with self.assertRaises(exceptions.ControllerAttributeError):
-            controller.check_attributes()
 
 
 class ControllerTests(TestCase):
@@ -240,55 +142,6 @@ class ControllerTests(TestCase):
             'Mantid controller found a different chi squared for multi fit'
             ' problem.')
 
-    def test_sasview(self):
-        """
-        SasviewController: Test for output shape
-        """
-        controller = SasviewController(self.problem)
-        controller.minimizer = 'amoeba'
-        self.shared_testing(controller)
-
-        controller._status = 0
-        self.check_converged(controller)
-        controller._status = 2
-        self.check_max_iterations(controller)
-        controller._status = 1
-        self.check_diverged(controller)
-
-    def test_scipy(self):
-        """
-        ScipyController: Test for output shape
-        """
-        controller = ScipyController(self.problem)
-        controller.minimizer = 'lm'
-        self.shared_testing(controller)
-
-        controller._status = 1
-        self.check_converged(controller)
-        controller._status = 0
-        self.check_max_iterations(controller)
-        controller._status = -1
-        self.check_diverged(controller)
-
-    def test_dfo(self):
-        """
-        DFOController: Tests for output shape
-        """
-        controller = DFOController(self.problem)
-        # test one from each class
-        minimizers = ['dfogn',
-                      'dfols']
-        for minimizer in minimizers:
-            controller.minimizer = minimizer
-            self.shared_testing(controller)
-
-            controller._status = 0
-            self.check_converged(controller)
-            controller._status = 2
-            self.check_max_iterations(controller)
-            controller._status = 5
-            self.check_diverged(controller)
-
     def test_gsl(self):
         """
         GSLController: Tests for output shape
@@ -323,18 +176,6 @@ class ControllerTests(TestCase):
             self.check_converged(controller)
             controller._status = 2
             self.check_diverged(controller)
-
-    def test_minuit(self):
-        """
-        MinuitController: Tests for output shape
-        """
-        controller = MinuitController(self.problem)
-        controller.minimizer = 'minuit'
-        self.shared_testing(controller)
-        controller._status = 0
-        self.check_converged(controller)
-        controller._status = 2
-        self.check_diverged(controller)
 
     def shared_testing(self, controller):
         """
@@ -392,7 +233,7 @@ class FactoryTests(TestCase):
         Test that the factory returns the correct class for inputs
         """
 
-        valid = ['scipy', 'mantid', 'sasview', 'ralfit']
+        valid = ['mantid', 'ralfit']
         invalid = ['foo', 'bar', 'hello', 'r2d2']
 
         for software in valid:
