@@ -154,11 +154,11 @@ class ControllerTests(TestCase):
     def setUp(self):
         self.problem = make_fitting_problem()
 
-    def test_sasview(self):
+    def test_bumps(self):
         """
         SasviewController: Test for output shape
         """
-        controller = SasviewController(self.problem)
+        controller = BumpsController(self.problem)
         controller.minimizer = 'amoeba'
         self.shared_testing(controller)
 
@@ -167,113 +167,6 @@ class ControllerTests(TestCase):
         controller._status = 2
         self.check_max_iterations(controller)
         controller._status = 1
-        self.check_diverged(controller)
-
-    def test_scipy_ls(self):
-        """
-<<<<<<< HEAD:fitbenchmarking/controllers/tests/test_controllers.py
-        file_path = os.path.join('multifit_set', 'multifit.txt')
-        problem = make_fitting_problem(file_path)
-
-        controller = MantidController(problem)
-        controller.minimizer = 'Levenberg-Marquardt'
-
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        self.assertEqual(len(controller.final_params), len(controller.data_x),
-                         'Multifit did not return a result for each data file')
-
-        self.assertEqual(len(controller.final_params[0]),
-                         len(controller.initial_params),
-                         'Incorrect number of final params.')
-
-    def test_mantid_singlefit_chisquared(self):
-        """
-        Test the override in Mantid conroller is working correctly for
-        evaluating chi_squared(SingleFit).
-        """
-        m_controller = MantidController(self.problem)
-        b_controller = DummyController(self.problem)
-        params = np.array([1, 2, 3, 4])
-        x = np.array([6, 2, 32, 4])
-        y = np.array([1, 21, 3, 4])
-        e = np.array([.5, .003, 1, 2])
-
-        expected = b_controller.eval_chisq(params=params, x=x, y=y, e=e)
-        actual = m_controller.eval_chisq(params=params, x=x, y=y, e=e)
-
-        self.assertEqual(expected, actual,
-                         'Mantid controller found a different chi squared'
-                         ' for single fit problem.')
-
-    def test_mantid_multifit_chisquared(self):
-        """
-        Test the override in Mantid conroller is working correctly for
-        evaluating chi_squared(MultiFit).
-        """
-        m_controller = MantidController(self.problem)
-        b_controller = DummyController(self.problem)
-        params = [np.array([1, 2, 3, 4]),
-                  np.array([1, 2, 3, 4]),
-                  np.array([1, 2, 3, 4])]
-        xs = [np.array([6, 2, 32, 4]),
-              np.array([6, 2, 32, 4]),
-              np.array([6, 2, 32, 4])]
-        ys = [np.array([1, 21, 3, 4]),
-              np.array([1, 21, 3, 4]),
-              np.array([1, 21, 3, 4])]
-        es = [np.array([.5, .003, 1, 2]),
-              np.array([.5, .003, 1, 2]),
-              np.array([.5, .003, 1, 2])]
-
-        expected = [b_controller.eval_chisq(params=p, x=x, y=y, e=e)
-                    for x, y, e, p in zip(xs, ys, es, params)]
-        actual = m_controller.eval_chisq(params=params, x=xs, y=ys, e=es)
-
-        self.assertListEqual(
-            expected, actual,
-            'Mantid controller found a different chi squared for multi fit'
-            ' problem.')
-
-    def test_bumps(self):
-        """
-        BumpsController: Test for output shape
-        """
-        controller = BumpsController(self.problem)
-        controller.minimizer = 'amoeba'
-=======
-        ScipyController: Test for output shape
-        """
-        controller = ScipyLSController(self.problem)
-        controller.minimizer = 'lm'
-
-
->>>>>> > origin / release - 0.1.x: fitbenchmarking / controllers / tests / test_default_controllers.py
-        self.shared_testing(controller)
-
-        controller._status = 1
-        self.check_converged(controller)
-        controller._status = 0
-        self.check_max_iterations(controller)
-        controller._status = -1
-        self.check_diverged(controller)
-
-    def test_scipy(self):
-        """
-        ScipyController: Test for output shape
-        """
-        controller = ScipyController(self.problem)
-        controller.minimizer = 'CG'
-        self.shared_testing(controller)
-
-        controller._status = 1
-        self.check_converged(controller)
-        controller._status = 0
-        self.check_max_iterations(controller)
-        controller._status = -1
         self.check_diverged(controller)
 
     def test_dfo(self):
@@ -305,6 +198,37 @@ class ControllerTests(TestCase):
         controller._status = 0
         self.check_converged(controller)
         controller._status = 2
+        self.check_diverged(controller)
+
+    def test_scipy(self):
+        """
+        ScipyController: Test for output shape
+        """
+        controller = ScipyController(self.problem)
+        controller.minimizer = 'CG'
+        self.shared_testing(controller)
+
+        controller._status = 1
+        self.check_converged(controller)
+        controller._status = 0
+        self.check_max_iterations(controller)
+        controller._status = -1
+        self.check_diverged(controller)
+
+    def test_scipy_ls(self):
+        """
+        ScipyLSController: Test for output shape
+        """
+        controller = ScipyLSController(self.problem)
+        controller.minimizer = 'lm'
+
+        self.shared_testing(controller)
+
+        controller._status = 1
+        self.check_converged(controller)
+        controller._status = 0
+        self.check_max_iterations(controller)
+        controller._status = -1
         self.check_diverged(controller)
 
     def shared_testing(self, controller):
@@ -363,17 +287,12 @@ class FactoryTests(TestCase):
         Test that the factory returns the correct class for inputs
         """
 
-<<<<<<< HEAD:fitbenchmarking/controllers/tests/test_controllers.py
-        valid = ['scipy', 'mantid', 'bumps', 'ralfit']
-=======
         valid = ['scipy_ls', 'mantid', 'sasview', 'ralfit']
         valid_names = ['scipyls', 'mantid', 'sasview', 'ralfit']
->>>>>>> origin/release-0.1.x:fitbenchmarking/controllers/tests/test_default_controllers.py
         invalid = ['foo', 'bar', 'hello', 'r2d2']
 
         for software, v in zip(valid, valid_names):
             controller = ControllerFactory.create_controller(software)
-            print(controller.__name__.lower())
             self.assertTrue(controller.__name__.lower().startswith(v))
 
         for software in invalid:
