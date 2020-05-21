@@ -156,7 +156,7 @@ class ControllerTests(TestCase):
 
     def test_bumps(self):
         """
-        SasviewController: Test for output shape
+        BumpsController: Test for output shape
         """
         controller = BumpsController(self.problem)
         controller.minimizer = 'amoeba'
