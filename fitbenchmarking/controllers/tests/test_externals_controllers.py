@@ -1,5 +1,5 @@
 # Tests for controllers for externals, i.e. those available in addition
-# to those from a basic fitbenchmarking install
+# to those from a default fitbenchmarking install
 import inspect
 import numpy as np
 import os

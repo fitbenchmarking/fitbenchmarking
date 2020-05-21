@@ -1,4 +1,4 @@
-# Tests for controllers available from basic fitbenchmarking install
+# Tests for the controllers available from a default fitbenchmarking install
 import inspect
 import numpy as np
 import os
