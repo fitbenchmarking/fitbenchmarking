@@ -11,6 +11,7 @@ from fitbenchmarking.controllers.dfo_controller import DFOController
 from fitbenchmarking.controllers.minuit_controller import MinuitController
 from fitbenchmarking.controllers.sasview_controller import SasviewController
 from fitbenchmarking.controllers.scipy_controller import ScipyController
+from fitbenchmarking.controllers.scipy_ls_controller import ScipyLSController
 
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
@@ -168,12 +169,27 @@ class ControllerTests(TestCase):
         controller._status = 1
         self.check_diverged(controller)
 
+    def test_scipy_ls(self):
+        """
+        ScipyController: Test for output shape
+        """
+        controller = ScipyLSController(self.problem)
+        controller.minimizer = 'lm'
+        self.shared_testing(controller)
+
+        controller._status = 1
+        self.check_converged(controller)
+        controller._status = 0
+        self.check_max_iterations(controller)
+        controller._status = -1
+        self.check_diverged(controller)
+
     def test_scipy(self):
         """
         ScipyController: Test for output shape
         """
         controller = ScipyController(self.problem)
-        controller.minimizer = 'lm'
+        controller.minimizer = 'CG'
         self.shared_testing(controller)
 
         controller._status = 1
@@ -270,12 +286,14 @@ class FactoryTests(TestCase):
         Test that the factory returns the correct class for inputs
         """
 
-        valid = ['scipy', 'sasview']
+        valid = ['scipy_ls', 'mantid', 'sasview', 'ralfit']
+        valid_names = ['scipyls', 'mantid', 'sasview', 'ralfit']
         invalid = ['foo', 'bar', 'hello', 'r2d2']
 
-        for software in valid:
+        for software, v in zip(valid, valid_names):
             controller = ControllerFactory.create_controller(software)
-            self.assertTrue(controller.__name__.lower().startswith(software))
+            print(controller.__name__.lower())
+            self.assertTrue(controller.__name__.lower().startswith(v))
 
         for software in invalid:
             self.assertRaises(exceptions.NoControllerError,

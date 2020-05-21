@@ -68,7 +68,7 @@ def generate_mock_results():
                   list of list fitting results,
                   Options object)
     """
-    software = 'scipy'
+    software = 'scipy_ls'
     options = Options()
     options.software = [software]
     num_min = len(options.minimizers[options.software[0]])
