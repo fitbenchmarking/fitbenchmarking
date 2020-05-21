@@ -21,10 +21,12 @@ class ScipyController(Controller):
 
         self._popt = None
         self.algorithm_check = {
-            'all': ['lm-scipy-no-jac', 'lm-scipy', 'trf', 'dogbox'],
-            'ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf', 'dogbox'],
-            'deriv_free': [None],
-            'general': [None]}
+            'all': ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
+                    'L-BFGS-B', 'TNC', 'SLSQP'],
+            'ls': [None],
+            'deriv_free': ['Nelder-Mead', 'Powell'],
+            'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
+                        'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP']}
 
     def setup(self):
         """

@@ -307,7 +307,6 @@ class FactoryTests(TestCase):
 
         for software, v in zip(valid, valid_names):
             controller = ControllerFactory.create_controller(software)
-            print(controller.__name__.lower())
             self.assertTrue(controller.__name__.lower().startswith(v))
 
         for software in invalid:
