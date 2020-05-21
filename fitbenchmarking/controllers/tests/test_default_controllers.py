@@ -287,8 +287,8 @@ class FactoryTests(TestCase):
         Test that the factory returns the correct class for inputs
         """
 
-        valid = ['scipy_ls', 'mantid', 'sasview', 'ralfit']
-        valid_names = ['scipyls', 'mantid', 'sasview', 'ralfit']
+        valid = ['scipy_ls', 'mantid', 'ralfit']
+        valid_names = ['scipyls', 'mantid', 'ralfit']
         invalid = ['foo', 'bar', 'hello', 'r2d2']
 
         for software, v in zip(valid, valid_names):
