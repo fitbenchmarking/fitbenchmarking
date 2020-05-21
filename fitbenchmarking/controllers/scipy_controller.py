@@ -1,5 +1,6 @@
 """
 Implements a controller for the scipy fitting software.
+In particular, here for the scipy minimize solver for general minimization problems
 """
 
 from scipy.optimize import minimize

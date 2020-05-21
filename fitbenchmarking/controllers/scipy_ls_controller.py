@@ -1,5 +1,6 @@
 """
 Implements a controller for the scipy ls fitting software.
+In particular, for the scipy least_squares solver.
 """
 
 from scipy.optimize import least_squares
