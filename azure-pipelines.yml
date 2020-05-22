@@ -26,6 +26,10 @@ steps:
 
 - script: |
     pip install pytest pytest-azurepipelines
-    pytest fitbenchmarking\utils\tests\test_logger.py
-#    pytest fitbenchmarking\utils\tests\test_fitbm_result.py (breaks in first azure pipeline install)
+    pytest fitbenchmarking\utils
+    pytest fitbenchmarking\core
+    pytest fitbenchmarking\results_processing
+    pytest fitbenchmarking\parsing
+    pytest fitbenchmarking\controllers\test\test_default_controllers.py
+    pytest fitbenchmarking\cli\tests\test_exception_handler.py
   displayName: 'pytest utils tests'

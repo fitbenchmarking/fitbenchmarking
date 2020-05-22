@@ -9,6 +9,7 @@ import os
 from unittest import TestCase
 
 import numpy as np
+import platform
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -59,6 +60,10 @@ def generate_test_cases():
         if known_format not in formats:
             raise RuntimeError(
                 'Could not find {}'.format(known_format))
+
+    # Limits the tests run on Windows (to be extended with issue #534)
+    if platform.system() == "Windows":
+        formats = ['nist']
 
     # create list of test_cases
     expected_dir = os.listdir(os.path.join(test_dir, 'expected'))
