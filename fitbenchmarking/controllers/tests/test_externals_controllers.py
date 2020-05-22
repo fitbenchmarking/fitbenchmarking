@@ -15,6 +15,7 @@ from fitbenchmarking.controllers.ralfit_controller import RALFitController
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 
 
 def make_fitting_problem(file_name='cubic.dat'):
@@ -28,6 +29,8 @@ def make_fitting_problem(file_name='cubic.dat'):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
+    jac = ScipyTwoPoint(fitting_problem)
+    fitting_problem.jac = jac
     return fitting_problem
 
 
