@@ -12,6 +12,7 @@ Here you will find all you need in order to get started.
     :caption: Contents:
 
     guidelines
+    workflow
     structure
     Module Index <module_index/fitbenchmarking>
 
