@@ -1,8 +1,16 @@
 .. _guidelines:
 
-######################
-Contributor Guidelines
-######################
+################
+Coding Standards
+################
+
+All code submitted must meet certain standards, outlined below, before
+it can be merged into the master branch.  It is the contributor's
+job to ensure that the following is satisfied, and the reviewer's
+role to check that these guidelines have been followed.
+
+The workflow to be used for submitting new code/issues is described in
+:ref:`workflow`.
 
 =======
 Linting
@@ -17,15 +25,10 @@ for this.
 Documentation
 =============
 
-Any new code will be accepted only if there is relevent documentation for it in
-the corresponding pull request.
+Any new code will be accepted only if the documentation, written in sphinx and
+found in `docs/`, has been updated accordingly, and the docstrings in the code
+have been updated where neccessary.
 
-===
-Git
-===
-
-Branches should be created from master, and by convention follow the pattern
-"nnn_description" where nnn is the issue number.
 
 =======
 Testing
