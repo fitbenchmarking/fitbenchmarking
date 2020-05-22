@@ -136,6 +136,18 @@ class FittingProblemError(FitBenchmarkException):
         self.error_code = 10
 
 
+class NoJacobianError(FitBenchmarkException):
+    """
+    Indicates a problem with the Jacobian import.
+    """
+
+    def __init__(self, message=''):
+        super(NoJacobianError, self).__init__(message)
+
+        self._class_message = 'Could not find Jacobian class'
+        self.error_code = 11
+
+
 class UnknownTableError(FitBenchmarkException):
     """
     Indicates a problem with the fitting problem.
@@ -145,4 +157,4 @@ class UnknownTableError(FitBenchmarkException):
         super(UnknownTableError, self).__init__(message)
 
         self._class_message = 'Set table option could not be found'
-        self.error_code = 11
+        self.error_code = 12

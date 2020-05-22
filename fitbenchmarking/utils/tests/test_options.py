@@ -27,7 +27,8 @@ class OptionsTests(unittest.TestCase):
             num_runs: 2
             software: foo
                       bar
-            jac_method: random_method
+            jac_method: random_type
+            num_method: random_method
 
             [PLOTTING]
             make_plots: no
@@ -60,7 +61,8 @@ class OptionsTests(unittest.TestCase):
                 'FITTING': {'use_errors': False,
                             'num_runs': 2,
                             'software': ['foo', 'bar'],
-                            'jac_method': 'random_method'},
+                            'jac_method': 'random_type',
+                            'num_method': 'random_method'},
                 'PLOTTING': {'make_plots': False,
                              'colour_scale': [(17.1, 'b_string?'),
                                               (float('inf'), 'final_string')],
@@ -98,6 +100,7 @@ class OptionsTests(unittest.TestCase):
         fitting_opts = self.options['FITTING']
         self.assertEqual(fitting_opts['software'], options.software)
         self.assertEqual(fitting_opts['jac_method'], options.jac_method)
+        self.assertEqual(fitting_opts['num_method'], options.num_method)
 
         plotting_opts = self.options['PLOTTING']
         self.assertEqual(plotting_opts['colour_scale'], options.colour_scale)
