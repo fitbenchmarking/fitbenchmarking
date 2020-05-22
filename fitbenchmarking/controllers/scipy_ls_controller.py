@@ -37,7 +37,7 @@ class ScipyLSController(Controller):
         # using the minimizer "lm-scipy" which uses problem.eval_j for the
         # Jacobian evaluation. We do not see significant speed changes or
         # difference in the accuracy results when running trf or dogbox with
-        # or without problem.eval_j for the Jacobian evaluation
+        # or without problem.jac.eval for the Jacobian evaluation
         if self.minimizer == "lm-scipy-no-jac":
             self.result = least_squares(fun=self.problem.eval_r,
                                         x0=self.initial_params,
@@ -47,7 +47,7 @@ class ScipyLSController(Controller):
             self.result = least_squares(fun=self.problem.eval_r,
                                         x0=self.initial_params,
                                         method=self.minimizer,
-                                        jac=self.problem.eval_j,
+                                        jac=self.problem.jac,
                                         max_nfev=500)
 
         self._popt = self.result.x

@@ -41,9 +41,9 @@ class ScipyController(Controller):
         :return: Approximation of the Jacobian
         :rtype: numpy array
         """
-        out = self.problem.eval_j(params=x,
-                                  func=self.problem.eval_r_norm,
-                                  *args)
+        out = self.problem.jac(params=x,
+                               func=self.problem.eval_r_norm,
+                               *args)
         return out
 
     def fit(self):
