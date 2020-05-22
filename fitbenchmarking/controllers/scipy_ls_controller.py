@@ -47,7 +47,7 @@ class ScipyLSController(Controller):
             self.result = least_squares(fun=self.problem.eval_r,
                                         x0=self.initial_params,
                                         method=self.minimizer,
-                                        jac=self.problem.jac,
+                                        jac=self.problem.jac.eval,
                                         max_nfev=500)
 
         self._popt = self.result.x
