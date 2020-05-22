@@ -53,6 +53,7 @@ class Options(object):
         except ValueError:
             error_message.append(template.format('use_errors', "boolean"))
         self.jac_method = fitting.getstr('jac_method')
+        self.num_method = fitting.getstr('num_method')
 
         plotting = config['PLOTTING']
         try:
@@ -113,7 +114,8 @@ class Options(object):
                              'algorithm_type': self.algorithm_type,
                              'software': list_to_string(self.software),
                              'use_errors': self.use_errors,
-                             'jac_method': self.jac_method}
+                             'jac_method': self.jac_method,
+                             'num_method': self.num_method}
         cs = list_to_string(['{0}, {1}'.format(*pair)
                              for pair in self.colour_scale])
         config['PLOTTING'] = {'colour_scale': cs,

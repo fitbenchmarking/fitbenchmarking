@@ -8,6 +8,7 @@ from __future__ import absolute_import, division, print_function
 
 from fitbenchmarking.core.fitbenchmark_one_problem import fitbm_one_prob
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.utils import misc, output_grabber
 from fitbenchmarking.utils.exceptions import NoResultsError
 from fitbenchmarking.utils.log import get_logger
@@ -47,6 +48,15 @@ def fitbenchmark_group(group_name, options, data_dir):
         with grabbed_output:
             parsed_problem = parse_problem_file(p, options)
         parsed_problem.correct_data()
+
+        # Creates Jacobian class
+        jacobian_cls = create_jacobian(options)
+        jacobian = jacobian_cls(parsed_problem)
+
+        # Making the Jacobian class part of the fitting problem. This will
+        # eventually be extended to have Hessian information too.
+        parsed_problem.jac = jacobian
+
         name = parsed_problem.name
 
         info_str = " Running data from: {} {}/{}".format(

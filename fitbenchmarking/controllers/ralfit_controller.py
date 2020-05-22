@@ -61,7 +61,7 @@ class RALFitController(Controller):
         """
         self._popt = ral_nlls.solve(self.initial_params,
                                     self.problem.eval_r,
-                                    self.problem.eval_j,
+                                    self.problem.jac.eval,
                                     options=self._options)[0]
         self._status = 0 if self._popt is not None else 1
 
