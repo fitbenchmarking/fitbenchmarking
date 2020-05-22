@@ -1,5 +1,5 @@
 """
-Implements a controller for the SasView fitting software.
+Implements a controller for the Bumps fitting software.
 """
 
 from bumps.fitters import fit as bumpsFit
@@ -10,9 +10,9 @@ import numpy as np
 from fitbenchmarking.controllers.base_controller import Controller
 
 
-class SasviewController(Controller):
+class BumpsController(Controller):
     """
-    Controller for the Sasview fitting software.
+    Controller for the Bumps fitting software.
 
     Sasview requires a model to fit.
     Setup creates a model with the correct function.
@@ -25,7 +25,7 @@ class SasviewController(Controller):
         :param problem: Problem to fit
         :type problem: FittingProblem
         """
-        super(SasviewController, self).__init__(problem)
+        super(BumpsController, self).__init__(problem)
 
         self._param_names = self.problem.param_names
 
@@ -40,9 +40,9 @@ class SasviewController(Controller):
 
     def setup(self):
         """
-        Setup problem ready to run with SasView.
+        Setup problem ready to run with Bumps.
 
-        Creates a Sasview FitProblem for calling in fit()
+        Creates a FitProblem for calling in the fit() function of Bumps
         """
         # Bumps fails with the *args notation
         param_name_str = ', '.join(self._param_names)
@@ -87,7 +87,7 @@ class SasviewController(Controller):
 
     def fit(self):
         """
-        Run problem with SasView.
+        Run problem with Bumps.
         """
         result = bumpsFit(self._fit_problem, method=self.minimizer)
 

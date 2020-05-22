@@ -6,10 +6,10 @@ from unittest import TestCase
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.controllers.bumps_controller import BumpsController
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.controllers.dfo_controller import DFOController
 from fitbenchmarking.controllers.minuit_controller import MinuitController
-from fitbenchmarking.controllers.sasview_controller import SasviewController
 from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.controllers.scipy_ls_controller import ScipyLSController
 
@@ -169,11 +169,11 @@ class ControllerTests(TestCase):
     def setUp(self):
         self.problem = make_fitting_problem()
 
-    def test_sasview(self):
+    def test_bumps(self):
         """
-        SasviewController: Test for output shape
+        BumpsController: Test for output shape
         """
-        controller = SasviewController(self.problem)
+        controller = BumpsController(self.problem)
         controller.minimizer = 'amoeba'
         self.shared_testing(controller)
 
@@ -182,36 +182,6 @@ class ControllerTests(TestCase):
         controller._status = 2
         self.check_max_iterations(controller)
         controller._status = 1
-        self.check_diverged(controller)
-
-    def test_scipy_ls(self):
-        """
-        ScipyController: Test for output shape
-        """
-        controller = ScipyLSController(self.problem)
-        controller.minimizer = 'lm'
-        self.shared_testing(controller)
-
-        controller._status = 1
-        self.check_converged(controller)
-        controller._status = 0
-        self.check_max_iterations(controller)
-        controller._status = -1
-        self.check_diverged(controller)
-
-    def test_scipy(self):
-        """
-        ScipyController: Test for output shape
-        """
-        controller = ScipyController(self.problem)
-        controller.minimizer = 'CG'
-        self.shared_testing(controller)
-
-        controller._status = 1
-        self.check_converged(controller)
-        controller._status = 0
-        self.check_max_iterations(controller)
-        controller._status = -1
         self.check_diverged(controller)
 
     def test_dfo(self):
@@ -243,6 +213,37 @@ class ControllerTests(TestCase):
         controller._status = 0
         self.check_converged(controller)
         controller._status = 2
+        self.check_diverged(controller)
+
+    def test_scipy(self):
+        """
+        ScipyController: Test for output shape
+        """
+        controller = ScipyController(self.problem)
+        controller.minimizer = 'CG'
+        self.shared_testing(controller)
+
+        controller._status = 1
+        self.check_converged(controller)
+        controller._status = 0
+        self.check_max_iterations(controller)
+        controller._status = -1
+        self.check_diverged(controller)
+
+    def test_scipy_ls(self):
+        """
+        ScipyLSController: Test for output shape
+        """
+        controller = ScipyLSController(self.problem)
+        controller.minimizer = 'lm'
+
+        self.shared_testing(controller)
+
+        controller._status = 1
+        self.check_converged(controller)
+        controller._status = 0
+        self.check_max_iterations(controller)
+        controller._status = -1
         self.check_diverged(controller)
 
     def shared_testing(self, controller):
@@ -301,8 +302,8 @@ class FactoryTests(TestCase):
         Test that the factory returns the correct class for inputs
         """
 
-        valid = ['scipy_ls', 'mantid', 'sasview', 'ralfit']
-        valid_names = ['scipyls', 'mantid', 'sasview', 'ralfit']
+        valid = ['scipy_ls', 'mantid', 'ralfit']
+        valid_names = ['scipyls', 'mantid', 'ralfit']
         invalid = ['foo', 'bar', 'hello', 'r2d2']
 
         for software, v in zip(valid, valid_names):
