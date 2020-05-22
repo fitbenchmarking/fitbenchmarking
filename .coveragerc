@@ -1,6 +1,7 @@
 [run]
 omit =
     */tests/*
+    fitbenchmarking/cli/main.py
 
 
 [report]

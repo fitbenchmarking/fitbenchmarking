@@ -217,10 +217,18 @@ class Table:
         :return: HTLM table output
         :rtype: str
         """
+        link_template = '<a href="https://fitbenchmarking.readthedocs.io/en/'\
+            'latest/concept/how/Minimizers.html#{0}" target="_blank">{0}</a>'
         table.apply(lambda x: self.enable_error(x, error, "<sup>{}</sup>"),
                     axis=1, result_type='expand')
         table.apply(lambda x: self.enable_link(x, links), axis=1,
                     result_type='expand')
+
+        minimizers_list = [(link_template.format(s), m)
+                           for s in self.options.software
+                           for m in self.options.minimizers[s]]
+        columns = pd.MultiIndex.from_tuples(minimizers_list)
+        table.columns = columns
 
         index = []
         for b, i in zip(self.best_results, table.index):
