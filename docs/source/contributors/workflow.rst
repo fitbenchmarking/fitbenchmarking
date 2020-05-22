@@ -55,7 +55,7 @@ Release branches
 Most work should be branched off, and merged into, master.
 
 The exception is when we are near a release, and then the contributor
-must make the decsion of whether the code will enter this release, or
+must make the decision of whether the code will enter this release, or
 wait for a future one.
 
 Branches named `release-*` are protected branches; code must be approved by
