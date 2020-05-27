@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test one dir to ogenerate the coverage file
+# Test one dir to generate the coverage file
 pytest fitbenchmarking/cli --cov=fitbenchmarking/cli --cov-report term-missing
 status=$?
 # Loop over other dirs to append to the coverage file

@@ -29,7 +29,7 @@ steps:
     pytest fitbenchmarking\utils
     pytest fitbenchmarking\core
     pytest fitbenchmarking\results_processing
-    pytest fitbenchmarking\parsing
-    pytest fitbenchmarking\controllers\test\test_default_controllers.py
+    pytest fitbenchmarking\parsing --test-type default
+    pytest fitbenchmarking\controllers\test\test_controllers.py --test-type default
     pytest fitbenchmarking\cli\tests\test_exception_handler.py
   displayName: 'pytest utils tests'
