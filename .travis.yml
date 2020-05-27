@@ -11,7 +11,9 @@ python:
 env:
   - SUITE=UNIT COVERAGE=OFF
   - SUITE=UNIT COVERAGE=ON
-  - SUITE=UNIT_DEFAULT COVERAGE=OFF  - SUITE=LINTING
+  - SUITE=UNIT_DEFAULT
+  - SUITE=SYSTEM
+  - SUITE=LINTING
 
 
 notifications:
@@ -49,7 +51,7 @@ jobs:
   exclude:
     - env: SUITE=UNIT COVERAGE=OFF
       python: 3.6
-    - env: SUITE=UNIT_DEFAULT COVERAGE=OFF
+    - env: SUITE=UNIT_DEFAULT
       python: 3.6
     - env: SUITE=UNIT COVERAGE=ON
       python: 2.7
@@ -75,11 +77,11 @@ jobs:
       python: 3.7
 
   allow_failures:
-    - env: SUITE=UNIT_DEFAULT COVERAGE=OFF
+    - env: SUITE=UNIT_DEFAULT
       python: 2.7
     - env: SUITE=LINTING
       python: 2.7
-    - env: SUITE=UNIT_DEFAULT COVERAGE=OFF
+    - env: SUITE=UNIT_DEFAULT
       python: 3.7
-    - env: SUITE=UNIT_DEFAULT COVERAGE=OFF
+    - env: SUITE=UNIT_DEFAULT
       python: 3.8
