@@ -4,8 +4,7 @@ import numpy as np
 import os
 from unittest import TestCase
 import pytest
-
-test_type = pytest.test_type
+from pytest import test_type as TEST_TYPE
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
@@ -16,7 +15,7 @@ from fitbenchmarking.controllers.minuit_controller import MinuitController
 from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.controllers.scipy_ls_controller import ScipyLSController
 
-if test_type != "default":
+if TEST_TYPE != "default":
     from fitbenchmarking.controllers.gsl_controller import GSLController
     from fitbenchmarking.controllers.mantid_controller import MantidController
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
@@ -109,7 +108,7 @@ class ControllerSharedTesting:
         assert controller.flag == 2
 
 
-@pytest.mark.skipif("test_type == 'external'")
+@pytest.mark.skipif("TEST_TYPE == 'external'")
 class BaseControllerTests(TestCase):
     """
     Tests for base software controller class methods.
@@ -206,7 +205,7 @@ class BaseControllerTests(TestCase):
             controller.check_attributes()
 
 
-@pytest.mark.skipif("test_type == 'external'")
+@pytest.mark.skipif("TEST_TYPE == 'external'")
 class DefaultControllerTests(TestCase):
     """
     Tests for each controller class
@@ -294,7 +293,7 @@ class DefaultControllerTests(TestCase):
         self.shared_tests.check_diverged(controller)
 
 
-@pytest.mark.skipif("test_type == 'default'")
+@pytest.mark.skipif("TEST_TYPE == 'default'")
 class ExternalControllerTests(TestCase):
     """
     Tests for each controller class
@@ -429,7 +428,7 @@ class FactoryTests(TestCase):
     """
     Tests for the ControllerFactory
     """
-    @pytest.mark.skipif("test_type == 'external'")
+    @pytest.mark.skipif("TEST_TYPE == 'external'")
     def test_default_imports(self):
         """
         Test that the factory returns the correct default class for inputs
@@ -440,7 +439,7 @@ class FactoryTests(TestCase):
         self.check_valid(valid, valid_names)
         self.check_invalid(invalid)
 
-    @pytest.mark.skipif("test_type == 'default'")
+    @pytest.mark.skipif("TEST_TYPE == 'default'")
     def test_external_imports(self):
         """
         Test that the factory returns the correct external class for inputs

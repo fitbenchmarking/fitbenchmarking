@@ -8,9 +8,8 @@ python:
   - 3.8
 
 env:
-  - SUITE=UNIT COVERAGE=OFF
   - SUITE=UNIT COVERAGE=ON
-  - SUITE=UNIT_DEFAULT
+  - SUITE=UNIT_DEFAULT COVERAGE=OFF
   - SUITE=SYSTEM
   - SUITE=LINTING
 
@@ -45,22 +44,12 @@ jobs:
   exclude:
     - env: SUITE=UNIT COVERAGE=OFF
       python: 3.6
-    - env: SUITE=UNIT_DEFAULT
+    - env: SUITE=UNIT_DEFAULT COVERAGE=OFF
       python: 3.6
     - env: SUITE=UNIT COVERAGE=ON
-      python: 2.7
-    - env: SUITE=UNIT COVERAGE=OFF
-      python: 2.7
-    - env: SUITE=UNIT COVERAGE=ON
-      python: 3.7
-    - env: SUITE=UNIT COVERAGE=OFF
       python: 3.7
     - env: SUITE=UNIT COVERAGE=ON
       python: 3.8
-    - env: SUITE=UNIT COVERAGE=OFF
-      python: 3.8
-    - env: SUITE=SYSTEM
-      python: 2.7
     - env: SUITE=SYSTEM
       python: 3.7
     - env: SUITE=SYSTEM
