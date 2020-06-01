@@ -119,7 +119,7 @@ class TestRegressionDefault(TestCase):
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,
                                                'mock_problems',
-                                               'all_parsers_set'))
+                                               'default_parsers'))
 
         run([problem], options_file=opt_file.name, debug=True)
 
@@ -132,12 +132,12 @@ class TestRegressionDefault(TestCase):
 
         expected_file = os.path.join(os.path.dirname(__file__),
                                      'expected_results',
-                                     'all_parsers_default.txt')
+                                     'default_parsers.txt')
 
         actual_file = os.path.join(os.path.dirname(__file__),
                                    'results',
-                                   'all_parsers_set',
-                                   'all_parsers_set_acc_weighted_table.txt')
+                                   'default_parsers',
+                                   'default_parsers_acc_weighted_table.txt')
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()
@@ -192,7 +192,7 @@ def setup_options(multifit=False):
     # Use only the first minimizer from the selected software packages
     if multifit:
         opts.software = ['mantid']
-        opts.minimizers = {'mantid': opts.minimizers['mantid'][0]}
+        opts.minimizers = {'mantid': [opts.minimizers['mantid'][0]]}
     elif TEST_TYPE != "default":
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
         opts.software = sorted(opts.minimizers.keys())
