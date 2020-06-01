@@ -10,8 +10,9 @@ python:
 
 env:
   - SUITE=UNIT COVERAGE=ON
-  - SUITE=UNIT_DEFAULT COVERAGE=OFF
+  - SUITE=UNIT_DEFAULT
   - SUITE=SYSTEM
+  - SUITE=SYSTEM_DEFAULT
   - SUITE=LINTING
 
 
@@ -30,12 +31,14 @@ install:
   - if [[ $SUITE == "UNIT" ]]; then source ./travis/full_install.sh; fi
   - if [[ $SUITE == "UNIT_DEFAULT" ]]; then source ./travis/default_install.sh; fi
   - if [[ $SUITE == "SYSTEM" ]]; then source ./travis/full_install.sh; fi
+  - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then source ./travis/default_install.sh; fi
   - if [[ $SUITE == "LINTING" ]]; then source ./travis/linting_install.sh; fi
 
 script:
   - if [[ $SUITE == "UNIT" ]]; then source ./travis/unit_tests.sh; fi
   - if [[ $SUITE == "UNIT_DEFAULT" ]]; then ./travis/unit_tests_default.sh; fi
   - if [[ $SUITE == "SYSTEM" ]]; then ./travis/system_tests.sh; fi
+  - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then ./travis/system_tests_default.sh; fi
   - if [[ $SUITE == "LINTING" ]]; then ./travis/linting_tests.sh;  fi
 
 after_success:
@@ -43,14 +46,18 @@ after_success:
 
 jobs:
   exclude:
-    - env: SUITE=UNIT COVERAGE=OFF
-      python: 2.7
-    - env: SUITE=UNIT_DEFAULT COVERAGE=OFF
+    - env: SUITE=UNIT_DEFAULT
       python: 3.6
+    - env: SUITE=UNIT COVERAGE=ON
+      python: 2.7
     - env: SUITE=UNIT COVERAGE=ON
       python: 3.7
     - env: SUITE=UNIT COVERAGE=ON
       python: 3.8
+    - env: SUITE=SYSTEM_DEFAULT
+      python: 3.6
+    - env: SUITE=SYSTEM
+      python: 2.7
     - env: SUITE=SYSTEM
       python: 3.7
     - env: SUITE=SYSTEM
@@ -63,9 +70,9 @@ jobs:
 
   allow_failures:
     # No longer guaranteed but good to know if working.
-    - env: SUITE=UNIT_DEFAULT COVERAGE=OFF
+    - env: SUITE=UNIT_DEFAULT
       python: 2.7
-    - env: SUITE=SYSTEM
+    - env: SUITE=SYSTEM_DEFAULT
       python: 2.7
     - env: SUITE=LINTING
       python: 2.7
