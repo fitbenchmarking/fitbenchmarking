@@ -3,6 +3,7 @@ dist: bionic
 
 language: python
 python:
+  - 2.7
   - 3.6
   - 3.7
   - 3.8
@@ -43,7 +44,7 @@ after_success:
 jobs:
   exclude:
     - env: SUITE=UNIT COVERAGE=OFF
-      python: 3.6
+      python: 2.7
     - env: SUITE=UNIT_DEFAULT COVERAGE=OFF
       python: 3.6
     - env: SUITE=UNIT COVERAGE=ON
@@ -59,3 +60,12 @@ jobs:
     - env: SUITE=LINTING
       python: 3.7
 
+
+  allow_failures:
+    # No longer guaranteed but good to know if working.
+    - env: SUITE=UNIT_DEFAULT COVERAGE=OFF
+      python: 2.7
+    - env: SUITE=SYSTEM
+      python: 2.7
+    - env: SUITE=LINTING
+      python: 2.7
