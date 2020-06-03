@@ -30,8 +30,6 @@ def make_fitting_problem(file_name='cubic.dat'):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    jac = ScipyTwoPoint(fitting_problem)
-    fitting_problem.jac = jac
     return fitting_problem
 
 
@@ -156,6 +154,7 @@ class ControllerTests(TestCase):
 
     def setUp(self):
         self.problem = make_fitting_problem()
+        self.jac = ScipyTwoPoint(self.problem)
 
     def test_bumps(self):
         """
@@ -209,6 +208,7 @@ class ControllerTests(TestCase):
         """
         controller = ScipyController(self.problem)
         controller.minimizer = 'CG'
+        controller.jacobian = self.jac
         self.shared_testing(controller)
 
         controller._status = 1
@@ -224,6 +224,7 @@ class ControllerTests(TestCase):
         """
         controller = ScipyLSController(self.problem)
         controller.minimizer = 'lm'
+        controller.jacobian = self.jac
 
         self.shared_testing(controller)
 

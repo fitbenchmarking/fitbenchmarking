@@ -51,8 +51,8 @@ class Options(object):
             self.use_errors = fitting.getboolean('use_errors')
         except ValueError:
             error_message.append(template.format('use_errors', "boolean"))
-        self.jac_method = fitting.getstr('jac_method')
-        self.num_method = fitting.getstr('num_method')
+        self.jac_method = fitting.getlist('jac_method')
+        self.num_method = fitting.getlist('num_method')
 
         plotting = config['PLOTTING']
         try:
@@ -112,8 +112,8 @@ class Options(object):
         config['FITTING'] = {'num_runs': self.num_runs,
                              'software': list_to_string(self.software),
                              'use_errors': self.use_errors,
-                             'jac_method': self.jac_method,
-                             'num_method': self.num_method}
+                             'jac_method': list_to_string(self.jac_method),
+                             'num_method': list_to_string(self.num_method)}
         cs = list_to_string(['{0}, {1}'.format(*pair)
                              for pair in self.colour_scale])
         config['PLOTTING'] = {'colour_scale': cs,

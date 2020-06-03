@@ -27,6 +27,14 @@ class MinuitController(Controller):
         self._initial_step = None
         self._minuit_problem = None
 
+    def jacobian_information(self):
+        """
+        Minuit does not requires Jacobian information
+        """
+        has_jacobian = False
+        jacobian_list = []
+        return has_jacobian, jacobian_list
+
     def setup(self):
         """
         Setup for Minuit

@@ -21,6 +21,14 @@ class ScipyController(Controller):
 
         self._popt = None
 
+    def jacobian_information(self):
+        """
+        Scipy does requires Jacobian information
+        """
+        has_jacobian = True
+        jacobian_list = ["Nelder-Mead", "Powell"]
+        return has_jacobian, jacobian_list
+
     def setup(self):
         """
         Setup problem ready to be run with SciPy
@@ -41,9 +49,9 @@ class ScipyController(Controller):
         :return: Approximation of the Jacobian
         :rtype: numpy array
         """
-        out = self.problem.jac.eval(params=x,
-                                    func=self.problem.eval_r_norm,
-                                    *args)
+        out = self.jacobian.eval(params=x,
+                                 func=self.problem.eval_r_norm,
+                                 *args)
         return out
 
     def fit(self):

@@ -38,6 +38,14 @@ class GSLController(Controller):
         self._relerror = None
         self._maxits = None
 
+    def jacobian_information(self):
+        """
+        GSL does requires Jacobian information
+        """
+        has_jacobian = True
+        jacobian_list = ['nmsimplex', 'nmsimplex2']
+        return has_jacobian, jacobian_list
+
     def _prediction_error(self, p, data=None):
         """
         Utility function to call problem.eval_r with correct args
@@ -62,7 +70,7 @@ class GSLController(Controller):
         :return: result from jac.eval
         :rtype: numpy array
         """
-        return self.problem.jac.eval(p)
+        return self.jacobian.eval(p)
 
     def _fdf(self, p, data=None):
         """
@@ -76,7 +84,7 @@ class GSLController(Controller):
         :rtype: (numpy array, numpy array)
         """
         f = self.problem.eval_r(p)
-        df = self.problem.jac.eval(p)
+        df = self.jacobian.eval(p)
         return f, df
 
     def _chi_squared(self, p, data=None):

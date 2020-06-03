@@ -10,6 +10,8 @@ import warnings
 import numpy as np
 
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
+from fitbenchmarking.jacobian.jacobian_factory import create_jacobian, \
+    get_jacobian_options
 from fitbenchmarking.utils import fitbm_result, output_grabber
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 from fitbenchmarking.utils.log import get_logger
@@ -44,7 +46,8 @@ def fitbm_one_prob(problem, options):
 
         if num_start_vals > 1:
             problem.name = name + ', Start {}'.format(i + 1)
-
+        minimizer_dict = {}
+        software_results = []
         for s in software:
             LOGGER.info("        Software: %s", s.upper())
             try:
@@ -52,21 +55,21 @@ def fitbm_one_prob(problem, options):
             except KeyError:
                 raise UnknownMinimizerError(
                     'No minimizer given for software: {}'.format(s))
+
             with grabbed_output:
                 controller_cls = ControllerFactory.create_controller(
                     software=s)
                 controller = controller_cls(problem=problem)
-
-            controller.parameter_set = i
-            problem_result = benchmark(controller=controller,
-                                       minimizers=minimizers,
-                                       options=options)
-
-            results.extend(problem_result)
-
+                controller.parameter_set = i
+            problem_result, minimizer_list = benchmark(controller=controller,
+                                                       minimizers=minimizers,
+                                                       options=options)
+            software_results.extend(problem_result)
+            minimizer_dict[s] = minimizer_list
+        results.extend(software_results)
     # Reset problem.name
     problem.name = name
-    return results
+    return results, minimizer_dict
 
 
 def benchmark(controller, minimizers, options):
@@ -86,75 +89,89 @@ def benchmark(controller, minimizers, options):
     """
     grabbed_output = output_grabber.OutputGrabber(options)
     problem = controller.problem
-    jac = controller.problem.jac
-
     results_problem = []
+    new_minimizer_list = []
     num_runs = options.num_runs
     for minimizer in minimizers:
+        minimizer_name = minimizer
         LOGGER.info("            Minimizer: %s", minimizer)
 
         controller.minimizer = minimizer
 
-        try:
-            with grabbed_output:
-                # Calls timeit repeat with repeat = num_runs and number = 1
-                runtime_list = \
-                    timeit.Timer(setup=controller.prepare,
-                                 stmt=controller.fit).repeat(num_runs, 1)
-                runtime = sum(runtime_list) / num_runs
-                controller.cleanup()
-        # Catching all exceptions as this means runtime cannot be calculated
-        # pylint: disable=broad-except
-        except Exception as excp:
-            LOGGER.warn(str(excp))
+        has_jacobian, invalid_jacobians = controller.jacobian_information()
+        jacobian_list = get_jacobian_options(options)
+        for jac_name in jacobian_list:
+            jac_method, num_method = jac_name
+            if (has_jacobian and minimizer not in invalid_jacobians):
+                LOGGER.info("                Jacobian: %s %s", jac_method,
+                            num_method)
+                minimizer_name = "{}: {} {}".format(
+                    minimizer, jac_method, num_method)
+            # Creates Jacobian class
+            jacobian_cls = create_jacobian(jac_method, num_method)
+            jacobian = jacobian_cls(problem)
+            controller.jacobian = jacobian
+            try:
+                with grabbed_output:
+                    # Calls timeit repeat with repeat = num_runs and number = 1
+                    runtime_list = timeit.Timer(setup=controller.prepare,
+                                                stmt=controller.fit).repeat(num_runs, 1)
+                    runtime = sum(runtime_list) / num_runs
+                    controller.cleanup()
+            # Catching all exceptions as this means runtime cannot be calculated
+            # pylint: disable=broad-except
+            except Exception as excp:
+                LOGGER.warn(str(excp))
 
-            runtime = np.inf
-            controller.flag = 3
-            controller.final_params = None if not problem.multifit \
-                else [None] * len(controller.data_x)
+                runtime = np.inf
+                controller.flag = 3
+                controller.final_params = None if not problem.multifit \
+                    else [None] * len(controller.data_x)
 
-        controller.check_attributes()
+            controller.check_attributes()
+            if controller.flag <= 2:
+                ratio = np.max(runtime_list) / np.min(runtime_list)
+                tol = 4
+                if ratio > tol:
+                    warnings.warn('The ratio of the max time to the min is {0}'
+                                  ' which is  larger than the tolerance of {1},'
+                                  ' which may indicate that caching has occurred'
+                                  ' in the timing results'.format(ratio, tol))
+                chi_sq = controller.eval_chisq(params=controller.final_params,
+                                               x=controller.data_x,
+                                               y=controller.data_y,
+                                               e=controller.data_e)
+            else:
+                chi_sq = np.inf if not problem.multifit \
+                    else [np.inf] * len(controller.data_x)
+            result_args = {'options': options,
+                           'problem': problem,
+                           'jac': jacobian,
+                           'chi_sq': chi_sq,
+                           'runtime': runtime,
+                           'minimizer': minimizer_name,
+                           'initial_params': controller.initial_params,
+                           'params': controller.final_params,
+                           'error_flag': controller.flag,
+                           'name': problem.name}
 
-        if controller.flag <= 2:
-            ratio = np.max(runtime_list) / np.min(runtime_list)
-            tol = 4
-            if ratio > tol:
-                warnings.warn('The ratio of the max time to the min is {0}'
-                              ' which is  larger than the tolerance of {1},'
-                              ' which may indicate that caching has occurred'
-                              ' in the timing results'.format(ratio, tol))
-            chi_sq = controller.eval_chisq(params=controller.final_params,
-                                           x=controller.data_x,
-                                           y=controller.data_y,
-                                           e=controller.data_e)
-        else:
-            chi_sq = np.inf if not problem.multifit \
-                else [np.inf] * len(controller.data_x)
+            if problem.multifit:
+                # Multi fit (will raise TypeError if these are not iterable)
+                for i in range(len(chi_sq)):
 
-        result_args = {'options': options,
-                       'problem': problem,
-                       'jac': jac,
-                       'chi_sq': chi_sq,
-                       'runtime': runtime,
-                       'minimizer': minimizer,
-                       'initial_params': controller.initial_params,
-                       'params': controller.final_params,
-                       'error_flag': controller.flag,
-                       'name': problem.name}
-
-        if problem.multifit:
-            # Multi fit (will raise TypeError if these are not iterable)
-            for i in range(len(chi_sq)):
-
-                result_args.update({'dataset_id': i,
-                                    'name': '{}, Dataset {}'.format(
-                                        problem.name, (i + 1))})
+                    result_args.update({'dataset_id': i,
+                                        'name': '{}, Dataset {}'.format(
+                                            problem.name, (i + 1))})
+                    individual_result = fitbm_result.FittingResult(
+                        **result_args)
+                    results_problem.append(individual_result)
+            else:
+                # Normal fitting
                 individual_result = fitbm_result.FittingResult(**result_args)
                 results_problem.append(individual_result)
-        else:
-            # Normal fitting
-            individual_result = fitbm_result.FittingResult(**result_args)
 
-            results_problem.append(individual_result)
+            new_minimizer_list.append(minimizer_name)
+            if not has_jacobian or minimizer in invalid_jacobians:
+                break
 
-    return results_problem
+    return results_problem, new_minimizer_list

@@ -96,10 +96,6 @@ class FittingProblem:
         #: *bool* Used to check if a problem is using multifit.
         self.multifit = False
 
-        # Used to assign the Jacobian class in
-        # fitbenchmarking/core/fitting_benchmarking.py
-        self.jac = None
-
     @property
     def param_names(self):
         """

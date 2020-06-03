@@ -33,6 +33,14 @@ class BumpsController(Controller):
         self._fit_problem = None
         self._bumps_result = None
 
+    def jacobian_information(self):
+        """
+        Bumps does not requires Jacobian information
+        """
+        has_jacobian = False
+        jacobian_list = []
+        return has_jacobian, jacobian_list
+
     def setup(self):
         """
         Setup problem ready to run with Bumps.

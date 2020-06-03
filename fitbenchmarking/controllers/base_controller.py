@@ -4,8 +4,6 @@ Implements the base class for the fitting software controllers.
 
 from abc import ABCMeta, abstractmethod
 
-import numpy as np
-
 from fitbenchmarking.utils.exceptions import ControllerAttributeError
 
 
@@ -31,6 +29,9 @@ class Controller:
 
         # Problem: The problem object from parsing
         self.problem = problem
+
+        # Jacobian: The Jacobian object
+        self.jacobian = None
 
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)
@@ -106,6 +107,20 @@ class Controller:
                 raise ControllerAttributeError(
                     'Attribute "flag" in the controller must be one of {}.'
                     ' Got: {}.'.format(valid_flags, attr))
+
+    @abstractmethod
+    def jacobian_information(self):
+        """
+        Setups up Jacobian information for the controller. This should return the following arguments:
+
+        has_jacobian: a True or False value whether the controller
+        requires Jacobian information
+
+        jacobian_list: a list of minimizers in a specific software
+        that do not require Jacobian informations. For example in the
+        `ScipyLS` controller this would return `lm-scipy-no-jac`
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def setup(self):

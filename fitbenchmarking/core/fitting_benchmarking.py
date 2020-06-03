@@ -8,7 +8,6 @@ from __future__ import absolute_import, division, print_function
 
 from fitbenchmarking.core.fitbenchmark_one_problem import fitbm_one_prob
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.utils import misc, output_grabber
 from fitbenchmarking.utils.log import get_logger
 
@@ -48,14 +47,6 @@ def fitbenchmark_group(group_name, options, data_dir):
             parsed_problem = parse_problem_file(p, options)
         parsed_problem.correct_data()
 
-        # Creates Jacobian class
-        jacobian_cls = create_jacobian(options)
-        jacobian = jacobian_cls(parsed_problem)
-
-        # Making the Jacobian class part of the fitting problem. This will
-        # eventually be extended to have Hessian information too.
-        parsed_problem.jac = jacobian
-
         name = parsed_problem.name
         name_count[name] = 1 + name_count.get(name, 0)
         count = name_count[name]
@@ -70,10 +61,10 @@ def fitbenchmark_group(group_name, options, data_dir):
         LOGGER.info(info_str)
         LOGGER.info('#' * (len(info_str) + 1))
 
-        problem_results = fitbm_one_prob(problem=parsed_problem,
-                                         options=options)
+        problem_results, minimizer_dict = fitbm_one_prob(problem=parsed_problem,
+                                                         options=options)
         results.extend(problem_results)
-
+    options.minimizers = minimizer_dict
     # Used to group elements in list by name
     results_dict = {}
     # Get list of names which need an index so they are unique

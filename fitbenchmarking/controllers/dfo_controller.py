@@ -28,6 +28,14 @@ class DFOController(Controller):
         self._popt = None
         self._pinit = None
 
+    def jacobian_information(self):
+        """
+        DFO does not requires Jacobian information
+        """
+        has_jacobian = False
+        jacobian_list = []
+        return has_jacobian, jacobian_list
+
     def setup(self):
         """
         Setup for DFO

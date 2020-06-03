@@ -29,8 +29,6 @@ def make_fitting_problem(file_name='cubic.dat'):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    jac = ScipyTwoPoint(fitting_problem)
-    fitting_problem.jac = jac
     return fitting_problem
 
 
@@ -59,6 +57,7 @@ class ControllerTests(TestCase):
 
     def setUp(self):
         self.problem = make_fitting_problem()
+        self.jac = ScipyTwoPoint(self.problem)
 
     def test_mantid(self):
         """
@@ -151,6 +150,7 @@ class ControllerTests(TestCase):
         """
         controller = GSLController(self.problem)
         # test one from each class
+        controller.jacobian = self.jac
         minimizers = ['lmsder',
                       'nmsimplex',
                       'conjugate_pr']
@@ -171,6 +171,8 @@ class ControllerTests(TestCase):
         """
         controller = RALFitController(self.problem)
         minimizers = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg']
+        controller.jacobian = self.jac
+
         for minimizer in minimizers:
             controller.minimizer = minimizer
             self.shared_testing(controller)

@@ -10,18 +10,18 @@ from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.utils.exceptions import NoJacobianError
 
 
-def create_jacobian(options):
+def create_jacobian(jac_method, num_method):
     """
     Create a Jacobian class.
 
-    :param options: FitBenchmarking options object
-    :type options: fitbenchmarking.utils.Options
+    :param jac_method: Type of Jacobian selected from options
+    :type jac_method: str
+    :param num_method: Type of numerical method selected from options
+    :type num_method: str
 
     :return: Controller class for the problem
     :rtype: fitbenchmarking.jacobian.base_controller.Jacobian subclass
     """
-    jac_method = options.jac_method
-    num_method = options.num_method
 
     module_name = f'{jac_method}_jacobian' if jac_method == 'analytic' \
         else f'{jac_method}_{num_method}_jacobian'
@@ -39,3 +39,24 @@ def create_jacobian(options):
                                             and m is not Jacobian))
 
     return classes[0][1]
+
+
+def get_jacobian_options(options):
+    """
+    Converts Jacobian options set in the options file into a list
+
+    :param options: FitBenchmarking options object
+    :type options: fitbenchmarking.utils.Options
+
+    :return: List of Jacobians used in the fitting
+    :rtype: list
+    """
+
+    jacobian_list = []
+    for jac_method in options.jac_method:
+        if jac_method == 'analytic':
+            jacobian_list.append([jac_method, None])
+        else:
+            for num_method in options.num_method:
+                jacobian_list.append([jac_method, num_method])
+    return jacobian_list
