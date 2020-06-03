@@ -189,6 +189,7 @@ class ControllerTests(TestCase):
         :param controller: Controller to test, with setup already completed
         :type controller: Object derived from BaseSoftwareController
         """
+        controller.jacobian_information()
         controller.parameter_set = 0
         controller.prepare()
         controller.fit()

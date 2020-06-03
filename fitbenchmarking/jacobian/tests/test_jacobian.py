@@ -10,7 +10,8 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.jacobian.SciPyFD_3point_jacobian import ScipyThreePoint
 from fitbenchmarking.jacobian.SciPyFD_cs_jacobian import ScipyCS
-from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
+from fitbenchmarking.jacobian.jacobian_factory import create_jacobian, \
+    get_jacobian_options
 
 
 def f(x, p1, p2):
@@ -115,3 +116,48 @@ class FactoryTests(TestCase):
                               create_jacobian,
                               jac_method,
                               num_method)
+
+
+class GetJacobianOptionsTests(TestCase):
+    """
+    Tests for the Jacobian factory
+    """
+
+    def test_invalid_type(self):
+        """
+        Test that the Jacobian options handler checks correct type import
+        """
+        options = Options()
+        options.jac_method = 'random'
+        options.num_method = 'random2'
+        self.assertRaises(exceptions.OptionsError,
+                          get_jacobian_options,
+                          options)
+
+    def test_invalid_list_element_type(self):
+        """
+        Test that the Jacobian options handler checks correct type import for each
+        element of the list
+        """
+        options = Options()
+        options.jac_method = ['name', 2]
+        options.num_method = ['random', 5, []]
+        self.assertRaises(exceptions.OptionsError,
+                          get_jacobian_options,
+                          options)
+
+    def test_valid(self):
+        """
+        Test that the Jacobian options handler correctly flattens list to required
+        format
+        """
+        options = Options()
+        options.jac_method = ['analytic', 'SciPyFD']
+        options.num_method = ['random_method_1',
+                              'random_method_2',
+                              'random_method_3']
+        expected = [['analytic', ''],
+                    ['SciPyFD', 'random_method_1'],
+                    ['SciPyFD', 'random_method_2'],
+                    ['SciPyFD', 'random_method_3']]
+        assert expected == get_jacobian_options(options)

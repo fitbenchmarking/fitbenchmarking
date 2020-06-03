@@ -7,7 +7,7 @@ from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
-from fitbenchmarking.utils.exceptions import NoJacobianError
+from fitbenchmarking.utils.exceptions import NoJacobianError, OptionsError
 
 
 def create_jacobian(jac_method, num_method):
@@ -51,12 +51,22 @@ def get_jacobian_options(options):
     :return: List of Jacobians used in the fitting
     :rtype: list
     """
+    jac_method = options.jac_method
+    num_method = options.num_method
+    for method, name in zip([jac_method, num_method],
+                            ["jac_method", "num_method"]):
+        if not isinstance(method, list):
+            raise OptionsError("Invalid '{}' type, it is required to be a "
+                               "lists".format(name))
+        if not all(isinstance(i, str) for i in method):
+            raise OptionsError(
+                "All elements of {} must be a string".format(name))
 
     jacobian_list = []
-    for jac_method in options.jac_method:
-        if jac_method == 'analytic':
-            jacobian_list.append([jac_method, ''])
+    for jac in jac_method:
+        if jac == 'analytic':
+            jacobian_list.append([jac, ''])
         else:
-            for num_method in options.num_method:
-                jacobian_list.append([jac_method, num_method])
+            for num in num_method:
+                jacobian_list.append([jac, num])
     return jacobian_list
