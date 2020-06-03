@@ -8,9 +8,9 @@ Adding new Jacobians
 
 In order to add a new Jacobian evaluation method, you will need to:
 
-1. Give the Jacobian a name using the following convention `<jac_method>` and
-   `<num_method>`. An example could be `scipy_fd` for `<jac_method>` and
-   `2point` for `<num_method>` which would call the SciPy's 2-point finite
+1. Give the Jacobian a name using the following convention ``<jac_method>`` and
+   ``<num_method>``. An example could be ``scipy_fd`` for ``<jac_method>`` and
+   ``2point`` for ``<num_method>`` which would call the SciPy's 2-point finite
    difference approximation.
 
 2. Create ``fitbenchmarking/jacobian/<jac_method>_<num_method>_jacobian.py``

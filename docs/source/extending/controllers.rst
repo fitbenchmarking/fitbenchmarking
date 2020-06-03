@@ -30,6 +30,14 @@ In order to add a new controller, you will need to:
    -  ``__init__()``: Initialise anything that is needed specifically for the
       software, do any work that can be done without knowledge of the
       minimizer to use, or function to fit, and call ``super().__init__()``.
+   -  ``jacobian_information()``: Setups up Jacobian information for the
+      controller. This should return the following arguments:
+
+      - ``has_jacobian``: a True or False value whether the controller
+        requires Jacobian information
+      - ``jacobian_list``: a list of minimizers in a specific software
+        that do not require Jacobian informations. For example in the
+        ``ScipyLS`` controller this would return ``lm-scipy-no-jac``
    -  ``setup()``: Do any work that must be done only after knowing the
       minimizer to use and the function to fit. E.g. creating function wrappers
       around a callable.
