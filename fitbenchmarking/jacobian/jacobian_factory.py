@@ -55,7 +55,7 @@ def get_jacobian_options(options):
     jacobian_list = []
     for jac_method in options.jac_method:
         if jac_method == 'analytic':
-            jacobian_list.append([jac_method, None])
+            jacobian_list.append([jac_method, ''])
         else:
             for num_method in options.num_method:
                 jacobian_list.append([jac_method, num_method])

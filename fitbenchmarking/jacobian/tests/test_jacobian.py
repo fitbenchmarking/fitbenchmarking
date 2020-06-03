@@ -99,18 +99,19 @@ class FactoryTests(TestCase):
         """
         self.options = Options()
 
-        valid = ['2point', '3point', 'cs']
-        expected_name = ["scipytwopoint", "scipythreepoint", "scipycs"]
+        valid = [['SciPyFD', '2point'], ['SciPyFD', '3point']]
+        expected_name = ["scipytwopoint", "scipythreepoint"]
 
-        invalid = ['foo', 'bar', 'hello', 'r2d2']
+        invalid = [['ran', '4point'], ['m', '6point']]
 
         for v, e in zip(valid, expected_name):
-            self.options.num_method = v
-            jac = create_jacobian(self.options)
+            jac_method, num_method = v
+            jac = create_jacobian(jac_method, num_method)
             self.assertTrue(jac.__name__.lower().startswith(e))
 
-        for i in invalid:
-            self.options.num_method = i
+        for v in invalid:
+            jac_method, num_method = v
             self.assertRaises(exceptions.NoJacobianError,
                               create_jacobian,
-                              self.options)
+                              jac_method,
+                              num_method)
