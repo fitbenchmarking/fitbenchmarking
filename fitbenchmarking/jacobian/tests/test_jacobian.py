@@ -10,6 +10,7 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.jacobian.SciPyFD_3point_jacobian import ScipyThreePoint
 from fitbenchmarking.jacobian.SciPyFD_cs_jacobian import ScipyCS
+from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 
 
@@ -58,6 +59,7 @@ class TestJacobianClass(TestCase):
         options = Options()
         self.fitting_problem = FittingProblem(options)
         self.fitting_problem.function = f
+        self.fitting_problem.jacobian = J
         self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.params = [6, 0.1]
@@ -84,6 +86,16 @@ class TestJacobianClass(TestCase):
         Test for ScipyCS evaluation is correct
         """
         jac = ScipyCS(self.fitting_problem)
+        eval_result = jac.eval(params=self.params)
+        print(self.params)
+        self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+    def test_analytic_cutest(self):
+        """
+        Test analytic jacobian
+        """
+        self.fitting_problem.format = "cutest"
+        jac = Analytic(self.fitting_problem)
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 

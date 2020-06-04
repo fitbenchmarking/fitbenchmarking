@@ -45,6 +45,9 @@ class FittingProblem:
         #: *string* Name (title) of the fitting problem
         self.name = None
 
+        #: *string* Name of the problem definition type (e.g., 'cutest')
+        self.format = None
+
         #: *string* Equation (function or model) to fit against data
         self.equation = None
 
