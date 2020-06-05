@@ -1,5 +1,10 @@
 #!/bin/bash
 
+sudo apt-get install gfortran
+sudo apt-get install lcov
+sudo apt-get install libblas-dev
+sudo apt-get install liblapack-dev
+
 SCRIPTPATH=$PWD
 
 git clone https://github.com/ralna/RALFit
