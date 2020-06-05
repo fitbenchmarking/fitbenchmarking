@@ -8,8 +8,8 @@ from json import load
 import os
 from unittest import TestCase
 
-import numpy as np
 import platform
+import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -19,6 +19,7 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 OPTIONS = Options()
+JACOBIAN_ENABLED_PARSERS = ['cutest']
 
 
 # pylint: disable=no-self-use
@@ -48,7 +49,8 @@ def generate_test_cases():
     """
     params = {'test_parsers': [],
               'test_factory': [],
-              'test_function_evaluation': []}
+              'test_function_evaluation': [],
+              'test_jacobian_evaluation': []}
 
     # get all parsers
     test_dir = os.path.dirname(__file__)
@@ -103,6 +105,14 @@ def generate_test_cases():
         test_func_eval['file_format'] = file_format
         test_func_eval['evaluations_file'] = func_eval
         params['test_function_evaluation'].append(test_func_eval)
+
+        jac_eval = os.path.join(test_dir,
+                                file_format,
+                                'jacobian_evaluations.json')
+        test_jac_eval = {}
+        test_jac_eval['file_format'] = file_format
+        test_jac_eval['evaluations_file'] = jac_eval
+        params['test_jacobian_evaluation'].append(test_jac_eval)
 
     return params
 
@@ -204,6 +214,10 @@ class TestParsers:
         # Check that the function is callable
         assert callable(fitting_problem.function)
 
+        if file_format in JACOBIAN_ENABLED_PARSERS:
+            # Check that the Jacobian is callable
+            assert callable(fitting_problem.jacobian)
+
     def test_function_evaluation(self, file_format, evaluations_file):
         """
         Tests that the function evaluation is consistent with what would be
@@ -244,6 +258,47 @@ class TestParsers:
                                                 params=r[1])
                 print(r, actual)
                 assert np.isclose(actual, r[2]).all()
+
+    def test_jacobian_evaluation(self, file_format, evaluations_file):
+        """
+        Tests that the Jacobian evaluation is consistent with what would be
+        expected by comparing to some precomputed values with fixed params and
+        x values.
+
+        :param file_format: The name of the file format
+        :type file_format: string
+        :param evaluations_file: Path to a json file containing tests and
+                                 results
+                                 in the following format:
+                                 {"test_file1": [[x1, params1, results1],
+                                                 [x2, params2, results2],
+                                                  ...],
+                                  "test_file2": ...}
+        :type evaluations_file: string
+        """
+        # Note that this test is optional so will only run if the file_format
+        # is added to the JACOBIAN_ENABLED_PARSERS list.
+        if file_format in JACOBIAN_ENABLED_PARSERS:
+            message = 'No function evaluations provided to test ' \
+                'against for {}'.format(file_format)
+            assert (evaluations_file is not None), message
+
+            with open(evaluations_file, 'r') as ef:
+                results = load(ef)
+
+            format_dir = os.path.dirname(evaluations_file)
+
+            for f, tests in results.items():
+                f = os.path.join(format_dir, f)
+
+                parser = ParserFactory.create_parser(f)
+                with parser(f, OPTIONS) as p:
+                    fitting_problem = p.parse()
+
+                for r in tests:
+                    x = np.array(r[0])
+                    actual = fitting_problem.jacobian(x, r[1])
+                    assert np.isclose(actual, r[2]).all()
 
     def test_factory(self, file_format, test_file):
         """

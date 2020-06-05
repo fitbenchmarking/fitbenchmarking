@@ -72,6 +72,22 @@ To add a new fitting problem definition type, complete the following steps:
      the list, raising an issue if the result is not suitably close to the
      specified value.
 
+   - **Jacobian tests** (optional): If the parser you add has analytic Jacobian
+     information which you wish to use, then in ``test_parsers.py`` add the
+    ``<format_name>`` to the ``JACOBIAN_ENABLED_PARSERS`` global variable. Then, 1 file
+     can be provided in the directory to test that Jacobian evaluation is as expected.
+     This file must be in json format and contain a string of the form::
+
+       {"file_name1": [[x1, [param11, param21], result1],
+                       [x2, [param12, param22], result2],
+                       ...],
+       {"file_name2": [...],
+        ...}
+
+     The test will then load the files in turn and run it against each item in
+     the list, raising an issue if the result is not suitably close to the
+     specified value.
+
    - **Integration tests**: Add an example to the `mock_problems/all_parser_test_set`.
      This will be used to verify that the problem can be run by scipy, and that
      accuracy results do not change unexpectedly in future changes to the code.

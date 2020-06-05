@@ -3,6 +3,7 @@ Implements a controller for the scipy fitting software.
 In particular, here for the scipy minimize solver for general minimization problems
 """
 
+from numpy import matmul
 from scipy.optimize import minimize
 
 from fitbenchmarking.controllers.base_controller import Controller
@@ -32,8 +33,7 @@ class ScipyController(Controller):
 
     def eval_jac(self, x, *args):
         """
-        Wrapper for problem.eval_j to form the approximate Jacobian for
-        problem.eval_r_norm
+        Evaluates Jacobian of the objective function
 
         :param x: The parameter values to find the Jacobian at
         :type x: list
@@ -41,9 +41,9 @@ class ScipyController(Controller):
         :return: Approximation of the Jacobian
         :rtype: numpy array
         """
-        out = self.problem.jac.eval(params=x,
-                                    func=self.problem.eval_r_norm,
-                                    *args)
+        fx = self.problem.eval_f(x)
+        J = self.jacobian.eval(x)
+        out = matmul(J.T, fx)
         return out
 
     def fit(self):
