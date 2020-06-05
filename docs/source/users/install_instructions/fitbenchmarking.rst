@@ -27,7 +27,7 @@ The following fitting packages are installed as a default with FitBenchmarking:
 2. `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_
 3. `DFO-GN <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`_
 4. `Minuit <http://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/>`_
-5.  Scipy `minimize <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html>`_
+5. Scipy `minimize <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html>`_
 6. Scipy `least_squares <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html>`_
 
 
