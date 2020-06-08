@@ -7,9 +7,9 @@ from inspect import isclass, isabstract, getmembers
 from json import load
 import os
 from unittest import TestCase
+from pytest import test_type as TEST_TYPE
 
 import numpy as np
-import platform
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -52,18 +52,12 @@ def generate_test_cases():
 
     # get all parsers
     test_dir = os.path.dirname(__file__)
-    formats = [f[:-10] for f in os.listdir(os.path.join(test_dir, os.pardir))
-               if f.endswith('_parser.py')
-               and f != 'base_parser.py']
-
-    for known_format in ['nist', 'fitbenchmark']:
-        if known_format not in formats:
-            raise RuntimeError(
-                'Could not find {}'.format(known_format))
-
-    # Limits the tests run on Windows (to be extended with issue #534)
-    if platform.system() == "Windows":
+    if TEST_TYPE == "all":
+        formats = ['cutest', 'nist', 'fitbenchmark']
+    elif TEST_TYPE == "default":
         formats = ['nist']
+    elif TEST_TYPE == "external":
+        formats = ['cutest', 'fitbenchmark']
 
     # create list of test_cases
     expected_dir = os.listdir(os.path.join(test_dir, 'expected'))
