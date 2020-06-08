@@ -35,7 +35,12 @@ In order to add a new controller, you will need to:
 
         - 'all' - all minimizers
         - 'ls' - least-squares fitting algorithms
-        - 'deriv_free' - derivative free algorithms
+        - 'deriv_free' - derivative free algorithms (these are algorithms that
+                         do not require an information about derivatives. For
+                         example, the 'Simplex' method in 'Mantid' does not
+                         require derivative information but 'lm-scipy-no-jac' in
+                         'scipy_ls' does but the derivative is handle internally
+                         within the sofware package)
         - 'general' - minimizers which solve a generic `min f(x)`
       and the values as a list of minimizer for that specific controller that fit into
       each of the above categories. See for example the ``GSL`` controller.
