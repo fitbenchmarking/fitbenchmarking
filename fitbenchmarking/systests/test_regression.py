@@ -9,14 +9,18 @@ except ImportError:
 import os
 import tempfile
 from unittest import TestCase
+import pytest
+from pytest import test_type as TEST_TYPE
 
 from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
 
 
-class TestRegression(TestCase):
+@pytest.mark.skipif("TEST_TYPE == 'default'")
+class TestRegressionAll(TestCase):
     """
-    Regression tests for the Fitbenchmarking software
+    Regression tests for the Fitbenchmarking software with all fitting software
+    packages
     """
 
     @classmethod
@@ -24,17 +28,7 @@ class TestRegression(TestCase):
         """
         Create an options file, run it, and get the results.
         """
-
-        # Get defaults which should have minimizers for every software
-        opts = Options()
-        opts.num_runs = 1
-        # Use only the first minimizer for each software
-        opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
-        # Get a list of all softwares
-        # (sorted to ensure it is the same order as expected)
-        opts.software = sorted(opts.minimizers.keys())
-        opts.results_dir = os.path.join(os.path.dirname(__file__), 'results')
-
+        opts = setup_options()
         opt_file = tempfile.NamedTemporaryFile(suffix='.ini')
         opts.write(opt_file.name)
 
@@ -44,7 +38,8 @@ class TestRegression(TestCase):
                                                'all_parsers_set'))
         run([problem], options_file=opt_file.name, debug=True)
 
-        opts.software = ['mantid']
+        opts = setup_options(multifit=True)
+        opt_file = tempfile.NamedTemporaryFile(suffix='.ini')
         opts.write(opt_file.name)
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,
@@ -52,7 +47,7 @@ class TestRegression(TestCase):
                                                'multifit_set'))
         run([problem], options_file=opt_file.name, debug=True)
 
-    def test_results_consistent(self):
+    def test_results_consistent_all(self):
         """
         Regression testing that the results of fitting a set of problems
         containing all problem types against a single minimiser from each of
@@ -102,6 +97,58 @@ class TestRegression(TestCase):
         self.assertListEqual([], diff, msg)
 
 
+@pytest.mark.skipif("TEST_TYPE == 'external'")
+@pytest.mark.skipif("TEST_TYPE == 'all'")
+class TestRegressionDefault(TestCase):
+    """
+    Regression tests for the Fitbenchmarking software with all default fitting
+    software packages
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Create an options file, run it, and get the results.
+        """
+
+        # Get defaults which should have minimizers for every software
+        opts = setup_options()
+        opt_file = tempfile.NamedTemporaryFile(suffix='.ini')
+        opts.write(opt_file.name)
+
+        problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                               os.pardir,
+                                               'mock_problems',
+                                               'default_parsers'))
+
+        run([problem], options_file=opt_file.name, debug=True)
+
+    def test_results_consistent(self):
+        """
+        Regression testing that the results of fitting a set of problems
+        containing all problem types against a single minimiser from each of
+        the supported softwares
+        """
+
+        expected_file = os.path.join(os.path.dirname(__file__),
+                                     'expected_results',
+                                     'default_parsers.txt')
+
+        actual_file = os.path.join(os.path.dirname(__file__),
+                                   'results',
+                                   'default_parsers',
+                                   'default_parsers_acc_weighted_table.txt')
+
+        with open(expected_file, 'r') as f:
+            expected = f.readlines()
+
+        with open(actual_file, 'r') as f:
+            actual = f.readlines()
+
+        diff, msg = diff_result(actual, expected)
+        self.assertListEqual([], diff, msg)
+
+
 def diff_result(expected, actual):
     """
     Return the lines which differ between expected and actual along with a
@@ -128,3 +175,30 @@ def diff_result(expected, actual):
           + '\n'.join(['{} \n{}'.format(*diff[i])
                        for i in range(num_diff)])
     return diff, msg
+
+
+def setup_options(multifit=False):
+    """
+    Setups up options class for system tests
+
+    :return: Fitbenchmarking options file for tests
+    :rtype: fitbenchmarking.utils.options.Options
+    """
+
+    # Get defaults which should have minimizers for every software
+    opts = Options()
+    opts.num_runs = 1
+    opts.make_plots = False
+    # Use only the first minimizer from the selected software packages
+    if multifit:
+        opts.software = ['mantid']
+        opts.minimizers = {'mantid': [opts.minimizers['mantid'][0]]}
+    elif TEST_TYPE != "default":
+        opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
+        opts.software = sorted(opts.minimizers.keys())
+    else:
+        opts.minimizers = {s: [opts.minimizers[s][0]] for s in opts.software}
+
+    opts.results_dir = os.path.join(os.path.dirname(__file__), 'results')
+
+    return opts
