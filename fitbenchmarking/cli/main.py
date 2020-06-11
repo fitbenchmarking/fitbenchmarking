@@ -114,14 +114,18 @@ def run(problem_sets, options_file='', debug=False):
 
         LOGGER.info('Running the benchmarking on the %s problem set',
                     label)
-        results = fitbenchmark_group(group_name=label,
-                                     options=options,
-                                     data_dir=data_dir)
+        results, failed_problems, unselected_minimzers = \
+            fitbenchmark_group(group_name=label,
+                               options=options,
+                               data_dir=data_dir)
         LOGGER.info('Producing output for the %s problem set', label)
         # Display the runtime and accuracy results in a table
-        group_results_dir = save_results(group_name=label,
-                                         results=results,
-                                         options=options)
+        group_results_dir = \
+            save_results(group_name=label,
+                         results=results,
+                         options=options,
+                         failed_problems=failed_problems,
+                         unselected_minimzers=unselected_minimzers)
 
         LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
         group_results_dir = os.path.relpath(path=group_results_dir,
