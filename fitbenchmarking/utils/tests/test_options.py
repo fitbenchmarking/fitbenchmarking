@@ -23,6 +23,7 @@ class OptionsTests(unittest.TestCase):
             dfogn: test
 
             [FITTING]
+            algorithm_type: random_algorithm
             use_errors: no
             num_runs: 2
             software: foo
@@ -58,7 +59,8 @@ class OptionsTests(unittest.TestCase):
         opts = {'MINIMIZERS': {'scipy': ['nonesense',
                                          'another_fake_minimizer'],
                                'dfogn': ['test']},
-                'FITTING': {'use_errors': False,
+                'FITTING': {'algorithm_type': 'random_algorithm',
+                            'use_errors': False,
                             'num_runs': 2,
                             'software': ['foo', 'bar'],
                             'jac_method': 'random_type',

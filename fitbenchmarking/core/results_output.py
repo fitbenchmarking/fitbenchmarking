@@ -13,7 +13,8 @@ from fitbenchmarking.results_processing import performance_profiler, plots, \
 from fitbenchmarking.utils import create_dirs
 
 
-def save_results(options, results, group_name):
+def save_results(options, results, group_name,
+                 failed_problems, unselected_minimzers):
     """
     Create all results files and store them.
     Result files are plots, support pages, tables, and index pages.
@@ -25,6 +26,12 @@ def save_results(options, results, group_name):
                     fitbenchmarking.utils.fitbm_result.FittingResult
     :param group_name: name of the problem group
     :type group_name: str
+    :param failed_problems: list of failed problems to be reported in the
+                            html output
+    :type failed_problems: list
+    :params unselected_minimzers: Dictionary containing unselected minimizers
+                                  based on the algorithm_type option
+    :type unselected_minimzers: dict
 
     :return: Path to directory of group results
     :rtype: str
@@ -46,7 +53,9 @@ def save_results(options, results, group_name):
                                      best_results,
                                      group_name,
                                      group_dir,
-                                     pp_locations)
+                                     pp_locations,
+                                     failed_problems,
+                                     unselected_minimzers)
 
     create_problem_level_index(options,
                                table_names,

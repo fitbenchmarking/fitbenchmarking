@@ -26,6 +26,11 @@ class MinuitController(Controller):
         self._popt = None
         self._initial_step = None
         self._minuit_problem = None
+        self.algorithm_check = {
+            'all': ['minuit'],
+            'ls': [None],
+            'deriv_free': [None],
+            'general': ['minuit']}
 
     def setup(self):
         """

@@ -158,3 +158,15 @@ class UnknownTableError(FitBenchmarkException):
 
         self._class_message = 'Set table option could not be found'
         self.error_code = 12
+
+
+class NoResultsError(FitBenchmarkException):
+    """
+    Indicates a problem with the fitting problem.
+    """
+
+    def __init__(self, message=''):
+        super(NoResultsError, self).__init__(message)
+
+        self._class_message = 'FitBenchmarking ran with no results'
+        self.error_code = 13
