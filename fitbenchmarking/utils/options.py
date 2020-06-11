@@ -46,6 +46,7 @@ class Options(object):
             self.num_runs = fitting.getint('num_runs')
         except ValueError:
             error_message.append(template.format('num_runs', "int"))
+        self.algorithm_type = fitting.getstr('algorithm_type')
         self.software = fitting.getlist('software')
         try:
             self.use_errors = fitting.getboolean('use_errors')
@@ -110,6 +111,7 @@ class Options(object):
         config['MINIMIZERS'] = {k: list_to_string(m)
                                 for k, m in self.minimizers.items()}
         config['FITTING'] = {'num_runs': self.num_runs,
+                             'algorithm_type': self.algorithm_type,
                              'software': list_to_string(self.software),
                              'use_errors': self.use_errors,
                              'jac_method': list_to_string(self.jac_method),

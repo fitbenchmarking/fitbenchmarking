@@ -32,6 +32,11 @@ class BumpsController(Controller):
         self._func_wrapper = None
         self._fit_problem = None
         self._bumps_result = None
+        self.algorithm_check = {
+            'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
+            'ls': ['lm-bumps', 'mp'],
+            'deriv_free': ['amoeba', 'de'],
+            'general': ['amoeba', 'newton', 'de']}
 
     def jacobian_information(self):
         """

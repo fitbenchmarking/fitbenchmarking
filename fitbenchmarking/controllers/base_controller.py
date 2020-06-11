@@ -4,7 +4,8 @@ Implements the base class for the fitting software controllers.
 
 from abc import ABCMeta, abstractmethod
 
-from fitbenchmarking.utils.exceptions import ControllerAttributeError
+from fitbenchmarking.utils.exceptions import ControllerAttributeError, \
+    UnknownMinimizerError
 
 
 class Controller:
@@ -54,6 +55,15 @@ class Controller:
         # Flag: error handling flag
         self.flag = None
 
+        # Algorithm check: this is used to check whether the selected
+        # minimizer/minimizers from the options is within the softwares
+        # algorithms. It also used to filter out algorithms based on the keys
+        # of the dictionary
+        self.algorithm_check = {'all': [None],
+                                'ls': [None],
+                                'deriv_free': [None],
+                                'general': [None]}
+
     def prepare(self):
         """
         Check that function and minimizer have been set.
@@ -87,6 +97,28 @@ class Controller:
         """
         out = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
         return out
+
+    def validate_minimizer(self, minimizer, algorithm_type):
+        """
+        Helper function which checks that the selected minimizer from the
+        options (options.minimizer) exists and whether the minimizer is in
+        self.algorithm_check[options.algorithm_type] (this is a list set in
+        the controller)
+
+        :param minimizer: string of minimizers selected from the
+                          options
+        :type minimizer: str
+        :param algorithm_type: the algorithm type selected from the options
+        :type algorithm_type: str
+        """
+        minimzer_selection = self.algorithm_check[algorithm_type]
+        result = minimizer in minimzer_selection
+
+        if not result:
+            message = 'The minimizer selected, {0}, is not within ' \
+                'algorithm_check[options.algorithm_type] = {1}\n'.format(
+                    minimizer, minimzer_selection)
+            raise UnknownMinimizerError(message)
 
     def check_attributes(self):
         """

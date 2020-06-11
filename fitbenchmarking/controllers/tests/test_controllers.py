@@ -202,6 +202,21 @@ class BaseControllerTests(TestCase):
         with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
 
+    def test_validate_minimizer_true(self):
+        controller = DummyController(self.problem)
+        controller.algorithm_check = {'all': ['min1', 'min2']}
+        algorithm_type = 'all'
+        minimizer = 'min1'
+        controller.validate_minimizer(minimizer, algorithm_type)
+
+    def test_validate_minimizer_false(self):
+        controller = DummyController(self.problem)
+        controller.algorithm_check = {'all': ['min1', 'min2']}
+        algorithm_type = 'all'
+        minimizer = 'min_unknown'
+        with self.assertRaises(exceptions.UnknownMinimizerError):
+            controller.validate_minimizer(minimizer, algorithm_type)
+
 
 @pytest.mark.skipif("TEST_TYPE == 'external'")
 class DefaultControllerTests(TestCase):

@@ -28,6 +28,18 @@ class MantidController(Controller):
         super(MantidController, self).__init__(problem)
 
         self._param_names = self.problem.param_names
+        self.algorithm_check = {
+            'all': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
+                    'Conjugate gradient (Polak-Ribiere imp.)',
+                    'Damped GaussNewton', 'Levenberg-Marquardt',
+                    'Levenberg-MarquardtMD', 'Simplex', 'SteepestDescent',
+                    'Trust Region'],
+            'ls': ['Levenberg-Marquardt', 'Levenberg-MarquardtMD',
+                   'Trust Region'],
+            'deriv_free': ['Simplex'],
+            'general': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
+                        'Conjugate gradient (Polak-Ribiere imp.)',
+                        'Damped GaussNewton', 'Simplex', 'SteepestDescent']}
 
         if self.problem.multifit:
             # Multi Fit

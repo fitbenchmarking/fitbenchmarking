@@ -20,6 +20,13 @@ class ScipyController(Controller):
         super(ScipyController, self).__init__(problem)
 
         self._popt = None
+        self.algorithm_check = {
+            'all': ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
+                    'L-BFGS-B', 'TNC', 'SLSQP'],
+            'ls': [None],
+            'deriv_free': ['Nelder-Mead', 'Powell'],
+            'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
+                        'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP']}
 
     def jacobian_information(self):
         """
