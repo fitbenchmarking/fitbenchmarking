@@ -58,16 +58,22 @@ In order to add a new controller, you will need to:
    the ``example_scripts`` directory)
 
 5. Create tests for the software in
-   ``fitbenchmarking/controllers/tests/test_controllers.py``.
+   ``fitbenchmarking/controllers/tests/test_controllers.py``. If the package
+   is ``pip`` installable then add the tests to ``DefaultControllerTests`` class
+   and if not add to the ``ExternalControllerTests`` class.
    Unless the new controller is more complicated than the currently available
    controllers, this can be done by following the example of the others.
 
-6. In the :ref:`Minimizers` page of the :ref:`how` page, update with the
+6. If `pip` installable add to ``install_requires`` in ``setup.py`` otherwise follow
+   the same installation procedure for the external fitting softwares found in
+   :ref:`external-instructions`
+
+7. In the :ref:`Minimizers` page of the :ref:`how` page, update with the
    new software and minimizers following the structure there. Note: make
    sure that you use `<software_name>` in :ref:`Minimizers` so that the
    software links in the HTML tables link correctly to the documentation.
 
-7. At the bottom of :doc:`main index page <../index>`, add the logo of the
+8. At the bottom of :doc:`main index page <../index>`, add the logo of the
    of the software package in the `Currently Benchmarking` section.
 
 .. note::
