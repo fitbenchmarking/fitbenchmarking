@@ -32,7 +32,8 @@ Please ensure everything required in :ref:`guidelines` is included in
 the branch.
 
 When you think your new code is ready to be merged into the codebase,
-you should open a pull request.  The description should contain the
+you should open a pull request to master.
+The description should contain the
 words "Fixes #<nnn>", where <nnn> is the issue number; this will ensure
 the issue is closed when the code is merged into master.  At this point
 the automated tests will trigger, and you can see if the code passes on
@@ -52,16 +53,10 @@ GitHub.
 Release branches
 ================
 
-Most work should be branched off, and merged into, master.
-
-The exception is when we are near a release, and then the contributor
-must make the decision of whether the code will enter this release, or
-wait for a future one.
-
 Branches named `release-*` are protected branches; code must be approved by
 a reviewer before being added to them, and automated tests will be run on
 pull requests to these branches.  If code is to be included in the release, it
-must be pulled into this branch and not master.
+must be pulled into this branch from master.
 
 Release branches should have the format `release-major.minor.x`, starting from
 `release-0.1.x`.  When the code is released, we will tag that commit with
@@ -69,6 +64,27 @@ Release branches should have the format `release-major.minor.x`, starting from
 be created accordingly.  If at some point we don't want to provide hot-fixes
 to a given minor release, then the corresponding release branch may be deleted.
 
-When a pull request is merged into a release branch, then the change should also
-be merged into master as soon a possible.  As long as the tests pass, and there
-are no merge conflicts, this can be done without a detailed review.
+All changes must be initially merged into master.
+There is a `backport-candidate` label, which you should put on the pull request.
+If the PR is lablelled as a `backport-candidate`, then it is recommended to
+merge into master using the squash commit option:
+
+.. figure:: ../../images/squash-and-merge.png
+   :alt: Squashing and merging
+
+
+When a pull request is merged into master, it should also be merged into
+the release branch as soon as possible.  This can be done using git cherry
+pick:
+
+.. code-block:: bash
+
+   git checkout release-x.x.x
+   git cherry-pick -x <commit-id>
+   git push
+
+If you didn't do a squash merge, you will have to cherry pick each commit in
+the PR that this being backported separately.
+
+As long as the tests pass, and there are no merge conflicts,
+this can be done without a detailed review.
