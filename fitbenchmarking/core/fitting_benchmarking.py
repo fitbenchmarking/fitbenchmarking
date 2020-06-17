@@ -64,14 +64,13 @@ def benchmark(group_name, options, data_dir):
         minimizers_all = options.minimizers[keys]
         options.minimizers[keys] = list(set(minimizers_all) - set(minimzers))
 
-    # options.minimizers = converge_minimizers
-    # If the results are and empty list then this means that all minimizers
+    # If the results are an empty list then this means that all minimizers
     # raise an exception and the tables will produce errors if they run.
     if results == []:
-        message = "The current options set up meant that all minimizers set " \
-                  "raised an exception. This is likely due to the " \
-                  "`algorithm_type` set in the options. Please review " \
-                  "current options setup and re-run FitBenmarking."
+        message = "The user chosen options setup resulted in all minimizers " \
+                  "raising an exception. This is likely due to the way " \
+                  "`algorithm_type` was set in the options. Please review " \
+                  "your options setup and re-run FitBenmarking."
         raise NoResultsError(message)
 
     # Used to group elements in list by name
@@ -223,8 +222,8 @@ def loop_over_fitting_software(problem, options, start_values_index):
         unselected_minimzers[s] = minimizer_failed
         software_results.extend(problem_result)
 
-    # Checks to see if all of the minimizers raise and exception and
-    # records the problems name for that case
+    # Checks to see if all of the minimizers raised an exception and
+    # record the problem name if that is the case
     software_check = [np.isinf(v.chi_sq) for v in software_results]
     if all(software_check):
         software_results = []
