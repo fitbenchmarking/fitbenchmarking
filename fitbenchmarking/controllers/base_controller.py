@@ -145,7 +145,7 @@ class Controller:
         A helper function which checks all required attributes are set
         in software controllers
         """
-        values = {'flag': int}
+        values = {'_flag': int}
 
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
