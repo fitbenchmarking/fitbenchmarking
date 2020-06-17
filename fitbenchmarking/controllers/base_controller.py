@@ -20,27 +20,6 @@ class Controller:
 
     VALID_FLAGS = [0, 1, 2, 3]
 
-    @property
-    def flag(self):
-
-        """
-        | 0: 'Successfully converged'
-        | 1: 'Software reported maximum number of iterations exceeded'
-        | 2: 'Software run but didn't converge to solution'
-        | 3: 'Software raised an exception'
-        """
-
-        return self._flag
-
-    @flag.setter
-    def flag(self, value):
-
-        if value not in self.VALID_FLAGS:
-            raise ControllerAttributeError(
-                'controller.flag must be one of {}. Got: {}.'.format(
-                    list(self.VALID_FLAGS), value))
-        self._flag = value
-
     def __init__(self, problem):
         """
         Initialise the class.
@@ -83,6 +62,27 @@ class Controller:
                                 'ls': [None],
                                 'deriv_free': [None],
                                 'general': [None]}
+
+    @property
+    def flag(self):
+
+        """
+        | 0: 'Successfully converged'
+        | 1: 'Software reported maximum number of iterations exceeded'
+        | 2: 'Software run but didn't converge to solution'
+        | 3: 'Software raised an exception'
+        """
+
+        return self._flag
+
+    @flag.setter
+    def flag(self, value):
+
+        if value not in self.VALID_FLAGS:
+            raise ControllerAttributeError(
+                'controller.flag must be one of {}. Got: {}.'.format(
+                    list(self.VALID_FLAGS), value))
+        self._flag = value
 
     def prepare(self):
         """
