@@ -82,7 +82,7 @@ class Controller:
             raise ControllerAttributeError(
                 'controller.flag must be one of {}. Got: {}.'.format(
                     list(self.VALID_FLAGS), value))
-        self._flag = value
+        self._flag = int(value)
 
     def prepare(self):
         """
