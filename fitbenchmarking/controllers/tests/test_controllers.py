@@ -188,11 +188,11 @@ class BaseControllerTests(TestCase):
                                 attribute
         """
         controller = DummyController(self.problem)
-        controller.check_attributes()
-        delattr(controller, '_flag')
 
         with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
+        controller.flag = 1
+        controller.check_attributes()
 
     def test_check_valid_flag(self):
         """
