@@ -6,6 +6,7 @@ for a certain fitting software.
 
 from __future__ import absolute_import, division, print_function
 
+from collections import defaultdict
 import timeit
 import warnings
 
@@ -16,13 +17,13 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 from fitbenchmarking.utils.exceptions import NoResultsError, \
-    UnknownMinimizerError
+    UnknownMinimizerError, UnsupportedMinimizerError
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
 
 
-def benchmark(group_name, options, data_dir):
+def benchmark(options, data_dir):
     """
     Gather the user input and list of paths. Call benchmarking on these.
     The benchmarking structure is:
@@ -34,10 +35,6 @@ def benchmark(group_name, options, data_dir):
                 loop_over_software()
                     loop_over_minimizers()
 
-    :param group_name: is the name (label) for a group. E.g. the name for
-                       the group of problems in "NIST/low_difficulty" may be
-                       picked to be NIST_low_difficulty
-    :type group_name: str
     :param options: dictionary containing software used in fitting
                     the problem, list of minimizers and location of
                     json file contain minimizers
@@ -74,17 +71,12 @@ def benchmark(group_name, options, data_dir):
         raise NoResultsError(message)
 
     # Used to group elements in list by name
-    results_dict = {}
+    results_dict = defaultdict(list)
     for problem_result in results:
-        name = problem_result.name
-        # group by name
-        try:
-            results_dict[name].append(problem_result)
-        except KeyError:
-            results_dict[name] = [problem_result]
+        results_dict[problem_result.name].append(problem_result)
 
     results = [results_dict[r] for r in
-               sorted(results_dict.keys(), key=str.lower)]
+               sorted(results_dict.keys(), key=lambda x: x.lower())]
 
     return results, failed_problems, unselected_minimzers
 
@@ -131,7 +123,7 @@ def loop_over_benchmark_problems(problem_group, options):
         # Loops over starting values #
         ##############################
         problem_results, problem_fails, unselected_minimzers = \
-            loop_over_starting_values(parsed_problem, options)
+            loop_over_starting_values(parsed_problem, options, grabbed_output)
 
         results.extend(problem_results)
         failed_problems.extend(problem_fails)
@@ -139,7 +131,7 @@ def loop_over_benchmark_problems(problem_group, options):
     return results, failed_problems, unselected_minimzers
 
 
-def loop_over_starting_values(problem, options):
+def loop_over_starting_values(problem, options, grabbed_output):
     """
     Loops over starting values from the fitting problem
 
@@ -147,6 +139,8 @@ def loop_over_starting_values(problem, options):
     :type problem: FittingProblem
     :param options: FitBenchmarking options for current run
     :type options: fitbenchmarking.utils.options.Options
+    :param grabbed_output: Object that removes third part output from console
+    :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
     :return: prob_results array of fitting results for the problem group,
              list of failed problems and dictionary of unselected minimizers
@@ -167,13 +161,15 @@ def loop_over_starting_values(problem, options):
         individual_problem_results, problem_fails, unselected_minimzers = \
             loop_over_fitting_software(problem=problem,
                                        options=options,
-                                       start_values_index=index)
+                                       start_values_index=index,
+                                       grabbed_output=grabbed_output)
         problem_results.extend(individual_problem_results)
 
     return problem_results, problem_fails, unselected_minimzers
 
 
-def loop_over_fitting_software(problem, options, start_values_index):
+def loop_over_fitting_software(problem, options, start_values_index,
+                               grabbed_output):
     """
     Loops over fitting software selected in the options
 
@@ -181,6 +177,11 @@ def loop_over_fitting_software(problem, options, start_values_index):
     :type problem: FittingProblem
     :param options: FitBenchmarking options for current run
     :type options: fitbenchmarking.utils.options.Options
+    :param start_values_index: Integer that selects the starting values when
+                               datasets have multiple ones.
+    :type start_values_index: int
+    :param grabbed_output: Object that removes third part output from console
+    :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
     :return: list of all results, failed problem names and dictionary of
              unselected minimizers based on algorithm_type
@@ -188,9 +189,7 @@ def loop_over_fitting_software(problem, options, start_values_index):
                   list of failed problem names,
                   dictionary of minimizers)
     """
-    grabbed_output = output_grabber.OutputGrabber(options)
     results = []
-
     software = options.software
     if not isinstance(software, list):
         software = [software]
@@ -203,7 +202,7 @@ def loop_over_fitting_software(problem, options, start_values_index):
         try:
             minimizers = options.minimizers[s]
         except KeyError:
-            raise UnknownMinimizerError(
+            raise UnsupportedMinimizerError(
                 'No minimizer given for software: {}'.format(s))
         with grabbed_output:
             controller_cls = ControllerFactory.create_controller(
@@ -218,7 +217,8 @@ def loop_over_fitting_software(problem, options, start_values_index):
         problem_result, minimizer_failed = \
             loop_over_minimizers(controller=controller,
                                  minimizers=minimizers,
-                                 options=options)
+                                 options=options,
+                                 grabbed_output=grabbed_output)
         unselected_minimzers[s] = minimizer_failed
         software_results.extend(problem_result)
 
@@ -233,7 +233,7 @@ def loop_over_fitting_software(problem, options, start_values_index):
     return results, problem_fails, unselected_minimzers
 
 
-def loop_over_minimizers(controller, minimizers, options):
+def loop_over_minimizers(controller, minimizers, options, grabbed_output):
     """
     Loops over minimizers in fitting software
 
@@ -243,6 +243,8 @@ def loop_over_minimizers(controller, minimizers, options):
     :type minimizers: list
     :param options: FitBenchmarking options for current run
     :type options: fitbenchmarking.utils.options.Options
+    :param grabbed_output: Object that removes third part output from console
+    :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
     :return: list of all results and dictionary of unselected minimizers
              based on algorithm_type

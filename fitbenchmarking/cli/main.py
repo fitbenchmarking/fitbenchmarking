@@ -115,8 +115,7 @@ def run(problem_sets, options_file='', debug=False):
         LOGGER.info('Running the benchmarking on the %s problem set',
                     label)
         results, failed_problems, unselected_minimzers = \
-            benchmark(group_name=label,
-                      options=options,
+            benchmark(options=options,
                       data_dir=data_dir)
         LOGGER.info('Producing output for the %s problem set', label)
         # Display the runtime and accuracy results in a table
