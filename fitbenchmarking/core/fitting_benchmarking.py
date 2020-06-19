@@ -65,6 +65,7 @@ def benchmark(options, data_dir):
         options.minimizers[keys] = list(set(minimizers_all) - set(minimzers))
 
     options.minimizers = minimizer_dict
+
     # If the results are an empty list then this means that all minimizers
     # raise an exception and the tables will produce errors if they run.
     if results == []:
@@ -360,7 +361,11 @@ def loop_over_jacobians(controller, options, grabbed_output):
             controller.final_params = None if not problem.multifit \
                 else [None] * len(controller.data_x)
 
+            chi_sq = np.inf if not problem.multifit \
+                else [np.inf] * len(controller.data_x)
+
         controller.check_attributes()
+
         if controller.flag <= 2:
             ratio = np.max(runtime_list) / np.min(runtime_list)
             tol = 4

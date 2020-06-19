@@ -68,7 +68,6 @@ class Controller:
 
     @property
     def flag(self):
-
         """
         | 0: 'Successfully converged'
         | 1: 'Software reported maximum number of iterations exceeded'
