@@ -49,7 +49,7 @@ class ScipyController(Controller):
         :rtype: numpy array
         """
         fx = self.problem.eval_f(x)
-        J = self.jacobian.eval(x)
+        J = self.problem.jac.eval(x)
         out = matmul(J.T, fx)
         return out
 
