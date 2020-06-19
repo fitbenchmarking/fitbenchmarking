@@ -1,10 +1,11 @@
 [run]
 omit =
     */tests/*
-    fitbenchmarking/cli/main.py
+    /fitbenchmarking/cli/main.py
 
 
 [report]
 omit =
     *__init__*
     */test_*
+    /fitbenchmarking/cli/main.py

@@ -35,7 +35,7 @@ install:
   - if [[ $SUITE == "LINTING" ]]; then source ./travis/linting_install.sh; fi
 
 script:
-  - if [[ $SUITE == "UNIT" ]]; then source ./travis/unit_tests.sh; fi
+  - if [[ $SUITE == "UNIT" ]]; then ./travis/unit_tests.sh; fi
   - if [[ $SUITE == "UNIT_DEFAULT" ]]; then ./travis/unit_tests_default.sh; fi
   - if [[ $SUITE == "SYSTEM" ]]; then ./travis/system_tests.sh; fi
   - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then ./travis/system_tests_default.sh; fi

@@ -6,7 +6,6 @@
     <link rel="stylesheet" type="text/css" href="{{ table_style }}" />
     <link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
     <link rel="stylesheet" type="text/css" href="{{ maths_style }}" />
-
     <head>
         <title>Fitbenchmark Results Table</title>
     </head>
@@ -18,82 +17,117 @@
                     <hr />
                 </div>
                 {% if table_description %}
-                <div class="content">
-                    {{ table_description }}
-                </div>
+                    <div class="content">
+                        {{ table_description }}
+                    </div>
                 {% endif %}
-		<section class="accordion">
-
+                <section class="accordion">
                     <input type="checkbox" name="collapse" id="handle2" checked="checked">
-			<h2 class="handle">
-                            <label for="handle2">Table</label>
-			</h2>
-			<div class="content">
-                            {% if table_format %}
-			    <p>
-				{{ table_format }}
-			    </p>
-			    {% endif %}
-			    <center>
-				<div class="table">
-				    {{ table }}
-				</div>
-			    </center>
-			    <p>
-				Clicking a result in the tables will give more details,
-				such as graphs of the fit against the data and the parameters that the minimizer found.
-			    </p>
-			    <p>
-				Clicking the problem names will take you to details of the best minimizer.
-			    </p>
-                <p>
-                Clicking the software name will take you to FitBenchmarking Read the Docs documentation for the selected software.
-                </p>
-			    <h3>Errors</h3>
-			    <p>
-				The superscripts in the tables denote current error handling within FitBenchmarking.
-				Currently the errors correspond to:
-			    </p>
-			    <table style="width:60%">
-				<tr>
-				    <th>Error flag</th>
-				    <th>Error message</th>
-				</tr>
-				{% for flag, message in error_message.items() %}
-				<tr>
-				    <td>{{ flag }}</td>
-				    <td>{{ message }}</td>
-				</tr>
-				{% endfor %}
-			    </table>
-			</div>
-		</section>
-		{% if has_pp %}
-		<hr>
-		<section class="accordion">
-		    <input type="checkbox" name="collapse" id="handle3" checked="checked">
-			<h2 class="handle">
-			    <label for="handle3">Performance profile</label>
-			</h2>
-			<div class="content">
-			    {% for imgfile in pp_filenames %}
-			        <img alt="{{ imgfile }}" src="{{ imgfile }}" />
-			    {% endfor %}
-			    <p>
-				This is a Dolan-Moré performance profile.
-				The solvers appearing in the top left corner may be considered the best
-				performing on this test set.
-				See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.
-			    </p>
-			</div>
-                </section>
-		{% endif %}
-                <center>
-		    <button class="btn default" onclick="history.go(-1)">
-			<i class="fa fa-arrow-left"></i>
-		    </button>
-                </center>
+                    <h2 class="handle">
+                    <label for="handle2">Table</label>
+                    </h2>
+                    <div class="content">
+                        {% if table_format %}
+                            <p>
+                                {{ table_format }}
+                            </p>
+                        {% endif %}
+                        <center>
+                        <div class="table">
+                            {{ table }}
+                        </div>
+                        </center>
+                        <p>
+                            Clicking a result in the tables will give more details,
+                            such as graphs of the fit against the data and the parameters that the minimizer found.
+                        </p>
+                        <p>
+                            Clicking the problem names will take you to details of the best minimizer.
+                        </p>
+                        <p>
+                            Clicking the software name will take you to FitBenchmarking Read the Docs documentation for the selected software.
+                        </p>
+                        {% if report_failed_min %}
+                            <h3>Failed minimizers</h3>
+                            <p>
+                                The `algorithm_type` has been selected to be
+                                <strong>{{algorithm_type}}</strong>. Please review
+                                current options setup and re-run FitBenmarking.
+                            </p>
+                            <p>
+                                {% for software, minimizer in unselected_minimzers.items() %}
+                                    Withing <strong>{{software}}</strong> the following
+                                    minimizers we were not run due to the selected
+                                    minimizers:
+                                    <ol>
+                                        {% for m in minimizer -%}
+                                            {{ m }} <br/>
+                                            {%- endfor %}
+                                        </ol>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {% if failed_problems != [] %}
+                                <h3>Failed problems</h3>
+                                <p>
+                                    For the following problems all the selected minimizers
+                                    and software packages raise an exception:
+                                </p>
+                                <ol>
+                                    {% for problem in failed_problems %}
+                                        {{ problem }} <br/>
+                                    {% endfor %}
+                                </ol>
+                                <p>
+                                    This is likely due to the `algorithm_type` set in the options. Please review current options setup and re-run
+                                    FitBenmarking.
+                                </p>
+                            {% endif %}
+                            <h3>Errors</h3>
+                            <p>
+                                The superscripts in the tables denote current error handling within FitBenchmarking.
+                                Currently the errors correspond to:
+                            </p>
+                            <table style="width:60%">
+                                <tr>
+                                    <th>Error flag</th>
+                                    <th>Error message</th>
+                                </tr>
+                                {% for flag, message in error_message.items() %}
+                                    <tr>
+                                        <td>{{ flag }}</td>
+                                        <td>{{ message }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </section>
+                    {% if has_pp %}
+                        <hr>
+                        <section class="accordion">
+                            <input type="checkbox" name="collapse" id="handle3" checked="checked">
+                            <h2 class="handle">
+                            <label for="handle3">Performance profile</label>
+                            </h2>
+                            <div class="content">
+                                {% for imgfile in pp_filenames %}
+                                    <img alt="{{ imgfile }}" src="{{ imgfile }}" />
+                                {% endfor %}
+                                <p>
+                                    This is a Dolan-Moré performance profile.
+                                    The solvers appearing in the top left corner may be considered the best
+                                    performing on this test set.
+                                    See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.
+                                </p>
+                            </div>
+                        </section>
+                    {% endif %}
+                    <center>
+                    <button class="btn default" onclick="history.go(-1)">
+                    <i class="fa fa-arrow-left"></i>
+                    </button>
+                    </center>
+                </div>
             </div>
-        </div>
-    </body>
-</html>
+        </body>
+    </html>

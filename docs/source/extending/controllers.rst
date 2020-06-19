@@ -29,7 +29,21 @@ In order to add a new controller, you will need to:
 
    -  ``__init__()``: Initialise anything that is needed specifically for the
       software, do any work that can be done without knowledge of the
-      minimizer to use, or function to fit, and call ``super().__init__()``.
+      minimizer to use, or function to fit, and call ``super().__init__()``. In this
+      function, you must initialize the a dictionary, ``self.algorithm_type``, such that
+      the keys are given by:
+
+        - 'all' - all minimizers
+        - 'ls' - least-squares fitting algorithms
+        - 'deriv_free' - derivative free algorithms (these are algorithms that
+                         do not require an information about derivatives. For
+                         example, the 'Simplex' method in 'Mantid' does not
+                         require derivative information but 'lm-scipy-no-jac' in
+                         'scipy_ls' does but the derivative is handle internally
+                         within the sofware package)
+        - 'general' - minimizers which solve a generic `min f(x)`
+      and the values as a list of minimizer for that specific controller that fit into
+      each of the above categories. See for example the ``GSL`` controller.
    -  ``setup()``: Do any work that must be done only after knowing the
       minimizer to use and the function to fit. E.g. creating function wrappers
       around a callable.
@@ -38,12 +52,11 @@ In order to add a new controller, you will need to:
    -  ``cleanup()``: Convert the results into the expected numpy arrays,
       error flags and store them in the results variables
       (``self.results``, ``self.final_params``, ``self.flag``).
-      The flag corresponds to the following messages::
+      The flag corresponds to the following messages:
 
-         0: "Successfully converged",
-         1: "Software reported maximum number of iterations exceeded",
-         2: "Software run but didn't converge to solution",
-         3: "Software raised an exception".
+      .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag
+
+
 
 4. Document the available minimizers (currently done by adding to
    ``fitbenchmarking/utils/default_options.ini`` and any example files in
