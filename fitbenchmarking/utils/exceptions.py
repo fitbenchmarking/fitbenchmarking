@@ -114,13 +114,15 @@ class NoDataError(FitBenchmarkException):
 
 class UnknownMinimizerError(FitBenchmarkException):
     """
-    Indicates that the controller does not support a given minimizer.
+    Indicates that the controller does not support a given minimizer given
+    the current "algorithm_type" option set.
     """
 
     def __init__(self, message=''):
         super(UnknownMinimizerError, self).__init__(message)
 
-        self._class_message = 'Minimizer cannot be run with Controller.'
+        self._class_message = 'Minimizer cannot be run with Controller with ' \
+                              'current "algorithm_type" option set.'
         self.error_code = 9
 
 
@@ -158,3 +160,27 @@ class UnknownTableError(FitBenchmarkException):
 
         self._class_message = 'Set table option could not be found'
         self.error_code = 12
+
+
+class NoResultsError(FitBenchmarkException):
+    """
+    Indicates a problem with the fitting problem.
+    """
+
+    def __init__(self, message=''):
+        super(NoResultsError, self).__init__(message)
+
+        self._class_message = 'FitBenchmarking ran with no results'
+        self.error_code = 13
+
+
+class UnsupportedMinimizerError(FitBenchmarkException):
+    """
+    Indicates that the controller does not support a given minimizer.
+    """
+
+    def __init__(self, message=''):
+        super(UnsupportedMinimizerError, self).__init__(message)
+
+        self._class_message = 'FitBenchmarking ran with no results'
+        self.error_code = 14

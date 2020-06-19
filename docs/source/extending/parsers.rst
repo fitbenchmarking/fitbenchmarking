@@ -47,9 +47,12 @@ To add a new fitting problem definition type, complete the following steps:
    made to match this, which future types could exploit.
 
 4. Create the files to test the new parser.
-   Automated tests are run against all parsers in FitBenchmarking,
+   Automated tests are run against selected parsers in FitBenchmarking,
    these work by using test files in
    ``fitbenchmarking/parsing/tests/<format_name>``.
+   In the ``generate_test_cases`` function, one needs to add the new parsers
+   name to ``formats`` based on whether the parser is ``pip`` installable or
+   not.
    There are 2 types of test files needed:
 
    - **Generic tests**: 1 file must be provided in the directory for each file

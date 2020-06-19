@@ -4,9 +4,8 @@ Implements the base class for the fitting software controllers.
 
 from abc import ABCMeta, abstractmethod
 
-import numpy as np
-
-from fitbenchmarking.utils.exceptions import ControllerAttributeError
+from fitbenchmarking.utils.exceptions import ControllerAttributeError, \
+    UnknownMinimizerError
 
 
 class Controller:
@@ -18,6 +17,8 @@ class Controller:
     """
 
     __metaclass__ = ABCMeta
+
+    VALID_FLAGS = [0, 1, 2, 3]
 
     def __init__(self, problem):
         """
@@ -51,7 +52,37 @@ class Controller:
         self.final_params = None
 
         # Flag: error handling flag
-        self.flag = None
+        self._flag = None
+
+        # Algorithm check: this is used to check whether the selected
+        # minimizer/minimizers from the options is within the softwares
+        # algorithms. It also used to filter out algorithms based on the keys
+        # of the dictionary
+        self.algorithm_check = {'all': [None],
+                                'ls': [None],
+                                'deriv_free': [None],
+                                'general': [None]}
+
+    @property
+    def flag(self):
+
+        """
+        | 0: 'Successfully converged'
+        | 1: 'Software reported maximum number of iterations exceeded'
+        | 2: 'Software run but didn't converge to solution'
+        | 3: 'Software raised an exception'
+        """
+
+        return self._flag
+
+    @flag.setter
+    def flag(self, value):
+
+        if value not in self.VALID_FLAGS:
+            raise ControllerAttributeError(
+                'controller.flag must be one of {}. Got: {}.'.format(
+                    list(self.VALID_FLAGS), value))
+        self._flag = int(value)
 
     def prepare(self):
         """
@@ -87,12 +118,34 @@ class Controller:
         out = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
         return out
 
+    def validate_minimizer(self, minimizer, algorithm_type):
+        """
+        Helper function which checks that the selected minimizer from the
+        options (options.minimizer) exists and whether the minimizer is in
+        self.algorithm_check[options.algorithm_type] (this is a list set in
+        the controller)
+
+        :param minimizer: string of minimizers selected from the
+                          options
+        :type minimizer: str
+        :param algorithm_type: the algorithm type selected from the options
+        :type algorithm_type: str
+        """
+        minimzer_selection = self.algorithm_check[algorithm_type]
+        result = minimizer in minimzer_selection
+
+        if not result:
+            message = 'The minimizer selected, {0}, is not within ' \
+                'algorithm_check[options.algorithm_type] = {1}\n'.format(
+                    minimizer, minimzer_selection)
+            raise UnknownMinimizerError(message)
+
     def check_attributes(self):
         """
         A helper function which checks all required attributes are set
         in software controllers
         """
-        values = {'flag': int}
+        values = {'_flag': int}
 
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
@@ -101,11 +154,6 @@ class Controller:
                     'Attribute "{}" in the controller is not the expected '
                     'type. Expected "{}", got {}.'.format(
                         attr_name, attr_type, type(attr)))
-            valid_flags = [0, 1, 2, 3]
-            if attr_name == 'flag' and attr not in valid_flags:
-                raise ControllerAttributeError(
-                    'Attribute "flag" in the controller must be one of {}.'
-                    ' Got: {}.'.format(valid_flags, attr))
 
     @abstractmethod
     def setup(self):

@@ -22,7 +22,8 @@ SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
 def create_results_tables(options, results, best_results, group_name,
-                          group_dir, pp_locations):
+                          group_dir, pp_locations, failed_problems,
+                          unselected_minimzers):
     """
     Saves the results of the fitting to html/txt tables.
 
@@ -45,7 +46,12 @@ def create_results_tables(options, results, best_results, group_name,
     :param pp_locations: tuple containing the locations of the
                          performance profiles (acc then runtime)
     :type pp_locations: tuple(str,str)
-
+    :param failed_problems: list of failed problems to be reported in the
+                            html output
+    :type failed_problems: list
+    :params unselected_minimzers: Dictionary containing unselected minimizers
+                                  based on the algorithm_type option
+    :type unselected_minimzers: dict
 
     :return: filepaths to each table
              e.g {'acc': <acc-table-filename>, 'runtime': ...}
@@ -96,19 +102,25 @@ def create_results_tables(options, results, best_results, group_name,
 
             with open(txt_output_file, "w") as f:
                 f.write(txt_table)
-
+            report_failed_min = list(unselected_minimzers.values()) != \
+                [[] * len(options.software)]
             with open(html_output_file, "w", encoding="utf-8") as f:
-                f.write(template.render(css_style_sheet=style_css,
-                                        custom_style=custom_style,
-                                        table_style=table_css,
-                                        maths_style=maths_style,
-                                        table_description=description[suffix],
-                                        table_format=table_format,
-                                        result_name=table_title,
-                                        has_pp=has_pp,
-                                        pp_filenames=pp_filenames,
-                                        table=html_table,
-                                        error_message=ERROR_OPTIONS))
+                f.write(
+                    template.render(css_style_sheet=style_css,
+                                    custom_style=custom_style,
+                                    table_style=table_css,
+                                    maths_style=maths_style,
+                                    table_description=description[suffix],
+                                    table_format=table_format,
+                                    result_name=table_title,
+                                    has_pp=has_pp,
+                                    pp_filenames=pp_filenames,
+                                    table=html_table,
+                                    error_message=ERROR_OPTIONS,
+                                    failed_problems=failed_problems,
+                                    unselected_minimzers=unselected_minimzers,
+                                    algorithm_type=options.algorithm_type,
+                                    report_failed_min=report_failed_min))
 
     return table_names, description
 
