@@ -18,6 +18,8 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
+    VALID_FLAGS = [0, 1, 2, 3]
+
     def __init__(self, problem):
         """
         Initialise the class.
@@ -53,7 +55,7 @@ class Controller:
         self.final_params = None
 
         # Flag: error handling flag
-        self.flag = None
+        self._flag = None
 
         # Algorithm check: this is used to check whether the selected
         # minimizer/minimizers from the options is within the softwares
@@ -63,6 +65,27 @@ class Controller:
                                 'ls': [None],
                                 'deriv_free': [None],
                                 'general': [None]}
+
+    @property
+    def flag(self):
+
+        """
+        | 0: 'Successfully converged'
+        | 1: 'Software reported maximum number of iterations exceeded'
+        | 2: 'Software run but didn't converge to solution'
+        | 3: 'Software raised an exception'
+        """
+
+        return self._flag
+
+    @flag.setter
+    def flag(self, value):
+
+        if value not in self.VALID_FLAGS:
+            raise ControllerAttributeError(
+                'controller.flag must be one of {}. Got: {}.'.format(
+                    list(self.VALID_FLAGS), value))
+        self._flag = int(value)
 
     def prepare(self):
         """
@@ -125,7 +148,7 @@ class Controller:
         A helper function which checks all required attributes are set
         in software controllers
         """
-        values = {'flag': int}
+        values = {'_flag': int}
 
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
@@ -134,11 +157,6 @@ class Controller:
                     'Attribute "{}" in the controller is not the expected '
                     'type. Expected "{}", got {}.'.format(
                         attr_name, attr_type, type(attr)))
-            valid_flags = [0, 1, 2, 3]
-            if attr_name == 'flag' and attr not in valid_flags:
-                raise ControllerAttributeError(
-                    'Attribute "flag" in the controller must be one of {}.'
-                    ' Got: {}.'.format(valid_flags, attr))
 
     @abstractmethod
     def jacobian_information(self):

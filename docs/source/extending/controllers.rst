@@ -59,12 +59,11 @@ In order to add a new controller, you will need to:
    -  ``cleanup()``: Convert the results into the expected numpy arrays,
       error flags and store them in the results variables
       (``self.results``, ``self.final_params``, ``self.flag``).
-      The flag corresponds to the following messages::
+      The flag corresponds to the following messages:
 
-         0: "Successfully converged",
-         1: "Software reported maximum number of iterations exceeded",
-         2: "Software run but didn't converge to solution",
-         3: "Software raised an exception".
+      .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag
+
+
 
 4. Document the available minimizers (currently done by adding to
    ``fitbenchmarking/utils/default_options.ini`` and any example files in
