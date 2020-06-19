@@ -18,7 +18,7 @@ from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
 from fitbenchmarking.cli.exception_handler import exception_handler
-from fitbenchmarking.core.fitting_benchmarking import fitbenchmark_group
+from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.core.results_output import save_results
 from fitbenchmarking.utils.exceptions import OptionsError
 from fitbenchmarking.utils.log import get_logger, setup_logger
@@ -115,9 +115,8 @@ def run(problem_sets, options_file='', debug=False):
         LOGGER.info('Running the benchmarking on the %s problem set',
                     label)
         results, failed_problems, unselected_minimzers = \
-            fitbenchmark_group(group_name=label,
-                               options=options,
-                               data_dir=data_dir)
+            benchmark(options=options,
+                      data_dir=data_dir)
         LOGGER.info('Producing output for the %s problem set', label)
         # Display the runtime and accuracy results in a table
         group_results_dir = \
