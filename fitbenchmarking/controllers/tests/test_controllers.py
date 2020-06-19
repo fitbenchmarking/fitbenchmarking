@@ -182,27 +182,33 @@ class BaseControllerTests(TestCase):
 
         assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
 
-    def test_check_flag_attr_true(self):
+    def test_check_flag_attr(self):
         """
-        BaseSoftwareController: Test check_attributes function for flag
+        BaseSoftwareController: Test check_attributes function for _flag
                                 attribute
         """
         controller = DummyController(self.problem)
+
+        with self.assertRaises(exceptions.ControllerAttributeError):
+            controller.check_attributes()
         controller.flag = 1
         controller.check_attributes()
 
-    def test_check_flag_attr_false(self):
+    def test_check_valid_flag(self):
         """
-        BaseSoftwareController: Test check_attributes function for flag
-                                attribute
+        BaseSoftwareController: Test flag setting with valid values
+        """
+        controller = DummyController(self.problem)
+        for flag in [0, 1, 2, 3]:
+            controller.flag = flag
+
+    def test_check_invalid_flag(self):
+        """
+        BaseSoftwareController: Test flag setting with invalid values
         """
         controller = DummyController(self.problem)
         with self.assertRaises(exceptions.ControllerAttributeError):
-            controller.check_attributes()
-
-        controller.flag = 10
-        with self.assertRaises(exceptions.ControllerAttributeError):
-            controller.check_attributes()
+            controller.flag = 10
 
     def test_validate_minimizer_true(self):
         controller = DummyController(self.problem)
