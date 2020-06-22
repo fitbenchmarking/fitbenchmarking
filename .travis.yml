@@ -25,6 +25,7 @@ notifications:
   email:
     recipients:
       - support@fitbenchmarking.com
+      - michael.wathen@stfc.ac.uk
     on_success: never
     on_failure: always
   slack:
