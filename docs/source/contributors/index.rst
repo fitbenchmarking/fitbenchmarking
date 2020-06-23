@@ -9,6 +9,7 @@ Here you will find all you need in order to get started.
 
 .. toctree::
     :titlesonly:
+    :maxdepth: 2
     :caption: Contents:
 
     guidelines
