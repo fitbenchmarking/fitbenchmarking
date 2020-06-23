@@ -12,18 +12,19 @@ We fit the data using a range of data fitting and
 nonlinear optimization software, and present comparisons on the
 accuracy and timings.
 
-.. figure:: ../../../images/FitBenchmarkingConcept.png  
+.. figure:: ../../../images/FitBenchmarkingConcept.png
    :alt: FitBenchmarking Concept
    :width: 100.0%
 
 .. toctree::
+   :maxdepth: 2
    :titlesonly:
    :caption: FitBenchmarking stages:
 
    BenchmarkProblems
    Minimizers
    BenchmarkingParadigm
-   
+
 
 
 
