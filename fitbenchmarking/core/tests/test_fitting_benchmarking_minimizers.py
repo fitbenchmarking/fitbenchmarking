@@ -1,3 +1,6 @@
+"""
+Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_minimizers
+"""
 from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
@@ -5,13 +8,11 @@ import unittest
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.utils import fitbm_result, output_grabber
-import fitbenchmarking.core.fitting_benchmarking as fitting_benchmarking
+from fitbenchmarking.core.fitting_benchmarking import loop_over_minimizers
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
-
-fitting_benchmarking_dir = "fitbenchmarking.core.fitting_benchmarking"
 
 
 class DummyController(Controller):
@@ -44,12 +45,13 @@ class DummyController(Controller):
         pass
 
 
-def make_fitting_problem(file_name='cubic.dat'):
+def make_fitting_problem(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
     options = Options()
-    options.minimizers = ["deriv_free_algorithm", "general"]
+    if minimizers:
+        options.minimizers = minimizers
 
     bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
     fname = os.path.join(bench_prob_dir, file_name)
@@ -62,12 +64,17 @@ def make_fitting_problem(file_name='cubic.dat'):
 
 
 class LoopOverMinimizersTests(unittest.TestCase):
-
+    """
+    loop_over_minimizers tests
+    """
     def setUp(self):
-        self.problem = make_fitting_problem()
+        """
+        Setting up
+        """
+        self.minimizers = ["deriv_free_algorithm", "general"]
+        self.problem = make_fitting_problem(minimizers=self.minimizers)
         self.controller = DummyController(problem=self.problem)
         self.options = self.problem.options
-        self.minimizers = self.options.minimizers
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
 
@@ -97,11 +104,9 @@ class LoopOverMinimizersTests(unittest.TestCase):
         """
         Tests that all minimizers run
         """
-        results_problem, minimizer_failed = \
-            fitting_benchmarking.loop_over_minimizers(self.controller,
-                                                      self.minimizers,
-                                                      self.options,
-                                                      self.grabbed_output)
+        results_problem, minimizer_failed = loop_over_minimizers(
+            self.controller, self.minimizers, self.options,
+            self.grabbed_output)
         self.shared_tests(results_problem, minimizer_failed)
 
     def test_run_minimzers_deriv_free(self):
@@ -109,11 +114,9 @@ class LoopOverMinimizersTests(unittest.TestCase):
         Tests that ``algorithm_type = deriv_free`` minimizers run
         """
         self.options.algorithm_type = "deriv_free"
-        results_problem, minimizer_failed = \
-            fitting_benchmarking.loop_over_minimizers(self.controller,
-                                                      self.minimizers,
-                                                      self.options,
-                                                      self.grabbed_output)
+        results_problem, minimizer_failed = loop_over_minimizers(
+            self.controller, self.minimizers, self.options,
+            self.grabbed_output)
         self.shared_tests(results_problem, minimizer_failed)
 
 
