@@ -67,9 +67,10 @@ class LoopOverMinimizersTests(unittest.TestCase):
     """
     loop_over_minimizers tests
     """
+
     def setUp(self):
         """
-        Setting up
+        Setting up problem for tests
         """
         self.minimizers = ["deriv_free_algorithm", "general"]
         self.problem = make_fitting_problem(minimizers=self.minimizers)
@@ -78,16 +79,14 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
 
-    def shared_tests(self, results_problem, minimizer_failed):
+    def shared_tests(self):
         """
         Shared tests for the `loop_over_minimizer` function
-
-        :param results_problem: list of all results
-        :type results_problem: list
-        :param minimizer_failed: list of failed minimizers
-        :type minimizer_failed: list
         """
 
+        results_problem, minimizer_failed = loop_over_minimizers(
+            self.controller, self.minimizers, self.options,
+            self.grabbed_output)
         algorithms = \
             self.controller.algorithm_check[self.options.algorithm_type]
         unselected_algorithms = [x for x in self.minimizers
@@ -104,20 +103,14 @@ class LoopOverMinimizersTests(unittest.TestCase):
         """
         Tests that all minimizers run
         """
-        results_problem, minimizer_failed = loop_over_minimizers(
-            self.controller, self.minimizers, self.options,
-            self.grabbed_output)
-        self.shared_tests(results_problem, minimizer_failed)
+        self.shared_tests()
 
     def test_run_minimzers_deriv_free(self):
         """
         Tests that ``algorithm_type = deriv_free`` minimizers run
         """
         self.options.algorithm_type = "deriv_free"
-        results_problem, minimizer_failed = loop_over_minimizers(
-            self.controller, self.minimizers, self.options,
-            self.grabbed_output)
-        self.shared_tests(results_problem, minimizer_failed)
+        self.shared_tests()
 
 
 if __name__ == "__main__":

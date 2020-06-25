@@ -43,14 +43,17 @@ class LoopOverSoftwareTests(unittest.TestCase):
     """
 
     def setUp(self):
+        """
+        Setting up problem for tests
+        """
         self.problem = make_fitting_problem()
         self.options = self.problem.options
-        self.options.software = ["scipy", "ralfit"]
+        self.options.software = ["scipy", "dfo"]
         self.minimizers = self.options.minimizers
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.start_values_index = 0
         self.scipy_len = len(self.options.minimizers["scipy"])
-        self.ralfit_len = len(self.options.minimizers["ralfit"])
+        self.dfo_len = len(self.options.minimizers["dfo"])
         self.result_args = {'options': self.options,
                             'problem': self.problem,
                             'jac': self.problem.jac,
@@ -59,10 +62,33 @@ class LoopOverSoftwareTests(unittest.TestCase):
                             'chi_sq': 1}
 
     def mock_func_call(self, *args, **kwargs):
+        """
+        Mock function to be used instead of loop_over_minimizers
+        """
         minimizer_failed = self.minimizer_failed[self.count]
         results_problem = self.results_problem[self.count]
         self.count += 1
         return results_problem, minimizer_failed
+
+    def shared_test(self, results_len):
+        """
+        Shared tests for the `loop_over_fitting_software` function
+
+        :param list_len: number of expect fitting results
+        :type list_len: int
+        """
+        results, problem_fails, unselected_minimzers = \
+            loop_over_fitting_software(self.problem,
+                                       self.options,
+                                       self.start_values_index,
+                                       self.grabbed_output)
+        assert len(results) == results_len
+        assert problem_fails == self.problem_fails
+        i = 0
+        for keys, values in unselected_minimzers.items():
+            assert keys in self.options.software
+            assert values == self.minimizer_failed[i]
+            i += 1
 
     @mock.patch('{}.loop_over_minimizers'.format(fitting_benchmarking_dir))
     def test_run_software(self, loop_over_minimizers):
@@ -72,22 +98,15 @@ class LoopOverSoftwareTests(unittest.TestCase):
         """
         self.count = 0
         self.minimizer_failed = [[], []]
+        self.problem_fails = []
         self.results_problem = \
             [[fitbm_result.FittingResult(**self.result_args)
               for i in range(self.scipy_len)],
              [fitbm_result.FittingResult(**self.result_args)
-              for i in range(self.ralfit_len)]]
+              for i in range(self.dfo_len)]]
         loop_over_minimizers.side_effect = self.mock_func_call
-        results, problem_fails, unselected_minimzers = \
-            loop_over_fitting_software(self.problem,
-                                       self.options,
-                                       self.start_values_index,
-                                       self.grabbed_output)
-        assert len(results) == self.scipy_len + self.ralfit_len
-        assert problem_fails == []
-        for keys, values in unselected_minimzers.items():
-            assert keys in self.options.software
-            assert values == []
+
+        self.shared_test(self.scipy_len + self.dfo_len)
 
     @mock.patch('{}.loop_over_minimizers'.format(fitting_benchmarking_dir))
     def test_run_software_failed_minimizers(self, loop_over_minimizers):
@@ -95,28 +114,19 @@ class LoopOverSoftwareTests(unittest.TestCase):
         Checks that the failed minimizers are reported
         """
         self.count = 0
-        self.minimizer_failed = [['Powell'], ['gn', 'gn_reg']]
+        self.minimizer_failed = [['Powell'], ['dfogn', 'dfols']]
         failed_scipy = 1
-        failed_ralfit = 2
+        failed_dfo = 2
+        self.problem_fails = []
         self.results_problem = \
             [[fitbm_result.FittingResult(**self.result_args)
               for i in range(self.scipy_len - failed_scipy)],
              [fitbm_result.FittingResult(**self.result_args)
-              for i in range(self.ralfit_len - failed_ralfit)]]
+              for i in range(self.dfo_len - failed_dfo)]]
         loop_over_minimizers.side_effect = self.mock_func_call
-        results, problem_fails, unselected_minimzers = \
-            loop_over_fitting_software(self.problem,
-                                       self.options,
-                                       self.start_values_index,
-                                       self.grabbed_output)
-        assert len(results) == self.scipy_len + \
-            self.ralfit_len - failed_scipy - failed_ralfit
-        assert problem_fails == []
-        i = 0
-        for keys, values in unselected_minimzers.items():
-            assert keys in self.options.software
-            assert values == self.minimizer_failed[i]
-            i += 1
+
+        self.shared_test(self.scipy_len + self.dfo_len -
+                         failed_scipy - failed_dfo)
 
     @mock.patch('{}.loop_over_minimizers'.format(fitting_benchmarking_dir))
     def test_run_software_all_failed_minimizers(self, loop_over_minimizers):
@@ -127,27 +137,16 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.count = 0
         self.minimizer_failed = [self.options.minimizers[s]
                                  for s in self.options.software]
-        failed_scipy = 1
-        failed_ralfit = 2
         self.result_args['chi_sq'] = np.inf
+        self.problem_fails = ['cubic']
         self.results_problem = \
             [[fitbm_result.FittingResult(**self.result_args)
-              for i in range(self.scipy_len - failed_scipy)],
+              for i in range(self.scipy_len)],
              [fitbm_result.FittingResult(**self.result_args)
-              for i in range(self.ralfit_len - failed_ralfit)]]
+              for i in range(self.dfo_len)]]
         loop_over_minimizers.side_effect = self.mock_func_call
-        results, problem_fails, unselected_minimzers = \
-            loop_over_fitting_software(self.problem,
-                                       self.options,
-                                       self.start_values_index,
-                                       self.grabbed_output)
-        assert len(results) == 0
-        assert problem_fails == ['cubic']
-        i = 0
-        for keys, values in unselected_minimzers.items():
-            assert keys in self.options.software
-            assert values == self.minimizer_failed[i]
-            i += 1
+
+        self.shared_test(0)
 
 
 if __name__ == "__main__":
