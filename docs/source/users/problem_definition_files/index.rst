@@ -12,6 +12,7 @@ More information on the supported formats can be found on the following pages.
 
 .. toctree::
     :titlesonly:
+    :maxdepth: 2
     :caption: File Formats:
 
     cutest

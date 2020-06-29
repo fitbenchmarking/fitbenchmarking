@@ -9,6 +9,7 @@ descriptions of these tables.
 
 .. toctree::
     :titlesonly:
+    :maxdepth: 2
     :caption: Tables:
 
     compare

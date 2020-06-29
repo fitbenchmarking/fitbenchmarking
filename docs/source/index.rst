@@ -21,6 +21,7 @@ fitbenchmarking.supp@gmail.com.
 
 
 .. toctree::
+   :maxdepth: 2
    :titlesonly:
 
    Concept <concept/index>
