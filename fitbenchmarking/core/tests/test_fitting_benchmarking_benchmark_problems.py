@@ -76,18 +76,20 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         self.count += 1
         return individual_problem_results, problem_fails, unselected_minimzers
 
-    def shared_tests(self, list_len):
+    def shared_tests(self, list_len, expected_problem_fails):
         """
         Shared tests for the `loop_over_starting_values` function
 
         :param list_len: number of expect fitting results
         :type list_len: int
+        :param expected_problem_fails: list of problems which fail
+        :type expected_problem_fails: list
         """
         results, failed_problems, unselected_minimzers = \
             loop_over_benchmark_problems(self.problem_group,
                                          self.options)
         assert len(results) == list_len
-        assert failed_problems == self.problem_fails
+        assert failed_problems == expected_problem_fails
         for keys, values in unselected_minimzers.items():
             assert keys == "scipy"
             assert values == []
@@ -103,7 +105,9 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         for file_name in ["cubic.dat", "prob_def_1.txt"]:
             self.problem_group.append(
                 os.path.join(self.default_parsers_dir, file_name))
-        self.shared_tests(len(self.list_results) * 2)
+        expected_problem_fails = self.problem_fails
+        expected_list_length = len(self.list_results) * 2
+        self.shared_tests(expected_list_length, expected_problem_fails)
 
     @mock.patch('{}.loop_over_starting_values'.format(fitting_dir))
     def test_run_multiple_failed_problems(self, loop_over_starting_values):
@@ -116,7 +120,10 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         self.problem_group = []
         self.problem_group = [os.path.join(self.default_parsers_dir,
                                            "cubic.dat")]
-        self.shared_tests(len(self.list_results))
+
+        expected_problem_fails = self.problem_fails
+        expected_list_length = len(self.list_results)
+        self.shared_tests(expected_list_length, expected_problem_fails)
 
 
 if __name__ == "__main__":

@@ -14,6 +14,7 @@ from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
+from fitbenchmarking.utils.exceptions import NoResultsError
 
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 
@@ -58,6 +59,13 @@ class BenchmarkTests(unittest.TestCase):
                      expected_minimzers):
         """
         Shared tests for the `benchmark` function
+
+        :param expected_names: expected sorted list of problem names
+        :type expected_names: list
+        :param expected_unselected_minimzers: expected unselected minimizers
+        :type expected_unselected_minimzers: dict
+        :param expected_minimzers: expected minimizers
+        :type expected_minimzers: dict
         """
         results, failed_problems, unselected_minimzers = \
             benchmark(self.options, self.default_parsers_dir)
@@ -142,6 +150,21 @@ class BenchmarkTests(unittest.TestCase):
             (results, problem_fails, expected_unselected_minimzers)
         self.shared_tests(expected_names, expected_unselected_minimzers,
                           expected_minimzers)
+
+    @mock.patch('{}.loop_over_benchmark_problems'.format(FITTING_DIR))
+    def test_check_no_results_produced(self, loop_over_benchmark_problems):
+        """
+        Checks benchmarking raises an error when no results are produced
+        """
+
+        results = []
+        problem_fails = []
+        expected_unselected_minimzers = {"scipy": []}
+        loop_over_benchmark_problems.return_value = \
+            (results, problem_fails, expected_unselected_minimzers)
+        with self.assertRaises(NoResultsError):
+            results, failed_problems, unselected_minimzers = \
+                benchmark(self.options, self.default_parsers_dir)
 
 
 if __name__ == "__main__":

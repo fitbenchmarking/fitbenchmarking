@@ -41,6 +41,9 @@ class LoopOverStartingValuesTests(unittest.TestCase):
     """
 
     def setUp(self):
+        """
+        Setting up problem for tests
+        """
         self.problem = make_fitting_problem()
         self.options = self.problem.options
         self.options.software = ["scipy"]
@@ -66,22 +69,30 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.count += 1
         return individual_problem_results, problem_fails, unselected_minimzers
 
-    def shared_tests(self, list_len):
+    def shared_tests(self, expected_list_len, expected_problem_fails,
+                     expected_unselected_minimzers):
         """
         Shared tests for the `loop_over_starting_values` function
 
-        :param list_len: number of expect fitting results
-        :type list_len: int
+        :param expected_list_len: number of expect fitting results
+        :type expected_list_len: int
+        :param expected_problem_fails: Expected list of failed problems
+        :type expected_problem_fails: list
+        :param expected_unselected_minimzers: Expected dictionary of unselected
+                                              minimizer
+        :type expected_unselected_minimzers: dict
         """
         problem_results, problem_fails, unselected_minimzers = \
             loop_over_starting_values(self.problem,
                                       self.options,
                                       self.grabbed_output)
-        assert len(problem_results) == list_len
-        assert problem_fails == self.problem_fails
-        for keys, values in unselected_minimzers.items():
-            assert keys == [*self.unselected_minimzers][0]
-            assert values == list(self.unselected_minimzers.values())[0]
+        assert len(problem_results) == expected_list_len
+        assert problem_fails == expected_problem_fails
+
+        for key in unselected_minimzers.keys():
+            assert key in expected_unselected_minimzers.keys()
+            assert sorted(unselected_minimzers[key]) == \
+                sorted(expected_unselected_minimzers[key])
 
     @mock.patch('{}.loop_over_fitting_software'.format(fitting_dir))
     def test_run_multiple_starting_values(self, loop_over_fitting_software):
@@ -95,7 +106,11 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.problem_fails = []
         self.unselected_minimzers = {"scipy": []}
         loop_over_fitting_software.side_effect = self.mock_func_call
-        self.shared_tests(len(list_results) * 2)
+        expected_list_length = len(list_results) * 2
+        expected_problem_fails = self.problem_fails
+        expected_unselected_minimzers = self.unselected_minimzers
+        self.shared_tests(expected_list_length, expected_problem_fails,
+                          expected_unselected_minimzers)
 
     @mock.patch('{}.loop_over_fitting_software'.format(fitting_dir))
     def test_run_one_starting_values(self, loop_over_fitting_software):
@@ -110,21 +125,28 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.problem_fails = []
         self.unselected_minimzers = {"scipy": []}
         loop_over_fitting_software.side_effect = self.mock_func_call
-        self.shared_tests(len(self.individual_problem_results[0]))
+        expected_list_length = len(self.individual_problem_results[0])
+        expected_problem_fails = self.problem_fails
+        expected_unselected_minimzers = self.unselected_minimzers
+        self.shared_tests(expected_list_length, expected_problem_fails,
+                          expected_unselected_minimzers)
 
     @mock.patch('{}.loop_over_fitting_software'.format(fitting_dir))
     def test_run_reports_failed_problems(self, loop_over_fitting_software):
         """
         Checks that the failed problems are reported correctly
         """
-
         list_results = [fitbm_result.FittingResult(**self.result_args)
                         for i in range(self.scipy_len)]
         self.individual_problem_results = [list_results, list_results]
         self.problem_fails = ['Cubic_failed']
         self.unselected_minimzers = {"scipy": []}
         loop_over_fitting_software.side_effect = self.mock_func_call
-        self.shared_tests(len(list_results) * 2)
+        expected_list_length = len(list_results) * 2
+        expected_problem_fails = self.problem_fails
+        expected_unselected_minimzers = self.unselected_minimzers
+        self.shared_tests(expected_list_length, expected_problem_fails,
+                          expected_unselected_minimzers)
 
     @mock.patch('{}.loop_over_fitting_software'.format(fitting_dir))
     def test_run_reports_unselected_minimizers(self,
@@ -132,14 +154,17 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         """
         Checks that the unselected minimizers are reported correctly
         """
-
         list_results = [fitbm_result.FittingResult(**self.result_args)
                         for i in range(self.scipy_len)]
         self.individual_problem_results = [list_results, list_results]
         self.problem_fails = []
         self.unselected_minimzers = {"scipy": ['Powell', 'CG']}
         loop_over_fitting_software.side_effect = self.mock_func_call
-        self.shared_tests(len(list_results) * 2)
+        expected_list_length = len(list_results) * 2
+        expected_problem_fails = self.problem_fails
+        expected_unselected_minimzers = self.unselected_minimzers
+        self.shared_tests(expected_list_length, expected_problem_fails,
+                          expected_unselected_minimzers)
 
 
 if __name__ == "__main__":

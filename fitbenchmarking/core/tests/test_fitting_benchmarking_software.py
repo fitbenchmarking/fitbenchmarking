@@ -15,6 +15,7 @@ from fitbenchmarking.core.fitting_benchmarking import \
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
+from fitbenchmarking.utils.exceptions import UnsupportedMinimizerError
 
 fitting_benchmarking_dir = "fitbenchmarking.core.fitting_benchmarking"
 
@@ -70,25 +71,28 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.count += 1
         return results_problem, minimizer_failed
 
-    def shared_test(self, results_len):
+    def shared_test(self, expected_list_len, expected_problem_fails,
+                    expected_minimizer_failed):
         """
         Shared tests for the `loop_over_fitting_software` function
 
-        :param list_len: number of expect fitting results
-        :type list_len: int
+        :param expected_list_len: number of expect fitting results
+        :type expected_list_len: int
+        :param expected_problem_fails: expected list of failed problems
+        :type expected_problem_fails: list
+        :param expected_minimizer_failed: expected list of failed minimizers
+        :type expected_minimizer_failed: list
         """
         results, problem_fails, unselected_minimzers = \
             loop_over_fitting_software(self.problem,
                                        self.options,
                                        self.start_values_index,
                                        self.grabbed_output)
-        assert len(results) == results_len
-        assert problem_fails == self.problem_fails
-        i = 0
-        for keys, values in unselected_minimzers.items():
+        assert len(results) == expected_list_len
+        assert problem_fails == expected_problem_fails
+        for i, (keys, values) in enumerate(unselected_minimzers.items()):
             assert keys in self.options.software
-            assert values == self.minimizer_failed[i]
-            i += 1
+            assert values == expected_minimizer_failed[i]
 
     @mock.patch('{}.loop_over_minimizers'.format(fitting_benchmarking_dir))
     def test_run_software(self, loop_over_minimizers):
@@ -105,8 +109,11 @@ class LoopOverSoftwareTests(unittest.TestCase):
              [fitbm_result.FittingResult(**self.result_args)
               for i in range(self.dfo_len)]]
         loop_over_minimizers.side_effect = self.mock_func_call
-
-        self.shared_test(self.scipy_len + self.dfo_len)
+        expected_list_len = self.scipy_len + self.dfo_len
+        expected_problem_fails = self.problem_fails
+        expected_minimizer_failed = self.minimizer_failed
+        self.shared_test(expected_list_len, expected_problem_fails,
+                         expected_minimizer_failed)
 
     @mock.patch('{}.loop_over_minimizers'.format(fitting_benchmarking_dir))
     def test_run_software_failed_minimizers(self, loop_over_minimizers):
@@ -124,9 +131,12 @@ class LoopOverSoftwareTests(unittest.TestCase):
              [fitbm_result.FittingResult(**self.result_args)
               for i in range(self.dfo_len - failed_dfo)]]
         loop_over_minimizers.side_effect = self.mock_func_call
-
-        self.shared_test(self.scipy_len + self.dfo_len -
-                         failed_scipy - failed_dfo)
+        expected_list_len = self.scipy_len + self.dfo_len - \
+            failed_scipy - failed_dfo
+        expected_problem_fails = self.problem_fails
+        expected_minimizer_failed = self.minimizer_failed
+        self.shared_test(expected_list_len, expected_problem_fails,
+                         expected_minimizer_failed)
 
     @mock.patch('{}.loop_over_minimizers'.format(fitting_benchmarking_dir))
     def test_run_software_all_failed_minimizers(self, loop_over_minimizers):
@@ -139,14 +149,28 @@ class LoopOverSoftwareTests(unittest.TestCase):
                                  for s in self.options.software]
         self.result_args['chi_sq'] = np.inf
         self.problem_fails = ['cubic']
-        self.results_problem = \
-            [[fitbm_result.FittingResult(**self.result_args)
-              for i in range(self.scipy_len)],
-             [fitbm_result.FittingResult(**self.result_args)
-              for i in range(self.dfo_len)]]
+        self.results_problem = [[fitbm_result.FittingResult(**self.result_args)
+                                 for i in range(self.scipy_len)],
+                                [fitbm_result.FittingResult(**self.result_args)
+                                 for i in range(self.dfo_len)]]
         loop_over_minimizers.side_effect = self.mock_func_call
+        expected_list_len = 0
+        expected_problem_fails = self.problem_fails
+        expected_minimizer_failed = self.minimizer_failed
+        self.shared_test(expected_list_len, expected_problem_fails,
+                         expected_minimizer_failed)
 
-        self.shared_test(0)
+    def test_incorrect_software(self):
+        """
+        Tests an exception is raised when an incorrect software is selected
+        """
+        self.options.software = ['incorrect_software']
+        with self.assertRaises(UnsupportedMinimizerError):
+            results, problem_fails, unselected_minimzers = \
+                loop_over_fitting_software(self.problem,
+                                           self.options,
+                                           self.start_values_index,
+                                           self.grabbed_output)
 
 
 if __name__ == "__main__":
