@@ -15,12 +15,20 @@ from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 
 
+# Due to construction of the controllers two folder functions
+# pylint: disable=unnecessary-pass
 class DummyController(Controller):
     """
     Minimal instantiatable subclass of Controller class for testing
     """
 
     def __init__(self, problem):
+        """
+        Initialize dummy controller
+
+        :param problem: Problem to fit
+        :type problem: FittingProblem
+        """
         super(DummyController, self).__init__(problem)
         self.algorithm_check = {'all': ['deriv_free_algorithm', 'general'],
                                 'ls': [None],
@@ -31,18 +39,24 @@ class DummyController(Controller):
         self.count = 0
 
     def setup(self):
+        """
+        Mock controller setup function
+        """
         pass
 
     def fit(self):
+        """
+        Mock controller fit function
+        """
         pass
 
     def cleanup(self):
+        """
+        Mock controller cleanup function
+        """
         self.final_params = self.final_params_expected[self.count]
         self.flag = self.flag_expected[self.count]
         self.count += 1
-
-    def error_flags(self):
-        pass
 
 
 def make_fitting_problem(file_name='cubic.dat', minimizers=None):

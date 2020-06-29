@@ -3,9 +3,9 @@ Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_fitting_software
 """
 from __future__ import (absolute_import, division, print_function)
 import inspect
-import mock
 import os
 import unittest
+import mock
 import numpy as np
 
 from fitbenchmarking import mock_problems
@@ -20,6 +20,9 @@ from fitbenchmarking.utils.exceptions import UnsupportedMinimizerError
 fitting_benchmarking_dir = "fitbenchmarking.core.fitting_benchmarking"
 
 
+# Due to structure of tests, some variables may not be previously defined
+# in the init function
+# pylint: disable=attribute-defined-outside-init
 def make_fitting_problem(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
@@ -166,7 +169,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         """
         self.options.software = ['incorrect_software']
         with self.assertRaises(UnsupportedMinimizerError):
-            results, problem_fails, unselected_minimzers = \
+            _, _, _ = \
                 loop_over_fitting_software(self.problem,
                                            self.options,
                                            self.start_values_index,

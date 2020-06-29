@@ -3,9 +3,9 @@ Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_starting_values
 """
 from __future__ import (absolute_import, division, print_function)
 import inspect
-import mock
 import os
 import unittest
+import mock
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.utils import fitbm_result, output_grabber
@@ -17,6 +17,9 @@ from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 fitting_dir = "fitbenchmarking.core.fitting_benchmarking"
 
 
+# Due to structure of tests, some variables may not be previously defined
+# in the init function. Removes pytest dictionary iteration suggestion
+# pylint: disable=attribute-defined-outside-init, consider-iterating-dictionary
 def make_fitting_problem(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem

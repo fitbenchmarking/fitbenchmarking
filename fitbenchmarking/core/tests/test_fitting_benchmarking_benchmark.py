@@ -4,12 +4,12 @@ Tests for fitbenchmarking.core.fitting_benchmarking.benchmark
 from __future__ import (absolute_import, division, print_function)
 import inspect
 import copy
-import mock
 import os
 import unittest
+import mock
 
 from fitbenchmarking import mock_problems
-from fitbenchmarking.utils import fitbm_result, output_grabber
+from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.options import Options
@@ -35,6 +35,20 @@ def make_fitting_problem(file_name='cubic.dat', minimizers=None):
     jac = ScipyTwoPoint(fitting_problem)
     fitting_problem.jac = jac
     return fitting_problem
+
+
+def dict_test(expected, actual):
+    """
+    Test to check two dictionaries are the same
+
+    :param expected: expected dictionary result
+    :type expected: dict
+    :param actual: actual dictionary result
+    :type actual: dict
+    """
+    for key in actual.keys():
+        assert key in expected.keys()
+        assert sorted(actual[key]) == sorted(expected[key])
 
 
 class BenchmarkTests(unittest.TestCase):
@@ -75,21 +89,8 @@ class BenchmarkTests(unittest.TestCase):
             assert all(p.name == name for p in results[i])
 
         assert failed_problems == []
-        self.dict_test(expected_unselected_minimzers, unselected_minimzers)
-        self.dict_test(expected_minimzers, self.options.minimizers)
-
-    def dict_test(self, expected, actual):
-        """
-        Test to check two dictionaries are the same
-
-        :param expected: expected dictionary result
-        :type expected: dict
-        :param actual: actual dictionary result
-        :type actual: dict
-        """
-        for key in actual.keys():
-            assert key in expected.keys()
-            assert sorted(actual[key]) == sorted(expected[key])
+        dict_test(expected_unselected_minimzers, unselected_minimzers)
+        dict_test(expected_minimzers, self.options.minimizers)
 
     @mock.patch('{}.loop_over_benchmark_problems'.format(FITTING_DIR))
     def test_check_no_unselected_minimizers(self,
@@ -163,7 +164,7 @@ class BenchmarkTests(unittest.TestCase):
         loop_over_benchmark_problems.return_value = \
             (results, problem_fails, expected_unselected_minimzers)
         with self.assertRaises(NoResultsError):
-            results, failed_problems, unselected_minimzers = \
+            _, _, _ = \
                 benchmark(self.options, self.default_parsers_dir)
 
 

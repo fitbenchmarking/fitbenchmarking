@@ -4,12 +4,12 @@ fitbenchmarking.core.fitting_benchmarking.loop_over_benchmark_problems
 """
 from __future__ import (absolute_import, division, print_function)
 import inspect
-import mock
 import os
 import unittest
+import mock
 
 from fitbenchmarking import mock_problems
-from fitbenchmarking.utils import fitbm_result, output_grabber
+from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_benchmark_problems
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
@@ -19,6 +19,9 @@ from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 fitting_dir = "fitbenchmarking.core.fitting_benchmarking"
 
 
+# Due to structure of tests, some variables may not be previously defined
+# in the init function.
+# pylint: disable=attribute-defined-outside-init
 def make_fitting_problem(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
