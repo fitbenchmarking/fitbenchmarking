@@ -141,9 +141,10 @@ class CutestParser(Parser):
             self._cache_g.append((x, g))
         _, gx = g(np.asarray(params)[0])
 
-        # We negate the gradient since `min ||r(x)|| s.t.
-        # `r(x) = f(x)-y = y-f(x)` it seems that CUTEst uses the
-        # negation of our implementation of `r(x)`
+        # We negate the gradient since we're solving 
+        # `min ||r(x)||^2 s.t. r(x) = f(x)-y`, or eqivalently 
+        # `min ||r(x)||^2 s.t. r(x) = y-f(x)`. 
+        # CUTEst uses the second of these formulations.
         return -gx
 
     def _get_starting_values(self):

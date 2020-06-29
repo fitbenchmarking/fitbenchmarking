@@ -17,8 +17,8 @@ class Analytic(Jacobian):
         super(Analytic, self).__init__(problem)
         problem_formats = ['cutest']
         if self.problem.format not in problem_formats:
-            raise NoJacobianError("Currently only {0} are implemented for "
-                                  "analytical Jacobian. The problem format "
+            raise NoJacobianError("Currently analytic Jacobians are only "
+                                  "implemented for {0}. The problem format "
                                   " here is {1}".format(problem_formats,
                                                         self.problem.format))
 
