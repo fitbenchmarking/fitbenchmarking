@@ -77,9 +77,10 @@ To add a new fitting problem definition type, complete the following steps:
 
    - **Jacobian tests** (optional): If the parser you add has analytic Jacobian
      information which you wish to use, then in ``test_parsers.py`` add the
-    ``<format_name>`` to the ``JACOBIAN_ENABLED_PARSERS`` global variable. Then, 1 file
-     can be provided in the directory to test that Jacobian evaluation is as expected.
-     This file must be in json format and contain a string of the form::
+     ``<format_name>`` to the ``JACOBIAN_ENABLED_PARSERS`` global variable. Then,
+     1 file can be provided in the directory to test that Jacobian evaluation is
+     as expected. This file must be in json format and contain a string of the
+     form::
 
        {"file_name1": [[x1, [param11, param21], result1],
                        [x2, [param12, param22], result2],
