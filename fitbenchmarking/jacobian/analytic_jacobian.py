@@ -22,16 +22,12 @@ class Analytic(Jacobian):
                                   " here is {1}".format(problem_formats,
                                                         self.problem.format))
 
-    def eval(self, params, func=None, **kwargs):
+    def eval(self, params, **kwargs):
         """
         Evaluates Jacobian
 
         :param params: The parameter values to find the Jacobian at
         :type params: list
-        :param func: This is only used in the numerical Jacobian classes but for
-                     consistency in the code it is left here to avoid additional
-                     restructuring
-        :type func: Callable, optional
 
         :return: Approximation of the Jacobian
         :rtype: numpy array

@@ -7,6 +7,7 @@ import numpy as np
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils import exceptions
+from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.jacobian.SciPyFD_3point_jacobian import ScipyThreePoint
 from fitbenchmarking.jacobian.SciPyFD_cs_jacobian import ScipyCS
@@ -87,7 +88,6 @@ class TestJacobianClass(TestCase):
         """
         jac = ScipyCS(self.fitting_problem)
         eval_result = jac.eval(params=self.params)
-        print(self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_analytic_cutest(self):
@@ -97,6 +97,117 @@ class TestJacobianClass(TestCase):
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.fitting_problem)
         eval_result = jac.eval(params=self.params)
+        self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+
+class TestCachedFuncValues(TestCase):
+    """
+    Tests for Jacobian classes
+    """
+
+    def setUp(self):
+        """
+        Setting up tests
+        """
+        options = Options()
+        self.fitting_problem = FittingProblem(options)
+        self.jacobian = Jacobian(self.fitting_problem)
+
+    def func(self, x):
+        """
+        Test function for cached value tests.
+
+        :param x: parameters to evaluate function at
+        :type x: numpy array
+
+        :return: function evaluation
+        :rtype: float
+        """
+        return x[0] * x[1] + x[2]**2
+
+    def test_check_cached_eval(self):
+        """
+        Checks cached function values
+        """
+        params = [1, 2, 4]
+        expected_value = self.func(params)
+        cached_dict = {"params": params, "value": expected_value}
+        computed_value = self.jacobian.cached_func_values(cached_dict,
+                                                          self.func,
+                                                          params)
+        assert expected_value == computed_value
+
+    def test_check_none_cached_eval(self):
+        """
+        Checks function values
+        """
+        params = [1, 2, 3]
+        expected_value = self.func(params)
+        cached_dict = {"params": [1, 2, 4], "value": 18}
+        computed_value = self.jacobian.cached_func_values(cached_dict,
+                                                          self.func,
+                                                          params)
+        assert expected_value == computed_value
+
+
+class TestDerivCostFunc(TestCase):
+    """
+    Tests for Jacobian classes
+    """
+
+    def setUp(self):
+        """
+        Setting up tests
+        """
+        options = Options()
+        self.fitting_problem = FittingProblem(options)
+        self.fitting_problem.function = f
+        self.fitting_problem.jacobian = J
+        self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
+        self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
+        self.params = [6, 0.1]
+        J_eval = J(x=self.fitting_problem.data_x,
+                   p=self.params)
+        f_eval = f(x=self.fitting_problem.data_x,
+                   p1=self.params[0],
+                   p2=self.params[1])
+        self.actual = np.matmul(J_eval.T, f_eval)
+
+    def test_scipy_two_point_eval(self):
+        """
+        Test for ScipyTwoPoint evaluation is correct
+        """
+        jac = ScipyTwoPoint(self.fitting_problem)
+        self.fitting_problem.jac = jac
+        eval_result = jac.eval_r_norm(params=self.params)
+        self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+    def test_scipy_three_point_eval(self):
+        """
+        Test for ScipyThreePoint evaluation is correct
+        """
+        jac = ScipyThreePoint(self.fitting_problem)
+        self.fitting_problem.jac = jac
+        eval_result = jac.eval_r_norm(params=self.params)
+        self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+    def test_scipy_cs_point_eval(self):
+        """
+        Test for ScipyCS evaluation is correct
+        """
+        jac = ScipyCS(self.fitting_problem)
+        self.fitting_problem.jac = jac
+        eval_result = jac.eval_r_norm(params=self.params)
+        self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+    def test_analytic_cutest(self):
+        """
+        Test analytic jacobian
+        """
+        self.fitting_problem.format = "cutest"
+        jac = Analytic(self.fitting_problem)
+        self.fitting_problem.jac = jac
+        eval_result = jac.eval_r_norm(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
 

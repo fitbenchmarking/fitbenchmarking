@@ -27,3 +27,20 @@ In order to add a new Jacobian evaluation method, you will need to:
 
 4. Create tests for the Jacobian evaluation in
    ``fitbenchmarking/jacobian/tests/test_jacobians.py``.
+
+
+The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When adding new Jacobian, you will find it helpful to make use of the
+following members of the :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
+classes:
+
+.. currentmodule:: fitbenchmarking.parsing.fitting_problem
+.. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
+          :members: cache_fx, cache_rx, cache_r_norm_x
+
+.. note::
+   If using cached values, use the base class ``cached_func_values`` method that checks
+   that the parameters the function is evaluated at and will either use the cached
+   result or evaluates the function.
