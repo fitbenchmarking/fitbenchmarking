@@ -4,9 +4,8 @@
 Installing Mantid
 #################
 
-**Note: To use Mantid with python3, it is currently required to install a
-nightly build. This nightly build is only available for python 3.6, and is not
-available for windows.**
+**Note: To use Mantid with python3, you need to run Mantid version 5.0.0
+or higher.**
 
 Windows
 =======
@@ -67,17 +66,17 @@ page <http://download.mantidproject.org/ubuntu.html>`__
 3. Install the package with::
 
       sudo apt-get update
-      sudo apt-get install mantidnightly-python3
+      sudo apt-get install mantid
 
-   This will install Mantid into ``/opt/mantidnightly-python3`` and add bash files to
+   This will install Mantid into ``/opt/Mantid`` and add bash files to
    ``/etc/profile.d`` so that next time you create a terminal the correct path
    to MantidPlot will be defined.
 
 4. Add the location of Mantid's python files to your python path::
 
-      PYTHONPATH=$PYTHONPATH:/opt/mantidnightly-python3/lib/:/opt/mantidnightly-python3/bin/
+      PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib/:/opt/Mantid/bin/
 
-
+**Note**: there is an example script of this in ``build/install/mantid.sh``.
 
 Manual Installation - Package
 -----------------------------
