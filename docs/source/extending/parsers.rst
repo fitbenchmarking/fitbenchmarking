@@ -12,10 +12,11 @@ The types (formats) that are currently supported are:
   - Native (Fitbenchmark)
     This supports functions/data from Mantid or SasView
   - NIST
+  - CUTEst
 
 An example of these formats can be seen in
-``benchmark_problems/Neutron_data/``/``benchmark_problems/SAS_modelling/``
-and ``benchmark_problems/NIST/`` respectively.
+``benchmark_problems/Neutron_data/``/``benchmark_problems/SAS_modelling/``,
+``benchmark_problems/NIST/``, ``benchmark_problems/SIF/``, respectively.
 
 **Adding new fitting problem definition types**
 
