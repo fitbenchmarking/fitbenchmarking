@@ -23,7 +23,6 @@ In order to add a new Jacobian evaluation method, you will need to:
 
   * updating the docs for :ref:`jacobian` in ``docs/source/users/jacobian.rst``
   * updating ``fitbenchmarking/utils/default_options.ini``
-  * updating any example files in the ``example_scripts`` directory
 
 4. Create tests for the Jacobian evaluation in
    ``fitbenchmarking/jacobian/tests/test_jacobians.py``.
