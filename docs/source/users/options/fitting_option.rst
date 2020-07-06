@@ -71,8 +71,12 @@ Use errors (:code:`use_errors`)
 -------------------------------
 
 This will switch between weighted and unweighted least squares
+<<<<<<< HEAD
 If `use_errors=True`, and no errors are supplied, then
 e[i] will be set to sqrt(abs(y[i])).
+=======
+If no errors are supplied, then e[i] will be set to sqrt(abs(y[i])).
+>>>>>>> 77d18e8... Moving options docs out of ini file
 Errors below 1.0e-8 will be clipped to that value.
 
 Default is ``True`` (``yes``/``no`` can also be used)
@@ -86,6 +90,7 @@ Default is ``True`` (``yes``/``no`` can also be used)
 Jacobian method (:code:`jac_method`)
 ------------------------------------
 
+<<<<<<< HEAD
 This sets the Jacobian used. Current Jacobian methods are:
 
 * ``anaylytic`` - This uses the analytic Jacobian extracted from the fitting problem.
@@ -94,6 +99,13 @@ This sets the Jacobian used. Current Jacobian methods are:
 **Note:** Currently analytic Jacobians are available are only available for
 problems that use the cutest parser, which are currently in the directories
 'SIF' and 'DIAMOND_SIF'.
+=======
+This sets the options type of Jacobian used. Current Jacobian methods are:
+
+* ``SciPyFD`` - denotes the use of SciPy's finite difference Jacobian approximations
+
+**Note:** currently only numerical Jacobians are implemented.
+>>>>>>> 77d18e8... Moving options docs out of ini file
 
 Default is ``SciPyFD``
 
