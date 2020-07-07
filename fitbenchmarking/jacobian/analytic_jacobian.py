@@ -36,8 +36,6 @@ class Analytic(Jacobian):
 
         if self.problem.options.use_errors:
             # scales each column of the Jacobian by the weights
-            n = jac.shape[1]
-            for i in range(n):
-                jac[:, i] = jac[:, i] / e
+            jac = jac / e[:,None]
 
         return jac
