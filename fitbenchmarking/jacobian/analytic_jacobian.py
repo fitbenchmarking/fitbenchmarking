@@ -1,8 +1,6 @@
 """
 Module which acts as a analytic Jacobian calculator
 """
-from scipy.optimize._numdiff import approx_derivative
-
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.utils.exceptions import NoJacobianError
 
@@ -24,7 +22,7 @@ class Analytic(Jacobian):
 
     def eval(self, params, **kwargs):
         """
-        Evaluates Jacobian
+        Evaluates Jacobian of problem.eval_f or a weighted problem.eval_f
 
         :param params: The parameter values to find the Jacobian at
         :type params: list
@@ -33,5 +31,13 @@ class Analytic(Jacobian):
         :rtype: numpy array
         """
         x = kwargs.get("x", self.problem.data_x)
+        e = kwargs.get("e", self.problem.data_e)
         jac = self.problem.jacobian(x, params)
+
+        if self.problem.options.use_errors:
+            # scales each column of the Jacobian by the weights
+            n = jac.shape[1]
+            for i in range(n):
+                jac[:, i] = jac[:, i] / e
+
         return jac
