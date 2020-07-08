@@ -54,6 +54,7 @@ class NISTParser(Parser):
         fitting_problem.function = \
             nist_func_definition(function=fitting_problem.equation,
                                  param_names=starting_values[0].keys())
+        fitting_problem.format = "nist"
 
         return fitting_problem
 

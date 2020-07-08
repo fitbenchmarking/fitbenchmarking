@@ -95,7 +95,7 @@ following members of the :class:`~fitbenchmarking.parsing.fitting_problem.Fittin
 
 .. currentmodule:: fitbenchmarking.jacobian.base_jacobian
 .. autoclass:: fitbenchmarking.jacobian.base_jacobian.Jacobian
-          :members: eval
+          :members: eval, eval_r_norm
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
