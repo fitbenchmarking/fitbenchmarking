@@ -106,7 +106,6 @@ class Options(object):
             config.read(file_name)
         minimizers = config['MINIMIZERS']
         self.minimizers = {}
-
         for key in self.VALID_FITTING["software"]:
             self.minimizers[key] = self.read_value(minimizers.getlist,
                                                    key)
