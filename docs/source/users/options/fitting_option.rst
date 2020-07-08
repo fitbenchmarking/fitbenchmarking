@@ -29,7 +29,7 @@ The options are:
 * 'deriv_free' - derivative free algorithms (these are algorithms that do not require an information about derivatives. For example, the ``Simplex`` method in ``Mantid`` does not require derivative information but ``lm-scipy-no-jac`` in ``scipy_ls`` does but the derivative is handle internally within the software package)
 * 'general' - minimizers which solve a generic `min f(x)`
 
-Note:** this will that choosing an option other than 'all' may deselect certain
+**Note:** this will that choosing an option other than 'all' may deselect certain
 minimizers set in the options file
 
 Default is ``all``
@@ -87,9 +87,12 @@ Jacobian method (:code:`jac_method`)
 
 This sets the options type of Jacobian used. Current Jacobian methods are:
 
+* ``anaylytic`` - This uses the analytic Jacobian extracted from the fitting problem.
 * ``SciPyFD`` - denotes the use of SciPy's finite difference Jacobian approximations
 
-**Note:** currently only numerical Jacobians are implemented.
+**Note:** Currently analytic Jacobians are available are only available for
+problems that use the cutest parser, which are currently in the directories
+'SIF' and 'DIAMOND_SIF'.# default 'SciPyFD'
 
 Default is ``SciPyFD``
 

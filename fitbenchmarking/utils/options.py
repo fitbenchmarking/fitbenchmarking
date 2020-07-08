@@ -40,7 +40,7 @@ class Options(object):
          'software': ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
                       'ralfit', 'scipy', 'scipy_ls'],
          'use_errors': [True, False],
-         'jac_method': ['SciPyFD'],
+         'jac_method': ['SciPyFD', 'analytic'],
          'num_method': ['2point', '3point', 'cs']}
     VALID_PLOTTING = \
         {'make_plots': [True, False],

@@ -77,14 +77,18 @@ class CutestParser(Parser):
         fp.name = self._p.name
 
         fp.function = self._function  # self._p.objcons
+        fp.jacobian = self._jacobian  # self._p.lagjac
         fp.equation = None
         fp.starting_values = self._get_starting_values()
         fp.start_x = None
         fp.end_x = None
+        fp.format = "cutest"
 
-        # Create a list of x and f.
+        # Create a list of x and f (function evaluation) and x and g (Jacobian
+        # evaluation).
         # If a new x is given we will create and parse a new file
-        self._cache = [(fp.data_x, self._p.objcons)]
+        self._cache_f = [(fp.data_x, self._p.objcons)]
+        self._cache_g = [(fp.data_x, self._p.lagjac)]
 
         return fp
 
@@ -100,7 +104,7 @@ class CutestParser(Parser):
         """
         os.environ["MASTSIF"] = self.mastsif_dir.name
 
-        for cx, cf in self._cache:
+        for cx, cf in self._cache_f:
             if np.isclose(cx, x).all():
                 f = cf
                 break
@@ -108,10 +112,40 @@ class CutestParser(Parser):
             fname, _, _, _ = self._setup_data(x)
             p = _import_problem(fname)
             f = p.objcons
-            self._cache.append((x, f))
+            self._cache_f.append((x, f))
         _, fx = f(np.asarray(params))
 
         return fx
+
+    def _jacobian(self, x, *params):
+        """
+        If these x values have been passed in before, then run the function to
+        calculate the Jacobian. Otherwise, create a new problem file, parse and
+        cache the Jacobian
+
+        :param x: The data to evaluate at
+        :type x: np.array
+        :return: The result of evaluating at the given x
+        :rtype: np.array
+        """
+        os.environ["MASTSIF"] = self.mastsif_dir.name
+
+        for cx, cg in self._cache_g:
+            if np.isclose(cx, x).all():
+                g = cg
+                break
+        else:
+            fname, _, _, _ = self._setup_data(x)
+            p = _import_problem(fname)
+            g = p.lagjac
+            self._cache_g.append((x, g))
+        _, gx = g(np.asarray(params)[0])
+
+        # We negate the gradient since we're solving
+        # `min ||r(x)||^2 s.t. r(x) = f(x)-y`, or eqivalently
+        # `min ||r(x)||^2 s.t. r(x) = y-f(x)`.
+        # CUTEst uses the second of these formulations.
+        return -gx
 
     def _get_starting_values(self):
 
@@ -200,11 +234,11 @@ def _read_x(lines):
         elif "RE Y" in line:
             data_y[y_idx] = float(line.split()[2])
             y_idx += 1
-            line = line[:col_width-1] + '0.0'
+            line = line[:col_width - 1] + '0.0'
         elif 'RE E' in line:
             data_e[e_idx] = float(line.split()[2])
             e_idx += 1
-            line = line[:col_width-1] + '1.0'
+            line = line[:col_width - 1] + '1.0'
         to_write.append(line + '\n')
 
     _check_data(data_count, x_idx, y_idx, e_idx)
@@ -234,11 +268,11 @@ def _write_x(lines, x):
 
     for line in lines:
         if "IE M " in line:
-            line = line[:col_width-1] + str(len(x))
+            line = line[:col_width - 1] + str(len(x))
         elif "IE MLOWER" in line:
-            line = line[:col_width-1] + '1\n'
+            line = line[:col_width - 1] + '1\n'
         elif "IE MUPPER" in line:
-            line = line[:col_width-1] + str(len(x))
+            line = line[:col_width - 1] + str(len(x))
         elif "RE X" in line:
             # Only write data once.
             # Once written can skip all x entries
@@ -247,8 +281,8 @@ def _write_x(lines, x):
             line = ''
             new_lines = []
             for i, val in enumerate(x):
-                idx = i+1
-                spacing = ' '*(col_width - (5 + len(str(idx))))
+                idx = i + 1
+                spacing = ' ' * (col_width - (5 + len(str(idx))))
                 new_lines.extend([' RE X{}{}{}'.format(idx, spacing, val),
                                   ' RE Y{}{}0.0'.format(idx, spacing),
                                   ' RE E{}{}1.0'.format(idx, spacing)])

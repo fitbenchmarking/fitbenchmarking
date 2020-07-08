@@ -192,9 +192,9 @@ class UserFittingOptionTests(unittest.TestCase):
         """
         Checks user set jac_method is valid
         """
-        set_option = "SciPyFD"
+        set_option = "analytic"
         config_str = \
-            "[FITTING]\njac_method: SciPyFD"
+            "[FITTING]\njac_method: analytic"
         self.shared_valid('jac_method', set_option, config_str)
 
     def test_minimizer_jac_method_invalid(self):
