@@ -38,10 +38,10 @@ printf "nny" >> sifdecode.input
 cd $CUTEST
 # 6 - 64 bit PC
 # 2 - linux
-# 5 - gfortran compiler
+# 6 - gfortran compiler
 # 2 - everything except matlab
-# 7 - generic gcc compiler
-printf "6\n2\n5\n2\n7\n" > cutest.input
+# 8 - generic gcc compiler
+printf "6\n2\n6\n2\n8\n" > cutest.input
 # n - modify compiler settings?
 # n - modify system commands?
 # y - compile package subset?
