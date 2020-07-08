@@ -18,18 +18,18 @@ class OptionsTests(unittest.TestCase):
         # "fitbenchmarking/utils/default_options.ini"
         config_str = """
             [MINIMIZERS]
-            scipy: nonesense
-                   another_fake_minimizer
-            dfogn: test
+            scipy: CG
+                   Powell
+            dfo: dfogn
 
             [FITTING]
-            algorithm_type: random_algorithm
+            algorithm_type: all
             use_errors: no
             num_runs: 2
-            software: foo
-                      bar
-            jac_method: random_type
-            num_method: random_method
+            software: scipy
+                      dfo
+            jac_method: SciPyFD
+            num_method: cs
 
             [PLOTTING]
             make_plots: no
@@ -43,7 +43,7 @@ class OptionsTests(unittest.TestCase):
             [LOGGING]
             file_name: THE_LOG.log
             append: yes
-            level: debug
+            level: DEBUG
             external_output: no
             """
         incorrect_config_str = """
@@ -51,20 +51,20 @@ class OptionsTests(unittest.TestCase):
             use_errors: correct
             num_runs: two
             [PLOTTING]
-            make_plots: incorrect_falue
+            make_plots: no_plots
             [LOGGING]
             append: sure
             external_output: maybe
             """
-        opts = {'MINIMIZERS': {'scipy': ['nonesense',
-                                         'another_fake_minimizer'],
-                               'dfogn': ['test']},
-                'FITTING': {'algorithm_type': 'random_algorithm',
+        opts = {'MINIMIZERS': {'scipy': ['CG',
+                                         'Powell'],
+                               'dfo': ['dfogn']},
+                'FITTING': {'algorithm_type': 'all',
                             'use_errors': False,
                             'num_runs': 2,
-                            'software': ['foo', 'bar'],
-                            'jac_method': 'random_type',
-                            'num_method': 'random_method'},
+                            'software': ['scipy', 'dfo'],
+                            'jac_method': 'SciPyFD',
+                            'num_method': 'cs'},
                 'PLOTTING': {'make_plots': False,
                              'colour_scale': [(17.1, 'b_string?'),
                                               (float('inf'), 'final_string')],
