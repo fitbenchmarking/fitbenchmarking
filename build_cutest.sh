@@ -24,8 +24,8 @@ export PYTHONPATH="${PYCUTEST_CACHE}:${PYTHONPATH}"
 cd $SIFDECODE
 # 6 - 64 bit PC
 # 2 - linux
-# 5 - gfortran compiler
-printf "6\n2\n5\n" > sifdecode.input
+# 6 - gfortran compiler
+printf "6\n2\n6\n" > sifdecode.input
 # n - modify compiler settings?
 # n - modify system commands?
 # y - compile the package
