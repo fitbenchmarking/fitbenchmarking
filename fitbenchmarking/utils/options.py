@@ -104,9 +104,9 @@ class Options(object):
 
         if file_name is not None:
             config.read(file_name)
-
         minimizers = config['MINIMIZERS']
         self.minimizers = {}
+
         for key in self.VALID_FITTING["software"]:
             self.minimizers[key] = self.read_value(minimizers.getlist,
                                                    key)
