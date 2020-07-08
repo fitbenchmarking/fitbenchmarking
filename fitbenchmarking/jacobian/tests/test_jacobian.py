@@ -58,6 +58,7 @@ class TestJacobianClass(TestCase):
         Setting up tests
         """
         options = Options()
+        options.use_errors = False
         self.fitting_problem = FittingProblem(options)
         self.fitting_problem.function = f
         self.fitting_problem.jacobian = J
@@ -90,7 +91,7 @@ class TestJacobianClass(TestCase):
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
-    def test_analytic_cutest(self):
+    def test_analytic_cutest_no_errors(self):
         """
         Test analytic jacobian
         """
@@ -98,6 +99,19 @@ class TestJacobianClass(TestCase):
         jac = Analytic(self.fitting_problem)
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+    def test_analytic_cutest_errors(self):
+        """
+        Test analytic jacobian
+        """
+        self.fitting_problem.options.use_errors = True
+        e = np.array([1, 2, 1, 3, 1])
+        self.fitting_problem.data_e = e
+        self.fitting_problem.format = "cutest"
+        jac = Analytic(self.fitting_problem)
+        eval_result = jac.eval(params=self.params)
+        scaled_actual = self.actual / e[:, None]
+        self.assertTrue(np.isclose(scaled_actual, eval_result).all())
 
 
 class TestCachedFuncValues(TestCase):
@@ -110,6 +124,7 @@ class TestCachedFuncValues(TestCase):
         Setting up tests
         """
         options = Options()
+        options.use_errors = False
         self.fitting_problem = FittingProblem(options)
         self.jacobian = Jacobian(self.fitting_problem)
 
@@ -160,6 +175,7 @@ class TestDerivCostFunc(TestCase):
         Setting up tests
         """
         options = Options()
+        options.use_errors = False
         self.fitting_problem = FittingProblem(options)
         self.fitting_problem.function = f
         self.fitting_problem.jacobian = J
