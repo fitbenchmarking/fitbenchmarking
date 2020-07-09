@@ -17,7 +17,7 @@ from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.utils.exceptions import UnsupportedMinimizerError
 
-# Defines the module which we mock out certain function calls
+# Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 
 # Due to structure of tests, some variables may not be previously defined

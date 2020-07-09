@@ -16,7 +16,7 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 
-# Defines the module which we mock out certain function calls
+# Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 
 
