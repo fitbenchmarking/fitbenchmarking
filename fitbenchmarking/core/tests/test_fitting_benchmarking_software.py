@@ -17,8 +17,8 @@ from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.utils.exceptions import UnsupportedMinimizerError
 
-fitting_benchmarking_dir = "fitbenchmarking.core.fitting_benchmarking"
-
+# Defines the module which we mock out certain function calls
+FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 
 # Due to structure of tests, some variables may not be previously defined
 # in the init function
@@ -97,7 +97,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
             assert keys in self.options.software
             assert values == expected_minimizer_failed[i]
 
-    @mock.patch('{}.loop_over_minimizers'.format(fitting_benchmarking_dir))
+    @mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software(self, loop_over_minimizers):
         """
         Checks that results are produced for all minimizers within the
@@ -118,7 +118,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.shared_test(expected_list_len, expected_problem_fails,
                          expected_minimizer_failed)
 
-    @mock.patch('{}.loop_over_minimizers'.format(fitting_benchmarking_dir))
+    @mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software_failed_minimizers(self, loop_over_minimizers):
         """
         Checks that the failed minimizers are reported
@@ -141,7 +141,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.shared_test(expected_list_len, expected_problem_fails,
                          expected_minimizer_failed)
 
-    @mock.patch('{}.loop_over_minimizers'.format(fitting_benchmarking_dir))
+    @mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software_all_failed_minimizers(self, loop_over_minimizers):
         """
         Tests that when all minimizers raise and exception for a problem

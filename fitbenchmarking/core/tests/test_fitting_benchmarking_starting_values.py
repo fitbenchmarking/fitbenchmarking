@@ -14,7 +14,8 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 
-fitting_dir = "fitbenchmarking.core.fitting_benchmarking"
+# Defines the module which we mock out certain function calls
+FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 
 
 # Due to structure of tests, some variables may not be previously defined
@@ -97,7 +98,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
             assert sorted(unselected_minimzers[key]) == \
                 sorted(expected_unselected_minimzers[key])
 
-    @mock.patch('{}.loop_over_fitting_software'.format(fitting_dir))
+    @mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_multiple_starting_values(self, loop_over_fitting_software):
         """
         Checks that all selected minimizers run with multiple starting
@@ -115,7 +116,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_unselected_minimzers)
 
-    @mock.patch('{}.loop_over_fitting_software'.format(fitting_dir))
+    @mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_one_starting_values(self, loop_over_fitting_software):
         """
         Checks that all selected minimizers run with one starting
@@ -134,7 +135,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_unselected_minimzers)
 
-    @mock.patch('{}.loop_over_fitting_software'.format(fitting_dir))
+    @mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_reports_failed_problems(self, loop_over_fitting_software):
         """
         Checks that the failed problems are reported correctly
@@ -151,7 +152,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_unselected_minimzers)
 
-    @mock.patch('{}.loop_over_fitting_software'.format(fitting_dir))
+    @mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_reports_unselected_minimizers(self,
                                                loop_over_fitting_software):
         """

@@ -16,7 +16,8 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 
-fitting_dir = "fitbenchmarking.core.fitting_benchmarking"
+# Defines the module which we mock out certain function calls
+FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 
 
 # Due to structure of tests, some variables may not be previously defined
@@ -97,7 +98,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
             assert keys == "scipy"
             assert values == []
 
-    @mock.patch('{}.loop_over_starting_values'.format(fitting_dir))
+    @mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
     def test_run_multiple_benchmark_problems(self, loop_over_starting_values):
         """
         Checks that all benchmark problems run with no failures
@@ -112,7 +113,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         expected_list_length = len(self.list_results) * 2
         self.shared_tests(expected_list_length, expected_problem_fails)
 
-    @mock.patch('{}.loop_over_starting_values'.format(fitting_dir))
+    @mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
     def test_run_multiple_failed_problems(self, loop_over_starting_values):
         """
         Checks that multiple failed problems are reported correctly
