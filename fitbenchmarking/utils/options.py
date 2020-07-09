@@ -98,12 +98,13 @@ class Options(object):
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str},
                                            allow_no_value=True)
-        config.add_section('MINIMIZERS')
-        config.add_section('FITTING')
-        config.add_section('PLOTTING')
-        config.add_section('LOGGING')
+
+        for section in ['MINIMIZERS', 'FITTING', 'PLOTTING', 'LOGGING']:
+            config.add_section(section)
+
         if file_name is not None:
             config.read(file_name)
+
         minimizers = config['MINIMIZERS']
         self.minimizers = {}
         for key in self.VALID_FITTING["software"]:

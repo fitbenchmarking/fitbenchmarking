@@ -10,6 +10,7 @@ The options file must be a `.ini` formatted file
 To add a new option to one of the four sections ``MINIMIZERS``,
 ``FITTING``, ``PLOTTING`` and ``LOGGING``, follow steps:
 
+
 1. Add new option to the corresponding ``DEFAULTS`` dictionary in `fitbenchmarking/utils/options.py`.
 2. **OPTIONAL** add accepted option values to the ``VALID`` dictionary in `fitbenchmarking/utils/options.py`.
 3. Using the ``read_value`` function within the options class, add you new option
@@ -25,4 +26,5 @@ To add a new option to one of the four sections ``MINIMIZERS``,
     - Add user defined tests to class called ``User{Section}OptionTests``. These
       should check that the user added option is set correctly and that if
       there are accepted options an ``OptionsError`` is raised.
+
 5. Add relevant documentation for the new option in :ref:`options`.
