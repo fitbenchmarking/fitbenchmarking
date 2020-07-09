@@ -30,3 +30,5 @@ The options file must be a `.ini` formatted file
 and a good reference for this can be
 found in the examples, as well as at the bottom of this document.
 
+See :ref:`options_extend` for new options.
+
