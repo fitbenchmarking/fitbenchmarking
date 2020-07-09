@@ -78,8 +78,10 @@ class FitbenchmarkParser(Parser):
         # FUNCTION
         if software == 'mantid':
             fitting_problem.function = self._create_mantid_function()
+            fitting_problem.format = 'mantid'
         elif software == 'sasview':
             fitting_problem.function = self._create_sasview_function()
+            fitting_problem.format = 'sasview'
 
         # EQUATION
         equation_count = len(self._parsed_func)

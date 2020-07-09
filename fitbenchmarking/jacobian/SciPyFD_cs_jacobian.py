@@ -17,24 +17,23 @@ class ScipyCS(Jacobian):
     def __init__(self, problem):
         super(ScipyCS, self).__init__(problem)
 
-    def eval(self, params, func=None, **kwargs):
+    def eval(self, params, **kwargs):
         """
         Evaluates Jacobian
 
         :param params: The parameter values to find the Jacobian at
         :type params: list
-        :param func: Function to find the Jacobian for, defaults to
-                     problem.eval_r
-        :type func: Callable, optional
 
         :return: Approximation of the Jacobian
         :rtype: numpy array
         """
-        if func is None:
-            func = self.problem.eval_r
-
+        func = self.problem.eval_r
+        f0 = self.cached_func_values(self.problem.cache_rx,
+                                     func,
+                                     params,
+                                     **kwargs)
         jac = approx_derivative(func, params, method="cs",
-                                rel_step=None, f0=func(params, **kwargs),
+                                rel_step=None, f0=f0,
                                 bounds=(-np.inf, np.inf),
                                 kwargs=kwargs)
         return jac
