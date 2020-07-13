@@ -5,7 +5,7 @@ Minimizer Options
 #################
 
 This section is used to declare the minimizers to use for each fitting
-software. In most cases this can be left out and defaults will be sufficient
+software.
 
 Bumps (:code:`bumps`)
 ---------------------
@@ -27,6 +27,8 @@ FitBenchmarking currently supports the Bumps minimizers:
 * `MINPACK <https://github.com/bumps/bumps/blob/96b5100fc3d5b9485bd4a444c83a33617b74aa9d/bumps/mpfit.py>`_ (:code:`mp`)  This is a translation of `MINPACK` to Python.
 
 
+**Links** `GitHub - bumps <https://github.com/bumps/bumps>`_
+
 The Bumps minimizers are set as follows:
 
 .. code-block:: rst
@@ -38,8 +40,6 @@ The Bumps minimizers are set as follows:
            de
            mp
 
-
-**Links** `GitHub - bumps <https://github.com/bumps/bumps>`_
 
 DFO
 ---
