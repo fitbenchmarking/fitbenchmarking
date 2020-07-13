@@ -73,7 +73,7 @@ class BenchmarkTests(unittest.TestCase):
     def shared_tests(self, expected_names, expected_unselected_minimzers,
                      expected_minimzers):
         """
-        Shared tests for the `benchmark` function
+        Shared tests for the `benchmark` function. The function test
 
         :param expected_names: expected sorted list of problem names
         :type expected_names: list
@@ -117,11 +117,12 @@ class BenchmarkTests(unittest.TestCase):
         expected_unselected_minimzers = {"scipy": []}
         loop_over_benchmark_problems.return_value = \
             (results, problem_fails, expected_unselected_minimzers)
-        
-        # run shared test and see if it match expected            
+
+        # run shared test and see if it match expected
         expected_problem_names = sorted(problem_names)
         expected_minimzers = copy.copy(self.all_minimzers)
-        self.shared_tests(expected_names, expected_unselected_minimzers,
+        self.shared_tests(expected_problem_names,
+                          expected_unselected_minimzers,
                           expected_minimzers)
 
     @mock.patch('{}.loop_over_benchmark_problems'.format(FITTING_DIR))
