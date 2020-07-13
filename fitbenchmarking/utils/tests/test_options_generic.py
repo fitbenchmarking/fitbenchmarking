@@ -12,6 +12,7 @@ class OptionsWriteTests(unittest.TestCase):
     """
     Tests for options.write
     """
+
     def setUp(self):
         '''
         Create an options file and store input
@@ -71,6 +72,37 @@ class OptionsWriteTests(unittest.TestCase):
         os.remove(new_file_name)
 
         self.assertDictEqual(options.__dict__, new_options.__dict__)
+
+    def test_user_section_valid(self):
+        """
+        Tests that the user defined sections are correct.
+        """
+        config_str = """
+            [MINIMIZERS]
+
+            [FITTING]
+            """
+        opts_file = 'test_options_tests_valid.ini'
+        with open(opts_file, 'w') as f:
+            f.write(config_str)
+        Options(opts_file)
+        os.remove(opts_file)
+
+    def test_user_section_invalid(self):
+        """
+        Tests that the user defined sections are correct.
+        """
+        config_str = """
+            [MINIMIZERS SECTION]
+
+            [FITTING]
+            """
+        opts_file = 'test_options_tests_valid.ini'
+        with open(opts_file, 'w') as f:
+            f.write(config_str)
+        with self.assertRaises(exceptions.OptionsError):
+            Options(opts_file)
+        os.remove(opts_file)
 
 
 if __name__ == '__main__':

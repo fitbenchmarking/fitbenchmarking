@@ -134,6 +134,14 @@ class UserPlottingOptionTests(unittest.TestCase):
         with self.assertRaises(exceptions.OptionsError):
             Options(opts_file)
 
+    def test_invalid_option_key(self):
+        """
+        Tests that the user defined option key is invalid.
+        """
+        config_str = \
+            "[PLOTTING]\nmake_figures: True"
+        self.shared_invalid('make_figures', config_str)
+
     def test_minimizer_make_plots_valid(self):
         """
         Checks user set make_plots is valid
