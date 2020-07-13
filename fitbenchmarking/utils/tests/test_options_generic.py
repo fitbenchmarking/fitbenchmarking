@@ -90,7 +90,7 @@ class OptionsWriteTests(unittest.TestCase):
 
     def test_user_section_invalid(self):
         """
-        Tests that the user defined sections are correct.
+        Tests that the user defined sections are incorrect.
         """
         config_str = """
             [MINIMIZERS SECTION]

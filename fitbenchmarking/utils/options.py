@@ -190,8 +190,9 @@ class Options(object):
                 value_check = value in self.VALID[section][option]
             if not value_check:
                 self.error_message.append(
-                    "Value set in the options, {0}, is not in the VALID "
-                    "list {1}".format(value, self.VALID[section][option]))
+                    "The option '{0}: {1}' in the ini file is invalid. {0} "
+                    "must be on or more of {2}".format(
+                        option, value, self.VALID[section][option]))
         return value
 
     @property
