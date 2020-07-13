@@ -25,6 +25,5 @@ To add a new option to one of the four sections ``MINIMIZERS``,
     - Add user defined tests to class called ``User{Section}OptionTests``. These
       should check that the user added option is set correctly and that if
       there are accepted options an ``OptionsError`` is raised.
-
 5. Add relevant documentation for the new option in :ref:`options`.
 
