@@ -99,10 +99,10 @@ class BenchmarkTests(unittest.TestCase):
         """
         Checks benchmarking runs with no unselected minimizers
         """
-        names = ["random_1", "random_3", "random_2"]
-        expected_names = sorted(names)
+        # define mock return for loop_over_benchmark_problems
+        problem_names = ["random_1", "random_3", "random_2"]
         results = []
-        for name in names:
+        for name in problem_names:
             result_args = {'options': self.options,
                            'problem': self.problem,
                            'jac': self.problem.jac,
@@ -115,10 +115,12 @@ class BenchmarkTests(unittest.TestCase):
             results.extend(list_results)
         problem_fails = []
         expected_unselected_minimzers = {"scipy": []}
-        expected_minimzers = copy.copy(self.all_minimzers)
-
         loop_over_benchmark_problems.return_value = \
             (results, problem_fails, expected_unselected_minimzers)
+        
+        # run shared test and see if it match expected            
+        expected_problem_names = sorted(problem_names)
+        expected_minimzers = copy.copy(self.all_minimzers)
         self.shared_tests(expected_names, expected_unselected_minimzers,
                           expected_minimzers)
 
