@@ -10,12 +10,12 @@ The options file must be a `.ini` formatted file
 To add a new option to one of the four sections ``MINIMIZERS``,
 ``FITTING``, ``PLOTTING`` and ``LOGGING``, follow steps:
 
-1. Add new option to the corresponding ``DEFAULTS`` dictionary.
-2. **OPTIONAL** add accepted option values to the ``VALID`` dictionary.
+1. Add new option to the corresponding ``DEFAULTS`` dictionary in `fitbenchmarking/utils/options.py`.
+2. **OPTIONAL** add accepted option values to the ``VALID`` dictionary in `fitbenchmarking/utils/options.py`.
    options class.
 3. Add tests in the following way:
 
-    - Each of the sections has it's own test file, for example, ``test_option_fitting`` have tests for the ``FITTING`` section.
+    - Each of the sections has it's own test file, for example, ``test_option_fitting`` has tests for the ``FITTING`` section.
 
     - Add default tests to class called ``{Section}OptionTests``.
 

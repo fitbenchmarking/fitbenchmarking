@@ -29,7 +29,7 @@ The options are:
 * 'deriv_free' - derivative free algorithms (these are algorithms that do not require an information about derivatives. For example, the ``Simplex`` method in ``Mantid`` does not require derivative information but ``lm-scipy-no-jac`` in ``scipy_ls`` does but the derivative is handle internally within the software package)
 * 'general' - minimizers which solve a generic `min f(x)`
 
-**Note:** this will that choosing an option other than 'all' may deselect certain
+**Note:** choosing an option other than 'all' may deselect certain
 minimizers set in the options file
 
 Default is ``all``
@@ -71,7 +71,8 @@ Use errors (:code:`use_errors`)
 -------------------------------
 
 This will switch between weighted and unweighted least squares
-If no errors are supplied, then e[i] will be set to sqrt(abs(y[i])).
+If `use_errors=True`, and no errors are supplied, then 
+e[i] will be set to sqrt(abs(y[i])).
 Errors below 1.0e-8 will be clipped to that value.
 
 Default is ``True`` (``yes``/``no`` can also be used)
@@ -85,7 +86,7 @@ Default is ``True`` (``yes``/``no`` can also be used)
 Jacobian method (:code:`jac_method`)
 ------------------------------------
 
-This sets the options type of Jacobian used. Current Jacobian methods are:
+This sets the Jacobian used. Current Jacobian methods are:
 
 * ``anaylytic`` - This uses the analytic Jacobian extracted from the fitting problem.
 * ``SciPyFD`` - denotes the use of SciPy's finite difference Jacobian approximations
