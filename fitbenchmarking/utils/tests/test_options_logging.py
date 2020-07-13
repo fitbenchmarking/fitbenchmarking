@@ -121,6 +121,14 @@ class UserLoggingOptionTests(unittest.TestCase):
         with self.assertRaises(exceptions.OptionsError):
             Options(opts_file)
 
+    def test_invalid_option_key(self):
+        """
+        Tests that the user defined option key is invalid.
+        """
+        config_str = \
+            "[LOGGING]\nlog_level: DEBUG"
+        self.shared_invalid('log_level', config_str)
+
     def test_minimizer_file_name_valid(self):
         """
         Checks user set file_name is valid

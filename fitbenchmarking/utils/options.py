@@ -17,6 +17,7 @@ class Options(object):
 
     DEFAULTS = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                             'default_options.ini'))
+    VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'PLOTTING', 'LOGGING']
     VALID_MINIMIZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
          'dfo': ['dfogn', 'dfols'],
@@ -99,11 +100,28 @@ class Options(object):
                                                        'str': str},
                                            allow_no_value=True)
 
-        for section in ['MINIMIZERS', 'FITTING', 'PLOTTING', 'LOGGING']:
+        for section in self.VALID_SECTIONS:
             config.add_section(section)
 
         if file_name is not None:
             config.read(file_name)
+
+            # Checks that the user defined sections are valid
+            if config.sections() != self.VALID_SECTIONS:
+                raise OptionsError(
+                    "Invalid options sections set, {0}, the valid sections "
+                    "are {1}".format(config.sections(), self.VALID_SECTIONS))
+            config.sections()
+
+            # Checks that the options within the sections are valid
+            for key in self.VALID_SECTIONS:
+                default_options_list = list(self.DEFAULTS[key].keys())
+                user_options_list = [option[0] for option in config.items(key)]
+                if not (set(user_options_list) <= set(default_options_list)):
+                    raise OptionsError(
+                        "Invalid options key set: \n{0}, \n the valid keys "
+                        "are: \n{1}".format(user_options_list,
+                                            default_options_list))
 
         minimizers = config['MINIMIZERS']
         self.minimizers = {}

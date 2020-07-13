@@ -137,6 +137,14 @@ class UserFittingOptionTests(unittest.TestCase):
         with self.assertRaises(exceptions.OptionsError):
             Options(opts_file)
 
+    def test_invalid_option_key(self):
+        """
+        Tests that the user defined option key is invalid.
+        """
+        config_str = \
+            "[FITTING]\nnum_minimizer_runs: 3"
+        self.shared_invalid('num_minimizer_runs', config_str)
+
     def test_minimizer_num_runs_valid(self):
         """
         Checks user set num_runs is valid

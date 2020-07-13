@@ -153,6 +153,13 @@ class UserMininimizerOptionTests(unittest.TestCase):
         with self.assertRaises(exceptions.OptionsError):
             Options(opts_file)
 
+    def test_invalid_option_key(self):
+        """
+        Tests that the user defined option key is invalid.
+        """
+        set_option = ['newton', 'de']
+        self.shared_invalid(set_option, 'sasview')
+
     def test_minimizer_bumps_valid(self):
         """
         Checks user set bumps minimizers is valid
