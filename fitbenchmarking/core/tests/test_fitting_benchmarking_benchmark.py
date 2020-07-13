@@ -130,8 +130,9 @@ class BenchmarkTests(unittest.TestCase):
         """
         Checks benchmarking runs with a few unselected minimizers
         """
-        names = ["random_1", "random_3", "random_2"]
-        expected_names = sorted(names)
+        # define mock return for loop_over_benchmark_problems
+        problem_names = ["random_1", "random_3", "random_2"]
+        expected_names = sorted(problem_names)
         results = []
         for name in names:
             result_args = {'options': self.options,
@@ -146,13 +147,14 @@ class BenchmarkTests(unittest.TestCase):
             results.extend(list_results)
         problem_fails = []
         expected_unselected_minimzers = {"scipy": ['SLSQP', 'Powell', 'CG']}
+        loop_over_benchmark_problems.return_value = \
+            (results, problem_fails, expected_unselected_minimzers)
+        
+        # run shared test and see if it match expected
         expected_minimzers = copy.copy(self.all_minimzers)
         for keys, minimzers in expected_unselected_minimzers.items():
             expected_minimzers[keys] = \
                 list(set(expected_minimzers[keys]) - set(minimzers))
-
-        loop_over_benchmark_problems.return_value = \
-            (results, problem_fails, expected_unselected_minimzers)
         self.shared_tests(expected_names, expected_unselected_minimzers,
                           expected_minimzers)
 
