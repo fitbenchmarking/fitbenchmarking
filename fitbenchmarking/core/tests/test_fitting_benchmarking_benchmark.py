@@ -134,7 +134,7 @@ class BenchmarkTests(unittest.TestCase):
         problem_names = ["random_1", "random_3", "random_2"]
         expected_names = sorted(problem_names)
         results = []
-        for name in names:
+        for name in problem_names:
             result_args = {'options': self.options,
                            'problem': self.problem,
                            'jac': self.problem.jac,
