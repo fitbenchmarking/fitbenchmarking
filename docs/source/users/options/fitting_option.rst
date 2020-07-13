@@ -71,7 +71,7 @@ Use errors (:code:`use_errors`)
 -------------------------------
 
 This will switch between weighted and unweighted least squares
-If `use_errors=True`, and no errors are supplied, then 
+If `use_errors=True`, and no errors are supplied, then
 e[i] will be set to sqrt(abs(y[i])).
 Errors below 1.0e-8 will be clipped to that value.
 
@@ -93,7 +93,7 @@ This sets the Jacobian used. Current Jacobian methods are:
 
 **Note:** Currently analytic Jacobians are available are only available for
 problems that use the cutest parser, which are currently in the directories
-'SIF' and 'DIAMOND_SIF'.# default 'SciPyFD'
+'SIF' and 'DIAMOND_SIF'.
 
 Default is ``SciPyFD``
 
