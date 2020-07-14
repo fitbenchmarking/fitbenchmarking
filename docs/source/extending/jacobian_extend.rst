@@ -22,7 +22,7 @@ In order to add a new Jacobian evaluation method, you will need to:
 3. Document the available Jacobians by:
 
   * updating the docs for :ref:`jacobian` in ``docs/source/users/jacobian.rst``
-  * updating ``fitbenchmarking/utils/default_options.ini``
+  * updating options via :ref:`options` and :ref:`options_extend`
   * updating any example files in the ``example_scripts`` directory
 
 4. Create tests for the Jacobian evaluation in
