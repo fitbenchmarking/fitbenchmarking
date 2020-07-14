@@ -45,22 +45,6 @@ class ScipyController(Controller):
 
         self.options = {'maxiter': 500}
 
-    def eval_jac(self, x, *args):
-        """
-        Wrapper for problem.eval_j to form the approximate Jacobian for
-        problem.eval_r_norm
-
-        :param x: The parameter values to find the Jacobian at
-        :type x: list
-
-        :return: Approximation of the Jacobian
-        :rtype: numpy array
-        """
-        out = self.jacobian.eval(params=x,
-                                 func=self.problem.eval_r_norm,
-                                 *args)
-        return out
-
     def fit(self):
         """
         Run problem with Scipy.
@@ -76,7 +60,7 @@ class ScipyController(Controller):
             self.result = minimize(fun=self.problem.eval_r_norm,
                                    x0=self.initial_params,
                                    method=self.minimizer,
-                                   jac=self.eval_jac,
+                                   jac=self.jacobian.eval_r_norm,
                                    options=self.options)
 
         self._popt = self.result.x

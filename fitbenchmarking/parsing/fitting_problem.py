@@ -45,6 +45,9 @@ class FittingProblem:
         #: *string* Name (title) of the fitting problem
         self.name = None
 
+        #: *string* Name of the problem definition type (e.g., 'cutest')
+        self.format = None
+
         #: *string* Equation (function or model) to fit against data
         self.equation = None
 
@@ -96,6 +99,22 @@ class FittingProblem:
         #: *bool* Used to check if a problem is using multifit.
         self.multifit = False
 
+        #: *dict*
+        #: Container cached function evaluation
+        self.cache_fx = {'params': None, 'value': None}
+
+        #: *dict*
+        #: Container cached residual evaluation
+        self.cache_rx = {'params': None, 'value': None}
+
+        #: *dict*
+        #: Container cached residual squared evaluation (cost function)
+        self.cache_r_norm_x = {'params': None, 'value': None}
+
+        # Used to assign the Jacobian class in
+        # fitbenchmarking/core/fitting_benchmarking.py
+        self.jac = None
+
     @property
     def param_names(self):
         """
@@ -131,8 +150,9 @@ class FittingProblem:
         if x is None:
             x = self.data_x
         # pylint: disable=not-callable
-        out = self.function(x, *params)
-        return out
+        self.cache_fx['params'] = params
+        self.cache_fx['value'] = self.function(x, *params)
+        return self.cache_fx['value']
 
     def eval_r(self, params, x=None, y=None, e=None):
         """
@@ -162,6 +182,8 @@ class FittingProblem:
         result = y - self.eval_f(params=params, x=x)
         if e is not None:
             result = result / e
+        self.cache_rx['params'] = params
+        self.cache_rx['value'] = result
         return result
 
     def eval_r_norm(self, params, x=None, y=None, e=None):
@@ -182,7 +204,10 @@ class FittingProblem:
         :rtype: numpy array
         """
         r = self.eval_r(params=params, x=x, y=y, e=e)
-        return np.dot(r, r)
+
+        self.cache_r_norm_x['params'] = params
+        self.cache_r_norm_x['value'] = np.dot(r, r)
+        return self.cache_r_norm_x['value']
 
     def eval_starting_params(self, param_set):
         """

@@ -5,6 +5,7 @@ This file will handle all interaction with the options configuration file.
 import configparser
 
 import os
+import numpy as np
 
 from fitbenchmarking.utils.exceptions import OptionsError
 
@@ -16,6 +17,73 @@ class Options(object):
 
     DEFAULTS = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                             'default_options.ini'))
+    VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'PLOTTING', 'LOGGING']
+    VALID_MINIMIZERS = \
+        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
+         'dfo': ['dfogn', 'dfols'],
+         'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
+                 'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
+                 'vector_bfgs2', 'steepest_descent'],
+         'mantid': ['BFGS',
+                    'Conjugate gradient (Fletcher-Reeves imp.)',
+                    'Conjugate gradient (Polak-Ribiere imp.)',
+                    'Damped GaussNewton', 'Levenberg-Marquardt',
+                    'Levenberg-MarquardtMD', 'Simplex',
+                    'SteepestDescent', 'Trust Region'],
+         'minuit': ['minuit'],
+         'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
+         'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
+                   'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
+         'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf',
+                      'dogbox']}
+    VALID_FITTING = \
+        {'algorithm_type': ['all', 'ls', 'deriv_free', 'general'],
+         'software': ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
+                      'ralfit', 'scipy', 'scipy_ls'],
+         'use_errors': [True, False],
+         'jac_method': ['SciPyFD', 'analytic'],
+         'num_method': ['2point', '3point', 'cs']}
+    VALID_PLOTTING = \
+        {'make_plots': [True, False],
+         'comparison_mode': ['abs', 'rel', 'both'],
+         'table_type': ['acc', 'runtime', 'compare', 'local_min']}
+    VALID_LOGGING = \
+        {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
+                   'CRITICAL'],
+         'append': [True, False],
+         'external_output': [True, False]}
+
+    VALID = {'MINIMIZERS': VALID_MINIMIZERS,
+             'FITTING': VALID_FITTING,
+             'PLOTTING': VALID_PLOTTING,
+             'LOGGING': VALID_LOGGING}
+
+    DEFAULT_FITTING = \
+        {'num_runs': 5,
+         'algorithm_type': 'all',
+         'software': ['bumps', 'dfo', 'minuit', 'scipy', 'scipy_ls'],
+         'use_errors': True,
+         'jac_method': ['SciPyFD'],
+         'num_method': ['2point']}
+    DEFAULT_PLOTTING = \
+        {'make_plots': True,
+         'colour_scale': [(1.1, "#fef0d9"),
+                          (1.33, "#fdcc8a"),
+                          (1.75, "#fc8d59"),
+                          (3, "#e34a33"),
+                          (np.inf, "#b30000")],
+         'comparison_mode': 'both',
+         'table_type': ['acc', 'runtime', 'compare', 'local_min'],
+         'results_dir': 'results'}
+    DEFAULT_LOGGING = \
+        {'file_name': 'fitbenchmarking.log',
+         'append': False,
+         'level': 'INFO',
+         'external_output': True}
+    DEFAULTS = {'MINIMIZERS': VALID_MINIMIZERS,
+                'FITTING': DEFAULT_FITTING,
+                'PLOTTING': DEFAULT_PLOTTING,
+                'LOGGING': DEFAULT_LOGGING}
 
     def __init__(self, file_name=None):
         """
@@ -26,66 +94,106 @@ class Options(object):
         :param file_name: The options file to load
         :type file_name: str
         """
-        error_message = []
-        template = "The option '{0}' must be of type {1}."
+        self.error_message = []
         self._results_dir = ''
         config = configparser.ConfigParser(converters={'list': read_list,
-                                                       'str': str})
+                                                       'str': str},
+                                           allow_no_value=True)
 
-        config.read(self.DEFAULTS)
+        for section in self.VALID_SECTIONS:
+            config.add_section(section)
+
         if file_name is not None:
             config.read(file_name)
 
+            # Checks that the user defined sections are valid
+            if config.sections() != self.VALID_SECTIONS:
+                raise OptionsError(
+                    "Invalid options sections set, {0}, the valid sections "
+                    "are {1}".format(config.sections(), self.VALID_SECTIONS))
+            config.sections()
+
+            # Checks that the options within the sections are valid
+            for key in self.VALID_SECTIONS:
+                default_options_list = list(self.DEFAULTS[key].keys())
+                user_options_list = [option[0] for option in config.items(key)]
+                if not (set(user_options_list) <= set(default_options_list)):
+                    raise OptionsError(
+                        "Invalid options key set: \n{0}, \n the valid keys "
+                        "are: \n{1}".format(user_options_list,
+                                            default_options_list))
+
         minimizers = config['MINIMIZERS']
         self.minimizers = {}
-        for key in minimizers.keys():
-            self.minimizers[key] = minimizers.getlist(key)
+        for key in self.VALID_FITTING["software"]:
+            self.minimizers[key] = self.read_value(minimizers.getlist,
+                                                   key)
 
         fitting = config['FITTING']
-        try:
-            self.num_runs = fitting.getint('num_runs')
-        except ValueError:
-            error_message.append(template.format('num_runs', "int"))
-        self.algorithm_type = fitting.getstr('algorithm_type')
-        self.software = fitting.getlist('software')
-        try:
-            self.use_errors = fitting.getboolean('use_errors')
-        except ValueError:
-            error_message.append(template.format('use_errors', "boolean"))
-        self.jac_method = fitting.getlist('jac_method')
-        self.num_method = fitting.getlist('num_method')
+        self.num_runs = self.read_value(fitting.getint, 'num_runs')
+        self.algorithm_type = self.read_value(fitting.getstr, 'algorithm_type')
+        self.software = self.read_value(fitting.getlist, 'software')
+        self.use_errors = self.read_value(fitting.getboolean, 'use_errors')
+        self.jac_method = self.read_value(fitting.getlist, 'jac_method')
+        self.num_method = self.read_value(fitting.getlist, 'num_method')
 
         plotting = config['PLOTTING']
-        try:
-            self.make_plots = plotting.getboolean('make_plots')
-        except ValueError:
-            error_message.append(template.format('make_plots', "boolean"))
-
-        self.colour_scale = plotting.getlist('colour_scale')
-        self.colour_scale = [(float(cs.split(',', 1)[0].strip()),
-                              cs.split(',', 1)[1].strip())
-                             for cs in self.colour_scale]
-        self.comparison_mode = plotting.getstr('comparison_mode')
-        self.table_type = plotting.getlist('table_type')
-        self.results_dir = plotting.getstr('results_dir')
+        self.make_plots = self.read_value(plotting.getboolean, 'make_plots')
+        self.colour_scale = self.read_value(plotting.getlist, 'colour_scale')
+        check = [isinstance(c, tuple) for c in self.colour_scale]
+        if check.count(False) == len(check):
+            self.colour_scale = [(float(cs.split(',', 1)[0].strip()),
+                                  cs.split(',', 1)[1].strip())
+                                 for cs in self.colour_scale]
+        self.comparison_mode = self.read_value(plotting.getstr,
+                                               'comparison_mode')
+        self.table_type = self.read_value(plotting.getlist, 'table_type')
+        self.results_dir = self.read_value(plotting.getstr, 'results_dir')
 
         logging = config['LOGGING']
-        try:
-            self.log_append = logging.getboolean('append')
-        except ValueError:
-            error_message.append(template.format('append', "boolean"))
-        self.log_file = logging.getstr('file_name')
-        self.log_level = logging.getstr('level')
+        self.log_append = self.read_value(logging.getboolean, 'append')
+        self.log_file = self.read_value(logging.getstr, 'file_name')
+        self.log_level = self.read_value(logging.getstr, 'level')
 
-        try:
-            self.external_output = logging.getboolean('external_output')
-        except ValueError:
-            error_message.append(template.format('external_output', "boolean"))
+        self.external_output = self.read_value(logging.getboolean,
+                                               'external_output')
 
-        # sys.exit() will be addressed in future FitBenchmarking
-        # error handling issue
-        if error_message != []:
-            raise OptionsError('\n'.join(error_message))
+        if self.error_message != []:
+            raise OptionsError('\n'.join(self.error_message))
+
+    def read_value(self, func, option):
+        """
+        Helper function which loads in the value
+
+        :param func: configparser function
+        :type func: callable
+        :param option: option to be read for file
+        :type option: str
+
+        :return: value of the option
+        :rtype: list/str/int/bool
+        """
+        section = func.__str__().split("Section: ")[1].split('>')[0]
+        try:
+            value = func(option, fallback=self.DEFAULTS[section][option])
+        except ValueError:
+            self.error_message.append(
+                "Incorrect options type for {}".format(option))
+            value = None
+
+        if option in self.VALID[section]:
+            if isinstance(value, list):
+                set1 = set(value)
+                set2 = set(self.VALID[section][option])
+                value_check = set1.issubset(set2)
+            else:
+                value_check = value in self.VALID[section][option]
+            if not value_check:
+                self.error_message.append(
+                    "The option '{0}: {1}' in the ini file is invalid. {0} "
+                    "must be on or more of {2}".format(
+                        option, value, self.VALID[section][option]))
+        return value
 
     @property
     def results_dir(self):
@@ -138,6 +246,7 @@ def read_list(s):
 
     :param s: string to convert to a list
     :type s: string
+
     :return: list of items
     :rtype: list of str
     """

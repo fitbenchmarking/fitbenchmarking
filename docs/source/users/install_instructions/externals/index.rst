@@ -12,6 +12,7 @@ you must install them with the following guides:
 
 .. toctree::
     :titlesonly:
+    :maxdepth: 2
     :caption: Softwares:
 
     cutest

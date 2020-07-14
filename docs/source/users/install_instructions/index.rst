@@ -14,6 +14,7 @@ you must install them with the external software instructions.
 
 .. toctree::
     :titlesonly:
+    :maxdepth: 2
     :caption: Softwares:
 
     fitbenchmarking
