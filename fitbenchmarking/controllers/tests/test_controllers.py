@@ -24,7 +24,7 @@ if TEST_TYPE != "default":
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
 
 def make_fitting_problem(file_name='cubic.dat'):
@@ -232,7 +232,8 @@ class DefaultControllerTests(TestCase):
 
     def setUp(self):
         self.problem = make_fitting_problem()
-        self.jac = ScipyTwoPoint(self.problem)
+        self.jac = Scipy(self.problem)
+        self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
 
     def test_bumps(self):
@@ -323,7 +324,8 @@ class ExternalControllerTests(TestCase):
 
     def setUp(self):
         self.problem = make_fitting_problem()
-        self.jac = ScipyTwoPoint(self.problem)
+        self.jac = Scipy(self.problem)
+        self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
 
     def test_mantid(self):

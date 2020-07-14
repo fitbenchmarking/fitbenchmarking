@@ -17,7 +17,8 @@ class Options(object):
 
     DEFAULTS = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                             'default_options.ini'))
-    VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'PLOTTING', 'LOGGING']
+    VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN',
+                      'PLOTTING', 'LOGGING']
     VALID_MINIMIZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
          'dfo': ['dfogn', 'dfols'],
@@ -41,8 +42,10 @@ class Options(object):
          'software': ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
                       'ralfit', 'scipy', 'scipy_ls'],
          'use_errors': [True, False],
-         'jac_method': ['SciPyFD', 'analytic'],
-         'num_method': ['2point', '3point', 'cs']}
+         'jac_method': ['scipy', 'analytic']}
+    VALID_JACOBIAN = \
+        {'scipy': ['2-point', '3-point', 'cs'],
+         'analytic': ['cutest']}
     VALID_PLOTTING = \
         {'make_plots': [True, False],
          'comparison_mode': ['abs', 'rel', 'both'],
@@ -55,6 +58,7 @@ class Options(object):
 
     VALID = {'MINIMIZERS': VALID_MINIMIZERS,
              'FITTING': VALID_FITTING,
+             'JACOBIAN': VALID_JACOBIAN,
              'PLOTTING': VALID_PLOTTING,
              'LOGGING': VALID_LOGGING}
 
@@ -63,8 +67,10 @@ class Options(object):
          'algorithm_type': 'all',
          'software': ['bumps', 'dfo', 'minuit', 'scipy', 'scipy_ls'],
          'use_errors': True,
-         'jac_method': ['SciPyFD'],
-         'num_method': ['2point']}
+         'jac_method': ['scipy']}
+    DEFAULT_JACOBIAN = \
+        {'scipy': ['2-point'],
+         'analytic': ['cutest']}
     DEFAULT_PLOTTING = \
         {'make_plots': True,
          'colour_scale': [(1.1, "#fef0d9"),
@@ -82,6 +88,7 @@ class Options(object):
          'external_output': True}
     DEFAULTS = {'MINIMIZERS': VALID_MINIMIZERS,
                 'FITTING': DEFAULT_FITTING,
+                'JACOBIAN': DEFAULT_JACOBIAN,
                 'PLOTTING': DEFAULT_PLOTTING,
                 'LOGGING': DEFAULT_LOGGING}
 
@@ -135,7 +142,12 @@ class Options(object):
         self.software = self.read_value(fitting.getlist, 'software')
         self.use_errors = self.read_value(fitting.getboolean, 'use_errors')
         self.jac_method = self.read_value(fitting.getlist, 'jac_method')
-        self.num_method = self.read_value(fitting.getlist, 'num_method')
+
+        jacobian = config['JACOBIAN']
+        self.num_method = {}
+        for key in self.VALID_FITTING["jac_method"]:
+            self.num_method[key] = self.read_value(jacobian.getlist,
+                                                   key)
 
         plotting = config['PLOTTING']
         self.make_plots = self.read_value(plotting.getboolean, 'make_plots')
@@ -222,10 +234,12 @@ class Options(object):
                              'algorithm_type': self.algorithm_type,
                              'software': list_to_string(self.software),
                              'use_errors': self.use_errors,
-                             'jac_method': list_to_string(self.jac_method),
-                             'num_method': list_to_string(self.num_method)}
+                             'jac_method': list_to_string(self.jac_method)}
         cs = list_to_string(['{0}, {1}'.format(*pair)
                              for pair in self.colour_scale])
+        config['JACOBIAN'] = {k: list_to_string(m)
+                              for k, m in self.num_method.items()}
+
         config['PLOTTING'] = {'colour_scale': cs,
                               'comparison_mode': self.comparison_mode,
                               'make_plots': self.make_plots,

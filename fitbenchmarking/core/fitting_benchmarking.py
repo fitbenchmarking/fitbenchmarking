@@ -16,8 +16,7 @@ from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.exceptions import NoResultsError, \
     UnknownMinimizerError, UnsupportedMinimizerError
-from fitbenchmarking.jacobian.jacobian_factory import create_jacobian, \
-    get_jacobian_options
+from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 
 from fitbenchmarking.utils.log import get_logger
@@ -324,77 +323,78 @@ def loop_over_jacobians(controller, options, grabbed_output):
     minimizer = controller.minimizer
     num_runs = options.num_runs
     has_jacobian, invalid_jacobians = controller.jacobian_information()
-    jacobian_list = get_jacobian_options(options)
+    jacobian_list = options.jac_method
     minimizer_name = minimizer
     results = []
     new_minimizer_list = []
-    for jac_name in jacobian_list:
-        jac_method, num_method = jac_name
-        if (has_jacobian and minimizer not in invalid_jacobians):
-            LOGGER.info("                Jacobian: %s %s", jac_method,
-                        num_method)
-            minimizer_name = "{}: {} {}".format(
-                minimizer, jac_method, num_method)
-        # Creates Jacobian class
-        jacobian_cls = create_jacobian(jac_method, num_method)
-        jacobian = jacobian_cls(problem)
-        controller.jacobian = jacobian
+    for jac_method in jacobian_list:
+        for num_method in options.num_method[jac_method]:
+            if (has_jacobian and minimizer not in invalid_jacobians):
+                LOGGER.info("                Jacobian: %s %s", jac_method,
+                            num_method)
+                minimizer_name = "{}: {} {}".format(
+                    minimizer, jac_method, num_method)
+            # Creates Jacobian class
+            jacobian_cls = create_jacobian(jac_method)
+            jacobian = jacobian_cls(problem)
+            jacobian.method = num_method
 
-        try:
-            with grabbed_output:
-                # Calls timeit repeat with repeat = num_runs and
-                # number = 1
-                runtime_list = \
-                    timeit.Timer(setup=controller.prepare,
-                                 stmt=controller.fit).repeat(
-                        num_runs, 1)
-                runtime = sum(runtime_list) / num_runs
-                controller.cleanup()
-        # Catching all exceptions as this means runtime cannot be
-        # calculated
-        # pylint: disable=broad-except
-        except Exception as excp:
-            LOGGER.warn(str(excp))
+            controller.jacobian = jacobian
+            try:
+                with grabbed_output:
+                    # Calls timeit repeat with repeat = num_runs and
+                    # number = 1
+                    runtime_list = \
+                        timeit.Timer(setup=controller.prepare,
+                                     stmt=controller.fit).repeat(
+                            num_runs, 1)
+                    runtime = sum(runtime_list) / num_runs
+                    controller.cleanup()
+            # Catching all exceptions as this means runtime cannot be
+            # calculated
+            # pylint: disable=broad-except
+            except Exception as excp:
+                LOGGER.warn(str(excp))
 
-            runtime = np.inf
-            controller.flag = 3
-            controller.final_params = None if not problem.multifit \
-                else [None] * len(controller.data_x)
+                runtime = np.inf
+                controller.flag = 3
+                controller.final_params = None if not problem.multifit \
+                    else [None] * len(controller.data_x)
 
-            chi_sq = np.inf if not problem.multifit \
-                else [np.inf] * len(controller.data_x)
+                chi_sq = np.inf if not problem.multifit \
+                    else [np.inf] * len(controller.data_x)
 
-        controller.check_attributes()
+            controller.check_attributes()
 
-        if controller.flag <= 2:
-            ratio = np.max(runtime_list) / np.min(runtime_list)
-            tol = 4
-            if ratio > tol:
-                warnings.warn(
-                    'The ratio of the max time to the min is {0}'
-                    ' which is  larger than the tolerance of {1},'
-                    ' which may indicate that caching has occurred'
-                    ' in the timing results'.format(ratio, tol))
-            chi_sq = controller.eval_chisq(
-                params=controller.final_params,
-                x=controller.data_x,
-                y=controller.data_y,
-                e=controller.data_e)
-        else:
-            chi_sq = np.inf if not problem.multifit \
-                else [np.inf] * len(controller.data_x)
-        result_args = {'options': options,
-                       'problem': problem,
-                       'jac': jacobian,
-                       'chi_sq': chi_sq,
-                       'runtime': runtime,
-                       'minimizer': minimizer_name,
-                       'initial_params': controller.initial_params,
-                       'params': controller.final_params,
-                       'error_flag': controller.flag,
-                       'name': problem.name}
-        results.append(result_args)
-        new_minimizer_list.append(minimizer_name)
-        if not has_jacobian or minimizer in invalid_jacobians:
-            break
+            if controller.flag <= 2:
+                ratio = np.max(runtime_list) / np.min(runtime_list)
+                tol = 4
+                if ratio > tol:
+                    warnings.warn(
+                        'The ratio of the max time to the min is {0}'
+                        ' which is  larger than the tolerance of {1},'
+                        ' which may indicate that caching has occurred'
+                        ' in the timing results'.format(ratio, tol))
+                chi_sq = controller.eval_chisq(
+                    params=controller.final_params,
+                    x=controller.data_x,
+                    y=controller.data_y,
+                    e=controller.data_e)
+            else:
+                chi_sq = np.inf if not problem.multifit \
+                    else [np.inf] * len(controller.data_x)
+            result_args = {'options': options,
+                           'problem': problem,
+                           'jac': jacobian,
+                           'chi_sq': chi_sq,
+                           'runtime': runtime,
+                           'minimizer': minimizer_name,
+                           'initial_params': controller.initial_params,
+                           'params': controller.final_params,
+                           'error_flag': controller.flag,
+                           'name': problem.name}
+            results.append(result_args)
+            new_minimizer_list.append(minimizer_name)
+            if not has_jacobian or minimizer in invalid_jacobians:
+                break
     return results, chi_sq, new_minimizer_list

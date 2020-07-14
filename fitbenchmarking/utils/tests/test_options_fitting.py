@@ -57,16 +57,8 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks jac_method default
         """
-        expected = ['SciPyFD']
+        expected = ['scipy']
         actual = self.options.jac_method
-        self.assertEqual(expected, actual)
-
-    def test_num_method_default(self):
-        """
-        Checks num_method default
-        """
-        expected = ['2point']
-        actual = self.options.num_method
         self.assertEqual(expected, actual)
 
 
@@ -213,19 +205,3 @@ class UserFittingOptionTests(unittest.TestCase):
             "[FITTING]\njac_method: NumPyFD"
         self.shared_invalid('jac_method', config_str)
 
-    def test_minimizer_num_method_valid(self):
-        """
-        Checks user set num_method is valid
-        """
-        set_option = ["cs"]
-        config_str = \
-            "[FITTING]\nnum_method: cs"
-        self.shared_valid('num_method', set_option, config_str)
-
-    def test_minimizer_num_method_invalid(self):
-        """
-        Checks user set num_method is invalid
-        """
-        config_str = \
-            "[FITTING]\nnum_method: FD_3point"
-        self.shared_invalid('num_method', config_str)

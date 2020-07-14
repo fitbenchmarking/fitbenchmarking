@@ -29,9 +29,10 @@ class OptionsWriteTests(unittest.TestCase):
             num_runs: 2
             software: scipy
                       dfo
-            jac_method: SciPyFD
+            jac_method: scipy
 
-            num_method: cs
+            [JACOBIAN]
+            scipy: cs
 
             [PLOTTING]
             make_plots: no

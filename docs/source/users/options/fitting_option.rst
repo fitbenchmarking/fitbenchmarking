@@ -101,23 +101,3 @@ Default is ``SciPyFD``
 
     [FITTING]
     jac_method: SciPyFD
-
-
-Numerical method (:code:`num_method`)
--------------------------------------
-
-Sets the numerical method used in conjunction with the Jacobian method.
-Currently scipy.optimize._numdiff.approx_derivative are the only
-methods implemented to calculate finite difference Jacobians.
-Scipy options are given as below:
-
-* ``2point`` - use the first order accuracy forward or backward difference.
-* ``3point`` - use central difference in interior points and the second order accuracy forward or backward difference near the boundary.
-* ``cs`` - use a complex-step finite difference scheme. This assumes that the user function is real-valued and can be analytically continued to the complex plane. Otherwise, produces bogus results.
-
-Default is ``2point``
-
-.. code-block:: rst
-
-    [FITTING]
-    num_method: 2point

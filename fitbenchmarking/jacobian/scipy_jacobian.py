@@ -1,21 +1,20 @@
 """
-Module which calculates SciPy 3 point finite difference approximation
+Module which calculates SciPy finite difference approximations
 """
 import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 
+
 # pylint: disable=useless-super-delegation
-
-
-class ScipyThreePoint(Jacobian):
+class Scipy(Jacobian):
     """
-    Implements SciPy 3 point finite difference approximation to the derivative
+    Implements SciPy finite difference approximations to the derivative
     """
 
     def __init__(self, problem):
-        super(ScipyThreePoint, self).__init__(problem)
+        super(Scipy, self).__init__(problem)
 
     def eval(self, params, **kwargs):
         """
@@ -32,7 +31,7 @@ class ScipyThreePoint(Jacobian):
                                      func,
                                      params,
                                      **kwargs)
-        jac = approx_derivative(func, params, method="3-point",
+        jac = approx_derivative(func, params, method=self.method,
                                 rel_step=None, f0=f0,
                                 bounds=(-np.inf, np.inf),
                                 kwargs=kwargs)
