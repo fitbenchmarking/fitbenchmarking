@@ -105,6 +105,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         """
         self.problem_fails = []
         loop_over_starting_values.side_effect = self.mock_func_call
+        
         self.problem_group = []
         for file_name in ["cubic.dat", "prob_def_1.txt"]:
             self.problem_group.append(
