@@ -4,7 +4,7 @@
 Jacobian options
 ################
 
-Currently FitBenchmarking uses SciPy's `numerical finite difference <https://github.com/scipy/scipy/blob/912c54cd6473225c902377df410258839511b863/scipy/optimize/_numdiff.py#L198>`_ approximation to the Jacobian and uses analytical Jacobians for the CUTEst data set.
+Currently FitBenchmarking uses SciPy's `numerical finite difference <https://github.com/scipy/scipy/blob/912c54cd6473225c902377df410258839511b863/scipy/optimize/_numdiff.py#L198>`_ approximation to the Jacobian.
 
 The finite difference schemes implemented are:
 
