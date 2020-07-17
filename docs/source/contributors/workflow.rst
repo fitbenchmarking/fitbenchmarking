@@ -65,18 +65,20 @@ be created accordingly.  If at some point we don't want to provide hot-fixes
 to a given minor release, then the corresponding release branch may be deleted.
 
 All changes must be initially merged into master.
-There is a `backport-candidate` label, which you should put on the pull request.
-If the PR is lablelled as a `backport-candidate`, then it is recommended to
-merge into master using the squash commit option:
+There is a `backport-candidate` label, which must be put on pull requests
+that in addition must be merged into the release branch.
+
+The recommended mechanism for merging PRs lablelled with `backport-candidate` into
+master is to use the `Squash and merge` commit option:
 
 .. figure:: ../../images/squash-and-merge.png
    :alt: Squashing and merging
 
 
-When a pull request is merged into master with label `backport-candidate`, it
-must also be merged into the release branch as soon as possible.
+After such a PR (with label `backport-candidate`) has been merged into master, it
+must then subsequently be merged into the release branch as soon as possible.
 It is the responsibility of the person merging such PRs to also perform this
-merge into the release branch. 
+merge into the release branch.
 
 This can be done using git cherry
 pick:
