@@ -73,8 +73,12 @@ merge into master using the squash commit option:
    :alt: Squashing and merging
 
 
-When a pull request is merged into master, it should also be merged into
-the release branch as soon as possible.  This can be done using git cherry
+When a pull request is merged into master with label `backport-candidate`, it
+must also be merged into the release branch as soon as possible.
+It is the responsibility of the person merging such PRs to also perform this
+merge into the release branch. 
+
+This can be done using git cherry
 pick:
 
 .. code-block:: bash
@@ -86,5 +90,5 @@ pick:
 If you didn't do a squash merge, you will have to cherry pick each commit in
 the PR that this being backported separately.
 
-As long as the tests pass, and there are no merge conflicts,
-this can be done without a detailed review.
+If you encounter problems with cherry picking into release branch please
+don't hesitate to speak to an experienced member of the FitBenchmarking team.
