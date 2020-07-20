@@ -77,7 +77,6 @@ def benchmark(options, data_dir):
 
     results = [results_dict[r] for r in
                sorted(results_dict.keys(), key=lambda x: x.lower())]
-
     return results, failed_problems, unselected_minimzers
 
 
@@ -389,7 +388,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                            'initial_params': controller.initial_params,
                            'params': controller.final_params,
                            'error_flag': controller.flag,
-                           'name': minimizer_name}
+                           'name': problem.name}
             results.append(result_args)
             new_minimizer_list.append(minimizer_name)
             if not has_jacobian or minimizer in invalid_jacobians:

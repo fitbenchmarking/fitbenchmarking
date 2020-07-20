@@ -114,7 +114,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
                                 self.options,
                                 self.grabbed_output)
         assert all(isinstance(x, dict) for x in results)
-        assert all(x["name"] == name for x, name in zip(results, new_name))
+        assert all(x["minimizer"] == name for x, name in zip(results, new_name))
         assert new_minimizer_list == new_name
 
     def test_multiple_jacobian(self):
@@ -132,7 +132,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
                                 self.options,
                                 self.grabbed_output)
         assert all(isinstance(x, dict) for x in results)
-        assert all(x["name"] == name for x, name in zip(results, new_name))
+        assert all(x["minimizer"] == name for x, name in zip(results, new_name))
         assert new_minimizer_list == new_name
 
     def test_single_no_jacobian(self):
@@ -151,7 +151,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
                                 self.options,
                                 self.grabbed_output)
         assert all(isinstance(x, dict) for x in results)
-        assert all(x["name"] == name for x, name in zip(results, new_name))
+        assert all(x["minimizer"] == name for x, name in zip(results, new_name))
         assert new_minimizer_list == new_name
 
 

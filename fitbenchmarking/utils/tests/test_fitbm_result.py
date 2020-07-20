@@ -34,8 +34,7 @@ class FitbmResultTests(unittest.TestCase):
         self.runtime = 0.01
         self.params = np.array([1, 3, 4, 4])
         self.initial_params = np.array([0, 0, 0, 0])
-        self.jac = Scipy(se
-                         lf.problem)
+        self.jac = Scipy(self.problem)
         self.jac.method = "2-point"
         self.result = FittingResult(
             options=self.options, problem=self.problem, jac=self.jac,
@@ -72,8 +71,7 @@ class FitbmResultTests(unittest.TestCase):
         self.problem.sorted_index = [np.array([2, 1, 0, 3]),
                                      np.array([1, 2, 3, 0]),
                                      np.array([3, 0, 1, 2])]
-        jac = Scipy(self.pr
-                    oblem)
+        jac = Scipy(self.problem)
         self.jac.method = "2-point"
         self.result = FittingResult(
             options=self.options, problem=self.problem, jac=jac,

@@ -102,7 +102,7 @@ class BenchmarkTests(unittest.TestCase):
         for name in problem_names:
             result_args = {'options': self.options,
                            'problem': self.problem,
-                           'jac': self.problem.jac,
+                           'jac': 'jac',
                            'initial_params': self.problem.starting_values[0],
                            'params': [],
                            'chi_sq': 1,
@@ -135,7 +135,7 @@ class BenchmarkTests(unittest.TestCase):
         for name in problem_names:
             result_args = {'options': self.options,
                            'problem': self.problem,
-                           'jac': self.problem.jac,
+                           'jac': 'jac',
                            'initial_params': self.problem.starting_values[0],
                            'params': [],
                            'chi_sq': 1,
