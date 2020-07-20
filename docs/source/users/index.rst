@@ -12,7 +12,7 @@ Welcome to the documentation for the FitBenchmarking software.
     install_instructions/index
     running
     output/index
-    options
+    options/index
     problem_definition_files/index
     jacobian
     notes
