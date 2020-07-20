@@ -13,6 +13,9 @@ class Analytic(Jacobian):
 
     def __init__(self, problem):
         super(Analytic, self).__init__(problem)
+        if not callable(problem.jacobian):
+            raise NoJacobianError("Problem set selected does not currently "
+                                  "support analytic Jacobians")
 
     def eval(self, params, **kwargs):
         """

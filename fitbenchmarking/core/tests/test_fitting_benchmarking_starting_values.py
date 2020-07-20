@@ -12,7 +12,6 @@ from fitbenchmarking.utils import fitbm_result, output_grabber
 from fitbenchmarking.core.fitting_benchmarking import loop_over_starting_values
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
@@ -34,9 +33,21 @@ def make_fitting_problem(file_name='cubic.dat', minimizers=None):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    jac = ScipyTwoPoint(fitting_problem)
-    fitting_problem.jac = jac
     return fitting_problem
+
+
+def dict_test(expected, actual):
+    """
+    Test to check two dictionaries are the same
+
+    :param expected: expected dictionary result
+    :type expected: dict
+    :param actual: actual dictionary result
+    :type actual: dict
+    """
+    for key in actual.keys():
+        assert key in expected.keys()
+        assert sorted(actual[key]) == sorted(expected[key])
 
 
 class LoopOverStartingValuesTests(unittest.TestCase):
@@ -71,7 +82,9 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         problem_fails = self.problem_fails
         unselected_minimzers = self.unselected_minimzers
         self.count += 1
-        return individual_problem_results, problem_fails, unselected_minimzers
+        expect_minimizers = {"scipy": ['TNC', 'lm-scipy']}
+        return individual_problem_results, problem_fails, \
+            unselected_minimzers, expect_minimizers
 
     def shared_tests(self, expected_list_len, expected_problem_fails,
                      expected_unselected_minimzers):
@@ -86,17 +99,15 @@ class LoopOverStartingValuesTests(unittest.TestCase):
                                               minimizer
         :type expected_unselected_minimzers: dict
         """
-        problem_results, problem_fails, unselected_minimzers = \
-            loop_over_starting_values(self.problem,
-                                      self.options,
-                                      self.grabbed_output)
+        problem_results, problem_fails, unselected_minimzers,\
+            minimizer_dict = loop_over_starting_values(self.problem,
+                                                       self.options,
+                                                       self.grabbed_output)
         assert len(problem_results) == expected_list_len
         assert problem_fails == expected_problem_fails
 
-        for key in unselected_minimzers.keys():
-            assert key in expected_unselected_minimzers.keys()
-            assert sorted(unselected_minimzers[key]) == \
-                sorted(expected_unselected_minimzers[key])
+        dict_test(unselected_minimzers, expected_unselected_minimzers)
+        dict_test(minimizer_dict, {"scipy": ['TNC', 'lm-scipy']})
 
     @mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_multiple_starting_values(self, loop_over_fitting_software):

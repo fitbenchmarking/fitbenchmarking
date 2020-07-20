@@ -22,7 +22,7 @@ def create_jacobian(jac_method):
     """
 
     module_name = '{}_jacobian'.format(jac_method)
-    print(jac_method)
+
     try:
         module = import_module('.' + module_name, __package__)
     except ImportError:

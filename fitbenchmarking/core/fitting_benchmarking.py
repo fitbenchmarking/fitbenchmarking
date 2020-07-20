@@ -59,10 +59,6 @@ def benchmark(options, data_dir):
     results, failed_problems, unselected_minimzers, minimizer_dict = \
         loop_over_benchmark_problems(problem_group, options)
 
-    for keys, minimzers in unselected_minimzers.items():
-        minimizers_all = options.minimizers[keys]
-        options.minimizers[keys] = list(set(minimizers_all) - set(minimzers))
-
     options.minimizers = minimizer_dict
 
     # If the results are an empty list then this means that all minimizers
@@ -329,6 +325,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
     new_minimizer_list = []
     for jac_method in jacobian_list:
         for num_method in options.num_method[jac_method]:
+            print(minimizer)
             if (has_jacobian and minimizer not in invalid_jacobians):
                 LOGGER.info("                Jacobian: %s %s", jac_method,
                             num_method)
@@ -392,7 +389,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                            'initial_params': controller.initial_params,
                            'params': controller.final_params,
                            'error_flag': controller.flag,
-                           'name': problem.name}
+                           'name': minimizer_name}
             results.append(result_args)
             new_minimizer_list.append(minimizer_name)
             if not has_jacobian or minimizer in invalid_jacobians:
