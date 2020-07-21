@@ -58,9 +58,8 @@ In order to add a new controller, you will need to:
 
 
 
-4. Document the available minimizers (currently done by adding to
-   ``fitbenchmarking/utils/default_options.ini`` and any example files in
-   the ``example_scripts`` directory)
+4. Document the available minimizers (see :ref:`options`, :ref:`options_extend`
+   and any example files in the ``example_scripts`` directory)
 
 5. Create tests for the software in
    ``fitbenchmarking/controllers/tests/test_controllers.py``. If the package
@@ -95,7 +94,7 @@ following members of the :class:`~fitbenchmarking.parsing.fitting_problem.Fittin
 
 .. currentmodule:: fitbenchmarking.jacobian.base_jacobian
 .. autoclass:: fitbenchmarking.jacobian.base_jacobian.Jacobian
-          :members: eval
+          :members: eval, eval_r_norm
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem

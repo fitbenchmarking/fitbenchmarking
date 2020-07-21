@@ -10,6 +10,7 @@ Welcome to the documentation for the FitBenchmarking software.
 
     parsers
     controllers
+    options_extend
     problems
     jacobian_extend
     outputs/index
