@@ -14,8 +14,6 @@ The tables that are currently supported are:
 - Runtime table :class:`~fitbenchmarking.results_processing.runtime_table.RuntimeTable`
 - Local minimiser table :class:`~fitbenchmarking.results_processing.local_min_table.LocalMinTable`
 
-following members of the :class:`~fitbenchmarking.results_processing.base_table.Table` class:
-
 In order to add a new table, you will need to:
 
 1. Give the table a name `<table_name>` this will be used by users when
@@ -30,16 +28,18 @@ In order to add a new table, you will need to:
 
    Additional functions to be changed are:
 
-   - ``get_colour()``: Converts the result from ``get_colour()`` into the HTML colours used in the tables. The base class implementation, for example, uses the relative results and ``colour_scale`` within :class:`~fitbenchmarking.utils.options.Options`
+   - ``get_colour()``: Converts the result from ``get_values()`` into the HTML colours used in the tables. The base class implementation, for example, uses the relative results and ``colour_scale`` within :class:`~fitbenchmarking.utils.options.Options`
    - ``colour_highlight()``: Takes the HTML colour values from ``get_colour()`` and maps it over the HTML table using the Pandas style mapper.
 
 3. Documenting the new table class is done by setting the docstring to be
    the description of the class.
 
 4. Create tests for the table in
-   ``fitbenchmarking/results_processing/tests/test_tables.py``. Generate both
-   a HTML and text table output as the expected result and add this to the
-   tests.
+   ``fitbenchmarking/results_processing/tests/test_tables.py``. This is done
+   by generating, ahead of time using the results problems constructed in
+   ``fitbenchmarking/results_processing/tests/test_tables.generate_mock_results``, both a HTML and text table output as the expected
+   result and adding the new table name to the global variable
+   ``SORTED_TABLE_NAMES``. Will automatically run the compare tests for the tables.
 
 
 The :class:`~fitbenchmarking.results_processing.base_table.Table` class
