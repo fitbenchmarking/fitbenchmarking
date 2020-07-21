@@ -56,10 +56,10 @@ In order to add a new controller, you will need to:
 
       .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag
 
-
-
 4. Document the available minimizers (see :ref:`options`, :ref:`options_extend`
-   and any example files in the ``example_scripts`` directory)
+   and any example files in the ``example_scripts`` directory). For none ``pip`` 
+   installable software please comment out the software in the default options 
+   file but add it to ``examples/all_softwares.ini``.
 
 5. Create tests for the software in
    ``fitbenchmarking/controllers/tests/test_controllers.py``. If the package
