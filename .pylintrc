@@ -9,6 +9,9 @@ max-statements=60
 # Certain functions require more arguments due to design
 max-args=10
 
+# Ignores pylint errors for args and kwargs
+ignored-argument-names=arg|args|kwargs
+
 [MESSAGES CONTROL]
 disable=too-many-instance-attributes,
         invalid-name,
