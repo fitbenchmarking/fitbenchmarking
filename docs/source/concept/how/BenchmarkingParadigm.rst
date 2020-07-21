@@ -4,7 +4,7 @@
 The Benchmarking Paradigm
 *************************
 
-      
+
 Once you have chosen which minimizers you want to compare on which problems,
 running FitBenchmarking will give you a comparison to indicate which of the
 chosen minimizers performs best.
@@ -20,7 +20,8 @@ An example of a table is:
 .. figure:: ../../../images/example_table.png
    :alt: Example Table
 
-This is the result of fitbenchmarking mantid on a set of neutron data.
+This is the result of FitBenchmarking for a selection of softwares/minimizers
+and different problem definition types supported in FitBenchmarking.
 Both chi squared values and values that are normalised with respect
 to the best minimizer per problem are given.
 The problem names link to html pages that display plots of the
