@@ -94,7 +94,7 @@ class TestJacobianClass(TestCase):
 
     def test_analytic_cutest_no_errors(self):
         """
-        Test analytic jacobian
+        Test analytic Jacobian
         """
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.fitting_problem)
@@ -103,7 +103,7 @@ class TestJacobianClass(TestCase):
 
     def test_analytic_cutest_errors(self):
         """
-        Test analytic jacobian
+        Test analytic Jacobian
         """
         self.fitting_problem.options.use_errors = True
         e = np.array([1, 2, 1, 3, 1])
@@ -113,6 +113,15 @@ class TestJacobianClass(TestCase):
         eval_result = jac.eval(params=self.params)
         scaled_actual = self.actual / e[:, None]
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
+
+    def test_analytic_raise_error(self):
+        """
+        Test analytic Jacobian raises an exception when problem.jacobian is
+        not callable
+        """
+        self.fitting_problem.jacobian = None
+        with self.assertRaises(exceptions.NoJacobianError):
+            Analytic(self.fitting_problem)
 
 
 class TestCachedFuncValues(TestCase):
