@@ -6,7 +6,8 @@ Adding new Jacobians
 
 *This section describes how to add further methods to approximate the Jacobian within FitBenchmarking*
 
-In order to add a new Jacobian evaluation method, you will need to:
+In order to add a new Jacobian evaluation method,``<jac_method>``,
+you will need to:
 
 1. Give the Jacobian method in the :ref:`fitting_option` using the following
    convention ``<jac_method>`` and :ref:`jacobian_option` is added using

@@ -89,15 +89,15 @@ Jacobian method (:code:`jac_method`)
 This sets the Jacobian used. Current Jacobian methods are:
 
 * ``analytic`` - This uses the analytic Jacobian extracted from the fitting problem.
-* ``SciPyFD`` - denotes the use of SciPy's finite difference Jacobian approximations
+* ``scipy`` - denotes the use of SciPy's finite difference Jacobian approximations
 
 **Note:** Currently analytic Jacobians are available are only available for
 problems that use the cutest parser, which are currently in the directories
 'SIF' and 'DIAMOND_SIF'.
 
-Default is ``SciPyFD``
+Default is ``scipy``
 
 .. code-block:: rst
 
     [FITTING]
-    jac_method: SciPyFD
+    jac_method: scipy
