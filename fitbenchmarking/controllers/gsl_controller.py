@@ -49,7 +49,7 @@ class GSLController(Controller):
 
     def jacobian_information(self):
         """
-        GSL does requires Jacobian information
+        GSL can use Jacobian information
         """
         has_jacobian = True
         jacobian_list = ['nmsimplex', 'nmsimplex2']

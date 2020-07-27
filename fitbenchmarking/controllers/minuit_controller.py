@@ -34,7 +34,7 @@ class MinuitController(Controller):
 
     def jacobian_information(self):
         """
-        Minuit does not requires Jacobian information
+        Minuit cannot use Jacobian information
         """
         has_jacobian = False
         jacobian_list = []

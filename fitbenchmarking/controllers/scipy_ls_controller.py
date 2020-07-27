@@ -30,7 +30,7 @@ class ScipyLSController(Controller):
 
     def jacobian_information(self):
         """
-        Scipy LS does requires Jacobian information
+        Scipy LS can use Jacobian information
         """
         has_jacobian = True
         jacobian_list = ["lm-scipy-no-jac"]

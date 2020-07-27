@@ -35,7 +35,7 @@ class DFOController(Controller):
 
     def jacobian_information(self):
         """
-        DFO does not requires Jacobian information
+        DFO cannot use Jacobian information
         """
         has_jacobian = False
         jacobian_list = []
