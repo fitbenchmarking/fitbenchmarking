@@ -52,8 +52,8 @@ class GSLController(Controller):
         GSL does requires Jacobian information
         """
         has_jacobian = True
-        jacobian_list = ['nmsimplex', 'nmsimplex2']
-        return has_jacobian, jacobian_list
+        jacobian_free_solvers = ['nmsimplex', 'nmsimplex2']
+        return has_jacobian, jacobian_free_solvers
 
     def _prediction_error(self, p, data=None):
         """

@@ -165,7 +165,7 @@ class Controller:
         has_jacobian: a True or False value whether the controller
         requires Jacobian information
 
-        jacobian_list: a list of minimizers in a specific software
+        jacobian_free_solvers: a list of minimizers in a specific software
         that do not require Jacobian informations. For example in the
         `ScipyLS` controller this would return `lm-scipy-no-jac`
         """

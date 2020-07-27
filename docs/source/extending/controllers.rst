@@ -25,7 +25,7 @@ In order to add a new controller, you will need to:
 2. Create ``fitbenchmarking/controllers/<software_name>_controller.py``
    which contains a new subclass of ``BaseSoftwareController``
    (from ``base_controller.py``).
-   This should implement 4 functions:
+   This should implement five functions:
 
    -  ``__init__()``: Initialise anything that is needed specifically for the
       software, do any work that can be done without knowledge of the
@@ -36,11 +36,10 @@ In order to add a new controller, you will need to:
         - 'all' - all minimizers
         - 'ls' - least-squares fitting algorithms
         - 'deriv_free' - derivative free algorithms (these are algorithms that
-                         do not require an information about derivatives. For
-                         example, the 'Simplex' method in 'Mantid' does not
-                         require derivative information but 'lm-scipy-no-jac' in
-                         'scipy_ls' does but the derivative is handle internally
-                         within the sofware package)
+          do not require an information about derivatives. For example, the
+          'Simplex' method in 'Mantid' does not require derivative information
+          but 'lm-scipy-no-jac'in 'scipy_ls' does but the derivative is handle
+          internally within the sofware package)
         - 'general' - minimizers which solve a generic `min f(x)`
       and the values as a list of minimizer for that specific controller that fit into each of the above categories. See for example the ``GSL`` controller.
    -  ``jacobian_information()``: Setups up Jacobian information for the
@@ -48,7 +47,7 @@ In order to add a new controller, you will need to:
 
       - ``has_jacobian``: a True or False value whether the controller
         requires Jacobian information
-      - ``jacobian_list``: a list of minimizers in a specific software
+      - ``jacobian_free_solvers``: a list of minimizers in a specific software
         that do not require Jacobian informations. For example in the
         ``ScipyLS`` controller this would return ``lm-scipy-no-jac``
    -  ``setup()``: Do any work that must be done only after knowing the
@@ -64,8 +63,8 @@ In order to add a new controller, you will need to:
       .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag
 
 4. Document the available minimizers (see :ref:`options`, :ref:`options_extend`
-   and any example files in the ``example_scripts`` directory). For none ``pip`` 
-   installable software please comment out the software in the default options 
+   and any example files in the ``example_scripts`` directory). For none ``pip``
+   installable software please comment out the software in the default options
    file but add it to ``examples/all_softwares.ini``.
 
 5. Create tests for the software in

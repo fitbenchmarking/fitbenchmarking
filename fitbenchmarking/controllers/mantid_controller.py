@@ -107,8 +107,8 @@ class MantidController(Controller):
         Mantid does not requires Jacobian information
         """
         has_jacobian = False
-        jacobian_list = []
-        return has_jacobian, jacobian_list
+        jacobian_free_solvers = []
+        return has_jacobian, jacobian_free_solvers
 
     def setup(self):
         """
