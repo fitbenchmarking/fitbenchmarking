@@ -30,7 +30,7 @@ class ScipyController(Controller):
 
     def jacobian_information(self):
         """
-        Scipy does requires Jacobian information
+        Scipy can use Jacobian information
         """
         has_jacobian = True
         jacobian_free_solvers = ["Nelder-Mead", "Powell"]

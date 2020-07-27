@@ -40,7 +40,7 @@ class BumpsController(Controller):
 
     def jacobian_information(self):
         """
-        Bumps does not requires Jacobian information
+        Bumps cannot use Jacobian information
         """
         has_jacobian = False
         jacobian_free_solvers = []

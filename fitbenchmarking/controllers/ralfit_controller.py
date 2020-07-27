@@ -33,7 +33,7 @@ class RALFitController(Controller):
 
     def jacobian_information(self):
         """
-        RALFit does requires Jacobian information
+        RALFit can use Jacobian information
         """
         has_jacobian = True
         jacobian_free_solvers = []

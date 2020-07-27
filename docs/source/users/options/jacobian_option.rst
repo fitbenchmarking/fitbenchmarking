@@ -1,10 +1,10 @@
-.. _jacobian_goption:
+.. _jacobian_option:
 
 #################################
 Jacobian Numerical Method Options
 #################################
 
-The Jacobian section to control the comparison between different methods
+The Jacobian section allows you to control which methods for computing Jacobians the software uses.  Currently the options available are:
 
 Analytic (:code:`analytic`)
 ---------------------------

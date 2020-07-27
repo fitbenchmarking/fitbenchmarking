@@ -104,7 +104,7 @@ class MantidController(Controller):
 
     def jacobian_information(self):
         """
-        Mantid does not requires Jacobian information
+        Mantid cannot use Jacobian information
         """
         has_jacobian = False
         jacobian_free_solvers = []

@@ -15,9 +15,9 @@ you will need to:
 
 2. Create ``fitbenchmarking/jacobian/<jac_method>_jacobian.py``
    which contains a new subclass of ``Jacobian``
-   (from ``base_jacobian.py``). The numerical method is set sequentially
-   withing ``fitbenchmarking.core.fitting_benchmark.loop_over_jacobians`` by
-   using the ``method`` attribute of the class.
+   (from ``base_jacobian.py``). Different options for the new Jacobian software
+   may be set using the ``method`` attribute of the class, which gets set using the 
+   :ref:`jacobian_option` in the configuration file.
    Then implement the method ``eval()``, which evaluates the Jacobian.
 
 3. Document the available Jacobians by:

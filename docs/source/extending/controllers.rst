@@ -46,8 +46,13 @@ In order to add a new controller, you will need to:
       controller. This should return the following arguments:
 
       - ``has_jacobian``: a True or False value whether the controller
+<<<<<<< HEAD
         requires Jacobian information
       - ``jacobian_free_solvers``: a list of minimizers in a specific software
+=======
+        can use Jacobian information
+      - ``jacobian_list``: a list of minimizers in a specific software
+>>>>>>> 1221ec24efec68e1faf69c2e282f25155916176b
         that do not require Jacobian informations. For example in the
         ``ScipyLS`` controller this would return ``lm-scipy-no-jac``
    -  ``setup()``: Do any work that must be done only after knowing the
