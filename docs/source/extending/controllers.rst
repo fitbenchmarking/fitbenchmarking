@@ -38,7 +38,7 @@ In order to add a new controller, you will need to:
         - 'deriv_free' - derivative free algorithms (these are algorithms that
           cannot use derivative information. For example, the
           'Simplex' method in 'Mantid' does not require Jacobians.
-          However, 'lm-scipy-no-jac' in 'scipy_ls' is designed to use derivatives, 
+          However, 'lm-scipy-no-jac' in 'scipy_ls' is designed to use derivatives,
           but calculates an approximation internally if one is not supplied.)
         - 'general' - minimizers which solve a generic `min f(x)`
       and the values as a list of minimizer for that specific controller that fit into each of the above categories. See for example the ``GSL`` controller.
@@ -46,13 +46,8 @@ In order to add a new controller, you will need to:
       controller. This should return the following arguments:
 
       - ``has_jacobian``: a True or False value whether the controller
-<<<<<<< HEAD
         requires Jacobian information
       - ``jacobian_free_solvers``: a list of minimizers in a specific software
-=======
-        can use Jacobian information
-      - ``jacobian_list``: a list of minimizers in a specific software
->>>>>>> 1221ec24efec68e1faf69c2e282f25155916176b
         that do not require Jacobian informations. For example in the
         ``ScipyLS`` controller this would return ``lm-scipy-no-jac``
    -  ``setup()``: Do any work that must be done only after knowing the
