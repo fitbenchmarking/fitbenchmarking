@@ -6,12 +6,14 @@ from __future__ import (absolute_import, division, print_function)
 
 from collections import OrderedDict
 import re
+import os
 
 import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.parsing.nist_data_functions import nist_func_definition
+from fitbenchmarking.parsing.nist_data_functions import nist_func_definition, \
+    nist_jacobian_definition
 from fitbenchmarking.utils.exceptions import ParsingError
 from fitbenchmarking.utils.log import get_logger
 
@@ -55,8 +57,31 @@ class NISTParser(Parser):
             nist_func_definition(function=fitting_problem.equation,
                                  param_names=starting_values[0].keys())
         fitting_problem.format = "nist"
-
+        jacobian = self._parse_jacobian(name)
+        fitting_problem.jacobian = \
+            nist_jacobian_definition(jacobian=jacobian,
+                                     param_names=starting_values[0].keys())
         return fitting_problem
+
+    def _parse_jacobian(self, name):
+        """
+        Parses the Jacobian for the NIST file format
+
+        :param name: name of the NIST file
+        :type name: str
+        """
+        file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
+        jac_file = os.path.join(file_dir, "data_files", "{}.jac".format(name))
+        jac_data = open(jac_file, "r")
+        jac_lines = jac_data.readlines()
+        jac_str = ""
+        for line in jac_lines:
+            if not line.lstrip().startswith("#"):
+                jac_str += line.rstrip("\n").strip(" ")
+
+        jac = self._convert_nist_to_muparser(jac_str)
+        jac = jac.split("=")[1].replace("{", "").replace("}", "")
+        return jac.split(",")
 
     def _parse_line_by_line(self):
         """
