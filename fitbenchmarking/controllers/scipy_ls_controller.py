@@ -15,16 +15,26 @@ class ScipyLSController(Controller):
 
     def __init__(self, problem):
         """
-        Initialises variable used for temporary storage.
+        Initialise the class.
+
+        :param problem: The parsed problem
+        :type problem: fitting_problem (see fitbenchmarking.parsers)
         """
         super(ScipyLSController, self).__init__(problem)
-
         self._popt = None
         self.algorithm_check = {
             'all': ['lm-scipy-no-jac', 'lm-scipy', 'trf', 'dogbox'],
             'ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf', 'dogbox'],
             'deriv_free': [None],
             'general': [None]}
+
+    def jacobian_information(self):
+        """
+        Scipy LS can use Jacobian information
+        """
+        has_jacobian = True
+        jacobian_free_solvers = ["lm-scipy-no-jac"]
+        return has_jacobian, jacobian_free_solvers
 
     def setup(self):
         """
@@ -52,7 +62,7 @@ class ScipyLSController(Controller):
             self.result = least_squares(fun=self.problem.eval_r,
                                         x0=self.initial_params,
                                         method=self.minimizer,
-                                        jac=self.problem.jac.eval,
+                                        jac=self.jacobian.eval,
                                         max_nfev=500)
 
         self._popt = self.result.x

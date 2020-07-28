@@ -33,6 +33,14 @@ class DFOController(Controller):
             'deriv_free': ['dfogn', 'dfols'],
             'general': [None]}
 
+    def jacobian_information(self):
+        """
+        DFO cannot use Jacobian information
+        """
+        has_jacobian = False
+        jacobian_free_solvers = []
+        return has_jacobian, jacobian_free_solvers
+
     def setup(self):
         """
         Setup for DFO

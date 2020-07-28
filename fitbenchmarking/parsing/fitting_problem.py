@@ -111,9 +111,8 @@ class FittingProblem:
         #: Container cached residual squared evaluation (cost function)
         self.cache_r_norm_x = {'params': None, 'value': None}
 
-        # Used to assign the Jacobian class in
-        # fitbenchmarking/core/fitting_benchmarking.py
-        self.jac = None
+        #: Callable function for the Jacobian
+        self.jacobian = None
 
     @property
     def param_names(self):

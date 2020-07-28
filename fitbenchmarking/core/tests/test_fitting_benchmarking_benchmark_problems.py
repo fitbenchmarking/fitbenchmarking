@@ -14,7 +14,6 @@ from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_benchmark_problems
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
@@ -36,9 +35,21 @@ def make_fitting_problem(file_name='cubic.dat', minimizers=None):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    jac = ScipyTwoPoint(fitting_problem)
-    fitting_problem.jac = jac
     return fitting_problem
+
+
+def dict_test(expected, actual):
+    """
+    Test to check two dictionaries are the same
+
+    :param expected: expected dictionary result
+    :type expected: dict
+    :param actual: actual dictionary result
+    :type actual: dict
+    """
+    for key in actual.keys():
+        assert key in expected.keys()
+        assert sorted(actual[key]) == sorted(expected[key])
 
 
 class LoopOverBenchmarkProblemsTests(unittest.TestCase):
@@ -60,7 +71,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         self.count = 0
         self.result_args = {'options': self.options,
                             'problem': self.problem,
-                            'jac': self.problem.jac,
+                            'jac': 'jac',
                             'initial_params': self.problem.starting_values[0],
                             'params': [],
                             'chi_sq': 1}
@@ -78,7 +89,9 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         problem_fails = self.problem_fails
         unselected_minimzers = {"scipy": []}
         self.count += 1
-        return individual_problem_results, problem_fails, unselected_minimzers
+        expect_minimizers = {"scipy": ['TNC', 'lm-scipy']}
+        return individual_problem_results, problem_fails, \
+            unselected_minimzers, expect_minimizers
 
     def shared_tests(self, list_len, expected_problem_fails):
         """
@@ -89,14 +102,13 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         :param expected_problem_fails: list of problems which fail
         :type expected_problem_fails: list
         """
-        results, failed_problems, unselected_minimzers = \
+        results, failed_problems, unselected_minimzers, minimizer_dict = \
             loop_over_benchmark_problems(self.problem_group,
                                          self.options)
         assert len(results) == list_len
         assert failed_problems == expected_problem_fails
-        for keys, values in unselected_minimzers.items():
-            assert keys == "scipy"
-            assert values == []
+        dict_test(unselected_minimzers, {"scipy": []})
+        dict_test(minimizer_dict, {"scipy": ['TNC', 'lm-scipy']})
 
     @mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
     def test_run_multiple_benchmark_problems(self, loop_over_starting_values):
@@ -105,7 +117,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         """
         self.problem_fails = []
         loop_over_starting_values.side_effect = self.mock_func_call
-        
+
         self.problem_group = []
         for file_name in ["cubic.dat", "prob_def_1.txt"]:
             self.problem_group.append(

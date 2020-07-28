@@ -21,6 +21,7 @@ the values for these can be seen in the links below.
 
     minimizer_option
     fitting_option
+    jacobian_option
     plotting_option
     logging_option
 

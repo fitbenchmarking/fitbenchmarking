@@ -47,6 +47,14 @@ class GSLController(Controller):
                         'conjugate_fr', 'vector_bfgs', 'vector_bfgs2',
                         'steepest_descent']}
 
+    def jacobian_information(self):
+        """
+        GSL can use Jacobian information
+        """
+        has_jacobian = True
+        jacobian_free_solvers = ['nmsimplex', 'nmsimplex2']
+        return has_jacobian, jacobian_free_solvers
+
     def _prediction_error(self, p, data=None):
         """
         Utility function to call problem.eval_r with correct args
@@ -71,7 +79,7 @@ class GSLController(Controller):
         :return: result from jac.eval
         :rtype: numpy array
         """
-        return self.problem.jac.eval(p)
+        return self.jacobian.eval(p)
 
     def _fdf(self, p, data=None):
         """
@@ -85,7 +93,7 @@ class GSLController(Controller):
         :rtype: (numpy array, numpy array)
         """
         f = self.problem.eval_r(p)
-        df = self.problem.jac.eval(p)
+        df = self.jacobian.eval(p)
         return f, df
 
     def _chi_squared(self, p, data=None):

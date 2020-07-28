@@ -14,6 +14,8 @@ class Jacobian:
     def __init__(self, problem):
         self.problem = problem
 
+        self._method = None
+
     @abstractmethod
     def eval(self, params, func=None, **kwargs):
         """
@@ -65,6 +67,26 @@ class Jacobian:
                                      params,
                                      **kwargs)
 
-        J = self.problem.jac.eval(params, **kwargs)
+        J = self.eval(params, **kwargs)
         out = matmul(J.T, fx)
         return out
+
+    @property
+    def method(self):
+        """
+        Utility function to get the numerical method
+
+        :return: the names of the parameters
+        :rtype: list of str
+        """
+        return self._method
+
+    @method.setter
+    def method(self, value):
+        """
+        Utility function to get the numerical method
+
+        :param value: the name of the numerical method
+        :type value: str
+        """
+        self._method = value

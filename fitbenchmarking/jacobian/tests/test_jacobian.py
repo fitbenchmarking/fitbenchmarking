@@ -8,9 +8,7 @@ from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
-from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
-from fitbenchmarking.jacobian.SciPyFD_3point_jacobian import ScipyThreePoint
-from fitbenchmarking.jacobian.SciPyFD_cs_jacobian import ScipyCS
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 
@@ -71,7 +69,8 @@ class TestJacobianClass(TestCase):
         """
         Test for ScipyTwoPoint evaluation is correct
         """
-        jac = ScipyTwoPoint(self.fitting_problem)
+        jac = Scipy(self.fitting_problem)
+        jac.method = '2-point'
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
@@ -79,7 +78,8 @@ class TestJacobianClass(TestCase):
         """
         Test for ScipyThreePoint evaluation is correct
         """
-        jac = ScipyThreePoint(self.fitting_problem)
+        jac = Scipy(self.fitting_problem)
+        jac.method = '3-point'
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
@@ -87,13 +87,14 @@ class TestJacobianClass(TestCase):
         """
         Test for ScipyCS evaluation is correct
         """
-        jac = ScipyCS(self.fitting_problem)
+        jac = Scipy(self.fitting_problem)
+        jac.method = 'cs'
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_analytic_cutest_no_errors(self):
         """
-        Test analytic jacobian
+        Test analytic Jacobian
         """
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.fitting_problem)
@@ -102,7 +103,7 @@ class TestJacobianClass(TestCase):
 
     def test_analytic_cutest_errors(self):
         """
-        Test analytic jacobian
+        Test analytic Jacobian
         """
         self.fitting_problem.options.use_errors = True
         e = np.array([1, 2, 1, 3, 1])
@@ -112,6 +113,15 @@ class TestJacobianClass(TestCase):
         eval_result = jac.eval(params=self.params)
         scaled_actual = self.actual / e[:, None]
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
+
+    def test_analytic_raise_error(self):
+        """
+        Test analytic Jacobian raises an exception when problem.jacobian is
+        not callable
+        """
+        self.fitting_problem.jacobian = None
+        with self.assertRaises(exceptions.NoJacobianError):
+            Analytic(self.fitting_problem)
 
 
 class TestCachedFuncValues(TestCase):
@@ -193,8 +203,8 @@ class TestDerivCostFunc(TestCase):
         """
         Test for ScipyTwoPoint evaluation is correct
         """
-        jac = ScipyTwoPoint(self.fitting_problem)
-        self.fitting_problem.jac = jac
+        jac = Scipy(self.fitting_problem)
+        jac.method = '2-point'
         eval_result = jac.eval_r_norm(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
@@ -202,8 +212,8 @@ class TestDerivCostFunc(TestCase):
         """
         Test for ScipyThreePoint evaluation is correct
         """
-        jac = ScipyThreePoint(self.fitting_problem)
-        self.fitting_problem.jac = jac
+        jac = Scipy(self.fitting_problem)
+        jac.method = '3-point'
         eval_result = jac.eval_r_norm(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
@@ -211,8 +221,8 @@ class TestDerivCostFunc(TestCase):
         """
         Test for ScipyCS evaluation is correct
         """
-        jac = ScipyCS(self.fitting_problem)
-        self.fitting_problem.jac = jac
+        jac = Scipy(self.fitting_problem)
+        jac.method = 'cs'
         eval_result = jac.eval_r_norm(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
@@ -238,18 +248,15 @@ class FactoryTests(TestCase):
         """
         self.options = Options()
 
-        valid = ['2point', '3point', 'cs']
-        expected_name = ["scipytwopoint", "scipythreepoint", "scipycs"]
+        valid = ['scipy', 'analytic']
 
-        invalid = ['foo', 'bar', 'hello', 'r2d2']
+        invalid = ['numpy', 'random_jac']
 
-        for v, e in zip(valid, expected_name):
-            self.options.num_method = v
-            jac = create_jacobian(self.options)
-            self.assertTrue(jac.__name__.lower().startswith(e))
+        for jac_method in valid:
+            jac = create_jacobian(jac_method)
+            self.assertTrue(jac.__name__.lower().startswith(jac_method))
 
-        for i in invalid:
-            self.options.num_method = i
+        for jac_method in invalid:
             self.assertRaises(exceptions.NoJacobianError,
                               create_jacobian,
-                              self.options)
+                              jac_method)

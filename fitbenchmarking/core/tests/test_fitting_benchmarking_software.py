@@ -14,11 +14,11 @@ from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_fitting_software
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.utils.exceptions import UnsupportedMinimizerError
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
+
 
 # Due to structure of tests, some variables may not be previously defined
 # in the init function
@@ -36,9 +36,21 @@ def make_fitting_problem(file_name='cubic.dat', minimizers=None):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    jac = ScipyTwoPoint(fitting_problem)
-    fitting_problem.jac = jac
     return fitting_problem
+
+
+def dict_test(expected, actual):
+    """
+    Test to check two dictionaries are the same
+
+    :param expected: expected dictionary result
+    :type expected: dict
+    :param actual: actual dictionary result
+    :type actual: dict
+    """
+    for key in actual.keys():
+        assert key in expected.keys()
+        assert sorted(actual[key]) == sorted(expected[key])
 
 
 class LoopOverSoftwareTests(unittest.TestCase):
@@ -60,7 +72,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.dfo_len = len(self.options.minimizers["dfo"])
         self.result_args = {'options': self.options,
                             'problem': self.problem,
-                            'jac': self.problem.jac,
+                            'jac': 'jac',
                             'initial_params': self.problem.starting_values[0],
                             'params': [],
                             'chi_sq': 1}
@@ -69,13 +81,14 @@ class LoopOverSoftwareTests(unittest.TestCase):
         """
         Mock function to be used instead of loop_over_minimizers
         """
-        minimizer_failed = self.minimizer_failed[self.count]
+        minimizer_failed = list(self.minimizer_failed.values())[self.count]
         results_problem = self.results_problem[self.count]
+        minimizer_success = list(self.minimizer_success.values())[self.count]
         self.count += 1
-        return results_problem, minimizer_failed
+        return results_problem, minimizer_failed, minimizer_success
 
     def shared_test(self, expected_list_len, expected_problem_fails,
-                    expected_minimizer_failed):
+                    expected_minimizer_failed, expected_minimizer_dict):
         """
         Shared tests for the `loop_over_fitting_software` function
 
@@ -83,19 +96,21 @@ class LoopOverSoftwareTests(unittest.TestCase):
         :type expected_list_len: int
         :param expected_problem_fails: expected list of failed problems
         :type expected_problem_fails: list
-        :param expected_minimizer_failed: expected list of failed minimizers
-        :type expected_minimizer_failed: list
+        :param expected_minimizer_failed: expected dict of failed minimizers
+        :type expected_minimizer_failed: dict
+        :param expected_minimizer_dict: expected dict of successful minimizers
+        :type expected_minimizer_dict: dict
         """
-        results, problem_fails, unselected_minimzers = \
+        results, problem_fails, unselected_minimzers, minimizer_dict = \
             loop_over_fitting_software(self.problem,
                                        self.options,
                                        self.start_values_index,
                                        self.grabbed_output)
         assert len(results) == expected_list_len
         assert problem_fails == expected_problem_fails
-        for i, (keys, values) in enumerate(unselected_minimzers.items()):
-            assert keys in self.options.software
-            assert values == expected_minimizer_failed[i]
+
+        dict_test(unselected_minimzers, expected_minimizer_failed)
+        dict_test(minimizer_dict, expected_minimizer_dict)
 
     @mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software(self, loop_over_minimizers):
@@ -104,7 +119,8 @@ class LoopOverSoftwareTests(unittest.TestCase):
         softwares
         """
         self.count = 0
-        self.minimizer_failed = [[], []]
+        self.minimizer_failed = {'scipy': [], 'dfo': []}
+        self.minimizer_success = {'scipy': ['TNC'], 'dfo': ['dfogn']}
         self.problem_fails = []
         self.results_problem = \
             [[fitbm_result.FittingResult(**self.result_args)
@@ -115,8 +131,9 @@ class LoopOverSoftwareTests(unittest.TestCase):
         expected_list_len = self.scipy_len + self.dfo_len
         expected_problem_fails = self.problem_fails
         expected_minimizer_failed = self.minimizer_failed
+        expected_minimizer_success = self.minimizer_success
         self.shared_test(expected_list_len, expected_problem_fails,
-                         expected_minimizer_failed)
+                         expected_minimizer_failed, expected_minimizer_success)
 
     @mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software_failed_minimizers(self, loop_over_minimizers):
@@ -124,7 +141,9 @@ class LoopOverSoftwareTests(unittest.TestCase):
         Checks that the failed minimizers are reported
         """
         self.count = 0
-        self.minimizer_failed = [['Powell'], ['dfogn', 'dfols']]
+        self.minimizer_failed = {'scipy': ['Powell'],
+                                 'dfo': ['dfogn', 'dfols']}
+        self.minimizer_success = {'scipy': ['TNC', 'CG'], 'dfo': ['dfogn']}
         failed_scipy = 1
         failed_dfo = 2
         self.problem_fails = []
@@ -138,8 +157,9 @@ class LoopOverSoftwareTests(unittest.TestCase):
             failed_scipy - failed_dfo
         expected_problem_fails = self.problem_fails
         expected_minimizer_failed = self.minimizer_failed
+        expected_minimizer_success = self.minimizer_success
         self.shared_test(expected_list_len, expected_problem_fails,
-                         expected_minimizer_failed)
+                         expected_minimizer_failed, expected_minimizer_success)
 
     @mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software_all_failed_minimizers(self, loop_over_minimizers):
@@ -148,8 +168,10 @@ class LoopOverSoftwareTests(unittest.TestCase):
         that this is reported correctly
         """
         self.count = 0
-        self.minimizer_failed = [self.options.minimizers[s]
-                                 for s in self.options.software]
+        self.minimizer_failed = {s: self.options.minimizers[s]
+                                 for s in self.options.software}
+        self.minimizer_success = {'scipy': ['TNC', 'CG'], 'dfo': ['dfogn']}
+
         self.result_args['chi_sq'] = np.inf
         self.problem_fails = ['cubic']
         self.results_problem = [[fitbm_result.FittingResult(**self.result_args)
@@ -160,8 +182,9 @@ class LoopOverSoftwareTests(unittest.TestCase):
         expected_list_len = 0
         expected_problem_fails = self.problem_fails
         expected_minimizer_failed = self.minimizer_failed
+        expected_minimizer_success = self.minimizer_success
         self.shared_test(expected_list_len, expected_problem_fails,
-                         expected_minimizer_failed)
+                         expected_minimizer_failed, expected_minimizer_success)
 
     def test_incorrect_software(self):
         """
@@ -169,11 +192,10 @@ class LoopOverSoftwareTests(unittest.TestCase):
         """
         self.options.software = ['incorrect_software']
         with self.assertRaises(UnsupportedMinimizerError):
-            _, _, _ = \
-                loop_over_fitting_software(self.problem,
-                                           self.options,
-                                           self.start_values_index,
-                                           self.grabbed_output)
+            _, _, _ = loop_over_fitting_software(self.problem,
+                                                 self.options,
+                                                 self.start_values_index,
+                                                 self.grabbed_output)
 
 
 if __name__ == "__main__":

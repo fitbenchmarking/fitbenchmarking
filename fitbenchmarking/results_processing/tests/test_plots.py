@@ -9,7 +9,7 @@ except ImportError:
 import unittest
 
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.results_processing import plots
@@ -32,7 +32,8 @@ class PlotTests(unittest.TestCase):
         self.prob.starting_values = [{'x': 1, 'y': 2}]
         self.prob.eval_f = lambda x, y: x[0] * y + x[1]
         self.prob.name = 'full name'
-        jac = ScipyTwoPoint(self.prob)
+        jac = Scipy(self.prob)
+        jac.method = "2-point"
         self.fr = FittingResult(options=self.opts,
                                 problem=self.prob,
                                 jac=jac,

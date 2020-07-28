@@ -5,6 +5,8 @@ from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 import unittest
+import mock
+
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.utils import fitbm_result, output_grabber
@@ -12,7 +14,9 @@ from fitbenchmarking.core.fitting_benchmarking import loop_over_minimizers
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
+
+# Defines the module which we mock out certain function calls for
+FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 
 
 # Due to construction of the controllers two folder functions
@@ -50,6 +54,12 @@ class DummyController(Controller):
         """
         pass
 
+    def jacobian_information(self):
+        """
+        Mock controller jacobian_information function
+        """
+        pass
+
     def cleanup(self):
         """
         Mock controller cleanup function
@@ -72,8 +82,6 @@ def make_fitting_problem(file_name='cubic.dat', minimizers=None):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    jac = ScipyTwoPoint(fitting_problem)
-    fitting_problem.jac = jac
     return fitting_problem
 
 
@@ -92,39 +100,71 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.options = self.problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
+        self.count = 0
+        self.result_args = {'options': self.options,
+                            'problem': self.problem,
+                            'jac': "jac",
+                            'initial_params': self.problem.starting_values[0],
+                            'params': [],
+                            'chi_sq': 1}
 
-    def shared_tests(self):
+    def mock_func_call(self, *args, **kwargs):
         """
-        Shared tests for the `loop_over_minimizer` function
+        Mock function to be used instead of loop_over_jacobians
         """
+        results = self.results[self.count]
+        minimizer_list = self.minimizer_list[self.count]
+        self.count += 1
+        return results, self.chi_sq, minimizer_list
 
-        results_problem, minimizer_failed = loop_over_minimizers(
-            self.controller, self.minimizers, self.options,
-            self.grabbed_output)
-        algorithms = \
-            self.controller.algorithm_check[self.options.algorithm_type]
-        unselected_algorithms = [x for x in self.minimizers
-                                 if x not in algorithms]
-        assert len(results_problem) == len(algorithms)
+    def test_run_minimzers_none_selected(self):
+        """
+        Tests that no minimizers are selected
+        """
+        self.options.algorithm_type = "ls"
+        results_problem, minimizer_failed, new_minimizer_list = \
+            loop_over_minimizers(self.controller, self.minimizers,
+                                 self.options, self.grabbed_output)
+        assert results_problem == []
+        assert minimizer_failed == self.minimizers
+        assert new_minimizer_list == []
+
+    @mock.patch('{}.loop_over_jacobians'.format(FITTING_DIR))
+    def test_run_minimzers_selected(self, loop_over_jacobians):
+        """
+        Tests that some minimizers are selected
+        """
+        self.options.algorithm_type = "general"
+        self.results = [[self.result_args]]
+        self.chi_sq = 1
+        self.minimizer_list = [["general"]]
+        loop_over_jacobians.side_effect = self.mock_func_call
+
+        results_problem, minimizer_failed, new_minimizer_list = \
+            loop_over_minimizers(self.controller, self.minimizers,
+                                 self.options, self.grabbed_output)
         assert all(isinstance(x, fitbm_result.FittingResult)
                    for x in results_problem)
-        for i, result in enumerate(results_problem):
-            assert result.params == self.controller.final_params_expected[i]
-            assert result.error_flag == self.controller.flag_expected[i]
-        assert minimizer_failed == unselected_algorithms
+        assert minimizer_failed == ["deriv_free_algorithm"]
+        assert new_minimizer_list == ["general"]
 
-    def test_run_all_minimzers(self):
+    @mock.patch('{}.loop_over_jacobians'.format(FITTING_DIR))
+    def test_run_minimzers_all(self, loop_over_jacobians):
         """
-        Tests that all minimizers run
+        Tests that all minimizers are selected
         """
-        self.shared_tests()
+        self.results = [[self.result_args], [self.result_args]]
+        self.chi_sq = [1]
+        self.minimizer_list = [["general"], ["deriv_free_algorithm"]]
+        loop_over_jacobians.side_effect = self.mock_func_call
 
-    def test_run_minimzers_deriv_free(self):
-        """
-        Tests that ``algorithm_type = deriv_free`` minimizers run
-        """
-        self.options.algorithm_type = "deriv_free"
-        self.shared_tests()
+        results_problem, minimizer_failed, new_minimizer_list = \
+            loop_over_minimizers(self.controller, self.minimizers,
+                                 self.options, self.grabbed_output)
+        assert all(isinstance(x, fitbm_result.FittingResult)
+                   for x in results_problem)
+        assert minimizer_failed == []
+        assert new_minimizer_list == ["general", "deriv_free_algorithm"]
 
 
 if __name__ == "__main__":

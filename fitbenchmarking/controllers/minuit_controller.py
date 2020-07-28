@@ -32,6 +32,14 @@ class MinuitController(Controller):
             'deriv_free': [None],
             'general': ['minuit']}
 
+    def jacobian_information(self):
+        """
+        Minuit cannot use Jacobian information
+        """
+        has_jacobian = False
+        jacobian_free_solvers = []
+        return has_jacobian, jacobian_free_solvers
+
     def setup(self):
         """
         Setup for Minuit

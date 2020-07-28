@@ -38,6 +38,14 @@ class BumpsController(Controller):
             'deriv_free': ['amoeba', 'de'],
             'general': ['amoeba', 'newton', 'de']}
 
+    def jacobian_information(self):
+        """
+        Bumps cannot use Jacobian information
+        """
+        has_jacobian = False
+        jacobian_free_solvers = []
+        return has_jacobian, jacobian_free_solvers
+
     def setup(self):
         """
         Setup problem ready to run with Bumps.

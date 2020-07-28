@@ -13,12 +13,9 @@ class Analytic(Jacobian):
 
     def __init__(self, problem):
         super(Analytic, self).__init__(problem)
-        problem_formats = ['cutest']
-        if self.problem.format not in problem_formats:
-            raise NoJacobianError("Currently analytic Jacobians are only "
-                                  "implemented for {0}. The problem format "
-                                  " here is {1}".format(problem_formats,
-                                                        self.problem.format))
+        if not callable(problem.jacobian):
+            raise NoJacobianError("Problem set selected does not currently "
+                                  "support analytic Jacobians")
 
     def eval(self, params, **kwargs):
         """
@@ -36,6 +33,6 @@ class Analytic(Jacobian):
 
         if self.problem.options.use_errors:
             # scales each column of the Jacobian by the weights
-            jac = jac / e[:,None]
+            jac = jac / e[:, None]
 
         return jac

@@ -28,6 +28,14 @@ class ScipyController(Controller):
             'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                         'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP']}
 
+    def jacobian_information(self):
+        """
+        Scipy can use Jacobian information
+        """
+        has_jacobian = True
+        jacobian_free_solvers = ["Nelder-Mead", "Powell"]
+        return has_jacobian, jacobian_free_solvers
+
     def setup(self):
         """
         Setup problem ready to be run with SciPy
@@ -52,7 +60,7 @@ class ScipyController(Controller):
             self.result = minimize(fun=self.problem.eval_r_norm,
                                    x0=self.initial_params,
                                    method=self.minimizer,
-                                   jac=self.problem.jac.eval_r_norm,
+                                   jac=self.jacobian.eval_r_norm,
                                    options=self.options)
 
         self._popt = self.result.x
