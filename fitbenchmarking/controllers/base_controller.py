@@ -33,6 +33,9 @@ class Controller:
         # Problem: The problem object from parsing
         self.problem = problem
 
+        # Jacobian: The Jacobian object
+        self.jacobian = None
+
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)
         self.data_x = problem.data_x
@@ -65,7 +68,6 @@ class Controller:
 
     @property
     def flag(self):
-
         """
         | 0: 'Successfully converged'
         | 1: 'Software reported maximum number of iterations exceeded'
@@ -154,6 +156,20 @@ class Controller:
                     'Attribute "{}" in the controller is not the expected '
                     'type. Expected "{}", got {}.'.format(
                         attr_name, attr_type, type(attr)))
+
+    @abstractmethod
+    def jacobian_information(self):
+        """
+        Setups up Jacobian information for the controller. This should return the following arguments:
+
+        has_jacobian: a True or False value whether the controller
+        requires Jacobian information
+
+        jacobian_free_solvers: a list of minimizers in a specific software
+        that do not require Jacobian informations. For example in the
+        `ScipyLS` controller this would return `lm-scipy-no-jac`
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def setup(self):

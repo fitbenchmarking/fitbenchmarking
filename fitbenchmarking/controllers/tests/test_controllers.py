@@ -24,7 +24,7 @@ if TEST_TYPE != "default":
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
 
 def make_fitting_problem(file_name='cubic.dat'):
@@ -38,8 +38,6 @@ def make_fitting_problem(file_name='cubic.dat'):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    jac = ScipyTwoPoint(fitting_problem)
-    fitting_problem.jac = jac
     return fitting_problem
 
 
@@ -75,6 +73,22 @@ class ControllerSharedTesting:
         controller.cleanup()
 
         assert len(controller.final_params) == len(controller.initial_params)
+
+    def check_jac_info(self, controller, expected_has_jac, expected_jac_list):
+        """
+        Utility function to check controller.jacobian_information() produces
+        a success flag
+
+        :param controller: Controller to test, with setup already completed
+        :type controller: Object derived from BaseSoftwareController
+        :param expected_has_jac: expected has_jacobian value
+        :type expected_has_jac: bool
+        :param expected_jac_list: expected jacobian_list value
+        :type expected_jac_list: list
+        """
+        has_jacobian, jacobian_list = controller.jacobian_information()
+        assert has_jacobian == expected_has_jac
+        assert jacobian_list == expected_jac_list
 
     def check_converged(self, controller):
         """
@@ -234,6 +248,8 @@ class DefaultControllerTests(TestCase):
 
     def setUp(self):
         self.problem = make_fitting_problem()
+        self.jac = Scipy(self.problem)
+        self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
 
     def test_bumps(self):
@@ -243,6 +259,9 @@ class DefaultControllerTests(TestCase):
         controller = BumpsController(self.problem)
         controller.minimizer = 'amoeba'
         self.shared_tests.controller_run_test(controller)
+        self.shared_tests.check_jac_info(controller,
+                                         False,
+                                         [])
 
         controller._status = 0
         self.shared_tests.check_converged(controller)
@@ -259,6 +278,9 @@ class DefaultControllerTests(TestCase):
         # test one from each class
         minimizers = ['dfogn',
                       'dfols']
+        self.shared_tests.check_jac_info(controller,
+                                         False,
+                                         [])
         for minimizer in minimizers:
             controller.minimizer = minimizer
             self.shared_tests.controller_run_test(controller)
@@ -277,6 +299,10 @@ class DefaultControllerTests(TestCase):
         controller = MinuitController(self.problem)
         controller.minimizer = 'minuit'
         self.shared_tests.controller_run_test(controller)
+        self.shared_tests.check_jac_info(controller,
+                                         False,
+                                         [])
+
         controller._status = 0
         self.shared_tests.check_converged(controller)
         controller._status = 2
@@ -288,8 +314,11 @@ class DefaultControllerTests(TestCase):
         """
         controller = ScipyController(self.problem)
         controller.minimizer = 'CG'
+        controller.jacobian = self.jac
         self.shared_tests.controller_run_test(controller)
-
+        self.shared_tests.check_jac_info(controller,
+                                         True,
+                                         ["Nelder-Mead", "Powell"])
         controller._status = 1
         self.shared_tests.check_converged(controller)
         controller._status = 0
@@ -303,8 +332,12 @@ class DefaultControllerTests(TestCase):
         """
         controller = ScipyLSController(self.problem)
         controller.minimizer = 'lm'
+        controller.jacobian = self.jac
 
         self.shared_tests.controller_run_test(controller)
+        self.shared_tests.check_jac_info(controller,
+                                         True,
+                                         ["lm-scipy-no-jac"])
 
         controller._status = 1
         self.shared_tests.check_converged(controller)
@@ -322,6 +355,8 @@ class ExternalControllerTests(TestCase):
 
     def setUp(self):
         self.problem = make_fitting_problem()
+        self.jac = Scipy(self.problem)
+        self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
 
     def test_mantid(self):
@@ -331,7 +366,9 @@ class ExternalControllerTests(TestCase):
         controller = MantidController(self.problem)
         controller.minimizer = 'Levenberg-Marquardt'
         self.shared_tests.controller_run_test(controller)
-
+        self.shared_tests.check_jac_info(controller,
+                                         False,
+                                         [])
         controller._status = "success"
         self.shared_tests.check_converged(controller)
         controller._status = "Failed to converge"
@@ -343,6 +380,7 @@ class ExternalControllerTests(TestCase):
         """
         MantidController: Additional bespoke test for multifit
         """
+
         file_path = os.path.join('multifit_set', 'multifit.txt')
         problem = make_fitting_problem(file_path)
 
@@ -414,6 +452,10 @@ class ExternalControllerTests(TestCase):
         GSLController: Tests for output shape
         """
         controller = GSLController(self.problem)
+        controller.jacobian = self.jac
+        self.shared_tests.check_jac_info(controller,
+                                         True,
+                                         ["nmsimplex", "nmsimplex2"])
         # test one from each class
         minimizers = ['lmsder',
                       'nmsimplex',
@@ -434,6 +476,11 @@ class ExternalControllerTests(TestCase):
         RALFitController: Tests for output shape
         """
         controller = RALFitController(self.problem)
+        controller.jacobian = self.jac
+        self.shared_tests.check_jac_info(controller,
+                                         True,
+                                         [])
+
         minimizers = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg']
         for minimizer in minimizers:
             controller.minimizer = minimizer

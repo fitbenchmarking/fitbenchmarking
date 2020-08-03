@@ -8,7 +8,7 @@ except ImportError:
 import unittest
 
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.results_processing import support_page
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
@@ -28,7 +28,7 @@ class CreateTests(unittest.TestCase):
         minimizers = ['min_a', 'min_b', 'min_c']
         self.results = [[FittingResult(options=self.options,
                                        problem=p,
-                                       jac=ScipyTwoPoint(p),
+                                       jac=Scipy(p),
                                        initial_params=[],
                                        params=[],
                                        minimizer=m)
@@ -69,9 +69,11 @@ class CreateProbGroupTests(unittest.TestCase):
         problem.starting_values = [{'x': 1}]
 
         minimizers = ['min_a', 'min_b', 'min_c']
+        jac = Scipy(problem)
+        jac.method = "2-point"
         self.results = [FittingResult(options=self.options,
                                       problem=problem,
-                                      jac=ScipyTwoPoint(problem),
+                                      jac=jac,
                                       initial_params=[],
                                       params=[],
                                       minimizer=m)
@@ -119,9 +121,11 @@ class GetFigurePathsTests(unittest.TestCase):
         problem.name = 'prob a'
         problem.equation = 'equation!'
         problem.starting_values = [{'x': 1}]
+        jac = Scipy(problem)
+        jac.method = "2-point"
         self.result = FittingResult(options=self.options,
                                     problem=problem,
-                                    jac=ScipyTwoPoint(problem),
+                                    jac=jac,
                                     initial_params=[],
                                     params=[],
                                     minimizer='test')

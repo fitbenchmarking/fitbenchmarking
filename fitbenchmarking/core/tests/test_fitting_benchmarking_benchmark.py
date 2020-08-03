@@ -13,7 +13,6 @@ from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.utils.exceptions import NoResultsError
 
 # Defines the module which we mock out certain function calls for
@@ -33,8 +32,6 @@ def make_fitting_problem(file_name='cubic.dat', minimizers=None):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    jac = ScipyTwoPoint(fitting_problem)
-    fitting_problem.jac = jac
     return fitting_problem
 
 
@@ -105,7 +102,7 @@ class BenchmarkTests(unittest.TestCase):
         for name in problem_names:
             result_args = {'options': self.options,
                            'problem': self.problem,
-                           'jac': self.problem.jac,
+                           'jac': 'jac',
                            'initial_params': self.problem.starting_values[0],
                            'params': [],
                            'chi_sq': 1,
@@ -114,13 +111,14 @@ class BenchmarkTests(unittest.TestCase):
                             for j in range(self.scipy_len)]
             results.extend(list_results)
         problem_fails = []
-        expected_unselected_minimzers = {"scipy": []}
-        loop_over_benchmark_problems.return_value = \
-            (results, problem_fails, expected_unselected_minimzers)
-
-        # run shared test and see if it match expected
         expected_problem_names = sorted(problem_names)
         expected_minimzers = copy.copy(self.all_minimzers)
+        expected_unselected_minimzers = {"scipy": []}
+        loop_over_benchmark_problems.return_value = \
+            (results, problem_fails, expected_unselected_minimzers,
+             expected_minimzers)
+
+        # run shared test and see if it match expected
         self.shared_tests(expected_problem_names,
                           expected_unselected_minimzers,
                           expected_minimzers)
@@ -137,7 +135,7 @@ class BenchmarkTests(unittest.TestCase):
         for name in problem_names:
             result_args = {'options': self.options,
                            'problem': self.problem,
-                           'jac': self.problem.jac,
+                           'jac': 'jac',
                            'initial_params': self.problem.starting_values[0],
                            'params': [],
                            'chi_sq': 1,
@@ -145,16 +143,20 @@ class BenchmarkTests(unittest.TestCase):
             list_results = [fitbm_result.FittingResult(**result_args)
                             for j in range(self.scipy_len)]
             results.extend(list_results)
+
         problem_fails = []
         expected_unselected_minimzers = {"scipy": ['SLSQP', 'Powell', 'CG']}
-        loop_over_benchmark_problems.return_value = \
-            (results, problem_fails, expected_unselected_minimzers)
-        
+
         # run shared test and see if it match expected
         expected_minimzers = copy.copy(self.all_minimzers)
         for keys, minimzers in expected_unselected_minimzers.items():
             expected_minimzers[keys] = \
                 list(set(expected_minimzers[keys]) - set(minimzers))
+
+        loop_over_benchmark_problems.return_value = \
+            (results, problem_fails, expected_unselected_minimzers,
+             expected_minimzers)
+
         self.shared_tests(expected_names, expected_unselected_minimzers,
                           expected_minimzers)
 
@@ -167,8 +169,10 @@ class BenchmarkTests(unittest.TestCase):
         results = []
         problem_fails = []
         expected_unselected_minimzers = {"scipy": []}
+        expected_minimzers = copy.copy(self.all_minimzers)
         loop_over_benchmark_problems.return_value = \
-            (results, problem_fails, expected_unselected_minimzers)
+            (results, problem_fails, expected_unselected_minimzers,
+             expected_minimzers)
         with self.assertRaises(NoResultsError):
             _, _, _ = \
                 benchmark(self.options, self.default_parsers_dir)

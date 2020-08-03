@@ -102,6 +102,14 @@ class MantidController(Controller):
         self._added_args = {'InputWorkspace_{}'.format(i + 1): v
                             for i, v in enumerate(other_inputs)}
 
+    def jacobian_information(self):
+        """
+        Mantid cannot use Jacobian information
+        """
+        has_jacobian = False
+        jacobian_free_solvers = []
+        return has_jacobian, jacobian_free_solvers
+
     def setup(self):
         """
         Setup problem ready to run with Mantid.

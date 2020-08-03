@@ -14,7 +14,7 @@ from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.nist_data_functions import nist_func_definition, \
     nist_jacobian_definition
-from fitbenchmarking.utils.exceptions import ParsingError
+from fitbenchmarking.utils.exceptions import ParsingError, NoJacobianError
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
@@ -57,6 +57,7 @@ class NISTParser(Parser):
             nist_func_definition(function=fitting_problem.equation,
                                  param_names=starting_values[0].keys())
         fitting_problem.format = "nist"
+
         jacobian = self._parse_jacobian(name)
         fitting_problem.jacobian = \
             nist_jacobian_definition(jacobian=jacobian,
@@ -72,7 +73,11 @@ class NISTParser(Parser):
         """
         file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
         jac_file = os.path.join(file_dir, "data_files", "{}.jac".format(name))
-        jac_data = open(jac_file, "r")
+        try:
+            jac_data = open(jac_file, "r")
+        except FileNotFoundError:
+            raise NoJacobianError('Could not find data for NIST Jacobian '
+                                  'file, {}'.format(jac_file))
         jac_lines = jac_data.readlines()
         jac_str = ""
         for line in jac_lines:

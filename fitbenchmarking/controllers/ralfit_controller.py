@@ -31,6 +31,14 @@ class RALFitController(Controller):
             'deriv_free': [None],
             'general': [None]}
 
+    def jacobian_information(self):
+        """
+        RALFit can use Jacobian information
+        """
+        has_jacobian = True
+        jacobian_free_solvers = []
+        return has_jacobian, jacobian_free_solvers
+
     def setup(self):
         """
         Setup for RALFit
@@ -61,7 +69,7 @@ class RALFitController(Controller):
         """
         self._popt = ral_nlls.solve(self.initial_params,
                                     self.problem.eval_r,
-                                    self.problem.jac.eval,
+                                    self.jacobian.eval,
                                     options=self._options)[0]
         self._status = 0 if self._popt is not None else 1
 

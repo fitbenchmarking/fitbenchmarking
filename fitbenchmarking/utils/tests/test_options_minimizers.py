@@ -25,7 +25,7 @@ class MininimizerOptionTests(unittest.TestCase):
         """
         Checks valid bumps minimizers are set correctly
         """
-        expected = ['amoeba', 'lm-bumps', 'newton', 'de', 'mp']
+        expected = ['amoeba', 'lm-bumps', 'newton', 'mp']
         actual = self.options.minimizers['bumps']
         self.assertEqual(expected, actual)
 
@@ -71,7 +71,7 @@ class MininimizerOptionTests(unittest.TestCase):
         Checks valid scipy minimizers are set correctly
         """
         expected = ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP']
+                    'Newton-CG', 'L-BFGS-B', 'TNC']
         actual = self.options.minimizers['scipy']
         self.assertEqual(expected, actual)
 

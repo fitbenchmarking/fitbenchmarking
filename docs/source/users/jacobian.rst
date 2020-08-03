@@ -12,4 +12,5 @@ The finite difference schemes implemented are:
 * `3-point`: use central difference in interior points and the second order accuracy forward or backward difference near the boundary.
 * `cs`: use a complex-step finite difference scheme. This assumes that the user function is real-valued and can be analytically continued to the complex plane. Otherwise, produces bogus results.
 
-See `Jacobian method` and `Numerical method` within :ref:`fitting_option`.
+See `Jacobian method` within :ref:`fitting_option` and `Numerical method` within
+:ref:`jacobian_option`.
