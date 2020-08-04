@@ -125,6 +125,13 @@ class MantidController(Controller):
             start_val_str = ', '.join(start_val_list)
             function_def = "name=fitFunction, " + start_val_str
 
+            def get_params(ff_self):
+                fit_param = np.zeros(len(self._param_names))
+                fit_param.setflags(write=1)
+                for i, param in enumerate(self._param_names):
+                    fit_param[i] = ff_self.getParameterValue(param)
+                return fit_param
+
             class fitFunction(IFunction1D):
                 def init(ff_self):
 
@@ -133,13 +140,18 @@ class MantidController(Controller):
 
                 def function1D(ff_self, xdata):
 
-                    fit_param = np.zeros(len(self._param_names))
-                    fit_param.setflags(write=1)
-                    for i, param in enumerate(self._param_names):
-                        fit_param[i] = ff_self.getParameterValue(param)
+                    fit_param = get_params(ff_self)
 
                     return self.problem.eval_f(x=xdata,
                                                params=fit_param)
+
+                def functionDeriv1D(ff_self, xvals, jacobian):
+                    fit_param = get_params(ff_self)
+
+                    jac = -self.jacobian.eval(fit_param)
+                    for i, x in enumerate(xvals):
+                        for j in range(len(fit_param)):
+                            jacobian.set(i, j, jac[i, j])
 
             FunctionFactory.subscribe(fitFunction)
 
