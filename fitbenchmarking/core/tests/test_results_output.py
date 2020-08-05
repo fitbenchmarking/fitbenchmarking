@@ -3,12 +3,13 @@ import unittest
 import os
 import shutil
 import numpy as np
+import mock
 
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.core.results_output import create_directories, \
-    preproccess_data
+    preproccess_data, create_plots
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils import fitbm_result
 
@@ -194,11 +195,82 @@ class PreproccessDataTests(unittest.TestCase):
 
 
 class CreatePlotsTests(unittest.TestCase):
-    def test_dummy(self):
+    """
+    Unit tests for create_plots function
+    """
+
+    def setUp(self):
         """
-        Dummy test to appease pytest
+        Setting up paths and results folders
         """
-        pass
+        self.results, self.options, self.min_chi_sq, self.min_runtime = \
+            generate_mock_results()
+        self.best_results = preproccess_data(self.results)
+
+    @mock.patch('fitbenchmarking.results_processing.plots.Plot')
+    def test_create_plots_with_params(self, plot_mock):
+        """
+        Tests for create_plots where the results object params are not None
+        """
+        expected_plot_initial_guess = "initial_guess"
+        expected_plot_best = "plot_best"
+        expected_plot_fit = "plot_fit"
+        plot_instance = mock.MagicMock()
+        plot_instance.plot_initial_guess.return_value = \
+            expected_plot_initial_guess
+        plot_instance.plot_best.return_value = expected_plot_best
+        plot_instance.plot_fit.return_value = expected_plot_fit
+
+        # Return the above created `plot_instance`
+        plot_mock.return_value = plot_instance
+        create_plots(self.options, self.results,
+                     self.best_results, "figures_dir")
+        for result, best_result in zip(self.results, self.best_results):
+            # Check initial guess is correctly set in results
+            assert best_result.start_figure_link == expected_plot_initial_guess
+            assert all(r.start_figure_link == expected_plot_initial_guess
+                       for r in result)
+
+            # Check plot is correctly set in results
+            assert best_result.figure_link == expected_plot_best
+            assert all(r.figure_link == expected_plot_fit
+                       if not r.is_best_fit else True for r in result)
+
+    @mock.patch('fitbenchmarking.results_processing.plots.Plot')
+    def test_create_plots_without_params(self, plot_mock):
+        """
+        Tests for create_plots where the results object params are None
+        """
+        for result, best in zip(self.results, self.best_results):
+            best.params = None
+            for r in result:
+                r.params = None
+        expected_plot_initial_guess = "initial_guess"
+        plot_instance = mock.MagicMock()
+        plot_instance.plot_initial_guess.return_value = \
+            expected_plot_initial_guess
+
+        # Return the above created `plot_instance`
+        plot_mock.return_value = plot_instance
+        create_plots(self.options, self.results,
+                     self.best_results, "figures_dir")
+        for result, best_result in zip(self.results, self.best_results):
+            # Check initial guess is correctly set in results
+            assert best_result.start_figure_link == expected_plot_initial_guess
+            assert all(r.start_figure_link == expected_plot_initial_guess
+                       for r in result)
+
+            # Check plot is correctly set in results
+            assert best_result.figure_link == ''
+            assert all(r.figure_link == ''
+                       if not r.is_best_fit else True for r in result)
+
+            # Checks that when no params are given the correct error message
+            # is produced
+            expected_message = "Minimizer failed to produce any parameters"
+            assert best_result.figure_error == expected_message
+            assert all(r.figure_error == expected_message
+                       if not r.is_best_fit else True for r in result)
 
 
 class CreateProblemLevelIndex(unittest.TestCase):
