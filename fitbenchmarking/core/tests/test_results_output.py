@@ -9,7 +9,7 @@ from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.core.results_output import create_directories, \
-    preproccess_data, create_plots
+    preproccess_data, create_plots, create_problem_level_index
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils import fitbm_result
 
@@ -274,11 +274,41 @@ class CreatePlotsTests(unittest.TestCase):
 
 
 class CreateProblemLevelIndex(unittest.TestCase):
-    def test_dummy(self):
+    """
+   Unit tests for create_problem_level_index function
+   """
+
+    def setUp(self):
         """
-        Dummy test to appease pytest
+        Setting up paths and results folders
         """
-        pass
+        self.options = Options()
+        test_path = os.path.dirname(os.path.realpath(__file__))
+        self.group_dir = os.path.join(test_path, 'results')
+        os.mkdir(self.group_dir)
+        self.table_names = {"compare": "compare_table_name.",
+                            "runtime": "runtime_table_name."}
+        self.table_descriptions = {"compare": "compare table descriptions",
+                                   "runtime": "runtime table descriptions",
+                                   "both": "both table descriptions"}
+        self.group_name = "random_name"
+
+    def tearDown(self):
+        """
+        Clean up created folders.
+        """
+        shutil.rmtree(self.group_dir)
+
+    def test_creation_index_page(self):
+        """
+        Tests to see that the index page are correctly created
+        """
+        create_problem_level_index(self.options, self.table_names,
+                                   self.group_name, self.group_dir,
+                                   self.table_descriptions)
+        expected_file = os.path.join(self.group_dir,
+                                     '{}_index.html'.format(self.group_name))
+        assert os.path.isfile(expected_file)
 
 
 if __name__ == "__main__":
