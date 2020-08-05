@@ -9,7 +9,7 @@ from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.core.results_output import create_directories, \
-    preproccess_data, create_plots, create_problem_level_index
+    save_results, preproccess_data, create_plots, create_problem_level_index
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils import fitbm_result
 
@@ -113,11 +113,37 @@ def generate_mock_results():
 
 
 class SaveResultsTests(unittest.TestCase):
-    def test_dummy(self):
+    """
+    Unit tests for save_results function
+    """
+
+    def setUp(self):
         """
-        Dummy test to appease pytest
+        Setting up paths and results folders
         """
-        pass
+        self.results, self.options, self.min_chi_sq, self.min_runtime = \
+            generate_mock_results()
+        test_path = os.path.dirname(os.path.realpath(__file__))
+        self.dirname = os.path.join(test_path, 'results')
+        self.options.results_dir = self.dirname
+        os.mkdir(self.dirname)
+
+    def tearDown(self):
+        """
+        Clean up created folders.
+        """
+        shutil.rmtree(self.dirname)
+
+    def test_save_results_correct(self):
+        """
+        Tests to check the group_dir is correct
+        """
+        failed_problems = []
+        unselected_minimzers = {}
+        group_name = "group_name"
+        group_dir = save_results(self.options, self.results, group_name,
+                                 failed_problems, unselected_minimzers)
+        assert group_dir == os.path.join(self.dirname, group_name)
 
 
 class CreateDirectoriesTests(unittest.TestCase):
@@ -207,7 +233,7 @@ class CreatePlotsTests(unittest.TestCase):
             generate_mock_results()
         self.best_results = preproccess_data(self.results)
 
-    @mock.patch('fitbenchmarking.results_processing.plots.Plot')
+    @ mock.patch('fitbenchmarking.results_processing.plots.Plot')
     def test_create_plots_with_params(self, plot_mock):
         """
         Tests for create_plots where the results object params are not None
@@ -236,7 +262,7 @@ class CreatePlotsTests(unittest.TestCase):
             assert all(r.figure_link == expected_plot_fit
                        if not r.is_best_fit else True for r in result)
 
-    @mock.patch('fitbenchmarking.results_processing.plots.Plot')
+    @ mock.patch('fitbenchmarking.results_processing.plots.Plot')
     def test_create_plots_without_params(self, plot_mock):
         """
         Tests for create_plots where the results object params are None
