@@ -2,9 +2,113 @@ from __future__ import (absolute_import, division, print_function)
 import unittest
 import os
 import shutil
+import numpy as np
 
-from fitbenchmarking.core.results_output import create_directories
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.core.results_output import create_directories, \
+    preproccess_data
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils import fitbm_result
+
+
+# By design both fitting_function_1 and fitting_function_2 need data as an
+# argument
+# pylint: disable=unused-argument
+def fitting_function_1(data, x1, x2):
+    """
+    Fitting function evaluator
+
+    :param data: x data
+    :type data: numpy array
+    :param x1: fitting parameter
+    :type x1: float
+    :param x2: fitting parameter
+    :type x2: float
+
+    :return: y data values evaluated from the function of the problem
+    :rtype: numpy array
+    """
+    return x1 * np.sin(x2)
+
+
+def fitting_function_2(data, x1, x2):
+    """
+    Fitting function evaluator
+
+    :param data: x data
+    :type data: numpy array
+    :param x1: fitting parameter
+    :type x1: float
+    :param x2: fitting parameter
+    :type x2: float
+
+    :return: y data values evaluated from the function of the problem
+    :rtype: numpy array
+    """
+    return x1 * x2
+
+
+# pylint: enable=unused-argument
+def generate_mock_results():
+    """
+    Generates results to test against
+
+    :return: best results calculated using the chi_sq value, list of results
+             and the options
+    :rtype: tuple(list of best results,
+                  list of list fitting results,
+                  Options object)
+    """
+    software = 'scipy_ls'
+    options = Options()
+    options.software = [software]
+    num_min = len(options.minimizers[options.software[0]])
+    data_x = np.array([[1, 4, 5], [2, 1, 5]])
+    data_y = np.array([[1, 2, 1], [2, 2, 2]])
+    data_e = np.array([[1, 1, 1], [1, 2, 1]])
+    func = [fitting_function_1, fitting_function_2]
+    problems = [FittingProblem(options), FittingProblem(options)]
+
+    params_in = [[[.3, .11], [.04, 2], [3, 1], [5, 0]],
+                 [[4, 2], [3, .006], [.3, 10], [9, 0]]]
+
+    starting_values = [{"a": .3, "b": .11}, {"a": 0, "b": 0}]
+    error_in = [[1, 0, 2, 0],
+                [0, 1, 3, 1]]
+    link_in = [['link1', 'link2', 'link3', 'link4'],
+               ['link5', 'link6', 'link7', 'link8']]
+    min_chi_sq = [1, 1]
+    acc_in = [[1, 5, 2, 1.54],
+              [7, 3, 5, 1]]
+    min_runtime = [4.2e-5, 5.0e-14]
+    runtime_in = [[1e-2, 2.2e-3, 4.2e-5, 9.8e-1],
+                  [3.0e-10, 5.0e-14, 1e-7, 4.3e-12]]
+
+    results_out = []
+    for i, p in enumerate(problems):
+        p.data_x = data_x[i]
+        p.data_y = data_y[i]
+        p.data_e = data_e[i]
+        p.function = func[i]
+        p.name = "prob_{}".format(i)
+        results = []
+        for j in range(num_min):
+            p.starting_values = starting_values
+            jac = Scipy(p)
+            jac.method = '2-point'
+            r = FittingResult(options=options, problem=p, jac=jac,
+                              initial_params=starting_values,
+                              params=params_in[i][j])
+            r.chi_sq = acc_in[i][j]
+            r.runtime = runtime_in[i][j]
+            r.error_flag = error_in[i][j]
+            r.support_page_link = link_in[i][j]
+            r.minimizer = options.minimizers[software][j]
+            results.append(r)
+        results_out.append(results)
+    return results_out, options, min_chi_sq, min_runtime
 
 
 class SaveResultsTests(unittest.TestCase):
@@ -62,11 +166,31 @@ class CreateDirectoriesTests(unittest.TestCase):
 
 
 class PreproccessDataTests(unittest.TestCase):
-    def test_dummy(self):
+    """
+    Unit tests for preproccess_data function
+    """
+
+    def setUp(self):
         """
-        Dummy test to appease pytest
+        Setting up paths and results folders
         """
-        pass
+        self.results, self.options, self.min_chi_sq, self.min_runtime = \
+            generate_mock_results()
+
+    def test_preproccess_data(self):
+        """
+        Test for preproccess_data function
+        """
+        best_result = preproccess_data(self.results)
+
+        for result in best_result:
+            assert result.is_best_fit
+
+        for result, chi_sq, runtime in zip(self.results,
+                                           self.min_chi_sq,
+                                           self.min_runtime):
+            assert all(r.min_chi_sq == chi_sq for r in result)
+            assert all(r.min_runtime == runtime for r in result)
 
 
 class CreatePlotsTests(unittest.TestCase):
