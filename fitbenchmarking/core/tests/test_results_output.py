@@ -1,9 +1,16 @@
+"""
+Results output tests
+"""
+
 from __future__ import (absolute_import, division, print_function)
 import unittest
 import os
 import shutil
 import numpy as np
+# mock module are used as decorators so raise a pylint error
+# pylint: disable=import-error
 import mock
+# pylint: enable=import-error
 
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -11,7 +18,6 @@ from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.core.results_output import create_directories, \
     save_results, preproccess_data, create_plots, create_problem_level_index
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.utils import fitbm_result
 
 
 # By design both fitting_function_1 and fitting_function_2 need data as an
@@ -233,7 +239,7 @@ class CreatePlotsTests(unittest.TestCase):
             generate_mock_results()
         self.best_results = preproccess_data(self.results)
 
-    @ mock.patch('fitbenchmarking.results_processing.plots.Plot')
+    @mock.patch('fitbenchmarking.results_processing.plots.Plot')
     def test_create_plots_with_params(self, plot_mock):
         """
         Tests for create_plots where the results object params are not None
@@ -262,7 +268,7 @@ class CreatePlotsTests(unittest.TestCase):
             assert all(r.figure_link == expected_plot_fit
                        if not r.is_best_fit else True for r in result)
 
-    @ mock.patch('fitbenchmarking.results_processing.plots.Plot')
+    @mock.patch('fitbenchmarking.results_processing.plots.Plot')
     def test_create_plots_without_params(self, plot_mock):
         """
         Tests for create_plots where the results object params are None
