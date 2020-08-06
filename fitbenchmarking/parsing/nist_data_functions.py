@@ -60,20 +60,20 @@ def nist_jacobian_definition(jacobian, param_names):
     scipy_jacobian = []
     for jacobian_lines in jacobian:
         jacobian_scipy_format = format_function_scipy(jacobian_lines)
-        print(jacobian_scipy_format)
         # Create a function def for each starting set in startvals
         if not is_safe(jacobian_scipy_format):
-            raise ParsingError('Error while sanitizing input')
+            raise ParsingError('Error while sanitizing Jacobian input')
         # Sanitizing of function_scipy_format is done so exec use is valid
         # Param_names is sanitized in get_nist_param_names_and_values
         # pylint: disable=exec-used
         scipy_jacobian.append(jacobian_scipy_format)
-
     jacobian_format = "-np.array([{}]).T".format(",".join(scipy_jacobian))
+
     new_param_name = "params"
     for i, name in enumerate(param_names):
         jacobian_format = jacobian_format.replace(
             name, "{0}[{1}]".format(new_param_name, i))
+
     local_dict = {}
     global_dict = {'__builtins__': {}, 'np': np}
     exec("def jacobian_function(x, " + new_param_name + "): return "
