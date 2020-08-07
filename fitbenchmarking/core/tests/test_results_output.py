@@ -174,7 +174,7 @@ class CreateDirectoriesTests(unittest.TestCase):
 
     def test_create_dirs_correct(self):
         """
-        Dummy test to appease pytest
+        Test to check that the directories are correctly made.
         """
         group_name = 'test_group'
         self.options.results_dir = self.dirname
