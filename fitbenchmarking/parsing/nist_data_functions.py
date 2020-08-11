@@ -42,6 +42,69 @@ def nist_func_definition(function, param_names):
     return local_dict['fitting_function']
 
 
+def nist_jacobian_definition(jacobian, param_names):
+    """
+    Processing a Jacobian plus different set of starting values as specified in
+    the NIST problem definition file into a callable
+
+    :param jacobian: Jacobian string as defined in the data files for the
+                     corresponding NIST problem definition file
+    :type jacobian: str
+    :param param_names: names of the parameters in the function
+    :type param_names: list
+
+    :return: callable function
+    :rtype: callable
+    """
+
+    scipy_jacobian = []
+    for jacobian_lines in jacobian:
+        jacobian_scipy_format = format_function_scipy(jacobian_lines)
+        # Create a function def for each starting set in startvals
+        if not is_safe(jacobian_scipy_format):
+            raise ParsingError('Error while sanitizing Jacobian input')
+
+        # Checks to see if the value is an integer and if so reformats the
+        # value to be a constant vector.
+        if is_int(jacobian_scipy_format):
+            jacobian_scipy_format += "*(np.ones(x.shape[0]))"
+        scipy_jacobian.append(jacobian_scipy_format)
+    jacobian_format = "-np.array([{}]).T".format(",".join(scipy_jacobian))
+
+    new_param_name = "params"
+    for i, name in enumerate(param_names):
+        jacobian_format = jacobian_format.replace(
+            name, "{0}[{1}]".format(new_param_name, i))
+
+    # Sanitizing of jacobian_scipy_format is done so exec use is valid
+    # Param_names is sanitized in get_nist_param_names_and_values
+    # pylint: disable=exec-used
+    local_dict = {}
+    global_dict = {'__builtins__': {}, 'np': np}
+    exec("def jacobian_function(x, " + new_param_name + "): return "
+         + jacobian_format, global_dict, local_dict)
+
+    return local_dict['jacobian_function']
+
+
+def is_int(value):
+    """
+    Checks to see if a value is an integer or not
+
+    :param value: String representation of an equation
+    :type value: str
+
+    :return: Whether or not value is an int
+    :rtype: bool
+    """
+    try:
+        int(value)
+        value_bool = True
+    except ValueError:
+        value_bool = False
+    return value_bool
+
+
 def format_function_scipy(function):
     """
     Formats the function string such that it is scipy-ready.
@@ -59,6 +122,7 @@ def format_function_scipy(function):
     function = function.replace("sin", "np.sin")
     function = function.replace("tan", "np.tan")
     function = function.replace("pi", "np.pi")
+    function = function.replace("Log", "np.log")
 
     return function
 
@@ -86,7 +150,7 @@ def is_safe(func_str):
 
     # These are all safe and can be stripped out
     if 'np' in func_str:
-        np_funcs = ['np.exp', 'np.cos', 'np.sin', 'np.tan', 'np.pi']
+        np_funcs = ['np.exp', 'np.cos', 'np.sin', 'np.tan', 'np.pi', 'np.log']
         for s in np_funcs:
             func_str = func_str.replace(s, '')
 

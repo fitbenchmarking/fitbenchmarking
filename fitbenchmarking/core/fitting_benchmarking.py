@@ -326,11 +326,11 @@ def loop_over_jacobians(controller, options, grabbed_output):
         for jac_method in jacobian_list:
             for num_method in options.num_method[jac_method]:
                 if minimizer_check:
-                    LOGGER.info("                Jacobian: %s %s",
-                                jac_method, num_method)
-                    minimizer_name = "{}: {} {}".format(minimizer,
-                                                        jac_method,
-                                                        num_method)
+                    LOGGER.info(
+                        "                Jacobian: {} ".format(jac_method)
+                        + (num_method if jac_method != "analytic" else ''))
+                    minimizer_name = "{}: {} ".format(minimizer, jac_method) \
+                        + (num_method if jac_method != "analytic" else '')
                 # Creates Jacobian class
                 jacobian_cls = create_jacobian(jac_method)
                 jacobian = jacobian_cls(problem)

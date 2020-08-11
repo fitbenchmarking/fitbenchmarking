@@ -19,7 +19,7 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 OPTIONS = Options()
-JACOBIAN_ENABLED_PARSERS = ['cutest']
+JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist']
 
 
 # pylint: disable=no-self-use
