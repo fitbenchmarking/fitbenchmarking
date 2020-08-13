@@ -57,11 +57,15 @@ class NISTParser(Parser):
             nist_func_definition(function=fitting_problem.equation,
                                  param_names=starting_values[0].keys())
         fitting_problem.format = "nist"
+        try:
+            jacobian = self._parse_jacobian(name)
+            fitting_problem.jacobian = \
+                nist_jacobian_definition(jacobian=jacobian,
+                                         param_names=starting_values[0].keys())
+        except NoJacobianError:
+            LOGGER.warn("WARNING: Could not find analytic Jacobian "
+                        "information for {} problem".format(name))
 
-        jacobian = self._parse_jacobian(name)
-        fitting_problem.jacobian = \
-            nist_jacobian_definition(jacobian=jacobian,
-                                     param_names=starting_values[0].keys())
         return fitting_problem
 
     def _parse_jacobian(self, name):

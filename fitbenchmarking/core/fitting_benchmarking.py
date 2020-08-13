@@ -9,13 +9,14 @@ from __future__ import absolute_import, division, print_function
 from collections import defaultdict
 import timeit
 import warnings
+import os
 
 import numpy as np
 
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.exceptions import NoResultsError, \
-    UnknownMinimizerError, UnsupportedMinimizerError
+    UnknownMinimizerError, UnsupportedMinimizerError, MissingSoftwareError
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 
@@ -61,15 +62,6 @@ def benchmark(options, data_dir):
 
     options.minimizers = minimizer_dict
 
-    # If the results are an empty list then this means that all minimizers
-    # raise an exception and the tables will produce errors if they run.
-    if results == []:
-        message = "The user chosen options setup resulted in all minimizers " \
-                  "raising an exception. This is likely due to the way " \
-                  "`algorithm_type` was set in the options. Please review " \
-                  "your options setup and re-run FitBenmarking."
-        raise NoResultsError(message)
-
     # Used to group elements in list by name
     results_dict = defaultdict(list)
     for problem_result in results:
@@ -92,32 +84,49 @@ def loop_over_benchmark_problems(problem_group, options):
              list of failed problems and dictionary of unselected minimizers
     :rtype: tuple(list, list, dict)
     """
-
     grabbed_output = output_grabber.OutputGrabber(options)
     results = []
     failed_problems = []
     for i, p in enumerate(problem_group):
-        with grabbed_output:
-            parsed_problem = parse_problem_file(p, options)
-        parsed_problem.correct_data()
-
-        name = parsed_problem.name
-
+        problem_passed = True
         info_str = " Running data from: {} {}/{}".format(
-            name, i + 1, len(problem_group))
+            os.path.basename(p), i + 1, len(problem_group))
         LOGGER.info('\n' + '#' * (len(info_str) + 1))
         LOGGER.info(info_str)
         LOGGER.info('#' * (len(info_str) + 1))
+        try:
+            with grabbed_output:
+                parsed_problem = parse_problem_file(p, options)
+                parsed_problem.correct_data()
+        except MissingSoftwareError as e:
+            info_str = " Could not run data from: {} {}/{}".format(
+                p, i + 1, len(problem_group))
+            LOGGER.warn(e)
+            problem_passed = False
 
-        ##############################
-        # Loops over starting values #
-        ##############################
-        problem_results, problem_fails, \
-            unselected_minimzers, minimizer_dict = \
-            loop_over_starting_values(parsed_problem, options, grabbed_output)
+        if problem_passed:
+            ##############################
+            # Loops over starting values #
+            ##############################
+            problem_results, problem_fails, \
+                unselected_minimzers, minimizer_dict = \
+                loop_over_starting_values(
+                    parsed_problem, options, grabbed_output)
+            results.extend(problem_results)
+            failed_problems.extend(problem_fails)
 
-        results.extend(problem_results)
-        failed_problems.extend(problem_fails)
+    # If the results are an empty list then this means that all minimizers
+    # raise an exception and the tables will produce errors if they run.
+    if results == []:
+        message = "The user chosen options and/or problem setup resulted in " \
+                  " all minimizers and/or parsers raising an exception. " \
+                  " This is likely due to the way `algorithm_type` was set " \
+                  " in the options or the selected problem set requires " \
+                  " additional software to be installed. Please review your " \
+                  " options setup and/or problem set then re-run " \
+                  "FitBenmarking."
+        raise NoResultsError(message)
+
     return results, failed_problems, unselected_minimzers, minimizer_dict
 
 
