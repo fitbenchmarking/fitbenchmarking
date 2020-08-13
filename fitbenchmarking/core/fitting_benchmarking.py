@@ -98,7 +98,7 @@ def loop_over_benchmark_problems(problem_group, options):
             with grabbed_output:
                 parsed_problem = parse_problem_file(p, options)
                 parsed_problem.correct_data()
-        except MissingSoftwareError as e:
+        except Exception as e:
             info_str = " Could not run data from: {} {}/{}".format(
                 p, i + 1, len(problem_group))
             LOGGER.warn(e)
