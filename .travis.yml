@@ -1,12 +1,9 @@
-os: linux
-dist: bionic
+sudo: required
 
-language: python
-python:
-  - 2.7
-  - 3.6
-  - 3.7
-  - 3.8
+language: minimal
+
+services:
+  - docker
 
 branches:
   only:
@@ -34,54 +31,16 @@ notifications:
     on_failure: always
 
 before_install:
-  - sudo apt-get update
-
-install:
-  - if [[ $SUITE == "UNIT" ]]; then source ./travis/full_install.sh; fi
-  - if [[ $SUITE == "UNIT_DEFAULT" ]]; then source ./travis/default_install.sh; fi
-  - if [[ $SUITE == "SYSTEM" ]]; then source ./travis/full_install.sh; fi
-  - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then source ./travis/default_install.sh; fi
-  - if [[ $SUITE == "LINTING" ]]; then source ./travis/linting_install.sh; fi
+  - docker pull tyronerees/fitbenchmarking-deps:latest
 
 script:
-  - if [[ $SUITE == "UNIT" ]]; then ./travis/unit_tests.sh; fi
-  - if [[ $SUITE == "UNIT_DEFAULT" ]]; then ./travis/unit_tests_default.sh; fi
-  - if [[ $SUITE == "SYSTEM" ]]; then ./travis/system_tests.sh; fi
-  - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then ./travis/system_tests_default.sh; fi
-  - if [[ $SUITE == "LINTING" ]]; then ./travis/linting_tests.sh;  fi
+  - docker run -t --mount type=bind,source=$(pwd),target=$(pwd) fitbenchmarking/fitbenchmarking:latest cd fitbenchmarking
+  - docker run -t ----mount type=bind,source=$(pwd),target=$(pwd) 
+#  - if [[ $SUITE == "UNIT" ]]; then ./travis/unit_tests.sh; fi
+#  - if [[ $SUITE == "UNIT_DEFAULT" ]]; then ./travis/unit_tests_default.sh; fi
+#  - if [[ $SUITE == "SYSTEM" ]]; then ./travis/system_tests.sh; fi
+#  - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then ./travis/system_tests_default.sh; fi
+#  - if [[ $SUITE == "LINTING" ]]; then ./travis/linting_tests.sh;  fi
 
 after_success:
-  - if [[ $COVERAGE == "ON" ]]; then coveralls; fi
-
-jobs:
-  exclude:
-    - env: SUITE=UNIT_DEFAULT
-      python: 3.6
-    - env: SUITE=UNIT COVERAGE=ON
-      python: 2.7
-    - env: SUITE=UNIT COVERAGE=ON
-      python: 3.7
-    - env: SUITE=UNIT COVERAGE=ON
-      python: 3.8
-    - env: SUITE=SYSTEM_DEFAULT
-      python: 3.6
-    - env: SUITE=SYSTEM
-      python: 2.7
-    - env: SUITE=SYSTEM
-      python: 3.7
-    - env: SUITE=SYSTEM
-      python: 3.8
-    - env: SUITE=LINTING
-      python: 3.6
-    - env: SUITE=LINTING
-      python: 3.7
-
-
-  allow_failures:
-    # No longer guaranteed but good to know if working.
-    - env: SUITE=UNIT_DEFAULT
-      python: 2.7
-    - env: SUITE=SYSTEM_DEFAULT
-      python: 2.7
-    - env: SUITE=LINTING
-      python: 2.7
+  - if [[ $COVERAGE == "ON" ]]; then docker coveralls; fi
