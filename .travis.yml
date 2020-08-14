@@ -31,7 +31,7 @@ notifications:
     on_failure: always
 
 before_install:
-  - docker pull tyronerees/fitbenchmarking-deps:latest
+  - docker pull tyronerees/fitbenchmarking-deps:0.1
 
 script:
   - docker run -t --mount type=bind,source=$(pwd),target=$(pwd) fitbenchmarking/fitbenchmarking:latest cd fitbenchmarking
