@@ -3,6 +3,7 @@ Implements the base class for the fitting software controllers.
 """
 
 from abc import ABCMeta, abstractmethod
+import numpy
 
 from fitbenchmarking.utils.exceptions import ControllerAttributeError, \
     UnknownMinimizerError
@@ -147,15 +148,23 @@ class Controller:
         A helper function which checks all required attributes are set
         in software controllers
         """
-        values = {'_flag': int}
+        values = {'_flag': int, 'final_params': numpy.ndarray}
 
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
-            if not isinstance(attr, attr_type):
-                raise ControllerAttributeError(
-                    'Attribute "{}" in the controller is not the expected '
-                    'type. Expected "{}", got {}.'.format(
-                        attr_name, attr_type, type(attr)))
+            if attr_type != numpy.ndarray:
+                if not isinstance(attr, attr_type):
+                    raise ControllerAttributeError(
+                        'Attribute "{}" in the controller is not the expected '
+                        'type. Expected "{}", got {}.'.format(
+                            attr_name, attr_type, type(attr)))
+            else:
+                if all(numpy.isnan(n) or numpy.isinf(n) for n in attr):
+                    raise ControllerAttributeError(
+                        'Attribute "{}" in the controller is not the expected '
+                        'numpy ndarray of floats. Expected a list or '
+                        'numpy ndarray of floats, got {}'.format(attr_name,
+                                                                 attr))
 
     @abstractmethod
     def jacobian_information(self):
