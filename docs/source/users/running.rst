@@ -10,7 +10,7 @@ directory along with a template for passing in options.
 To run with any of these problem sets, you should pass the path to the
 `fitbenchmarking` command.
 
-  e.g ``fitbenchmarking examples/benchmark_problems/NIST/high_difficulty``
+  e.g ``fitbenchmarking examples/benchmark_problems/NIST/low_difficulty``
 
 An options file can also be passed with the ``-o`` argument.
 The template in `examples` is heavily documented and serves as a good
