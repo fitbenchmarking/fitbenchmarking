@@ -119,11 +119,11 @@ def loop_over_benchmark_problems(problem_group, options):
     # raise an exception and the tables will produce errors if they run.
     if results == []:
         message = "The user chosen options and/or problem setup resulted in " \
-                  " all minimizers and/or parsers raising an exception. " \
-                  " This is likely due to the way `algorithm_type` was set " \
-                  " in the options or the selected problem set requires " \
-                  " additional software to be installed. Please review your " \
-                  " options setup and/or problem set then re-run " \
+                  "all minimizers and/or parsers raising an exception. " \
+                  "This is likely due to the way `algorithm_type` was set " \
+                  "in the options or the selected problem set requires " \
+                  "additional software to be installed. Please review your " \
+                  "options setup and/or problem set then re-run " \
                   "FitBenmarking."
         raise NoResultsError(message)
 
