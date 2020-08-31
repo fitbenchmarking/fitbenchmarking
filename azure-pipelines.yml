@@ -21,10 +21,10 @@ steps:
   displayName: 'Use Python $(python.version)'
 
 - script: |
+    pip install -r requirements.txt
     pip install .
-  displayName: 'Install FitBenchmarking'
+  displayName: 'Install FitBenchmarking and requirements'
 
 - script: |
-    pip install pytest pytest-azurepipelines
     pytest fitbenchmarking\ --test-type default
   displayName: 'pytest'
