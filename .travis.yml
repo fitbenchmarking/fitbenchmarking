@@ -31,10 +31,22 @@ notifications:
     on_failure: always
 
 before_install:
-  - docker pull tyronerees/fitbenchmarking-deps:0.1
+  - if [[ $SUITE == "UNIT" ]]; then docker pull tyronerees/fitbenchmarking-extras:0.1; fi
+  - if [[ $SUITE == "UNIT_DEFAULT" ]];then docker pull tyronerees/fitbenchmarking-deps:0.1; fi;
+  - if [[ $SUITE == "SYSTEM" ]]; then docker pull tyronerees/fitbenchmarking-extras:0.1; fi;
+  - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then docker pull tyronerees/fitbenchmarking-deps:0.1; fi;
+  - if [[ $SUITE == "LINTING" ]]; then source ./travis/linting_install.sh; fi
+  
 
 script:
-  - docker run -t --mount type=bind,source=$(pwd),target=$(pwd) tyronerees/fitbenchmarking-deps:0.1 bash $(pwd)/travis/unit_tests_default.sh $(pwd)
+  - >
+    if [[ $SUITE == "UNIT" ]]; then
+    docker run
+           --volume ${PWD}:/home/fitbenchmarking/
+	   tyronerees/fitbenchmarking-deps:0.1
+	   bash -c "pip install .; 
+                    fitbenchmarking/travis/unit_tests_default.sh";
+    fi
   # - docker exec tyronerees/fitbenchmarking-deps:0.1 travis/unit_tests_default.sh
 #  - if [[ $SUITE == "UNIT" ]]; then ./travis/unit_tests.sh; fi
 #  - if [[ $SUITE == "UNIT_DEFAULT" ]]; then ./travis/unit_tests_default.sh; fi
