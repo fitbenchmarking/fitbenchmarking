@@ -12,7 +12,7 @@ import numpy as np
 import mock
 # pylint: enable=import-error
 
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.core.results_output import create_directories, \
@@ -103,7 +103,7 @@ def generate_mock_results():
         results = []
         for j in range(num_min):
             p.starting_values = starting_values
-            jac = Scipy(p)
+            jac = ScipyTwoPoint(p)
             jac.method = '2-point'
             r = FittingResult(options=options, problem=p, jac=jac,
                               initial_params=starting_values,
