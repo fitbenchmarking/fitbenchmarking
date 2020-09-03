@@ -275,6 +275,7 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                                  stmt=controller.fit).repeat(num_runs, 1)
                 runtime = sum(runtime_list) / num_runs
                 controller.cleanup()
+                controller.check_attributes()
         # Catching all exceptions as this means runtime cannot be calculated
         # pylint: disable=broad-except
         except Exception as excp:
@@ -289,8 +290,6 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                 else [None] * len(controller.data_x)
             chi_sq = np.inf if not problem.multifit \
                 else [np.inf] * len(controller.data_x)
-
-        controller.check_attributes()
 
         if controller.flag <= 2:
             ratio = np.max(runtime_list) / np.min(runtime_list)
@@ -315,6 +314,7 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                        'params': controller.final_params,
                        'error_flag': controller.flag,
                        'name': problem.name}
+
         if minimizer_check:
             if problem.multifit:
                 # Multi fit (will raise TypeError if these are not iterable)
