@@ -38,16 +38,15 @@ before_install:
   - if [[ $SUITE == "LINTING" ]]; then source ./travis/linting_install.sh; fi
   
 
-script:
-  - >
-    if [[ $SUITE == "UNIT" ]]; then
+script: >
+  - if [[ $SUITE == "UNIT" ]]; then
     docker run
            --volume ${PWD}:/home/fitbenchmarking/
 	   tyronerees/fitbenchmarking-deps:0.1
 	   bash -c "pip install .; 
                     fitbenchmarking/travis/unit_tests_default.sh";
     fi
-  # - docker exec tyronerees/fitbenchmarking-deps:0.1 travis/unit_tests_default.sh
+# - docker exec tyronerees/fitbenchmarking-deps:0.1 travis/unit_tests_default.sh
 #  - if [[ $SUITE == "UNIT" ]]; then ./travis/unit_tests.sh; fi
 #  - if [[ $SUITE == "UNIT_DEFAULT" ]]; then ./travis/unit_tests_default.sh; fi
 #  - if [[ $SUITE == "SYSTEM" ]]; then ./travis/system_tests.sh; fi
