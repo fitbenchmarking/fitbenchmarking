@@ -159,12 +159,17 @@ class Controller:
                         'type. Expected "{}", got {}.'.format(
                             attr_name, attr_type, type(attr)))
             else:
-                if any(numpy.isnan(n) or numpy.isinf(n) for n in attr):
-                    raise ControllerAttributeError(
-                        'Attribute "{}" in the controller is not the expected '
-                        'numpy ndarray of floats. Expected a list or '
-                        'numpy ndarray of floats, got {}'.format(attr_name,
-                                                                 attr))
+                # Mantid multifit produces final params as a list of final
+                # params.
+                if not self.problem.multifit:
+                    attr = [attr]
+                for a in attr:
+                    if any(numpy.isnan(n) or numpy.isinf(n) for n in a):
+                        raise ControllerAttributeError(
+                            'Attribute "{}" in the controller is not the '
+                            'expected numpy ndarray of floats. Expected a '
+                            'list or numpy ndarray of floats, got '
+                            '{}'.format(attr_name, attr))
 
     @abstractmethod
     def jacobian_information(self):
