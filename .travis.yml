@@ -42,8 +42,8 @@ script: >
   - if [[ $SUITE == "UNIT" ]]; then
     docker run
            --volume ${PWD}:/home/fitbenchmarking/
-	   tyronerees/fitbenchmarking-deps:0.1
-	   bash -c "pip install .; 
+           tyronerees/fitbenchmarking-deps:0.1
+           bash -c "pip install .; 
                     fitbenchmarking/travis/unit_tests_default.sh";
     fi
 # - docker exec tyronerees/fitbenchmarking-deps:0.1 travis/unit_tests_default.sh
