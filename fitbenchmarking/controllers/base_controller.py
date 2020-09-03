@@ -159,7 +159,7 @@ class Controller:
                         'type. Expected "{}", got {}.'.format(
                             attr_name, attr_type, type(attr)))
             else:
-                if all(numpy.isnan(n) or numpy.isinf(n) for n in attr):
+                if any(numpy.isnan(n) or numpy.isinf(n) for n in attr):
                     raise ControllerAttributeError(
                         'Attribute "{}" in the controller is not the expected '
                         'numpy ndarray of floats. Expected a list or '
