@@ -347,6 +347,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                                 num_runs, 1)
                         runtime = sum(runtime_list) / num_runs
                         controller.cleanup()
+                        controller.check_attributes()
                 # Catching all exceptions as this means runtime cannot be
                 # calculated
                 # pylint: disable=broad-except
@@ -361,8 +362,6 @@ def loop_over_jacobians(controller, options, grabbed_output):
 
                     chi_sq = np.inf if not problem.multifit \
                         else [np.inf] * len(controller.data_x)
-
-                controller.check_attributes()
 
                 if controller.flag <= 2:
                     ratio = np.max(runtime_list) / np.min(runtime_list)
