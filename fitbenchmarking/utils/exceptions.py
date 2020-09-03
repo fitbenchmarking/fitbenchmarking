@@ -150,6 +150,18 @@ class NoJacobianError(FitBenchmarkException):
         self.error_code = 11
 
 
+class NoAnalyticJacobian(FitBenchmarkException):
+    """
+    Indicates when no Jacobian data files can be found
+    """
+
+    def __init__(self, message=''):
+        super(NoAnalyticJacobian, self).__init__(message)
+
+        self._class_message = 'Could not find Jacobian data files'
+        self.error_code = 12
+
+
 class UnknownTableError(FitBenchmarkException):
     """
     Indicates a problem with the fitting problem.
@@ -159,7 +171,7 @@ class UnknownTableError(FitBenchmarkException):
         super(UnknownTableError, self).__init__(message)
 
         self._class_message = 'Set table option could not be found'
-        self.error_code = 12
+        self.error_code = 13
 
 
 class NoResultsError(FitBenchmarkException):
@@ -171,7 +183,7 @@ class NoResultsError(FitBenchmarkException):
         super(NoResultsError, self).__init__(message)
 
         self._class_message = 'FitBenchmarking ran with no results'
-        self.error_code = 13
+        self.error_code = 14
 
 
 class UnsupportedMinimizerError(FitBenchmarkException):
@@ -183,4 +195,4 @@ class UnsupportedMinimizerError(FitBenchmarkException):
         super(UnsupportedMinimizerError, self).__init__(message)
 
         self._class_message = 'FitBenchmarking ran with no results'
-        self.error_code = 14
+        self.error_code = 15

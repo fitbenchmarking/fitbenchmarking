@@ -3,8 +3,8 @@
 # fitbenchmarking/jacobian/scripts/NIST-Jacobians.nb
 
 J = {1,
-     cos[(pi*x)/6],
-     sin[(pi*x)/6],
+     cos((2*pi*x)/12),
+     sin[(2*pi*x)/12],
      (-2*b6*pi*x*cos[(2*pi*x)/b4])/b4**2 + (2*b5*pi*x*sin[(2*pi*x)/b4])/b4**2,
      cos[(2*pi*x)/b4],
      sin[(2*pi*x)/b4], 
