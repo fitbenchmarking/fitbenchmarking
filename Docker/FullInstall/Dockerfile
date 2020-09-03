@@ -7,7 +7,8 @@ WORKDIR /
 # Install gsl #
 ###############
 
-RUN apt-get install -y gsl-bin \
+RUN apt-get update && \
+ apt-get install -y gsl-bin \
  libgsl-dev \
  libgsl-dbg
  
