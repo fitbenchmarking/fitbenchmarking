@@ -9,6 +9,7 @@ from __future__ import absolute_import, division, print_function
 from collections import defaultdict
 import timeit
 import warnings
+import os
 
 import numpy as np
 
@@ -54,21 +55,12 @@ def benchmark(options, data_dir):
     #################################
     # Loops over benchmark problems #
     #################################
-    results, failed_problems, unselected_minimzers = \
-        loop_over_benchmark_problems(problem_group, options)
+    results, failed_problems, unselected_minimzers = loop_over_benchmark_problems(
+        problem_group, options)
 
     for keys, minimzers in unselected_minimzers.items():
         minimizers_all = options.minimizers[keys]
         options.minimizers[keys] = list(set(minimizers_all) - set(minimzers))
-
-    # If the results are an empty list then this means that all minimizers
-    # raise an exception and the tables will produce errors if they run.
-    if results == []:
-        message = "The user chosen options setup resulted in all minimizers " \
-                  "raising an exception. This is likely due to the way " \
-                  "`algorithm_type` was set in the options. Please review " \
-                  "your options setup and re-run FitBenmarking."
-        raise NoResultsError(message)
 
     # Used to group elements in list by name
     results_dict = defaultdict(list)
@@ -94,39 +86,54 @@ def loop_over_benchmark_problems(problem_group, options):
              list of failed problems and dictionary of unselected minimizers
     :rtype: tuple(list, list, dict)
     """
-
     grabbed_output = output_grabber.OutputGrabber(options)
     results = []
     failed_problems = []
     for i, p in enumerate(problem_group):
-        with grabbed_output:
-            parsed_problem = parse_problem_file(p, options)
-        parsed_problem.correct_data()
-
-        # Creates Jacobian class
-        jacobian_cls = create_jacobian(options)
-        jacobian = jacobian_cls(parsed_problem)
-
-        # Making the Jacobian class part of the fitting problem. This will
-        # eventually be extended to have Hessian information too.
-        parsed_problem.jac = jacobian
-
-        name = parsed_problem.name
-
+        problem_passed = True
         info_str = " Running data from: {} {}/{}".format(
-            name, i + 1, len(problem_group))
-        LOGGER.info('#' * (len(info_str) + 1))
+            os.path.basename(p), i + 1, len(problem_group))
+
+        LOGGER.info('\n' + '#' * (len(info_str) + 1))
         LOGGER.info(info_str)
         LOGGER.info('#' * (len(info_str) + 1))
 
-        ##############################
-        # Loops over starting values #
-        ##############################
-        problem_results, problem_fails, unselected_minimzers = \
-            loop_over_starting_values(parsed_problem, options, grabbed_output)
+        try:
+            with grabbed_output:
+                parsed_problem = parse_problem_file(p, options)
+                parsed_problem.correct_data()
+        except Exception as e:
+            info_str = " Could not run data from: {} {}/{}".format(
+                p, i + 1, len(problem_group))
+            LOGGER.warn(e)
+            problem_passed = False
 
-        results.extend(problem_results)
-        failed_problems.extend(problem_fails)
+        if problem_passed:
+            jacobian_cls = create_jacobian(options)
+            jacobian = jacobian_cls(parsed_problem)
+
+            # Making the Jacobian class part of the fitting problem. This will
+            # eventually be extended to have Hessian information too.
+            parsed_problem.jac = jacobian
+            ##############################
+            # Loops over starting values #
+            ##############################
+            problem_results, problem_fails, \
+                unselected_minimzers = loop_over_starting_values(
+                    parsed_problem, options, grabbed_output)
+            results.extend(problem_results)
+            failed_problems.extend(problem_fails)
+    # If the results are an empty list then this means that all minimizers
+    # raise an exception and the tables will produce errors if they run.
+    if results == []:
+        message = "The user chosen options and/or problem setup resulted in " \
+            "all minimizers and/or parsers raising an exception. " \
+            "This is likely due to the way `algorithm_type` was set " \
+                  "in the options or the selected problem set requires " \
+                  "additional software to be installed. Please review your " \
+                  "options setup and/or problem set then re-run " \
+                  "FitBenmarking."
+        raise NoResultsError(message)
 
     return results, failed_problems, unselected_minimzers
 
@@ -158,11 +165,10 @@ def loop_over_starting_values(problem, options, grabbed_output):
         ################################
         # Loops over fitting softwares #
         ################################
-        individual_problem_results, problem_fails, unselected_minimzers = \
-            loop_over_fitting_software(problem=problem,
-                                       options=options,
-                                       start_values_index=index,
-                                       grabbed_output=grabbed_output)
+        individual_problem_results, problem_fails, unselected_minimzers = loop_over_fitting_software(
+            problem=problem, options=options,
+            start_values_index=index,
+            grabbed_output=grabbed_output)
         problem_results.extend(individual_problem_results)
 
     return problem_results, problem_fails, unselected_minimzers
@@ -214,11 +220,10 @@ def loop_over_fitting_software(problem, options, start_values_index,
         #########################
         # Loops over minimizers #
         #########################
-        problem_result, minimizer_failed = \
-            loop_over_minimizers(controller=controller,
-                                 minimizers=minimizers,
-                                 options=options,
-                                 grabbed_output=grabbed_output)
+        problem_result, minimizer_failed = loop_over_minimizers(controller=controller,
+                                                                minimizers=minimizers,
+                                                                options=options,
+                                                                grabbed_output=grabbed_output)
         unselected_minimzers[s] = minimizer_failed
         software_results.extend(problem_result)
 
@@ -270,9 +275,8 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
             with grabbed_output:
                 controller.validate_minimizer(minimizer, algorithm_type)
                 # Calls timeit repeat with repeat = num_runs and number = 1
-                runtime_list = \
-                    timeit.Timer(setup=controller.prepare,
-                                 stmt=controller.fit).repeat(num_runs, 1)
+                runtime_list = timeit.Timer(setup=controller.prepare,
+                                            stmt=controller.fit).repeat(num_runs, 1)
                 runtime = sum(runtime_list) / num_runs
                 controller.cleanup()
                 controller.check_attributes()
@@ -322,8 +326,8 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                     result_args.update({'dataset_id': i,
                                         'name': '{}, Dataset {}'.format(
                                             problem.name, (i + 1))})
-                    individual_result = \
-                        fitbm_result.FittingResult(**result_args)
+                    individual_result = fitbm_result.FittingResult(
+                        **result_args)
                     results_problem.append(individual_result)
             else:
                 # Normal fitting

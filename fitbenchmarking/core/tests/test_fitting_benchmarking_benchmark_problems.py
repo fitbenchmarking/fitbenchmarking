@@ -9,7 +9,7 @@ import unittest
 import mock
 
 from fitbenchmarking import mock_problems
-from fitbenchmarking.utils import fitbm_result
+from fitbenchmarking.utils import fitbm_result, exceptions
 from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_benchmark_problems
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
@@ -122,13 +122,26 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         self.problem_fails = ['Random_failed_problem_1',
                               'Random_failed_problem_2']
         loop_over_starting_values.side_effect = self.mock_func_call
-        self.problem_group = []
         self.problem_group = [os.path.join(self.default_parsers_dir,
                                            "cubic.dat")]
 
         expected_problem_fails = self.problem_fails
         expected_list_length = len(self.list_results)
         self.shared_tests(expected_list_length, expected_problem_fails)
+
+    @mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
+    def test_check_no_results_produced(self, loop_over_starting_values):
+        """
+        Checks that multiple failed problems are reported correctly
+        """
+        loop_over_starting_values.side_effect = self.mock_func_call
+        problem_group = [os.path.join(self.default_parsers_dir,
+                                      "META.txt")]
+
+        with self.assertRaises(exceptions.NoResultsError):
+            _, _, _ = \
+                loop_over_benchmark_problems(problem_group,
+                                             self.options)
 
 
 if __name__ == "__main__":
