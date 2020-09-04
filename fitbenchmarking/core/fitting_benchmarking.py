@@ -60,7 +60,8 @@ def benchmark(options, data_dir):
 
     for keys, minimzers in unselected_minimzers.items():
         minimizers_all = options.minimizers[keys]
-        options.minimizers[keys] = list(set(minimizers_all) - set(minimzers))
+        diff = set(minimizers_all) - set(minimzers)
+        options.minimizers[keys] = [x for x in minimizers_all if x in diff]
 
     # Used to group elements in list by name
     results_dict = defaultdict(list)

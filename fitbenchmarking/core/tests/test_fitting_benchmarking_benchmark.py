@@ -153,29 +153,12 @@ class BenchmarkTests(unittest.TestCase):
         # run shared test and see if it match expected
         expected_minimzers = copy.copy(self.all_minimzers)
         for keys, minimzers in expected_unselected_minimzers.items():
-            expected_minimzers[keys] = \
-                list(set(expected_minimzers[keys]) - set(minimzers))
+            diff = set(expected_minimzers[keys]) - set(minimzers)
+            expected_minimzers[keys] = [x for x in expected_minimzers[keys]
+                                        if x in diff]
+
         self.shared_tests(expected_names, expected_unselected_minimzers,
                           expected_minimzers)
-
-# <<<<<<< HEAD
-#     @mock.patch('{}.loop_over_benchmark_problems'.format(FITTING_DIR))
-#     def test_check_no_results_produced(self, loop_over_benchmark_problems):
-#         """
-#         Checks benchmarking raises an error when no results are produced
-#         """
-
-#         results = []
-#         problem_fails = []
-#         expected_unselected_minimzers = {"scipy": []}
-#         loop_over_benchmark_problems.return_value = \
-#             (results, problem_fails, expected_unselected_minimzers)
-#         with self.assertRaises(NoResultsError):
-#             _, _, _ = \
-#                 benchmark(self.options, self.default_parsers_dir)
-
-# =======
-# >>>>>>> 723b27b2... Updating first example docs (#604)
 
 
 if __name__ == "__main__":
