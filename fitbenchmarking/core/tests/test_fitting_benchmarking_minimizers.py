@@ -5,8 +5,6 @@ from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 import unittest
-import mock
-
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.utils import fitbm_result, output_grabber
@@ -129,7 +127,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         assert minimizer_failed == self.minimizers
         assert new_minimizer_list == []
 
-    @mock.patch('{}.loop_over_jacobians'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_jacobians'.format(FITTING_DIR))
     def test_run_minimzers_selected(self, loop_over_jacobians):
         """
         Tests that some minimizers are selected
@@ -148,7 +146,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         assert minimizer_failed == ["deriv_free_algorithm"]
         assert new_minimizer_list == ["general"]
 
-    @mock.patch('{}.loop_over_jacobians'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_jacobians'.format(FITTING_DIR))
     def test_run_minimzers_all(self, loop_over_jacobians):
         """
         Tests that all minimizers are selected
