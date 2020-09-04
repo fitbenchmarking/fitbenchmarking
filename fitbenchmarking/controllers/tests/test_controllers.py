@@ -387,11 +387,12 @@ class ExternalControllerTests(TestCase):
         MantidController: Test for output shape
         """
         controller = MantidController(self.problem)
+        controller.jacobian = self.jac
         controller.minimizer = 'Levenberg-Marquardt'
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
-                                         False,
-                                         [])
+                                         True,
+                                         ["Simplex"])
         controller._status = "success"
         self.shared_tests.check_converged(controller)
         controller._status = "Failed to converge"
