@@ -3,15 +3,15 @@ FROM tyronerees/fitbenchmarking-deps:0.1
 
 WORKDIR /
 
-###############
-# Install gsl #
-###############
+#################
+# Install pygsl #
+#################
 
 RUN apt-get update && \
  apt-get install -y gsl-bin \
  libgsl-dev \
  libgsl-dbg
- 
+
 ##################
 # Install RALFit #
 ##################
@@ -53,7 +53,7 @@ RUN mkdir pycutest_cache
 
 ENV ARCHDEFS=/cutest/archdefs/ \
     SIFDECODE=/cutest/sifdecode/ \
-    MASTSIF=/fitbenchmarking/examples/benchmark_problems/SIF/ \
+    MASTSIF=/home/fitbenchmarking/examples/benchmark_problems/SIF/ \
     CUTEST=/cutest/cutest/ \
     MYARCH="pc64.lnx.gfo" \
     PYCUTEST_CACHE=/pycutest_cache \
@@ -93,6 +93,11 @@ RUN apt-get update && apt-get install mantid -y
 ENV PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib:/opt/Mantid/bin
 RUN pip install IPython six
 RUN /opt/Mantid/bin/mantidpython -m  mantid.simpleapi || echo "expected segfault on first run"
+
+#################
+# install pygsl #
+#################
+RUN python -m pip install pygsl
 
 
 ## ALL SET UP ##
