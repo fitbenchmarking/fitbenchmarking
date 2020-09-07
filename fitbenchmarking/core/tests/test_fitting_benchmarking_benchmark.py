@@ -160,23 +160,6 @@ class BenchmarkTests(unittest.TestCase):
         self.shared_tests(expected_names, expected_unselected_minimzers,
                           expected_minimzers)
 
-    @mock.patch('{}.loop_over_benchmark_problems'.format(FITTING_DIR))
-    def test_check_no_results_produced(self, loop_over_benchmark_problems):
-        """
-        Checks benchmarking raises an error when no results are produced
-        """
-
-        results = []
-        problem_fails = []
-        expected_unselected_minimzers = {"scipy": []}
-        expected_minimzers = copy.copy(self.all_minimzers)
-        loop_over_benchmark_problems.return_value = \
-            (results, problem_fails, expected_unselected_minimzers,
-             expected_minimzers)
-        with self.assertRaises(NoResultsError):
-            _, _, _ = \
-                benchmark(self.options, self.default_parsers_dir)
-
 
 if __name__ == "__main__":
     unittest.main()
