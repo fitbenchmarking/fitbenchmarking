@@ -38,8 +38,9 @@ before_install:
   - if [[ $SUITE == "LINTING" ]]; then source ./travis/linting_install.sh; fi
   
 
-script: >
-  - if [[ $SUITE == "UNIT" ]]; then
+script: 
+  - >
+    if [[ $SUITE == "UNIT" ]]; then
     docker run
            --volume ${PWD}:/home/fitbenchmarking/
            tyronerees/fitbenchmarking-extras:0.1
