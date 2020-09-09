@@ -12,7 +12,6 @@ import pycutest
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.utils.create_dirs import del_contents_of_dir
 from fitbenchmarking.utils.exceptions import ParsingError
 
 try:
@@ -23,7 +22,8 @@ except ImportError:
 if os.path.isdir(os.environ["PYCUTEST_CACHE"]+"pycutest_cache_holder"):
     # clear the cache
     for cached_problem in pycutest.all_cached_problems():
-        pycutest.clear_cache(cached_problem[0],cached_problem[1])
+        pycutest.clear_cache(cached_problem[0], cached_problem[1])
+
 
 # pylint: disable=attribute-defined-outside-init, too-few-public-methods
 
