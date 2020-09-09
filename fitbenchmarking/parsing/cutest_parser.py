@@ -19,7 +19,7 @@ try:
 except ImportError:
     from backports.tempfile import TemporaryDirectory
 
-if os.path.isdir(os.environ["PYCUTEST_CACHE"]+"pycutest_cache_holder"):
+if os.path.isdir(os.environ["PYCUTEST_CACHE"]+"/pycutest_cache_holder"):
     # clear the cache
     for cached_problem in pycutest.all_cached_problems():
         pycutest.clear_cache(cached_problem[0], cached_problem[1])
