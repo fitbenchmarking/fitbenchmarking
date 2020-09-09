@@ -20,10 +20,8 @@ try:
 except ImportError:
     from backports.tempfile import TemporaryDirectory
 
-
-# Empty the cache
-del_contents_of_dir(os.environ["PYCUTEST_CACHE"])
-
+for cached_problem in pycutest.all_cached_problems():
+    pycutest.clear_cache(cached_problem[0],cached_problem[1])
 
 # pylint: disable=attribute-defined-outside-init, too-few-public-methods
 
