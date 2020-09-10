@@ -56,8 +56,9 @@ ENV ARCHDEFS=/cutest/archdefs/ \
     MASTSIF=/home/fitbenchmarking/examples/benchmark_problems/SIF/ \
     CUTEST=/cutest/cutest/ \
     MYARCH="pc64.lnx.gfo" \
-    PYCUTEST_CACHE=/cutest/pycutest_cache/ \
-    PYTHONPATH="${PYCUTEST_CACHE}:${PYTHONPATH}"
+    PYCUTEST_CACHE=/cutest/pycutest_cache/
+
+ENV PYTHONPATH="${PYCUTEST_CACHE}:${PYTHONPATH}"
 
 # Install sifdecode
 
