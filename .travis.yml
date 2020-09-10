@@ -31,9 +31,9 @@ notifications:
     on_failure: always
 
 before_install:
-  - if [[ $SUITE == "UNIT" ]]; then docker pull tyronerees/fitbenchmarking-extras:0.2.1; fi
+  - if [[ $SUITE == "UNIT" ]]; then docker pull tyronerees/fitbenchmarking-extras:0.2.2; fi
   - if [[ $SUITE == "UNIT_DEFAULT" ]];then docker pull tyronerees/fitbenchmarking-deps:0.1; fi;
-  - if [[ $SUITE == "SYSTEM" ]]; then docker pull tyronerees/fitbenchmarking-extras:0.2.1; fi;
+  - if [[ $SUITE == "SYSTEM" ]]; then docker pull tyronerees/fitbenchmarking-extras:0.2.2; fi;
   - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then docker pull tyronerees/fitbenchmarking-deps:0.1; fi;
   - if [[ $SUITE == "LINTING" ]]; then source ./travis/linting_install.sh; fi
   
