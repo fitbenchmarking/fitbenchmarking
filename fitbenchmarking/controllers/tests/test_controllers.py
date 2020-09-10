@@ -202,10 +202,10 @@ class BaseControllerTests(TestCase):
                                 attribute
         """
         controller = DummyController(self.problem)
-
         with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
         controller.flag = 1
+        controller.final_params = [1]
         controller.check_attributes()
 
     def test_check_valid_flag(self):
@@ -213,6 +213,8 @@ class BaseControllerTests(TestCase):
         BaseSoftwareController: Test flag setting with valid values
         """
         controller = DummyController(self.problem)
+        controller.final_params = [1]
+
         for flag in [0, 1, 2, 3]:
             controller.flag = flag
 
@@ -221,8 +223,29 @@ class BaseControllerTests(TestCase):
         BaseSoftwareController: Test flag setting with invalid values
         """
         controller = DummyController(self.problem)
+        controller.final_params = [1, 2, 3, 4, 5]
         with self.assertRaises(exceptions.ControllerAttributeError):
             controller.flag = 10
+
+    def test_check_final_params_attr(self):
+        """
+        BaseSoftwareController: Test check_attributes function for final_params
+                                attribute
+        """
+        controller = DummyController(self.problem)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.check_attributes()
+
+    def test_check_invalid_final_params(self):
+        """
+        BaseSoftwareController: Test final_params setting with invalid values
+        """
+        controller = DummyController(self.problem)
+        controller.flag = 1
+        controller.final_params = [1, np.inf]
+        with self.assertRaises(exceptions.ControllerAttributeError):
+            controller.check_attributes()
 
     def test_validate_minimizer_true(self):
         controller = DummyController(self.problem)
@@ -364,11 +387,12 @@ class ExternalControllerTests(TestCase):
         MantidController: Test for output shape
         """
         controller = MantidController(self.problem)
+        controller.jacobian = self.jac
         controller.minimizer = 'Levenberg-Marquardt'
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
-                                         False,
-                                         [])
+                                         True,
+                                         ["Simplex"])
         controller._status = "success"
         self.shared_tests.check_converged(controller)
         controller._status = "Failed to converge"
