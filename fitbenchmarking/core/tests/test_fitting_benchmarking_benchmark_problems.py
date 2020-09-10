@@ -140,7 +140,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         expected_list_length = len(self.list_results)
         self.shared_tests(expected_list_length, expected_problem_fails)
 
-    @mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
     def test_check_no_results_produced(self, loop_over_starting_values):
         """
         Checks that multiple failed problems are reported correctly
