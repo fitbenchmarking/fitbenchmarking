@@ -34,18 +34,18 @@ notifications:
     on_failure: always
 
 before_install:
-  - if [[ $SUITE == "UNIT" ]]; then docker pull tyronerees/fitbenchmarking-extras:0.2.2; fi
-  - if [[ $SUITE == "UNIT_DEFAULT" ]];then docker pull tyronerees/fitbenchmarking-deps:0.1; fi;
-  - if [[ $SUITE == "SYSTEM" ]]; then docker pull tyronerees/fitbenchmarking-extras:0.2.2; fi;
-  - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then docker pull tyronerees/fitbenchmarking-deps:0.1; fi;
+  - if [[ $SUITE == "UNIT" ]]; then docker pull fitbenchmarking/fitbenchmarking-extras:latest; fi
+  - if [[ $SUITE == "UNIT_DEFAULT" ]];then docker pull fitbenchmarking/fitbenchmarking-deps:latest; fi;
+  - if [[ $SUITE == "SYSTEM" ]]; then docker pull fitbenchmarking/fitbenchmarking-extras:latest; fi;
+  - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then docker pull fitbenchmarking/fitbenchmarking-deps:latest; fi;
   - if [[ $SUITE == "LINTING" ]]; then source ./travis/linting_install.sh; fi
   
 
 script: 
-  - if [[ $SUITE == "UNIT" ]]; then docker run --volume ${PWD}:/home/fitbenchmarking/ tyronerees/fitbenchmarking-extras:0.2.2 bash -c "pip install fitbenchmarking/; fitbenchmarking/travis/unit_tests.sh"; fi
-  - if [[ $SUITE == "UNIT_DEFAULT" ]]; then docker run --volume ${PWD}:/home/fitbenchmarking/ tyronerees/fitbenchmarking-deps:0.1 bash -c "pip install fitbenchmarking/; fitbenchmarking/travis/unit_tests_default.sh"; fi
-  - if [[ $SUITE == "SYSTEM" ]]; then docker run --volume ${PWD}:/home/fitbenchmarking/ tyronerees/fitbenchmarking-extras:0.2.2 bash -c "pip install fitbenchmarking/; fitbenchmarking/travis/unit_tests.sh"; fi
-  - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then docker run --volume ${PWD}:/home/fitbenchmarking/ tyronerees/fitbenchmarking-deps:0.1 bash -c "pip install fitbenchmarking/; fitbenchmarking/travis/unit_tests_default.sh"; fi
+  - if [[ $SUITE == "UNIT" ]]; then docker run --volume ${PWD}:/home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-extras:latest bash -c "pip install fitbenchmarking/; fitbenchmarking/travis/unit_tests.sh"; fi
+  - if [[ $SUITE == "UNIT_DEFAULT" ]]; then docker run --volume ${PWD}:/home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-deps:latest bash -c "pip install fitbenchmarking/; fitbenchmarking/travis/unit_tests_default.sh"; fi
+  - if [[ $SUITE == "SYSTEM" ]]; then docker run --volume ${PWD}:/home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-extras:latest bash -c "pip install fitbenchmarking/; fitbenchmarking/travis/unit_tests.sh"; fi
+  - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then docker run --volume ${PWD}:/home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-deps:latest bash -c "pip install fitbenchmarking/; fitbenchmarking/travis/unit_tests_default.sh"; fi
   - if [[ $SUITE == "LINTING" ]]; then ./travis/linting_tests.sh;  fi
 
 after_success:
