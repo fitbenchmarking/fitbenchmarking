@@ -2,11 +2,11 @@
 # Test default installation
 if [ -z "$1" ]
     then
-        FB_DIR=fitbenchmarking/fitbenchmarking
+        FB_DIR=fitbenchmarking
     else
-        FB_DIR=$1/fitbenchmarking/fitbenchmarking
+        FB_DIR=$1/fitbenchmarking
 fi
-pytest $FB_DIR/cli --cov=fitbenchmarking/fitbenchmarking/cli --cov-report term-missing
+pytest $FB_DIR/cli --cov=fitbenchmarking/cli --cov-report term-missing
 status=$?
 for dir in controllers core jacobian parsing results_processing utils
 do

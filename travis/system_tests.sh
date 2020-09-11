@@ -1,5 +1,5 @@
 #!/bin/bash
 # ======= System Test =============== #
-pytest fitbenchmarking/fitbenchmarking/systests
+pytest fitbenchmarking/systests
 
 exit $?
