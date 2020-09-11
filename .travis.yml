@@ -40,6 +40,9 @@ before_install:
   - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then docker pull fitbenchmarking/fitbenchmarking-deps:latest; fi;
   - if [[ $SUITE == "LINTING" ]]; then source ./travis/linting_install.sh; fi
   
+install:
+  # mantid may segfault on first run, so run this outside of the test
+  - if [[ $SUITE == "UNIT" || $SUITE == "SYSTEM"]]; then docker run --volume ${PWD}:/home/fitbenchmarking/ -w /home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-full:latest bash -c "/opt/Mantid/bin/mantidpython -m mantid.simpleapi || echo 'expected segfault on first run'"; fi
 
 script: 
   - if [[ $SUITE == "UNIT" ]]; then docker run --env TRAVIS_JOB_ID="$TRAVIS_JOB_ID" --env TRAVIS_BRANCH="$TRAVIS_BRANCH" --volume ${PWD}:/home/fitbenchmarking/ -w /home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-extras:latest bash -c "pip install .; travis/unit_tests.sh"; fi
