@@ -12,7 +12,7 @@ omit =
 ; the second path is the path as it appears within the Docker container
 source =
   fitbenchmarking/
-  /home/fitbenchmarking/
+  /home/fitbenchmarking/fitbenchmarking/
 
 [report]
 omit =
