@@ -26,5 +26,5 @@ steps:
   displayName: 'Install FitBenchmarking and requirements'
 
 - script: |
-    pytest fitbenchmarking\ --test-type default
+    pytest fitbenchmarking\results_processing --test-type default
   displayName: 'pytest'
