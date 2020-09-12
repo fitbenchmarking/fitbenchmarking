@@ -35,6 +35,6 @@ steps:
     pytest fitbenchmarking\cli --test-type default
   displayName: 'unit testing'
   
-  - script: |
+- script: |
     pytest fitbenchmarking\systests --test-type default
   displayName: 'system testing'
