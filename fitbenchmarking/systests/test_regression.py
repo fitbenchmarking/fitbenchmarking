@@ -29,8 +29,8 @@ class TestRegressionAll(TestCase):
         Create an options file, run it, and get the results.
         """
         opts = setup_options()
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini')
-        opts.write(opt_file.name)
+        opt_file = tempfile.NamedTemporaryFile(suffix='.ini', mode='w')
+        opts.write_to_stream(opt_file)
 
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,
@@ -39,8 +39,8 @@ class TestRegressionAll(TestCase):
         run([problem], options_file=opt_file.name, debug=True)
 
         opts = setup_options(multifit=True)
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini')
-        opts.write(opt_file.name)
+        opt_file = tempfile.NamedTemporaryFile(suffix='.ini', mode='w')
+        opts.write_to_stream(opt_file)
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,
                                                'mock_problems',
@@ -113,8 +113,10 @@ class TestRegressionDefault(TestCase):
 
         # Get defaults which should have minimizers for every software
         opts = setup_options()
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini')
-        opts.write(opt_file.name)
+        opt_file = tempfile.NamedTemporaryFile(suffix='.ini', mode='w')
+        # while opt_file is open it cannot be reoponed on Windows NT or later
+        # and hence option available is to write to the stream directly
+        opts.write_to_stream(opt_file)
 
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,

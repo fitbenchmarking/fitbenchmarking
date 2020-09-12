@@ -234,12 +234,12 @@ class Options(object):
     def results_dir(self, value):
         self._results_dir = os.path.abspath(value)
 
-    def write(self, file_name):
+    def _create_config(self):
         """
-        Write the contents of the options object to a new options file.
+        Return the contents of the options object as a ConfigParser object,
+        which e.g. then can be written to a file object or other stream
 
-        :param file_name: The path to the new options file
-        :type file_name: str
+        :return: ConfigParser
         """
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str})
@@ -269,8 +269,27 @@ class Options(object):
                              'append': self.log_append,
                              'external_output': self.external_output}
 
+        return config
+
+    def write(self, file_name):
+        """
+        Write the contents of the options object to a new options file.
+
+        :param file_name: The path to the new options file
+        :type file_name: str
+        """
+        config = self._create_config()
+
         with open(file_name, 'w') as f:
             config.write(f)
+
+    def write_to_stream(self, file_object):
+        """
+        Write the contents of the options object to a file object.
+
+        :type file_object: file object
+        """
+        self._create_config().write(file_object)
 
 
 def read_list(s):
