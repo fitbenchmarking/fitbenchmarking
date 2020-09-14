@@ -4,9 +4,10 @@
 Repository Structure
 ####################
 
-At the root of the repository there are four directories:
+At the root of the repository there are five directories:
 
  - build
+ - Docker
  - docs
  - examples
  - fitbenchmarking
@@ -19,6 +20,26 @@ Build (``build``)
 This directory contains scripts to allow for installing packages such as Mantid
 through setuptools.
 
+*******************
+Docker (``Docker``)
+*******************
+
+The continuous integration process on travis currently run on a Docker container,
+and this directory holds the Dockerfiles.  The Docker containers are hosted on
+Dockerhub.
+
+`'BasicInstall`` holds the Dockerfile that is pushed to the repository `fitbenchmarking/fitbenchmarking-deps`, the lastest of which should have the tag `latest`.  This contains a basic Ubuntu install, with just the minimal infrastructure needed to run the tests.
+
+``FullInstall`` holds the Dockerfile that is pushed to the repository `fitbenchmarking/fitbenchmarking-extras`, the lastest of which should have the tag `latest`.  This is built on top of the basic container, and includes optional third party software that FitBenchmarking can work with.
+
+The versions on Docker Hub can be updated from a connected account by issuing the commands:
+
+.. code-block:: bash
+		docker build --tag fitbenchmarking-<type>:<tag>
+		docker tag fitbenchmarking-<type>:<tag> fitbenchmarking/fitbenchmarking-<type>:<tag>
+		docker push fitbenchmarking/fitbenchmarking-<type>:<tag>
+
+where `<type>` is, e.g., `deps` or `extras`, and `<tag>` is, e.g., `latest`.
 
 ************************
 Documentation (``docs``)
