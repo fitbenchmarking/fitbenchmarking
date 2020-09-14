@@ -1,5 +1,5 @@
 # Use the basic dependencies
-FROM tyronerees/fitbenchmarking-deps:0.1
+FROM fitbenchmarking/fitbenchmarking-deps:latest
 
 WORKDIR /
 

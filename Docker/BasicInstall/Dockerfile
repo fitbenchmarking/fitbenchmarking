@@ -14,12 +14,12 @@ ENV VIRTUAL_ENV=/opt/venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+RUN pip install wheel
 RUN pip install pytest>3.6 \
     		pytest-cov \
 		coveralls \
-		python-coveralls \
 		urllib3==1.23 \
-                mock
+                mock 
 		
 WORKDIR /home/
     
