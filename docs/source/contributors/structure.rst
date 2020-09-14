@@ -57,6 +57,7 @@ Examples (``examples``)
 ***********************
 
 Examples is used to store two sets of assets:
+
  - Problem files
  - Options files
 
