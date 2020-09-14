@@ -16,9 +16,10 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip install wheel
 RUN pip install pytest>3.6 \
-    		pytest-cov \
-		coveralls \
-		urllib3==1.23 \
+     		pytest-cov \
+ 		coveralls \
+		coverage~=4.5.4 \ 
+ 		urllib3==1.23 \
                 mock 
 		
 WORKDIR /home/
