@@ -132,6 +132,9 @@ def run(problem_sets, options_file='', debug=False):
         result_dir.append(group_results_dir)
         groups.append(label)
 
+        # resets options to original values
+        options.reset()
+
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
