@@ -371,7 +371,10 @@ def loop_over_jacobians(controller, options, grabbed_output):
                         x=controller.data_x,
                         y=controller.data_y,
                         e=controller.data_e)
-                    if np.isnan(runtime) or np.isnan(chi_sq):
+
+                    chi_sq_check = any(np.isnan(n) for n in chi_sq) \
+                        if problem.multifit else np.isnan(chi_sq)
+                    if np.isnan(runtime) or chi_sq_check:
                         raise ControllerAttributeError(
                             "Either the computed runtime or chi_sq values "
                             "was a NaN.")
