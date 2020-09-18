@@ -19,7 +19,7 @@ class Options(object):
                                             'default_options.ini'))
     VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'PLOTTING', 'LOGGING']
     VALID_MINIMIZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'mp'],
+        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
          'dfo': ['dfogn', 'dfols'],
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',

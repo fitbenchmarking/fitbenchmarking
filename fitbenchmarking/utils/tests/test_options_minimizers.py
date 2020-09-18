@@ -25,7 +25,7 @@ class MininimizerOptionTests(unittest.TestCase):
         """
         Checks valid bumps minimizers are set correctly
         """
-        expected = ['amoeba', 'lm-bumps', 'newton', 'mp']
+        expected = ['amoeba', 'lm-bumps', 'newton', 'de', 'mp']
         actual = self.options.minimizers['bumps']
         self.assertEqual(expected, actual)
 
