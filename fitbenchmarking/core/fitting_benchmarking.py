@@ -16,7 +16,8 @@ import numpy as np
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.exceptions import NoResultsError, \
-    UnknownMinimizerError, UnsupportedMinimizerError, MissingSoftwareError
+    UnknownMinimizerError, UnsupportedMinimizerError, MissingSoftwareError, \
+    ControllerAttributeError
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 
@@ -357,6 +358,26 @@ def loop_over_jacobians(controller, options, grabbed_output):
                         runtime = sum(runtime_list) / num_runs
                         controller.cleanup()
                         controller.check_attributes()
+                    ratio = np.max(runtime_list) / np.min(runtime_list)
+                    tol = 4
+                    if ratio > tol:
+                        warnings.warn(
+                            'The ratio of the max time to the min is {0}'
+                            ' which is  larger than the tolerance of {1},'
+                            ' which may indicate that caching has occurred'
+                            ' in the timing results'.format(ratio, tol))
+                    chi_sq = controller.eval_chisq(
+                        params=controller.final_params,
+                        x=controller.data_x,
+                        y=controller.data_y,
+                        e=controller.data_e)
+
+                    chi_sq_check = any(np.isnan(n) for n in chi_sq) \
+                        if problem.multifit else np.isnan(chi_sq)
+                    if np.isnan(runtime) or chi_sq_check:
+                        raise ControllerAttributeError(
+                            "Either the computed runtime or chi_sq values "
+                            "was a NaN.")
                 # Catching all exceptions as this means runtime cannot be
                 # calculated
                 # pylint: disable=broad-except
@@ -372,23 +393,6 @@ def loop_over_jacobians(controller, options, grabbed_output):
                     chi_sq = np.inf if not problem.multifit \
                         else [np.inf] * len(controller.data_x)
 
-                if controller.flag <= 2:
-                    ratio = np.max(runtime_list) / np.min(runtime_list)
-                    tol = 4
-                    if ratio > tol:
-                        warnings.warn(
-                            'The ratio of the max time to the min is {0}'
-                            ' which is  larger than the tolerance of {1},'
-                            ' which may indicate that caching has occurred'
-                            ' in the timing results'.format(ratio, tol))
-                    chi_sq = controller.eval_chisq(
-                        params=controller.final_params,
-                        x=controller.data_x,
-                        y=controller.data_y,
-                        e=controller.data_e)
-                else:
-                    chi_sq = np.inf if not problem.multifit \
-                        else [np.inf] * len(controller.data_x)
                 result_args = {'options': options,
                                'problem': problem,
                                'jac': jacobian,
