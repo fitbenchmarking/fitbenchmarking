@@ -46,13 +46,13 @@ examples include `Mantid <https://mantidproject.org/>`_,
 These packages include mathematical models, which depend on parameters,
 that can describe the data.
 We need to find values for the parameters in these models which
-fit be data best -- see this `Wikipedia article <https://en.wikipedia.org/wiki/Goodness_of_fit>`_.
+best fit the data -- for more background, see this `Wikipedia article <https://en.wikipedia.org/wiki/Goodness_of_fit>`_.
 The usual way this is done is by finding parameters that minimize the
 (weighted) squares of the error in the data, or :math:`\chi^2` value.
-This is done by formulating a nonlinear
+This is equivalent to formulating a nonlinear
 least-squares problem; specifically, given :math:`n` data points
 :math:`(x_i, y_i)` (the crosses in the figure above), together
-with errors on the values of :math:`y_i`, :math:`\sigma_i`, we solve
+with estimates of the errors on the values of :math:`y_i`, :math:`\sigma_i`, we solve
 
 .. math:: {\boldsymbol{\beta}}^* = \arg \min_{{\boldsymbol{\beta}}} \underbrace{\sum_i \left( \frac{y_i - f({\boldsymbol{\beta}};x_i)}{\sigma_i} \right)^2}_{\chi^2({\boldsymbol{\beta}})},\label{eq:chi2}
 
@@ -98,21 +98,21 @@ As the volume of data increases, and we do more and more data analysis
 algorithmically, it is increasingly important that we have the best algorithm
 without needing to check it by eye.  
 
-FitBenchmarking will help the scientist make an informed choice by
+FitBenchmarking will help the **scientist** make an informed choice by
 comparing runtime and accuracy of all available minimizers, on their
 specific hardware, on problems from their science area, which will
 ensure they are using the most appropriate minimizer. 
 
-FitBenchmarking will help the scientific software developer ensure
+FitBenchmarking will help the **scientific software developer** ensure
 that the most robust and quickest algorithms for the type of data
 analysis they support are available in their software.
 
-FitBenchmarking will help mathematicians see what the state of the
+FitBenchmarking will help **mathematicians** see what the state of the
 art is, and what kinds of data are problematic.  It will give
 them access to real data, and will give a route for novel methods to
 quickly make it into production.
 
-A workflow as described plays a crucial role in the processing and analysis of
+A workflow as described above plays a crucial role in the processing and analysis of
 data at large research facilities in tasks as diverse as instrument
 calibration, refinement of structures, and data analysis methods specific
 to different scientific techniques. FitBenchmarking will ensure that, across
@@ -120,4 +120,4 @@ all areas that utilise least-squares fitting, scientists can be confident they a
 using the best tool for the job.
    
 We discuss the specific
-FitBenchmarking paradigm in the Section :ref:`how`.
+FitBenchmarking paradigm in the Section :ref:`how`
