@@ -5,7 +5,7 @@ Benchmark problems
 ##################
 
 To help choose between the different minimizers, FitBenchmarking
-comes with some curated Benchmark problems—although it’s straightforward to
+comes with some curated Benchmark problems.  It is also straightforward to
 add custom data sets to the benchmark, if that is more appropriate; see
 :ref:`problem_def` for specifics of how to add additional problems in a
 supported file format.
@@ -21,11 +21,10 @@ We've made it possible to extend this list by following the steps in
 
 Each of the test problems contain:
 
-* a data set consisting of points :math:`(x_i, y_i)` (with optional errors on :math:`y_i`, :math:`\sigma_i`)
-* a definition of the fitting function, :math:`f({\boldsymbol{\beta}};x)`
-* (at least) one set of initial values for the function parameters :math:`{\boldsymbol{\beta}}_0`, and
-* an optional set of target values that the parameters are expected to reach, :math:`{\boldsymbol{\beta}}_*`.
-
+* a data set consisting of points :math:`(x_i, y_i)` (with optional errors on :math:`y_i`, :math:`\sigma_i`);
+* a definition of the fitting function, :math:`f({\boldsymbol{\beta}};x)`; and
+* (at least) one set of initial values for the function parameters :math:`{\boldsymbol{\beta}}_0`.
+  
 If a problem doesn’t have observational
 errors (e.g., the NIST problem set), then FitBenchmarking can
 approximate errors by taking :math:`\sigma_i = \sqrt{y_i}`.
@@ -37,7 +36,7 @@ problem data.
 As we work with scientists in other areas, we will extend the problem
 suite to encompass new categories. The FitBenchmarking framework has
 been designed to make it easy to integrate new problem sets, and any
-new problem set added to the framework can be tested with any and all of
+additional data added to the framework can be tested with any and all of
 the available fitting methods.
 
 Currently FitBenchmarking ships with data from the following sources:
@@ -114,14 +113,14 @@ STFC's ISIS Neutron and Muon source, and has been supplied in the
 format that `Mantid <https://mantidproject.org/>`__ uses to process
 the data.
 
-The size of these problems differ massively per problem.
+The size of these problems differ massively.
 The Engin-X calibration problems find 7 unknown parameters, and fit to
 56-67 data points.
 The Engin-X vanadium problems find 4 unknown parameters, and fit to around 14,168
 data points.
-The eVS problems find 8 unknown parameters, and fit to 1025 data points.
-The GEM problem finds 105 unknown parameters, and fits to 1314 data points.
-The WISH problems find 30 unknown parameters, and fit to 5 data points.
+The eVS problems find 8 unknown parameters, and fit to 1,025 data points.
+The GEM problem finds 105 unknown parameters, and fits to 1,314 data points.
+The WISH problems find 5 unknown parameters, and fit to 512 data points.
 
 .. warning::   
    |MantidWarning|
@@ -152,7 +151,7 @@ These are from a wide range of applications.  They have between
 2 and 9 unknown parameters, and for the most part fit between
 6 and 250 data points, although the `VESUVIO` examples (from
 the `VESUVIO <https://www.isis.stfc.ac.uk/Pages/Vesuvio.aspx>`_
-instrument at ISIS) have 1025 data points (with 8 unknown parameters).
+instrument at ISIS) have 1,025 data points (with 8 unknown parameters).
 
 .. warning::
    |CUTEstWarning|
