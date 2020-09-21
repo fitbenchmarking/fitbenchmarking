@@ -50,3 +50,4 @@ See below for the description of the base class implementation of ``get_values()
 .. currentmodule:: fitbenchmarking.results_processing.base_table
 .. autoclass:: fitbenchmarking.results_processing.base_table.Table
           :members: get_values, display_str, get_colour, colour_highlight
+	  :noindex:

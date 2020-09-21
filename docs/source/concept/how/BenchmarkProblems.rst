@@ -14,8 +14,8 @@ We supply some standard nonlinear least-squares test problems in the
 form of the `NIST nonlinear regression set <https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`_
 and the relevant problems from the `CUTEst problem set <https://github.com/ralna/CUTEst/wiki>`_,
 together with some real-world 
-data sets that have been extracted from `Mantid <https://www.mantidproject.org>`_ and
-`SASView <https://www.sasview.org>`_ usage examples and system tests.
+data sets that have been extracted from `Mantid <https://www.mantidproject.org>`__ and
+`SASView <https://www.sasview.org>`__ usage examples and system tests.
 We've made it possible to extend this list by following the steps in 
 :ref:`controllers`.
 
@@ -81,7 +81,7 @@ data from Muon spectrometers.  The data supplied comes
 from the `HiFi <https://www.isis.stfc.ac.uk/Pages/hifi.aspx>`_ and 
 `EMU <https://www.isis.stfc.ac.uk/Pages/EMU.aspx>`_ instruments at
 STFC's ISIS Neutron and Muon source, and has been supplied in the
-format that `Mantid <https://mantidproject.org/>`_ uses to process
+format that `Mantid <https://mantidproject.org/>`__ uses to process
 the data.
 
 These problems have between 5 and 13 unknown parameters, and fit around 1,000 data points.
@@ -94,7 +94,7 @@ NIST
 ----
 
 In the folder `examples/benchmark_problems/NIST` you will find
-data from the `NIST Nonlinear Regression https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`_ test set.
+data from the `NIST Nonlinear Regression <https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`_ test set.
 
 These problems are split into low, average and high difficulty.
 They have between 2 and 9 unknown parameters, and
@@ -111,7 +111,7 @@ from the `Engin-X <https://www.isis.stfc.ac.uk/Pages/Engin-X.aspx>`_,
 `eVS <https://www.isis.stfc.ac.uk/Pages/Vesuvio.aspx>`_, and
 `WISH <https://www.isis.stfc.ac.uk/Pages/wish.aspx>`_ instruments at
 STFC's ISIS Neutron and Muon source, and has been supplied in the
-format that `Mantid <https://mantidproject.org/>`_ uses to process
+format that `Mantid <https://mantidproject.org/>`__ uses to process
 the data.
 
 The size of these problems differ massively per problem.
@@ -134,7 +134,7 @@ In the folder `examples/benchmark_problems/SAS_modelling/1D` are
 two data sets from small angle scattering experiments.
 These are from fitting data to a
 `cylinder <http://www.sasview.org/docs/user/models/cylinder.html>`_,
-and have been supplied in the format that `SASView <http://www.sasview.org>`_
+and have been supplied in the format that `SASView <http://www.sasview.org>`__
 uses to process the data.
 
 These have 6 unknown parameters, and fit to either 20 or 54 data points.

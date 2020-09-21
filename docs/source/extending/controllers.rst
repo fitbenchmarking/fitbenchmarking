@@ -31,17 +31,18 @@ In order to add a new controller, you will need to:
       software, do any work that can be done without knowledge of the
       minimizer to use, or function to fit, and call ``super().__init__()``. In this
       function, you must initialize the a dictionary, ``self.algorithm_type``, such that
-      the keys are given by:
+      the **keys** are given by:
 
-        - 'all' - all minimizers
-        - 'ls' - least-squares fitting algorithms
-        - 'deriv_free' - derivative free algorithms (these are algorithms that
+        - ``all`` - all minimizers
+        - ``ls`` - least-squares fitting algorithms
+        - ``deriv_free`` - derivative free algorithms (these are algorithms that
           cannot use derivative information. For example, the
           'Simplex' method in 'Mantid' does not require Jacobians.
           However, 'lm-scipy-no-jac' in 'scipy_ls' is designed to use derivatives,
           but calculates an approximation internally if one is not supplied.)
-        - 'general' - minimizers which solve a generic `min f(x)`
-      and the values as a list of minimizer for that specific controller that fit into each of the above categories. See for example the ``GSL`` controller.
+        - ``general`` - minimizers which solve a generic `min f(x)`
+
+      The **values** of the dictionary are given as a list of minimizer for that specific controller that fit into each of the above categories. See for example the ``GSL`` controller.
    -  ``jacobian_information()``: Setups up Jacobian information for the
       controller. This should return the following arguments:
 
@@ -60,7 +61,8 @@ In order to add a new controller, you will need to:
       (``self.results``, ``self.final_params``, ``self.flag``).
       The flag corresponds to the following messages:
 
-      .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag
+      .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag()
+		      :noindex:
 
 4. Document the available minimizers (see :ref:`options`, :ref:`options_extend`
    and any example files in the ``example_scripts`` directory). For none ``pip``
@@ -100,7 +102,8 @@ following members of the :class:`~fitbenchmarking.parsing.fitting_problem.Fittin
 
 .. currentmodule:: fitbenchmarking.jacobian.base_jacobian
 .. autoclass:: fitbenchmarking.jacobian.base_jacobian.Jacobian
-          :members: eval, eval_r_norm
+	  :noindex:
+          :members: eval, eval_r_norm	
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem

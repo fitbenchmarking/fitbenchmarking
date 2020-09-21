@@ -41,6 +41,7 @@ classes:
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
           :members: cache_fx, cache_rx, cache_r_norm_x
+	  :noindex:
 
 .. note::
    If using cached values, use the base class ``cached_func_values`` method that checks
