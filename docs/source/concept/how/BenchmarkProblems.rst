@@ -5,7 +5,7 @@ Benchmark problems
 ##################
 
 To help choose between the different minimizers, FitBenchmarking
-comes with some curated Benchmark problems—although it’s straightforward
+comes with some curated Benchmark problems—although it’s straightforward to
 add custom data sets to the benchmark, if that is more appropriate; see
 :ref:`problem_def` for specifics of how to add additional problems in a
 supported file format.
@@ -17,7 +17,7 @@ together with some real-world
 data sets that have been extracted from `Mantid <https://www.mantidproject.org>`__ and
 `SASView <https://www.sasview.org>`__ usage examples and system tests.
 We've made it possible to extend this list by following the steps in 
-:ref:`controllers`.
+:ref:`parsers`.
 
 Each of the test problems contain:
 
@@ -49,7 +49,7 @@ In the folder `examples/benchmark_problems/DIAMOND_SIF` you will find
 data from powder diffraction experiments.  The data supplied comes
 from the `I14 Hard X-Ray Nanoprobe <https://www.diamond.ac.uk/Instruments/Imaging-and-Microscopy/I14.html>`_ beamline at
 the Diamond Light source, and has been supplied in the SIF
-format used by `CUTEst <https://github.com/ralna/CUTEst>`_.the data.
+format used by `CUTEst <https://github.com/ralna/CUTEst>`_.
 
 These problems have either 66 or 99 unknown parameters, and fit around 5,000 data points.
 
@@ -150,7 +150,7 @@ continuous optimization testing environment.
 
 These are from a wide range of applications.  They have between
 2 and 9 unknown parameters, and for the most part fit between
-6 and 250 data points, although the `VESUVIO*` examples (from
+6 and 250 data points, although the `VESUVIO` examples (from
 the `VESUVIO <https://www.isis.stfc.ac.uk/Pages/Vesuvio.aspx>`_
 instrument at ISIS) have 1025 data points (with 8 unknown parameters).
 
@@ -163,7 +163,7 @@ Simple tests
 
 The folder `examples/benchmark_problems/simple_tests` contains
 a number of simple tests with known, and easy to obtain,
-answers.  We recommend that this is used to test any new data sets
+answers.  We recommend that this is used to test any new minimizers
 that are added, and also that any new parsers reimplement these
 data sets and models (if possible).
 
