@@ -4,7 +4,7 @@
 Installation
 ############
 
-Fitbenchmarking will install all softwares that can be installed through pip.
+Fitbenchmarking will install all packages that can be installed through pip.
 This includes the minimizers from SciPy, bumps, DFO-GN/LS, Minuit, and
 also the SASModels package.
 
