@@ -17,7 +17,7 @@ Linux and Mac OS. As of this writing the tool does not have instructions
 and/or code for setting it up to run on specialised hardware.
 
 For questions, requests etc. don’t hesitate to contact us on
-fitbenchmarking.supp@gmail.com.
+support@fitbenchmarking.com.
 
 
 .. toctree::
