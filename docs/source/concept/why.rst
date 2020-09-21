@@ -45,7 +45,11 @@ examples include `Mantid <https://mantidproject.org/>`_,
 
 These packages include mathematical models, which depend on parameters,
 that can describe the data.
-The usual way to find good values for the parameters is to formulate a nonlinear
+We need to find values for the parameters in these models which
+fit be data best -- see this `Wikipedia article <https://en.wikipedia.org/wiki/Goodness_of_fit>`_.
+The usual way this is done is by finding parameters that minimize the
+(weighted) squares of the error in the data, or :math:`\chi^2` value.
+This is done by formulating a nonlinear
 least-squares problem; specifically, given :math:`n` data points
 :math:`(x_i, y_i)` (the crosses in the figure above), together
 with errors on the values of :math:`y_i`, :math:`\sigma_i`, we solve
