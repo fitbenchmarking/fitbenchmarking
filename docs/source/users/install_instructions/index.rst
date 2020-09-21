@@ -18,4 +18,4 @@ you must install them with the external software instructions.
     :caption: Softwares:
 
     fitbenchmarking
-    externals/index
+    externals

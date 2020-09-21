@@ -169,9 +169,8 @@ data sets and models (if possible).
 
 .. |CUTEstWarning| replace::
 		   The external packages CUTEst and pycutest must be installed to run
-		   this data set.   At present, this is only available for linux systems.
-		   See :ref:`CUTEst` for details.
+		   this data set.   See :ref:`external-instructions` for details.
 
 .. |MantidWarning| replace::
 		   The external package Mantid must be installed to run
-		   this data set.  See :ref:`InstallMantid` for details.
+		   this data set.  See :ref:`external-instructions` for details.

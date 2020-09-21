@@ -4,6 +4,11 @@
 The Benchmarking Paradigm
 *************************
 
+FitBenchmarking can compare against any of the supported minmizers listed in
+:ref:`minimizer_option`.  We've also made it straightforward to add new software by
+following the instructions in :ref:`controllers` -- the software just needs
+to be callable from  Python.
+
 
 Once you have chosen which minimizers you want to compare for a given problem,
 running FitBenchmarking will give you a comparison to indicate the
