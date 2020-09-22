@@ -25,7 +25,7 @@ An example of a table is:
 .. figure:: ../../../images/example_table.png
    :alt: Example Table
 
-This is the result of FitBenchmarking for a selection of softwares/minimizers
+This is the result of FitBenchmarking for a selection of software/minimizers
 and different problem definition types supported in FitBenchmarking.
 Both the raw chi squared values, and the values normalised with respect
 to the best minimizer per problem, are given.

@@ -1,8 +1,8 @@
 .. _external-instructions:
 
-#############################
-Installing External Softwares
-#############################
+############################
+Installing External Software
+############################
 
 Fitbenchmarking will install all packages that are available through pip.
 

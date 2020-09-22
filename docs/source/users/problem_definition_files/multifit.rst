@@ -34,7 +34,7 @@ keys are described below:
 software
 ========
 Either 'Mantid' or 'SasView' (case insensitive).
-This defines which of the softwares to use to generate the function to be used
+This defines which of the software to use to generate the function to be used
 in fitting.
 
 name

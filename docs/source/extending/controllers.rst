@@ -8,7 +8,7 @@ Adding Fitting Software
 the available problems.*
 
 In FitBenchmarking, controllers are used to interface into the various fitting
-softwares. Controllers are responsible for converting the problem into a format
+software. Controllers are responsible for converting the problem into a format
 that the fitting software can use, and converting the result back to a
 standardised format (numpy arrays). As well as this, the controller must be
 written so that the fitting is separated from the preparation wherever possible
@@ -67,7 +67,7 @@ In order to add a new controller, you will need to:
 4. Document the available minimizers (see :ref:`options`, :ref:`options_extend`
    and any example files in the ``example_scripts`` directory). For none ``pip``
    installable software please comment out the software in the default options
-   file but add it to ``examples/all_softwares.ini``.
+   file but add it to ``examples/all_software.ini``.
 
 5. Create tests for the software in
    ``fitbenchmarking/controllers/tests/test_controllers.py``. If the package
@@ -77,12 +77,12 @@ In order to add a new controller, you will need to:
    controllers, this can be done by following the example of the others.
 
 6. If `pip` installable add to ``install_requires`` in ``setup.py`` otherwise follow
-   the same installation procedure for the external fitting softwares found in
+   the same installation procedure for the external fitting software found in
    :ref:`external-instructions`
 
-7. In the :ref:`Minimizers` page of the :ref:`how` page, update with the
+7. Update the :ref:`fitting_option` and :ref:`minimizer_option` pages with the
    new software and minimizers following the structure there. Note: make
-   sure that you use `<software_name>` in :ref:`Minimizers` so that the
+   sure that you use `<software_name>` in these places so that the
    software links in the HTML tables link correctly to the documentation.
 
 8. At the bottom of :doc:`main index page <../index>`, add the logo of the

@@ -23,7 +23,7 @@ keys are described below:
 software
 ========
 Either 'Mantid' or 'SasView' (case insensitive).
-This defines which of the softwares to use to generate the function to be used
+This defines which of the software to use to generate the function to be used
 in fitting.
 
 The 'Mantid' software also supports Mantids MultiFit functionality which
@@ -63,7 +63,7 @@ function
 ========
 This defines the function that will be used as a model for the fitting.
 Inside FitBenchmarking, this is passed on to the specified software and as
-such, a single function will not be valid with both softwares.
+such, a single function will not be valid with both packages.
 
 Mantid
 ^^^^^^

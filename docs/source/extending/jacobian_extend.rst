@@ -23,7 +23,7 @@ you will need to:
 
 3. Document the available Jacobians by:
 
-  * updating the docs for :ref:`jacobian` in ``docs/source/users/jacobian.rst``
+  * updating the docs for :ref:`jacobian_option` in ``docs/source/users/jacobian.rst``
   * updating options via :ref:`options` and :ref:`options_extend`
   * updating any example files in the ``examples`` directory
 

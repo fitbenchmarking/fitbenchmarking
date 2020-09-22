@@ -23,9 +23,9 @@ The following list details all cases where we are aware of a possible bias:
 - Using native FitBenchmarking problems with the Mantid software and fitting using Mantid.
     This is expected to have a smaller overhead on evaluating
     functions, and so may be marginally faster when compared to other
-    softwares.
+    software.
 - Using ties in native FitBenchmarking problems with the Mantid software.
-    This is not available for non-Mantid fitting softwares.
+    This is not available for non-Mantid fitting software.
     In these cases, a warning will be generated.
 
 
