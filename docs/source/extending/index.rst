@@ -2,17 +2,17 @@
 Extending FitBenchmarking Documentation
 #######################################
 
-Welcome to the documentation for the FitBenchmarking software.
+FitBenchmarking is designed to be easily extendable to add new features
+to the software.  Below we outline instructions for doing this.
 
 .. toctree::
     :titlesonly:
     :caption: Contents:
 
     parsers
+    jacobian_extend
     controllers
     options_extend
-    problems
-    jacobian_extend
     outputs/index
 
 

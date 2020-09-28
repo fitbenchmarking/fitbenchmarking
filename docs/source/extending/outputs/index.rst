@@ -2,7 +2,7 @@
 FitBenchmarking Outputs
 #######################
 
-Welcome to the documentation for the FitBenchmarking software.
+Here we describe how to add ways of displaying results obtained by FitBenchmarking.
 
 .. toctree::
     :titlesonly:

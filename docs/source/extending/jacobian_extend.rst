@@ -4,30 +4,28 @@
 Adding new Jacobians
 ####################
 
-*This section describes how to add further methods to approximate the Jacobian within FitBenchmarking*
+*This section describes how to add further methods to approximate the
+Jacobian within FitBenchmarking*
 
-In order to add a new Jacobian evaluation method,``<jac_method>``,
+In order to add a new Jacobian evaluation method, ``<jac_method>``,
 you will need to:
 
-1. Give the Jacobian method in the :ref:`fitting_option` using the following
-   convention ``<jac_method>`` and :ref:`jacobian_option` is added using
-   ``<jac_method>`` as the key and the list as possible numerical methods.
-
-2. Create ``fitbenchmarking/jacobian/<jac_method>_jacobian.py``
-   which contains a new subclass of ``Jacobian``
-   (from ``base_jacobian.py``). Then implement the method ``eval()``, which
+1. Create ``fitbenchmarking/jacobian/<jac_method>_jacobian.py``,
+   which contains a new subclass of
+   :class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian`.
+   Then implement the method
+   :meth:`~fitbenchmarking.jacobian.base_jacobian.Jacobian.eval()`, which
    evaluates the Jacobian. The numerical method is set sequentially
-   within ``fitbenchmarking.core.fitting_benchmark.loop_over_jacobians`` by
+   within :meth:`~fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians()` by
    using the ``method`` attribute of the class.
 
+2. Document the available Jacobians by:
 
-3. Document the available Jacobians by:
-
-  * updating the docs for :ref:`jacobian_option` in ``docs/source/users/jacobian.rst``
-  * updating options via :ref:`options` and :ref:`options_extend`
+  * adding ``<jac_method>`` as an option in :ref:`fitting_option`.
+  * adding a list of available ``method`` options to the docs for :ref:`jacobian_option`.
   * updating any example files in the ``examples`` directory
 
-4. Create tests for the Jacobian evaluation in
+3. Create tests for the Jacobian evaluation in
    ``fitbenchmarking/jacobian/tests/test_jacobians.py``.
 
 
@@ -44,6 +42,7 @@ classes:
 	  :noindex:
 
 .. note::
-   If using cached values, use the base class ``cached_func_values`` method that checks
-   that the parameters the function is evaluated at and will either use the cached
-   result or evaluates the function.
+   If using cached values, use the
+   :meth:`~fitbenchmarking.jacobian.base_jacobian.Jacobian.cached_func_values` method,
+   which first checks if a cached function evaluation is available to use
+   for the given parameters.
