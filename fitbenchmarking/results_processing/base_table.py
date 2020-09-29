@@ -99,9 +99,11 @@ class Table:
 
     def display_str(self, results):
         """
-        Function which converts the results from `self.get_values()` into
-        a string format used in the tables. Base class implementation takes
-        the absolute and relative values and uses `self.output_string_type`
+        Function which converts the results from 
+        :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()`
+        into a string respresentation to be used in the tables. 
+        Base class implementation takes
+        the absolute and relative values and uses ``self.output_string_type``
         as a template for the string format. This can be overwritten to
         adequately display the results.
 
@@ -131,7 +133,12 @@ class Table:
 
     def get_colour(self, results):
         """
-        Uses the relative values to set the HTML colours
+        Converts the result from 
+        :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()` 
+        into the HTML colours 
+        used in the tables. The base class implementation, for example, 
+        uses the relative results and ``colour_scale`` within 
+        :class:`~fitbenchmarking.utils.options.Options`.
 
         :param results: tuple containing absolute and relative values
         :type results: tuple
@@ -303,7 +310,9 @@ class Table:
 
     def colour_highlight(self, value, colour):
         """
-        Enable HTML colours in the HTML output
+        Takes the HTML colour values from 
+        :meth:`~fitbenchmarking.results_processing.base_table.Table.get_colour` 
+        and maps it over the HTML table using the Pandas style mapper.
 
         :param value: Row data from the pandas array
         :type value: pandas.core.series.Series

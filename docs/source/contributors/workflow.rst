@@ -26,15 +26,15 @@ Adding new code
 
 The first step in adding new code is to create a branch, where the work
 will be done. Branches should be named according to the convention
-"<nnn>-description", where <nnn> is the issue number.
+`<nnn>-description_of_work`, where `<nnn>` is the issue number.
 
-Please ensure everything required in :ref:`guidelines` is included in
+Please ensure our :ref:`guidelines` are adhered to throughout
 the branch.
 
 When you think your new code is ready to be merged into the codebase,
 you should open a pull request to master.
 The description should contain the
-words "Fixes #<nnn>", where <nnn> is the issue number; this will ensure
+words `Fixes #<nnn>`, where `<nnn>` is the issue number; this will ensure
 the issue is closed when the code is merged into master.  At this point
 the automated tests will trigger, and you can see if the code passes on
 an independent system.

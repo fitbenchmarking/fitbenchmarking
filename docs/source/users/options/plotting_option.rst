@@ -4,13 +4,13 @@
 Plotting Options
 ################
 
-The plotting section contains options to control how results are presented
+The plotting section contains options to control how results are presented.
 
 Make plots (:code:`make_plots`)
 -------------------------------
 
-This is used to allow the user to either create plots during runtime.
-Toggling this False will be much faster on small data sets.
+This allows the user to decide whether or not to create plots during runtime.
+Toggling this to False will be much faster on large data sets.
 
 Default is ``True`` (``yes``/``no`` can also be used)
 
@@ -22,11 +22,10 @@ Default is ``True`` (``yes``/``no`` can also be used)
 Colour scale (:code:`colour_scale`)
 -----------------------------------
 
-Lists thresholds for each colour in the html table
-In the below example, this means that values less than 1.1 will
+Lists thresholds for each colour in the html table.
+In the example below, this means that values less than 1.1 will
 have the top ranking (brightest) and values over 3 will show as
-the worst ranking (deep red). One can change the bounds (1.1,
-1.33, etc) and the colouring here or within the run script.
+the worst ranking (deep red). 
 
 Default thresholds are ``1.1, 1.33, 1.75, 3, and inf``
 
@@ -39,6 +38,8 @@ Default thresholds are ``1.1, 1.33, 1.75, 3, and inf``
                   3, #e34a33
                   inf, #b30000
 
+
+.. _ComparisonOption:
 
 Comparison mode (:code:`comparison_mode`)
 -----------------------------------------
@@ -61,13 +62,13 @@ Default is ``both``
 Table type (:code:`table_type`)
 -------------------------------
 
-This selects the types of tables to be produced in FitBenchmarking
-options are ``acc``, ``runtime``, ``compare``:
+This selects the types of tables to be produced in FitBenchmarking.
+Options are:
 
-* ``acc`` indicates that the resulting table should contain the chi_sq values for each of the minimizers
-* ``runtime`` indicates that the resulting table should contain the runtime values for each of the minimizers
-* ``compare`` indicates that the resulting table should contain both the chi_sq value and runtime values for each of the minimizers. The tables produced have the chi_sq values on the top line of the cell and the runtime on the bottom line of the cell.
-* ``local_min`` indicates that the resulting table should return true or false value whether the software terminates at a local minimum and the value of :math:`\frac{|| J^T r||}{||r||}` for those parameters. The output looks like "{bool} (norm_value)" and the colouring is red for false and cream for true.
+* ``acc`` indicates that the resulting table should contain the chi squared values for each of the minimizers.
+* ``runtime`` indicates that the resulting table should contain the runtime values for each of the minimizers.
+* ``compare`` indicates that the resulting table should contain both the chi squared value and runtime values for each of the minimizers. The tables produced have the chi squared values on the top line of the cell and the runtime on the bottom line of the cell.
+* ``local_min`` indicates that the resulting table should return true if a local minimum was found, or false otherwise.  The value of :math:`\frac{|| J^T r||}{||r||}` for those parameters is also returned. The output looks like ``{bool} (norm_value)``, and the colouring is red for false and cream for true.
 
 Default is ``acc``, ``runtime``, ``compare``, and ``local_min``.
 

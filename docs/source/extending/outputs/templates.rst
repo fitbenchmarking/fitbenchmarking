@@ -1,8 +1,8 @@
 .. _templates:
 
-#########
-Templates
-#########
+##################
+HTML/CSS Templates
+##################
 
 In FitBenchmarking, templates are used to generate all html output files,
 and can be found in the `fitbenchmarking/templates` directory.
