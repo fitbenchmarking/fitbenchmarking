@@ -38,7 +38,7 @@ def get_parser():
     epilog = '''Usage Examples:
 
     $ fitbenchmarking examples/benchmark_problems/NIST/*
-    $ fitbenchmarking -o examples/myoptions.ini \
+    $ fitbenchmarking -o examples/options_template.ini \
 examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
 
     parser = argparse.ArgumentParser(

@@ -4,13 +4,18 @@
 The Benchmarking Paradigm
 *************************
 
+FitBenchmarking can compare against any of the supported minmizers listed in
+:ref:`minimizer_option`.  We've also made it straightforward to add new software by
+following the instructions in :ref:`controllers` -- the software just needs
+to be callable from  Python.
 
-Once you have chosen which minimizers you want to compare on which problems,
-running FitBenchmarking will give you a comparison to indicate which of the
-chosen minimizers performs best.
+
+Once you have chosen which minimizers you want to compare for a given problem,
+running FitBenchmarking will give you a comparison to indicate the
+minimizer that performs best.
 
 There are a number of options that you can pick to customize what your tests
-are comparing or how they are run.  A full list of these options, and how to
+are comparing, or how they are run.  A full list of these options, and how to
 select them, is given in the section :ref:`options`.
 
 FitBenchmarking creates tables, as given in the section :ref:`output`,
@@ -20,10 +25,10 @@ An example of a table is:
 .. figure:: ../../../images/example_table.png
    :alt: Example Table
 
-This is the result of FitBenchmarking for a selection of softwares/minimizers
+This is the result of FitBenchmarking for a selection of software/minimizers
 and different problem definition types supported in FitBenchmarking.
-Both chi squared values and values that are normalised with respect
-to the best minimizer per problem are given.
+Both the raw chi squared values, and the values normalised with respect
+to the best minimizer per problem, are given.
 The problem names link to html pages that display plots of the
 data and the fit that was performed, together with initial and final
 values of the parameters. Here is an example of the final plot fit:

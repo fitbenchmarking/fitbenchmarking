@@ -2,7 +2,8 @@
 FitBenchmarking User Documentation
 ##################################
 
-Welcome to the documentation for the FitBenchmarking software.
+In these pages we describe how to install, run, and set options to use
+the FitBenchmarking software.
 
 .. toctree::
     :titlesonly:
@@ -14,6 +15,5 @@ Welcome to the documentation for the FitBenchmarking software.
     output/index
     options/index
     problem_definition_files/index
-    jacobian
     notes
 

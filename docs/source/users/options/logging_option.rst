@@ -59,8 +59,8 @@ Logging external output (:code:`external_output`)
 -------------------------------------------------
 
 This toggles whether the output grabber collects the third party
-output. We note that for the Windows operating system the
-default will be off.
+output. We note that for the Windows operating system this
+option is not available.
 
 Default is ``True`` (``yes``/``no`` can also be used)
 
