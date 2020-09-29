@@ -15,7 +15,7 @@ Installing FitBenchmarking and default fitting packages
    
    .. code-block:: bash
 		   
-      pip install .['bumps','DFO','minuit','SAS']
+      pip install .[bumps,DFO,minuit,SAS]
 
    If this doesn't work either ``pip`` is not
    in your PATH or not installed. See `here <https://pip.pypa.io/en/stable/>`__
