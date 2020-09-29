@@ -46,6 +46,10 @@ The Bumps minimizers are set as follows:
            de
            mp
 
+.. warning::
+   The additional dependency Bumps must be installed for this to be available;
+   See :ref:`extra_dependencies`.	 
+	   
 
 DFO (``dfo``)
 -----------------------
@@ -71,6 +75,12 @@ The DFO minimizers are set as follows:
     dfo: dfols
          dfogn
 
+.. warning::
+   Additional dependencies `DFO-GN` and `DFO-LS` must be installed for
+   these to be available;
+   See :ref:`extra_dependencies`.	 
+
+	 
 GSL (``gsl``)
 -------------
 
@@ -187,6 +197,11 @@ The Minuit minimizers are set as follows:
     [MINIMIZERS]
     minuit: minuit
 
+.. warning::
+   The additional dependency Minuit must be installed for this to be available;
+   See :ref:`extra_dependencies`.	 
+
+    
 RALFit (``ralfit``)
 -------------------
 
