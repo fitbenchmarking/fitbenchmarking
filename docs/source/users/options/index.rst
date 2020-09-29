@@ -4,23 +4,17 @@
 FitBenchmarking Options
 #######################
 
-FitBenchmarking is controlled by a set of options that are set in 2 places.
-In order from lowest priority to highest these are:
-
-- The default options.
-- An options file.
-
-The default options are a complete set of options with sensible values.
-These will be used when no other values are given for any of the options,
-the values for these can be seen in the links below.
+The default behaviour of FitBenchmarking can be changed by
+supplying an options file.  The default values of these options,
+and how to override them, are given in the pages below.
 
 .. toctree::
     :titlesonly:
     :maxdepth: 2
     :caption: Contents:
 
-    minimizer_option
     fitting_option
+    minimizer_option
     plotting_option
     logging_option
 

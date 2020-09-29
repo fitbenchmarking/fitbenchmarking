@@ -4,7 +4,8 @@
 Adding new Jacobians
 ####################
 
-*This section describes how to add further methods to approximate the Jacobian within FitBenchmarking*
+*This section describes how to add further methods to approximate the
+Jacobian within FitBenchmarking*
 
 In order to add a new Jacobian evaluation method, you will need to:
 
@@ -13,14 +14,18 @@ In order to add a new Jacobian evaluation method, you will need to:
    ``2point`` for ``<num_method>`` which would call the SciPy's 2-point finite
    difference approximation.
 
-2. Create ``fitbenchmarking/jacobian/<jac_method>_<num_method>_jacobian.py``
-   which contains a new subclass of ``Jacobian``
-   (from ``base_jacobian.py``).
-   Then implement the method ``eval()``, which evaluates the Jacobian.
+2. Create ``fitbenchmarking/jacobian/<jac_method>_<num_method>_jacobian.py``,
+   which contains a new subclass of
+   :class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian`.
+   Then implement the method
+   :meth:`~fitbenchmarking.jacobian.base_jacobian.Jacobian.eval()`, which
+   evaluates the Jacobian. The numerical method is set sequentially
+   within :meth:`~fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians()` by
+   using the ``method`` attribute of the class.
 
 3. Document the available Jacobians by:
 
-  * updating the docs for :ref:`jacobian` in ``docs/source/users/jacobian.rst``
+  * updating the docs for :ref:`fitting_option`
   * updating options via :ref:`options` and :ref:`options_extend`
   * updating any example files in the ``example`` directory
 

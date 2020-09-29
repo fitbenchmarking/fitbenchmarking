@@ -58,6 +58,24 @@ class Options(object):
              'PLOTTING': VALID_PLOTTING,
              'LOGGING': VALID_LOGGING}
 
+    DEFAULT_MINIMZERS = \
+        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'mp'],
+         'dfo': ['dfogn', 'dfols'],
+         'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
+                 'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
+                 'vector_bfgs2', 'steepest_descent'],
+         'mantid': ['BFGS',
+                    'Conjugate gradient (Fletcher-Reeves imp.)',
+                    'Conjugate gradient (Polak-Ribiere imp.)',
+                    'Damped GaussNewton', 'Levenberg-Marquardt',
+                    'Levenberg-MarquardtMD', 'Simplex',
+                    'SteepestDescent', 'Trust Region'],
+         'minuit': ['minuit'],
+         'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
+         'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
+                   'Newton-CG', 'L-BFGS-B', 'TNC'],
+         'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf',
+                      'dogbox']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': 'all',
@@ -80,7 +98,7 @@ class Options(object):
          'append': False,
          'level': 'INFO',
          'external_output': True}
-    DEFAULTS = {'MINIMIZERS': VALID_MINIMIZERS,
+    DEFAULTS = {'MINIMIZERS': DEFAULT_MINIMZERS,
                 'FITTING': DEFAULT_FITTING,
                 'PLOTTING': DEFAULT_PLOTTING,
                 'LOGGING': DEFAULT_LOGGING}
