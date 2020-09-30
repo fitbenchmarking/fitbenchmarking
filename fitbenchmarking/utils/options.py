@@ -63,7 +63,7 @@ class Options(object):
              'PLOTTING': VALID_PLOTTING,
              'LOGGING': VALID_LOGGING}
 
-    DEFAULTS_MINIMZERS = \
+    DEFAULT_MINIMZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'mp'],
          'dfo': ['dfogn', 'dfols'],
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
@@ -105,7 +105,7 @@ class Options(object):
          'append': False,
          'level': 'INFO',
          'external_output': True}
-    DEFAULTS = {'MINIMIZERS': DEFAULTS_MINIMZERS,
+    DEFAULTS = {'MINIMIZERS': DEFAULT_MINIMZERS,
                 'FITTING': DEFAULT_FITTING,
                 'JACOBIAN': DEFAULT_JACOBIAN,
                 'PLOTTING': DEFAULT_PLOTTING,
@@ -120,6 +120,9 @@ class Options(object):
         :param file_name: The options file to load
         :type file_name: str
         """
+        # stores the file name to be used to reset options for multiple
+        # problem groups
+        self.stored_file_name = file_name
         self.error_message = []
         self._results_dir = ''
         config = configparser.ConfigParser(converters={'list': read_list,
@@ -191,6 +194,12 @@ class Options(object):
 
         if self.error_message != []:
             raise OptionsError('\n'.join(self.error_message))
+
+    def reset(self):
+        """
+        Resets options object when running multiple problem groups.
+        """
+        self.__init__(self.stored_file_name)
 
     def read_value(self, func, option):
         """

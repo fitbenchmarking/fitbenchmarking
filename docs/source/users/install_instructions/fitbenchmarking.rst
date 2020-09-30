@@ -15,7 +15,7 @@ Installing FitBenchmarking and default fitting packages
    ``pip install .``. If this doesn't work either ``pip`` is not
    in your PATH or not installed. See `here <https://pip.pypa.io/en/stable/>`__
    for instructions to install ``pip``.
-4. Install any additional softwares you wish to benchmark.
+4. Install any additional software you wish to benchmark.
    See :ref:`external-instructions` for more information on this.
 
 Default fitting packages

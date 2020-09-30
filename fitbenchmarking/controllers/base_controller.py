@@ -23,12 +23,32 @@ class Controller:
 
     def __init__(self, problem):
         """
-        Initialise the class.
-        Sets up data as defined by the problem and use_errors variables,
-        and initialises variables that will be used in other methods.
-
+        Initialise anything that is needed specifically for the
+        software, do any work that can be done without knowledge of the
+        minimizer to use, or function to fit, and call 
+        ``super(<software_name>Controller, self).__init__(problem)``
+        (the base class's ``__init__`` implementation).
+        In this function, you must initialize the a dictionary,
+        ``self.algorithm_type``, such that the **keys** are given by:
+        
+        - ``all`` - all minimizers
+        - ``ls`` - least-squares fitting algorithms
+        - ``deriv_free`` - derivative free algorithms (these are algorithms that
+          cannot use derivative information. For example, the
+          ``Simplex`` method in ``Mantid`` does not require Jacobians, and so is
+	  derivative free.
+          However, ``lm-scipy-no-jac`` in ``scipy_ls`` is designed to use 
+          derivatives, but calculates an approximation internally if one is not 
+          supplied.)
+        - ``general`` - minimizers which solve a generic `min f(x)`.
+        
+        The **values** of the dictionary are given as a list of minimizers 
+        for that specific controller that fit into each of the above categories. 
+        See for example the ``GSL`` controller.
+ 
         :param problem: The parsed problem
-        :type problem: fitting_problem (see fitbenchmarking.parsers)
+        :type problem: 
+                :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
         """
 
         # Problem: The problem object from parsing
@@ -70,10 +90,10 @@ class Controller:
     @property
     def flag(self):
         """
-        | 0: 'Successfully converged'
-        | 1: 'Software reported maximum number of iterations exceeded'
-        | 2: 'Software run but didn't converge to solution'
-        | 3: 'Software raised an exception'
+        | 0: `Successfully converged`
+        | 1: `Software reported maximum number of iterations exceeded`
+        | 2: `Software run but didn't converge to solution`
+        | 3: `Software raised an exception`
         """
 
         return self._flag
@@ -174,23 +194,30 @@ class Controller:
     @abstractmethod
     def jacobian_information(self):
         """
-        Setups up Jacobian information for the controller. This should return the following arguments:
+        Sets up Jacobian information for the controller. 
 
-        has_jacobian: a True or False value whether the controller
-        requires Jacobian information
+        This should return the following arguments:
 
-        jacobian_free_solvers: a list of minimizers in a specific software
-        that do not require Jacobian informations. For example in the
-        `ScipyLS` controller this would return `lm-scipy-no-jac`
+        - ``has_jacobian``: a True or False value whether the controller
+          requires Jacobian information.
+        - ``jacobian_free_solvers``: a list of minimizers in a specific software
+          that do not require Jacobian information to be passed into the fitting
+	  algorithm. For example in the ``ScipyLS`` controller this would return
+	  ``lm-scipy-no-jac``.
+        
+        :return: (``has_jacobian``, ``jacobian_free_solvers``)
+        :rtype: (`string`, `list`)
         """
         raise NotImplementedError
 
     @abstractmethod
     def setup(self):
         """
-        Setup the specifics of the fitting
+        Setup the specifics of the fitting.
 
-        Anything needed for "fit" should be saved to self.
+        Anything needed for "fit" that can only be done after knowing the 
+        minimizer to use and the function to fit should be done here.
+        Any variables needed should be saved to self (as class attributes).
         """
         raise NotImplementedError
 
@@ -198,12 +225,22 @@ class Controller:
     def fit(self):
         """
         Run the fitting.
+        
+        This will be timed so should include only what is needed to fit the data.
         """
         raise NotImplementedError
 
     @abstractmethod
     def cleanup(self):
         """
-        Retrieve the result as a numpy array and store in self.results
+        Retrieve the result as a numpy array and store results.
+        
+        Convert the fitted parameters into a numpy array, saved to 
+        ``self.final_params``, and store the error flag as ``self.flag``.
+        
+        The flag corresponds to the following messages:
+        
+        .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag()
+		      :noindex:
         """
         raise NotImplementedError

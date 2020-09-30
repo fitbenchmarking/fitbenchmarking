@@ -38,7 +38,7 @@ def get_parser():
     epilog = '''Usage Examples:
 
     $ fitbenchmarking examples/benchmark_problems/NIST/*
-    $ fitbenchmarking -o examples/myoptions.ini \
+    $ fitbenchmarking -o examples/options_template.ini \
 examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
 
     parser = argparse.ArgumentParser(
@@ -131,6 +131,9 @@ def run(problem_sets, options_file='', debug=False):
                                             start=options.results_dir)
         result_dir.append(group_results_dir)
         groups.append(label)
+
+        # resets options to original values
+        options.reset()
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')

@@ -4,7 +4,7 @@
 FitBenchmarking Output
 ######################
 
-FitBenchmarking produces tables as outputs, follow the links bellow for
+FitBenchmarking produces tables as outputs.  The links below give
 descriptions of these tables.
 
 .. toctree::
@@ -26,5 +26,7 @@ The tables for ``accuracy``, ``runtime`` and ``compare`` have three display mode
    :module: fitbenchmarking.results_processing.base_table
    :var: FORMAT_DESCRIPTION
 
-The ``Local minimum`` table shows a ``True`` or ``False`` value together with a number. The description of this can be found in :ref:`local_min`.
+This can be set in the option file using the :ref:`Comparison Mode <ComparisonOption>` option.
+
+The :ref:`local_min` table is formatted differently, and doesn't use this convention.
 
