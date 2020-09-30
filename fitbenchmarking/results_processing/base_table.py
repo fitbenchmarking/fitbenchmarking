@@ -99,9 +99,9 @@ class Table:
 
     def display_str(self, results):
         """
-        Function which converts the results from 
+        Function which converts the results from
         :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()`
-        into a string respresentation to be used in the tables. 
+        into a string respresentation to be used in the tables.
         Base class implementation takes
         the absolute and relative values and uses ``self.output_string_type``
         as a template for the string format. This can be overwritten to
@@ -133,11 +133,11 @@ class Table:
 
     def get_colour(self, results):
         """
-        Converts the result from 
-        :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()` 
-        into the HTML colours 
-        used in the tables. The base class implementation, for example, 
-        uses the relative results and ``colour_scale`` within 
+        Converts the result from
+        :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()`
+        into the HTML colours
+        used in the tables. The base class implementation, for example,
+        uses the relative results and ``colour_scale`` within
         :class:`~fitbenchmarking.utils.options.Options`.
 
         :param results: tuple containing absolute and relative values
@@ -224,14 +224,15 @@ class Table:
         :return: HTLM table output
         :rtype: str
         """
-        link_template = '<a href="https://fitbenchmarking.readthedocs.io/en/'\
-            'latest/concept/how/Minimizers.html#{0}" target="_blank">{0}</a>'
+        link_template = '<a href="https://fitbenchmarking.readthedocs.io/'\
+                        'en/latest/users/options/minimizer_option.html#'\
+                        '{0}-{0}" target="_blank">{0}</a>'
         table.apply(lambda x: self.enable_error(x, error, "<sup>{}</sup>"),
                     axis=1, result_type='expand')
         table.apply(lambda x: self.enable_link(x, links), axis=1,
                     result_type='expand')
 
-        minimizers_list = [(link_template.format(s), m)
+        minimizers_list = [(link_template.format(s.replace("_", "-")), m)
                            for s in self.options.software
                            for m in self.options.minimizers[s]]
         columns = pd.MultiIndex.from_tuples(minimizers_list)
@@ -310,8 +311,8 @@ class Table:
 
     def colour_highlight(self, value, colour):
         """
-        Takes the HTML colour values from 
-        :meth:`~fitbenchmarking.results_processing.base_table.Table.get_colour` 
+        Takes the HTML colour values from
+        :meth:`~fitbenchmarking.results_processing.base_table.Table.get_colour`
         and maps it over the HTML table using the Pandas style mapper.
 
         :param value: Row data from the pandas array
