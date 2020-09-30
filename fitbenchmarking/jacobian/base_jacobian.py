@@ -4,6 +4,9 @@ Implements the base class for the Jacobian.
 from abc import ABCMeta, abstractmethod
 from numpy import array_equal, matmul
 
+import numpy as np
+from scipy.optimize._numdiff import approx_derivative
+
 
 class Jacobian:
     """
@@ -62,13 +65,12 @@ class Jacobian:
         :return: Computed derivative of the cost function
         :rtype: numpy array
         """
-        fx = self.cached_func_values(self.problem.cache_fx,
-                                     self.problem.eval_f,
+        rx = self.cached_func_values(self.problem.cache_rx,
+                                     self.problem.eval_r,
                                      params,
                                      **kwargs)
-
         J = self.eval(params, **kwargs)
-        out = matmul(J.T, fx)
+        out = matmul(J.T, rx)
         return out
 
     @property
