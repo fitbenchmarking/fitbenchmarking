@@ -70,7 +70,6 @@ class ScipyController(Controller):
                                    method=self.minimizer,
                                    jac=self.eval_jac,
                                    options=self.options)
-
         self._popt = self.result.x
         self._status = self.result.status
 
@@ -79,9 +78,9 @@ class ScipyController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        if self._status > 0:
+        if self._status == 0:
             self.flag = 0
-        elif self._status == 0:
+        elif self._status == 2:
             self.flag = 1
         else:
             self.flag = 2

@@ -313,11 +313,11 @@ class DefaultControllerTests(TestCase):
         controller.minimizer = 'CG'
         self.shared_tests.controller_run_test(controller)
 
-        controller._status = 1
-        self.shared_tests.check_converged(controller)
         controller._status = 0
+        self.shared_tests.check_converged(controller)
+        controller._status = 2
         self.shared_tests.check_max_iterations(controller)
-        controller._status = -1
+        controller._status = 1
         self.shared_tests.check_diverged(controller)
 
     def test_scipy_ls(self):
