@@ -1,8 +1,10 @@
-#######################
-FitBenchmarking Outputs
-#######################
+.. _extending_outputs:
 
-Welcome to the documentation for the FitBenchmarking software.
+################################
+Amending FitBenchmarking Outputs
+################################
+
+Here we describe how to add ways of displaying results obtained by FitBenchmarking.
 
 .. toctree::
     :titlesonly:

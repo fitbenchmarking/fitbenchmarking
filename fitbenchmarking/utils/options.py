@@ -63,7 +63,7 @@ class Options(object):
              'PLOTTING': VALID_PLOTTING,
              'LOGGING': VALID_LOGGING}
 
-    DEFAULTS_MINIMZERS = \
+    DEFAULT_MINIMZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'mp'],
          'dfo': ['dfogn', 'dfols'],
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
@@ -105,7 +105,7 @@ class Options(object):
          'append': False,
          'level': 'INFO',
          'external_output': True}
-    DEFAULTS = {'MINIMIZERS': DEFAULTS_MINIMZERS,
+    DEFAULTS = {'MINIMIZERS': DEFAULT_MINIMZERS,
                 'FITTING': DEFAULT_FITTING,
                 'JACOBIAN': DEFAULT_JACOBIAN,
                 'PLOTTING': DEFAULT_PLOTTING,

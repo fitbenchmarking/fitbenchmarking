@@ -22,7 +22,6 @@ accuracy and timings.
    :caption: FitBenchmarking stages:
 
    BenchmarkProblems
-   Minimizers
    BenchmarkingParadigm
 
 

@@ -8,13 +8,22 @@ A set of example problems can be found the ``fitbenchmarking/examples``
 directory along with a template for passing in options.
 
 To run with any of these problem sets, you should pass the path to the
-`fitbenchmarking` command.
+``fitbenchmarking`` command.  For example, to run the NIST low difficulty
+set, type into the terminal:
 
-  e.g ``fitbenchmarking examples/benchmark_problems/NIST/low_difficulty``
+.. code-block:: bash
+		
+   fitbenchmarking examples/benchmark_problems/NIST/low_difficulty
 
-An options file can also be passed with the ``-o`` argument.
-The template in `examples` is heavily documented and serves as a good
-reference for what options are available.
+An options file can also be passed with the ``-o`` argument.  For example,
+the template file can be run by issuing the command
 
-The `fitbenchmarking` function can also be called with ``-h`` to get
-more help.
+.. code-block:: bash
+
+   fitbenchmarking -o examples/options_template.ini \
+   examples/benchmark_problems/NIST/low_difficulty
+
+Details about how the options file must be formatted are given in :ref:`options`.
+
+Running ``fitbenchmarking -h`` will give more guidance about available commands,
+including examples of how to run multiple problem sets.

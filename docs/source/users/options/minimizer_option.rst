@@ -7,6 +7,12 @@ Minimizer Options
 This section is used to declare the minimizers to use for each fitting
 software.
 
+.. warning::
+
+   Options set in this section will only have an effect if the related
+   software is also set in :ref:`fitting_option` (either explicitly, or
+   as a default option).
+
 Bumps (:code:`bumps`)
 ---------------------
 
@@ -41,8 +47,8 @@ The Bumps minimizers are set as follows:
            mp
 
 
-DFO
----
+DFO (``dfo``)
+-----------------------
 
 There are two Derivative-Free Optimization packages, `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ and
 `DFO-GN <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`_.
@@ -53,7 +59,7 @@ FitBenchmarking currently supports the DFO minimizers:
 
 * `Derivative-Free Optimizer for Least Squares <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ (:code:`dfols`)
 
-* `Derivative-Free Gauss-Newton Solver <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ (:code:`dfogn`)
+* `Derivative-Free Gauss-Newton Solver <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`_ (:code:`dfogn`)
 
  **Links** `GitHub - DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn>`_ `GitHub - DFO-LS <https://github.com/numericalalgorithmsgroup/dfols>`_
 
@@ -65,8 +71,8 @@ The DFO minimizers are set as follows:
     dfo: dfols
          dfogn
 
-GSL
----
+GSL (``gsl``)
+-------------
 
 The `GNU Scientific Library <https://www.gnu.org/software/gsl/>`_ is a numerical library that
 provides a wide range of mathematical routines.  We call GSL using  the `pyGSL Python interface
@@ -113,10 +119,14 @@ The GSL minimizers are set as follows:
          vector_bfgs
          vector_bfgs2
          steepest_descent
+	 
+.. warning::
+   The external packages GSL and pygsl must be installed to use these minimizers.
 
-
-Mantid
-------
+.. _MantidMinimizers:
+   
+Mantid (``mantid``)
+-------------------
 
 `Mantid <https://www.mantidproject.org>`_ is a framework created to
 manipulate and analyze neutron scattering and muon spectroscopy data.
@@ -136,7 +146,7 @@ It has support for a number of minimizers, most of which are from GSL.
 
 * `Simplex <https://docs.mantidproject.org/nightly/fitting/fitminimizers/Simplex.html>`_ (:code:`simplex`)
 
-* `SteepestDescent <https://docs.mantidproject.org/nightly/fitting/fitminimizers/Simplex.html>`_ (:code:`SteepestDescent`)
+* `SteepestDescent <https://docs.mantidproject.org/nightly/fitting/fitminimizers/GradientDescent.html>`_ (:code:`SteepestDescent`)
 
 * `Trust Region <https://docs.mantidproject.org/nightly/fitting/fitminimizers/TrustRegion.html>`_ (:code:`Trust Region`) - An implementation of one of the algorithms available in RALFit.
 
@@ -157,8 +167,11 @@ The Mantid minimizers are set as follows:
             SteepestDescent
             Trust Region
 
-Minuit
-------
+.. warning::
+   The external package Mantid must be installed to use these minimizers.
+	    
+Minuit (``minuit``)
+-------------------
 
 CERN developed the `Minuit <http://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/>`_ package to find the minimum value of a multi-parameter function, and also to compute the uncertainties.
 We interface via the python interface `iminuit <https://iminuit.readthedocs.io>`_
@@ -174,8 +187,8 @@ The Minuit minimizers are set as follows:
     [MINIMIZERS]
     minuit: minuit
 
-RALFit
-------
+RALFit (``ralfit``)
+-------------------
 
 `RALFit <https://ralfit.readthedocs.io/projects/Fortran/en/latest/>`_
 is a nonlinear least-squares solver, the development of which was funded
@@ -200,8 +213,11 @@ The RALFit minimizers are set as follows:
             hybrid
             hybrid_reg
 
-SciPy
------
+.. warning::
+   The external package RALFit must be installed to use these minimizers.
+
+SciPy (``scipy``)
+-----------------
 
 `SciPy <https://www.scipy.org>`_ is the standard python package for mathematical
 software.  In particular, we use the `minimize <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html>`_
@@ -234,8 +250,8 @@ The SciPy minimizers are set as follows:
            TNC
            SLSQP
 
-SciPy LS
---------
+SciPy LS (``scipy_ls``)
+-----------------------
 
 `SciPy <https://www.scipy.org>`_ is the standard python package for mathematical
 software.  In particular, we use the `least_squares <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares>`_
