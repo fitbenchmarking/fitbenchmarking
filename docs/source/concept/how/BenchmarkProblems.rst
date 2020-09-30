@@ -138,6 +138,10 @@ uses to process the data.
 
 These have 6 unknown parameters, and fit to either 20 or 54 data points.
 
+.. warning::
+   The external package ``sasmodels`` must be installed to run this data
+   set.  See :ref:`external-instructions` for details.
+
 CUTEst (SIF files)
 ------------------
 

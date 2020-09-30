@@ -63,7 +63,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'FitBenchmarking'
-copyright = u'2019, STFC'
+copyright = u'2020, STFC'
 author = u'STFC'
 
 # The version info for the project you're documenting, acts as replacement for
