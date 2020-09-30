@@ -1,0 +1,7 @@
+# FitBenchmark Problem
+software = 'Mantid'
+name = 'ENGINX 193749 calibration, spectrum 651, peak 5'
+description = 'An example of (full) detector calibration for the ENGIN-X instrument'
+input_file = 'ENGINX193749_calibration_spec651.txt'
+function = 'name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,I=15.1595,A=1,B=0.05,X0=13072.9,S=0.854238'
+fit_ranges = {'x': [12986.356148, 13161.356148]}

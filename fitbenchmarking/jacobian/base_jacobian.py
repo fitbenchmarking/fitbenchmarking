@@ -3,6 +3,9 @@ Implements the base class for the Jacobian.
 """
 from abc import ABCMeta, abstractmethod
 
+import numpy as np
+from scipy.optimize._numdiff import approx_derivative
+
 
 class Jacobian:
     """
