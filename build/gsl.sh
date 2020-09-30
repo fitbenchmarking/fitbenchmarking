@@ -1,5 +1,5 @@
 #!/bin/bash
 
-sudo apt-get install gsl-bin
-sudo apt-get install libgsl-dev
-sudo apt-get install libgsl-dbg
+sudo apt-get install gsl-bin libgsl-dev libgsl-dbg -y
+
+python -m pip install pygsl

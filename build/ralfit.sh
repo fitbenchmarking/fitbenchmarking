@@ -1,9 +1,7 @@
 #!/bin/bash
 
-sudo apt-get install gfortran
-sudo apt-get install lcov
-sudo apt-get install libblas-dev
-sudo apt-get install liblapack-dev
+sudo apt-get upgrade
+sudo apt-get install cmake gfortran lcov libblas-dev liblapack-dev -y
 
 SCRIPTPATH=$PWD
 
@@ -18,3 +16,7 @@ python setup.py build_ext
 python setup.py install
 
 cd $SCRIPTPATH
+
+export LD_LIBRARY_PATH=${SCRIPTPATH}/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
+
+echo "To enable RALFit in future sessions we recommend adding 'export LD_LIBRARY_PATH=${SCRIPTPATH}/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH'"

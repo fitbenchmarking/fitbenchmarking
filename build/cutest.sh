@@ -13,7 +13,7 @@ cd $HOME/cutest
 
 export ARCHDEFS=$HOME/cutest/archdefs/
 export SIFDECODE=$HOME/cutest/sifdecode/
-export MASTSIF=$SCRIPTPATH/examples/benchmark_problems/SIF/
+export MASTSIF=$SCRIPTPATH/../examples/benchmark_problems/SIF/
 export CUTEST=$HOME/cutest/cutest/
 export MYARCH="pc64.lnx.gfo"
 mkdir pycutest_cache
@@ -54,5 +54,3 @@ printf "nnydn" >> cutest.input
 python -m pip install pycutest
 
 cd $SCRIPTPATH
-
-
