@@ -97,8 +97,14 @@ class OptionsWriteTests(unittest.TestCase):
 
         new_options = Options(new_file_name)
 
-        os.remove(new_file_name)
+        assert options.stored_file_name == self.options_file
+        assert new_options.stored_file_name == new_file_name
 
+        # Overwrite file names
+        options.stored_file_name = ""
+        new_options.stored_file_name = ""
+
+        os.remove(new_file_name)
         self.assertDictEqual(options.__dict__, new_options.__dict__)
 
     def test_create_config(self):
