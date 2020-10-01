@@ -7,6 +7,7 @@ try:
 except ImportError:
     from itertools import izip_longest as zip_longest
 import os
+from sys import platform
 import tempfile
 from unittest import TestCase
 import pytest
@@ -61,7 +62,7 @@ class TestRegressionAll(TestCase):
         """
 
         expected_file = os.path.join(os.path.dirname(__file__),
-                                     'expected_results',
+                                     '{}_expected_results'.format(platform),
                                      'all_parsers.txt')
 
         actual_file = os.path.join(os.path.dirname(__file__),
@@ -85,7 +86,7 @@ class TestRegressionAll(TestCase):
         """
 
         expected_file = os.path.join(os.path.dirname(__file__),
-                                     'expected_results',
+                                     '{}_expected_results'.format(platform),
                                      'multifit.txt')
 
         actual_file = os.path.join(os.path.dirname(__file__),
@@ -142,7 +143,7 @@ class TestRegressionDefault(TestCase):
         """
 
         expected_file = os.path.join(os.path.dirname(__file__),
-                                     'expected_results',
+                                     '{}_expected_results'.format(platform),
                                      'default_parsers.txt')
 
         actual_file = os.path.join(os.path.dirname(__file__),
