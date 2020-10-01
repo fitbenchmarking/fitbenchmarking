@@ -6,6 +6,7 @@ from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 from jinja2 import Environment, FileSystemLoader
+from shutil import copy2
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import performance_profiler, plots, \
@@ -36,7 +37,14 @@ def save_results(options, results, group_name,
     :return: Path to directory of group results
     :rtype: str
     """
-    _, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
+    _, group_dir, supp_dir, fig_dir, local_css_dir = \
+                                        create_directories(options, group_name)
+
+    # copy the template css files into a subfolder of results
+    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    template_dir = os.path.join(root, 'templates')
+    local_css_dir = os.path.join(options.results_dir,'css')
+    rel_css = os.path.relpath(local_css_dir,supp_dir)
     best_results = preproccess_data(results)
     pp_locations = performance_profiler.profile(results, fig_dir)
 
@@ -82,7 +90,8 @@ def create_directories(options, group_name):
     group_dir = create_dirs.group_results(results_dir, group_name)
     support_dir = create_dirs.support_pages(group_dir)
     figures_dir = create_dirs.figures(support_dir)
-    return results_dir, group_dir, support_dir, figures_dir
+    local_css_dir = create_dirs.css(options.results_dir)
+    return results_dir, group_dir, support_dir, figures_dir, local_css_dir
 
 
 def preproccess_data(results_per_test):
@@ -180,9 +189,11 @@ def create_problem_level_index(options, table_names, group_name,
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
-    style_css = os.path.join(template_dir, 'main_style.css')
-    custom_style = os.path.join(template_dir, 'custom_style.css')
-    maths_style = os.path.join(template_dir, 'math_style.css')
+    local_css_dir = os.path.join(options.results_dir,'css')
+    rel_css = os.path.relpath(local_css_dir,group_dir)
+    style_css = os.path.join(rel_css, 'main_style.css')
+    custom_style = os.path.join(rel_css, 'custom_style.css')
+    maths_style = os.path.join(rel_css, 'math_style.css')
     template = env.get_template("problem_index_page.html")
 
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))

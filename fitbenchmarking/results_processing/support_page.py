@@ -79,9 +79,11 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         template_dir = os.path.join(root, "templates")
         env = Environment(loader=FileSystemLoader(template_dir))
-        style_css = os.path.join(template_dir, 'main_style.css')
-        table_css = os.path.join(template_dir, 'table_style.css')
-        custom_style = os.path.join(template_dir, 'custom_style.css')
+        local_css_dir = os.path.join(options.results_dir,'css')
+        rel_css = os.path.relpath(local_css_dir,options.results_dir)
+        style_css = os.path.join(rel_css, 'main_style.css')
+        table_css = os.path.join(rel_css, 'table_style.css')
+        custom_style = os.path.join(rel_css, 'custom_style.css')
         template = env.get_template("support_page_template.html")
 
         with open(file_path, 'w') as fh:
@@ -100,7 +102,7 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
                 fitted_plot_available=fit_success,
                 fitted_plot=fig_fit))
 
-        result.support_page_link = file_path
+        result.support_page_link = os.path.relpath(file_path)
 
 
 def get_figure_paths(result):

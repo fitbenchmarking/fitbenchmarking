@@ -138,8 +138,10 @@ def run(problem_sets, options_file='', debug=False):
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
-    style_css = os.path.join(template_dir, 'main_style.css')
-    custom_style = os.path.join(template_dir, 'custom_style.css')
+    local_css_dir = os.path.join(options.results_dir,'css')
+    rel_css = os.path.relpath(local_css_dir,options.results_dir)
+    style_css = os.path.join(rel_css, 'main_style.css')
+    custom_style = os.path.join(rel_css, 'custom_style.css')
     template = env.get_template("index_page.html")
     group_links = [os.path.join(d, "{}_index.html".format(g))
                    for g, d in zip(groups, result_dir)]
