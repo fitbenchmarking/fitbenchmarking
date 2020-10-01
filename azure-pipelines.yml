@@ -22,7 +22,7 @@ steps:
 
 - script: |
     pip install -r requirements.txt
-    pip install .
+    pip install .[bumps,DFO,minuit,SAS]
   displayName: 'Install FitBenchmarking and requirements'
 
 - script: |
@@ -34,7 +34,7 @@ steps:
     pytest fitbenchmarking\controllers --test-type default
     pytest fitbenchmarking\cli --test-type default
   displayName: 'unit testing'
-  
+
 - script: |
     pytest fitbenchmarking\systests --test-type default
   displayName: 'system testing'
