@@ -103,10 +103,15 @@ class CreateProbGroupTests(unittest.TestCase):
                                        support_pages_dir=self.dir.name,
                                        options=self.options)
         file_names = [r.support_page_link for r in self.results]
-        expected = [os.path.join(self.dir.name, f)
+        print("*** file_names ***")
+        print(file_names)
+        expected = [os.path.join(os.path.relpath(self.dir.name), f)
                     for f in ['test_group_prob_a_min_a.html',
                               'test_group_prob_a_min_b.html',
                               'test_group_prob_a_min_c.html']]
+        print("*** expected ***")
+        print(expected)
+
         self.assertListEqual(file_names, expected)
 
 
