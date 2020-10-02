@@ -11,8 +11,6 @@ strategy:
   matrix:
     Python36:
       python.version: '3.6'
-    Python37:
-      python.version: '3.7'
 
 steps:
 - task: UsePythonVersion@0
@@ -21,15 +19,20 @@ steps:
   displayName: 'Use Python $(python.version)'
 
 - script: |
-    pip install .
-  displayName: 'Install FitBenchmarking'
+    pip install -r requirements.txt
+    pip install .[bumps,DFO,minuit,SAS]
+  displayName: 'Install FitBenchmarking and requirements'
 
 - script: |
-    pip install pytest pytest-azurepipelines
-    pytest fitbenchmarking\utils
-    pytest fitbenchmarking\core
-    pytest fitbenchmarking\results_processing
+    pytest fitbenchmarking\results_processing --test-type default
+    pytest fitbenchmarking\utils --test-type default
+    pytest fitbenchmarking\core --test-type default
+    pytest fitbenchmarking\results_processing --test-type default
     pytest fitbenchmarking\parsing --test-type default
     pytest fitbenchmarking\controllers --test-type default
-    pytest fitbenchmarking\cli\tests
-  displayName: 'pytest utils tests'
+    pytest fitbenchmarking\cli --test-type default
+  displayName: 'unit testing'
+
+- script: |
+    pytest fitbenchmarking\systests --test-type default
+  displayName: 'system testing'
