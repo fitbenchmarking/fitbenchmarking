@@ -148,7 +148,7 @@ def create_plots(options, results, best_results, figures_dir):
         # If none of the fits succeeded, params could be None
         # Otherwise, add the best fit to the plot
         if best.params is not None:
-            plot_path = plot.plot_best(best.minimizer, best.params)
+            plot_path = plot.plot_best(best.sanitised_min_name, best.params)
             best.figure_link = plot_path
         else:
             best.figure_error = 'Minimizer failed to produce any parameters'
@@ -160,7 +160,8 @@ def create_plots(options, results, best_results, figures_dir):
             # Don't plot best again
             if not result.is_best_fit:
                 if result.params is not None:
-                    plot_path = plot.plot_fit(result.minimizer, result.params)
+                    plot_path = plot.plot_fit(result.sanitised_min_name,
+                                              result.params)
                     result.figure_link = plot_path
                 else:
                     result.figure_error = 'Minimizer failed to produce any ' \

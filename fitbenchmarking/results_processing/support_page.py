@@ -58,7 +58,8 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
         prob_name = result.sanitised_name
 
         file_name = '{}_{}_{}.html'.format(
-            group_name, prob_name, result.minimizer).lower()
+            group_name, prob_name, result.sanitised_min_name)
+        file_name = file_name.lower()
         file_path = os.path.join(support_pages_dir, file_name)
 
         # Bool for print message/insert image
