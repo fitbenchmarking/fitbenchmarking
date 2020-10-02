@@ -183,19 +183,22 @@ class CreateDirectoriesTests(unittest.TestCase):
         expected_support_dir = os.path.join(expected_group_dir,
                                             'support_pages')
         expected_figures_dir = os.path.join(expected_support_dir, 'figures')
+        expected_css_dir = os.path.join(expected_results_dir,'css')
 
-        results_dir, group_dir, support_dir, figures_dir = \
+        results_dir, group_dir, support_dir, figures_dir, css_dir = \
             create_directories(self.options, group_name)
 
         assert results_dir == expected_results_dir
         assert group_dir == expected_group_dir
         assert support_dir == expected_support_dir
         assert figures_dir == expected_figures_dir
-
+        assert css_dir == expected_css_dir
+        
         assert os.path.isdir(results_dir)
         assert os.path.isdir(group_dir)
         assert os.path.isdir(support_dir)
         assert os.path.isdir(figures_dir)
+        assert os.path.isdir(css_dir)
 
 
 class PreproccessDataTests(unittest.TestCase):
