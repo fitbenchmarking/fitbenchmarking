@@ -2,6 +2,7 @@
 Runtime table
 """
 import numpy as np
+import os
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -42,7 +43,7 @@ class RuntimeTable(Table):
                                            group_dir, pp_locations, table_name)
 
         self.has_pp = True
-        self.pp_filenames = [self.pp_locations[1]]
+        self.pp_filenames = [os.path.relpath(self.pp_locations[1],group_dir)]
 
     def get_values(self, results_dict):
         """
