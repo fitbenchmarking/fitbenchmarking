@@ -6,7 +6,6 @@ from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 import unittest
-import mock
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.utils import fitbm_result, exceptions
@@ -98,7 +97,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
             assert keys == "scipy"
             assert values == []
 
-    @mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
     def test_run_multiple_benchmark_problems(self, loop_over_starting_values):
         """
         Checks that all benchmark problems run with no failures
@@ -114,7 +113,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         expected_list_length = len(self.list_results) * 2
         self.shared_tests(expected_list_length, expected_problem_fails)
 
-    @mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
     def test_run_multiple_failed_problems(self, loop_over_starting_values):
         """
         Checks that multiple failed problems are reported correctly
@@ -129,7 +128,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         expected_list_length = len(self.list_results)
         self.shared_tests(expected_list_length, expected_problem_fails)
 
-    @mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
     def test_check_no_results_produced(self, loop_over_starting_values):
         """
         Checks that multiple failed problems are reported correctly

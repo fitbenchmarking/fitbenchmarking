@@ -5,7 +5,6 @@ from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 import unittest
-import mock
 import numpy as np
 
 from fitbenchmarking import mock_problems
@@ -97,7 +96,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
             assert keys in self.options.software
             assert values == expected_minimizer_failed[i]
 
-    @mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software(self, loop_over_minimizers):
         """
         Checks that results are produced for all minimizers within the
@@ -118,7 +117,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.shared_test(expected_list_len, expected_problem_fails,
                          expected_minimizer_failed)
 
-    @mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software_failed_minimizers(self, loop_over_minimizers):
         """
         Checks that the failed minimizers are reported
@@ -141,7 +140,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.shared_test(expected_list_len, expected_problem_fails,
                          expected_minimizer_failed)
 
-    @mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software_all_failed_minimizers(self, loop_over_minimizers):
         """
         Tests that when all minimizers raise and exception for a problem

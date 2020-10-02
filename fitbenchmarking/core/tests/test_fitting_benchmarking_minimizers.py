@@ -94,6 +94,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.controller.parameter_set = 0
 
     def shared_tests(self):
+
         """
         Shared tests for the `loop_over_minimizer` function
         """
