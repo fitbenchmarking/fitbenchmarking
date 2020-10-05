@@ -8,7 +8,7 @@ def pytest_addoption(parser):
     """
     parser.addoption(
         "--test-type", action="store", default="all", type=str,
-        choices=['all', 'default', 'external']
+        choices=['all', 'default']
     )
 
 
