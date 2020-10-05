@@ -19,4 +19,6 @@ cd $SCRIPTPATH
 
 export LD_LIBRARY_PATH=${SCRIPTPATH}/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
 
-echo "To enable RALFit in future sessions we recommend adding 'export LD_LIBRARY_PATH=${SCRIPTPATH}/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH'"
+printf "To enable RALFit in future sessions we recommend adding \n
+'export LD_LIBRARY_PATH=${SCRIPTPATH}/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH' \n
+to your .bashrc file \n"
