@@ -8,11 +8,14 @@ from build.commands.help import Help
 from build.commands.installs import InstallExternals
 
 setup(name='FitBenchmarking',
-      version='0.1.dev2',
-      description='FitBenchmarking software',
+      version='0.1.0',
+      description='FitBenchmarking is an open source tool for comparing different minimizers/fitting frameworks.',
       author='FitBenchmarking Team',
-      url='http://github.com/fitbenchmarking/fitbenchmarking',
-      license='GPL-3.0',
+      author_email="support@fitbenchmarking.com",
+      url='http://fitbenchmarking.com',
+      long_description=README.md,
+      long_description_content_type="text/markdown",
+      license='BSD',
       entry_points={
           "console_scripts": [
               'fitbenchmarking = fitbenchmarking.cli.main:main'
@@ -33,7 +36,6 @@ setup(name='FitBenchmarking',
                       'minuit': ['iminuit'],
                       'bumps': ['bumps']},
       zip_safe=False,
-
       cmdclass={
           'externals': InstallExternals,
           'help': Help,
