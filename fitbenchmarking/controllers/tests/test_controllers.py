@@ -108,7 +108,6 @@ class ControllerSharedTesting:
         assert controller.flag == 2
 
 
-@pytest.mark.skipif("TEST_TYPE == 'external'")
 class BaseControllerTests(TestCase):
     """
     Tests for base software controller class methods.
@@ -249,7 +248,6 @@ class BaseControllerTests(TestCase):
             controller.validate_minimizer(minimizer, algorithm_type)
 
 
-@pytest.mark.skipif("TEST_TYPE == 'external'")
 class DefaultControllerTests(TestCase):
     """
     Tests for each controller class
@@ -472,7 +470,7 @@ class FactoryTests(TestCase):
     """
     Tests for the ControllerFactory
     """
-    @pytest.mark.skipif("TEST_TYPE == 'external'")
+
     def test_default_imports(self):
         """
         Test that the factory returns the correct default class for inputs

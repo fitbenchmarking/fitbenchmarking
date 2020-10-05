@@ -15,5 +15,6 @@ the FitBenchmarking software.
     output/index
     options/index
     problem_definition_files/index
+    tests
     notes
 

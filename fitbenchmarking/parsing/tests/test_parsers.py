@@ -56,8 +56,6 @@ def generate_test_cases():
         formats = ['cutest', 'nist', 'fitbenchmark']
     elif TEST_TYPE == "default":
         formats = ['nist']
-    elif TEST_TYPE == "external":
-        formats = ['cutest', 'fitbenchmark']
 
     # create list of test_cases
     expected_dir = os.listdir(os.path.join(test_dir, 'expected'))
