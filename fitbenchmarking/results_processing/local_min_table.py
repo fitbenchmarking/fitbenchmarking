@@ -108,7 +108,7 @@ class LocalMinTable(Table):
 
     def get_colour(self, results):
         """
-        Uses the local minimiser dictionary values to set the HTML colour
+        Uses the local minimizer dictionary values to set the HTML colour
 
         :param results: a dictionary containing true or false values whether
                         the return parameters is a local minimizer and a

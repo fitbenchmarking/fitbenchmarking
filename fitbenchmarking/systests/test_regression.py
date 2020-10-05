@@ -57,7 +57,7 @@ class TestRegressionAll(TestCase):
     def test_results_consistent_all(self):
         """
         Regression testing that the results of fitting a set of problems
-        containing all problem types against a single minimiser from each of
+        containing all problem types against a single minimizer from each of
         the supported softwares
         """
 
@@ -82,7 +82,7 @@ class TestRegressionAll(TestCase):
     def test_multifit_consistent(self):
         """
         Regression testing that the results of fitting multifit problems
-        against a single minimiser from mantid.
+        against a single minimizer from mantid.
         """
 
         expected_file = os.path.join(os.path.dirname(__file__),
@@ -138,7 +138,7 @@ class TestRegressionDefault(TestCase):
     def test_results_consistent(self):
         """
         Regression testing that the results of fitting a set of problems
-        containing all problem types against a single minimiser from each of
+        containing all problem types against a single minimizer from each of
         the supported softwares
         """
 
