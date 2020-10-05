@@ -4,9 +4,6 @@ import shutil
 
 from setuptools import find_packages, setup
 
-from build.commands.help import Help
-from build.commands.installs import InstallExternals
-
 setup(name='FitBenchmarking',
       version='0.1.dev2',
       description='FitBenchmarking software',
@@ -33,11 +30,6 @@ setup(name='FitBenchmarking',
                       'minuit': ['iminuit'],
                       'bumps': ['bumps']},
       zip_safe=False,
-
-      cmdclass={
-          'externals': InstallExternals,
-          'help': Help,
-      },
       package_data={'fitbenchmarking': ['utils/default_options.ini',
                                         'templates/*']})
 
