@@ -6,7 +6,7 @@ import shutil
 import unittest
 
 from fitbenchmarking.utils.create_dirs import (figures, group_results, results,
-                                               support_pages)
+                                               support_pages, css)
 
 
 class CreateDirsTests(unittest.TestCase):
@@ -71,6 +71,19 @@ class CreateDirsTests(unittest.TestCase):
         self.assertTrue(os.path.exists(figures_dir_expected))
 
         shutil.rmtree(results_dir)
+
+    def test_css_create_correct_dir(self):
+
+        results_dir = results(self.results_dir)
+        group_results_dir = group_results(results_dir, "test_group")
+        css_dir = css(group_results_dir)
+        css_dir_expected = os.path.join(group_results_dir,
+                                    'css')
+        
+        self.assertEqual(css_dir_expected, css_dir)
+        self.assertTrue(os.path.exists(css_dir_expected))
+
+        shutil.rmtree(css_dir)
 
 
 if __name__ == "__main__":

@@ -147,13 +147,27 @@ class FittingResult:
     @property
     def sanitised_name(self):
         """
-        Sanitise the problem name ito one which can be used as a filename.
+        Sanitise the problem name into one which can be used as a filename.
 
         :return: sanitised name
         :rtype: str
         """
         return self.name.replace(',', '').replace(' ', '_')
+    
+    @property
+    def sanitised_min_name(self):
+        """
+        Sanitise the minimizer name into one which can be used as a filename.
+
+        :return: sanitised name
+        :rtype: str
+        """
+        return self.minimizer.replace(':', '').replace(' ', '_')
 
     @sanitised_name.setter
     def sanitised_name(self, value):
         raise RuntimeError('sanitised_name can not be edited')
+    
+    @sanitised_min_name.setter
+    def sanitised_min_name(self, value):
+        raise RuntimeError('sanitised_min_name can not be edited')

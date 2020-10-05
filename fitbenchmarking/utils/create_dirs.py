@@ -85,6 +85,22 @@ def figures(support_pages_dir):
 
     return figures_dir
 
+def css(results_dir):
+    """
+    Creates a local css directory inside the results directory.
+
+    :param support_pages_dir: path to the results directory
+    :type support_pages_dir: str
+
+    :return: path to the local css directory
+    :rtype: str
+    """
+    local_css_dir = os.path.join(results_dir, "css")
+    if not os.path.exists(local_css_dir):
+        os.makedirs(local_css_dir)
+
+    return local_css_dir
+
 
 def del_contents_of_dir(directory):
     """
