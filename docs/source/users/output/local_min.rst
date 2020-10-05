@@ -1,7 +1,7 @@
 .. _local_min:
 
 #####################
-Local Minimiser Table
+Local Minimizer Table
 #####################
 
 .. currentmodule:: fitbenchmarking.results_processing.local_min_table
