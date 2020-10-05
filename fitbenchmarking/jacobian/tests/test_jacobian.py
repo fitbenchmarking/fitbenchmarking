@@ -197,7 +197,7 @@ class TestDerivCostFunc(TestCase):
         f_eval = self.fitting_problem.data_y - f(x=self.fitting_problem.data_x,
                                                  p1=self.params[0],
                                                  p2=self.params[1])
-        self.actual = np.matmul(J_eval.T, f_eval)
+        self.actual = 2.0 * np.matmul(J_eval.T, f_eval)
 
     def test_scipy_two_point_eval(self):
         """
