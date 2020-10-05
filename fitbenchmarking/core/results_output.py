@@ -37,7 +37,7 @@ def save_results(options, results, group_name,
     :return: Path to directory of group results
     :rtype: str
     """
-    _, group_dir, supp_dir, fig_dir, local_css_dir = \
+    group_dir, supp_dir, fig_dir, local_css_dir = \
                                         create_directories(options, group_name)
 
     # copy the template css files into a subfolder of results
@@ -46,7 +46,6 @@ def save_results(options, results, group_name,
     local_css_dir = os.path.join(options.results_dir,'css')
     for css_file in ["main_style","custom_style","math_style","table_style"]:
         copy2(os.path.join(template_dir,css_file+".css"),local_css_dir)
-    rel_css = os.path.relpath(local_css_dir,supp_dir)
     best_results = preproccess_data(results)
     pp_locations = performance_profiler.profile(results, fig_dir)
 
@@ -93,7 +92,7 @@ def create_directories(options, group_name):
     support_dir = create_dirs.support_pages(group_dir)
     figures_dir = create_dirs.figures(support_dir)
     local_css_dir = create_dirs.css(options.results_dir)
-    return results_dir, group_dir, support_dir, figures_dir, local_css_dir
+    return group_dir, support_dir, figures_dir, local_css_dir
 
 
 def preproccess_data(results_per_test):
