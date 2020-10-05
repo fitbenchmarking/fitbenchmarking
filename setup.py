@@ -43,17 +43,3 @@ setup(name='FitBenchmarking',
       package_data={'fitbenchmarking': ['utils/default_options.ini',
                                         'templates/*']})
 
-
-# Clean up build files
-CLEAN_FILES = ['./dist', './*.pyc', './*.tgz', './lib/*.egg-info']
-CURDIR = os.path.abspath(os.curdir)
-
-for path_spec in CLEAN_FILES:
-    # Make paths absolute and relative to this path
-    abs_paths = glob.glob(os.path.normpath(os.path.join(CURDIR, path_spec)))
-    for path in [str(p) for p in abs_paths]:
-        if not path.startswith(CURDIR):
-            # Die if path in CLEAN_FILES is absolute + outside this directory
-            raise ValueError("{} is not a path inside {}".format(path, CURDIR))
-        print('removing {}'.format(os.path.relpath(path)))
-        shutil.rmtree(path)
