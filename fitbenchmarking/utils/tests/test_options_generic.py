@@ -83,6 +83,40 @@ class OptionsWriteTests(unittest.TestCase):
 
         self.assertDictEqual(options.__dict__, new_options.__dict__)
 
+    def test_write_to_stream(self):
+        """
+        Test that the stream options writer works.
+        """
+        options = Options(file_name=self.options_file)
+        new_file_name = 'copy_of_{}'.format(self.options_file)
+
+        # open stream, write to it and close it
+        f = open(new_file_name, 'w')
+        options.write_to_stream(f)
+        f.close()
+
+        new_options = Options(new_file_name)
+
+        assert options.stored_file_name == self.options_file
+        assert new_options.stored_file_name == new_file_name
+
+        # Overwrite file names
+        options.stored_file_name = ""
+        new_options.stored_file_name = ""
+
+        os.remove(new_file_name)
+        self.assertDictEqual(options.__dict__, new_options.__dict__)
+
+    def test_create_config(self):
+        """
+        Test that created config object contains all valid sections.
+        """
+        options = Options(file_name=self.options_file)
+
+        config = options._create_config()
+        for section in options.VALID_SECTIONS:
+            self.assertTrue(config.has_section(section))
+
     def test_user_section_valid(self):
         """
         Tests that the user defined sections are correct.

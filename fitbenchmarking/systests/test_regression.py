@@ -7,6 +7,7 @@ try:
 except ImportError:
     from itertools import izip_longest as zip_longest
 import os
+from sys import platform
 import tempfile
 from unittest import TestCase
 import pytest
@@ -29,33 +30,39 @@ class TestRegressionAll(TestCase):
         Create an options file, run it, and get the results.
         """
         opts = setup_options()
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini')
-        opts.write(opt_file.name)
-
+        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
+                                               mode='w',
+                                               delete=False)
+        opts.write_to_stream(opt_file)
+        opt_file.close()
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,
                                                'mock_problems',
                                                'all_parsers_set'))
         run([problem], options_file=opt_file.name, debug=True)
-
+        os.remove(opt_file.name)
         opts = setup_options(multifit=True)
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini')
-        opts.write(opt_file.name)
+        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
+                                               mode='w',
+                                               delete=False)
+        opts.write_to_stream(opt_file)
+        opt_file.close()
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,
                                                'mock_problems',
                                                'multifit_set'))
         run([problem], options_file=opt_file.name, debug=True)
+        os.remove(opt_file.name)
 
     def test_results_consistent_all(self):
         """
         Regression testing that the results of fitting a set of problems
-        containing all problem types against a single minimiser from each of
+        containing all problem types against a single minimizer from each of
         the supported softwares
         """
 
         expected_file = os.path.join(os.path.dirname(__file__),
-                                     'expected_results',
+                                     '{}_expected_results'.format(platform),
                                      'all_parsers.txt')
 
         actual_file = os.path.join(os.path.dirname(__file__),
@@ -75,11 +82,11 @@ class TestRegressionAll(TestCase):
     def test_multifit_consistent(self):
         """
         Regression testing that the results of fitting multifit problems
-        against a single minimiser from mantid.
+        against a single minimizer from mantid.
         """
 
         expected_file = os.path.join(os.path.dirname(__file__),
-                                     'expected_results',
+                                     '{}_expected_results'.format(platform),
                                      'multifit.txt')
 
         actual_file = os.path.join(os.path.dirname(__file__),
@@ -113,25 +120,30 @@ class TestRegressionDefault(TestCase):
 
         # Get defaults which should have minimizers for every software
         opts = setup_options()
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini')
-        opts.write(opt_file.name)
-
+        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
+                                               mode='w',
+                                               delete=False)
+        # while opt_file is open it cannot be reoponed on Windows NT or later
+        # and hence option available is to write to the stream directly
+        opts.write_to_stream(opt_file)
+        opt_file.close()
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,
                                                'mock_problems',
                                                'default_parsers'))
 
         run([problem], options_file=opt_file.name, debug=True)
+        os.remove(opt_file.name)
 
     def test_results_consistent(self):
         """
         Regression testing that the results of fitting a set of problems
-        containing all problem types against a single minimiser from each of
+        containing all problem types against a single minimizer from each of
         the supported softwares
         """
 
         expected_file = os.path.join(os.path.dirname(__file__),
-                                     'expected_results',
+                                     '{}_expected_results'.format(platform),
                                      'default_parsers.txt')
 
         actual_file = os.path.join(os.path.dirname(__file__),
