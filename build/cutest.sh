@@ -13,7 +13,7 @@ cd $HOME/cutest
 
 export ARCHDEFS=$HOME/cutest/archdefs/
 export SIFDECODE=$HOME/cutest/sifdecode/
-export MASTSIF=$SCRIPTPATH/examples/benchmark_problems/SIF/
+export MASTSIF=$SCRIPTPATH/../examples/benchmark_problems/SIF/
 export CUTEST=$HOME/cutest/cutest/
 export MYARCH="pc64.lnx.gfo"
 mkdir pycutest_cache
@@ -55,4 +55,12 @@ python -m pip install pycutest
 
 cd $SCRIPTPATH
 
-
+printf "\nTo enable CUTEst in future sessions we recommend adding \n
+    export ARCHDEFS=$HOME/cutest/archdefs/
+    export SIFDECODE=$HOME/cutest/sifdecode/
+    export MASTSIF=$SCRIPTPATH/../examples/benchmark_problems/SIF/
+    export CUTEST=$HOME/cutest/cutest/
+    export MYARCH="pc64.lnx.gfo"
+    export PYCUTEST_CACHE=$PWD/pycutest_cache
+    export PYTHONPATH=\${PYCUTEST_CACHE}:\${PYTHONPATH} \n
+to your .bashrc file \n"
