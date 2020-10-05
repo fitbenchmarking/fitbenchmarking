@@ -7,7 +7,8 @@ import unittest
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.utils.misc import get_problem_files
-
+from fitbenchmarking.utils.misc import get_local_css_path
+from fitbenchmarking.utils.options import Options
 
 class CreateDirsTests(unittest.TestCase):
 
@@ -55,6 +56,14 @@ class CreateDirsTests(unittest.TestCase):
         self.assertIsInstance(problems, list)
         self.assertEqual(self.expected, sorted(problems))
 
+    def test_get_local_css_path(self):
+        
+        options = Options()
+        print(options.results_dir)
+        test_dir = os.path.join(options.results_dir,"foo")
+        expected_local_css_dir = os.path.join("..","css")
+        local_css_dir = get_local_css_path(options,test_dir)
+        self.assertEqual(local_css_dir,expected_local_css_dir)
 
 if __name__ == "__main__":
     unittest.main()
