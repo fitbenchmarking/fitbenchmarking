@@ -1,13 +1,13 @@
 .. _tests:
 
 #####################
-FitBenchmarking tests
+FitBenchmarking Tests
 #####################
 
-To run both the ``unit`` and ``system`` tests for FitBenchmarking you will need to install ``pytest>=3.6``. We have split the tests into two categories:
+The tests for FitBenchmarking require ``pytest>=3.6``. We have split the tests into two categories:
 
-* ``default``: denotes all tests that use ``pip`` installable :ref:`software packages<getting-started>`,
-* ``all``: denotes all test.
+* ``default``: denotes tests involving ``pip`` installable :ref:`software packages<getting-started>`,
+* ``all``: in addition to ``default``, also runs tests on :ref:`external packages <external-instructions>`.
 
 Unit tests
 ----------
@@ -31,7 +31,7 @@ System tests can be found in the ``systests`` directory in FitBenchmarking. As w
 
 
 .. warning::
-   The expected results directory in the ``systests`` directory are generated to check consistency in our automated tests via `Travis CI <https://travis-ci.org/>`__. This is done by checking the text output of the tables are consistent, and therefore, they might not pass on your specific operating system due to, for example, different software package versions.
+   The files in the expected results subdirectory of the ``systests`` directory are generated to check consistency in our automated tests via `Travis CI <https://travis-ci.org/>`__.  They might not pass on your local operating system due to, for example, different software package versions being installed.
 
 Travis CI tests
 ---------------
