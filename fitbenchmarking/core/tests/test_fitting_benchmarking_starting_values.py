@@ -5,7 +5,6 @@ from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 import unittest
-import mock
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.utils import fitbm_result, output_grabber
@@ -109,7 +108,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         dict_test(unselected_minimzers, expected_unselected_minimzers)
         dict_test(minimizer_dict, {"scipy": ['TNC', 'lm-scipy']})
 
-    @mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_multiple_starting_values(self, loop_over_fitting_software):
         """
         Checks that all selected minimizers run with multiple starting
@@ -127,7 +126,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_unselected_minimzers)
 
-    @mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_one_starting_values(self, loop_over_fitting_software):
         """
         Checks that all selected minimizers run with one starting
@@ -146,7 +145,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_unselected_minimzers)
 
-    @mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_reports_failed_problems(self, loop_over_fitting_software):
         """
         Checks that the failed problems are reported correctly
@@ -163,7 +162,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_unselected_minimzers)
 
-    @mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_reports_unselected_minimizers(self,
                                                loop_over_fitting_software):
         """
