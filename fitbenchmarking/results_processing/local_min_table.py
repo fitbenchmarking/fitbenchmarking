@@ -2,6 +2,7 @@
 compare table
 """
 import numpy as np
+import os
 from fitbenchmarking.results_processing.base_table import Table
 
 GRAD_TOL = 1e-1
@@ -57,7 +58,8 @@ class LocalMinTable(Table):
                                             table_name)
 
         self.has_pp = True
-        self.pp_filenames = pp_locations
+        self.pp_filenames = \
+                        [os.path.relpath(pp,group_dir) for pp in pp_locations]
 
     def get_values(self, results_dict):
         """

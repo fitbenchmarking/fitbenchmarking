@@ -97,9 +97,9 @@ class PlotTests(unittest.TestCase):
         """
         Test that best plot creates a file.
         """
-        file_name = self.plot.plot_best('best', [0.1, 3])
+        file_name = self.plot.plot_best('fit', [0.1, 3])
 
-        self.assertEqual(file_name, 'best_fit_for_full_name.png')
+        self.assertEqual(file_name, 'fit_fit_for_full_name.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 

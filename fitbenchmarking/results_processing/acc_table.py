@@ -2,6 +2,7 @@
 Accuracy table
 """
 import numpy as np
+import os
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -44,7 +45,7 @@ class AccTable(Table):
                                        group_dir, pp_locations, table_name)
 
         self.has_pp = True
-        self.pp_filenames = [self.pp_locations[0]]
+        self.pp_filenames = [os.path.relpath(self.pp_locations[0],group_dir)]
 
     def get_values(self, results_dict):
         """
