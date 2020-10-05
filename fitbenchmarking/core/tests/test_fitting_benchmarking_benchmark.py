@@ -6,7 +6,7 @@ import inspect
 import copy
 import os
 import unittest
-import mock
+from unittest import mock
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.utils import fitbm_result
