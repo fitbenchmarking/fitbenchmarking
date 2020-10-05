@@ -12,6 +12,7 @@ import fitbenchmarking
 from fitbenchmarking.results_processing import performance_profiler, plots, \
     support_page, tables
 from fitbenchmarking.utils import create_dirs
+from fitbenchmarking.utils.misc import get_local_css_path
 
 
 def save_results(options, results, group_name,
@@ -191,11 +192,10 @@ def create_problem_level_index(options, table_names, group_name,
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
-    local_css_dir = os.path.join(options.results_dir,'css')
-    rel_css = os.path.relpath(local_css_dir,group_dir)
-    style_css = os.path.join(rel_css, 'main_style.css')
-    custom_style = os.path.join(rel_css, 'custom_style.css')
-    maths_style = os.path.join(rel_css, 'math_style.css')
+    css_path = get_local_css_path(options,group_dir)
+    style_css = os.path.join(css_path, 'main_style.css')
+    custom_style = os.path.join(css_path, 'custom_style.css')
+    maths_style = os.path.join(css_path, 'math_style.css')
     template = env.get_template("problem_index_page.html")
 
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))

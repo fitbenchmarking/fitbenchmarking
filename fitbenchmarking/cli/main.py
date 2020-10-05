@@ -22,6 +22,7 @@ from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.core.results_output import save_results
 from fitbenchmarking.utils.exceptions import OptionsError
 from fitbenchmarking.utils.log import get_logger, setup_logger
+from fitbenchmarking.utils.misc import get_local_css_path
 from fitbenchmarking.utils.options import Options
 
 LOGGER = get_logger()
@@ -138,10 +139,9 @@ def run(problem_sets, options_file='', debug=False):
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
-    local_css_dir = os.path.join(options.results_dir,'css')
-    rel_css = os.path.relpath(local_css_dir,options.results_dir)
-    style_css = os.path.join(rel_css, 'main_style.css')
-    custom_style = os.path.join(rel_css, 'custom_style.css')
+    css_path = get_local_css_path(options,options.results_dir)
+    style_css = os.path.join(css_path, 'main_style.css')
+    custom_style = os.path.join(css_path, 'custom_style.css')
     template = env.get_template("index_page.html")
     group_links = [os.path.join(d, "{}_index.html".format(g))
                    for g, d in zip(groups, result_dir)]

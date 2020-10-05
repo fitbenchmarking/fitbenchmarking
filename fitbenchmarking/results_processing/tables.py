@@ -12,6 +12,7 @@ from jinja2 import Environment, FileSystemLoader
 import fitbenchmarking
 from fitbenchmarking.results_processing.base_table import Table
 from fitbenchmarking.utils.exceptions import UnknownTableError
+from fitbenchmarking.utils.misc import get_local_css_path
 
 ERROR_OPTIONS = {0: "Successfully converged",
                  1: "Software reported maximum number of iterations exceeded",
@@ -91,12 +92,11 @@ def create_results_tables(options, results, best_results, group_name,
 
             root = os.path.dirname(getfile(fitbenchmarking))
             template_dir = os.path.join(root, 'templates')
-            local_css_dir = os.path.join(options.results_dir,'css')
-            rel_css = os.path.relpath(local_css_dir,group_dir)
-            style_css = os.path.join(rel_css, 'main_style.css')
-            table_css = os.path.join(rel_css, 'table_style.css')
-            custom_style = os.path.join(rel_css, 'custom_style.css')
-            maths_style = os.path.join(rel_css, 'math_style.css')
+            css_path = get_local_css_path(options,group_dir)
+            style_css = os.path.join(css_path, 'main_style.css')
+            table_css = os.path.join(css_path, 'table_style.css')
+            custom_style = os.path.join(css_path, 'custom_style.css')
+            maths_style = os.path.join(css_path, 'math_style.css')
             env = Environment(loader=FileSystemLoader(template_dir))
             template = env.get_template("table_template.html")
             html_output_file = file_path + 'html'
