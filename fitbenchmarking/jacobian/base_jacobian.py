@@ -70,7 +70,7 @@ class Jacobian:
                                      params,
                                      **kwargs)
         J = self.eval(params, **kwargs)
-        out = matmul(J.T, rx)
+        out = 2.0 * matmul(J.T, rx)
         return out
 
     @property
