@@ -104,7 +104,6 @@ class TestRegressionAll(TestCase):
         self.assertListEqual([], diff, msg)
 
 
-@pytest.mark.skipif("TEST_TYPE == 'external'")
 @pytest.mark.skipif("TEST_TYPE == 'all'")
 class TestRegressionDefault(TestCase):
     """
