@@ -81,7 +81,7 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
         template_dir = os.path.join(root, "templates")
         env = Environment(loader=FileSystemLoader(template_dir))
         local_css_dir = os.path.join(options.results_dir,'css')
-        rel_css = os.path.relpath(local_css_dir,options.results_dir)
+        rel_css = os.path.relpath(local_css_dir,support_pages_dir)
         style_css = os.path.join(rel_css, 'main_style.css')
         table_css = os.path.join(rel_css, 'table_style.css')
         custom_style = os.path.join(rel_css, 'custom_style.css')
