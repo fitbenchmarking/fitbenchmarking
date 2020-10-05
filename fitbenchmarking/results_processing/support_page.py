@@ -10,7 +10,7 @@ import os
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
-from fitbenchmarking.utils.misc import get_local_css_path
+from fitbenchmarking.utils.misc import get_css
 
 
 def create(results_per_test, group_name, support_pages_dir,
@@ -81,17 +81,14 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         template_dir = os.path.join(root, "templates")
         env = Environment(loader=FileSystemLoader(template_dir))
-        css_path = get_local_css_path(options,support_pages_dir)
-        style_css = os.path.join(css_path, 'main_style.css')
-        table_css = os.path.join(css_path, 'table_style.css')
-        custom_style = os.path.join(css_path, 'custom_style.css')
+        css = get_css(options,support_pages_dir)
         template = env.get_template("support_page_template.html")
 
         with open(file_path, 'w') as fh:
             fh.write(template.render(
-                css_style_sheet=style_css,
-                table_style=table_css,
-                custom_style=custom_style,
+                css_style_sheet=css['main'],
+                table_style=css['table'],
+                custom_style=css['custom'],
                 title=result.name,
                 equation=result.problem.equation,
                 initial_guess=result.ini_function_params,
