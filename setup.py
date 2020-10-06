@@ -4,9 +4,14 @@ import shutil
 
 from setuptools import find_packages, setup
 
+with open('README.md', encoding="utf-8") as f:
+    long_description = f.read()
+    
 setup(name='FitBenchmarking',
       version='0.1.dev2',
       description='FitBenchmarking software',
+      long_description=long_description,
+      long_description_content_type='text/markdown',
       author='FitBenchmarking Team',
       url='http://github.com/fitbenchmarking/fitbenchmarking',
       license='GPL-3.0',
