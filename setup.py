@@ -4,9 +4,9 @@ import shutil
 
 from setuptools import find_packages, setup
 
-with open('README.md') as f:
+with open('README.md', encoding="utf-8") as f:
     long_description = f.read()
-
+    
 setup(name='FitBenchmarking',
       version='0.1.dev2',
       description='FitBenchmarking software',
