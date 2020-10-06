@@ -2,8 +2,7 @@
 [![Documentation Status](https://img.shields.io/readthedocs/fitbenchmarking?style=flat-square)](https://fitbenchmarking.readthedocs.io/en/latest)
 [![Coverage Status](https://img.shields.io/coveralls/github/fitbenchmarking/fitbenchmarking.svg?style=flat-square)](https://coveralls.io/github/fitbenchmarking/fitbenchmarking)
 ![Windows Supported](https://img.shields.io/badge/win10-support-blue.svg?style=flat-square&logo=windows)
-![Ubuntu Supported](https://img.shields.io/badge/16.04-support-orange.svg?style=flat-square&logo=ubuntu)
-[![email](https://img.shields.io/badge/gmail-fitbenchmarking.supp-red.svg?style=flat-square&logo=gmail)](mailto:fitbenchmarking.supp@gmail.com)
+![Ubuntu Supported](https://img.shields.io/badge/18.04-support-orange.svg?style=flat-square&logo=ubuntu)
 [![Chat](https://img.shields.io/badge/chat-CompareFitMinimizers-lightgrey.svg?style=flat-square&logo=slack)](https://slack.com/)
 # FitBenchmarking
 
