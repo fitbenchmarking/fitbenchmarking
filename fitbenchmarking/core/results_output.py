@@ -6,11 +6,13 @@ from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 from jinja2 import Environment, FileSystemLoader
+from shutil import copy2
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import performance_profiler, plots, \
     support_page, tables
 from fitbenchmarking.utils import create_dirs
+from fitbenchmarking.utils.misc import get_css
 
 
 def save_results(options, results, group_name,
@@ -36,7 +38,15 @@ def save_results(options, results, group_name,
     :return: Path to directory of group results
     :rtype: str
     """
-    _, group_dir, supp_dir, fig_dir = create_directories(options, group_name)
+    group_dir, supp_dir, fig_dir, local_css_dir = \
+                                        create_directories(options, group_name)
+
+    # copy the template css files into a subfolder of results
+    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    template_dir = os.path.join(root, 'templates')
+    local_css_dir = os.path.join(options.results_dir,'css')
+    for css_file in ["main_style","custom_style","math_style","table_style"]:
+        copy2(os.path.join(template_dir,css_file+".css"),local_css_dir)
     best_results = preproccess_data(results)
     pp_locations = performance_profiler.profile(results, fig_dir)
 
@@ -82,7 +92,8 @@ def create_directories(options, group_name):
     group_dir = create_dirs.group_results(results_dir, group_name)
     support_dir = create_dirs.support_pages(group_dir)
     figures_dir = create_dirs.figures(support_dir)
-    return results_dir, group_dir, support_dir, figures_dir
+    local_css_dir = create_dirs.css(options.results_dir)
+    return group_dir, support_dir, figures_dir, local_css_dir
 
 
 def preproccess_data(results_per_test):
@@ -139,7 +150,7 @@ def create_plots(options, results, best_results, figures_dir):
         # If none of the fits succeeded, params could be None
         # Otherwise, add the best fit to the plot
         if best.params is not None:
-            plot_path = plot.plot_best(best.minimizer, best.params)
+            plot_path = plot.plot_best(best.sanitised_min_name, best.params)
             best.figure_link = plot_path
         else:
             best.figure_error = 'Minimizer failed to produce any parameters'
@@ -151,7 +162,8 @@ def create_plots(options, results, best_results, figures_dir):
             # Don't plot best again
             if not result.is_best_fit:
                 if result.params is not None:
-                    plot_path = plot.plot_fit(result.minimizer, result.params)
+                    plot_path = plot.plot_fit(result.sanitised_min_name,
+                                              result.params)
                     result.figure_link = plot_path
                 else:
                     result.figure_error = 'Minimizer failed to produce any ' \
@@ -180,11 +192,8 @@ def create_problem_level_index(options, table_names, group_name,
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
-    style_css = os.path.join(template_dir, 'main_style.css')
-    custom_style = os.path.join(template_dir, 'custom_style.css')
-    maths_style = os.path.join(template_dir, 'math_style.css')
+    css = get_css(options,group_dir)
     template = env.get_template("problem_index_page.html")
-
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
     links = [v + "html" for v in table_names.values()]
     names = table_names.keys()
@@ -192,9 +201,9 @@ def create_problem_level_index(options, table_names, group_name,
     index = table_descriptions[options.comparison_mode]
     with open(output_file, 'w', encoding="utf-8") as fh:
         fh.write(template.render(
-            css_style_sheet=style_css,
-            custom_style=custom_style,
-            maths_style=maths_style,
+            css_style_sheet=css['main'],
+            custom_style=css['custom'],
+            maths_style=css['math'],
             group_name=group_name,
             index=index,
             table_type=names,

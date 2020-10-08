@@ -39,3 +39,24 @@ def get_problem_files(data_dir):
         LOGGER.debug(problem)
 
     return problems
+
+def get_css(options,working_directory):
+    """
+    Returns the path of the local css folder
+    
+    :param working_directory: location of current directory
+    :type working_directory: string
+    
+    :return: A dictionary containing relative links to the local css directory
+    :rtype: dict of strings
+    """
+    local_css_dir = os.path.join(options.results_dir,"css")
+    css_path = os.path.relpath(local_css_dir,working_directory)
+    css_dict = {
+        'main'   : os.path.join(css_path,'main_style.css'),
+        'table'  : os.path.join(css_path,'table_style.css'),
+        'math'   : os.path.join(css_path,'math_style.css'),
+        'custom' : os.path.join(css_path,'custom_style.css')
+    }
+    
+    return css_dict
