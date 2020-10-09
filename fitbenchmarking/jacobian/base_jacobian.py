@@ -17,17 +17,14 @@ class Jacobian:
         self._method = None
 
     @abstractmethod
-    def eval(self, params, func=None, **kwargs):
+    def eval(self, params, **kwargs):
         """
-        Evaluates Jacobian
+        Evaluates Jacobian of the model
 
         :param params: The parameter values to find the Jacobian at
         :type params: list
-        :param func: Function to find the Jacobian for, defaults to
-                     problem.eval_r
-        :type func: Callable, optional
 
-        :return: Approximation of the Jacobian
+        :return: Computed Jacobian
         :rtype: numpy array
         """
         return NotImplementedError
@@ -35,7 +32,7 @@ class Jacobian:
     @abstractmethod
     def eval_cost(self, params, **kwargs):
         """
-        Evaluates derivative of the cost function
+        Evaluates Jacobian of the cost function
 
         :param params: The parameter values to find the Jacobian at
         :type params: list

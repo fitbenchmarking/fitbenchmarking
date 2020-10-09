@@ -13,10 +13,15 @@ you will need to:
 1. Create ``fitbenchmarking/jacobian/<jac_method>_jacobian.py``,
    which contains a new subclass of
    :class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian`.
-   Then implement the method
-   :meth:`~fitbenchmarking.jacobian.base_jacobian.Jacobian.eval()`, which
-   evaluates the Jacobian. The numerical method is set sequentially
-   within :meth:`~fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians()` by
+   Then implement the methods:
+
+    -  .. automethod:: fitbenchmarking.jacobian.base_jacobian.Jacobian.eval()
+              :noindex:
+    -  .. automethod:: fitbenchmarking.jacobian.base_jacobian.Jacobian.eval_cost()
+              :noindex:
+
+   The numerical method is set sequentially within
+   :meth:`~fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians()` by
    using the ``method`` attribute of the class.
 
 2. Document the available Jacobians by:
