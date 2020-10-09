@@ -4,12 +4,14 @@ import shutil
 
 from setuptools import find_packages, setup
 
-from build.commands.help import Help
-from build.commands.installs import InstallExternals
-
+with open('README.md', encoding="utf-8") as f:
+    long_description = f.read()
+    
 setup(name='FitBenchmarking',
-      version='0.1.0',
-      description='FitBenchmarking is an open source tool for comparing different minimizers/fitting frameworks.',
+      version='0.1.dev1',
+      description='FitBenchmarking: A tool for comparing fitting software',
+      long_description=long_description,
+      long_description_content_type='text/markdown',
       author='FitBenchmarking Team',
       author_email="support@fitbenchmarking.com",
       url='http://fitbenchmarking.com',
@@ -36,10 +38,6 @@ setup(name='FitBenchmarking',
                       'minuit': ['iminuit'],
                       'bumps': ['bumps']},
       zip_safe=False,
-      cmdclass={
-          'externals': InstallExternals,
-          'help': Help,
-      },
       package_data={'fitbenchmarking': ['utils/default_options.ini',
                                         'templates/*']})
 

@@ -7,7 +7,8 @@ import unittest
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.utils.misc import get_problem_files
-
+from fitbenchmarking.utils.misc import get_css
+from fitbenchmarking.utils.options import Options
 
 class CreateDirsTests(unittest.TestCase):
 
@@ -55,6 +56,23 @@ class CreateDirsTests(unittest.TestCase):
         self.assertIsInstance(problems, list)
         self.assertEqual(self.expected, sorted(problems))
 
+    def test_get_css(self):
+        
+        options = Options()
+        print(options.results_dir)
+        test_dir = os.path.join(options.results_dir,"foo")
+        
+        expected_css_dir = os.path.join("..","css")
+        expected_main_css = os.path.join(expected_css_dir,"main_style.css")
+        expected_table_css = os.path.join(expected_css_dir,"table_style.css")
+        expected_math_css = os.path.join(expected_css_dir,"math_style.css")
+        expected_custom_css = os.path.join(expected_css_dir,"custom_style.css")
+        css = get_css(options,test_dir)
+
+        self.assertEqual(css['main'], expected_main_css)
+        self.assertEqual(css['table'], expected_table_css)
+        self.assertEqual(css['math'], expected_math_css)
+        self.assertEqual(css['custom'], expected_custom_css)
 
 if __name__ == "__main__":
     unittest.main()
