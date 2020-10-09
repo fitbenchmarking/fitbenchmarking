@@ -176,7 +176,7 @@ class BaseControllerTests(TestCase):
         y = np.array([1, 21, 3, 4])
         e = None
 
-        result = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
+        result = self.problem.eval_cost(params=params, x=x, y=y, e=e)
 
         assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
 
@@ -191,7 +191,7 @@ class BaseControllerTests(TestCase):
         y = np.array([1, 21, 3, 4])
         e = np.array([.5, .003, 1, 2])
 
-        result = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
+        result = self.problem.eval_cost(params=params, x=x, y=y, e=e)
 
         assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
 

@@ -109,7 +109,7 @@ class FittingProblem:
 
         #: *dict*
         #: Container cached residual squared evaluation (cost function)
-        self.cache_r_norm_x = {'params': None, 'value': None}
+        self.cache_cost_x = {'params': None, 'value': None}
 
         #: Callable function for the Jacobian
         self.jacobian = None
@@ -185,7 +185,7 @@ class FittingProblem:
         self.cache_rx['value'] = result
         return result
 
-    def eval_r_norm(self, params, x=None, y=None, e=None):
+    def eval_cost(self, params, x=None, y=None, e=None):
         """
         Evaluate the square of the L2 norm of the residuals
 
@@ -204,9 +204,9 @@ class FittingProblem:
         """
         r = self.eval_r(params=params, x=x, y=y, e=e)
 
-        self.cache_r_norm_x['params'] = params
-        self.cache_r_norm_x['value'] = np.dot(r, r)
-        return self.cache_r_norm_x['value']
+        self.cache_cost_x['params'] = params
+        self.cache_cost_x['value'] = np.dot(r, r)
+        return self.cache_cost_x['value']
 
     def eval_starting_params(self, param_set):
         """

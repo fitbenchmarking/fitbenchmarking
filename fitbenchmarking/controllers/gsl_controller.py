@@ -98,26 +98,26 @@ class GSLController(Controller):
 
     def _chi_squared(self, p, data=None):
         """
-        Utility function to call problem.eval_r_norm with correct args
+        Utility function to call problem.eval_cost with correct args
 
         :param p: parameters
         :type p: list
         :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
-        :return: result from problem.eval_r_norm
+        :return: result from problem.eval_cost
         :rtype: numpy array
         """
-        return self.problem.eval_r_norm(p)
+        return self.problem.eval_cost(p)
 
     def _jac_chi_squared(self, p, data=None):
         """
-        Utility function to get jacobian for problem.eval_r_norm
+        Utility function to get jacobian for problem.eval_cost
 
         :param p: parameters
         :type p: list
         :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
-        :return: jacobian approximation for problem.eval_r_norm
+        :return: jacobian approximation for problem.eval_cost
         :rtype: numpy array
         """
         j = self.jacobian.eval_cost(p)
@@ -125,17 +125,17 @@ class GSLController(Controller):
 
     def _chi_squared_fdf(self, p, data=None):
         """
-        Utility function to return results from eval_r_norm and
+        Utility function to return results from eval_cost and
         _jac_chi_squared as a tuple.
 
         :param p: parameters
         :type p: list
         :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
-        :return: result from problem.eval_r_norm and _jac_chi_squared
+        :return: result from problem.eval_cost and _jac_chi_squared
         :rtype: (numpy array, numpy array)
         """
-        f = self.problem.eval_r_norm(p)
+        f = self.problem.eval_cost(p)
         df = self._jac_chi_squared(p)
         return f, df
 

@@ -25,29 +25,29 @@ class Controller:
         """
         Initialise anything that is needed specifically for the
         software, do any work that can be done without knowledge of the
-        minimizer to use, or function to fit, and call 
+        minimizer to use, or function to fit, and call
         ``super(<software_name>Controller, self).__init__(problem)``
         (the base class's ``__init__`` implementation).
         In this function, you must initialize the a dictionary,
         ``self.algorithm_type``, such that the **keys** are given by:
-        
+
         - ``all`` - all minimizers
         - ``ls`` - least-squares fitting algorithms
         - ``deriv_free`` - derivative free algorithms (these are algorithms that
           cannot use derivative information. For example, the
           ``Simplex`` method in ``Mantid`` does not require Jacobians, and so is
 	  derivative free.
-          However, ``lm-scipy-no-jac`` in ``scipy_ls`` is designed to use 
-          derivatives, but calculates an approximation internally if one is not 
+          However, ``lm-scipy-no-jac`` in ``scipy_ls`` is designed to use
+          derivatives, but calculates an approximation internally if one is not
           supplied.)
         - ``general`` - minimizers which solve a generic `min f(x)`.
-        
-        The **values** of the dictionary are given as a list of minimizers 
-        for that specific controller that fit into each of the above categories. 
+
+        The **values** of the dictionary are given as a list of minimizers
+        for that specific controller that fit into each of the above categories.
         See for example the ``GSL`` controller.
- 
+
         :param problem: The parsed problem
-        :type problem: 
+        :type problem:
                 :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
         """
 
@@ -138,7 +138,7 @@ class Controller:
                  given parameters
         :rtype: numpy array
         """
-        out = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
+        out = self.problem.eval_cost(params=params, x=x, y=y, e=e)
         return out
 
     def validate_minimizer(self, minimizer, algorithm_type):
@@ -194,7 +194,7 @@ class Controller:
     @abstractmethod
     def jacobian_information(self):
         """
-        Sets up Jacobian information for the controller. 
+        Sets up Jacobian information for the controller.
 
         This should return the following arguments:
 
@@ -204,7 +204,7 @@ class Controller:
           that do not require Jacobian information to be passed into the fitting
 	  algorithm. For example in the ``ScipyLS`` controller this would return
 	  ``lm-scipy-no-jac``.
-        
+
         :return: (``has_jacobian``, ``jacobian_free_solvers``)
         :rtype: (`string`, `list`)
         """
@@ -215,7 +215,7 @@ class Controller:
         """
         Setup the specifics of the fitting.
 
-        Anything needed for "fit" that can only be done after knowing the 
+        Anything needed for "fit" that can only be done after knowing the
         minimizer to use and the function to fit should be done here.
         Any variables needed should be saved to self (as class attributes).
         """
@@ -225,7 +225,7 @@ class Controller:
     def fit(self):
         """
         Run the fitting.
-        
+
         This will be timed so should include only what is needed to fit the data.
         """
         raise NotImplementedError
@@ -234,12 +234,12 @@ class Controller:
     def cleanup(self):
         """
         Retrieve the result as a numpy array and store results.
-        
-        Convert the fitted parameters into a numpy array, saved to 
+
+        Convert the fitted parameters into a numpy array, saved to
         ``self.final_params``, and store the error flag as ``self.flag``.
-        
+
         The flag corresponds to the following messages:
-        
+
         .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag()
 		      :noindex:
         """

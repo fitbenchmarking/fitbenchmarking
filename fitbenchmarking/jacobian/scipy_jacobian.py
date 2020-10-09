@@ -47,8 +47,8 @@ class Scipy(Jacobian):
         :return: Computed derivative of the cost function
         :rtype: numpy array
         """
-        func = self.problem.eval_r_norm
-        r0 = self.cached_func_values(self.problem.cache_r_norm_x,
+        func = self.problem.eval_cost
+        r0 = self.cached_func_values(self.problem.cache_cost_x,
                                      func,
                                      params,
                                      **kwargs)

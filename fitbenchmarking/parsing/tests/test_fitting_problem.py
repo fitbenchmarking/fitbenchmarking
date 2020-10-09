@@ -113,9 +113,9 @@ class TestFittingProblem(TestCase):
         eval_result = fitting_problem.eval_r(params=[5])
         self.assertTrue(all(eval_result == np.array([-2.5, 0.8, 0.8])))
 
-    def test_eval_r_norm(self):
+    def test_eval_cost(self):
         """
-        Test that eval_r_norm is correct
+        Test that eval_cost is correct
         """
         fitting_problem = FittingProblem(self.options)
         fitting_problem.function = lambda x, p1: x + p1
@@ -123,15 +123,15 @@ class TestFittingProblem(TestCase):
         y_val = np.array([6, 10, 20])
         e_val = np.array([0.5, 10, 0.1])
 
-        eval_result = fitting_problem.eval_r_norm(params=[5],
-                                                  x=x_val,
-                                                  y=y_val,
-                                                  e=e_val)
+        eval_result = fitting_problem.eval_cost(params=[5],
+                                                x=x_val,
+                                                y=y_val,
+                                                e=e_val)
         self.assertEqual(eval_result, 1600.09)
 
         fitting_problem.data_x = x_val
         fitting_problem.data_y = y_val
-        eval_result = fitting_problem.eval_r_norm(params=[5])
+        eval_result = fitting_problem.eval_cost(params=[5])
         self.assertEqual(eval_result, 25)
 
     def test_eval_starting_params(self):

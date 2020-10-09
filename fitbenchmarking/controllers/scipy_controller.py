@@ -52,12 +52,12 @@ class ScipyController(Controller):
         # Neither the Nelder-Mead or Powell minimizers require a Jacobian
         # so are run without that argument.
         if self.minimizer == "Nelder-Mead" or self.minimizer == "Powell":
-            self.result = minimize(fun=self.problem.eval_r_norm,
+            self.result = minimize(fun=self.problem.eval_cost,
                                    x0=self.initial_params,
                                    method=self.minimizer,
                                    options=self.options)
         else:
-            self.result = minimize(fun=self.problem.eval_r_norm,
+            self.result = minimize(fun=self.problem.eval_cost,
                                    x0=self.initial_params,
                                    method=self.minimizer,
                                    jac=self.jacobian.eval_cost,
