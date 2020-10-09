@@ -61,6 +61,14 @@ class FittingOptionTests(unittest.TestCase):
         actual = self.options.jac_method
         self.assertEqual(expected, actual)
 
+    def test_cost_func_default(self):
+        """
+        Checks cost_func default
+        """
+        expected = ['nlls']
+        actual = self.options.cost_func_type
+        self.assertEqual(expected, actual)
+
 
 class UserFittingOptionTests(unittest.TestCase):
     """
@@ -205,3 +213,19 @@ class UserFittingOptionTests(unittest.TestCase):
             "[FITTING]\njac_method: NumPyFD"
         self.shared_invalid('jac_method', config_str)
 
+    def test_minimizer_cost_func_type_valid(self):
+        """
+        Checks user set cost_func_type is valid
+        """
+        set_option = ["nlls"]
+        config_str = \
+            "[FITTING]\ncost_func_type: nlls"
+        self.shared_valid('cost_func_type', set_option, config_str)
+
+    def test_minimizer_cost_func_type_invalid(self):
+        """
+        Checks user set cost_func_type is invalid
+        """
+        config_str = \
+            "[FITTING]\ncost_func_type: normal_dist"
+        self.shared_invalid('cost_func_type', config_str)

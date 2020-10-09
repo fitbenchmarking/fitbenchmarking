@@ -43,7 +43,8 @@ class Options(object):
          'software': ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
                       'ralfit', 'scipy', 'scipy_ls'],
          'use_errors': [True, False],
-         'jac_method': ['scipy', 'analytic']}
+         'jac_method': ['scipy', 'analytic'],
+         'cost_func_type': ['nlls']}
     VALID_JACOBIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
          'analytic': ['cutest']}
@@ -86,7 +87,8 @@ class Options(object):
          'algorithm_type': 'all',
          'software': ['bumps', 'dfo', 'minuit', 'scipy', 'scipy_ls'],
          'use_errors': True,
-         'jac_method': ['scipy']}
+         'jac_method': ['scipy'],
+         'cost_func_type': ['nlls']}
     DEFAULT_JACOBIAN = \
         {'scipy': ['2-point'],
          'analytic': ['cutest']}
@@ -164,6 +166,8 @@ class Options(object):
         self.software = self.read_value(fitting.getlist, 'software')
         self.use_errors = self.read_value(fitting.getboolean, 'use_errors')
         self.jac_method = self.read_value(fitting.getlist, 'jac_method')
+        self.cost_func_type = self.read_value(fitting.getlist,
+                                              'cost_func_type')
 
         jacobian = config['JACOBIAN']
         self.num_method = {}
