@@ -205,7 +205,7 @@ class TestDerivCostFunc(TestCase):
         """
         jac = Scipy(self.fitting_problem)
         jac.method = '2-point'
-        eval_result = jac.eval_r_norm(params=self.params)
+        eval_result = jac.eval_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_scipy_three_point_eval(self):
@@ -214,7 +214,7 @@ class TestDerivCostFunc(TestCase):
         """
         jac = Scipy(self.fitting_problem)
         jac.method = '3-point'
-        eval_result = jac.eval_r_norm(params=self.params)
+        eval_result = jac.eval_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_scipy_cs_point_eval(self):
@@ -223,7 +223,7 @@ class TestDerivCostFunc(TestCase):
         """
         jac = Scipy(self.fitting_problem)
         jac.method = 'cs'
-        eval_result = jac.eval_r_norm(params=self.params)
+        eval_result = jac.eval_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_analytic_cutest(self):
@@ -233,7 +233,7 @@ class TestDerivCostFunc(TestCase):
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.fitting_problem)
         self.fitting_problem.jac = jac
-        eval_result = jac.eval_r_norm(params=self.params)
+        eval_result = jac.eval_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
 

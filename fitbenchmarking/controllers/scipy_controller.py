@@ -60,7 +60,7 @@ class ScipyController(Controller):
             self.result = minimize(fun=self.problem.eval_r_norm,
                                    x0=self.initial_params,
                                    method=self.minimizer,
-                                   jac=self.jacobian.eval_r_norm,
+                                   jac=self.jacobian.eval_cost,
                                    options=self.options)
         self._popt = self.result.x
         self._status = self.result.status

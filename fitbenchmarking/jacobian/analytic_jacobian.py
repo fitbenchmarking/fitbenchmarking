@@ -4,6 +4,8 @@ Module which acts as a analytic Jacobian calculator
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.utils.exceptions import NoJacobianError
 
+from numpy import matmul
+
 
 # pylint: disable=useless-super-delegation
 class Analytic(Jacobian):
@@ -36,3 +38,21 @@ class Analytic(Jacobian):
             jac = jac / e[:, None]
 
         return jac
+
+    def eval_cost(self, params, **kwargs):
+        """
+        Evaluates derivative of the cost function
+
+        :param params: The parameter values to find the Jacobian at
+        :type params: list
+
+        :return: Computed derivative of the cost function
+        :rtype: numpy array
+        """
+        rx = self.cached_func_values(self.problem.cache_rx,
+                                     self.problem.eval_r,
+                                     params,
+                                     **kwargs)
+        J = self.eval(params, **kwargs)
+        out = 2.0 * matmul(J.T, rx)
+        return out

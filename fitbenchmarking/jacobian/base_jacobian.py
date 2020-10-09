@@ -2,10 +2,7 @@
 Implements the base class for the Jacobian.
 """
 from abc import ABCMeta, abstractmethod
-from numpy import array_equal, matmul
-
-import numpy as np
-from scipy.optimize._numdiff import approx_derivative
+from numpy import array_equal
 
 
 class Jacobian:
@@ -35,6 +32,19 @@ class Jacobian:
         """
         return NotImplementedError
 
+    @abstractmethod
+    def eval_cost(self, params, **kwargs):
+        """
+        Evaluates derivative of the cost function
+
+        :param params: The parameter values to find the Jacobian at
+        :type params: list
+
+        :return: Computed derivative of the cost function
+        :rtype: numpy array
+        """
+        return NotImplementedError
+
     def cached_func_values(self, cached_dict, eval_func, params, **kwargs):
         """
         Computes function values using cached or function evaluation
@@ -54,24 +64,6 @@ class Jacobian:
         else:
             value = eval_func(params, **kwargs)
         return value
-
-    def eval_r_norm(self, params, **kwargs):
-        """
-        Evaluates derivative of the cost function
-
-        :param params: The parameter values to find the Jacobian at
-        :type params: list
-
-        :return: Computed derivative of the cost function
-        :rtype: numpy array
-        """
-        rx = self.cached_func_values(self.problem.cache_rx,
-                                     self.problem.eval_r,
-                                     params,
-                                     **kwargs)
-        J = self.eval(params, **kwargs)
-        out = 2.0 * matmul(J.T, rx)
-        return out
 
     @property
     def method(self):

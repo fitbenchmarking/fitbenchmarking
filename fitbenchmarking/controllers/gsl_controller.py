@@ -120,7 +120,7 @@ class GSLController(Controller):
         :return: jacobian approximation for problem.eval_r_norm
         :rtype: numpy array
         """
-        j = approx_derivative(self.problem.eval_r_norm, p)
+        j = self.jacobian.eval_cost(p)
         return j
 
     def _chi_squared_fdf(self, p, data=None):
