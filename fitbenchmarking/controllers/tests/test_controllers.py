@@ -58,6 +58,7 @@ class DummyController(Controller):
     def error_flags(self):
         raise NotImplementedError
 
+
 class ControllerSharedTesting:
 
     def controller_run_test(self, controller):
