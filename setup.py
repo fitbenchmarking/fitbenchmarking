@@ -38,6 +38,5 @@ setup(name='FitBenchmarking',
                       'minuit': ['iminuit'],
                       'bumps': ['bumps']},
       zip_safe=False,
-      package_data={'fitbenchmarking': ['utils/default_options.ini',
-                                        'templates/*']})
+      package_data={'fitbenchmarking': ['templates/*']})
 
