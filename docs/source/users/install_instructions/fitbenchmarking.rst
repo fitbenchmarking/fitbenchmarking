@@ -4,8 +4,8 @@
 Installing FitBenchmarking and default fitting packages
 #######################################################
 
-|Python 3.6+| will be needed for running/installing this. To install
-FitBenchmarking we use the Python package manager,
+We recommend using |Python 3.6+| for running/installing Fitbenchmarking.
+The easiest way to install FitBenchmarking is by using the Python package manager,
 `pip <https://pip.pypa.io/en/stable/>`__.
 
 
@@ -19,23 +19,25 @@ FitBenchmarking can be installed via the command line by entering:
       python -m pip install fitbenchmarking[bumps,DFO,minuit,SAS]
 
 
-This will install the latest version of FitBenchmarking. For all available version
-please visit the FitBenchamarking
-`PyPI project <https://pypi.org/project/fitbenchmarking/>`__. Additional
-software that cannot be installed via pip can also be used with
-FitBenchmarking. Follow the instructions at :ref:`external-instructions`.
+This will install the latest stable version of FitBenchmarking.
+For all available versions please visit the FitBenchamarking
+`PyPI project <https://pypi.org/project/fitbenchmarking/>`__.
+FitBenchmarking can also use additional software that cannot be installed
+using pip; please see :ref:`external-instructions` for details.
 
 .. note::
 
     This install will include additional optional packages --
-    see :ref:`extra_dependencies` for details.
+    see :ref:`extra_dependencies`.
     Any of the dependencies in the square brackets can be omitted, if required,
-    and that package will not be available for Benchmarking.
+    and that package will not be available for Benchmarking, or will use the
+    version of the package already on your system, if appropriate.
 
 Installing from source
 ----------------------
 
-This will install the latest version of the code that is still in development.
+You may instead wish to install from source, e.g., to get the very latest version
+of the code that is still in development.
 
 1. Download this repository or clone it using
    `git <https://git-scm.com/>`__:
