@@ -79,7 +79,7 @@ class Options(object):
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': 'all',
-         'software': ['bumps', 'dfo', 'minuit', 'scipy', 'scipy_ls'],
+         'software': ['scipy', 'scipy_ls'],
          'use_errors': True,
          'jac_method': 'SciPyFD',
          'num_method': '2point'}
