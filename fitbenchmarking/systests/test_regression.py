@@ -208,6 +208,7 @@ def setup_options(multifit=False):
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
         opts.software = sorted(opts.minimizers.keys())
     else:
+        opts.software = ['bumps', 'dfo', 'minuit', 'scipy', 'scipy_ls']
         opts.minimizers = {s: [opts.minimizers[s][0]] for s in opts.software}
 
     opts.results_dir = os.path.join(os.path.dirname(__file__), 'results')
