@@ -99,7 +99,7 @@ class Options(object):
                           (np.inf, "#b30000")],
          'comparison_mode': 'both',
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
-         'results_dir': 'results'}
+         'results_dir': 'fitbenchmarking_results'}
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
          'append': False,
@@ -183,7 +183,6 @@ class Options(object):
                                                'comparison_mode')
         self.table_type = self.read_value(plotting.getlist, 'table_type')
         self.results_dir = self.read_value(plotting.getstr, 'results_dir')
-
         logging = config['LOGGING']
         self.log_append = self.read_value(logging.getboolean, 'append')
         self.log_file = self.read_value(logging.getstr, 'file_name')

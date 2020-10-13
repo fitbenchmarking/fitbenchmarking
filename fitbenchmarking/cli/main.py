@@ -92,6 +92,12 @@ def run(problem_sets, options_file='', debug=False):
                  append=options.log_append,
                  level=options.log_level)
 
+    if os.path.basename(options.results_dir) == \
+            options.DEFAULT_PLOTTING['results_dir']:
+        LOGGER.info("\nWARNING: \nthe FitBenchmarking results will be "
+                    "placed into the folder: \n   {}\nto change this "
+                    "alter the input options "
+                    "file.\n".format(options.results_dir))
     groups = []
     result_dir = []
     for sub_dir in problem_sets:
@@ -139,7 +145,7 @@ def run(problem_sets, options_file='', debug=False):
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
-    css = get_css(options,options.results_dir)
+    css = get_css(options, options.results_dir)
     template = env.get_template("index_page.html")
     group_links = [os.path.join(d, "{}_index.html".format(g))
                    for g, d in zip(groups, result_dir)]
