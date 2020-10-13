@@ -11,6 +11,7 @@ import argparse
 import glob
 import inspect
 import os
+import tempfile
 import sys
 import webbrowser
 
@@ -98,6 +99,18 @@ def run(problem_sets, options_file='', debug=False):
                     "placed into the folder: \n   {}\nto change this "
                     "alter the input options "
                     "file.\n".format(options.results_dir))
+
+    opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
+                                           mode='w',
+                                           delete=False)
+    options.write_to_stream(opt_file)
+    opt_file.close()
+    LOGGER.debug("The options file used is as follows:")
+    with open(opt_file.name) as f:
+        for line in f:
+            LOGGER.debug(line.replace("\n", ""))
+    os.remove(opt_file.name)
+
     groups = []
     result_dir = []
     for sub_dir in problem_sets:
