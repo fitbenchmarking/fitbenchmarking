@@ -151,19 +151,18 @@ class Options(object):
                         "Invalid options key set: \n{0}, \n the valid keys "
                         "are: \n{1}".format(user_options_list,
                                             default_options_list))
-
-        minimizers = config['MINIMIZERS']
-        self.minimizers = {}
-        for key in self.VALID_FITTING["software"]:
-            self.minimizers[key] = self.read_value(minimizers.getlist,
-                                                   key)
-
         fitting = config['FITTING']
         self.num_runs = self.read_value(fitting.getint, 'num_runs')
         self.algorithm_type = self.read_value(fitting.getstr, 'algorithm_type')
         self.software = self.read_value(fitting.getlist, 'software')
         self.use_errors = self.read_value(fitting.getboolean, 'use_errors')
         self.jac_method = self.read_value(fitting.getlist, 'jac_method')
+
+        minimizers = config['MINIMIZERS']
+        self.minimizers = {}
+        for key in self.software:
+            self.minimizers[key] = self.read_value(minimizers.getlist,
+                                                   key)
 
         jacobian = config['JACOBIAN']
         self.num_method = {}
