@@ -11,8 +11,16 @@ class Jacobian:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, problem):
-        self.problem = problem
+    def __init__(self, cost_func):
+        """
+        Base class for the Jacobians
+
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+        """
+        self.cost_func = cost_func
+        self.problem = self.cost_func.problem
 
         self._method = None
 

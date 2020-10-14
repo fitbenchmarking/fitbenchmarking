@@ -13,9 +13,9 @@ class Analytic(Jacobian):
     Class to apply an analytical Jacobian
     """
 
-    def __init__(self, problem):
-        super(Analytic, self).__init__(problem)
-        if not callable(problem.jacobian):
+    def __init__(self, cost_func):
+        super(Analytic, self).__init__(cost_func)
+        if not callable(self.problem.jacobian):
             raise NoJacobianError("Problem set selected does not currently "
                                   "support analytic Jacobians")
 
@@ -49,8 +49,8 @@ class Analytic(Jacobian):
         :return: Computed derivative of the cost function
         :rtype: numpy array
         """
-        rx = self.cached_func_values(self.problem.cache_rx,
-                                     self.problem.eval_r,
+        rx = self.cached_func_values(self.cost_func.cache_rx,
+                                     self.cost_func.eval_r,
                                      params,
                                      **kwargs)
         J = self.eval(params, **kwargs)

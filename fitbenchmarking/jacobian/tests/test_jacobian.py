@@ -4,6 +4,7 @@ from unittest import TestCase
 
 import numpy as np
 
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils import exceptions
@@ -62,6 +63,7 @@ class TestJacobianClass(TestCase):
         self.fitting_problem.jacobian = J
         self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
+        self.cost_func = NLLSCostFunc(self.fitting_problem)
         self.params = [6, 0.1]
         self.actual = J(x=self.fitting_problem.data_x, p=self.params)
 
@@ -69,7 +71,7 @@ class TestJacobianClass(TestCase):
         """
         Test for ScipyTwoPoint evaluation is correct
         """
-        jac = Scipy(self.fitting_problem)
+        jac = Scipy(self.cost_func)
         jac.method = '2-point'
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -78,7 +80,7 @@ class TestJacobianClass(TestCase):
         """
         Test for ScipyThreePoint evaluation is correct
         """
-        jac = Scipy(self.fitting_problem)
+        jac = Scipy(self.cost_func)
         jac.method = '3-point'
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -87,7 +89,7 @@ class TestJacobianClass(TestCase):
         """
         Test for ScipyCS evaluation is correct
         """
-        jac = Scipy(self.fitting_problem)
+        jac = Scipy(self.cost_func)
         jac.method = 'cs'
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -97,7 +99,7 @@ class TestJacobianClass(TestCase):
         Test analytic Jacobian
         """
         self.fitting_problem.format = "cutest"
-        jac = Analytic(self.fitting_problem)
+        jac = Analytic(self.cost_func)
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
@@ -109,7 +111,7 @@ class TestJacobianClass(TestCase):
         e = np.array([1, 2, 1, 3, 1])
         self.fitting_problem.data_e = e
         self.fitting_problem.format = "cutest"
-        jac = Analytic(self.fitting_problem)
+        jac = Analytic(self.cost_func)
         eval_result = jac.eval(params=self.params)
         scaled_actual = self.actual / e[:, None]
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
@@ -121,7 +123,7 @@ class TestJacobianClass(TestCase):
         """
         self.fitting_problem.jacobian = None
         with self.assertRaises(exceptions.NoJacobianError):
-            Analytic(self.fitting_problem)
+            Analytic(self.cost_func)
 
 
 class TestCachedFuncValues(TestCase):
@@ -136,7 +138,8 @@ class TestCachedFuncValues(TestCase):
         options = Options()
         options.use_errors = False
         self.fitting_problem = FittingProblem(options)
-        self.jacobian = Jacobian(self.fitting_problem)
+        self.cost_func = NLLSCostFunc(self.fitting_problem)
+        self.jacobian = Jacobian(self.cost_func)
 
     def func(self, x):
         """
@@ -192,6 +195,7 @@ class TestDerivCostFunc(TestCase):
         self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.params = [6, 0.1]
+        self.cost_func = NLLSCostFunc(self.fitting_problem)
         J_eval = J(x=self.fitting_problem.data_x,
                    p=self.params)
         f_eval = self.fitting_problem.data_y - f(x=self.fitting_problem.data_x,
@@ -203,7 +207,7 @@ class TestDerivCostFunc(TestCase):
         """
         Test for ScipyTwoPoint evaluation is correct
         """
-        jac = Scipy(self.fitting_problem)
+        jac = Scipy(self.cost_func)
         jac.method = '2-point'
         eval_result = jac.eval_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -212,7 +216,7 @@ class TestDerivCostFunc(TestCase):
         """
         Test for ScipyThreePoint evaluation is correct
         """
-        jac = Scipy(self.fitting_problem)
+        jac = Scipy(self.cost_func)
         jac.method = '3-point'
         eval_result = jac.eval_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -221,7 +225,7 @@ class TestDerivCostFunc(TestCase):
         """
         Test for ScipyCS evaluation is correct
         """
-        jac = Scipy(self.fitting_problem)
+        jac = Scipy(self.cost_func)
         jac.method = 'cs'
         eval_result = jac.eval_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -231,7 +235,7 @@ class TestDerivCostFunc(TestCase):
         Test analytic jacobian
         """
         self.fitting_problem.format = "cutest"
-        jac = Analytic(self.fitting_problem)
+        jac = Analytic(self.cost_func)
         self.fitting_problem.jac = jac
         eval_result = jac.eval_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())

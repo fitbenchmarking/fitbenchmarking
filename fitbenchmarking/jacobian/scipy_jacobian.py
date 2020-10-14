@@ -13,8 +13,8 @@ class Scipy(Jacobian):
     Implements SciPy finite difference approximations to the derivative
     """
 
-    def __init__(self, problem):
-        super(Scipy, self).__init__(problem)
+    def __init__(self, cost_func):
+        super(Scipy, self).__init__(cost_func)
 
     def eval(self, params, **kwargs):
         """
@@ -26,8 +26,8 @@ class Scipy(Jacobian):
         :return: Approximation of the Jacobian
         :rtype: numpy array
         """
-        func = self.problem.eval_r
-        f0 = self.cached_func_values(self.problem.cache_rx,
+        func = self.cost_func.eval_r
+        f0 = self.cached_func_values(self.cost_func.cache_rx,
                                      func,
                                      params,
                                      **kwargs)
@@ -47,8 +47,8 @@ class Scipy(Jacobian):
         :return: Computed derivative of the cost function
         :rtype: numpy array
         """
-        func = self.problem.eval_cost
-        r0 = self.cached_func_values(self.problem.cache_cost_x,
+        func = self.cost_func.eval_cost
+        r0 = self.cached_func_values(self.cost_func.cache_cost_x,
                                      func,
                                      params,
                                      **kwargs)
