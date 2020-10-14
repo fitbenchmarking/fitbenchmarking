@@ -18,14 +18,15 @@ class BumpsController(Controller):
     Setup creates a model with the correct function.
     """
 
-    def __init__(self, problem):
+    def __init__(self, cost_func):
         """
         Extract param names for function setup
 
-        :param problem: Problem to fit
-        :type problem: FittingProblem
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(BumpsController, self).__init__(problem)
+        super(BumpsController, self).__init__(cost_func)
 
         self._param_names = self.problem.param_names
 

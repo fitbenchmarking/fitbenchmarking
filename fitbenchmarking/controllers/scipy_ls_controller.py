@@ -13,14 +13,15 @@ class ScipyLSController(Controller):
     Controller for the Scipy Least-Squares fitting software.
     """
 
-    def __init__(self, problem):
+    def __init__(self, cost_func):
         """
         Initialise the class.
 
-        :param problem: The parsed problem
-        :type problem: fitting_problem (see fitbenchmarking.parsers)
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(ScipyLSController, self).__init__(problem)
+        super(ScipyLSController, self).__init__(cost_func)
         self._popt = None
         self.algorithm_check = {
             'all': ['lm-scipy-no-jac', 'lm-scipy', 'trf', 'dogbox'],
@@ -54,12 +55,12 @@ class ScipyLSController(Controller):
         # difference in the accuracy results when running trf or dogbox with
         # or without problem.jac.eval for the Jacobian evaluation
         if self.minimizer == "lm-scipy-no-jac":
-            self.result = least_squares(fun=self.problem.eval_r,
+            self.result = least_squares(fun=self.cost_func.eval_r,
                                         x0=self.initial_params,
                                         method="lm",
                                         max_nfev=500)
         else:
-            self.result = least_squares(fun=self.problem.eval_r,
+            self.result = least_squares(fun=self.cost_func.eval_r,
                                         x0=self.initial_params,
                                         method=self.minimizer,
                                         jac=self.jacobian.eval,

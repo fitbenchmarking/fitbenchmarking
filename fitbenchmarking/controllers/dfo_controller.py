@@ -15,14 +15,15 @@ class DFOController(Controller):
     Controller for the DFO-{GN/LS} fitting software.
     """
 
-    def __init__(self, problem):
+    def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
 
-        :param problem: Problem to fit
-        :type problem: FittingProblem
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(DFOController, self).__init__(problem)
+        super(DFOController, self).__init__(cost_func)
 
         self._soln = None
         self._popt = None
@@ -52,10 +53,10 @@ class DFOController(Controller):
         Run problem with DFO.
         """
         if self.minimizer == 'dfogn':
-            self._soln = dfogn.solve(self.problem.eval_r,
+            self._soln = dfogn.solve(self.cost_func.eval_r,
                                      self._pinit)
         elif self.minimizer == 'dfols':
-            self._soln = dfols.solve(self.problem.eval_r,
+            self._soln = dfols.solve(self.cost_func.eval_r,
                                      self._pinit)
 
         self._popt = self._soln.x

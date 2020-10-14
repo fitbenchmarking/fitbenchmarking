@@ -13,11 +13,16 @@ class ScipyController(Controller):
     Controller for the Scipy fitting software.
     """
 
-    def __init__(self, problem):
+    def __init__(self, cost_func):
         """
         Initialises variable used for temporary storage.
+
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+
         """
-        super(ScipyController, self).__init__(problem)
+        super(ScipyController, self).__init__(cost_func)
 
         self._popt = None
         self.algorithm_check = {
@@ -52,12 +57,12 @@ class ScipyController(Controller):
         # Neither the Nelder-Mead or Powell minimizers require a Jacobian
         # so are run without that argument.
         if self.minimizer == "Nelder-Mead" or self.minimizer == "Powell":
-            self.result = minimize(fun=self.problem.eval_cost,
+            self.result = minimize(fun=self.cost_func.eval_cost,
                                    x0=self.initial_params,
                                    method=self.minimizer,
                                    options=self.options)
         else:
-            self.result = minimize(fun=self.problem.eval_cost,
+            self.result = minimize(fun=self.cost_func.eval_cost,
                                    x0=self.initial_params,
                                    method=self.minimizer,
                                    jac=self.jacobian.eval_cost,

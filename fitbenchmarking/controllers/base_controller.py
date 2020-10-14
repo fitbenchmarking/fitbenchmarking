@@ -21,7 +21,7 @@ class Controller:
 
     VALID_FLAGS = [0, 1, 2, 3]
 
-    def __init__(self, problem):
+    def __init__(self, cost_func):
         """
         Initialise anything that is needed specifically for the
         software, do any work that can be done without knowledge of the
@@ -33,40 +33,40 @@ class Controller:
 
         - ``all`` - all minimizers
         - ``ls`` - least-squares fitting algorithms
-        - ``deriv_free`` - derivative free algorithms (these are algorithms that
-          cannot use derivative information. For example, the
-          ``Simplex`` method in ``Mantid`` does not require Jacobians, and so is
-	  derivative free.
+        - ``deriv_free`` - derivative free algorithms (these are algorithms
+          that cannot use derivative information. For example, the
+          ``Simplex`` method in ``Mantid`` does not require Jacobians, and so
+          is derivative free.
           However, ``lm-scipy-no-jac`` in ``scipy_ls`` is designed to use
           derivatives, but calculates an approximation internally if one is not
           supplied.)
         - ``general`` - minimizers which solve a generic `min f(x)`.
 
         The **values** of the dictionary are given as a list of minimizers
-        for that specific controller that fit into each of the above categories.
-        See for example the ``GSL`` controller.
+        for that specific controller that fit into each of the above
+        categories. See for example the ``GSL`` controller.
 
-        :param problem: The parsed problem
-        :type problem:
-                :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-
+        self.cost_func = cost_func
         # Problem: The problem object from parsing
-        self.problem = problem
+        self.problem = self.cost_func.problem
 
         # Jacobian: The Jacobian object
         self.jacobian = None
 
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)
-        self.data_x = problem.data_x
-        self.data_y = problem.data_y
-        self.data_e = problem.data_e
+        self.data_x = self.problem.data_x
+        self.data_y = self.problem.data_y
+        self.data_e = self.problem.data_e
 
         # Initial Params: The starting values for params when fitting
         self.initial_params = None
         # Staring Valuess: The list of starting parameters
-        self.starting_values = problem.starting_values
+        self.starting_values = self.problem.starting_values
         # Parameter set: The index of the starting parameters to use
         self.parameter_set = None
         # Minimizer: The current minimizer to use
@@ -138,7 +138,7 @@ class Controller:
                  given parameters
         :rtype: numpy array
         """
-        out = self.problem.eval_cost(params=params, x=x, y=y, e=e)
+        out = self.cost_func.eval_cost(params=params, x=x, y=y, e=e)
         return out
 
     def validate_minimizer(self, minimizer, algorithm_type):
@@ -202,8 +202,8 @@ class Controller:
           requires Jacobian information.
         - ``jacobian_free_solvers``: a list of minimizers in a specific software
           that do not require Jacobian information to be passed into the fitting
-	  algorithm. For example in the ``ScipyLS`` controller this would return
-	  ``lm-scipy-no-jac``.
+          algorithm. For example in the ``ScipyLS`` controller this would return
+          ``lm-scipy-no-jac``.
 
         :return: (``has_jacobian``, ``jacobian_free_solvers``)
         :rtype: (`string`, `list`)
@@ -241,6 +241,6 @@ class Controller:
         The flag corresponds to the following messages:
 
         .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag()
-		      :noindex:
+                      :noindex:
         """
         raise NotImplementedError
