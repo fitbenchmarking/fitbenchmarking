@@ -92,7 +92,7 @@ def create_results_tables(options, results, best_results, group_name,
 
             root = os.path.dirname(getfile(fitbenchmarking))
             template_dir = os.path.join(root, 'templates')
-            css = get_css(options,group_dir)
+            css = get_css(options, group_dir)
             env = Environment(loader=FileSystemLoader(template_dir))
             template = env.get_template("table_template.html")
             html_output_file = file_path + 'html'
@@ -100,8 +100,9 @@ def create_results_tables(options, results, best_results, group_name,
 
             with open(txt_output_file, "w") as f:
                 f.write(txt_table)
-            report_failed_min = list(unselected_minimzers.values()) != \
-                [[] * len(options.software)]
+            failed_minimzers = sum(list(unselected_minimzers.values()), [])
+            report_failed_min = failed_minimzers != []
+
             with open(html_output_file, "w", encoding="utf-8") as f:
                 f.write(
                     template.render(css_style_sheet=css['main'],
