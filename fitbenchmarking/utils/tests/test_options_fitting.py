@@ -41,7 +41,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks software default
         """
-        expected = ['bumps', 'dfo', 'minuit', 'scipy', 'scipy_ls']
+        expected = ['scipy', 'scipy_ls']
         actual = self.options.software
         self.assertEqual(expected, actual)
 
