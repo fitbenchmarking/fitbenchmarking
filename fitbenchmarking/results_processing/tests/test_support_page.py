@@ -7,6 +7,7 @@ except ImportError:
     from backports.tempfile import TemporaryDirectory
 import unittest
 
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.results_processing import support_page
@@ -18,22 +19,22 @@ class CreateTests(unittest.TestCase):
 
     def setUp(self):
         self.options = Options()
-        problems = []
+        cost_func = []
         for i in range(5):
             problem = FittingProblem(self.options)
             problem.name = 'prob {}'.format(i)
             problem.starting_values = [{'x': 1}]
-            problems.append(problem)
+            cost_func.append(NLLSCostFunc(problem))
 
         minimizers = ['min_a', 'min_b', 'min_c']
         self.results = [[FittingResult(options=self.options,
-                                       problem=p,
-                                       jac=Scipy(p),
+                                       cost_func=c,
+                                       jac=Scipy(c),
                                        initial_params=[],
                                        params=[],
                                        minimizer=m)
                          for m in minimizers]
-                        for p in problems]
+                        for c in cost_func]
 
         self.dir = TemporaryDirectory()
 
@@ -69,10 +70,11 @@ class CreateProbGroupTests(unittest.TestCase):
         problem.starting_values = [{'x': 1}]
 
         minimizers = ['min_a', 'min_b', 'min_c']
-        jac = Scipy(problem)
+        cost_func = NLLSCostFunc(problem)
+        jac = Scipy(cost_func)
         jac.method = "2-point"
         self.results = [FittingResult(options=self.options,
-                                      problem=problem,
+                                      cost_func=cost_func,
                                       jac=jac,
                                       initial_params=[],
                                       params=[],
@@ -107,7 +109,7 @@ class CreateProbGroupTests(unittest.TestCase):
                     for f in ['test_group_prob_a_min_a.html',
                               'test_group_prob_a_min_b.html',
                               'test_group_prob_a_min_c.html']]
-        
+
         self.assertListEqual(file_names, expected)
 
 
@@ -122,10 +124,11 @@ class GetFigurePathsTests(unittest.TestCase):
         problem.name = 'prob a'
         problem.equation = 'equation!'
         problem.starting_values = [{'x': 1}]
-        jac = Scipy(problem)
+        cost_func = NLLSCostFunc(problem)
+        jac = Scipy(cost_func)
         jac.method = "2-point"
         self.result = FittingResult(options=self.options,
-                                    problem=problem,
+                                    cost_func=cost_func,
                                     jac=jac,
                                     initial_params=[],
                                     params=[],

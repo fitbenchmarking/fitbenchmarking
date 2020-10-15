@@ -59,7 +59,7 @@ class LocalMinTable(Table):
 
         self.has_pp = True
         self.pp_filenames = \
-                        [os.path.relpath(pp,group_dir) for pp in pp_locations]
+            [os.path.relpath(pp, group_dir) for pp in pp_locations]
 
     def get_values(self, results_dict):
         """
@@ -85,7 +85,7 @@ class LocalMinTable(Table):
                     norm_rel[key].append(np.inf)
                     local_min[key].append("False")
                 else:
-                    res = v.problem.eval_r(
+                    res = v.cost_func.eval_r(
                         v.params, v.data_x, v.data_y, v.data_e)
                     jac = v.jac.eval(v.params, x=v.data_x,
                                      y=v.data_y, e=v.data_e)
