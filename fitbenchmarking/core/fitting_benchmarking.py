@@ -327,6 +327,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                   list of failed minimizers,
                   list of minimizers and Jacobians)
     """
+    cost_func = controller.cost_func
     problem = controller.problem
     minimizer = controller.minimizer
     num_runs = options.num_runs
@@ -347,7 +348,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                         + (num_method if jac_method != "analytic" else '')
                 # Creates Jacobian class
                 jacobian_cls = create_jacobian(jac_method)
-                jacobian = jacobian_cls(problem)
+                jacobian = jacobian_cls(cost_func)
                 jacobian.method = num_method
 
                 controller.jacobian = jacobian

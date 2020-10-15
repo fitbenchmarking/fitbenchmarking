@@ -3,6 +3,7 @@ Implements the base class for the cost function class.
 """
 
 from abc import ABCMeta, abstractmethod
+from fitbenchmarking.utils.exceptions import CostFuncError
 
 
 class CostFunc:
@@ -58,3 +59,19 @@ class CostFunc:
 
         """
         raise NotImplementedError
+
+    def eval_starting_params(self, param_set):
+        """
+        Evaluate the function using the starting parameters.
+
+        :param param_set: The index of the parameter set in starting_params
+        :type param_set: int
+
+        :return: Results from evaluation
+        :rtype: numpy array
+        """
+        if self.problem.starting_values is None:
+            raise CostFuncError('Cannot call function before setting '
+                                'starting values.')
+        # pylint: disable=unsubscriptable-object
+        return self.eval_f(self.problem.starting_values[param_set].values())

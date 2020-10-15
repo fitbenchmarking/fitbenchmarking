@@ -8,10 +8,73 @@ from unittest import TestCase
 import numpy as np
 
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
+
+
+class DummyCostFunc(CostFunc):
+    """
+    Minimal instantiatable subclass of CostFunc class for testing
+    """
+
+    def __init__(self, problem):
+        super(DummyCostFunc, self).__init__(problem)
+
+    def eval_f(self, params, **kwargs):
+        """
+        Dummy function evaluation method
+
+        :param params: parameter value(s)
+        :type params: list
+
+        :return: data values evaluated from the function of the problem
+        :rtype: numpy array
+        """
+        x = kwargs.get("x", self.problem.data_x)
+        return self.problem.function(x, *params)
+
+    def eval_cost(self, params, **kwargs):
+        raise NotImplementedError
+
+
+class TestBaseCostFunc(TestCase):
+    """
+    Tests for the base cost function class
+    """
+
+    def setUp(self):
+        """
+        Setting up options to use for tests
+        """
+        self.options = Options()
+
+    def test_eval_starting_params_raises_error(self):
+        """
+        Test that eval_starting_params raises an error
+        """
+        fitting_problem = FittingProblem(self.options)
+        cost_func = DummyCostFunc(fitting_problem)
+        self.assertRaises(exceptions.CostFuncError,
+                          cost_func.eval_starting_params,
+                          param_set=0)
+
+    def test_eval_starting_params_correct(self):
+        """
+        Test that eval_starting_params returns the correct result
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.function = lambda x, p1: x + p1
+        fitting_problem.starting_values = [OrderedDict([('p1', 3)]),
+                                           OrderedDict([('p1', 7)])]
+        fitting_problem.data_x = np.array([1])
+        cost_func = DummyCostFunc(fitting_problem)
+        eval_result = cost_func.eval_starting_params(0)
+        self.assertTrue(all(eval_result == np.array([4])))
+        eval_result = cost_func.eval_starting_params(1)
+        self.assertTrue(all(eval_result == np.array([8])))
 
 
 class TestNLLSCostFunc(TestCase):
@@ -25,9 +88,9 @@ class TestNLLSCostFunc(TestCase):
         """
         self.options = Options()
 
-    def test_eval_f(self):
+    def test_eval_f_raise_error(self):
         """
-        Test that eval_f is running the correct function
+        Test that eval_f raises and error
         """
         fitting_problem = FittingProblem(self.options)
         cost_function = NLLSCostFunc(fitting_problem)
@@ -35,6 +98,13 @@ class TestNLLSCostFunc(TestCase):
                           cost_function.eval_f,
                           x=2,
                           params=[1, 2, 3])
+
+    def test_eval_f_correct_evaluation(self):
+        """
+        Test that eval_f is running the correct function
+        """
+        fitting_problem = FittingProblem(self.options)
+        cost_function = NLLSCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
         x_val = np.array([1, 8, 11])
         eval_result = cost_function.eval_f(x=x_val,
@@ -42,12 +112,12 @@ class TestNLLSCostFunc(TestCase):
         self.assertTrue(all(eval_result == np.array([6, 13, 16])))
 
         fitting_problem.data_x = np.array([20, 21, 22])
-        eval_result = fitting_problem.eval_f(params=[5])
+        eval_result = cost_function.eval_f(params=[5])
         self.assertTrue(all(eval_result == np.array([25, 26, 27])))
 
-    def test_eval_r(self):
+    def test_eval_r_raise_error(self):
         """
-        Test that eval_r is correct
+        Test that eval_r raises and error
         """
         fitting_problem = FittingProblem(self.options)
         cost_function = NLLSCostFunc(fitting_problem)
@@ -55,6 +125,13 @@ class TestNLLSCostFunc(TestCase):
                           cost_function.eval_r,
                           params=[1, 2, 3],
                           x=2)
+
+    def test_eval_r_correct_evaluation(self):
+        """
+        Test that eval_f is running the correct function
+        """
+        fitting_problem = FittingProblem(self.options)
+        cost_function = NLLSCostFunc(fitting_problem)
 
         fitting_problem.function = lambda x, p1: x + p1
         x_val = np.array([1, 8, 11])
@@ -66,10 +143,10 @@ class TestNLLSCostFunc(TestCase):
         self.assertTrue(all(eval_result == np.array([0, -3, 4])))
 
         e_val = np.array([2, 4, 1])
-        eval_result = fitting_problem.eval_r(x=x_val,
-                                             y=y_val,
-                                             e=e_val,
-                                             params=[5])
+        eval_result = cost_function.eval_r(x=x_val,
+                                           y=y_val,
+                                           e=e_val,
+                                           params=[5])
         self.assertTrue(all(eval_result == np.array([0, -0.75, 4])))
 
         fitting_problem.data_x = np.array([20, 21, 22])

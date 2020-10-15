@@ -99,18 +99,6 @@ class FittingProblem:
         #: *bool* Used to check if a problem is using multifit.
         self.multifit = False
 
-        #: *dict*
-        #: Container cached function evaluation
-        self.cache_fx = {'params': None, 'value': None}
-
-        #: *dict*
-        #: Container cached residual evaluation
-        self.cache_rx = {'params': None, 'value': None}
-
-        #: *dict*
-        #: Container cached residual squared evaluation (cost function)
-        self.cache_cost_x = {'params': None, 'value': None}
-
         #: Callable function for the Jacobian
         self.jacobian = None
 
@@ -130,99 +118,6 @@ class FittingProblem:
     @param_names.setter
     def param_names(self, value):
         raise FittingProblemError('param_names should not be edited')
-
-    def eval_f(self, params, x=None):
-        """
-        Function evaluation method
-
-        :param params: parameter value(s)
-        :type params: list
-        :param x: x data values or None, if None this uses self.data_x
-        :type x: numpy array
-
-        :return: y data values evaluated from the function of the problem
-        :rtype: numpy array
-        """
-        if self.function is None:
-            raise FittingProblemError('Cannot call function before setting '
-                                      'function.')
-        if x is None:
-            x = self.data_x
-        # pylint: disable=not-callable
-        self.cache_fx['params'] = params
-        self.cache_fx['value'] = self.function(x, *params)
-        return self.cache_fx['value']
-
-    def eval_r(self, params, x=None, y=None, e=None):
-        """
-        Calculate residuals and weight them if using errors
-
-        :param params: The parameters to calculate residuals for
-        :type params: list
-        :param x: x data points, defaults to self.data_x
-        :type x: numpy array, optional
-        :param y: y data points, defaults to self.data_y
-        :type y: numpy array, optional
-        :param e: error at each data point, defaults to self.data_e
-        :type e: numpy array, optional
-
-        :return: The residuals for the datapoints at the given parameters
-        :rtype: numpy array
-        """
-
-        if x is None and y is None and e is None:
-            x = self.data_x
-            y = self.data_y
-            e = self.data_e
-        elif x is None or y is None:
-            raise FittingProblemError('Residuals could not be computed with '
-                                      'only one of x and y.')
-
-        result = y - self.eval_f(params=params, x=x)
-        if e is not None:
-            result = result / e
-        self.cache_rx['params'] = params
-        self.cache_rx['value'] = result
-        return result
-
-    def eval_cost(self, params, x=None, y=None, e=None):
-        """
-        Evaluate the square of the L2 norm of the residuals
-
-        :param params: The parameters to calculate residuals for
-        :type params: list
-        :param x: x data points, defaults to self.data_x
-        :type x: numpy array, optional
-        :param y: y data points, defaults to self.data_y
-        :type y: numpy array, optional
-        :param e: error at each data point, defaults to self.data_e
-        :type e: numpy array, optional
-
-        :return: The sum of squares of residuals for the datapoints at the
-                 given parameters
-        :rtype: numpy array
-        """
-        r = self.eval_r(params=params, x=x, y=y, e=e)
-
-        self.cache_cost_x['params'] = params
-        self.cache_cost_x['value'] = np.dot(r, r)
-        return self.cache_cost_x['value']
-
-    def eval_starting_params(self, param_set):
-        """
-        Evaluate the function using the starting parameters.
-
-        :param param_set: The index of the parameter set in starting_params
-        :type param_set: int
-
-        :return: Results from evaluation
-        :rtype: numpy array
-        """
-        if self.starting_values is None:
-            raise FittingProblemError('Cannot call function before setting '
-                                      'starting values.')
-        # pylint: disable=unsubscriptable-object
-        return self.eval_f(self.starting_values[param_set].values())
 
     def get_function_params(self, params):
         """
