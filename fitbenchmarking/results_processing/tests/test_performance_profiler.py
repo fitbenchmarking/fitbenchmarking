@@ -39,7 +39,8 @@ class PerformanceProfillerTests(unittest.TestCase):
         Removes expected acc and runtime plots
         """
         for name in [self.acc_name, self.runtime_name]:
-            os.remove(name)
+            if os.path.isfile(name):
+                os.remove(name)
 
     def generate_mock_results(self):
         """

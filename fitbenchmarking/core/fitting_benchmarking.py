@@ -399,7 +399,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                         else [np.inf] * len(controller.data_x)
 
                 result_args = {'options': options,
-                               'problem': problem,
+                               'cost_func': cost_func,
                                'jac': jacobian,
                                'chi_sq': chi_sq,
                                'runtime': runtime,

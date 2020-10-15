@@ -8,6 +8,7 @@ import os
 import unittest
 
 from fitbenchmarking import mock_problems
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.utils import fitbm_result, exceptions
 from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_benchmark_problems
@@ -21,7 +22,7 @@ FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 # Due to structure of tests, some variables may not be previously defined
 # in the init function.
 # pylint: disable=attribute-defined-outside-init
-def make_fitting_problem(file_name='cubic.dat', minimizers=None):
+def make_cost_function(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
@@ -34,7 +35,8 @@ def make_fitting_problem(file_name='cubic.dat', minimizers=None):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    return fitting_problem
+    cost_func = NLLSCostFunc(fitting_problem)
+    return cost_func
 
 
 def dict_test(expected, actual):
@@ -60,7 +62,8 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         """
         Setting up problem for tests
         """
-        self.problem = make_fitting_problem()
+        self.cost_func = make_cost_function()
+        self.problem = self.cost_func.problem
         self.options = Options()
         self.options.software = ["scipy"]
         self.scipy_len = len(self.options.minimizers["scipy"])
@@ -69,7 +72,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
                                                 "default_parsers")
         self.count = 0
         self.result_args = {'options': self.options,
-                            'problem': self.problem,
+                            'cost_func': self.cost_func,
                             'jac': 'jac',
                             'initial_params': self.problem.starting_values[0],
                             'params': [],

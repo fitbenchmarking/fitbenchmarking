@@ -8,6 +8,7 @@ import os
 import shutil
 import numpy as np
 
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -99,9 +100,10 @@ def generate_mock_results():
         results = []
         for j in range(num_min):
             p.starting_values = starting_values
-            jac = Scipy(p)
+            cost_func = NLLSCostFunc(p)
+            jac = Scipy(cost_func)
             jac.method = '2-point'
-            r = FittingResult(options=options, problem=p, jac=jac,
+            r = FittingResult(options=options, cost_func=cost_func, jac=jac,
                               initial_params=starting_values,
                               params=params_in[i][j])
             r.chi_sq = acc_in[i][j]
@@ -179,7 +181,7 @@ class CreateDirectoriesTests(unittest.TestCase):
         expected_support_dir = os.path.join(expected_group_dir,
                                             'support_pages')
         expected_figures_dir = os.path.join(expected_support_dir, 'figures')
-        expected_css_dir = os.path.join(expected_results_dir,'css')
+        expected_css_dir = os.path.join(expected_results_dir, 'css')
 
         group_dir, support_dir, figures_dir, css_dir = \
             create_directories(self.options, group_name)
@@ -188,7 +190,7 @@ class CreateDirectoriesTests(unittest.TestCase):
         assert support_dir == expected_support_dir
         assert figures_dir == expected_figures_dir
         assert css_dir == expected_css_dir
-        
+
         assert os.path.isdir(group_dir)
         assert os.path.isdir(support_dir)
         assert os.path.isdir(figures_dir)

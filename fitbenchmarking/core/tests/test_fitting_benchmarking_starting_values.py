@@ -7,6 +7,7 @@ import os
 import unittest
 
 from fitbenchmarking import mock_problems
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.utils import fitbm_result, output_grabber
 from fitbenchmarking.core.fitting_benchmarking import loop_over_starting_values
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
@@ -19,7 +20,7 @@ FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 # Due to structure of tests, some variables may not be previously defined
 # in the init function. Removes pytest dictionary iteration suggestion
 # pylint: disable=attribute-defined-outside-init, consider-iterating-dictionary
-def make_fitting_problem(file_name='cubic.dat', minimizers=None):
+def make_cost_function(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
@@ -32,7 +33,8 @@ def make_fitting_problem(file_name='cubic.dat', minimizers=None):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    return fitting_problem
+    cost_func = NLLSCostFunc(fitting_problem)
+    return cost_func
 
 
 def dict_test(expected, actual):
@@ -58,7 +60,8 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         """
         Setting up problem for tests
         """
-        self.problem = make_fitting_problem()
+        self.cost_func = make_cost_function()
+        self.problem = self.cost_func.problem
         self.options = self.problem.options
         self.options.software = ["scipy"]
         self.minimizers = self.options.minimizers
@@ -66,7 +69,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.count = 0
         self.scipy_len = len(self.options.minimizers["scipy"])
         self.result_args = {'options': self.options,
-                            'problem': self.problem,
+                            'cost_func': self.cost_func,
                             'jac': 'jac',
                             'initial_params': self.problem.starting_values[0],
                             'params': [],
@@ -99,7 +102,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         :type expected_unselected_minimzers: dict
         """
         problem_results, problem_fails, unselected_minimzers,\
-            minimizer_dict = loop_over_starting_values(self.problem,
+            minimizer_dict = loop_over_starting_values(self.cost_func,
                                                        self.options,
                                                        self.grabbed_output)
         assert len(problem_results) == expected_list_len
