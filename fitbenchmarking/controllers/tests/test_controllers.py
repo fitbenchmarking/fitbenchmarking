@@ -274,7 +274,7 @@ class DefaultControllerTests(TestCase):
     def setUp(self):
         self.cost_func = make_cost_func()
         self.problem = self.cost_func.problem
-        self.jac = Scipy(self.problem)
+        self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
 
@@ -382,7 +382,7 @@ class ExternalControllerTests(TestCase):
     def setUp(self):
         self.cost_func = make_cost_func()
         self.problem = self.cost_func.problem
-        self.jac = Scipy(self.problem)
+        self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
 

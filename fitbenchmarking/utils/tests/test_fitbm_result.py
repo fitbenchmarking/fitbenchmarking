@@ -118,7 +118,8 @@ class FitbmResultTests(unittest.TestCase):
         Test that sanitised minimizer names are correct.
         """
         self.result.minimizer = 'test: name with colon'
-        self.assertEqual(self.result.sanitised_min_name, 'test_name_with_colon')
+        self.assertEqual(self.result.sanitised_min_name,
+                         'test_name_with_colon')
 
 
 if __name__ == "__main__":
