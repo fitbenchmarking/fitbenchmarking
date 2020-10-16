@@ -93,13 +93,6 @@ def run(problem_sets, options_file='', debug=False):
                  append=options.log_append,
                  level=options.log_level)
 
-    if os.path.basename(options.results_dir) == \
-            options.DEFAULT_PLOTTING['results_dir']:
-        LOGGER.info("\nWARNING: \nthe FitBenchmarking results will be "
-                    "placed into the folder: \n   {}\nto change this "
-                    "alter the input options "
-                    "file.\n".format(options.results_dir))
-
     opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
                                            mode='w',
                                            delete=False)
@@ -154,6 +147,12 @@ def run(problem_sets, options_file='', debug=False):
 
         # resets options to original values
         options.reset()
+    if os.path.basename(options.results_dir) == \
+            options.DEFAULT_PLOTTING['results_dir']:
+        LOGGER.info("\nWARNING: \nthe FitBenchmarking results will be "
+                    "placed into the folder: \n   {}\nto change this "
+                    "alter the input options "
+                    "file.\n".format(options.results_dir))
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
