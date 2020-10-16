@@ -120,7 +120,7 @@ Cost function (:code:`cost_func_type`)
 This sets the cost function to be used for the given data. Current cost
 functions supported are:
 
-* ``nlls`` - This sets the cost function to be weighted or non-weighted non-linear least squares.
+* ``nlls`` - This sets the cost function to be weighted or non-weighted non-linear least squares, the weighting is controlled by the ``use_errors`` option.
 
 
 Default is ``nlls``
@@ -129,4 +129,3 @@ Default is ``nlls``
 
     [FITTING]
     cost_func_type: nlls
-

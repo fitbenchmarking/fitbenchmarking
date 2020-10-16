@@ -39,7 +39,7 @@ The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and :class:
 
 When adding new Jacobian, you will find it helpful to make use of the
 following members of the :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-and subclasses of :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc` class:
+and subclasses of :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`:
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
