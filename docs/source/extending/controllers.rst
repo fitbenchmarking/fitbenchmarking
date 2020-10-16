@@ -80,7 +80,7 @@ following members of the
 
 .. currentmodule:: fitbenchmarking.cost_func.base_cost_func
 .. autoclass:: fitbenchmarking.cost_func.base_cost_func.CostFunc
-          :members: eval_f, eval_cost
+          :members: eval_model, eval_cost
           :noindex:
 
 .. currentmodule:: fitbenchmarking.jacobian.base_jacobian

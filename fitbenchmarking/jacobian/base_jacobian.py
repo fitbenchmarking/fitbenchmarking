@@ -50,14 +50,14 @@ class Jacobian:
         """
         return NotImplementedError
 
-    def cached_func_values(self, cached_dict, eval_func, params, **kwargs):
+    def cached_func_values(self, cached_dict, eval_modelunc, params, **kwargs):
         """
         Computes function values using cached or function evaluation
 
         :param cached_dict: Cached function values
         :type cached_dict: dict
-        :param eval_func: Function to find the Jacobian for
-        :type eval_func: Callable
+        :param eval_modelunc: Function to find the Jacobian for
+        :type eval_modelunc: Callable
         :param params: The parameter values to find the Jacobian at
         :type params: list
 
@@ -67,7 +67,7 @@ class Jacobian:
         if array_equal(params, cached_dict['params']):
             value = cached_dict['value']
         else:
-            value = eval_func(params, **kwargs)
+            value = eval_modelunc(params, **kwargs)
         return value
 
     @property

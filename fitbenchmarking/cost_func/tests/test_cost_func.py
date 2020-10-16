@@ -23,7 +23,7 @@ class DummyCostFunc(CostFunc):
     def __init__(self, problem):
         super(DummyCostFunc, self).__init__(problem)
 
-    def eval_f(self, params, **kwargs):
+    def eval_model(self, params, **kwargs):
         """
         Dummy function evaluation method
 
@@ -88,31 +88,31 @@ class TestNLLSCostFunc(TestCase):
         """
         self.options = Options()
 
-    def test_eval_f_raise_error(self):
+    def test_eval_model_raise_error(self):
         """
-        Test that eval_f raises and error
+        Test that eval_model raises and error
         """
         fitting_problem = FittingProblem(self.options)
         cost_function = NLLSCostFunc(fitting_problem)
         self.assertRaises(exceptions.CostFuncError,
-                          cost_function.eval_f,
+                          cost_function.eval_model,
                           x=2,
                           params=[1, 2, 3])
 
-    def test_eval_f_correct_evaluation(self):
+    def test_eval_model_correct_evaluation(self):
         """
-        Test that eval_f is running the correct function
+        Test that eval_model is running the correct function
         """
         fitting_problem = FittingProblem(self.options)
         cost_function = NLLSCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
         x_val = np.array([1, 8, 11])
-        eval_result = cost_function.eval_f(x=x_val,
+        eval_result = cost_function.eval_model(x=x_val,
                                            params=[5])
         self.assertTrue(all(eval_result == np.array([6, 13, 16])))
 
         fitting_problem.data_x = np.array([20, 21, 22])
-        eval_result = cost_function.eval_f(params=[5])
+        eval_result = cost_function.eval_model(params=[5])
         self.assertTrue(all(eval_result == np.array([25, 26, 27])))
 
     def test_eval_r_raise_error(self):
@@ -128,7 +128,7 @@ class TestNLLSCostFunc(TestCase):
 
     def test_eval_r_correct_evaluation(self):
         """
-        Test that eval_f is running the correct function
+        Test that eval_model is running the correct function
         """
         fitting_problem = FittingProblem(self.options)
         cost_function = NLLSCostFunc(fitting_problem)

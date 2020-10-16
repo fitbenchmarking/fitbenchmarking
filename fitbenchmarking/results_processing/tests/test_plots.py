@@ -33,7 +33,7 @@ class PlotTests(unittest.TestCase):
         self.prob.starting_values = [{'x': 1, 'y': 2}]
         self.prob.name = 'full name'
         cost_func = NLLSCostFunc(self.prob)
-        cost_func.eval_f = lambda y, x: y[0] * x + y[1]
+        cost_func.eval_model = lambda y, x: y[0] * x + y[1]
         jac = Scipy(cost_func)
         jac.method = "2-point"
         self.fr = FittingResult(options=self.opts,

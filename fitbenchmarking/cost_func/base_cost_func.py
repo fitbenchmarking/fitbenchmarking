@@ -35,7 +35,7 @@ class CostFunc:
         self.cache_cost_x = {'params': None, 'value': None}
 
     @abstractmethod
-    def eval_f(self, params, **kwargs):
+    def eval_model(self, params, **kwargs):
         """
         Evaluates the model
 
@@ -75,4 +75,4 @@ class CostFunc:
             raise CostFuncError('Cannot call function before setting '
                                 'starting values.')
         # pylint: disable=unsubscriptable-object
-        return self.eval_f(self.problem.starting_values[param_set].values())
+        return self.eval_model(self.problem.starting_values[param_set].values())

@@ -48,7 +48,7 @@ and subclasses of :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc` cl
 
 .. currentmodule:: fitbenchmarking.cost_func.base_cost_func
 .. autoclass:: fitbenchmarking.cost_func.base_cost_func.CostFunc
-          :members: eval_f, eval_cost, cache_fx, cache_cost_x
+          :members: eval_model, eval_cost, cache_fx, cache_cost_x
           :noindex:
 
 

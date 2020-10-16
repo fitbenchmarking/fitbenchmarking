@@ -14,7 +14,7 @@ you will need to:
    :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`.
    Then implement the methods:
 
-    -  .. automethod:: fitbenchmarking.cost_func.base_cost_func.CostFunc.eval_f()
+    -  .. automethod:: fitbenchmarking.cost_func.base_cost_func.CostFunc.eval_model()
               :noindex:
     -  .. automethod:: fitbenchmarking.cost_func.base_cost_func.CostFunc.eval_cost()
               :noindex:

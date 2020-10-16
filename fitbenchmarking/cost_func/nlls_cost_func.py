@@ -27,7 +27,7 @@ class NLLSCostFunc(CostFunc):
         #: Container cached residual evaluation
         self.cache_rx = {'params': None, 'value': None}
 
-    def eval_f(self, params, **kwargs):
+    def eval_model(self, params, **kwargs):
         """
         Function evaluation method
 
@@ -71,7 +71,7 @@ class NLLSCostFunc(CostFunc):
             raise CostFuncError('Residuals could not be computed with '
                                 'only one of x and y.')
 
-        result = y - self.eval_f(params=params, x=x)
+        result = y - self.eval_model(params=params, x=x)
         if e is not None:
             result = result / e
         self.cache_rx['params'] = params
