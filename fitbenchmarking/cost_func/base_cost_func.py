@@ -8,6 +8,7 @@ from fitbenchmarking.utils.exceptions import CostFuncError
 
 class CostFunc:
     """
+    Base class for the cost functions.
     """
 
     __metaclass__ = ABCMeta

@@ -23,15 +23,8 @@ class FittingProblem:
     Definition of a fitting problem, which will be populated by a parser from a
     problem definition file.
 
-    This defines a fitting problem where, given a set of :math:`n` data points
-    :math:`(x_i,y_i)`, associated errors :math:`e_i`, and a model
-    function :math:`f(x,p)`, we find the optimal parameters in the
-    least-squares sense by solving:
-
-    .. math:: \min_p \sum_{i=1}^n \left( \frac{y_i - f(x_i, p)}{e_i} \right)^2
-
-    where :math:`p` is a vector of length :math:`m`, and we start from a given
-    intial guess for the optimal parameters.
+    Onces populated, this should include the data, the function and any other
+    additional requirements from the data.
     """
 
     def __init__(self, options):
@@ -65,7 +58,7 @@ class FittingProblem:
         #: *numpy array* The y-data
         self.data_y = None
 
-        #: *numpy array* The errors
+        #: *numpy array* The errors or weights
         self.data_e = None
 
         #: *list of dict*

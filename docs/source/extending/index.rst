@@ -10,6 +10,7 @@ to the software.  Below we outline instructions for doing this.
     :caption: Contents:
 
     parsers
+    cost_function
     jacobian_extend
     controllers
     options_extend

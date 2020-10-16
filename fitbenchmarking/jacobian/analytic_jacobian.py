@@ -21,7 +21,7 @@ class Analytic(Jacobian):
 
     def eval(self, params, **kwargs):
         """
-        Evaluates Jacobian of problem.eval_f or a weighted problem.eval_f
+        Evaluates Jacobian of cost_func.eval_f or a weighted cost_func.eval_f
 
         :param params: The parameter values to find the Jacobian at
         :type params: list

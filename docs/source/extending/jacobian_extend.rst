@@ -34,17 +34,23 @@ you will need to:
    ``fitbenchmarking/jacobian/tests/test_jacobians.py``.
 
 
-The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When adding new Jacobian, you will find it helpful to make use of the
+When adding new cost functions, you will find it helpful to make use of the
 following members of the :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-classes:
+and subclasses of :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc` class:
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
-          :members: cache_fx, cache_rx, cache_r_norm_x
-	  :noindex:
+          :members: function, data_x, data_y, data_e
+          :noindex:
+
+.. currentmodule:: fitbenchmarking.cost_func.base_cost_func
+.. autoclass:: fitbenchmarking.cost_func.base_cost_func.CostFunc
+          :members: eval_f, eval_cost, cache_fx, cache_cost_x
+          :noindex:
+
 
 .. note::
    If using cached values, use the
