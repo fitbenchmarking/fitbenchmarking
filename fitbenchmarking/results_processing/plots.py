@@ -141,7 +141,7 @@ class Plot(object):
         self.plot_data(errors=False,
                        plot_options=self.ini_guess_plot_options,
                        x=self.x,
-                       y=self.cost_func.eval_model(list(ini_guess), x=self.x))
+                       y=self.problem.eval_model(list(ini_guess), x=self.x))
         self.format_plot()
         file = "start_for_{0}.png".format(self.result.sanitised_name)
         file_name = os.path.join(self.figures_dir, file)
@@ -172,7 +172,7 @@ class Plot(object):
         plot_options_dict['label'] = label
         plot_options_dict['color'] = self.best_fit_plot_options['color']
 
-        y = self.cost_func.eval_model(params, x=self.x)
+        y = self.problem.eval_model(params, x=self.x)
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
                        y=y)
@@ -214,7 +214,7 @@ class Plot(object):
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
                        x=self.x,
-                       y=self.cost_func.eval_model(params, x=self.x))
+                       y=self.problem.eval_model(params, x=self.x))
         self.format_plot()
         file = "{}_fit_for_{}.png".format(self.result.sanitised_min_name,
                                           self.result.sanitised_name)

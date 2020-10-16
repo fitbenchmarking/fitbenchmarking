@@ -27,25 +27,8 @@ class CostFunc:
         self.problem = problem
 
         #: *dict*
-        #: Container cached function evaluation
-        self.cache_fx = {'params': None, 'value': None}
-
-        #: *dict*
         #: Container cached residual squared evaluation (cost function)
         self.cache_cost_x = {'params': None, 'value': None}
-
-    @abstractmethod
-    def eval_model(self, params, **kwargs):
-        """
-        Evaluates the model
-
-        :param params: parameter value(s)
-        :type params: list
-
-        :return: data values evaluated from the model function of the problem
-        :rtype: numpy array
-        """
-        raise NotImplementedError
 
     @abstractmethod
     def eval_cost(self, params, **kwargs):
@@ -60,19 +43,3 @@ class CostFunc:
 
         """
         raise NotImplementedError
-
-    def eval_starting_params(self, param_set):
-        """
-        Evaluate the function using the starting parameters.
-
-        :param param_set: The index of the parameter set in starting_params
-        :type param_set: int
-
-        :return: Results from evaluation
-        :rtype: numpy array
-        """
-        if self.problem.starting_values is None:
-            raise CostFuncError('Cannot call function before setting '
-                                'starting values.')
-        # pylint: disable=unsubscriptable-object
-        return self.eval_model(self.problem.starting_values[param_set].values())

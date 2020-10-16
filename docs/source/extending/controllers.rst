@@ -75,12 +75,12 @@ following members of the
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
-          :members: function, data_x, data_y, data_e
+          :members: eval_model, data_x, data_y, data_e
           :noindex:
 
 .. currentmodule:: fitbenchmarking.cost_func.base_cost_func
 .. autoclass:: fitbenchmarking.cost_func.base_cost_func.CostFunc
-          :members: eval_model, eval_cost
+          :members: eval_cost
           :noindex:
 
 .. currentmodule:: fitbenchmarking.jacobian.base_jacobian

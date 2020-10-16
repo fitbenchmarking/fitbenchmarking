@@ -143,7 +143,7 @@ class MantidController(Controller):
 
                     fit_param = get_params(ff_self)
 
-                    return self.cost_func.eval_model(x=xdata,
+                    return self.problem.eval_model(x=xdata,
                                                  params=fit_param)
 
                 def functionDeriv1D(ff_self, xvals, jacobian):

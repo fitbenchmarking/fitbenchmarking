@@ -59,6 +59,31 @@ class TestFittingProblem(TestCase):
             fitting_problem.verify()
             self.fail('verify() passes for x values not numpy.')
 
+    def test_eval_model_raise_error(self):
+        """
+        Test that eval_model raises and error
+        """
+        fitting_problem = FittingProblem(self.options)
+        self.assertRaises(exceptions.FittingProblemError,
+                          fitting_problem.eval_model,
+                          x=2,
+                          params=[1, 2, 3])
+
+    def test_eval_model_correct_evaluation(self):
+        """
+        Test that eval_model is running the correct function
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.function = lambda x, p1: x + p1
+        x_val = np.array([1, 8, 11])
+        eval_result = fitting_problem.eval_model(x=x_val,
+                                                 params=[5])
+        self.assertTrue(all(eval_result == np.array([6, 13, 16])))
+
+        fitting_problem.data_x = np.array([20, 21, 22])
+        eval_result = fitting_problem.eval_model(params=[5])
+        self.assertTrue(all(eval_result == np.array([25, 26, 27])))
+
     def test_get_function_params(self):
         """
         Tests that the function params is formatted correctly

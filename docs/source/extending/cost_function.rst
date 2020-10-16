@@ -12,10 +12,8 @@ you will need to:
 1. Create ``fitbenchmarking/cost_func/<cost_func>_cost_func.py``,
    which contains a new subclass of
    :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`.
-   Then implement the methods:
+   Then implement the method:
 
-    -  .. automethod:: fitbenchmarking.cost_func.base_cost_func.CostFunc.eval_model()
-              :noindex:
     -  .. automethod:: fitbenchmarking.cost_func.base_cost_func.CostFunc.eval_cost()
               :noindex:
 
@@ -38,10 +36,10 @@ and subclasses of :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc` cl
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
-          :members: function, data_x, data_y, data_e
+          :members: eval_model, cache_model_x, data_x, data_y, data_e
           :noindex:
 
 .. currentmodule:: fitbenchmarking.cost_func.base_cost_func
 .. autoclass:: fitbenchmarking.cost_func.base_cost_func.CostFunc
-          :members: cache_fx, cache_cost_x
+          :members: cache_cost_x
           :noindex:
