@@ -50,7 +50,7 @@ class Jacobian:
         """
         return NotImplementedError
 
-    def cached_func_values(self, cached_dict, eval_modelunc, params, **kwargs):
+    def cached_func_values(self, cached_dict, eval_model, params, **kwargs):
         """
         Computes function values using cached or function evaluation
 
@@ -67,7 +67,7 @@ class Jacobian:
         if array_equal(params, cached_dict['params']):
             value = cached_dict['value']
         else:
-            value = eval_modelunc(params, **kwargs)
+            value = eval_model(params, **kwargs)
         return value
 
     @property

@@ -1,5 +1,5 @@
 """
-Implements the base class for the cost function class.
+Implements the weighted and non-weighted non-linear least squares cost function```
 """
 from numpy import dot
 

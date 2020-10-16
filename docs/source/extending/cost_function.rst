@@ -17,7 +17,7 @@ you will need to:
     -  .. automethod:: fitbenchmarking.cost_func.base_cost_func.CostFunc.eval_cost()
               :noindex:
 
-2. Document the available cost functions by by:
+2. Document the available cost functions by:
 
   * adding ``<cost_func>`` to the ``cost_func_type`` option in :ref:`fitting_option`.
   * updating any example files in the ``examples`` directory
