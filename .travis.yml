@@ -1,12 +1,18 @@
-os:
-  - linux
-  - osx
-
-dist: bionic
-
 language: python
-python:
- - 3.6
+
+matrix:
+  include:
+
+    - os: linux
+      sudo: required
+      python: 3.6
+      dist: bionic
+
+    - os: osx
+      osx_image: xcode10
+      language: generic
+      env: PYTHON=36
+
 
 services:
   - docker
