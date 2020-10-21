@@ -1,5 +1,6 @@
 from __future__ import (absolute_import, division, print_function)
 
+import inspect
 import os
 try:
     from tempfile import TemporaryDirectory
@@ -7,6 +8,7 @@ except ImportError:
     from backports.tempfile import TemporaryDirectory
 import unittest
 
+import fitbenchmarking
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.jacobian.SciPyFD_2point_jacobian import ScipyTwoPoint
 from fitbenchmarking.results_processing import support_page
@@ -34,8 +36,8 @@ class CreateTests(unittest.TestCase):
                                        minimizer=m)
                          for m in minimizers]
                         for p in problems]
-
-        self.dir = TemporaryDirectory()
+        root = os.path.dirname(inspect.getfile(fitbenchmarking))
+        self.dir = TemporaryDirectory(dir=root)
 
     def test_create_unique_files(self):
         """
@@ -77,7 +79,8 @@ class CreateProbGroupTests(unittest.TestCase):
                                       minimizer=m)
                         for m in minimizers]
 
-        self.dir = TemporaryDirectory()
+        root = os.path.dirname(inspect.getfile(fitbenchmarking))
+        self.dir = TemporaryDirectory(dir=root)
 
     def test_create_files(self):
         """
@@ -87,10 +90,8 @@ class CreateProbGroupTests(unittest.TestCase):
                                        group_name='test_group',
                                        support_pages_dir=self.dir.name,
                                        options=self.options)
-
         self.assertTrue(all(
-            os.path.exists(os.path.join(self.dir.name, r.support_page_link))
-            for r in self.results))
+            os.path.exists(r.support_page_link) for r in self.results))
 
     def test_file_name(self):
         """
@@ -105,7 +106,7 @@ class CreateProbGroupTests(unittest.TestCase):
                     for f in ['test_group_prob_a_min_a.html',
                               'test_group_prob_a_min_b.html',
                               'test_group_prob_a_min_c.html']]
-        
+
         self.assertListEqual(file_names, expected)
 
 
