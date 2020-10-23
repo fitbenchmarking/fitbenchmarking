@@ -81,7 +81,7 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         template_dir = os.path.join(root, "templates")
         env = Environment(loader=FileSystemLoader(template_dir))
-        css = get_css(options,support_pages_dir)
+        css = get_css(options, support_pages_dir)
         template = env.get_template("support_page_template.html")
 
         with open(file_path, 'w') as fh:
