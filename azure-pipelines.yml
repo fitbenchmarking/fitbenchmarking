@@ -24,11 +24,5 @@ steps:
   displayName: 'Install FitBenchmarking and requirements'
 
 - script: |
-    pytest fitbenchmarking\results_processing --test-type default
-    pytest fitbenchmarking\utils --test-type default
-    pytest fitbenchmarking\core --test-type default
-    pytest fitbenchmarking\results_processing --test-type default
-    pytest fitbenchmarking\parsing --test-type default
-    pytest fitbenchmarking\controllers --test-type default
-    pytest fitbenchmarking\cli --test-type default
+    bash travis/unit_tests_default.sh
   displayName: 'unit testing'
