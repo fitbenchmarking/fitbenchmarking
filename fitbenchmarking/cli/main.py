@@ -47,7 +47,6 @@ examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
         formatter_class=argparse.RawDescriptionHelpFormatter)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    print("root = {}".format(root))
 
     parser.add_argument('-o', '--options-file',
                         metavar='OPTIONS_FILE',
