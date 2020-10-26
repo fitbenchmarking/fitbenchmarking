@@ -55,8 +55,10 @@ examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
                         help='The path to a %(prog)s options file')
     parser.add_argument('-p','--problem_sets',
                         nargs='+',
-                        default=[root+
-                        '/benchmark_problems/NIST/*'],
+                        default=glob.glob(os.path.join(root,
+                                                       'benchmark_problems',
+                                                       'NIST',
+                                                       '*')),
                         help='Paths to directories containing problem sets.')
     parser.add_argument('-d', '--debug-mode',
                         default=False,
