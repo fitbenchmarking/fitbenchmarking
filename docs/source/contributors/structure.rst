@@ -79,6 +79,16 @@ Each file that contains source code will have a directory inside it called
 ``tests``, which contains all of the tests for that section of the code.
 
 
+Benchmark Problems (``benchmark_problems``)
+===========================================
+
+This is a copy of the NIST benchmark problems from `examples/benchmark_problems`.
+These are the default problems that are run if no problem is passed to the
+``fitbenchmarking`` command, and is copied here so that it is distributed
+with the package when installed using, say, `pip`.
+
+
+
 CLI (:py:mod:`~fitbenchmarking.cli`)
 ====================================
 
