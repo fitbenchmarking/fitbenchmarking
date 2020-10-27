@@ -18,8 +18,9 @@ Running alternative problems
 Other problems written in a :ref:`supported file format <problem_def>`
 can be analyzed with FitBenchmarking by
 passing the path using the `--problem-sets` (or `-p`) option.
-A set of example problems can be found the ``fitbenchmarking/examples``
-directory of the code, and examples can also be downloaded from ??.
+A example problems can be downloaded from
+:ref:`BenchmarkProblems`, and they can also be found in the
+``fitbenchmarking/examples`` directory of the code.
 
 For example, to run the NIST low difficulty set from the base directory
 of the source, type into the terminal:
