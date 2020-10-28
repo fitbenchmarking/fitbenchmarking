@@ -13,6 +13,7 @@ the FitBenchmarking software.
     install_instructions/index
     running
     output/index
+    BenchmarkProblems
     options/index
     problem_definition_files/index
     tests

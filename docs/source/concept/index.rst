@@ -11,4 +11,4 @@ types of data.
     :caption: Contents:
 
     why
-    how/index
+    how
