@@ -1,0 +1,3 @@
+NIST_high_difficulty
+
+Files from a NIST dataset. These files should be more difficult than average.

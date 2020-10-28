@@ -38,20 +38,27 @@ def get_parser():
 
     epilog = '''Usage Examples:
 
-    $ fitbenchmarking examples/benchmark_problems/NIST/*
+    $ fitbenchmarking
+    $ fitbenchmarking -p examples/benchmark_problems/NIST/*
     $ fitbenchmarking -o examples/options_template.ini \
-examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
+-p examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
 
     parser = argparse.ArgumentParser(
         prog='FitBenchmarking', add_help=True, epilog=epilog,
         formatter_class=argparse.RawDescriptionHelpFormatter)
 
+    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+
     parser.add_argument('-o', '--options-file',
                         metavar='OPTIONS_FILE',
                         default='',
                         help='The path to a %(prog)s options file')
-    parser.add_argument('problem_sets',
+    parser.add_argument('-p','--problem_sets',
                         nargs='+',
+                        default=glob.glob(os.path.join(root,
+                                                       'benchmark_problems',
+                                                       'NIST',
+                                                       '*')),
                         help='Paths to directories containing problem sets.')
     parser.add_argument('-d', '--debug-mode',
                         default=False,
@@ -162,8 +169,7 @@ def main():
     parser = get_parser()
 
     if len(sys.argv) == 1:
-        parser.print_help()
-        sys.exit(1)
+        print("Running with NIST problem set")
 
     args = parser.parse_args(sys.argv[1:])
 
