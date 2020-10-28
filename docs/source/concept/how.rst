@@ -1,4 +1,20 @@
-.. _BenchmarkingParadigm:
+.. _how:
+
+##############################
+How does FitBenchmarking work?
+##############################
+
+FitBenchmarking takes data and models from real world applications
+and data analysis packages.
+It fits the data to the models by casting them as a
+nonlinear least-squares problem.
+We fit the data using a range of data fitting and
+nonlinear optimization software, and present comparisons on the
+accuracy and timings.
+
+.. figure:: ../../images/FitBenchmarkingConcept.png
+   :alt: FitBenchmarking Concept
+   :width: 100.0%
 
 *************************
 The Benchmarking Paradigm
@@ -22,7 +38,7 @@ FitBenchmarking creates tables, as given in the section :ref:`output`,
 which show a comparison between the different minimizers available.
 An example of a table is:
 
-.. figure:: ../../../images/example_table.png
+.. figure:: ../../images/example_table.png
    :alt: Example Table
 
 This is the result of FitBenchmarking for a selection of software/minimizers
@@ -33,7 +49,7 @@ The problem names link to html pages that display plots of the
 data and the fit that was performed, together with initial and final
 values of the parameters. Here is an example of the final plot fit:
 
-.. figure:: ../../../images/example_plot.png
+.. figure:: ../../images/example_plot.png
    :alt: Example Plot
 
 Performance Profile
@@ -41,10 +57,15 @@ Performance Profile
 
 With each test FitBenchmarking also produces a Dolan-Moré performance profile:
 
-.. figure:: ../../../images/example_pp.png
+.. figure:: ../../images/example_pp.png
 	    :alt: Example Performance Profile
 		  
 The solvers appearing in the top left corner may be considered the best
 performing on this test set.
 See `Dolan and Moré (2001) <https://link.springer.com/article/10.1007/s101070100263>`_
 for more information. 
+
+
+
+
+

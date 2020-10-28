@@ -1,14 +1,19 @@
 .. _BenchmarkProblems:
 
-##################
-Benchmark problems
-##################
+====================
+ Benchmark problems
+====================
 
-To help choose between the different minimizers, FitBenchmarking
-comes with some curated Benchmark problems.  It is also straightforward to
+To help choose between the different minimizers, we have made some curated
+problems available to use with FitBenchmarking.  It is also straightforward to
 add custom data sets to the benchmark, if that is more appropriate; see
 :ref:`problem_def` for specifics of how to add additional problems in a
 supported file format.
+
+.. topic:: Downloads
+	   
+	   | **You can download a folder containing all examples here:** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/examples.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/examples.tar.gz>`
+	   | Individual problem sets are also available to download below.
 
 We supply some standard nonlinear least-squares test problems in the
 form of the `NIST nonlinear regression set <https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`_
@@ -42,24 +47,30 @@ the available fitting methods.
 Currently FitBenchmarking ships with data from the following sources:
 
 Powder Diffraction Data (SIF files)
------------------------------------
+===================================
 
-In the folder `examples/benchmark_problems/DIAMOND_SIF` you will find
-data from powder diffraction experiments.  The data supplied comes
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.tar.gz>`
+
+These problems (also found in the folder `examples/benchmark_problems/DIAMOND_SIF`)
+contain data from powder diffraction experiments.  The data supplied comes
 from the `I14 Hard X-Ray Nanoprobe <https://www.diamond.ac.uk/Instruments/Imaging-and-Microscopy/I14.html>`_ beamline at
 the Diamond Light source, and has been supplied in the SIF
 format used by `CUTEst <https://github.com/ralna/CUTEst>`_.
 
 These problems have either 66 or 99 unknown parameters, and fit around 5,000 data points.
 
+
 .. warning::
    |CUTEstWarning|
 
    
 MultiFit Data (Mantid)
-----------------------
+======================
 
-The folder `examples/benchmark_problems/MultiFit` contains data
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/MultiFit.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/MultiFit.tar.gz>`
+
+These problems (also found in the folder `examples/benchmark_problems/MultiFit`)
+contain data
 for testing the MultFit functionality of Mantid.  This contains
 a simple data set, on which two fits are done, and a calibration
 dataset from the `MuSR <https://www.isis.stfc.ac.uk/Pages/musr.aspx>`_
@@ -73,10 +84,13 @@ See :ref:`The MultiFit documentation<multifit>` for more details.
 
 
 Muon Data (Mantid)
-------------------
+==================
 
-In the folder `examples/benchmark_problems/Muon` you will find
-data from Muon spectrometers.  The data supplied comes
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Muon.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Muon.tar.gz>`
+
+
+These problems (also found in the folder `examples/benchmark_problems/Muon`)
+contain data from Muon spectrometers.  The data supplied comes
 from the `HiFi <https://www.isis.stfc.ac.uk/Pages/hifi.aspx>`_ and 
 `EMU <https://www.isis.stfc.ac.uk/Pages/EMU.aspx>`_ instruments at
 STFC's ISIS Neutron and Muon source, and has been supplied in the
@@ -90,9 +104,11 @@ These problems have between 5 and 13 unknown parameters, and fit around 1,000 da
 
 
 NIST
-----
+====
 
-In the folder `examples/benchmark_problems/NIST` you will find
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/NIST.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/NIST.tar.gz>`
+
+These problems (also found in the folder `examples/benchmark_problems/NIST`) contain
 data from the `NIST Nonlinear Regression <https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`_ test set.
 
 These problems are split into low, average and high difficulty.
@@ -101,9 +117,13 @@ fit between 6 and 250 data points.
 
 
 Neutron Data (Mantid)
----------------------
+=====================
 
-In the folder `examples/benchmark_problems/Neutron` you will find
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Neutron.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Neutron.tar.gz>`
+
+
+These problems (also found in the folder `examples/benchmark_problems/Neutron`)
+contain
 data from Neutron scattering experiments.  The data supplied comes
 from the `Engin-X <https://www.isis.stfc.ac.uk/Pages/Engin-X.aspx>`_,
 `GEM <https://www.isis.stfc.ac.uk/Pages/gem.aspx>`_,
@@ -127,9 +147,12 @@ The WISH problems find 5 unknown parameters, and fit to 512 data points.
 
 
 Small Angle Scattering (SASView)
---------------------------------
+================================
 
-In the folder `examples/benchmark_problems/SAS_modelling/1D` are
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.tar.gz>`
+
+
+These problems (also found in the folder `examples/benchmark_problems/SAS_modelling/1D`) are
 two data sets from small angle scattering experiments.
 These are from fitting data to a
 `cylinder <http://www.sasview.org/docs/user/models/cylinder.html>`_,
@@ -143,9 +166,12 @@ These have 6 unknown parameters, and fit to either 20 or 54 data points.
    set.  See :ref:`external-instructions` for details.
 
 CUTEst (SIF files)
-------------------
+==================
 
-The folder `examples/benchmark_problems/SIF` contains
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/SIF.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/SIF.tar.gz>`
+
+
+This directory (also found in the folder `examples/benchmark_problems/SIF`) contain
 `SIF files <https://github.com/ralna/SIFDecode>`_
 encoding least squares problems 
 from the `CUTEst <https://github.com/ralna/CUTEst>`_
@@ -162,9 +188,11 @@ instrument at ISIS) have 1,025 data points (with 8 unknown parameters).
 
 
 Simple tests
-------------
+============
 
-The folder `examples/benchmark_problems/simple_tests` contains
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/simple_tests.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/simple_tests.tar.gz>`
+
+This folder (also found in `examples/benchmark_problems/simple_tests`) contains
 a number of simple tests with known, and easy to obtain,
 answers.  We recommend that this is used to test any new minimizers
 that are added, and also that any new parsers reimplement these
