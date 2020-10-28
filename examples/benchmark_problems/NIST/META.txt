@@ -1,3 +1,0 @@
-NIST
-
-All files from the NIST dataset.
