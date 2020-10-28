@@ -19,10 +19,9 @@ and how to override them, are given in the pages below.
     logging_option
 
 
-The options file must be a `.ini` formatted file
-(`see here <https://docs.python.org/3/library/configparser.html#supported-ini-file-structure>`__),
-and a good reference for this can be
-found in the examples, as well as at the bottom of this document.
+The options file must be a ``.ini`` formatted file
+(`see here <https://docs.python.org/3/library/configparser.html#supported-ini-file-structure>`__).
+Some example files can be found in the ``examples`` folder of the source, which is also
+available to download at :ref:`BenchmarkProblems`.
 
-See :ref:`options_extend` for new options.
 
