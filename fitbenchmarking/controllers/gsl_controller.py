@@ -20,14 +20,15 @@ class GSLController(Controller):
     Controller for the GSL fitting software
     """
 
-    def __init__(self, problem):
+    def __init__(self, cost_func):
         """
         Initializes variable used for temporary storage
 
-        :param problem: Problem to fit
-        :type problem: FittingProblem
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(GSLController, self).__init__(problem)
+        super(GSLController, self).__init__(cost_func)
 
         self._solver = None
         self._residual_methods = None
@@ -57,16 +58,16 @@ class GSLController(Controller):
 
     def _prediction_error(self, p, data=None):
         """
-        Utility function to call problem.eval_r with correct args
+        Utility function to call cost_func.eval_r with correct args
 
         :param p: parameters
         :type p: list
         :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
-        :return: result from problem.eval_r
+        :return: result from cost_func.eval_r
         :rtype: numpy array
         """
-        return self.problem.eval_r(p)
+        return self.cost_func.eval_r(p)
 
     def _jac(self, p, data=None):
         """
@@ -89,53 +90,53 @@ class GSLController(Controller):
         :type p: list
         :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
-        :return: result from problem.eval_r and eval_j
+        :return: result from cost_func.eval_r and eval_j
         :rtype: (numpy array, numpy array)
         """
-        f = self.problem.eval_r(p)
+        f = self.cost_func.eval_r(p)
         df = self.jacobian.eval(p)
         return f, df
 
     def _chi_squared(self, p, data=None):
         """
-        Utility function to call problem.eval_r_norm with correct args
+        Utility function to call cost_func.eval_cost with correct args
 
         :param p: parameters
         :type p: list
         :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
-        :return: result from problem.eval_r_norm
+        :return: result from cost_func.eval_cost
         :rtype: numpy array
         """
-        return self.problem.eval_r_norm(p)
+        return self.cost_func.eval_cost(p)
 
     def _jac_chi_squared(self, p, data=None):
         """
-        Utility function to get jacobian for problem.eval_r_norm
+        Utility function to get jacobian for cost_func.eval_cost
 
         :param p: parameters
         :type p: list
         :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
-        :return: jacobian approximation for problem.eval_r_norm
+        :return: jacobian approximation for cost_func.eval_cost
         :rtype: numpy array
         """
-        j = approx_derivative(self.problem.eval_r_norm, p)
+        j = self.jacobian.eval_cost(p)
         return j
 
     def _chi_squared_fdf(self, p, data=None):
         """
-        Utility function to return results from eval_r_norm and
+        Utility function to return results from eval_cost and
         _jac_chi_squared as a tuple.
 
         :param p: parameters
         :type p: list
         :param data: x data, this is discarded as the defaults can be used.
         :type data: N/A
-        :return: result from problem.eval_r_norm and _jac_chi_squared
+        :return: result from cost_func.eval_cost and _jac_chi_squared
         :rtype: (numpy array, numpy array)
         """
-        f = self.problem.eval_r_norm(p)
+        f = self.cost_func.eval_cost(p)
         df = self._jac_chi_squared(p)
         return f, df
 

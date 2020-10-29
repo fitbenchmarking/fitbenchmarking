@@ -15,7 +15,7 @@ class FittingResult:
     fitting problem test.
     """
 
-    def __init__(self, options, problem, jac, initial_params, params,
+    def __init__(self, options, cost_func, jac, initial_params, params,
                  name=None, chi_sq=None, runtime=None,
                  minimizer=None, error_flag=None, dataset_id=None):
         """
@@ -23,8 +23,9 @@ class FittingResult:
 
         :param options: Options used in fitting
         :type options: utils.options.Options
-        :param problem: The Problem definition for the fit
-        :type problem: parsing.fitting_problem.FittingProblem
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         :param jac: The Jacobian definition
         :type jac: fitbenchmarking.jacobian.base_controller.Jacobian subclass
         :param initial_params: The starting parameters for the fit
@@ -46,26 +47,27 @@ class FittingResult:
         :type dataset_id: int, optional
         """
         self.options = options
-        self.problem = problem
+        self.cost_func = cost_func
+        self.problem = self.cost_func.problem
         self.jac = jac
         self.name = name if name is not None else \
-            problem.name
+            self.problem.name
 
         self.chi_sq = chi_sq
         if dataset_id is None:
-            self.data_x = problem.data_x
-            self.data_y = problem.data_y
-            self.data_e = problem.data_e
-            self.sorted_index = problem.sorted_index
+            self.data_x = self.problem.data_x
+            self.data_y = self.problem.data_y
+            self.data_e = self.problem.data_e
+            self.sorted_index = self.problem.sorted_index
 
             self.params = params
             self.chi_sq = chi_sq
 
         else:
-            self.data_x = problem.data_x[dataset_id]
-            self.data_y = problem.data_y[dataset_id]
-            self.data_e = problem.data_e[dataset_id]
-            self.sorted_index = problem.sorted_index[dataset_id]
+            self.data_x = self.problem.data_x[dataset_id]
+            self.data_y = self.problem.data_y[dataset_id]
+            self.data_e = self.problem.data_e[dataset_id]
+            self.sorted_index = self.problem.sorted_index[dataset_id]
 
             self.params = params[dataset_id]
             self.chi_sq = chi_sq[dataset_id]
@@ -153,7 +155,7 @@ class FittingResult:
         :rtype: str
         """
         return self.name.replace(',', '').replace(' ', '_')
-    
+
     @property
     def sanitised_min_name(self):
         """
@@ -167,7 +169,7 @@ class FittingResult:
     @sanitised_name.setter
     def sanitised_name(self, value):
         raise RuntimeError('sanitised_name can not be edited')
-    
+
     @sanitised_min_name.setter
     def sanitised_min_name(self, value):
         raise RuntimeError('sanitised_min_name can not be edited')

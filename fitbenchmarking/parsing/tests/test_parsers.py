@@ -246,9 +246,7 @@ class TestParsers:
 
             for r in tests:
                 x = np.array(r[0])
-                actual = fitting_problem.eval_f(x=x,
-                                                params=r[1])
-                print(r, actual)
+                actual = fitting_problem.eval_model(x=x, params=r[1])
                 assert np.isclose(actual, r[2]).all()
 
     def test_jacobian_evaluation(self, file_format, evaluations_file):

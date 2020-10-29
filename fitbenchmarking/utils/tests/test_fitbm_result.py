@@ -8,6 +8,7 @@ import unittest
 import numpy as np
 
 from fitbenchmarking import mock_problems
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -34,10 +35,11 @@ class FitbmResultTests(unittest.TestCase):
         self.runtime = 0.01
         self.params = np.array([1, 3, 4, 4])
         self.initial_params = np.array([0, 0, 0, 0])
-        self.jac = Scipy(self.problem)
+        self.cost_func = NLLSCostFunc(self.problem)
+        self.jac = Scipy(self.cost_func)
         self.jac.method = "2-point"
         self.result = FittingResult(
-            options=self.options, problem=self.problem, jac=self.jac,
+            options=self.options, cost_func=self.cost_func, jac=self.jac,
             chi_sq=self.chi_sq, runtime=self.runtime, minimizer=self.minimizer,
             initial_params=self.initial_params, params=self.params,
             error_flag=0)
@@ -71,10 +73,11 @@ class FitbmResultTests(unittest.TestCase):
         self.problem.sorted_index = [np.array([2, 1, 0, 3]),
                                      np.array([1, 2, 3, 0]),
                                      np.array([3, 0, 1, 2])]
-        jac = Scipy(self.problem)
+        self.cost_func = NLLSCostFunc(self.problem)
+        self.jac = Scipy(self.cost_func)
         self.jac.method = "2-point"
         self.result = FittingResult(
-            options=self.options, problem=self.problem, jac=jac,
+            options=self.options, cost_func=self.cost_func, jac=self.jac,
             chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
             initial_params=initial_params, params=params,
             error_flag=0, dataset_id=1)
@@ -118,7 +121,8 @@ class FitbmResultTests(unittest.TestCase):
         Test that sanitised minimizer names are correct.
         """
         self.result.minimizer = 'test: name with colon'
-        self.assertEqual(self.result.sanitised_min_name, 'test_name_with_colon')
+        self.assertEqual(self.result.sanitised_min_name,
+                         'test_name_with_colon')
 
 
 if __name__ == "__main__":

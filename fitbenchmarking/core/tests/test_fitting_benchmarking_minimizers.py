@@ -7,6 +7,7 @@ import os
 import unittest
 
 from fitbenchmarking import mock_problems
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.utils import fitbm_result, output_grabber
 from fitbenchmarking.core.fitting_benchmarking import loop_over_minimizers
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
@@ -24,14 +25,14 @@ class DummyController(Controller):
     Minimal instantiatable subclass of Controller class for testing
     """
 
-    def __init__(self, problem):
+    def __init__(self, cost_func):
         """
         Initialize dummy controller
 
-        :param problem: Problem to fit
-        :type problem: FittingProblem
+        :param cost_func: cost function class
+        :type cost_func: CostFunc class
         """
-        super(DummyController, self).__init__(problem)
+        super(DummyController, self).__init__(cost_func)
         self.algorithm_check = {'all': ['deriv_free_algorithm', 'general'],
                                 'ls': [None],
                                 'deriv_free': ['deriv_free_algorithm'],
@@ -67,7 +68,7 @@ class DummyController(Controller):
         self.count += 1
 
 
-def make_fitting_problem(file_name='cubic.dat', minimizers=None):
+def make_cost_function(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
@@ -80,7 +81,8 @@ def make_fitting_problem(file_name='cubic.dat', minimizers=None):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    return fitting_problem
+    cost_func = NLLSCostFunc(fitting_problem)
+    return cost_func
 
 
 class LoopOverMinimizersTests(unittest.TestCase):
@@ -93,14 +95,15 @@ class LoopOverMinimizersTests(unittest.TestCase):
         Setting up problem for tests
         """
         self.minimizers = ["deriv_free_algorithm", "general"]
-        self.problem = make_fitting_problem(minimizers=self.minimizers)
-        self.controller = DummyController(problem=self.problem)
+        self.cost_func = make_cost_function(minimizers=self.minimizers)
+        self.problem = self.cost_func.problem
+        self.controller = DummyController(cost_func=self.cost_func)
         self.options = self.problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
         self.count = 0
         self.result_args = {'options': self.options,
-                            'problem': self.problem,
+                            'cost_func': self.cost_func,
                             'jac': "jac",
                             'initial_params': self.problem.starting_values[0],
                             'params': [],

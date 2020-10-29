@@ -7,7 +7,9 @@ import unittest
 from collections import OrderedDict
 
 import numpy as np
+import os
 
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -20,6 +22,25 @@ class PerformanceProfillerTests(unittest.TestCase):
     """
     General tests for the performance profiler code.
     """
+
+    def setUp(self):
+        """
+        Sets up acc runtime profile names
+        """
+        self.results, self.acc_expected, self.runtime_expected = \
+            self.generate_mock_results()
+        _ = preproccess_data(self.results)
+        self.fig_dir = ''
+        self.acc_name = "acc_profile.png"
+        self.runtime_name = "runtime_profile.png"
+
+    def tearDown(self):
+        """
+        Removes expected acc and runtime plots
+        """
+        for name in [self.acc_name, self.runtime_name]:
+            if os.path.isfile(name):
+                os.remove(name)
 
     def generate_mock_results(self):
         """
@@ -58,12 +79,13 @@ class PerformanceProfillerTests(unittest.TestCase):
             runtime_expected.append(
                 list(runtime_results) / np.min(runtime_results))
             prob_results = []
-            jac = Scipy(problem)
+            cost_func = NLLSCostFunc(problem)
+            jac = Scipy(cost_func)
             jac.method = "2-point"
             for j in range(self.num_minimizers):
                 minimizer = 'min_{}'.format(j)
                 prob_results.append(FittingResult(options=options,
-                                                  problem=problem,
+                                                  cost_func=cost_func,
                                                   jac=jac,
                                                   initial_params=[1, 2, 3],
                                                   params=[1, 2, 3],
@@ -72,12 +94,6 @@ class PerformanceProfillerTests(unittest.TestCase):
                                                   minimizer=minimizer))
             results.append(prob_results)
         return results, acc_expected, runtime_expected
-
-    def setUp(self):
-        self.results, self.acc_expected, self.runtime_expected = \
-            self.generate_mock_results()
-        _ = preproccess_data(self.results)
-        self.fig_dir = ''
 
     def test_correct_prepare_profile_data(self):
         """

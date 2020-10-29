@@ -8,6 +8,7 @@ except ImportError:
     from backports.tempfile import TemporaryDirectory
 import unittest
 
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -30,12 +31,13 @@ class PlotTests(unittest.TestCase):
         self.prob.data_y = np.array([4, 3, 5, 2, 1])
         self.prob.data_e = np.array([0.5, 0.2, 0.3, 0.1, 0.4])
         self.prob.starting_values = [{'x': 1, 'y': 2}]
-        self.prob.eval_f = lambda x, y: x[0] * y + x[1]
         self.prob.name = 'full name'
-        jac = Scipy(self.prob)
+        self.prob.eval_model = lambda y, x: y[0] * x + y[1]
+        cost_func = NLLSCostFunc(self.prob)
+        jac = Scipy(cost_func)
         jac.method = "2-point"
         self.fr = FittingResult(options=self.opts,
-                                problem=self.prob,
+                                cost_func=cost_func,
                                 jac=jac,
                                 chi_sq=1.0,
                                 initial_params=[1.8],

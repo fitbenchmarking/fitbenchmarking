@@ -9,6 +9,7 @@ import unittest
 from unittest import mock
 
 from fitbenchmarking import mock_problems
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
@@ -19,7 +20,7 @@ from fitbenchmarking.utils.exceptions import NoResultsError
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 
 
-def make_fitting_problem(file_name='cubic.dat', minimizers=None):
+def make_cost_function(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
@@ -32,7 +33,8 @@ def make_fitting_problem(file_name='cubic.dat', minimizers=None):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    return fitting_problem
+    cost_func = NLLSCostFunc(fitting_problem)
+    return cost_func
 
 
 def dict_test(expected, actual):
@@ -58,7 +60,8 @@ class BenchmarkTests(unittest.TestCase):
         """
         Setting up problem for tests
         """
-        self.problem = make_fitting_problem()
+        self.cost_func = make_cost_function()
+        self.problem = self.cost_func.problem
         self.options = Options()
         self.options.software = ["scipy"]
         self.scipy_len = len(self.options.minimizers["scipy"])
@@ -101,7 +104,7 @@ class BenchmarkTests(unittest.TestCase):
         results = []
         for name in problem_names:
             result_args = {'options': self.options,
-                           'problem': self.problem,
+                           'cost_func': self.cost_func,
                            'jac': 'jac',
                            'initial_params': self.problem.starting_values[0],
                            'params': [],
@@ -134,7 +137,7 @@ class BenchmarkTests(unittest.TestCase):
         results = []
         for name in problem_names:
             result_args = {'options': self.options,
-                           'problem': self.problem,
+                           'cost_func': self.cost_func,
                            'jac': 'jac',
                            'initial_params': self.problem.starting_values[0],
                            'params': [],
