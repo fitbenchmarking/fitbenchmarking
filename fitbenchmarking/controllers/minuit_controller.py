@@ -15,14 +15,16 @@ class MinuitController(Controller):
     Controller for the Minuit fitting software
     """
 
-    def __init__(self, problem):
+    def __init__(self, cost_func):
         """
         Initializes variable used for temporary storage.
 
-        :param problem: Problem to fit
-        :type problem: FittingProblem
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+
         """
-        super(MinuitController, self).__init__(problem)
+        super(MinuitController, self).__init__(cost_func)
         self._popt = None
         self._initial_step = None
         self._minuit_problem = None
@@ -53,7 +55,7 @@ class MinuitController(Controller):
         self._initial_step = 0.1 * np.array(self.initial_params)
         # set small steps to something sensible(?)
         self._initial_step[self._initial_step < 1e-12] = 1e-12
-        self._minuit_problem = Minuit.from_array_func(self.problem.eval_r_norm,
+        self._minuit_problem = Minuit.from_array_func(self.cost_func.eval_cost,
                                                       self.initial_params,
                                                       error=self._initial_step,
                                                       errordef=1)

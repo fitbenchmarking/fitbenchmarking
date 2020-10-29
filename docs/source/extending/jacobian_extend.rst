@@ -13,10 +13,15 @@ you will need to:
 1. Create ``fitbenchmarking/jacobian/<jac_method>_jacobian.py``,
    which contains a new subclass of
    :class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian`.
-   Then implement the method
-   :meth:`~fitbenchmarking.jacobian.base_jacobian.Jacobian.eval()`, which
-   evaluates the Jacobian. The numerical method is set sequentially
-   within :meth:`~fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians()` by
+   Then implement the methods:
+
+    -  .. automethod:: fitbenchmarking.jacobian.base_jacobian.Jacobian.eval()
+              :noindex:
+    -  .. automethod:: fitbenchmarking.jacobian.base_jacobian.Jacobian.eval_cost()
+              :noindex:
+
+   The numerical method is set sequentially within
+   :meth:`~fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians()` by
    using the ``method`` attribute of the class.
 
 2. Document the available Jacobians by:
@@ -29,17 +34,23 @@ you will need to:
    ``fitbenchmarking/jacobian/tests/test_jacobians.py``.
 
 
-The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When adding new Jacobian, you will find it helpful to make use of the
 following members of the :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-classes:
+and subclasses of :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`:
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
-          :members: cache_fx, cache_rx, cache_r_norm_x
-	  :noindex:
+          :members: eval_model, cache_model_x, data_x, data_y, data_e
+          :noindex:
+
+.. currentmodule:: fitbenchmarking.cost_func.base_cost_func
+.. autoclass:: fitbenchmarking.cost_func.base_cost_func.CostFunc
+          :members: eval_cost, cache_cost_x
+          :noindex:
+
 
 .. note::
    If using cached values, use the

@@ -196,3 +196,15 @@ class UnsupportedMinimizerError(FitBenchmarkException):
 
         self._class_message = 'FitBenchmarking ran with no results'
         self.error_code = 15
+
+
+class CostFuncError(FitBenchmarkException):
+    """
+    Indicates a problem with the cost function class.
+    """
+
+    def __init__(self, message=''):
+        super(CostFuncError, self).__init__(message)
+
+        self._class_message = 'FitBenchmarking ran with no results'
+        self.error_code = 16

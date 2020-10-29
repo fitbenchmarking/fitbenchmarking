@@ -14,6 +14,7 @@ import os
 import numpy as np
 
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
+from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.exceptions import NoResultsError, \
     UnknownMinimizerError, UnsupportedMinimizerError, MissingSoftwareError, \
@@ -109,10 +110,12 @@ def loop_over_benchmark_problems(problem_group, options):
             ##############################
             # Loops over starting values #
             ##############################
+            cost_func_cls = create_cost_func(options.cost_func_type)
+            cost_func = cost_func_cls(parsed_problem)
             problem_results, problem_fails, \
                 unselected_minimzers, minimizer_dict = \
                 loop_over_starting_values(
-                    parsed_problem, options, grabbed_output)
+                    cost_func, options, grabbed_output)
             results.extend(problem_results)
             failed_problems.extend(problem_fails)
 
@@ -131,12 +134,12 @@ def loop_over_benchmark_problems(problem_group, options):
     return results, failed_problems, unselected_minimzers, minimizer_dict
 
 
-def loop_over_starting_values(problem, options, grabbed_output):
+def loop_over_starting_values(cost_func, options, grabbed_output):
     """
-    Loops over starting values from the fitting problem
+    Loops over starting values from the fitting cost_func
 
-    :param problem: a problem object containing information used in fitting
-    :type problem: FittingProblem
+    :param cost_func: a cost_func object containing information used in fitting
+    :type cost_func: CostFunc
     :param options: FitBenchmarking options for current run
     :type options: fitbenchmarking.utils.options.Options
     :param grabbed_output: Object that removes third part output from console
@@ -147,6 +150,7 @@ def loop_over_starting_values(problem, options, grabbed_output):
              dictionary of minimizers together with the Jacobian used
     :rtype: tuple(list, list, dict, dict)
     """
+    problem = cost_func.problem
     name = problem.name
     num_start_vals = len(problem.starting_values)
     problem_results = []
@@ -161,7 +165,7 @@ def loop_over_starting_values(problem, options, grabbed_output):
         ################################
         individual_problem_results, problem_fails, \
             unselected_minimzers, minimizer_dict = \
-            loop_over_fitting_software(problem=problem,
+            loop_over_fitting_software(cost_func=cost_func,
                                        options=options,
                                        start_values_index=index,
                                        grabbed_output=grabbed_output)
@@ -170,13 +174,13 @@ def loop_over_starting_values(problem, options, grabbed_output):
     return problem_results, problem_fails, unselected_minimzers, minimizer_dict
 
 
-def loop_over_fitting_software(problem, options, start_values_index,
+def loop_over_fitting_software(cost_func, options, start_values_index,
                                grabbed_output):
     """
     Loops over fitting software selected in the options
 
-    :param problem: a problem object containing information used in fitting
-    :type problem: FittingProblem
+    :param cost_func: a cost_func object containing information used in fitting
+    :type cost_func: CostFunction
     :param options: FitBenchmarking options for current run
     :type options: fitbenchmarking.utils.options.Options
     :param start_values_index: Integer that selects the starting values when
@@ -212,7 +216,7 @@ def loop_over_fitting_software(problem, options, start_values_index,
         with grabbed_output:
             controller_cls = ControllerFactory.create_controller(
                 software=s)
-            controller = controller_cls(problem=problem)
+            controller = controller_cls(cost_func=cost_func)
 
         controller.parameter_set = start_values_index
 
@@ -234,7 +238,7 @@ def loop_over_fitting_software(problem, options, start_values_index,
     software_check = [np.isinf(v.chi_sq) for v in software_results]
     if all(software_check):
         software_results = []
-        problem_fails.append(problem.name)
+        problem_fails.append(cost_func.problem.name)
     results.extend(software_results)
 
     return results, problem_fails, unselected_minimzers, minimizer_dict
@@ -323,6 +327,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                   list of failed minimizers,
                   list of minimizers and Jacobians)
     """
+    cost_func = controller.cost_func
     problem = controller.problem
     minimizer = controller.minimizer
     num_runs = options.num_runs
@@ -343,7 +348,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                         + (num_method if jac_method != "analytic" else '')
                 # Creates Jacobian class
                 jacobian_cls = create_jacobian(jac_method)
-                jacobian = jacobian_cls(problem)
+                jacobian = jacobian_cls(cost_func)
                 jacobian.method = num_method
 
                 controller.jacobian = jacobian
@@ -394,7 +399,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                         else [np.inf] * len(controller.data_x)
 
                 result_args = {'options': options,
-                               'problem': problem,
+                               'cost_func': cost_func,
                                'jac': jacobian,
                                'chi_sq': chi_sq,
                                'runtime': runtime,

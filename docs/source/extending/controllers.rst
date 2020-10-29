@@ -16,7 +16,7 @@ In order to add a new controller, you will need to:
 
 1. Give the software a name ``<software_name>``.  This will be used by users when
    selecting this software.
-   
+
 2. Create ``fitbenchmarking/controllers/<software_name>_controller.py``
    which contains a new subclass of
    :class:`~fitbenchmarking.controllers.base_controller.Controller`.
@@ -25,15 +25,15 @@ In order to add a new controller, you will need to:
 
   -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.__init__()
                      :noindex:
-        
+
   -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.jacobian_information()
-  		      :noindex:
+              :noindex:
   -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.setup()
-  		      :noindex:
+              :noindex:
   -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.fit()
-  		      :noindex:
+              :noindex:
   -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.cleanup()
-  		      :noindex:
+              :noindex:
 
 3. Add the new software to the default options, following the instructions in
    :ref:`options_extend`.
@@ -64,20 +64,27 @@ repository so that other can use this package.  To do this need to follow our
    software in alphabetical order.
 
 
-The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and :class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian` classes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`,  :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc` and :class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian` classes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When adding new minimizers, you will find it helpful to make use of the
-following members of the :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and subclasses of :class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian` classes:
-
-
-.. currentmodule:: fitbenchmarking.jacobian.base_jacobian
-.. autoclass:: fitbenchmarking.jacobian.base_jacobian.Jacobian
-	  :noindex:
-          :members: eval, eval_r_norm	
+following members of the
+:class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`, subclasses of
+:class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc` and subclasses of
+:class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian` classes:
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
-	          :noindex:
-		  :members: eval_f, eval_r, eval_r_norm,
-			data_x, data_y, data_e, starting_values
+          :members: eval_model, data_x, data_y, data_e
+          :noindex:
+
+.. currentmodule:: fitbenchmarking.cost_func.base_cost_func
+.. autoclass:: fitbenchmarking.cost_func.base_cost_func.CostFunc
+          :members: eval_cost
+          :noindex:
+
+.. currentmodule:: fitbenchmarking.jacobian.base_jacobian
+.. autoclass:: fitbenchmarking.jacobian.base_jacobian.Jacobian
+          :members: eval, eval_cost
+          :noindex:
+

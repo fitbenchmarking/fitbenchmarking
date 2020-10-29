@@ -2,10 +2,7 @@
 Implements the base class for the Jacobian.
 """
 from abc import ABCMeta, abstractmethod
-from numpy import array_equal, matmul
-
-import numpy as np
-from scipy.optimize._numdiff import approx_derivative
+from numpy import array_equal
 
 
 class Jacobian:
@@ -14,35 +11,53 @@ class Jacobian:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, problem):
-        self.problem = problem
+    def __init__(self, cost_func):
+        """
+        Base class for the Jacobians
+
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+        """
+        self.cost_func = cost_func
+        self.problem = self.cost_func.problem
 
         self._method = None
 
     @abstractmethod
-    def eval(self, params, func=None, **kwargs):
+    def eval(self, params, **kwargs):
         """
-        Evaluates Jacobian
+        Evaluates Jacobian of the model
 
         :param params: The parameter values to find the Jacobian at
         :type params: list
-        :param func: Function to find the Jacobian for, defaults to
-                     problem.eval_r
-        :type func: Callable, optional
 
-        :return: Approximation of the Jacobian
+        :return: Computed Jacobian
         :rtype: numpy array
         """
         return NotImplementedError
 
-    def cached_func_values(self, cached_dict, eval_func, params, **kwargs):
+    @abstractmethod
+    def eval_cost(self, params, **kwargs):
+        """
+        Evaluates Jacobian of the cost function
+
+        :param params: The parameter values to find the Jacobian at
+        :type params: list
+
+        :return: Computed derivative of the cost function
+        :rtype: numpy array
+        """
+        return NotImplementedError
+
+    def cached_func_values(self, cached_dict, eval_model, params, **kwargs):
         """
         Computes function values using cached or function evaluation
 
         :param cached_dict: Cached function values
         :type cached_dict: dict
-        :param eval_func: Function to find the Jacobian for
-        :type eval_func: Callable
+        :param eval_modelunc: Function to find the Jacobian for
+        :type eval_modelunc: Callable
         :param params: The parameter values to find the Jacobian at
         :type params: list
 
@@ -52,26 +67,8 @@ class Jacobian:
         if array_equal(params, cached_dict['params']):
             value = cached_dict['value']
         else:
-            value = eval_func(params, **kwargs)
+            value = eval_model(params, **kwargs)
         return value
-
-    def eval_r_norm(self, params, **kwargs):
-        """
-        Evaluates derivative of the cost function
-
-        :param params: The parameter values to find the Jacobian at
-        :type params: list
-
-        :return: Computed derivative of the cost function
-        :rtype: numpy array
-        """
-        rx = self.cached_func_values(self.problem.cache_rx,
-                                     self.problem.eval_r,
-                                     params,
-                                     **kwargs)
-        J = self.eval(params, **kwargs)
-        out = 2.0 * matmul(J.T, rx)
-        return out
 
     @property
     def method(self):

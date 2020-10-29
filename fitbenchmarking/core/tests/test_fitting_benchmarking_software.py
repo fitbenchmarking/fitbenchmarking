@@ -8,6 +8,7 @@ import unittest
 import numpy as np
 
 from fitbenchmarking import mock_problems
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.utils import fitbm_result, output_grabber
 from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_fitting_software
@@ -22,7 +23,7 @@ FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 # Due to structure of tests, some variables may not be previously defined
 # in the init function
 # pylint: disable=attribute-defined-outside-init
-def make_fitting_problem(file_name='cubic.dat', minimizers=None):
+def make_cost_function(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
@@ -35,7 +36,8 @@ def make_fitting_problem(file_name='cubic.dat', minimizers=None):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    return fitting_problem
+    cost_func = NLLSCostFunc(fitting_problem)
+    return cost_func
 
 
 def dict_test(expected, actual):
@@ -61,7 +63,8 @@ class LoopOverSoftwareTests(unittest.TestCase):
         """
         Setting up problem for tests
         """
-        self.problem = make_fitting_problem()
+        self.cost_func = make_cost_function()
+        self.problem = self.cost_func.problem
         self.options = self.problem.options
         self.options.software = ["scipy", "dfo"]
         self.minimizers = self.options.minimizers
@@ -70,7 +73,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.scipy_len = len(self.options.minimizers["scipy"])
         self.dfo_len = len(self.options.minimizers["dfo"])
         self.result_args = {'options': self.options,
-                            'problem': self.problem,
+                            'cost_func': self.cost_func,
                             'jac': 'jac',
                             'initial_params': self.problem.starting_values[0],
                             'params': [],
@@ -101,7 +104,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         :type expected_minimizer_dict: dict
         """
         results, problem_fails, unselected_minimzers, minimizer_dict = \
-            loop_over_fitting_software(self.problem,
+            loop_over_fitting_software(self.cost_func,
                                        self.options,
                                        self.start_values_index,
                                        self.grabbed_output)
@@ -191,7 +194,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         """
         self.options.software = ['incorrect_software']
         with self.assertRaises(UnsupportedMinimizerError):
-            _, _, _ = loop_over_fitting_software(self.problem,
+            _, _, _ = loop_over_fitting_software(self.cost_func,
                                                  self.options,
                                                  self.start_values_index,
                                                  self.grabbed_output)

@@ -21,13 +21,14 @@ if TEST_TYPE != "default":
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
 
 
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
 
-def make_fitting_problem(file_name='cubic.dat'):
+def make_cost_func(file_name='cubic.dat'):
     """
     Helper function that returns a simple fitting problem
     """
@@ -38,7 +39,8 @@ def make_fitting_problem(file_name='cubic.dat'):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    return fitting_problem
+    cost_func = NLLSCostFunc(fitting_problem)
+    return cost_func
 
 
 class DummyController(Controller):
@@ -57,6 +59,7 @@ class DummyController(Controller):
 
     def error_flags(self):
         raise NotImplementedError
+
 
 class ControllerSharedTesting:
 
@@ -128,14 +131,15 @@ class BaseControllerTests(TestCase):
     """
 
     def setUp(self):
-        self.problem = make_fitting_problem()
+        self.cost_func = make_cost_func()
+        self.problem = self.cost_func.problem
 
     def test_data(self):
         """
         BaseSoftwareController: Test data is read into controller correctly
         """
 
-        controller = DummyController(self.problem)
+        controller = DummyController(self.cost_func)
 
         if self.problem.start_x is not None:
             assert min(controller.data_x) >= self.problem.start_x
@@ -159,7 +163,7 @@ class BaseControllerTests(TestCase):
         """
         BaseSoftwareController: Test prepare function
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.cost_func)
         controller.minimizer = 'test'
         controller.parameter_set = 0
         controller.prepare()
@@ -169,14 +173,14 @@ class BaseControllerTests(TestCase):
         """
         BaseSoftwareController: Test eval_chisq function
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.cost_func)
 
         params = np.array([1, 2, 3, 4])
         x = np.array([6, 2, 32, 4])
         y = np.array([1, 21, 3, 4])
         e = None
 
-        result = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
+        result = self.cost_func.eval_cost(params=params, x=x, y=y, e=e)
 
         assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
 
@@ -184,14 +188,14 @@ class BaseControllerTests(TestCase):
         """
         BaseSoftwareController: Test eval_chisq function
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.cost_func)
 
         params = np.array([1, 2, 3, 4])
         x = np.array([6, 2, 32, 4])
         y = np.array([1, 21, 3, 4])
         e = np.array([.5, .003, 1, 2])
 
-        result = self.problem.eval_r_norm(params=params, x=x, y=y, e=e)
+        result = self.cost_func.eval_cost(params=params, x=x, y=y, e=e)
 
         assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
 
@@ -200,7 +204,7 @@ class BaseControllerTests(TestCase):
         BaseSoftwareController: Test check_attributes function for _flag
                                 attribute
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.cost_func)
         with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
         controller.flag = 1
@@ -211,7 +215,7 @@ class BaseControllerTests(TestCase):
         """
         BaseSoftwareController: Test flag setting with valid values
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.cost_func)
         controller.final_params = [1]
 
         for flag in [0, 1, 2, 3]:
@@ -221,7 +225,7 @@ class BaseControllerTests(TestCase):
         """
         BaseSoftwareController: Test flag setting with invalid values
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.cost_func)
         controller.final_params = [1, 2, 3, 4, 5]
         with self.assertRaises(exceptions.ControllerAttributeError):
             controller.flag = 10
@@ -231,7 +235,7 @@ class BaseControllerTests(TestCase):
         BaseSoftwareController: Test check_attributes function for final_params
                                 attribute
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.cost_func)
         controller.final_params = [1, 2, 3, 4, 5]
         controller.flag = 3
         controller.check_attributes()
@@ -240,21 +244,21 @@ class BaseControllerTests(TestCase):
         """
         BaseSoftwareController: Test final_params setting with invalid values
         """
-        controller = DummyController(self.problem)
+        controller = DummyController(self.cost_func)
         controller.flag = 1
         controller.final_params = [1, np.inf]
         with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
 
     def test_validate_minimizer_true(self):
-        controller = DummyController(self.problem)
+        controller = DummyController(self.cost_func)
         controller.algorithm_check = {'all': ['min1', 'min2']}
         algorithm_type = 'all'
         minimizer = 'min1'
         controller.validate_minimizer(minimizer, algorithm_type)
 
     def test_validate_minimizer_false(self):
-        controller = DummyController(self.problem)
+        controller = DummyController(self.cost_func)
         controller.algorithm_check = {'all': ['min1', 'min2']}
         algorithm_type = 'all'
         minimizer = 'min_unknown'
@@ -268,8 +272,9 @@ class DefaultControllerTests(TestCase):
     """
 
     def setUp(self):
-        self.problem = make_fitting_problem()
-        self.jac = Scipy(self.problem)
+        self.cost_func = make_cost_func()
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
 
@@ -277,7 +282,7 @@ class DefaultControllerTests(TestCase):
         """
         BumpsController: Test for output shape
         """
-        controller = BumpsController(self.problem)
+        controller = BumpsController(self.cost_func)
         controller.minimizer = 'amoeba'
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
@@ -295,7 +300,7 @@ class DefaultControllerTests(TestCase):
         """
         DFOController: Tests for output shape
         """
-        controller = DFOController(self.problem)
+        controller = DFOController(self.cost_func)
         # test one from each class
         minimizers = ['dfogn',
                       'dfols']
@@ -317,7 +322,7 @@ class DefaultControllerTests(TestCase):
         """
         MinuitController: Tests for output shape
         """
-        controller = MinuitController(self.problem)
+        controller = MinuitController(self.cost_func)
         controller.minimizer = 'minuit'
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
@@ -333,7 +338,7 @@ class DefaultControllerTests(TestCase):
         """
         ScipyController: Test for output shape
         """
-        controller = ScipyController(self.problem)
+        controller = ScipyController(self.cost_func)
         controller.minimizer = 'CG'
         controller.jacobian = self.jac
         self.shared_tests.controller_run_test(controller)
@@ -351,7 +356,7 @@ class DefaultControllerTests(TestCase):
         """
         ScipyLSController: Test for output shape
         """
-        controller = ScipyLSController(self.problem)
+        controller = ScipyLSController(self.cost_func)
         controller.minimizer = 'lm'
         controller.jacobian = self.jac
 
@@ -375,8 +380,9 @@ class ExternalControllerTests(TestCase):
     """
 
     def setUp(self):
-        self.problem = make_fitting_problem()
-        self.jac = Scipy(self.problem)
+        self.cost_func = make_cost_func()
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
 
@@ -384,7 +390,7 @@ class ExternalControllerTests(TestCase):
         """
         MantidController: Test for output shape
         """
-        controller = MantidController(self.problem)
+        controller = MantidController(self.cost_func)
         controller.jacobian = self.jac
         controller.minimizer = 'Levenberg-Marquardt'
         self.shared_tests.controller_run_test(controller)
@@ -404,9 +410,9 @@ class ExternalControllerTests(TestCase):
         """
 
         file_path = os.path.join('multifit_set', 'multifit.txt')
-        problem = make_fitting_problem(file_path)
+        cost_func = make_cost_func(file_path)
 
-        controller = MantidController(problem)
+        controller = MantidController(cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
 
         controller.parameter_set = 0
@@ -426,8 +432,8 @@ class ExternalControllerTests(TestCase):
         Test the override in Mantid conroller is working correctly for
         evaluating chi_squared (SingleFit).
         """
-        m_controller = MantidController(self.problem)
-        b_controller = DummyController(self.problem)
+        m_controller = MantidController(self.cost_func)
+        b_controller = DummyController(self.cost_func)
         params = np.array([1, 2, 3, 4])
         x = np.array([6, 2, 32, 4])
         y = np.array([1, 21, 3, 4])
@@ -445,8 +451,8 @@ class ExternalControllerTests(TestCase):
         Test the override in Mantid conroller is working correctly for
         evaluating chi_squared (MultiFit).
         """
-        m_controller = MantidController(self.problem)
-        b_controller = DummyController(self.problem)
+        m_controller = MantidController(self.cost_func)
+        b_controller = DummyController(self.cost_func)
         params = [np.array([1, 2, 3, 4]),
                   np.array([1, 2, 3, 4]),
                   np.array([1, 2, 3, 4])]
@@ -473,7 +479,7 @@ class ExternalControllerTests(TestCase):
         """
         GSLController: Tests for output shape
         """
-        controller = GSLController(self.problem)
+        controller = GSLController(self.cost_func)
         controller.jacobian = self.jac
         self.shared_tests.check_jac_info(controller,
                                          True,
@@ -497,7 +503,7 @@ class ExternalControllerTests(TestCase):
         """
         RALFitController: Tests for output shape
         """
-        controller = RALFitController(self.problem)
+        controller = RALFitController(self.cost_func)
         controller.jacobian = self.jac
         self.shared_tests.check_jac_info(controller,
                                          True,
@@ -529,7 +535,7 @@ class FactoryTests(TestCase):
         self.check_valid(valid, valid_names)
         self.check_invalid(invalid)
 
-    @pytest.mark.skipif("TEST_TYPE == 'default'")
+    @ pytest.mark.skipif("TEST_TYPE == 'default'")
     def test_external_imports(self):
         """
         Test that the factory returns the correct external class for inputs

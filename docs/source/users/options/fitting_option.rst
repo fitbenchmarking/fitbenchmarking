@@ -39,8 +39,8 @@ Default are ``bumps``, ``dfo``, ``minuit``, ``scipy``, and ``scipy_ls``
    Software must be listed to be here to be run.
    Any minimizers set in :ref:`minimizer_option` will not be run if the software is not also
    present in this list.
-	      
-	      
+
+
 Number of minimizer runs (:code:`num_runs`)
 -------------------------------------------
 
@@ -72,7 +72,7 @@ Default is ``all``
     algorithm_type: all
 
 .. warning::
-   
+
    Choosing an option other than ``all`` may deselect certain
    minimizers set in the options file
 
@@ -113,3 +113,19 @@ Default is ``scipy``
 
    Currently analytic Jacobians are available are only available for
    problems that use the cutest and NIST parsers.
+
+Cost function (:code:`cost_func_type`)
+--------------------------------------
+
+This sets the cost function to be used for the given data. Current cost
+functions supported are:
+
+* ``nlls`` - This sets the cost function to be weighted or non-weighted non-linear least squares, the weighting is controlled by the ``use_errors`` option.
+
+
+Default is ``nlls``
+
+.. code-block:: rst
+
+    [FITTING]
+    cost_func_type: nlls

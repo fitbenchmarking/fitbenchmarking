@@ -17,15 +17,16 @@ class MantidController(Controller):
     so this controller creates that in setup.
     """
 
-    def __init__(self, problem):
+    def __init__(self, cost_func):
         """
         Setup workspace, cost_function, ignore_invalid, and initialise vars
         used for temporary storage within the mantid controller
 
-        :param problem: Problem to fit
-        :type problem: FittingProblem
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(MantidController, self).__init__(problem)
+        super(MantidController, self).__init__(cost_func)
 
         self._param_names = self.problem.param_names
         self.algorithm_check = {
@@ -142,8 +143,8 @@ class MantidController(Controller):
 
                     fit_param = get_params(ff_self)
 
-                    return self.problem.eval_f(x=xdata,
-                                               params=fit_param)
+                    return self.problem.eval_model(x=xdata,
+                                                 params=fit_param)
 
                 def functionDeriv1D(ff_self, xvals, jacobian):
                     fit_param = get_params(ff_self)
