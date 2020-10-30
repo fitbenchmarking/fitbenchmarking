@@ -20,6 +20,9 @@ class MininimizerOptionTests(unittest.TestCase):
         Initializes options class with defaults
         """
         self.options = Options()
+        software = ['bumps', 'dfo', 'mantid', 'minuit',
+                    'ralfit', 'scipy', 'scipy_ls']
+        self.options.software = software
 
     def test_minimizer_bumps(self):
         """
@@ -137,6 +140,8 @@ class UserMininimizerOptionTests(unittest.TestCase):
         """
         opts_file = self.generate_user_ini_file(options_set, software)
         options = Options(opts_file)
+        if software not in options.software:
+            options.software.append(software)
         actual = options.minimizers[software]
         self.assertEqual(options_set, actual)
 

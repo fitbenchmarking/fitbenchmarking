@@ -155,10 +155,10 @@ class Options(object):
                                             default_options_list))
 
         minimizers = config['MINIMIZERS']
-        self.minimizers = {}
+        self._minimizers = {}
         for key in self.VALID_FITTING["software"]:
-            self.minimizers[key] = self.read_value(minimizers.getlist,
-                                                   key)
+            self._minimizers[key] = self.read_value(minimizers.getlist,
+                                                    key)
 
         fitting = config['FITTING']
         self.num_runs = self.read_value(fitting.getint, 'num_runs')
@@ -245,6 +245,14 @@ class Options(object):
     @results_dir.setter
     def results_dir(self, value):
         self._results_dir = os.path.abspath(value)
+
+    @property
+    def minimizers(self):
+        return {s: self._minimizers[s] for s in self.software}
+
+    @minimizers.setter
+    def minimizers(self, value):
+        return value
 
     def _create_config(self):
         """
