@@ -11,6 +11,7 @@ import argparse
 import glob
 import inspect
 import os
+import tempfile
 import sys
 import webbrowser
 
@@ -92,6 +93,17 @@ def run(problem_sets, options_file='', debug=False):
                  append=options.log_append,
                  level=options.log_level)
 
+    opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
+                                           mode='w',
+                                           delete=False)
+    options.write_to_stream(opt_file)
+    opt_file.close()
+    LOGGER.debug("The options file used is as follows:")
+    with open(opt_file.name) as f:
+        for line in f:
+            LOGGER.debug(line.replace("\n", ""))
+    os.remove(opt_file.name)
+
     groups = []
     result_dir = []
     for sub_dir in problem_sets:
@@ -135,11 +147,17 @@ def run(problem_sets, options_file='', debug=False):
 
         # resets options to original values
         options.reset()
+    if os.path.basename(options.results_dir) == \
+            options.DEFAULT_PLOTTING['results_dir']:
+        LOGGER.info("\nWARNING: \nThe FitBenchmarking results will be "
+                    "placed into the folder: \n\n   {}\n\nTo change this "
+                    "alter the input options "
+                    "file.\n".format(options.results_dir))
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
-    css = get_css(options,options.results_dir)
+    css = get_css(options, options.results_dir)
     template = env.get_template("index_page.html")
     group_links = [os.path.join(d, "{}_index.html".format(g))
                    for g, d in zip(groups, result_dir)]
