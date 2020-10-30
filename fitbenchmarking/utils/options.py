@@ -252,7 +252,7 @@ class Options(object):
 
     @minimizers.setter
     def minimizers(self, value):
-        return value
+        self._minimizers = value
 
     def _create_config(self):
         """
