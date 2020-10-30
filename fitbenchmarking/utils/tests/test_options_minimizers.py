@@ -20,7 +20,7 @@ class MininimizerOptionTests(unittest.TestCase):
         Initializes options class with defaults
         """
         self.options = Options()
-        software = ['bumps', 'dfo', 'mantid', 'minuit',
+        software = ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
                     'ralfit', 'scipy', 'scipy_ls']
         self.options.software = software
 
@@ -38,6 +38,16 @@ class MininimizerOptionTests(unittest.TestCase):
         """
         expected = ['dfogn', 'dfols']
         actual = self.options.minimizers['dfo']
+        self.assertEqual(expected, actual)
+
+    def test_minimizer_gsl(self):
+        """
+        Checks valid gsl minimizers are set correctly
+        """
+        expected = ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
+                    'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
+                    'vector_bfgs2', 'steepest_descent']
+        actual = self.options.minimizers['gsl']
         self.assertEqual(expected, actual)
 
     def test_minimizer_mantid(self):
@@ -192,6 +202,20 @@ class UserMininimizerOptionTests(unittest.TestCase):
         """
         set_option = ['CG']
         self.shared_invalid(set_option, 'dfo')
+
+    def test_minimizer_gsl_valid(self):
+        """
+        Checks user set gsl minimizers is valid
+        """
+        set_option = ['lmsder', 'lmder', 'nmsimplex']
+        self.shared_valid(set_option, 'gsl')
+
+    def test_minimizer_gsl_invalid(self):
+        """
+        Checks user set gsl minimizers is invalid
+        """
+        set_option = ['newton']
+        self.shared_invalid(set_option, 'gsl')
 
     def test_minimizer_mantid_valid(self):
         """
