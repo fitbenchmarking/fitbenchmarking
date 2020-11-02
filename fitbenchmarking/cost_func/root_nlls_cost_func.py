@@ -45,13 +45,12 @@ class RootNLLSCostFunc(BaseNLLSCostFunc):
         :return: The residuals for the datapoints at the given parameters
         :rtype: numpy array
         """
-
-        if "x" in kwargs and "y" in kwargs:
-            x = kwargs.get("x", self.problem.data_x)
-            y = kwargs.get("y", self.problem.data_y)
-        else:
-            raise CostFuncError('Residuals could not be computed with '
-                                'only one of x and y.')
+        x = kwargs.get("x", self.problem.data_x)
+        y = kwargs.get("y", self.problem.data_y)
+        if len(x) != len(y):
+            raise CostFuncError('The length of the x and y are not the same, '
+                                'len(x)={} and len(y)= {}.'.format(len(x),
+                                                                   len(y)))
         result = sqrt(y) - sqrt(self.problem.eval_model(params=params, x=x))
         self.cache_rx['params'] = params
         self.cache_rx['value'] = result

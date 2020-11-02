@@ -41,7 +41,8 @@ class TestNLLSCostFunc(TestCase):
         self.assertRaises(exceptions.CostFuncError,
                           self.cost_function.eval_r,
                           params=[1, 2, 3],
-                          x=2)
+                          x=[2],
+                          y=[3, 4])
 
     def test_eval_r_correct_evaluation(self):
         """
@@ -86,7 +87,9 @@ class TestWeightedNLLSCostFunc(TestCase):
         self.assertRaises(exceptions.CostFuncError,
                           self.cost_function.eval_r,
                           params=[1, 2, 3],
-                          x=2)
+                          x=[2],
+                          y=[3, 4, 5],
+                          e=[23, 4])
 
     def test_eval_r_correct_evaluation(self):
         """
@@ -133,7 +136,8 @@ class TestRootNLLSCostFunc(TestCase):
         self.assertRaises(exceptions.CostFuncError,
                           self.cost_function.eval_r,
                           params=[1, 2, 3],
-                          x=2)
+                          x=[2],
+                          y=[3, 4, 5])
 
     def test_eval_r_correct_evaluation(self):
         """
@@ -174,7 +178,6 @@ class FactoryTests(TestCase):
 
         for cost_func_type in valid:
             cost_func = create_cost_func(cost_func_type)
-            print(cost_func_type.replace("_", ""))
             self.assertTrue(
                 cost_func.__name__.lower().startswith(
                     cost_func_type.replace("_", "")))
