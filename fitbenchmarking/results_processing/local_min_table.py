@@ -86,7 +86,7 @@ class LocalMinTable(Table):
                     local_min[key].append("False")
                 else:
                     res = v.cost_func.eval_r(
-                        v.params, v.data_x, v.data_y, v.data_e)
+                        v.params, x=v.data_x, y=v.data_y, e=v.data_e)
                     jac = v.jac.eval(v.params, x=v.data_x,
                                      y=v.data_y, e=v.data_e)
                     min_test = np.matmul(res, jac)

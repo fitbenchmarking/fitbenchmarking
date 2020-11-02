@@ -21,7 +21,8 @@ if TEST_TYPE != "default":
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
 
 
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
@@ -39,7 +40,7 @@ def make_cost_func(file_name='cubic.dat'):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    cost_func = NLLSCostFunc(fitting_problem)
+    cost_func = WeightedNLLSCostFunc(fitting_problem)
     return cost_func
 
 
@@ -169,22 +170,7 @@ class BaseControllerTests(TestCase):
         controller.prepare()
         assert controller.setup_result == 53
 
-    def test_eval_chisq_no_errors(self):
-        """
-        BaseSoftwareController: Test eval_chisq function
-        """
-        controller = DummyController(self.cost_func)
-
-        params = np.array([1, 2, 3, 4])
-        x = np.array([6, 2, 32, 4])
-        y = np.array([1, 21, 3, 4])
-        e = None
-
-        result = self.cost_func.eval_cost(params=params, x=x, y=y, e=e)
-
-        assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
-
-    def test_eval_chisq_with_errors(self):
+    def test_eval_chisq(self):
         """
         BaseSoftwareController: Test eval_chisq function
         """
