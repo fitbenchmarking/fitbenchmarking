@@ -7,7 +7,10 @@ from unittest import TestCase
 
 import numpy as np
 
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cost_func.root_nlls_cost_func import RootNLLSCostFunc
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -25,15 +28,18 @@ class TestNLLSCostFunc(TestCase):
         Setting up nonlinear least squares cost function tests
         """
         self.options = Options()
+        fitting_problem = FittingProblem(self.options)
+        self.cost_function = NLLSCostFunc(fitting_problem)
+        fitting_problem.function = lambda x, p1: x + p1
+        self.x_val = np.array([1, 8, 11])
+        self.y_val = np.array([6, 10, 20])
 
     def test_eval_r_raise_error(self):
         """
         Test that eval_r raises and error
         """
-        fitting_problem = FittingProblem(self.options)
-        cost_function = NLLSCostFunc(fitting_problem)
         self.assertRaises(exceptions.CostFuncError,
-                          cost_function.eval_r,
+                          self.cost_function.eval_r,
                           params=[1, 2, 3],
                           x=2)
 
@@ -41,56 +47,115 @@ class TestNLLSCostFunc(TestCase):
         """
         Test that eval_r is running the correct function
         """
-        fitting_problem = FittingProblem(self.options)
-        cost_function = NLLSCostFunc(fitting_problem)
-
-        fitting_problem.function = lambda x, p1: x + p1
-        x_val = np.array([1, 8, 11])
-        y_val = np.array([6, 10, 20])
-
-        eval_result = cost_function.eval_r(x=x_val,
-                                           y=y_val,
-                                           params=[5])
+        eval_result = self.cost_function.eval_r(x=self.x_val,
+                                                y=self.y_val,
+                                                params=[5])
         self.assertTrue(all(eval_result == np.array([0, -3, 4])))
-
-        e_val = np.array([2, 4, 1])
-        eval_result = cost_function.eval_r(x=x_val,
-                                           y=y_val,
-                                           e=e_val,
-                                           params=[5])
-        self.assertTrue(all(eval_result == np.array([0, -0.75, 4])))
-
-        fitting_problem.data_x = np.array([20, 21, 22])
-        fitting_problem.data_y = np.array([20, 30, 35])
-        eval_result = cost_function.eval_r(params=[5])
-        self.assertTrue(all(eval_result == np.array([-5, 4, 8])))
-
-        fitting_problem.data_e = np.array([2, 5, 10])
-        eval_result = cost_function.eval_r(params=[5])
-        self.assertTrue(all(eval_result == np.array([-2.5, 0.8, 0.8])))
 
     def test_eval_cost(self):
         """
         Test that eval_cost is correct
         """
-        fitting_problem = FittingProblem(self.options)
-        cost_function = NLLSCostFunc(fitting_problem)
-
-        fitting_problem.function = lambda x, p1: x + p1
-        x_val = np.array([1, 8, 11])
-        y_val = np.array([6, 10, 20])
-        e_val = np.array([0.5, 10, 0.1])
-
-        eval_result = cost_function.eval_cost(params=[5],
-                                              x=x_val,
-                                              y=y_val,
-                                              e=e_val)
-        self.assertEqual(eval_result, 1600.09)
-
-        fitting_problem.data_x = x_val
-        fitting_problem.data_y = y_val
-        eval_result = cost_function.eval_cost(params=[5])
+        eval_result = self.cost_function.eval_cost(params=[5],
+                                                   x=self.x_val,
+                                                   y=self.y_val)
         self.assertEqual(eval_result, 25)
+
+
+class TestWeightedNLLSCostFunc(TestCase):
+    """
+    Class to test the WeightedNLLSCostFunc class
+    """
+
+    def setUp(self):
+        """
+        Setting up weighted nonlinear least squares cost function tests
+        """
+        self.options = Options()
+        fitting_problem = FittingProblem(self.options)
+        self.cost_function = WeightedNLLSCostFunc(fitting_problem)
+        fitting_problem.function = lambda x, p1: x + p1
+        self.x_val = np.array([1, 8, 11])
+        self.y_val = np.array([6, 10, 20])
+        self.e_val = np.array([2, 4, 1])
+
+    def test_eval_r_raise_error(self):
+        """
+        Test that eval_r raises and error
+        """
+        self.assertRaises(exceptions.CostFuncError,
+                          self.cost_function.eval_r,
+                          params=[1, 2, 3],
+                          x=2)
+
+    def test_eval_r_correct_evaluation(self):
+        """
+        Test that eval_r is running the correct function
+        """
+
+        eval_result = self.cost_function.eval_r(x=self.x_val,
+                                                y=self.y_val,
+                                                e=self.e_val,
+                                                params=[5])
+        self.assertTrue(all(eval_result == np.array([0, -0.75, 4])))
+
+    def test_eval_cost(self):
+        """
+        Test that eval_cost is correct
+        """
+        eval_result = self.cost_function.eval_cost(params=[5],
+                                                   x=self.x_val,
+                                                   y=self.y_val,
+                                                   e=self.e_val)
+        self.assertEqual(eval_result, 16.5625)
+
+
+class TestRootNLLSCostFunc(TestCase):
+    """
+    Class to test the RootNLLSCostFunc class
+    """
+
+    def setUp(self):
+        """
+        Setting up root nonlinear least squares cost function tests
+        """
+        self.options = Options()
+        fitting_problem = FittingProblem(self.options)
+        self.cost_function = RootNLLSCostFunc(fitting_problem)
+        fitting_problem.function = lambda x, p1: x + p1
+        self.x_val = np.array([1, 8, 11])
+        self.y_val = np.array([6, 10, 20])
+
+    def test_eval_r_raise_error(self):
+        """
+        Test that eval_r raises and error
+        """
+        self.assertRaises(exceptions.CostFuncError,
+                          self.cost_function.eval_r,
+                          params=[1, 2, 3],
+                          x=2)
+
+    def test_eval_r_correct_evaluation(self):
+        """
+        Test that eval_r is running the correct function
+        """
+        eval_result = self.cost_function.eval_r(x=self.x_val,
+                                                y=self.y_val,
+                                                params=[0])
+        expected = np.array([1.4494897427831779,
+                             0.33385053542218923,
+                             1.1555111646441798])
+        self.assertTrue(
+            all(eval_result == expected))
+
+    def test_eval_cost(self):
+        """
+        Test that eval_cost is correct
+        """
+        eval_result = self.cost_function.eval_cost(params=[5],
+                                                   x=self.x_val,
+                                                   y=self.y_val)
+        self.assertEqual(eval_result, 0.4194038580206052)
 
 
 class FactoryTests(TestCase):
@@ -104,15 +169,17 @@ class FactoryTests(TestCase):
         """
         self.options = Options()
 
-        valid = ['nlls']
+        valid = ['weighted_nlls', 'nlls', 'root_nlls']
         invalid = ['normal']
 
         for cost_func_type in valid:
             cost_func = create_cost_func(cost_func_type)
+            print(cost_func_type.replace("_", ""))
             self.assertTrue(
-                cost_func.__name__.lower().startswith(cost_func_type))
+                cost_func.__name__.lower().startswith(
+                    cost_func_type.replace("_", "")))
 
-        for jac_method in invalid:
+        for cost_func_type in invalid:
             self.assertRaises(exceptions.CostFuncError,
                               create_cost_func,
-                              jac_method)
+                              cost_func_type)
