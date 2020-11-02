@@ -126,7 +126,7 @@ class SaveResultsTests(unittest.TestCase):
         self.results, self.options, self.min_chi_sq, self.min_runtime = \
             generate_mock_results()
         test_path = os.path.dirname(os.path.realpath(__file__))
-        self.dirname = os.path.join(test_path, 'results')
+        self.dirname = os.path.join(test_path, 'fitbenchmarking_results')
         self.options.results_dir = self.dirname
         os.mkdir(self.dirname)
 
@@ -159,7 +159,7 @@ class CreateDirectoriesTests(unittest.TestCase):
         """
         self.options = Options()
         test_path = os.path.dirname(os.path.realpath(__file__))
-        self.dirname = os.path.join(test_path, 'results')
+        self.dirname = os.path.join(test_path, 'fitbenchmarking_results')
         os.mkdir(self.dirname)
 
     def tearDown(self):
@@ -188,7 +188,7 @@ class CreateDirectoriesTests(unittest.TestCase):
         assert support_dir == expected_support_dir
         assert figures_dir == expected_figures_dir
         assert css_dir == expected_css_dir
-        
+
         assert os.path.isdir(group_dir)
         assert os.path.isdir(support_dir)
         assert os.path.isdir(figures_dir)
@@ -313,7 +313,7 @@ class CreateProblemLevelIndex(unittest.TestCase):
         """
         self.options = Options()
         test_path = os.path.dirname(os.path.realpath(__file__))
-        self.group_dir = os.path.join(test_path, 'results')
+        self.group_dir = os.path.join(test_path, 'fitbenchmarking_results')
         os.mkdir(self.group_dir)
         self.table_names = {"compare": "compare_table_name.",
                             "runtime": "runtime_table_name."}
