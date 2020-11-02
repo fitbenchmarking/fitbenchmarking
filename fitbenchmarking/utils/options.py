@@ -44,7 +44,7 @@ class Options(object):
                       'ralfit', 'scipy', 'scipy_ls'],
          'use_errors': [True, False],
          'jac_method': ['scipy', 'analytic'],
-         'cost_func_type': 'nlls'}
+         'cost_func_type': ['nlls', 'weigthed_nlls', 'root_nlls']}
     VALID_JACOBIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
          'analytic': ['cutest']}

@@ -33,7 +33,7 @@ class Analytic(Jacobian):
         e = kwargs.get("e", self.problem.data_e)
         jac = self.problem.jacobian(x, params)
 
-        if self.problem.options.use_errors:
+        if self.problem.options.cost_func_type == "weighted_nlls":
             # scales each column of the Jacobian by the weights
             jac = jac / e[:, None]
 
