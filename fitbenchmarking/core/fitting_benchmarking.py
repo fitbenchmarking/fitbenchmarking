@@ -7,6 +7,7 @@ for a certain fitting software.
 from __future__ import absolute_import, division, print_function
 
 from collections import defaultdict
+import copy
 import timeit
 import warnings
 import os
@@ -56,13 +57,15 @@ def benchmark(options, data_dir):
     #################################
     # Loops over benchmark problems #
     #################################
-    results, failed_problems, unselected_minimzers = loop_over_benchmark_problems(
-        problem_group, options)
+    results, failed_problems, unselected_minimizers = \
+        loop_over_benchmark_problems(problem_group, options)
 
-    for keys, minimzers in unselected_minimzers.items():
-        minimizers_all = options.minimizers[keys]
-        diff = set(minimizers_all) - set(minimzers)
-        options.minimizers[keys] = [x for x in minimizers_all if x in diff]
+    new_minimizer = {}
+    minimizer_copy = copy.copy(options.minimizers)
+    for keys, minimizers in unselected_minimizers.items():
+        new_minimizer[keys] = [x for x in minimizer_copy[keys]
+                               if x not in minimizers]
+    options.minimizers = new_minimizer
 
     # Used to group elements in list by name
     results_dict = defaultdict(list)
@@ -72,7 +75,7 @@ def benchmark(options, data_dir):
     results = [results_dict[r] for r in
                sorted(results_dict.keys(), key=lambda x: x.lower())]
 
-    return results, failed_problems, unselected_minimzers
+    return results, failed_problems, unselected_minimizers
 
 
 def loop_over_benchmark_problems(problem_group, options):
