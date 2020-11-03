@@ -10,7 +10,8 @@ import shutil
 import numpy as np
 
 import fitbenchmarking
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
 from fitbenchmarking.results_processing.tables import SORTED_TABLE_NAMES
 from fitbenchmarking.results_processing.tables import generate_table
 from fitbenchmarking.results_processing.tables import create_results_tables
@@ -103,7 +104,7 @@ def generate_mock_results():
         results = []
         for j in range(num_min):
             p.starting_values = starting_values
-            cost_func = NLLSCostFunc(p)
+            cost_func = WeightedNLLSCostFunc(p)
             jac = Scipy(cost_func)
             jac.method = '2-point'
             r = FittingResult(options=options, cost_func=cost_func, jac=jac,
