@@ -65,10 +65,11 @@ class TestRegressionAll(TestCase):
                                      '{}_expected_results'.format(platform),
                                      'all_parsers.txt')
 
-        actual_file = os.path.join(os.path.dirname(__file__),
-                                   'results',
-                                   'all_parsers_set',
-                                   'all_parsers_set_acc_weighted_table.txt')
+        actual_file = \
+            os.path.join(os.path.dirname(__file__),
+                         'results',
+                         'all_parsers_set',
+                         'all_parsers_set_acc_weighted_nlls_table.txt')
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()
@@ -92,7 +93,7 @@ class TestRegressionAll(TestCase):
         actual_file = os.path.join(os.path.dirname(__file__),
                                    'results',
                                    'multifit_set',
-                                   'multifit_set_acc_weighted_table.txt')
+                                   'multifit_set_acc_weighted_nlls_table.txt')
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()
@@ -145,10 +146,11 @@ class TestRegressionDefault(TestCase):
                                      '{}_expected_results'.format(platform),
                                      'default_parsers.txt')
 
-        actual_file = os.path.join(os.path.dirname(__file__),
-                                   'results',
-                                   'default_parsers',
-                                   'default_parsers_acc_weighted_table.txt')
+        actual_file = \
+            os.path.join(os.path.dirname(__file__),
+                         'results',
+                         'default_parsers',
+                         'default_parsers_acc_weighted_nlls_table.txt')
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()

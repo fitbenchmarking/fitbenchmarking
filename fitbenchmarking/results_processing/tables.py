@@ -60,15 +60,14 @@ def create_results_tables(options, results, best_results, group_name,
     :rtype: tuple(dict, dict)
     """
 
-    weighted_str = 'weighted' if options.use_errors else 'unweighted'
-
     table_names = {}
     description = {}
     for suffix in SORTED_TABLE_NAMES:
         if suffix in options.table_type:
-            table_names[suffix] = '{0}_{1}_{2}_table.'.format(group_name,
-                                                              suffix,
-                                                              weighted_str)
+            table_names[suffix] = \
+                '{0}_{1}_{2}_table.'.format(group_name,
+                                            suffix,
+                                            options.cost_func_type)
 
             table, html_table, txt_table = generate_table(results,
                                                           best_results,
@@ -92,7 +91,7 @@ def create_results_tables(options, results, best_results, group_name,
 
             root = os.path.dirname(getfile(fitbenchmarking))
             template_dir = os.path.join(root, 'templates')
-            css = get_css(options,group_dir)
+            css = get_css(options, group_dir)
             env = Environment(loader=FileSystemLoader(template_dir))
             template = env.get_template("table_template.html")
             html_output_file = file_path + 'html'

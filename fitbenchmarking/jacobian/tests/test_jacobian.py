@@ -57,7 +57,7 @@ class TestJacobianClass(TestCase):
         Setting up tests
         """
         options = Options()
-        options.use_errors = False
+        options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
         self.fitting_problem.function = f
         self.fitting_problem.jacobian = J
@@ -98,22 +98,36 @@ class TestJacobianClass(TestCase):
         """
         Test analytic Jacobian
         """
+        self.fitting_problem.options.cost_func_type = "nlls"
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.cost_func)
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
-    def test_analytic_cutest_errors(self):
+    def test_analytic_cutest_weighted(self):
         """
         Test analytic Jacobian
         """
-        self.fitting_problem.options.use_errors = True
+        self.fitting_problem.options.cost_func_type = "weighted_nlls"
         e = np.array([1, 2, 1, 3, 1])
         self.fitting_problem.data_e = e
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.cost_func)
         eval_result = jac.eval(params=self.params)
         scaled_actual = self.actual / e[:, None]
+        self.assertTrue(np.isclose(scaled_actual, eval_result).all())
+
+    def test_analytic_cutest_root(self):
+        """
+        Test analytic Jacobian
+        """
+        self.fitting_problem.options.cost_func_type = "root_nlls"
+        self.fitting_problem.format = "cutest"
+        jac = Analytic(self.cost_func)
+        eval_result = jac.eval(params=self.params)
+        scaled_actual = self.actual * \
+            self.fitting_problem.eval_model(self.params)[:, None] / 2
+
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
 
     def test_analytic_raise_error(self):
@@ -136,7 +150,7 @@ class TestCachedFuncValues(TestCase):
         Setting up tests
         """
         options = Options()
-        options.use_errors = False
+        options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
         self.cost_func = NLLSCostFunc(self.fitting_problem)
         self.jacobian = Jacobian(self.cost_func)
@@ -188,7 +202,7 @@ class TestDerivCostFunc(TestCase):
         Setting up tests
         """
         options = Options()
-        options.use_errors = False
+        options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
         self.fitting_problem.function = f
         self.fitting_problem.jacobian = J

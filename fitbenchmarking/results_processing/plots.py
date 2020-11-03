@@ -57,8 +57,11 @@ class Plot(object):
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(1, 1, 1)
         self.line_plot = None
+
+        use_errors = True if self.options.cost_func_type == "weighted_nlls" \
+            else False
         # Plot the data that functions were fitted to
-        self.plot_data(self.options.use_errors,
+        self.plot_data(use_errors,
                        self.data_plot_options)
         # reset line_plot as base data won't need updating
         self.line_plot = None

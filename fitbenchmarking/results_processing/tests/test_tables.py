@@ -223,9 +223,11 @@ class CreateResultsTableTests(unittest.TestCase):
         for suffix in SORTED_TABLE_NAMES:
 
             for table_type in ['html', 'txt']:
-                table_name = '{}_{}_weighted_table.{}'.format(self.group_name,
-                                                              suffix,
-                                                              table_type)
+                table_name = \
+                    '{}_{}_{}_table.{}'.format(self.group_name,
+                                               suffix,
+                                               self.options.cost_func_type,
+                                               table_type)
                 file_name = os.path.join(self.group_dir, table_name)
                 self.assertTrue(os.path.isfile(file_name))
 

@@ -45,14 +45,6 @@ class FittingOptionTests(unittest.TestCase):
         actual = self.options.software
         self.assertEqual(expected, actual)
 
-    def test_use_errors_default(self):
-        """
-        Checks use_errors default
-        """
-        expected = True
-        actual = self.options.use_errors
-        self.assertEqual(expected, actual)
-
     def test_jac_method_default(self):
         """
         Checks jac_method default
@@ -65,7 +57,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks cost_func default
         """
-        expected = 'nlls'
+        expected = 'weighted_nlls'
         actual = self.options.cost_func_type
         self.assertEqual(expected, actual)
 
@@ -178,23 +170,6 @@ class UserFittingOptionTests(unittest.TestCase):
         config_str = \
             "[FITTING]\nalgorithm_type: all_the_minimizers"
         self.shared_invalid('algorithm_type', config_str)
-
-    def test_minimizer_use_errors_valid(self):
-        """
-        Checks user set use_errors is valid
-        """
-        set_option = False
-        config_str = \
-            "[FITTING]\nuse_errors: no"
-        self.shared_valid('use_errors', set_option, config_str)
-
-    def test_minimizer_use_errors_invalid(self):
-        """
-        Checks user set use_errors is invalid
-        """
-        config_str = \
-            "[FITTING]\nuse_errors: use_weights"
-        self.shared_invalid('use_errors', config_str)
 
     def test_minimizer_jac_method_valid(self):
         """

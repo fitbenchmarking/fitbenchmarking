@@ -183,13 +183,15 @@ class FittingProblem:
         and approximate errors if not given.
         Modifications happen on member variables.
         """
+        use_errors = True if self.options.cost_func_type == "weighted_nlls" \
+            else False
         if not self.multifit:
             correct_vals = correct_data(x=self.data_x,
                                         y=self.data_y,
                                         e=self.data_e,
                                         startx=self.start_x,
                                         endx=self.end_x,
-                                        use_errors=self.options.use_errors)
+                                        use_errors=use_errors)
             self.data_x = correct_vals[0]
             self.data_y = correct_vals[1]
             self.data_e = correct_vals[2]
@@ -203,7 +205,7 @@ class FittingProblem:
                                             e=self.data_e[i],
                                             startx=self.start_x[i],
                                             endx=self.end_x[i],
-                                            use_errors=self.options.use_errors)
+                                            use_errors=use_errors)
                 self.data_x[i] = correct_vals[0]
                 self.data_y[i] = correct_vals[1]
                 self.data_e[i] = correct_vals[2]
