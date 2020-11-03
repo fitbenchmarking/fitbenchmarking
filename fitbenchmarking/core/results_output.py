@@ -4,6 +4,7 @@ Functions that create the tables, support pages, figures, and indexes.
 
 from __future__ import (absolute_import, division, print_function)
 import inspect
+import docutils
 import os
 from jinja2 import Environment, FileSystemLoader
 from shutil import copy2
@@ -39,14 +40,15 @@ def save_results(options, results, group_name,
     :rtype: str
     """
     group_dir, supp_dir, fig_dir, local_css_dir = \
-                                        create_directories(options, group_name)
+        create_directories(options, group_name)
 
     # copy the template css files into a subfolder of results
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
-    local_css_dir = os.path.join(options.results_dir,'css')
-    for css_file in ["main_style","custom_style","math_style","table_style"]:
-        copy2(os.path.join(template_dir,css_file+".css"),local_css_dir)
+    local_css_dir = os.path.join(options.results_dir, 'css')
+    for css_file in ["main_style", "custom_style",
+                     "math_style", "table_style"]:
+        copy2(os.path.join(template_dir, css_file + ".css"), local_css_dir)
     best_results = preproccess_data(results)
     pp_locations = performance_profiler.profile(results, fig_dir)
 
@@ -188,11 +190,17 @@ def create_problem_level_index(options, table_names, group_name,
                                tables and the comparison mode
     :type table_descriptions: dict
     """
+    options.cost_func_description
+    options.cost_func_description = \
+        options.cost_func_description.replace(':ref:', '')
+    description_page = docutils.core.publish_parts(
+        options.cost_func_description, writer_name='html')
+    cost_func = description_page['body'].replace('<blockquote>\n', '')
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
-    css = get_css(options,group_dir)
+    css = get_css(options, group_dir)
     template = env.get_template("problem_index_page.html")
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
     links = [v + "html" for v in table_names.values()]
@@ -205,6 +213,7 @@ def create_problem_level_index(options, table_names, group_name,
             custom_style=css['custom'],
             maths_style=css['math'],
             group_name=group_name,
+            cost_func=cost_func,
             index=index,
             table_type=names,
             links=links,

@@ -112,6 +112,7 @@ def loop_over_benchmark_problems(problem_group, options):
             ##############################
             cost_func_cls = create_cost_func(options.cost_func_type)
             cost_func = cost_func_cls(parsed_problem)
+            options.cost_func_description = cost_func.__doc__
             problem_results, problem_fails, \
                 unselected_minimzers, minimizer_dict = \
                 loop_over_starting_values(
