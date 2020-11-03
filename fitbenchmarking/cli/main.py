@@ -54,7 +54,7 @@ def get_parser():
                         metavar='OPTIONS_FILE',
                         default='',
                         help='The path to a %(prog)s options file')
-    parser.add_argument('-p','--problem_sets',
+    parser.add_argument('-p', '--problem_sets',
                         nargs='+',
                         default=glob.glob(os.path.join(root,
                                                        'benchmark_problems',
@@ -134,7 +134,8 @@ def run(problem_sets, options_file='', debug=False):
 
         LOGGER.info('Running the benchmarking on the %s problem set',
                     label)
-        results, failed_problems, unselected_minimzers = \
+        results, failed_problems, unselected_minimzers, \
+            cost_func_description = \
             benchmark(options=options,
                       data_dir=data_dir)
         LOGGER.info('Producing output for the %s problem set', label)
@@ -144,7 +145,8 @@ def run(problem_sets, options_file='', debug=False):
                          results=results,
                          options=options,
                          failed_problems=failed_problems,
-                         unselected_minimzers=unselected_minimzers)
+                         unselected_minimzers=unselected_minimzers,
+                         cost_func_description=cost_func_description)
 
         LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
         group_results_dir = os.path.relpath(path=group_results_dir,

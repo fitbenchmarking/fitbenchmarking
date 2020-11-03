@@ -16,8 +16,8 @@ from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.misc import get_css
 
 
-def save_results(options, results, group_name,
-                 failed_problems, unselected_minimzers):
+def save_results(options, results, group_name, failed_problems,
+                 unselected_minimzers, cost_func_description):
     """
     Create all results files and store them.
     Result files are plots, support pages, tables, and index pages.
@@ -35,6 +35,8 @@ def save_results(options, results, group_name,
     :params unselected_minimzers: Dictionary containing unselected minimizers
                                   based on the algorithm_type option
     :type unselected_minimzers: dict
+    :param cost_func_description: cost function description
+    :type cost_func_description: str
 
     :return: Path to directory of group results
     :rtype: str
@@ -49,7 +51,9 @@ def save_results(options, results, group_name,
     for css_file in ["main_style", "custom_style",
                      "math_style", "table_style"]:
         copy2(os.path.join(template_dir, css_file + ".css"), local_css_dir)
+
     best_results = preproccess_data(results)
+
     pp_locations = performance_profiler.profile(results, fig_dir)
 
     if options.make_plots:
@@ -73,7 +77,8 @@ def save_results(options, results, group_name,
                                table_names,
                                group_name,
                                group_dir,
-                               table_descriptions)
+                               table_descriptions,
+                               cost_func_description)
 
     return group_dir
 
@@ -174,7 +179,8 @@ def create_plots(options, results, best_results, figures_dir):
 
 
 def create_problem_level_index(options, table_names, group_name,
-                               group_dir, table_descriptions):
+                               group_dir, table_descriptions,
+                               cost_func_description):
     """
     Generates problem level index page.
 
@@ -189,12 +195,12 @@ def create_problem_level_index(options, table_names, group_name,
     :param table_descriptions: dictionary containing descriptions of the
                                tables and the comparison mode
     :type table_descriptions: dict
+    :param cost_func_description: cost function description
+    :type cost_func_description: str
     """
-    options.cost_func_description
-    options.cost_func_description = \
-        options.cost_func_description.replace(':ref:', '')
-    description_page = docutils.core.publish_parts(
-        options.cost_func_description, writer_name='html')
+    cost_func_description = cost_func_description.replace(':ref:', '')
+    description_page = docutils.core.publish_parts(cost_func_description,
+                                                   writer_name='html')
     cost_func = description_page['body'].replace('<blockquote>\n', '')
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))

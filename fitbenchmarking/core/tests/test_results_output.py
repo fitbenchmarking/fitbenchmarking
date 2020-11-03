@@ -128,7 +128,7 @@ class SaveResultsTests(unittest.TestCase):
         self.results, self.options, self.min_chi_sq, self.min_runtime = \
             generate_mock_results()
         test_path = os.path.dirname(os.path.realpath(__file__))
-        self.dirname = os.path.join(test_path, 'results')
+        self.dirname = os.path.join(test_path, 'fitbenchmarking_results')
         self.options.results_dir = self.dirname
         os.mkdir(self.dirname)
 
@@ -145,8 +145,10 @@ class SaveResultsTests(unittest.TestCase):
         failed_problems = []
         unselected_minimzers = {}
         group_name = "group_name"
+        cost_func_description = "rst_desciption"
         group_dir = save_results(self.options, self.results, group_name,
-                                 failed_problems, unselected_minimzers)
+                                 failed_problems, unselected_minimzers,
+                                 cost_func_description)
         assert group_dir == os.path.join(self.dirname, group_name)
 
 
@@ -161,7 +163,7 @@ class CreateDirectoriesTests(unittest.TestCase):
         """
         self.options = Options()
         test_path = os.path.dirname(os.path.realpath(__file__))
-        self.dirname = os.path.join(test_path, 'results')
+        self.dirname = os.path.join(test_path, 'fitbenchmarking_results')
         os.mkdir(self.dirname)
 
     def tearDown(self):
@@ -315,7 +317,7 @@ class CreateProblemLevelIndex(unittest.TestCase):
         """
         self.options = Options()
         test_path = os.path.dirname(os.path.realpath(__file__))
-        self.group_dir = os.path.join(test_path, 'results')
+        self.group_dir = os.path.join(test_path, 'fitbenchmarking_results')
         os.mkdir(self.group_dir)
         self.table_names = {"compare": "compare_table_name.",
                             "runtime": "runtime_table_name."}
@@ -323,6 +325,7 @@ class CreateProblemLevelIndex(unittest.TestCase):
                                    "runtime": "runtime table descriptions",
                                    "both": "both table descriptions"}
         self.group_name = "random_name"
+        self.cost_func_description = "rst_desciption"
 
     def tearDown(self):
         """
@@ -336,7 +339,8 @@ class CreateProblemLevelIndex(unittest.TestCase):
         """
         create_problem_level_index(self.options, self.table_names,
                                    self.group_name, self.group_dir,
-                                   self.table_descriptions)
+                                   self.table_descriptions,
+                                   self.cost_func_description)
         expected_file = os.path.join(self.group_dir,
                                      '{}_index.html'.format(self.group_name))
         assert os.path.isfile(expected_file)
