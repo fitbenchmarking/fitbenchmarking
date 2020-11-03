@@ -120,7 +120,11 @@ Cost function (:code:`cost_func_type`)
 This sets the cost function to be used for the given data. Current cost
 functions supported are:
 
-* ``nlls`` - This sets the cost function to be weighted or non-weighted non-linear least squares, the weighting is controlled by the ``use_errors`` option.
+* ``nlls`` - This sets the cost function to be non-weighted non-linear least squares, :class:`~fitbenchmarking.cost_func.nlls_cost_func.NLLSCostFunc`.
+
+* ``weigthed_nlls`` - This sets the cost function to be weighted non-linear least squares, :class:`~fitbenchmarking.cost_func.weighted_nlls_cost_func.WeightedNLLSCostFunc`.
+
+* ``root_nlls`` - This sets the cost function to be root non-linear least squares, :class:`~fitbenchmarking.cost_func.root_nlls_cost_func.RootNLLSCostFunc`.
 
 
 Default is ``nlls``
@@ -128,4 +132,4 @@ Default is ``nlls``
 .. code-block:: rst
 
     [FITTING]
-    cost_func_type: nlls
+    cost_func_type: root_nlls
