@@ -67,9 +67,10 @@ class TestRegressionAll(TestCase):
 
         actual_file = \
             os.path.join(os.path.dirname(__file__),
-                         'results',
+                         'fitbenchmarking_results',
                          'all_parsers_set',
                          'all_parsers_set_acc_weighted_nlls_table.txt')
+
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()
@@ -91,7 +92,7 @@ class TestRegressionAll(TestCase):
                                      'multifit.txt')
 
         actual_file = os.path.join(os.path.dirname(__file__),
-                                   'results',
+                                   'fitbenchmarking_results',
                                    'multifit_set',
                                    'multifit_set_acc_weighted_nlls_table.txt')
 
@@ -145,10 +146,9 @@ class TestRegressionDefault(TestCase):
         expected_file = os.path.join(os.path.dirname(__file__),
                                      '{}_expected_results'.format(platform),
                                      'default_parsers.txt')
-
         actual_file = \
             os.path.join(os.path.dirname(__file__),
-                         'results',
+                         'fitbenchmarking_results',
                          'default_parsers',
                          'default_parsers_acc_weighted_nlls_table.txt')
 
@@ -207,12 +207,14 @@ def setup_options(multifit=False):
         opts.software = ['mantid']
         opts.minimizers = {'mantid': [opts.minimizers['mantid'][0]]}
     elif TEST_TYPE != "default":
+        opts.software = ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
+                         'ralfit', 'scipy', 'scipy_ls']
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
-        opts.software = sorted(opts.minimizers.keys())
     else:
         opts.software = ['bumps', 'dfo', 'minuit', 'scipy', 'scipy_ls']
         opts.minimizers = {s: [opts.minimizers[s][0]] for s in opts.software}
 
-    opts.results_dir = os.path.join(os.path.dirname(__file__), 'results')
+    opts.results_dir = os.path.join(os.path.dirname(__file__),
+                                    'fitbenchmarking_results')
 
     return opts

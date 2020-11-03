@@ -62,7 +62,7 @@ class PlottingOptionTests(unittest.TestCase):
         """
         Checks results_dir default
         """
-        expected = os.path.abspath('results')
+        expected = os.path.abspath('fitbenchmarking_results')
         actual = self.options.results_dir
         self.assertEqual(expected, actual)
 
