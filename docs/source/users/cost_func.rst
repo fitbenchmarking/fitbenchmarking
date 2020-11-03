@@ -4,7 +4,7 @@
 Cost functions
 ##############
 
-Fitbenchmarking supports multiple different nonlinear least squares cost functions. These can be set via the `cost_func_type` option in :ref:`fitting_option`.
+Fitbenchmarking supports multiple different nonlinear least squares cost functions. These can be set via the ``cost_func_type`` option in :ref:`fitting_option`.
 
 The cost functions that are currently supported are:
 
