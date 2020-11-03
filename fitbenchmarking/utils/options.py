@@ -3,8 +3,6 @@ This file will handle all interaction with the options configuration file.
 '''
 
 import configparser
-
-import copy
 import os
 import numpy as np
 
