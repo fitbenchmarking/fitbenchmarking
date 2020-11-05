@@ -18,7 +18,7 @@ Running alternative problems
 Other problems written in a :ref:`supported file format <problem_def>`
 can be analyzed with FitBenchmarking by
 passing the path using the ``--problem-sets`` (or ``-p``) option.
-A example problems can be downloaded from
+Some example problems can be downloaded from
 :ref:`BenchmarkProblems`, and they can also be found in the
 ``fitbenchmarking/examples`` directory of the code.
 
