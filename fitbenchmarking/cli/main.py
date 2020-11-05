@@ -8,6 +8,7 @@ docs.fitbenchmarking.com.
 from __future__ import absolute_import, division, print_function
 
 import argparse
+from distutils.dir_util import copy_tree
 import glob
 import inspect
 import os
@@ -171,6 +172,10 @@ def run(problem_sets, options_file='', debug=False):
     group_links = [os.path.join(d, "{}_index.html".format(g))
                    for g, d in zip(groups, result_dir)]
     output_file = os.path.join(options.results_dir, 'results_index.html')
+
+    # Copying fonts directory into results directory
+    copy_tree(os.path.join(root, 'fonts'),
+              os.path.join(options.results_dir, "fonts"))
 
     with open(output_file, 'w') as fh:
         fh.write(template.render(
