@@ -8,6 +8,7 @@ docs.fitbenchmarking.com.
 from __future__ import absolute_import, division, print_function
 
 import argparse
+from distutils.dir_util import copy_tree
 import glob
 import inspect
 import os
@@ -54,7 +55,7 @@ def get_parser():
                         metavar='OPTIONS_FILE',
                         default='',
                         help='The path to a %(prog)s options file')
-    parser.add_argument('-p','--problem_sets',
+    parser.add_argument('-p', '--problem_sets',
                         nargs='+',
                         default=glob.glob(os.path.join(root,
                                                        'benchmark_problems',
@@ -169,6 +170,10 @@ def run(problem_sets, options_file='', debug=False):
     group_links = [os.path.join(d, "{}_index.html".format(g))
                    for g, d in zip(groups, result_dir)]
     output_file = os.path.join(options.results_dir, 'results_index.html')
+
+    # Copying fonts directory into results directory
+    copy_tree(os.path.join(root, 'fonts'),
+              os.path.join(options.results_dir, "fonts"))
 
     with open(output_file, 'w') as fh:
         fh.write(template.render(
