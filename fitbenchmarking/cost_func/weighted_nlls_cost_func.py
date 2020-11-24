@@ -9,16 +9,18 @@ from fitbenchmarking.utils.exceptions import CostFuncError
 
 class WeightedNLLSCostFunc(BaseNLLSCostFunc):
     """
-    This defines the weighted non-linear least cost function where, given a set
-    of :math:`n` data points :math:`(x_i,y_i)`, associated errors :math:`e_i`,
-    and a model function :math:`f(x,p)`, we find the optimal parameters in the
-    root least-squares sense by solving:
+    This defines the weighted non-linear least squares cost function where,
+    given a set of :math:`n` data points :math:`(x_i,y_i)`, associated errors
+    :math:`e_i`, and a model function :math:`f(x,p)`, we find the optimal
+    parameters in the root least-squares sense by solving:
 
     .. math:: \\min_p \\sum_{i=1}^n
               \\left(\\frac{y_i - f(x_i, p)}{e_i}\\right)^2
 
     where :math:`p` is a vector of length :math:`m`, and we start from a
-    given initial guess for the optimal parameters.
+    given initial guess for the optimal parameters. More information on
+    non-linear least squares cost functions can be found
+    `here <https://en.wikipedia.org/wiki/Non-linear_least_squares>`__.
     """
 
     def __init__(self, problem):

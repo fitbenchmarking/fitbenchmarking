@@ -9,8 +9,8 @@ from fitbenchmarking.utils.exceptions import CostFuncError
 
 class HellingerNLLSCostFunc(BaseNLLSCostFunc):
     """
-    This defines the Hellinger non-linear least cost function where, given a
-    set of :math:`n` data points :math:`(x_i,y_i)`, associated errors
+    This defines the Hellinger non-linear least squares cost function where,
+    given a set of :math:`n` data points :math:`(x_i,y_i)`, associated errors
     :math:`e_i`, and a model function :math:`f(x,p)`, we find the optimal
     parameters in the Hellinger least-squares sense by solving:
 
@@ -18,7 +18,12 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
               \\left(\\sqrt{y_i} - \\sqrt{f(x_i, p})\\right)^2
 
     where :math:`p` is a vector of length :math:`m`, and we start from a
-    given initial guess for the optimal parameters.
+    given initial guess for the optimal parameters. More information on
+    non-linear least squares cost functions can be found
+    `here <https://en.wikipedia.org/wiki/Non-linear_least_squares>`__ and for
+    the Hellinger distance measure see
+    `here <https://en.wikipedia.org/wiki/Hellinger_distance>`__.
+
     """
 
     def __init__(self, problem):
