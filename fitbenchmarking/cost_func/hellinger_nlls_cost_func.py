@@ -7,12 +7,12 @@ from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
 
 
-class RootNLLSCostFunc(BaseNLLSCostFunc):
+class HellingerNLLSCostFunc(BaseNLLSCostFunc):
     """
-    This defines the root non-linear least cost function where, given a set
-    of :math:`n` data points :math:`(x_i,y_i)`, associated errors :math:`e_i`,
-    and a model function :math:`f(x,p)`, we find the optimal parameters in the
-    root least-squares sense by solving:
+    This defines the Hellinger non-linear least cost function where, given a
+    set of :math:`n` data points :math:`(x_i,y_i)`, associated errors
+    :math:`e_i`, and a model function :math:`f(x,p)`, we find the optimal
+    parameters in the Hellinger least-squares sense by solving:
 
     .. math:: \\min_p \\sum_{i=1}^n
               \\left(\\sqrt{y_i} - \\sqrt{f(x_i, p})\\right)^2
@@ -31,7 +31,7 @@ class RootNLLSCostFunc(BaseNLLSCostFunc):
 
         """
         # Problem: The problem object from parsing
-        super(RootNLLSCostFunc, self).__init__(problem)
+        super(HellingerNLLSCostFunc, self).__init__(problem)
         #: *dict*
         #: Container cached residual evaluation
         self.cache_rx = {'params': None, 'value': None}

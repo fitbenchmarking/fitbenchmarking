@@ -25,7 +25,7 @@ def create_cost_func(cost_func_type):
     try:
         module = import_module('.' + module_name, __package__)
     except ImportError:
-        raise CostFuncError('Could not find Jacobian class with type as '
+        raise CostFuncError('Could not find Cost function class with type as '
                             '{}.'.format(cost_func_type))
     classes = getmembers(module, lambda m: (isclass(m)
                                             and not isabstract(m)

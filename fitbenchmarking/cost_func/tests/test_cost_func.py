@@ -10,7 +10,7 @@ import numpy as np
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.cost_func.root_nlls_cost_func import RootNLLSCostFunc
+from fitbenchmarking.cost_func.hellinger_nlls_cost_func import HellingerNLLSCostFunc
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -113,9 +113,9 @@ class TestWeightedNLLSCostFunc(TestCase):
         self.assertEqual(eval_result, 16.5625)
 
 
-class TestRootNLLSCostFunc(TestCase):
+class TestHellingerNLLSCostFunc(TestCase):
     """
-    Class to test the RootNLLSCostFunc class
+    Class to test the HellingerNLLSCostFunc class
     """
 
     def setUp(self):
@@ -124,7 +124,7 @@ class TestRootNLLSCostFunc(TestCase):
         """
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
-        self.cost_function = RootNLLSCostFunc(fitting_problem)
+        self.cost_function = HellingerNLLSCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
         self.x_val = np.array([1, 8, 11])
         self.y_val = np.array([6, 10, 20])
@@ -173,7 +173,7 @@ class FactoryTests(TestCase):
         """
         self.options = Options()
 
-        valid = ['weighted_nlls', 'nlls', 'root_nlls']
+        valid = ['weighted_nlls', 'nlls', 'hellinger_nlls']
         invalid = ['normal']
 
         for cost_func_type in valid:

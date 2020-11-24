@@ -18,8 +18,8 @@ The cost functions that are currently supported are:
     .. currentmodule:: fitbenchmarking.cost_func.weighted_nlls_cost_func
     .. autoclass:: fitbenchmarking.cost_func.weighted_nlls_cost_func.WeightedNLLSCostFunc
                :noindex:
-- Root non-linear least squares cost function
+- Hellinger non-linear least squares cost function
 
-    .. currentmodule:: fitbenchmarking.cost_func.root_nlls_cost_func
-    .. autoclass:: fitbenchmarking.cost_func.root_nlls_cost_func.RootNLLSCostFunc
+    .. currentmodule:: fitbenchmarking.cost_func.hellinger_nlls_cost_func
+    .. autoclass:: fitbenchmarking.cost_func.hellinger_nlls_cost_func.HellingerNLLSCostFunc
                :noindex:
