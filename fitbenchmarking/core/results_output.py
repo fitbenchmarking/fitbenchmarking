@@ -4,6 +4,7 @@ Functions that create the tables, support pages, figures, and indexes.
 
 from __future__ import (absolute_import, division, print_function)
 import inspect
+import docutils
 import os
 from jinja2 import Environment, FileSystemLoader
 from shutil import copy2
@@ -15,8 +16,8 @@ from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.misc import get_css
 
 
-def save_results(options, results, group_name,
-                 failed_problems, unselected_minimzers):
+def save_results(options, results, group_name, failed_problems,
+                 unselected_minimzers, cost_func_description):
     """
     Create all results files and store them.
     Result files are plots, support pages, tables, and index pages.
@@ -34,20 +35,25 @@ def save_results(options, results, group_name,
     :params unselected_minimzers: Dictionary containing unselected minimizers
                                   based on the algorithm_type option
     :type unselected_minimzers: dict
+    :param cost_func_description: cost function description
+    :type cost_func_description: str
 
     :return: Path to directory of group results
     :rtype: str
     """
     group_dir, supp_dir, fig_dir, local_css_dir = \
-                                        create_directories(options, group_name)
+        create_directories(options, group_name)
 
     # copy the template css files into a subfolder of results
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
-    local_css_dir = os.path.join(options.results_dir,'css')
-    for css_file in ["main_style","custom_style","math_style","table_style"]:
-        copy2(os.path.join(template_dir,css_file+".css"),local_css_dir)
+    local_css_dir = os.path.join(options.results_dir, 'css')
+    for css_file in ["main_style", "custom_style",
+                     "math_style", "table_style"]:
+        copy2(os.path.join(template_dir, css_file + ".css"), local_css_dir)
+
     best_results = preproccess_data(results)
+
     pp_locations = performance_profiler.profile(results, fig_dir)
 
     if options.make_plots:
@@ -71,7 +77,8 @@ def save_results(options, results, group_name,
                                table_names,
                                group_name,
                                group_dir,
-                               table_descriptions)
+                               table_descriptions,
+                               cost_func_description)
 
     return group_dir
 
@@ -172,7 +179,8 @@ def create_plots(options, results, best_results, figures_dir):
 
 
 def create_problem_level_index(options, table_names, group_name,
-                               group_dir, table_descriptions):
+                               group_dir, table_descriptions,
+                               cost_func_description):
     """
     Generates problem level index page.
 
@@ -187,12 +195,18 @@ def create_problem_level_index(options, table_names, group_name,
     :param table_descriptions: dictionary containing descriptions of the
                                tables and the comparison mode
     :type table_descriptions: dict
+    :param cost_func_description: cost function description
+    :type cost_func_description: str
     """
+    cost_func_description = cost_func_description.replace(':ref:', '')
+    description_page = docutils.core.publish_parts(cost_func_description,
+                                                   writer_name='html')
+    cost_func = description_page['body'].replace('<blockquote>\n', '')
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
-    css = get_css(options,group_dir)
+    css = get_css(options, group_dir)
     template = env.get_template("problem_index_page.html")
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
     links = [v + "html" for v in table_names.values()]
@@ -205,6 +219,7 @@ def create_problem_level_index(options, table_names, group_name,
             custom_style=css['custom'],
             maths_style=css['math'],
             group_name=group_name,
+            cost_func=cost_func,
             index=index,
             table_type=names,
             links=links,

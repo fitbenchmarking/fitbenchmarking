@@ -3,8 +3,6 @@ This file will handle all interaction with the options configuration file.
 '''
 
 import configparser
-
-import copy
 import os
 import numpy as np
 
@@ -42,9 +40,8 @@ class Options(object):
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general'],
          'software': ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
                       'ralfit', 'scipy', 'scipy_ls'],
-         'use_errors': [True, False],
          'jac_method': ['scipy', 'analytic'],
-         'cost_func_type': 'nlls'}
+         'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls']}
     VALID_JACOBIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
          'analytic': ['cutest']}
@@ -86,9 +83,8 @@ class Options(object):
         {'num_runs': 5,
          'algorithm_type': 'all',
          'software': ['scipy', 'scipy_ls'],
-         'use_errors': True,
          'jac_method': ['scipy'],
-         'cost_func_type': 'nlls'}
+         'cost_func_type': 'weighted_nlls'}
     DEFAULT_JACOBIAN = \
         {'scipy': ['2-point'],
          'analytic': ['cutest']}
@@ -164,7 +160,6 @@ class Options(object):
         self.num_runs = self.read_value(fitting.getint, 'num_runs')
         self.algorithm_type = self.read_value(fitting.getstr, 'algorithm_type')
         self.software = self.read_value(fitting.getlist, 'software')
-        self.use_errors = self.read_value(fitting.getboolean, 'use_errors')
         self.jac_method = self.read_value(fitting.getlist, 'jac_method')
         self.cost_func_type = self.read_value(fitting.getstr, 'cost_func_type')
 
@@ -272,7 +267,6 @@ class Options(object):
         config['FITTING'] = {'num_runs': self.num_runs,
                              'algorithm_type': self.algorithm_type,
                              'software': list_to_string(self.software),
-                             'use_errors': self.use_errors,
                              'jac_method': list_to_string(self.jac_method)}
         cs = list_to_string(['{0}, {1}'.format(*pair)
                              for pair in self.colour_scale])

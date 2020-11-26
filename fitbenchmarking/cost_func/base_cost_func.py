@@ -40,6 +40,5 @@ class CostFunc:
 
         :return: evaluated cost function
         :rtype: float
-
         """
         raise NotImplementedError

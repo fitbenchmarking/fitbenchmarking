@@ -49,8 +49,9 @@ def benchmark(options, data_dir):
     :type date_dir: str
 
     :return: prob_results array of fitting results for the problem group,
-             list of failed problems and dictionary of unselected minimizers
-    :rtype: tuple(list, list, dict)
+             list of failed problems and dictionary of unselected minimizers,
+             rst description of the cost function from the docstring
+    :rtype: tuple(list, list, dict, str)
     """
 
     # Extract problem definitions
@@ -59,7 +60,8 @@ def benchmark(options, data_dir):
     #################################
     # Loops over benchmark problems #
     #################################
-    results, failed_problems, unselected_minimzers, minimizer_dict = \
+    results, failed_problems, unselected_minimzers, \
+        minimizer_dict, cost_func_description = \
         loop_over_benchmark_problems(problem_group, options)
 
     options.minimizers = minimizer_dict
@@ -70,7 +72,8 @@ def benchmark(options, data_dir):
         results_dict[problem_result.name].append(problem_result)
     results = [results_dict[r] for r in
                sorted(results_dict.keys(), key=lambda x: x.lower())]
-    return results, failed_problems, unselected_minimzers
+    return results, failed_problems, unselected_minimzers, \
+        cost_func_description
 
 
 def loop_over_benchmark_problems(problem_group, options):
@@ -83,8 +86,9 @@ def loop_over_benchmark_problems(problem_group, options):
     :type options: fitbenchmarking.utils.options.Options
 
     :return: prob_results array of fitting results for the problem group,
-             list of failed problems and dictionary of unselected minimizers
-    :rtype: tuple(list, list, dict)
+             list of failed problems and dictionary of unselected minimizers,
+             rst description of the cost function from the docstring
+    :rtype: tuple(list, list, dict, str)
     """
     grabbed_output = output_grabber.OutputGrabber(options)
     results = []
@@ -112,6 +116,7 @@ def loop_over_benchmark_problems(problem_group, options):
             ##############################
             cost_func_cls = create_cost_func(options.cost_func_type)
             cost_func = cost_func_cls(parsed_problem)
+            cost_func_description = cost_func.__doc__
             problem_results, problem_fails, \
                 unselected_minimzers, minimizer_dict = \
                 loop_over_starting_values(
@@ -131,7 +136,8 @@ def loop_over_benchmark_problems(problem_group, options):
                   "FitBenmarking."
         raise NoResultsError(message)
 
-    return results, failed_problems, unselected_minimzers, minimizer_dict
+    return results, failed_problems, unselected_minimzers, \
+        minimizer_dict, cost_func_description
 
 
 def loop_over_starting_values(cost_func, options, grabbed_output):

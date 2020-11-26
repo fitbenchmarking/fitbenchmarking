@@ -21,7 +21,7 @@ class Analytic(Jacobian):
 
     def eval(self, params, **kwargs):
         """
-        Evaluates Jacobian of problem.eval_model or a weighted problem.eval_model
+        Evaluates Jacobian of problem.eval_model
 
         :param params: The parameter values to find the Jacobian at
         :type params: list
@@ -32,11 +32,12 @@ class Analytic(Jacobian):
         x = kwargs.get("x", self.problem.data_x)
         e = kwargs.get("e", self.problem.data_e)
         jac = self.problem.jacobian(x, params)
-
-        if self.problem.options.use_errors:
+        if self.problem.options.cost_func_type == "weighted_nlls":
             # scales each column of the Jacobian by the weights
             jac = jac / e[:, None]
-
+        elif self.problem.options.cost_func_type == "root_nlls":
+            # calculates the Jacobian of the root NLLS cost function
+            jac = jac * self.problem.eval_model(params, x=x)[:, None] / 2
         return jac
 
     def eval_cost(self, params, **kwargs):

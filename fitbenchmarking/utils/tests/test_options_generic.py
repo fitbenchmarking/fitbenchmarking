@@ -26,7 +26,6 @@ class OptionsWriteTests(unittest.TestCase):
 
             [FITTING]
             algorithm_type: all
-            use_errors: no
             num_runs: 2
             software: scipy
                       dfo

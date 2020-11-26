@@ -95,7 +95,8 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         return individual_problem_results, problem_fails, \
             unselected_minimzers, expect_minimizers
 
-    def shared_tests(self, list_len, expected_problem_fails):
+    def shared_tests(self, list_len, expected_problem_fails,
+                     expected_cost_func_descriptions):
         """
         Shared tests for the `loop_over_starting_values` function
 
@@ -103,10 +104,12 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         :type list_len: int
         :param expected_problem_fails: list of problems which fail
         :type expected_problem_fails: list
+        :param expected_cost_func_descriptions: cost function description
+        :type expected_cost_func_descriptions: str
         """
-        results, failed_problems, unselected_minimzers, minimizer_dict = \
-            loop_over_benchmark_problems(self.problem_group,
-                                         self.options)
+        results, failed_problems, unselected_minimzers, minimizer_dict, \
+            cost_func_descriptions = loop_over_benchmark_problems(
+                self.problem_group, self.options)
         assert len(results) == list_len
         assert failed_problems == expected_problem_fails
         dict_test(unselected_minimzers, {"scipy": []})
@@ -126,7 +129,9 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
                 os.path.join(self.default_parsers_dir, file_name))
         expected_problem_fails = self.problem_fails
         expected_list_length = len(self.list_results) * 2
-        self.shared_tests(expected_list_length, expected_problem_fails)
+        expected_cost_func_descriptions = self.cost_func.__doc__
+        self.shared_tests(expected_list_length, expected_problem_fails,
+                          expected_cost_func_descriptions)
 
     @unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
     def test_run_multiple_failed_problems(self, loop_over_starting_values):
@@ -141,7 +146,9 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
 
         expected_problem_fails = self.problem_fails
         expected_list_length = len(self.list_results)
-        self.shared_tests(expected_list_length, expected_problem_fails)
+        expected_cost_func_descriptions = self.cost_func.__doc__
+        self.shared_tests(expected_list_length, expected_problem_fails,
+                          expected_cost_func_descriptions)
 
     @unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
     def test_check_no_results_produced(self, loop_over_starting_values):

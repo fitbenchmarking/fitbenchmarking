@@ -21,10 +21,12 @@ you will need to:
 
   * adding ``<cost_func>`` to the ``cost_func_type`` option in :ref:`fitting_option`.
   * updating any example files in the ``examples`` directory
+  * adding the new cost function to the :ref:`cost_func` user docs.
 
 3. Create tests for the cost function in
    ``fitbenchmarking/cost_func/tests/test_cost_func.py``.
 
+4. Update the analytic Jacobian for the new cost function, :class:`~fitbenchmarking.jacobian.analytic_jacobian.Analytic`.
 
 
 The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`

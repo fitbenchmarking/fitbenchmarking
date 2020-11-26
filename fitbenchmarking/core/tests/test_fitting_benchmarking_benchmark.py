@@ -71,7 +71,7 @@ class BenchmarkTests(unittest.TestCase):
         self.all_minimzers = copy.copy(self.options.minimizers)
 
     def shared_tests(self, expected_names, expected_unselected_minimzers,
-                     expected_minimzers):
+                     expected_minimzers, expected_cost_func_descriptions):
         """
         Shared tests for the `benchmark` function. The function test
 
@@ -81,10 +81,13 @@ class BenchmarkTests(unittest.TestCase):
         :type expected_unselected_minimzers: dict
         :param expected_minimzers: expected minimizers
         :type expected_minimzers: dict
+        :param expected_cost_func_descriptions: cost function description
+        :type expected_cost_func_descriptions: str
         """
-        results, failed_problems, unselected_minimzers = \
-            benchmark(self.options, self.default_parsers_dir)
-
+        results, failed_problems, unselected_minimzers, \
+            cost_func_descriptions = benchmark(self.options,
+                                               self.default_parsers_dir)
+        assert expected_cost_func_descriptions == cost_func_descriptions
         assert len(results) == len(expected_names)
         for i, name in enumerate(expected_names):
             assert all(p.name == name for p in results[i])
@@ -117,14 +120,16 @@ class BenchmarkTests(unittest.TestCase):
         expected_problem_names = sorted(problem_names)
         expected_minimzers = copy.copy(self.all_minimzers)
         expected_unselected_minimzers = {"scipy": []}
+        expected_cost_func_descriptions = "rst_description"
         loop_over_benchmark_problems.return_value = \
             (results, problem_fails, expected_unselected_minimzers,
-             expected_minimzers)
+             expected_minimzers, expected_cost_func_descriptions)
 
         # run shared test and see if it match expected
         self.shared_tests(expected_problem_names,
                           expected_unselected_minimzers,
-                          expected_minimzers)
+                          expected_minimzers,
+                          expected_cost_func_descriptions)
 
     @mock.patch('{}.loop_over_benchmark_problems'.format(FITTING_DIR))
     def test_check_unselected_minimizers(self, loop_over_benchmark_problems):
@@ -156,12 +161,13 @@ class BenchmarkTests(unittest.TestCase):
             expected_minimzers[keys] = \
                 list(set(expected_minimzers[keys]) - set(minimzers))
 
+        expected_cost_func_descriptions = "rst_description"
         loop_over_benchmark_problems.return_value = \
             (results, problem_fails, expected_unselected_minimzers,
-             expected_minimzers)
+             expected_minimzers, expected_cost_func_descriptions)
 
         self.shared_tests(expected_names, expected_unselected_minimzers,
-                          expected_minimzers)
+                          expected_minimzers, expected_cost_func_descriptions)
 
 
 if __name__ == "__main__":
