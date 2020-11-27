@@ -199,8 +199,12 @@ def create_problem_level_index(options, table_names, group_name,
     :type cost_func_description: str
     """
     cost_func_description = cost_func_description.replace(':ref:', '')
+    docsettings = {
+        'math_output': 'MathJax https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+    }
     description_page = docutils.core.publish_parts(cost_func_description,
-                                                   writer_name='html')
+                                                   writer_name='html',
+                                                   settings_overrides=docsettings)
     cost_func = description_page['body'].replace('<blockquote>\n', '')
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
