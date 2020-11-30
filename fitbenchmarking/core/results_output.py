@@ -13,7 +13,7 @@ import fitbenchmarking
 from fitbenchmarking.results_processing import performance_profiler, plots, \
     support_page, tables
 from fitbenchmarking.utils import create_dirs
-from fitbenchmarking.utils.misc import get_css
+from fitbenchmarking.utils.misc import get_css, get_js
 
 
 def save_results(options, results, group_name, failed_problems,
@@ -198,8 +198,9 @@ def create_problem_level_index(options, table_names, group_name,
     :type cost_func_description: str
     """
     cost_func_description = cost_func_description.replace(':ref:', '')
+    js = get_js(options, group_dir)
     docsettings = {
-        'math_output': 'MathJax https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+        'math_output': 'MathJax '+js['mathjax']
     }
     description_page = docutils.core.publish_parts(cost_func_description,
                                                    writer_name='html',
@@ -220,7 +221,7 @@ def create_problem_level_index(options, table_names, group_name,
         fh.write(template.render(
             css_style_sheet=css['main'],
             custom_style=css['custom'],
-            maths_style=css['math'],
+            mathjax=js['mathjax'],
             group_name=group_name,
             cost_func=cost_func,
             index=index,

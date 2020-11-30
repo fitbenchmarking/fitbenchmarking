@@ -72,5 +72,17 @@ class CreateDirsTests(unittest.TestCase):
         self.assertEqual(css['table'], expected_table_css)
         self.assertEqual(css['custom'], expected_custom_css)
 
+    def test_get_js(self):
+        
+        options = Options()
+        print(options.results_dir)
+        test_dir = os.path.join(options.results_dir,"foo")
+        
+        expected_js_dir = os.path.join("..","js")
+        expected_mathjax_js = os.path.join(expected_js_dir,"tex-mml-chtml.js")
+        js = get_js(options,test_dir)
+
+        self.assertEqual(js['mathjax'], expected_main_js)
+
 if __name__ == "__main__":
     unittest.main()
