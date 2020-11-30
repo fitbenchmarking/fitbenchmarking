@@ -7,7 +7,7 @@ import unittest
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.utils.misc import get_problem_files
-from fitbenchmarking.utils.misc import get_css
+from fitbenchmarking.utils.misc import get_css, get_js
 from fitbenchmarking.utils.options import Options
 
 class CreateDirsTests(unittest.TestCase):
@@ -82,7 +82,7 @@ class CreateDirsTests(unittest.TestCase):
         expected_mathjax_js = os.path.join(expected_js_dir,"tex-mml-chtml.js")
         js = get_js(options,test_dir)
 
-        self.assertEqual(js['mathjax'], expected_main_js)
+        self.assertEqual(js['mathjax'], expected_mathjax_js)
 
 if __name__ == "__main__":
     unittest.main()
