@@ -48,8 +48,7 @@ def save_results(options, results, group_name, failed_problems,
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     local_css_dir = os.path.join(options.results_dir, 'css')
-    for css_file in ["main_style", "custom_style",
-                     "math_style", "table_style"]:
+    for css_file in ["main_style", "custom_style", "table_style"]:
         copy2(os.path.join(template_dir, css_file + ".css"), local_css_dir)
 
     best_results = preproccess_data(results)
