@@ -7,6 +7,8 @@ import docutils.core
 import pandas as pd
 import numpy as np
 
+from fitbenchmarking.utils.misc import get_js
+
 FORMAT_DESCRIPTION = \
     {'abs': 'Absolute values are displayed in the table.',
      'rel': 'Relative values are displayed in the table.',
@@ -346,8 +348,14 @@ class Table:
         for name in [self.name, self.options.comparison_mode]:
             descrip = FORMAT_DESCRIPTION[name]
             descrip = descrip.replace(':ref:', '')
+            js = get_js(self.options, self.group_dir)
+            docsettings = {
+                'math_output': 'MathJax '+js['mathjax']
+            }
             description_page = docutils.core.publish_parts(
-                descrip, writer_name='html')
+                descrip,
+                writer_name='html',
+                settings_overrides=docsettings)
             html_description[name] = description_page['body']
             html_description[name] = html_description[name].replace(
                 '<blockquote>\n', '')
