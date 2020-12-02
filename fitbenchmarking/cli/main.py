@@ -174,7 +174,10 @@ def run(problem_sets, options_file='', debug=False):
     # Copying fonts directory into results directory
     copy_tree(os.path.join(root, 'fonts'),
               os.path.join(options.results_dir, "fonts"))
-
+    # Copying js directory into results directory
+    copy_tree(os.path.join(template_dir,'js'),
+              os.path.join(options.results_dir, "js"))
+    
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=css['main'],

@@ -18,9 +18,9 @@ class LocalMinTable(Table):
     criteria:
 
 
-    - :math:`||r|| \\leq \\mbox{RES\\_TOL}`,
-    - :math:`|| J^T r|| \\leq \\mbox{GRAD\\_TOL}`,
-    - :math:`\\frac{|| J^T r||}{||r||} \\leq \\mbox{GRAD\\_TOL}`,
+    - :math:`||r|| \\leq` RES\\_TOL,
+    - :math:`|| J^T r|| \\leq` GRAD\\_TOL,
+    - :math:`\\frac{|| J^T r||}{||r||} \\leq` GRAD\\_TOL,
 
     where :math:`J` and :math:`r` are the Jacobian and residual of
     :math:`f(x, p)`, respectively. The tolerances can be found in the results

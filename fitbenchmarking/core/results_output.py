@@ -12,7 +12,7 @@ import fitbenchmarking
 from fitbenchmarking.results_processing import performance_profiler, plots, \
     support_page, tables
 from fitbenchmarking.utils import create_dirs
-from fitbenchmarking.utils.misc import get_css
+from fitbenchmarking.utils.misc import get_css, get_js
 
 
 def save_results(options, results, group_name,
@@ -44,9 +44,9 @@ def save_results(options, results, group_name,
     # copy the template css files into a subfolder of results
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
-    local_css_dir = os.path.join(options.results_dir,'css')
-    for css_file in ["main_style","custom_style","math_style","table_style"]:
-        copy2(os.path.join(template_dir,css_file+".css"),local_css_dir)
+    local_css_dir = os.path.join(options.results_dir, 'css')
+    for css_file in ["main_style", "custom_style", "table_style"]:
+        copy2(os.path.join(template_dir, css_file + ".css"), local_css_dir)
     best_results = preproccess_data(results)
     pp_locations = performance_profiler.profile(results, fig_dir)
 
@@ -188,11 +188,11 @@ def create_problem_level_index(options, table_names, group_name,
                                tables and the comparison mode
     :type table_descriptions: dict
     """
-
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
     css = get_css(options,group_dir)
+    js = get_js(options,group_dir)
     template = env.get_template("problem_index_page.html")
     output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
     links = [v + "html" for v in table_names.values()]
@@ -203,7 +203,7 @@ def create_problem_level_index(options, table_names, group_name,
         fh.write(template.render(
             css_style_sheet=css['main'],
             custom_style=css['custom'],
-            maths_style=css['math'],
+            mathjax=js['mathjax'],
             group_name=group_name,
             index=index,
             table_type=names,
