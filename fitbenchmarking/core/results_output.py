@@ -13,7 +13,7 @@ import fitbenchmarking
 from fitbenchmarking.results_processing import performance_profiler, plots, \
     support_page, tables
 from fitbenchmarking.utils import create_dirs
-from fitbenchmarking.utils.misc import get_css
+from fitbenchmarking.utils.misc import get_css, get_js
 
 
 def save_results(options, results, group_name, failed_problems,
@@ -48,8 +48,7 @@ def save_results(options, results, group_name, failed_problems,
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
     local_css_dir = os.path.join(options.results_dir, 'css')
-    for css_file in ["main_style", "custom_style",
-                     "math_style", "table_style"]:
+    for css_file in ["main_style", "custom_style", "table_style"]:
         copy2(os.path.join(template_dir, css_file + ".css"), local_css_dir)
 
     best_results = preproccess_data(results)
@@ -199,8 +198,13 @@ def create_problem_level_index(options, table_names, group_name,
     :type cost_func_description: str
     """
     cost_func_description = cost_func_description.replace(':ref:', '')
+    js = get_js(options, group_dir)
+    docsettings = {
+        'math_output': 'MathJax '+js['mathjax']
+    }
     description_page = docutils.core.publish_parts(cost_func_description,
-                                                   writer_name='html')
+                                                   writer_name='html',
+                                                   settings_overrides=docsettings)
     cost_func = description_page['body'].replace('<blockquote>\n', '')
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
@@ -217,7 +221,7 @@ def create_problem_level_index(options, table_names, group_name,
         fh.write(template.render(
             css_style_sheet=css['main'],
             custom_style=css['custom'],
-            maths_style=css['math'],
+            mathjax=js['mathjax'],
             group_name=group_name,
             cost_func=cost_func,
             index=index,
