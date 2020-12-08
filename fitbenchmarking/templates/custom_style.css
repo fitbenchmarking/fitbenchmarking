@@ -3,19 +3,21 @@ body {
 }
 
 div.container {
-    max-width: max-content;
-    width: 80%;
-    padding: 70px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+  max-width: -moz-max-content;
+  max-width: -webkit-max-content;
+  max-width: max-content;
+  width: 80%;
+  padding: 70px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 div.row {
-    text-align: left;
+  text-align: left;
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 
