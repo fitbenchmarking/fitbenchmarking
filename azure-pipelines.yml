@@ -1,28 +1,68 @@
-# CI for Windows
-# Here not repeating LINTING and similar done with Travis (only this may make sense later)
 # For info syntax used in this file see: https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
 - master
+- release-*
 
-pool:
-  vmImage: 'windows-latest'
-strategy:
-  matrix:
-    Python36:
-      python.version: '3.6'
+pr:
+- master
+- release-*
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+jobs:
+- template: pipelines/docker_template.yml
+  parameters:
+     name: Ubuntu_Default_Unit_Tests
+     vmImage: ubuntu-latest
+     test_type: unit
+     full_install: False
 
-- script: |
-    pip install -r requirements.txt
-    pip install .[bumps,DFO,minuit,SAS]
-  displayName: 'Install FitBenchmarking and requirements'
+- template: pipelines/docker_template.yml
+  parameters:
+     name: Ubuntu_Full_Unit_Tests
+     vmImage: ubuntu-latest
+     test_type: unit
+     full_install: True
 
-- script: |
-    bash travis/unit_tests_default.sh
-  displayName: 'unit testing'
+- template: pipelines/docker_template.yml
+  parameters:
+     name: Ubuntu_Default_System_Tests
+     vmImage: ubuntu-latest
+     test_type: system
+     full_install: False
+
+- template: pipelines/docker_template.yml
+  parameters:
+     name: Ubuntu_Full_System_Tests
+     vmImage: ubuntu-latest
+     test_type: system
+     full_install: True
+     
+- template: pipelines/docker_template.yml
+  parameters:
+     name: Ubuntu_Linting_Tests
+     vmImage: ubuntu-latest
+     test_type: linting
+     full_install: True
+
+- job: 'Windows_Default_Unit_Tests'
+  pool:
+    vmImage: 'windows-latest'
+  strategy:
+    matrix:
+      Python36:
+        python.version: '3.6'
+
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+    displayName: 'Use Python $(python.version)'
+
+  - script: |
+      python -m pip install -r requirements.txt
+      python -m pip install .[bumps,DFO,minuit,SAS]
+    displayName: 'Install FitBenchmarking and requirements'
+
+  - script: |
+      bash pipelines/unit_tests_default.sh
+    displayName: 'unit testing'

@@ -1,0 +1,46 @@
+# Template for using docker
+
+# From https://docs.microsoft.com/en-gb/azure/devops/pipelines/process/templates?view=azure-devops#job-stage-and-step-templates-with-parameters
+
+parameters:
+- name: name
+  default: Ubuntu_Bionic
+- name: vmImage
+  default: ubuntu-18.04
+- name: test_type
+  default: unit
+- name: full_install
+  type: boolean
+  default: false
+
+jobs:
+- job: ${{ parameters.name }}
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  
+  ${{ if eq(parameters.full_install, true) }}:
+    container:
+      image: fitbenchmarking/fitbenchmarking-extras:latest
+  ${{ if eq(parameters.full_install, false) }}:
+    container: 
+      image: fitbenchmarking/fitbenchmarking-deps:latest
+  
+  steps:
+  - script: |
+      env
+      sudo -E --preserve-env=PATH /opt/venv/bin/python -m pip install -r requirements.txt
+      sudo -E --preserve-env=PATH /opt/venv/bin/python -m pip install .[bumps,DFO,minuit,SAS]
+    displayName: 'Install FitBenchmarking and requirements'
+
+  - ${{ if eq(parameters.full_install, true) }}:
+    - script: |
+        sudo -E mkdir -p $MASTSIF
+        sudo -E chown $(whoami) $MASTSIF
+        sudo -E mkdir -p $PYCUTEST_CACHE
+        sudo -E chown $(whoami) $PYCUTEST_CACHE
+        pipelines/${{ parameters.test_type }}_tests.sh
+      displayName: 'Running ${{ parameters.test_type }} tests - Full Install'
+  - ${{ if eq(parameters.full_install, false) }}:
+    - script: |
+        pipelines/${{ parameters.test_type }}_tests_default.sh
+      displayName: 'Running ${{ parameters.test_type }} tests - Default Install'
