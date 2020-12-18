@@ -22,6 +22,7 @@ jobs:
      vmImage: ubuntu-latest
      test_type: unit
      full_install: True
+     coverage: True
 
 - template: pipelines/docker_template.yml
   parameters:

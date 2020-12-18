@@ -14,7 +14,7 @@ parameters:
   default: False
 - name: coverage
   type: boolean
-  default: True
+  default: False
 
 jobs:
 - job: ${{ parameters.name }}
@@ -53,3 +53,4 @@ jobs:
         mv .coverage .coverage.docker
         coverage combine --append
         coveralls
+      displayName: 'Update Covarage'
