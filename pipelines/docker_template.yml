@@ -11,7 +11,10 @@ parameters:
   default: unit
 - name: full_install
   type: boolean
-  default: false
+  default: False
+- name: coverage
+  type: boolean
+  default: True
 
 jobs:
 - job: ${{ parameters.name }}
@@ -44,3 +47,9 @@ jobs:
     - script: |
         pipelines/${{ parameters.test_type }}_tests_default.sh
       displayName: 'Running ${{ parameters.test_type }} tests - Default Install'
+  
+  - ${{ if eq(parameters.coverage, true) }}:
+    - script: |
+        mv .coverage .coverage.docker
+        coverage combine --append
+        coveralls
