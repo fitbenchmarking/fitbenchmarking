@@ -18,6 +18,10 @@ parameters:
 
 jobs:
 - job: ${{ parameters.name }}
+
+  variables:
+  - group: coverage
+
   pool:
     vmImage: ${{ parameters.vmImage }}
   
@@ -54,3 +58,5 @@ jobs:
         coverage combine --append
         coveralls
       displayName: 'Update Covarage'
+      env:
+        COVERALLS_REPO_TOKEN: $(coverage.token)
