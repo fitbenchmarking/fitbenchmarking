@@ -15,6 +15,7 @@ parameters:
 - name: coverage
   type: boolean
   default: False
+- name: source_branch
 
 jobs:
 - job: ${{ parameters.name }}
@@ -54,9 +55,11 @@ jobs:
   
   - ${{ if eq(parameters.coverage, true) }}:
     - script: |
+        if [[ ${{ parameters.source_branch }} ]]; then git checkout ${{ parameters.source_branch }}; fi;
         mv .coverage .coverage.docker
         coverage combine --append
         coveralls
-      displayName: 'Update Covarage'
+      displayName: 'Update Coverage'
       env:
-        COVERALLS_REPO_TOKEN: $(coverage.token)
+        COVERALLS_REPO_TOKEN: $(token)
+        COVERALLS_SERVICE_NAME: azure-pipelines
