@@ -41,10 +41,10 @@ before_install:
   - if [[ $SUITE == "LINTING" ]]; then source ./travis/linting_install.sh; fi
 
 script:
-  - if [[ $SUITE == "UNIT" ]]; then docker run --env TRAVIS_JOB_ID="$TRAVIS_JOB_ID" --env TRAVIS_BRANCH="$TRAVIS_BRANCH" --volume ${PWD}:/home/fitbenchmarking/ -w /home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-extras:latest bash -c "pip install .[bumps,DFO,minuit,SAS]; travis/unit_tests.sh"; fi
-  - if [[ $SUITE == "UNIT_DEFAULT" ]]; then docker run --env TRAVIS_JOB_ID="$TRAVIS_JOB_ID" --env TRAVIS_BRANCH="$TRAVIS_BRANCH" --volume ${PWD}:/home/fitbenchmarking/ -w /home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-deps:latest bash -c "pip install .[bumps,DFO,minuit,SAS]; travis/unit_tests_default.sh"; fi
-  - if [[ $SUITE == "SYSTEM" ]]; then docker run --env TRAVIS_JOB_ID="$TRAVIS_JOB_ID" --env TRAVIS_BRANCH="$TRAVIS_BRANCH" --volume ${PWD}:/home/fitbenchmarking/ -w /home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-extras:latest bash -c "pip install .[bumps,DFO,minuit,SAS]; travis/system_tests.sh"; fi
-  - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then docker run --env TRAVIS_JOB_ID="$TRAVIS_JOB_ID" --env TRAVIS_BRANCH="$TRAVIS_BRANCH" --volume ${PWD}:/home/fitbenchmarking/ -w /home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-deps:latest bash -c "pip install .[bumps,DFO,minuit,SAS]; travis/system_tests_default.sh"; fi
+  - if [[ $SUITE == "UNIT" ]]; then docker run --env TRAVIS_JOB_ID="$TRAVIS_JOB_ID" --env TRAVIS_BRANCH="$TRAVIS_BRANCH" --volume ${PWD}:/home/fitbenchmarking/ -w /home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-extras:latest bash -c "pip install .[bumps,DFO,minuit,SAS]; pipelines/unit_tests.sh"; fi
+  - if [[ $SUITE == "UNIT_DEFAULT" ]]; then docker run --env TRAVIS_JOB_ID="$TRAVIS_JOB_ID" --env TRAVIS_BRANCH="$TRAVIS_BRANCH" --volume ${PWD}:/home/fitbenchmarking/ -w /home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-deps:latest bash -c "pip install .[bumps,DFO,minuit,SAS]; pipelines/unit_tests_default.sh"; fi
+  - if [[ $SUITE == "SYSTEM" ]]; then docker run --env TRAVIS_JOB_ID="$TRAVIS_JOB_ID" --env TRAVIS_BRANCH="$TRAVIS_BRANCH" --volume ${PWD}:/home/fitbenchmarking/ -w /home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-extras:latest bash -c "pip install .[bumps,DFO,minuit,SAS]; pipelines/system_tests.sh"; fi
+  - if [[ $SUITE == "SYSTEM_DEFAULT" ]]; then docker run --env TRAVIS_JOB_ID="$TRAVIS_JOB_ID" --env TRAVIS_BRANCH="$TRAVIS_BRANCH" --volume ${PWD}:/home/fitbenchmarking/ -w /home/fitbenchmarking/ fitbenchmarking/fitbenchmarking-deps:latest bash -c "pip install .[bumps,DFO,minuit,SAS]; pipelines/system_tests_default.sh"; fi
   - if [[ $SUITE == "LINTING" ]]; then ./travis/linting_tests.sh;  fi
 
 after_success:
