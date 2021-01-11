@@ -7,22 +7,13 @@ from fitbenchmarking.utils.log import get_logger
 LOGGER = get_logger()
 
 
-class OutputGrabber(object):
+class OutputGrabber:
     """
-    Class used to grab standard output and standard error.
+    Class used to grab outputs for stdout and stderr
     """
-    escape_char = "\b"
-
     def __init__(self, options):
-
-        self.stdout = sys.stdout
-        self.stdoutfd = self.stdout.fileno()
-
-        self.stderr = sys.stderr
-        self.stderrfd = self.stderr.fileno()
-
-        self.capturedstdout = ""
-        self.capturedstderr = ""
+        self.stdout_grabber = StreamGrabber(sys.stdout)
+        self.stderr_grabber = StreamGrabber(sys.stderr)
 
         # From issue 500 the output grabber does not currently on windows, thus
         # we set the __enter__ and __exit__ functions to pass through for this
@@ -33,79 +24,81 @@ class OutputGrabber(object):
 
     def __enter__(self):
         if self.system and self.external_output:
-            self.start()
+            self.stdout_grabber.start()
+            self.stderr_grabber.start()
         return self
 
     def __exit__(self, type, value, traceback):
         if self.system and self.external_output:
-            self.stop()
+            self.stdout_grabber.stop()
+            self.stderr_grabber.stop()
+            if self.stdout_grabber.capturedtext:
+                LOGGER.info('Captured output: \n%s',
+                            self.stdout_grabber.capturedtext)
+
+            if self.stderr_grabber.capturedtext:
+                LOGGER.info('Captured error: \n%s',
+                            self.stderr_grabber.capturedtext)
+
+
+class StreamGrabber(object):
+    """
+    Class used to grab an output stream.
+    """
+    escape_char = "\b"
+
+    def __init__(self, stream):
+
+        self.origstream = stream
+        self.origstreamfd = stream.fileno()
+        self.encoding = stream.encoding
+
+        self.capturedtext = ""
 
     def start(self):
         """
         Start capturing the stream data.
         """
         # Create a pipe so the stream can be captured:
-        self.stdout_out, self.stdout_in = os.pipe()
-        self.stderr_out, self.stderr_in = os.pipe()
-        self.capturedstdout = ""
-        self.capturedstderr = ""
+        self.pipe_out, self.pipe_in = os.pipe()
+        self.capturedtext = ""
 
         # Save a copy of the stream:
-        self.stdoutfd_bak = os.dup(self.stdoutfd)
-        self.stderrfd_bak = os.dup(self.stderrfd)
+        self.streamfd = os.dup(self.origstreamfd)
 
         # Replace the original stream with our write pipe:
-        os.dup2(self.stdout_in, self.stdoutfd)
-        os.dup2(self.stderr_in, self.stderrfd)
+        os.dup2(self.pipe_in, self.origstreamfd)
 
     def stop(self):
         """
         Stop capturing the stream data and save the text in `capturedtext`.
         """
         # Print the escape character to make the readOutput method stop:
-        self.stdout.write(self.escape_char)
-        self.stderr.write(self.escape_char)
+        self.origstream.write(self.escape_char)
         # Flush the stream to make sure all our data goes in before
         # the escape character:
-        self.stdout.flush()
-        self.stderr.flush()
+        self.origstream.flush()
 
-        # Reads the output and stores it
+        # Reads the output and stores it in capturedtext
         self.readOutput()
 
-        if self.capturedstdout:
-            LOGGER.info('Captured output: \n%s', self.capturedstdout)
-
-        if self.capturedstderr:
-            LOGGER.info('Captured error: \n%s', self.capturedstderr)
-
         # Close the pipes:
-        os.close(self.stdout_in)
-        os.close(self.stdout_out)
-        os.close(self.stderr_in)
-        os.close(self.stderr_out)
+        os.close(self.pipe_in)
+        os.close(self.pipe_out)
 
         # Restore the original streams:
-        os.dup2(self.stdoutfd_bak, self.stdoutfd)
-        os.dup2(self.stderrfd_bak, self.stderrfd)
+        os.dup2(self.streamfd, self.origstreamfd)
 
         # Close the duplicate streams:
-        os.close(self.stdoutfd_bak)
-        os.close(self.stderrfd_bak)
+        os.close(self.streamfd)
 
     def readOutput(self):
         """
         Read the stream data (one byte at a time)
-        and save the text in `captured<stream>`.
+        and save the text in `capturedtext`.
         """
         while True:
-            char = os.read(self.stdout_out, 1).decode(sys.stdout.encoding)
+            char = os.read(self.pipe_out, 1).decode(self.encoding)
             if not char or self.escape_char in char:
                 break
-            self.capturedstdout += char
-
-        while True:
-            char = os.read(self.stderr_out, 1).decode(sys.stderr.encoding)
-            if not char or self.escape_char in char:
-                break
-            self.capturedstderr += char
+            self.capturedtext += char
