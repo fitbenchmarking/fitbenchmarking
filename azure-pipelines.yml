@@ -1,5 +1,14 @@
 # For info syntax used in this file see: https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
+schedules:
+- cron: "0 9 * * Mon"
+  displayName: Weekly tests
+  branches:
+    include:
+    - master
+    - releases-*
+  always: true
+
 trigger:
 - master
 - release-*
