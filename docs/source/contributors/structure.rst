@@ -11,7 +11,7 @@ At the root of the repository there are six directories:
  - docs
  - examples
  - fitbenchmarking
- - travis
+ - pipelines
 
 
 #################
@@ -25,7 +25,7 @@ through setuptools.
 Docker (``Docker``)
 ###################
 
-The continuous integration process on travis currently run on a Docker container,
+The continuous integration process on Azure Pipelines currently run on a Docker container,
 and this directory holds the Dockerfiles.  The Docker containers are hosted on
 Dockerhub.
 
@@ -183,11 +183,11 @@ class (see :ref:`options_extend` to extend)
 and :class:`~fitbenchmarking.utils.fitbm_result.FittingResult` class,
 as well as functions for logging and directory creation.
 
-###################
-Travis (``travis``)
-###################
+#########################
+Pipelines (``pipelines``)
+#########################
 
-We use `Travis <https://travis-ci.org/github/fitbenchmarking/fitbenchmarking>`_
+We use `Azure Pipelines <https://azure.microsoft.com/en-gb/services/devops/pipelines/>`__
 to run our Continuous Integration tests.
 The specific tests run are defined in a series of Bash scripts,
 which are stored in this folder.
