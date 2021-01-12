@@ -41,7 +41,7 @@ class OutputGrabber:
                             self.stderr_grabber.capturedtext)
 
 
-class StreamGrabber(object):
+class StreamGrabber:
     """
     Class used to grab an output stream.
     """
