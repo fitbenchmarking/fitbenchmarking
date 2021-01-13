@@ -15,7 +15,6 @@ parameters:
 - name: coverage
   type: boolean
   default: False
-- name: source_branch
 
 jobs:
 - job: ${{ parameters.name }}
@@ -55,7 +54,10 @@ jobs:
   
   - ${{ if eq(parameters.coverage, true) }}:
     - script: |
-        if [[ ${{ parameters.source_branch }} ]]; then git checkout ${{ parameters.source_branch }}; fi;
+        # Hack while coveralls doesn't explicitly support Azure
+        export CIRCLECI=1
+        export CIRCLE_BUILD_NUM=$BUILD_BUILDNUMBER
+        export CIRCLE_BRANCH=BUILD_SOURCEBRANCH
         mv .coverage .coverage.docker
         coverage combine --append
         coveralls

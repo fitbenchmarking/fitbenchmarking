@@ -24,7 +24,6 @@ jobs:
      vmImage: ubuntu-latest
      test_type: unit
      full_install: False
-     source_branch: $(System.PullRequest.SourceBranch)
 
 - template: pipelines/docker_template.yml
   parameters:
@@ -33,7 +32,6 @@ jobs:
      test_type: unit
      full_install: True
      coverage: True
-     source_branch: $(System.PullRequest.SourceBranch)
 
 - template: pipelines/docker_template.yml
   parameters:
@@ -41,7 +39,6 @@ jobs:
      vmImage: ubuntu-latest
      test_type: system
      full_install: False
-     source_branch: $(System.PullRequest.SourceBranch)
 
 - template: pipelines/docker_template.yml
   parameters:
@@ -49,7 +46,6 @@ jobs:
      vmImage: ubuntu-latest
      test_type: system
      full_install: True
-     source_branch: $(System.PullRequest.SourceBranch)
      
 - template: pipelines/docker_template.yml
   parameters:
@@ -57,7 +53,6 @@ jobs:
      vmImage: ubuntu-latest
      test_type: linting
      full_install: True
-     source_branch: $(System.PullRequest.SourceBranch)
 
 - job: 'Windows_Default_Unit_Tests'
   pool:
