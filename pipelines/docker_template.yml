@@ -56,7 +56,11 @@ jobs:
     - script: |
         # Hack while coveralls doesn't explicitly support Azure
         export TRAVIS_JOB_ID=$BUILD_BUILDNUMBER
-        export TRAVIS_BRANCH=$BUILD_SOURCEBRANCH
+        if [[ $BUILD_PULLREQUEST_SOURCEBRANCH ]] ; then
+          export TRAVIS_BRANCH=$BUILD_PULLREQUEST_SOURCEBRANCH
+        else
+          export TRAVIS_BRANCH=$BUILD_SOURCEBRANCH
+        fi
         mv .coverage .coverage.docker
         coverage combine --append
         coveralls
