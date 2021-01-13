@@ -57,7 +57,7 @@ jobs:
         # Hack while coveralls doesn't explicitly support Azure
         export CIRCLECI=1
         export CIRCLE_BUILD_NUM=$BUILD_BUILDNUMBER
-        export CIRCLE_BRANCH=BUILD_SOURCEBRANCH
+        export CIRCLE_BRANCH=$BUILD_SOURCEBRANCH
         mv .coverage .coverage.docker
         coverage combine --append
         coveralls
