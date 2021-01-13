@@ -55,10 +55,8 @@ jobs:
   - ${{ if eq(parameters.coverage, true) }}:
     - script: |
         # Hack while coveralls doesn't explicitly support Azure
-        export CIRCLECI=1
-        export CIRCLE_BUILD_NUM=$BUILD_BUILDNUMBER
-        export CIRCLE_BRANCH=$BUILD_SOURCEBRANCH
-        echo $CIRCLE_BRANCH
+        export TRAVIS_JOB_ID=$BUILD_BUILDNUMBER
+        export TRAVIS_BRANCH=$BUILD_SOURCEBRANCH
         mv .coverage .coverage.docker
         coverage combine --append
         coveralls
