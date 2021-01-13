@@ -58,6 +58,7 @@ jobs:
         export CIRCLECI=1
         export CIRCLE_BUILD_NUM=$BUILD_BUILDNUMBER
         export CIRCLE_BRANCH=$BUILD_SOURCEBRANCH
+        echo $CIRCLE_BRANCH
         mv .coverage .coverage.docker
         coverage combine --append
         coveralls
