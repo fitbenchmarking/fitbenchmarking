@@ -11,6 +11,7 @@ on:
       - 'release-**'
   schedule:
     - cron: '0 9 * * Mon'
+  workflow_dispatch:
 
 jobs:
   default_system_linux:
