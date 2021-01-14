@@ -45,11 +45,11 @@ jobs:
         sudo -E chown $(whoami) $MASTSIF
         sudo -E mkdir -p $PYCUTEST_CACHE
         sudo -E chown $(whoami) $PYCUTEST_CACHE
-        pipelines/${{ parameters.test_type }}_tests.sh
+        ci/${{ parameters.test_type }}_tests.sh
       displayName: 'Running ${{ parameters.test_type }} tests - Full Install'
   - ${{ if eq(parameters.full_install, false) }}:
     - script: |
-        pipelines/${{ parameters.test_type }}_tests_default.sh
+        ci/${{ parameters.test_type }}_tests_default.sh
       displayName: 'Running ${{ parameters.test_type }} tests - Default Install'
   
   - ${{ if eq(parameters.coverage, true) }}:

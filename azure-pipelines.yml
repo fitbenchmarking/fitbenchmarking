@@ -18,14 +18,14 @@ pr:
 - release-*
 
 jobs:
-- template: pipelines/docker_template.yml
+- template: ci/docker_template.yml
   parameters:
      name: Ubuntu_Default_Unit_Tests
      vmImage: ubuntu-latest
      test_type: unit
      full_install: False
 
-- template: pipelines/docker_template.yml
+- template: ci/docker_template.yml
   parameters:
      name: Ubuntu_Full_Unit_Tests
      vmImage: ubuntu-latest
@@ -33,21 +33,21 @@ jobs:
      full_install: True
      coverage: True
 
-- template: pipelines/docker_template.yml
+- template: ci/docker_template.yml
   parameters:
      name: Ubuntu_Default_System_Tests
      vmImage: ubuntu-latest
      test_type: system
      full_install: False
 
-- template: pipelines/docker_template.yml
+- template: ci/docker_template.yml
   parameters:
      name: Ubuntu_Full_System_Tests
      vmImage: ubuntu-latest
      test_type: system
      full_install: True
      
-- template: pipelines/docker_template.yml
+- template: ci/docker_template.yml
   parameters:
      name: Ubuntu_Linting_Tests
      vmImage: ubuntu-latest
@@ -74,5 +74,5 @@ jobs:
     displayName: 'Install FitBenchmarking and requirements'
 
   - script: |
-      bash pipelines/unit_tests_default.sh
+      bash ci/unit_tests_default.sh
     displayName: 'unit testing'
