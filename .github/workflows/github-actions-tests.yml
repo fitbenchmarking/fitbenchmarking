@@ -80,11 +80,6 @@ jobs:
     - name: 'Running Tests'
       run: |
         ci/unit_tests.sh
-    # - name: 'Submit Coverage'
-    #   run: |
-    #     mv .coverage .coverage.docker
-    #     coverage combine --append
-    #     coveralls
   
   default_unit_windows:
     name: 'Default Unit Tests (Windows)'
