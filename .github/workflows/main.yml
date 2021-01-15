@@ -3,11 +3,11 @@ name: 'Tests'
 on:
   push:
     branches:
-      - 'main'
+      - 'master'
       - 'release-**'
   pull_request:
     branches:
-      - 'main'
+      - 'master'
       - 'release-**'
   schedule:
     - cron: '0 9 * * Mon'
@@ -81,6 +81,10 @@ jobs:
     - name: 'Running Tests'
       run: |
         ci/unit_tests.sh
+    - name: 'Submit Coverage'
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
   
   default_unit_windows:
     name: 'Default Unit Tests (Windows)'

@@ -52,19 +52,19 @@ jobs:
         ci/${{ parameters.test_type }}_tests_default.sh
       displayName: 'Running ${{ parameters.test_type }} tests - Default Install'
   
-  - ${{ if eq(parameters.coverage, true) }}:
-    - script: |
-        # Hack while coveralls doesn't explicitly support Azure
-        export TRAVIS_JOB_ID=$BUILD_BUILDNUMBER
-        if ! [ -z ${SYSTEM_PULLREQUEST_SOURCEBRANCH+_} ] ; then
-          export TRAVIS_BRANCH=$SYSTEM_PULLREQUEST_SOURCEBRANCH
-        else
-          export TRAVIS_BRANCH=$BUILD_SOURCEBRANCH
-        fi
-        mv .coverage .coverage.docker
-        coverage combine --append
-        coveralls
-      displayName: 'Update Coverage'
-      env:
-        COVERALLS_REPO_TOKEN: $(token)
-        COVERALLS_SERVICE_NAME: azure-pipelines
+  # - ${{ if eq(parameters.coverage, true) }}:
+  #   - script: |
+  #       # Hack while coveralls doesn't explicitly support Azure
+  #       export TRAVIS_JOB_ID=$BUILD_BUILDNUMBER
+  #       if ! [ -z ${SYSTEM_PULLREQUEST_SOURCEBRANCH+_} ] ; then
+  #         export TRAVIS_BRANCH=$SYSTEM_PULLREQUEST_SOURCEBRANCH
+  #       else
+  #         export TRAVIS_BRANCH=$BUILD_SOURCEBRANCH
+  #       fi
+  #       mv .coverage .coverage.docker
+  #       coverage combine --append
+  #       coveralls
+  #     displayName: 'Update Coverage'
+  #     env:
+  #       COVERALLS_REPO_TOKEN: $(token)
+  #       COVERALLS_SERVICE_NAME: azure-pipelines
