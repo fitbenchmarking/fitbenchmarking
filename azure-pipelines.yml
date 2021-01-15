@@ -20,7 +20,7 @@ steps:
 
 - script: |
     pip install -r requirements.txt
-    pip install .[bumps,DFO,minuit,SAS]
+    pip install .[bumps,DFO,minuit,SAS,numdifftools]
   displayName: 'Install FitBenchmarking and requirements'
 
 - script: |
