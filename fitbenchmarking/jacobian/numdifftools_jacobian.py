@@ -31,8 +31,15 @@ class numdifftools(Jacobian):
         """
         
         # Use the default numdifftools derivatives
+        # 
+        # Note that once jac_func is set up, it can be called
+        # multiple times by giving it params.
+        # We tested moving the call to nd.Jacobian into
+        # __init__ to see if this was a large overhead, but it
+        # seemed not to make a difference.
+        # Details of the experiment are in the GitHub issue.
         jac_func = nd.Jacobian(self.cost_func.eval_r, \
-                            method=self.method)
+                               method=self.method)
         jac = jac_func(params)
         return jac
 
@@ -47,9 +54,9 @@ class numdifftools(Jacobian):
         :rtype: numpy array
         """
         # Use the default numdifftools derivatives
-        jac_cost = nd.Jacobian(self.cost_func.eval_cost, \
+        jac_cost = nd.Gradient(self.cost_func.eval_cost, \
                                method=self.method)
-
+        
         jac = jac_cost(params)
         return jac
 
