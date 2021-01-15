@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/azure-devops/tests/fitbenchmarking/fitbenchmarking/1.svg?style=flat-square&compactmessage)](https://dev.azure.com/fitbenchmarking/fitbenchmarking/_build/latest?definitionId=1&branchName=master)
+[![Build Status](https://img.shields.io/github/workflow/status/fitbenchmarking/fitbenchmarking/main?style=flat-square)](https://github.com/fitbenchmarking/fitbenchmarking/actions)
 [![Documentation Status](https://img.shields.io/readthedocs/fitbenchmarking?style=flat-square)](https://fitbenchmarking.readthedocs.io/en/latest)
 [![Coverage Status](https://img.shields.io/coveralls/github/fitbenchmarking/fitbenchmarking.svg?style=flat-square)](https://coveralls.io/github/fitbenchmarking/fitbenchmarking)
 ![Windows Supported](https://img.shields.io/badge/win10-support-blue.svg?style=flat-square&logo=windows)

@@ -40,15 +40,15 @@ As with the unit tests, these can be run via:
 .. warning::
    The files in the expected results subdirectory of the ``systests``
    directory are generated to check consistency in our automated tests via
-   `Azure Pipelines <https://azure.microsoft.com/en-gb/services/devops/pipelines/>`__.
+   `GitHub Actions <https://github.com/fitbenchmarking/fitbenchmarking/actions>`__.
    They might not pass on your local operating system due to, for example,
    different software package versions being installed.
 
-Azure Pipelines tests
+GitHub Actions tests
 ---------------------
 
-The scripts that are used our automated tests via
-`Azure Pipelines <https://azure.microsoft.com/en-gb/services/devops/pipelines/>`__
-are located in the ``pipelines`` folder.
+The scripts that are used for our automated tests via
+`GitHub Actions <https://github.com/fitbenchmarking/fitbenchmarking/actions>`__
+are located in the ``ci`` folder.
 These give an example of how to run both the unit and system tests within
 FitBenchmarking.
