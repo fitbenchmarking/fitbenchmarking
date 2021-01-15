@@ -45,7 +45,7 @@ class Options(object):
     VALID_JACOBIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
          'analytic': ['cutest'],
-         'numdifftools': ['central', 'forward',
+         'numdifftools': ['central', 
                           'complex', 'multicomplex',
                           'forward', 'backward']}
     VALID_PLOTTING = \
