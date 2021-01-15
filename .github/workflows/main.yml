@@ -86,7 +86,28 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         coveralls
-  
+
+  linting_linux:
+    name: 'Linting Tests (Linux)'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - name: 'Checkout code'
+      uses: actions/checkout@v2
+    - name: 'Choose Python Version'
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.6'
+    - name: 'Installing'
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install .[bumps,DFO,minuit,SAS]
+        pip install --use-deprecated=legacy-resolver pygsl
+        pip install pycutest
+    - name: 'Run Linting'
+      run: |
+        ci/linting_tests.sh
+      
   default_unit_windows:
     name: 'Default Unit Tests (Windows)'
     runs-on: 'windows-latest'
@@ -94,7 +115,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: 'Choose Python Version'
-      uses: actions/checkout@v2
+      uses: actions/setup-python@v2
       with:
         python-version: '3.6'
     - name: Installing
