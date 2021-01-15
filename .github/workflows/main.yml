@@ -31,7 +31,7 @@ jobs:
         ci/system_tests_default.sh
   
   full_system_linux:
-    name: 'Full Sysytem Tests (Linux)'
+    name: 'Full System Tests (Linux)'
     runs-on: 'ubuntu-latest'
     container:
       image: 'fitbenchmarking/fitbenchmarking-extras:latest'
