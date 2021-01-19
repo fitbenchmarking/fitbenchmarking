@@ -4,8 +4,11 @@
 Adding new Options
 ##################
 
-Default options are set in :class:`~fitbenchmarking.utils.options.Options`.
-These can be changed using an `.ini` formatted file
+Default options are set by the class
+:class:`~fitbenchmarking.utils.options.Options`, which is defined in
+the file `fitbenchmarking/utils/options.py`.
+
+The options used can be changed using an `.ini` formatted file
 (`see here <https://docs.python.org/3/library/configparser.html#supported-ini-file-structure>`__). :ref:`options` gives examples of how this is currently implemented in
 FitBenchmarking.
 

@@ -24,13 +24,26 @@ you will need to:
    :meth:`~fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians()` by
    using the ``method`` attribute of the class.
 
-2. Document the available Jacobians by:
+2. Enable the new method as an option in :ref:`fitting_option`,
+   following the instructions in :ref:`options_extend`.  Specifically:
+   
+   * Amend the ``VALID_FITTING`` dictionary so that the element associated
+     with the ``jac_method`` key contains the new ``<jac_method>``.
+     
+   * Extend the ``VALID_JACOBIAN`` dictionary to have a new
+     key ``<jac_method>``, with the associated element being a list of
+     valid options for this Jacobian.
+     
+   * Extend the ``DEFAULT_JACOBIAN`` dictionary to have a new key
+     ``<jac_method>``, with the associated element being a subset of the
+     valid options added in ``VALID_JACOBIAN`` in the previous step.
 
-  * adding ``<jac_method>`` as an option in :ref:`fitting_option`.
+3. Document the available Jacobians by:
+
   * adding a list of available ``method`` options to the docs for :ref:`jacobian_option`.
   * updating any example files in the ``examples`` directory
 
-3. Create tests for the Jacobian evaluation in
+4. Create tests for the Jacobian evaluation in
    ``fitbenchmarking/jacobian/tests/test_jacobians.py``.
 
 

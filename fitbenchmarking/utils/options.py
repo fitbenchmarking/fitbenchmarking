@@ -40,11 +40,14 @@ class Options(object):
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general'],
          'software': ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
                       'ralfit', 'scipy', 'scipy_ls'],
-         'jac_method': ['scipy', 'analytic'],
+         'jac_method': ['scipy', 'analytic', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls']}
     VALID_JACOBIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
-         'analytic': ['cutest']}
+         'analytic': ['cutest'],
+         'numdifftools': ['central', 
+                          'complex', 'multicomplex',
+                          'forward', 'backward']}
     VALID_PLOTTING = \
         {'make_plots': [True, False],
          'comparison_mode': ['abs', 'rel', 'both'],
@@ -87,7 +90,8 @@ class Options(object):
          'cost_func_type': 'weighted_nlls'}
     DEFAULT_JACOBIAN = \
         {'scipy': ['2-point'],
-         'analytic': ['cutest']}
+         'analytic': ['cutest'],
+         'numdifftools': ['central']}
     DEFAULT_PLOTTING = \
         {'make_plots': True,
          'colour_scale': [(1.1, "#fef0d9"),
@@ -146,9 +150,10 @@ class Options(object):
                 user_options_list = [option[0] for option in config.items(key)]
                 if not (set(user_options_list) <= set(default_options_list)):
                     raise OptionsError(
-                        "Invalid options key set: \n{0}, \n the valid keys "
+                        "Invalid options key set in the {2} Section: \n{0}, \n the valid keys "
                         "are: \n{1}".format(user_options_list,
-                                            default_options_list))
+                                            default_options_list,
+                                            key))
 
         minimizers = config['MINIMIZERS']
         self._minimizers = {}
