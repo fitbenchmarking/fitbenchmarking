@@ -10,6 +10,7 @@ from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.jacobian.numdifftools_jacobian import numdifftools
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 
@@ -94,6 +95,20 @@ class TestJacobianClass(TestCase):
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
+    def test_numdifftools_eval(self):
+        """
+        Test whether numdifftools evaluation is correct
+        """
+        for method in ['central',
+                       'forward',
+                       'backward',
+                       'complex',
+                       'multicomplex']:
+            jac = numdifftools(self.cost_func)
+            jac.method = method
+            eval_result = jac.eval(params=self.params)
+            self.assertTrue(np.isclose(self.actual, eval_result).all())
+        
     def test_analytic_cutest_no_errors(self):
         """
         Test analytic Jacobian
@@ -243,6 +258,20 @@ class TestDerivCostFunc(TestCase):
         jac.method = 'cs'
         eval_result = jac.eval_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+    def test_numdifftools_eval(self):
+        """
+        Test whether numdifftools evaluation is correct
+        """
+        for method in ['central',
+                       'forward',
+                       'backward',
+                       'complex',
+                       'multicomplex']:
+            jac = numdifftools(self.cost_func)
+            jac.method = method
+            eval_result = jac.eval_cost(params=self.params)
+            self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_analytic_cutest(self):
         """

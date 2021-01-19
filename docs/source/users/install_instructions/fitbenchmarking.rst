@@ -16,7 +16,7 @@ FitBenchmarking can be installed via the command line by entering:
 
 .. code-block:: bash
 
-      python -m pip install fitbenchmarking[bumps,DFO,minuit,SAS]
+      python -m pip install fitbenchmarking[bumps,DFO,minuit,SAS,numdifftools]
 
 
 This will install the latest stable version of FitBenchmarking.
@@ -79,6 +79,7 @@ where valid strings ``option-x`` are:
 * ``DFO`` -- installs the `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ and `DFO-GN <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`_ fitting packages.
 * ``minuit`` -- installs the `Minuit <http://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/>`_ fitting package.
 * ``SAS`` -- installs the `Sasmodels <https://github.com/SasView/sasmodels>`_ fitting package.
+  * ``numdifftools`` -- installs the `numdifftools <https://numdifftools.readthedocs.io/en/latest/index.html>`_ numerical differentiation package.
 
 
 .. |Python 3.6+| image:: https://img.shields.io/badge/python-3.6+-blue.svg
