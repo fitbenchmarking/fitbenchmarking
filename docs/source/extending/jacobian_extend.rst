@@ -26,11 +26,14 @@ you will need to:
 
 2. Enable the new method as an option in :ref:`fitting_option`,
    following the instructions in :ref:`options_extend`.  Specifically:
+   
    * Amend the ``VALID_FITTING`` dictionary so that the element associated
      with the ``jac_method`` key contains the new ``<jac_method>``.
+     
    * Extend the ``VALID_JACOBIAN`` dictionary to have a new
      key ``<jac_method>``, with the associated element being a list of
      valid options for this Jacobian.
+     
    * Extend the ``DEFAULT_JACOBIAN`` dictionary to have a new key
      ``<jac_method>``, with the associated element being a subset of the
      valid options added in ``VALID_JACOBIAN`` in the previous step.
