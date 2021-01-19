@@ -21,7 +21,7 @@ class numdifftools(Jacobian):
 
     def eval(self, params, **kwargs):
         """
-        Evaluates Jacobian of the fucntion
+        Evaluates Jacobian of the function
 
         :param params: The parameter values to find the Jacobian at
         :type params: list
@@ -59,4 +59,3 @@ class numdifftools(Jacobian):
         
         jac = jac_cost(params)
         return jac
-
