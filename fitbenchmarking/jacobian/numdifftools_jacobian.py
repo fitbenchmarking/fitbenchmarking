@@ -17,11 +17,11 @@ class numdifftools(Jacobian):
         """
         initializes the numdifftools jacobian
         """
-        super(numdifftools, self).__init__(cost_func)        
+        super(numdifftools, self).__init__(cost_func)
 
     def eval(self, params, **kwargs):
         """
-        Evaluates Jacobian of the fucntion
+        Evaluates Jacobian of the function
 
         :param params: The parameter values to find the Jacobian at
         :type params: list
@@ -38,7 +38,7 @@ class numdifftools(Jacobian):
         # __init__ to see if this was a large overhead, but it
         # seemed not to make a difference.
         # Details of the experiment are in the GitHub issue.
-        jac_func = nd.Jacobian(self.cost_func.eval_r, \
+        jac_func = nd.Jacobian(self.cost_func.eval_r,
                                method=self.method)
         jac = jac_func(params)
         return jac
@@ -54,9 +54,8 @@ class numdifftools(Jacobian):
         :rtype: numpy array
         """
         # Use the default numdifftools derivatives
-        jac_cost = nd.Gradient(self.cost_func.eval_cost, \
+        jac_cost = nd.Gradient(self.cost_func.eval_cost,
                                method=self.method)
         
         jac = jac_cost(params)
         return jac
-
