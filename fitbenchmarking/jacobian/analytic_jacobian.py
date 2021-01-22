@@ -30,14 +30,17 @@ class Analytic(Jacobian):
         :rtype: numpy array
         """
         x = kwargs.get("x", self.problem.data_x)
+        y = kwargs.get("y", self.problem.data_y)
         e = kwargs.get("e", self.problem.data_e)
         jac = self.problem.jacobian(x, params)
         if self.problem.options.cost_func_type == "weighted_nlls":
             # scales each column of the Jacobian by the weights
             jac = jac / e[:, None]
-        elif self.problem.options.cost_func_type == "root_nlls":
+        elif self.problem.options.cost_func_type == "hellinger_nlls":
             # calculates the Jacobian of the root NLLS cost function
             jac = jac * self.problem.eval_model(params, x=x)[:, None] / 2
+        elif self.problem.options.cost_func_type == "poisson":
+            jac = jac * (1 - y / self.problem.eval_model(params, x=x))
         return jac
 
     def eval_cost(self, params, **kwargs):
