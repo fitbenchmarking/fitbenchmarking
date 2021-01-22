@@ -30,9 +30,10 @@ setup(name='FitBenchmarking',
       extras_require={'DFO': ['DFO-LS', 'dfogn'],
                       'SAS': ['sasmodels'],
                       'minuit': ['iminuit<2'],
-                      'bumps': ['bumps']},
+                      'bumps': ['bumps'],
+                      'numdifftools': ['numdifftools']},
       zip_safe=False,
-      use_scm_version= True,
+      use_scm_version={'fallback_version': '1.0.0'},
       setup_requires=['setuptools_scm'],
       include_package_data=True
 )

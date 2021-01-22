@@ -25,7 +25,9 @@ class JacobianOptionTesJacobians(unittest.TestCase):
         """
         Checks num_method default
         """
-        expected = {'scipy': ['2-point'], 'analytic': ['cutest']}
+        expected = {'scipy': ['2-point'],
+                    'analytic': ['cutest'],
+                    'numdifftools': ['central']}
         actual = self.options.num_method
         self.assertEqual(expected, actual)
 
@@ -109,7 +111,9 @@ class UserJacobianOptionTests(unittest.TestCase):
         """
         Checks user set num_method is valid
         """
-        set_option = {'scipy': ['cs'], 'analytic': ['cutest']}
+        set_option = {'scipy': ['cs'],
+                      'analytic': ['cutest'],
+                      'numdifftools': ['central']}
         config_str = \
             "[JACOBIAN]\nscipy: cs"
         self.shared_valid('num_method', set_option, config_str)

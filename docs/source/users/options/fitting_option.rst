@@ -99,9 +99,10 @@ Jacobian method (:code:`jac_method`)
 
 This sets the Jacobian used. Current Jacobian methods are:
 
-* ``analytic`` - This uses the analytic Jacobian extracted from the fitting problem.
-* ``scipy`` - denotes the use of SciPy's finite difference Jacobian approximations
-
+* ``analytic`` - uses the analytic Jacobian extracted from the fitting problem.
+* ``scipy`` -  uses :ref:`SciPy's finite difference Jacobian approximations <scipy-jac>`
+* ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-jac>`.
+  
 Default is ``scipy``
 
 .. code-block:: rst

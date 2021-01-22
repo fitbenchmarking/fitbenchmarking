@@ -7,11 +7,11 @@ Repository Structure
 At the root of the repository there are six directories:
 
  - build
+ - ci
  - Docker
  - docs
  - examples
  - fitbenchmarking
- - travis
 
 
 #################
@@ -21,11 +21,20 @@ Build (``build``)
 This directory contains scripts to allow for installing packages such as Mantid
 through setuptools.
 
+#########################
+CI (``ci``)
+#########################
+
+We use `GitHub Actions <https://github.com/fitbenchmarking/fitbenchmarking/actions>`__
+to run our Continuous Integration tests.
+The specific tests run are defined in a series of Bash scripts,
+which are stored in this folder.
+
 ###################
 Docker (``Docker``)
 ###################
 
-The continuous integration process on travis currently run on a Docker container,
+The continuous integration process on Github Actions currently run on a Docker container,
 and this directory holds the Dockerfiles.  The Docker containers are hosted on
 Dockerhub.
 
@@ -182,12 +191,3 @@ This includes the :class:`~fitbenchmarking.utils.options.Options`
 class (see :ref:`options_extend` to extend) 
 and :class:`~fitbenchmarking.utils.fitbm_result.FittingResult` class,
 as well as functions for logging and directory creation.
-
-###################
-Travis (``travis``)
-###################
-
-We use `Travis <https://travis-ci.org/github/fitbenchmarking/fitbenchmarking>`_
-to run our Continuous Integration tests.
-The specific tests run are defined in a series of Bash scripts,
-which are stored in this folder.
