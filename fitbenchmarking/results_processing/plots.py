@@ -176,7 +176,7 @@ class Plot(object):
                        plot_options=plot_options_dict,
                        y=y)
         self.format_plot()
-        file = "{}_fit_for_{}.png".format(self.result.sanitised_min_name,
+        file = "{}_fit_for_{}.png".format(minimizer,
                                           self.result.sanitised_name)
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
@@ -215,7 +215,7 @@ class Plot(object):
                        x=self.x,
                        y=self.problem.eval_f(params, self.x))
         self.format_plot()
-        file = "{}_fit_for_{}.png".format(self.result.sanitised_min_name,
+        file = "{}_fit_for_{}.png".format(minimizer,
                                           self.result.sanitised_name)
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
