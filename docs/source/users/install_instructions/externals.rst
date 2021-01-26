@@ -33,6 +33,8 @@ Install instructions can be found at the `pyGSL docs <http://pygsl.sourceforge.n
 This package is also installable via pip, provided GSL is available on your system;
 see our example build script in `build/gsl`.
 
+Note: pyGSL may not be installable with the latest versions of pip. We have found that 20.0.2 works for our tests.
+
 Mantid
 ------
 
