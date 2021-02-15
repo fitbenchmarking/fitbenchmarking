@@ -49,7 +49,7 @@ class LoggingOptionTests(unittest.TestCase):
         """
         Checks external_output default
         """
-        expected = True
+        expected = 'log_only'
         actual = self.options.external_output
         self.assertEqual(expected, actual)
 
@@ -176,9 +176,9 @@ class UserLoggingOptionTests(unittest.TestCase):
         """
         Checks user set external_output is valid
         """
-        set_option = False
+        set_option = 'debug'
         config_str = \
-            "[LOGGING]\nexternal_output: no"
+            "[LOGGING]\nexternal_output: debug"
         self.shared_valid('external_output', set_option, config_str)
 
     def test_minimizer_external_output_invalid(self):
