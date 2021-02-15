@@ -46,7 +46,7 @@ class OptionsWriteTests(unittest.TestCase):
             file_name: THE_LOG.log
             append: yes
             level: DEBUG
-            external_output: no
+            external_output: display
             """
 
         opts_file = 'test_options_tests.ini'

@@ -58,13 +58,17 @@ Default is ``INFO``
 Logging external output (:code:`external_output`)
 -------------------------------------------------
 
-This toggles whether the output grabber collects the third party
-output. We note that for the Windows operating system this
-option is not available.
+This selects the amount of information displayed from third-parties.
+There are 3 options:
 
-Default is ``True`` (``yes``/``no`` can also be used)
+* ``display``: Print information from third-parties to the stdout stream
+               during a run.
+* ``log_only``: Print information to the log file but not the stdout stream.
+* ``debug``: Do not intercept third-party use of output streams.
+
+Default is ``log_only``
 
 .. code-block:: rst
 
     [LOGGING]
-    append: yes
+    append: log_only
