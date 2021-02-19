@@ -3,9 +3,9 @@ from glob import glob
 
 with open('README.md', encoding="utf-8") as f:
     long_description = f.read()
-    
+
 setup(name='FitBenchmarking',
-      version='0.1.dev2',
+      version='0.1.0rc1',
       description='FitBenchmarking: A tool for comparing fitting software',
       author='FitBenchmarking Team',
       author_email="support@fitbenchmarking.com",
@@ -32,7 +32,7 @@ setup(name='FitBenchmarking',
                       'minuit': ['iminuit<2'],
                       'bumps': ['bumps']},
       zip_safe=False,
-      use_scm_version={'fallback_version': '1.0.0'},
+      use_scm_version={'fallback_version': '0.1.0'},
       setup_requires=['setuptools_scm'],
       include_package_data=True
 )
