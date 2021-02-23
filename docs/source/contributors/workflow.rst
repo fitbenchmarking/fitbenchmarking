@@ -60,7 +60,7 @@ must be pulled into this branch from master.
 
 Release branches should have the format `release-major.minor.x`, starting from
 `release-0.1.x`.  When the code is released, we will tag that commit with
-`release-0.1.0`.  Any hotfixes will increment `x` by one, and a new tag will
+a version number `v0.1.0`.  Any hotfixes will increment `x` by one, and a new tag will
 be created accordingly.  If at some point we don't want to provide hot-fixes
 to a given minor release, then the corresponding release branch may be deleted.
 
@@ -94,3 +94,42 @@ the PR that this being backported separately.
 
 If you encounter problems with cherry picking into release branch please
 don't hesitate to speak to an experienced member of the FitBenchmarking team.
+
+
+================
+Create a release
+================
+In order to create a new release for FitBenchmarking, there are a few manual steps.
+These have been streamlined as much as possible.
+
+First checkout the branch to create the release from.
+
+From the root of the repo run the "ci/prep_and_tag_release.sh" script with the new version number.
+The version number will be rejected if it is not of the expected form.
+We expect a "v" followed by the major, minor, and patch numbers,
+and an optional numbered label to mark the type of release.
+
+Possible lables are:
+ - -beta (release for testing)
+ - -rc (release candidate)
+ - -dev (release of a development version)
+
+This script will create a new commit with the docs and testing links updated, tag it,
+and revert the change in a second commit so that the links point back to the latest versions.
+
+These commits will need to be pushed to github.
+
+Finally, you will need to create a release on github.
+This can be done by navigating to the releases page, selecting new release
+and typing in the tag that was given to the release
+(it should tell you the tag exists at this point!).
+
+E.g For a first beta version of release 0.1.0. One would run:
+
+.. code-block:: bash
+
+   git checkout release-0.1.x
+   ci/prep_and_tag_release.sh v0.1.0-beta1
+   git push origin release-0.1.x
+
+   <And make the release on GitHub>
