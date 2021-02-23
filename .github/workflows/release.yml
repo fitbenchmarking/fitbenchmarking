@@ -22,7 +22,7 @@ jobs:
                -e "s|actions/workflows/release.yml|&?query=branch%3A${short_ref}|" \
                -e "s|fitbenchmarking/Tests|&/${short_ref}|" \
                -e "s|actions/workflows/main.yml|&?query=branch%3A${short_ref}|" \
-               -e "s|/readthedocs/fitbenchmarking|&/${short_ref}|"
+               -e "s|/readthedocs/fitbenchmarking|&/${short_ref}|" \
                -e "s|readthedocs.io/en/latest|/en/${short_ref}|" \
                README.md
     - name: 'Build'
