@@ -23,6 +23,14 @@ if [[ ! $tag =~ $tag_regex ]]; then
     exit 1
 fi
 
+branch=$(git branch --show-current)
+
+branch_regex="^release-[0-9]+\.[0-9]+\.x$"
+if [[ ! $branch =~ $branch_regex ]]; then
+    echo "Releases should only be made from release branches. You are on: $branch"
+    exit 1
+fi
+
 cp README.md README.md.bak
 
 sed -i -e "s|\(fitbenchmarking/Build%20and%20Publish\)[^\?]*|\1/${tag}|" \
