@@ -112,7 +112,6 @@ and an optional numbered label to mark the type of release.
 Possible labels are:
  - -beta (release for testing)
  - -rc (release candidate)
- - -dev (release of a development version)
 
 This script will create a new commit with the docs and testing links updated, tag it,
 and revert the change in a second commit so that the links point back to the latest versions.
