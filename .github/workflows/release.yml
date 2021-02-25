@@ -15,16 +15,7 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.6'
-    - name: 'Pin version in README.md'
-      run: |
-        short_ref=${GITHUB_REF#refs/tags}
-        sed -i -e "s|fitbenchmarking/Build%20and%20Publish|&/${short_ref}|" \
-               -e "s|actions/workflows/release.yml|&?query=branch%3A${short_ref}|" \
-               -e "s|fitbenchmarking/Tests|&/${short_ref}|" \
-               -e "s|actions/workflows/main.yml|&?query=branch%3A${short_ref}|" \
-               -e "s|/readthedocs/fitbenchmarking|&/${short_ref}|" \
-               -e "s|readthedocs.io/en/latest|/en/${short_ref}|" \
-               README.md
+
     - name: 'Build'
       run: |
         python3 -m pip install --user --upgrade setuptools wheel
