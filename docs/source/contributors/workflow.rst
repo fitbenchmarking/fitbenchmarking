@@ -97,19 +97,19 @@ don't hesitate to speak to an experienced member of the FitBenchmarking team.
 
 
 ================
-Create a release
+Creating a release
 ================
 In order to create a new release for FitBenchmarking, there are a few manual steps.
 These have been streamlined as much as possible.
 
-First checkout the branch to create the release from.
+First checkout the branch to create the release from.  Releases should only be made from a `release-x-x` branch, not a development branch or master.
 
 From the root of the repo run the "ci/prep_and_tag_release.sh" script with the new version number.
 The version number will be rejected if it is not of the expected form.
 We expect a "v" followed by the major, minor, and patch numbers,
 and an optional numbered label to mark the type of release.
 
-Possible lables are:
+Possible labels are:
  - -beta (release for testing)
  - -rc (release candidate)
  - -dev (release of a development version)
@@ -124,7 +124,7 @@ This can be done by navigating to the releases page, selecting new release
 and typing in the tag that was given to the release
 (it should tell you the tag exists at this point!).
 
-E.g For a first beta version of release 0.1.0. One would run:
+For example, For a first beta version of release 0.1.0, one would run:
 
 .. code-block:: bash
 
