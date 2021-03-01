@@ -57,13 +57,10 @@ class LevmarController(Controller):
         :rtype: numpy array
         """
         
-        fx = self.problem.eval_model(params=p)
-        print("p = {}".format(p))
-        print("x = {}".format(self.data_x))
-        print("fx = {}".format(fx))
+        fx = self.problem.function(self.data_x, *p) #(eval_model(params=p)
         return fx
 
-    def _jeval(self, p, data=None):
+    def _jeval(self, p, x):
         """
         Utility function to call jac.eval with correct args
 
@@ -74,9 +71,7 @@ class LevmarController(Controller):
         :return: result from jac.eval
         :rtype: numpy array
         """
-        print("cost_func_type = {}".format(self.problem.options.cost_func_type))
         jac = -self.jacobian.eval(p)
-        print("jac = {}".format(jac))
         return jac
 
     def fit(self):
@@ -88,15 +83,11 @@ class LevmarController(Controller):
         else:
             jac = self._jeval
 
-        print("y = {}".format(self.data_y))
-        print(type(self.initial_params[0]))
         (self.final_params, cov, self._info) = levmar.levmar(self._feval,
                                                         self.initial_params,
                                                         self.data_y,
                                                         args=(self.data_x,),
                                                         jacf=jac)
-        print(self._info[3])
-        print("Converged in {} iterations".format(self._info[2]))
         # self._info isn't documented (other than in the levmar source),
         # but returns:
         # self._info[0] = ||e||_2 at `p0`
