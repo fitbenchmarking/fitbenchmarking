@@ -1,0 +1,6 @@
+# FitBenchmark Problem
+software = 'Mantid'
+name = 'HIFI 160973 Count data'
+description = 'Count data from the ISIS muon dataset, run 160973. Lambda should be ~0.455'
+input_file = 'HIFI_160973_muon_count.txt'
+function = 'name=ExpDecayOsc,A=60000,Lambda=0.65,Frequency=1e-4,Phi=0'

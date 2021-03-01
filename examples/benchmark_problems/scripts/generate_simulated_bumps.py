@@ -1,10 +1,16 @@
+"""
+This script is used to generate simulated count data to fit against based on a
+Bumps implementation.
+"""
+
+
 import os
 
 import numpy as np
 
 
-def peak(x, scale, center, width, background):
-    return scale*np.exp(-0.5*(x-center)**2/width**2) + background
+def peak(x, scale, centre, width, background):
+    return scale*np.exp(-0.5*(x-centre)**2/width**2) + background
 
 
 def write_data(x, y):
@@ -32,7 +38,7 @@ def write_problem():
         f.write("function = 'name=UserFunction,"
                 "Formula=scale*exp(-0.5*(x-centre)^2/width^2)+background,"
                 "scale=1.0,"
-                "centre=8.0,"
+                "centre=2.0,"
                 "width=2.0,"
                 "background=0.0'\n")
 
@@ -41,7 +47,7 @@ def main():
     x = np.linspace(5, 20, 345)
     # y = np.random.poisson(peak(x, 1000, 12, 1.0, 1))
     # y = np.random.poisson(peak(x, 300, 12, 1.5, 1))
-    y = np.random.poisson(peak(x, 3, 12, 1.5, 1))
+    y = np.random.poisson(peak(x, scale=3, centre=12, width=1.5, background=1))
     write_problem()
     write_data(x, y)
 

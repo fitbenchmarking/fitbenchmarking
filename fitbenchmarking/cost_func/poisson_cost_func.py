@@ -2,8 +2,7 @@
 Implements a Poisson deviance cost function based on Mantids:
 https://docs.mantidproject.org/nightly/fitting/fitcostfunctions/Poisson.html
 """
-from numpy import log
-
+from numpy import log, finfo
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
@@ -62,13 +61,27 @@ class PoissonCostFunc(CostFunc):
             raise CostFuncError('The length of the x and y are not the same, '
                                 'len(x)={} and len(y)= {}.'.format(len(x),
                                                                    len(y)))
-        if (y <= 0.0).any():
+        if (y < 0.0).any():
             raise CostFuncError('This cost function is designed for use with '
                                 'positive experimental values, try again with '
                                 'a different cost function.')
         f_xp = self.problem.eval_model(x=x, params=params)
 
-        result = sum(y * (log(y) - log(f_xp)) - (y - f_xp))
+        # Penalise nagative f(x, p)
+        f_xp[f_xp <= 0.0] = finfo(float).max
+
+        result = sum(_safe_a_log_b(y, y) - _safe_a_log_b(y, f_xp) - (y - f_xp))
         self.cache_cost_x['params'] = params
         self.cache_cost_x['value'] = result
         return result
+
+
+def _safe_a_log_b(a, b):
+    """
+    Calculate y=a*log(b) such that if a==0 then y==0.
+    """
+    mask = a != 0
+
+    result = a.copy()
+    result[mask] *= log(b[mask])
+    return result

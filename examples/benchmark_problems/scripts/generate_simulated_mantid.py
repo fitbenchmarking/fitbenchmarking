@@ -1,5 +1,7 @@
-# This script is used to generate simulated poisson data based on a Mantid
-# script
+"""
+This script is used to generate simulated count data based on a Mantid
+script.
+"""
 
 import os
 
@@ -14,9 +16,10 @@ def VariableStatsData(N, A0, omega, phi, sigma, bg):
     return (x, numpy.random.poisson(y*NN))
 
 
-def write_data(x, y):
+def write_data(x, y, part=0):
     path = f'{os.path.dirname(__file__)}/../data_files'
-    with open(f'{path}/simulated_mantid.txt', 'w') as f:
+    part_str = part if part != 0 else ""
+    with open(f'{path}/simulated_mantid{part_str}.txt', 'w') as f:
         f.write('# X Y\n')
         lines = [[x[i], y[i]]
                  # if y[i] != 0  # Uncomment to replace 0s with 1s
@@ -27,15 +30,16 @@ def write_data(x, y):
         f.writelines([f'{i} {j}\n' for i, j in lines])
 
 
-def write_problem(N):
+def write_problem(N, part=0):
     path = f'{os.path.dirname(__file__)}/..'
-    with open(f'{path}/simulated_mantid.txt', 'w') as f:
+    part_str = part if part != 0 else ""
+    with open(f'{path}/simulated_mantid{part_str}.txt', 'w') as f:
         f.write('# FitBenchmark Problem\n')
         f.write("software = 'Mantid'\n")
-        f.write("name = 'Simulated poisson (Mantid)'\n")
+        f.write(f"name = 'Simulated poisson (Mantid) {part_str}'\n")
         f.write("description = 'A simulated dataset for testing poisson cost"
                 "functions, based on a simple simulation from Mantid.'\n")
-        f.write("input_file = 'simulated_mantid.txt'\n")
+        f.write(f"input_file = 'simulated_mantid{part_str}.txt'\n")
         f.write("function = 'name=UserFunction,"
                 "Formula=N*((1+A*cos(omega*x+phi)*exp(-(sigma*x)^2))*"
                 "exp(-x/2.197)+bg),"
@@ -48,12 +52,16 @@ def write_problem(N):
 
 
 if __name__ == '__main__':
-    args = {'N': 1000,
-            'A0': 0.25,
-            'omega': 1.0,
-            'phi': 0.1,
-            'sigma': 0.1,
-            'bg': 1.E-4}
-    x, y = VariableStatsData(**args)
-    write_data(x, y)
-    write_problem(N=args['N'])
+    chunks = [1] #,8,16,20,32,40,50,100]
+    num = 1000
+    N0 = 4e5
+    for i, part in enumerate(chunks):
+        args = {'N': 1000/part,
+                'A0': 0.25,
+                'omega': 1.0,
+                'phi': 0.1,
+                'sigma': 0.1,
+                'bg': 1.E-4}
+        x, y = VariableStatsData(**args)
+        write_data(x, y, part=i)
+        write_problem(N=args['N'], part=i)
