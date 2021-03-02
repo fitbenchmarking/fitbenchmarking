@@ -1,5 +1,5 @@
 """
-Implements a Poisson deviance cost function based on Mantids:
+Implements a Poisson deviance cost function based on Mantid's:
 https://docs.mantidproject.org/nightly/fitting/fitcostfunctions/Poisson.html
 """
 from numpy import log, finfo, float64
@@ -13,7 +13,7 @@ class PoissonCostFunc(CostFunc):
     This defines the Poisson deviance cost-function where,
     given the set of :math:`n` data points :math:`(x_i, y_i)`,
     and a model function :math:`f(x,p)`, we find the optimal parameters in the
-    poisson deviance sence by solving:
+    poisson deviance sense by solving:
 
     .. math:: \min_p \sum_{i=1}^n
               \left( y_i \left(\log{y_i} - \log{f(x_i, p)} \right)
@@ -22,7 +22,7 @@ class PoissonCostFunc(CostFunc):
     where :math:`p` is a vector of length :math:`m`, and we start from a given
     initial guess for the optimal parameters.
 
-    This cost function is intended for strictly positive values.
+    This cost function is intended for positive values.
 
     This cost function is not a least squares problem and as such will not work
     with least squares minimizers. Please use `algorithm_type` to select either
@@ -31,7 +31,7 @@ class PoissonCostFunc(CostFunc):
 
     def __init__(self, problem):
         """
-        Initialise the root cost function class
+        Initialise the poisson cost function class
 
         :param problem: The parsed problem
         :type problem:

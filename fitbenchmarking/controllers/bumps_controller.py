@@ -2,9 +2,10 @@
 Implements a controller for the Bumps fitting software.
 """
 
-import numpy as np
 from bumps.fitters import fit as bumpsFit
 from bumps.names import Curve, FitProblem, PoissonCurve
+
+import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func

@@ -171,7 +171,7 @@ class TestPoissonCostFunc(TestCase):
 
     def setUp(self):
         """
-        Setting up root nonlinear least squares cost function tests
+        Setting up poisson cost function tests
         """
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
