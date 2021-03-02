@@ -1,4 +1,4 @@
-""" 
+"""
 Implements a controller for the levmar fitting software.
 http://www.ics.forth.gr/~lourakis/levmar/
 via the python interface
@@ -8,6 +8,7 @@ https://pypi.org/project/levmar/
 import levmar
 
 from fitbenchmarking.controllers.base_controller import Controller
+
 
 class LevmarController(Controller):
     """
@@ -31,7 +32,7 @@ class LevmarController(Controller):
             'general': [None]}
 
     def jacobian_information(self):
-        """ 
+        """
         levmar can use Jacobian information
         """
         has_jacobian = True
@@ -56,8 +57,8 @@ class LevmarController(Controller):
         :return: result from problem.eval_model
         :rtype: numpy array
         """
-        
-        fx = self.problem.function(self.data_x, *p) #(eval_model(params=p)
+
+        fx = self.problem.function(self.data_x, *p)  # (eval_model(params=p)
         return fx
 
     def _jeval(self, p, x):
@@ -83,11 +84,13 @@ class LevmarController(Controller):
         else:
             jac = self._jeval
 
-        (self.final_params, cov, self._info) = levmar.levmar(self._feval,
-                                                        self.initial_params,
-                                                        self.data_y,
-                                                        args=(self.data_x,),
-                                                        jacf=jac)
+        (self.final_params,
+         cov,
+         self._info) = levmar.levmar(self._feval,
+                                     self.initial_params,
+                                     self.data_y,
+                                     args=(self.data_x,),
+                                     jacf=jac)
         # self._info isn't documented (other than in the levmar source),
         # but returns:
         # self._info[0] = ||e||_2 at `p0`
@@ -100,14 +103,13 @@ class LevmarController(Controller):
         # self._info[4] = number of `func` evaluations
         # self._info[5] = number of `jacf` evaluations
         # self._info[6] = number of linear system solved
-        
 
     def cleanup(self):
-        """ 
+        """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        
+
         if self._info[3] == "Stop by small Dp":
             self.flag = 0
         elif self._info[3] == "Stopped by small gradient J^T e":
@@ -118,4 +120,3 @@ class LevmarController(Controller):
             self.flag = 1
         else:
             self.flag = 2
-
