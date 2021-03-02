@@ -11,6 +11,7 @@ from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.bumps_controller import BumpsController
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.controllers.dfo_controller import DFOController
+from fitbenchmarking.controllers.levmar_controller import LevmarController
 from fitbenchmarking.controllers.minuit_controller import MinuitController
 from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.controllers.scipy_ls_controller import ScipyLSController
@@ -304,6 +305,30 @@ class DefaultControllerTests(TestCase):
             controller._status = 5
             self.shared_tests.check_diverged(controller)
 
+    def test_levmar(self):
+        """
+        LevmarController: Tests for output shape
+        """
+        controller = LevmarController(self.cost_func)
+        controller.minimizer = 'levmar'
+        controller.jacobian = self.jac
+        self.shared_tests.controller_run_test(controller)
+        self.shared_tests.check_jac_info(controller,
+                                         True,
+                                         ["levmar-no-jac"])
+
+        print(controller._info)
+        controller._info = (0,1,2,"Stop by small Dp",4,5,6)
+        self.shared_tests.check_converged(controller)
+        controller._info = (0,1,2,"Stopped by small gradient J^T e",4,5,6)
+        self.shared_tests.check_converged(controller)
+        controller._info = (0,1,2,"Stopped by small ||e||_2",4,5,6)
+        self.shared_tests.check_converged(controller)
+        controller._info = (0,1,2,"maxit",4,5,6)
+        self.shared_tests.check_max_iterations(controller)
+        controller._info = (0,1,2,"diverged",4,5,6)
+        self.shared_tests.check_diverged(controller)
+                    
     def test_minuit(self):
         """
         MinuitController: Tests for output shape
