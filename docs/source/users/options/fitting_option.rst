@@ -16,6 +16,7 @@ a newline-separated list. Available options are:
 * ``bumps`` (default software)
 * ``dfo`` (default software)
 * ``gsl`` (external software -- see :ref:`external-instructions`)
+* ``levmar`` (default software)
 * ``mantid`` (external software -- see :ref:`external-instructions`)
 * ``minuit`` (default software)
 * ``ralfit`` (external software -- see :ref:`external-instructions`)
@@ -23,13 +24,14 @@ a newline-separated list. Available options are:
 * ``scipy_ls`` (default software)
 
 
-Default are ``bumps``, ``dfo``, ``minuit``, ``scipy``, and ``scipy_ls``
+Default are ``bumps``, ``dfo``, ``levmar``, ``minuit``, ``scipy``, and ``scipy_ls``
 
 .. code-block:: rst
 
     [FITTING]
     software: bumps
               dfo
+	      levmar
               minuit
               scipy
               scipy_ls
