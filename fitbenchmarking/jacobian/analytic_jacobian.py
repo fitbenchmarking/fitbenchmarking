@@ -37,10 +37,10 @@ class Analytic(Jacobian):
             # scales each column of the Jacobian by the weights
             jac = jac / e[:, None]
         elif self.problem.options.cost_func_type == "hellinger_nlls":
-            # calculates the Jacobian of the root NLLS cost function
+            # calculates the Jacobian of the hellinger(root) NLLS cost function
             jac = jac * self.problem.eval_model(params, x=x)[:, None] / 2
         elif self.problem.options.cost_func_type == "poisson":
-            jac = jac * (1 - y / self.problem.eval_model(params, x=x))
+            jac = jac * (1 - y / self.problem.eval_model(params, x=x))[:, None]
         return jac
 
     def eval_cost(self, params, **kwargs):
