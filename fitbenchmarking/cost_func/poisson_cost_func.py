@@ -2,7 +2,7 @@
 Implements a Poisson deviance cost function based on Mantids:
 https://docs.mantidproject.org/nightly/fitting/fitcostfunctions/Poisson.html
 """
-from numpy import log, finfo
+from numpy import log, finfo, float64
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
@@ -82,6 +82,6 @@ def _safe_a_log_b(a, b):
     """
     mask = a != 0
 
-    result = a.copy()
+    result = a.copy().astype(float64)
     result[mask] *= log(b[mask])
     return result
