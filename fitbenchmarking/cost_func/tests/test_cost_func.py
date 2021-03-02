@@ -209,15 +209,16 @@ class TestPoissonCostFunc(TestCase):
         """
         Test the safe_a_log_b function.
         """
-        a = np.array([1, 2, 3, 0, 5])
-        b = np.array([1, 2, 3, 4, 5])
+        a = np.array([1.0, 2.0, 3.0, 0.0, 5.0])
+        b = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
         res = _safe_a_log_b(a, b)
-        self.assertEqual(res, np.array([0,
-                                        2*np.log(2),
-                                        3*np.log(3),
-                                        0,
-                                        5*np.log(5)])
-                         )
+        self.assertTrue(np.isclose(res,
+                                   np.array([0.0,
+                                             2*np.log(2),
+                                             3*np.log(3),
+                                             0.0,
+                                             5*np.log(5)])
+                                   ).all())
 
 
 class FactoryTests(TestCase):
