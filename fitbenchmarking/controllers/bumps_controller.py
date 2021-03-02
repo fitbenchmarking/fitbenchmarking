@@ -2,12 +2,12 @@
 Implements a controller for the Bumps fitting software.
 """
 
+import numpy as np
 from bumps.fitters import fit as bumpsFit
 from bumps.names import Curve, FitProblem, PoissonCurve
 
-import numpy as np
-
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.utils.exceptions import CostFuncError
 
 
@@ -90,7 +90,7 @@ class BumpsController(Controller):
                                         **param_dict)
         else:
             raise CostFuncError('Bumps controller is not compatible with the '
-                                'chosen cost function'.)
+                                'chosen cost function.')
 
         # Set a range for each parameter
         val_ranges = self.problem.value_ranges
