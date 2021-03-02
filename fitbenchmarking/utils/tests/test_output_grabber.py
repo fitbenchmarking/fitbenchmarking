@@ -1,9 +1,12 @@
-from __future__ import (absolute_import, division, print_function)
-import unittest
-import platform
+from __future__ import absolute_import, division, print_function
 
-from fitbenchmarking.utils.output_grabber import OutputGrabber
+import platform
+import sys
+import unittest
+
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.output_grabber import OutputGrabber
+
 
 class OutputGrabberTests(unittest.TestCase):
 
@@ -11,25 +14,37 @@ class OutputGrabberTests(unittest.TestCase):
         self.options = Options()
         self.plt = platform.system()
 
-    def test_correct_output(self):
+    def test_correct_stdout(self):
+        """
+        Test that the OutputGrabber grabs the stdout stream.
+        """
         output_string = 'This is the correct output string\nSecond line'
+        error_string = 'An error has occurred:\nSome details'
+
         output = OutputGrabber(self.options)
         with output:
-            print(output_string)
+            print(output_string, end='')
+            print(error_string, end='', file=sys.stderr)
 
-        # there is currently an issue with OutputGrapper on Windows
-        # see issues for details
+        # The output grabber is not enabled for windows
         if self.plt != "Windows":
-            # print adds an extra \n
-            assert output.capturedtext == output_string + "\n"
+            assert output.stdout_grabber.capturedtext == output_string
 
-    def test_incorrect_output(self):
+    def test_correct_stderr(self):
+        """
+        Test that the OutputGrabber grabs the stderr stream.
+        """
         output_string = 'This is the correct output string\nSecond line'
-        incorrect_output_sting = 'This is the incorrect string\n'
+        error_string = 'An error has occurred:\nSome details'
+
         output = OutputGrabber(self.options)
         with output:
-            print(output_string)
-        assert output.capturedtext != incorrect_output_sting
+            print(output_string, end='')
+            print(error_string, end='', file=sys.stderr)
+
+        # The output grabber is not enabled for windows
+        if self.plt != "Windows":
+            assert output.stderr_grabber.capturedtext == error_string
 
 
 if __name__ == "__main__":
