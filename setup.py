@@ -5,7 +5,6 @@ with open('README.md', encoding="utf-8") as f:
     long_description = f.read()
     
 setup(name='FitBenchmarking',
-      version='0.1.dev2',
       description='FitBenchmarking: A tool for comparing fitting software',
       author='FitBenchmarking Team',
       author_email="support@fitbenchmarking.com",

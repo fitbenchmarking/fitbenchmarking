@@ -57,7 +57,7 @@ class Options(object):
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
                    'CRITICAL'],
          'append': [True, False],
-         'external_output': [True, False]}
+         'external_output': ['debug','display','log_only']}
 
     VALID = {'MINIMIZERS': VALID_MINIMIZERS,
              'FITTING': VALID_FITTING,
@@ -108,7 +108,7 @@ class Options(object):
         {'file_name': 'fitbenchmarking.log',
          'append': False,
          'level': 'INFO',
-         'external_output': True}
+         'external_output': 'log_only'}
     DEFAULTS = {'MINIMIZERS': DEFAULT_MINIMZERS,
                 'FITTING': DEFAULT_FITTING,
                 'JACOBIAN': DEFAULT_JACOBIAN,
@@ -194,7 +194,7 @@ class Options(object):
         self.log_file = self.read_value(logging.getstr, 'file_name')
         self.log_level = self.read_value(logging.getstr, 'level')
 
-        self.external_output = self.read_value(logging.getboolean,
+        self.external_output = self.read_value(logging.getstr,
                                                'external_output')
 
         if self.error_message != []:
