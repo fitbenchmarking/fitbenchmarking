@@ -30,6 +30,7 @@ class LevmarController(Controller):
             'ls': ['levmar', 'levmar-no-jac'],
             'deriv_free': [None],
             'general': [None]}
+        self._info = None
 
     def jacobian_information(self):
         """
@@ -85,7 +86,7 @@ class LevmarController(Controller):
             jac = self._jeval
 
         (self.final_params,
-         cov,
+         _,
          self._info) = levmar.levmar(self._feval,
                                      self.initial_params,
                                      self.data_y,
