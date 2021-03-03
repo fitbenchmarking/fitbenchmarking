@@ -1,6 +1,8 @@
 # Use ubuntu as a parent image
 FROM ubuntu:20.04
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 # Install the packages we need to build fitbenchmarking
 RUN apt-get update && apt-get install -y \
     python3 \
