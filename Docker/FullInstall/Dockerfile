@@ -19,7 +19,6 @@ RUN apt-get install -y gfortran \
     lcov \
     libblas-dev \
     liblapack-dev \
-    cmake \
     libgdal-dev
 
 RUN git clone https://github.com/ralna/RALFit
