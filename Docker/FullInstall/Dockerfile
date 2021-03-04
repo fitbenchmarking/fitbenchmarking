@@ -113,11 +113,12 @@ ENV VIRTUAL_ENV=/opt/venv
 ENV PATH=$OLD_PATH
 RUN unset OLD_PATH
 ENV PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib:/opt/Mantid/bin
-RUN python -m pip install IPython six
+RUN python -m pip install IPython six python-dateutil pyyaml h5py
+ENV HDF5_DISABLE_VERSION_CHECK=2
 RUN /opt/Mantid/bin/mantidpython -m  mantid.simpleapi || echo "expected segfault on first run"
 
 WORKDIR /
-RUN rm -rf mantid-6.0.0-Source
+#RUN rm -rf mantid-6.0.0-Source
 
 #################
 # install pygsl #
