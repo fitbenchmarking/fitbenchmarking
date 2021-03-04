@@ -118,7 +118,6 @@ ENV HDF5_DISABLE_VERSION_CHECK=2
 RUN /opt/Mantid/bin/mantidpython -m  mantid.simpleapi || echo "expected segfault on first run"
 
 WORKDIR /
-#RUN rm -rf mantid-6.0.0-Source
 
 #################
 # install pygsl #
