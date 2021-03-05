@@ -5,3 +5,4 @@ urllib3==1.23
 coverage<5.0
 pylint
 flake8
+pandas>=1.2
