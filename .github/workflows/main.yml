@@ -98,7 +98,7 @@ jobs:
     - name: 'Choose Python Version'
       uses: actions/setup-python@v2
       with:
-        python-version: '3.6'
+        python-version: '3.8'
     - name: 'Installing'
       run: |
         python -m pip install --upgrade pip==20.0.2
@@ -120,7 +120,7 @@ jobs:
     - name: 'Choose Python Version'
       uses: actions/setup-python@v2
       with:
-        python-version: '3.6'
+        python-version: '3.8'
     - name: Installing
       run: |
         python -m pip install --upgrade pip
