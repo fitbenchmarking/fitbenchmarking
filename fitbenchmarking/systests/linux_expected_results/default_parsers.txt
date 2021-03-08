@@ -1,5 +1,5 @@
-                                bumps                    dfo                 minuit                     scipy             scipy_ls
-                               amoeba                  dfogn                 minuit               Nelder-Mead      lm-scipy-no-jac
-cubic, Start 1  1.119e-14 (2.899e+07)      1.788e-20 (46.31)  2.352e-07 (6.091e+14)  6.267e-05 (1.623e+17)[1]        3.861e-22 (1)
-cubic, Start 2  1.146e-14 (2.969e+07)  1.312e-14 (3.397e+07)  7.579e-06 (1.963e+16)     7.176e-11 (1.859e+11)        3.861e-22 (1)
-Problem Def 1   6.784e+05 (5.225e+15)          1.299e-10 (1)       4.214e-07 (3245)      3.837e-09 (29.55)[1]  0.03966 (3.055e+08)
+                                bumps                     scipy             scipy_ls
+                               amoeba               Nelder-Mead      lm-scipy-no-jac
+cubic, Start 1  1.119e-14 (2.899e+07)  6.267e-05 (1.623e+17)[1]        3.861e-22 (1)
+cubic, Start 2  1.146e-14 (2.969e+07)     7.176e-11 (1.859e+11)        3.861e-22 (1)
+Problem Def 1   6.784e+05 (1.768e+14)          3.837e-09 (1)[1]  0.03966 (1.034e+07)
