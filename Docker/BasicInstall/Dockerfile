@@ -1,5 +1,7 @@
 # Use ubuntu as a parent image
-FROM ubuntu:18.04
+FROM ubuntu:20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Install the packages we need to build fitbenchmarking
 RUN apt-get update && apt-get install -y \
@@ -8,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     python3-venv \
     git \
-    sudo
+    sudo \
+    cmake
 
 # set up a venv to stop python/python3 sillyness
 ENV VIRTUAL_ENV=/opt/venv
