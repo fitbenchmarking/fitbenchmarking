@@ -5,10 +5,11 @@ using the iminuit python interface
 http://iminuit.readthedocs.org
 """
 from iminuit import Minuit
-import iminuit
+from iminuit import __version__ as iminuit_version
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
 class MinuitController(Controller):
@@ -26,9 +27,10 @@ class MinuitController(Controller):
 
         """
 
-        if int(iminuit.__version__[:1]) < 2:
-            raise Exception("iminuit version " + iminuit.__version__ + 
-                            " is not supported, please upgrade to at least version 2.0.0")
+        if int(iminuit_version[:1]) < 2:
+            raise MissingSoftwareError('iminuit version {} is not supported, '
+                                       'please upgrade to at least version '
+                                       '2.0.0'.format(iminuit_version))
 
         super(MinuitController, self).__init__(cost_func)
         self._popt = None
