@@ -5,10 +5,11 @@ using the iminuit python interface
 http://iminuit.readthedocs.org
 """
 from iminuit import Minuit
-import iminuit
+from iminuit import __version__ as iminuit_version
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
 class MinuitController(Controller):
@@ -23,10 +24,11 @@ class MinuitController(Controller):
         :param problem: Problem to fit
         :type problem: FittingProblem
         """
-        super(MinuitController, self).__init__(problem)
         if int(iminuit.__version__[:1]) < 2:
             raise Exception("iminuit version " + iminuit.__version__ + 
                             " is not supported, please upgrade to at least version 2.0.0")
+
+        super(MinuitController, self).__init__(problem)
         self._popt = None
         self._initial_step = None
         self._minuit_problem = None
