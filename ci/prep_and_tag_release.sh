@@ -39,6 +39,10 @@ sed -i -e "s|\(fitbenchmarking/Build%20and%20Publish\)[^\?]*|\1/${tag}|" \
     -e "s|\(actions/workflows/main.yml\).*)|\1?query=branch%3A${tag})|" \
     -e "s|\(/readthedocs/fitbenchmarking\)[^\?]*|\1/${tag}|" \
     -e "s|\(readthedocs.io/en\).*)|\1/${tag})|" \
+    -e "s|\(readthedocs.io/en\).*\(/users/install_instructions/index.html\)|\1/${tag}\2|" \
+    -e "s|\(readthedocs.io/en\).*\(/users/index.html\)|\1/${tag}\2|" \
+    -e "s|\(readthedocs.io/en\).*\(/contributors/guidelines.html\)|\1/${tag}\2|" \
+    -e "s|\(readthedocs.io/en\).*\(/tests.html\)|\1/${tag}\2|" \
     README.md
 
 git add README.md
