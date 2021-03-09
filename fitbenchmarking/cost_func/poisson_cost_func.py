@@ -13,7 +13,7 @@ class PoissonCostFunc(CostFunc):
     This defines the Poisson deviance cost-function where,
     given the set of :math:`n` data points :math:`(x_i, y_i)`,
     and a model function :math:`f(x,p)`, we find the optimal parameters in the
-    poisson deviance sense by solving:
+    Poisson deviance sense by solving:
 
     .. math:: \min_p \sum_{i=1}^n
               \left( y_i \left(\log{y_i} - \log{f(x_i, p)} \right)
