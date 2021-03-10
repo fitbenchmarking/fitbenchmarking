@@ -25,8 +25,10 @@ class PoissonCostFunc(CostFunc):
     This cost function is intended for positive values.
 
     This cost function is not a least squares problem and as such will not work
-    with least squares minimizers. Please use `algorithm_type` to select either
-    `deriv_free` or `general` solvers.
+    with least squares minimizers. Please use `algorithm_type` to select
+    `general` solvers.
+    See options docs for information on how to do this:
+    https://fitbenchmarking.readthedocs.io/en/latest/users/options/fitting_option.html#algorithm-type-algorithm-type
     """
 
     def __init__(self, problem):

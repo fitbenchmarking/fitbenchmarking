@@ -68,7 +68,10 @@ Options are:
 * ``acc`` indicates that the resulting table should contain the chi squared values for each of the minimizers.
 * ``runtime`` indicates that the resulting table should contain the runtime values for each of the minimizers.
 * ``compare`` indicates that the resulting table should contain both the chi squared value and runtime values for each of the minimizers. The tables produced have the chi squared values on the top line of the cell and the runtime on the bottom line of the cell.
-* ``local_min`` indicates that the resulting table should return true if a local minimum was found, or false otherwise.  The value of :math:`\frac{|| J^T r||}{||r||}` for those parameters is also returned. The output looks like ``{bool} (norm_value)``, and the colouring is red for false and cream for true.
+* ``local_min`` indicates that the resulting table should return true if a local minimum was found, or false otherwise.
+  The value of :math:`\frac{|| J^T r||}{||r||}` for those parameters is also returned.
+  The output looks like ``{bool} (norm_value)``, and the colouring is red for false and cream for true.
+  This option is only meaningful for least-squares cost functions.
 
 Default is ``acc``, ``runtime``, ``compare``, and ``local_min``.
 
