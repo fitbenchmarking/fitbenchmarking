@@ -207,7 +207,7 @@ Minuit (``minuit``)
 -------------------
 
 CERN developed the `Minuit <http://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/>`_ package to find the minimum value of a multi-parameter function, and also to compute the uncertainties.
-We interface via the python interface `iminuit <https://iminuit.readthedocs.io>`_
+We interface via the python interface `iminuit <https://iminuit.readthedocs.io>`_ with support for the 2.x series. 
 
 * `Minuit's MIGRAD <https://root.cern.ch/root/htmldoc/guides/minuit2/Minuit2.pdf>`_ (:code:`minuit`)
 
