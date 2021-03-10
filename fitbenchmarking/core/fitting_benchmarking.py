@@ -18,7 +18,7 @@ from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.exceptions import NoResultsError, \
     UnknownMinimizerError, UnsupportedMinimizerError, MissingSoftwareError, \
-    ControllerAttributeError
+    ControllerAttributeError, NoJacobianError, IncompatibleMinimizerError
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 
@@ -123,18 +123,6 @@ def loop_over_benchmark_problems(problem_group, options):
                     cost_func, options, grabbed_output)
             results.extend(problem_results)
             failed_problems.extend(problem_fails)
-
-    # If the results are an empty list then this means that all minimizers
-    # raise an exception and the tables will produce errors if they run.
-    if results == []:
-        message = "The user chosen options and/or problem setup resulted in " \
-                  "all minimizers and/or parsers raising an exception. " \
-                  "This is likely due to the way `algorithm_type` was set " \
-                  "in the options or the selected problem set requires " \
-                  "additional software to be installed. Please review your " \
-                  "options setup and/or problem set then re-run " \
-                  "FitBenmarking."
-        raise NoResultsError(message)
 
     return results, failed_problems, unselected_minimzers, \
         minimizer_dict, cost_func_description
@@ -287,6 +275,13 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
             minimizer_check = False
             LOGGER.warn(str(excp))
 
+        try: 
+            controller.cost_func.validate_algorithm_type(controller.algorithm_check,minimizer)
+        except IncompatibleMinimizerError as excp:
+            minimizer_failed.append(minimizer)
+            minimizer_check = False
+            LOGGER.warn(str(excp))
+
         if minimizer_check:
             ########################
             # Loops over Jacobians #
@@ -341,6 +336,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
     jacobian_list = options.jac_method
     minimizer_name = minimizer
     results = []
+    chi_sq = []
     new_minimizer_list = []
     minimizer_check = has_jacobian and minimizer not in invalid_jacobians
     try:
@@ -354,68 +350,76 @@ def loop_over_jacobians(controller, options, grabbed_output):
                         + (num_method if jac_method != "analytic" else '')
                 # Creates Jacobian class
                 jacobian_cls = create_jacobian(jac_method)
-                jacobian = jacobian_cls(cost_func)
-                jacobian.method = num_method
-
-                controller.jacobian = jacobian
                 try:
-                    with grabbed_output:
-                        # Calls timeit repeat with repeat = num_runs and
-                        # number = 1
-                        runtime_list = \
-                            timeit.Timer(setup=controller.prepare,
-                                         stmt=controller.fit).repeat(
-                                num_runs, 1)
-                        runtime = sum(runtime_list) / num_runs
-                        controller.cleanup()
-                        controller.check_attributes()
-                    ratio = np.max(runtime_list) / np.min(runtime_list)
-                    tol = 4
-                    if ratio > tol:
-                        warnings.warn(
-                            'The ratio of the max time to the min is {0}'
-                            ' which is  larger than the tolerance of {1},'
-                            ' which may indicate that caching has occurred'
-                            ' in the timing results'.format(ratio, tol))
-                    chi_sq = controller.eval_chisq(
-                        params=controller.final_params,
-                        x=controller.data_x,
-                        y=controller.data_y,
-                        e=controller.data_e)
-
-                    chi_sq_check = any(np.isnan(n) for n in chi_sq) \
-                        if problem.multifit else np.isnan(chi_sq)
-                    if np.isnan(runtime) or chi_sq_check:
-                        raise ControllerAttributeError(
-                            "Either the computed runtime or chi_sq values "
-                            "was a NaN.")
-                # Catching all exceptions as this means runtime cannot be
-                # calculated
-                # pylint: disable=broad-except
-                except Exception as excp:
+                    jacobian = jacobian_cls(cost_func)
+                except NoJacobianError as excp:
                     LOGGER.warn(str(excp))
+                    jacobian = False             
 
-                    runtime = np.inf
-                    controller.flag = 3
-                    controller.final_params = \
-                        None if not problem.multifit \
-                        else [None] * len(controller.data_x)
+                if jacobian:
+                    jacobian.method = num_method    
+                    jacobian = jacobian_cls(cost_func)
+                    jacobian.method = num_method
 
-                    chi_sq = np.inf if not problem.multifit \
-                        else [np.inf] * len(controller.data_x)
+                    controller.jacobian = jacobian
+                    try:
+                        with grabbed_output:
+                            # Calls timeit repeat with repeat = num_runs and
+                            # number = 1
+                            runtime_list = \
+                                timeit.Timer(setup=controller.prepare,
+                                            stmt=controller.fit).repeat(
+                                    num_runs, 1)
+                            runtime = sum(runtime_list) / num_runs
+                            controller.cleanup()
+                            controller.check_attributes()
+                        ratio = np.max(runtime_list) / np.min(runtime_list)
+                        tol = 4
+                        if ratio > tol:
+                            warnings.warn(
+                                'The ratio of the max time to the min is {0}'
+                                ' which is  larger than the tolerance of {1},'
+                                ' which may indicate that caching has occurred'
+                                ' in the timing results'.format(ratio, tol))
+                        chi_sq = controller.eval_chisq(
+                            params=controller.final_params,
+                            x=controller.data_x,
+                            y=controller.data_y,
+                            e=controller.data_e)
 
-                result_args = {'options': options,
-                               'cost_func': cost_func,
-                               'jac': jacobian,
-                               'chi_sq': chi_sq,
-                               'runtime': runtime,
-                               'minimizer': minimizer_name,
-                               'initial_params': controller.initial_params,
-                               'params': controller.final_params,
-                               'error_flag': controller.flag,
-                               'name': problem.name}
-                results.append(result_args)
-                new_minimizer_list.append(minimizer_name)
+                        chi_sq_check = any(np.isnan(n) for n in chi_sq) \
+                            if problem.multifit else np.isnan(chi_sq)
+                        if np.isnan(runtime) or chi_sq_check:
+                            raise ControllerAttributeError(
+                                "Either the computed runtime or chi_sq values "
+                                "was a NaN.")
+                    # Catching all exceptions as this means runtime cannot be
+                    # calculated
+                    # pylint: disable=broad-except
+                    except Exception as excp:
+                        LOGGER.warn(str(excp))
+
+                        runtime = np.inf
+                        controller.flag = 3
+                        controller.final_params = \
+                            None if not problem.multifit \
+                            else [None] * len(controller.data_x)
+
+                        chi_sq = np.inf if not problem.multifit \
+                            else [np.inf] * len(controller.data_x)
+
+                    result_args = {'options': options,
+                                'cost_func': cost_func,
+                                'jac': jacobian,
+                                'chi_sq': chi_sq,
+                                'runtime': runtime,
+                                'minimizer': minimizer_name,
+                                'initial_params': controller.initial_params,
+                                'params': controller.final_params,
+                                'error_flag': controller.flag,
+                                'name': problem.name}
+                    results.append(result_args)
+                    new_minimizer_list.append(minimizer_name)
 
                 # For minimizers that do not accept minimizers we raise an
                 # StopIteration exception to exit the loop through the

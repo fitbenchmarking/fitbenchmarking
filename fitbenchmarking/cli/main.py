@@ -22,7 +22,7 @@ import fitbenchmarking
 from fitbenchmarking.cli.exception_handler import exception_handler
 from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.core.results_output import save_results
-from fitbenchmarking.utils.exceptions import OptionsError
+from fitbenchmarking.utils.exceptions import OptionsError, NoResultsError
 from fitbenchmarking.utils.log import get_logger, setup_logger
 from fitbenchmarking.utils.misc import get_css
 from fitbenchmarking.utils.options import Options
@@ -139,24 +139,49 @@ def run(problem_sets, options_file='', debug=False):
             cost_func_description = \
             benchmark(options=options,
                       data_dir=data_dir)
-        LOGGER.info('Producing output for the %s problem set', label)
-        # Display the runtime and accuracy results in a table
-        group_results_dir = \
-            save_results(group_name=label,
-                         results=results,
-                         options=options,
-                         failed_problems=failed_problems,
-                         unselected_minimzers=unselected_minimzers,
-                         cost_func_description=cost_func_description)
 
-        LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
-        group_results_dir = os.path.relpath(path=group_results_dir,
-                                            start=options.results_dir)
-        result_dir.append(group_results_dir)
-        groups.append(label)
+        produce_output = True
+        # If the results are an empty list then this means that all minimizers
+        # raise an exception and the tables will produce errors if they run
+        # for that problem set.
+        if results == []:
+            message = "\nWARNING: \nThe user chosen options and/or problem setup resulted in " \
+                      "all minimizers and/or parsers raising an exception. " \
+                      "Because of this, results for the {} problem set will " \
+                      "not be displayed. Please see the above logs for more " \
+                      "detail on why this is the case.".format(label)
+            LOGGER.warning(message)
+            produce_output = False
+
+        if produce_output:
+            LOGGER.info('Producing output for the %s problem set', label)
+            # Display the runtime and accuracy results in a table
+            group_results_dir = \
+                save_results(group_name=label,
+                             results=results,
+                             options=options,
+                             failed_problems=failed_problems,
+                             unselected_minimzers=unselected_minimzers,
+                             cost_func_description=cost_func_description)
+
+            LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
+            group_results_dir = os.path.relpath(path=group_results_dir,
+                                                start=options.results_dir)
+            result_dir.append(group_results_dir)
+            groups.append(label)
 
         # resets options to original values
         options.reset()
+    
+    # Check result_dir is non empty before producing output
+    if result_dir == []:
+        message = "The user chosen options and/or problem setup resulted in " \
+                  "all minimizers and/or parsers raising an exception. " \
+                  "For more detail on what caused this, please see the " \
+                  "above logs before reviewing your options setup " \
+                  "and/or problem set then re-run FitBenchmarking" 
+        raise NoResultsError(message)
+
     if os.path.basename(options.results_dir) == \
             options.DEFAULT_PLOTTING['results_dir']:
         LOGGER.info("\nWARNING: \nThe FitBenchmarking results will be "
