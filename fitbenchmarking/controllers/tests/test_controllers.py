@@ -305,30 +305,6 @@ class DefaultControllerTests(TestCase):
             controller._status = 5
             self.shared_tests.check_diverged(controller)
 
-    def test_levmar(self):
-        """
-        LevmarController: Tests for output shape
-        """
-        controller = LevmarController(self.cost_func)
-        controller.minimizer = 'levmar'
-        controller.jacobian = self.jac
-        self.shared_tests.controller_run_test(controller)
-        self.shared_tests.check_jac_info(controller,
-                                         True,
-                                         ["levmar-no-jac"])
-
-        print(controller._info)
-        controller._info = (0,1,2,"Stop by small Dp",4,5,6)
-        self.shared_tests.check_converged(controller)
-        controller._info = (0,1,2,"Stopped by small gradient J^T e",4,5,6)
-        self.shared_tests.check_converged(controller)
-        controller._info = (0,1,2,"Stopped by small ||e||_2",4,5,6)
-        self.shared_tests.check_converged(controller)
-        controller._info = (0,1,2,"maxit",4,5,6)
-        self.shared_tests.check_max_iterations(controller)
-        controller._info = (0,1,2,"diverged",4,5,6)
-        self.shared_tests.check_diverged(controller)
-                    
     def test_minuit(self):
         """
         MinuitController: Tests for output shape
@@ -396,6 +372,31 @@ class ExternalControllerTests(TestCase):
         self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
+
+    def test_levmar(self):
+        """
+        LevmarController: Tests for output shape
+        """
+        controller = LevmarController(self.cost_func)
+        controller.minimizer = 'levmar'
+        controller.jacobian = self.jac
+        self.shared_tests.controller_run_test(controller)
+        self.shared_tests.check_jac_info(controller,
+                                         True,
+                                         ["levmar-no-jac"])
+
+        print(controller._info)
+        controller._info = (0, 1, 2, "Stop by small Dp", 4, 5, 6)
+        self.shared_tests.check_converged(controller)
+        controller._info = (0, 1, 2, "Stopped by small gradient J^T e",
+                            4, 5, 6)
+        self.shared_tests.check_converged(controller)
+        controller._info = (0, 1, 2, "Stopped by small ||e||_2", 4, 5, 6)
+        self.shared_tests.check_converged(controller)
+        controller._info = (0, 1, 2, "maxit", 4, 5, 6)
+        self.shared_tests.check_max_iterations(controller)
+        controller._info = (0, 1, 2, "diverged", 4, 5, 6)
+        self.shared_tests.check_diverged(controller)
 
     def test_mantid(self):
         """
