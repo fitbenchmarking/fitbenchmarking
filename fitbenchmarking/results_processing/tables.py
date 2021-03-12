@@ -11,7 +11,8 @@ from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
 from fitbenchmarking.results_processing.base_table import Table
-from fitbenchmarking.utils.exceptions import UnknownTableError
+from fitbenchmarking.utils.exceptions import UnknownTableError, \
+    IncompatibleTableError
 from fitbenchmarking.utils.misc import get_css, get_js
 from fitbenchmarking.utils.log import get_logger
 
@@ -68,67 +69,67 @@ def create_results_tables(options, results, best_results, group_name,
     for suffix in SORTED_TABLE_NAMES:
         if suffix in options.table_type:
 
-            if suffix == 'local_min' and options.cost_func_type == 'poisson':
-                LOGGER.info('WARNING: \nThe local min table is not '
-                            'compatiable with the Poisson cost function, '
-                            'as a result this table will not be produced.')  
-            else:    
-                table_names[suffix] = \
-                    '{0}_{1}_{2}_table.'.format(group_name,
-                                                suffix,
-                                                options.cost_func_type)
+            table_names[suffix] = \
+                '{0}_{1}_{2}_table.'.format(group_name,
+                                            suffix,
+                                            options.cost_func_type)
 
+            try:
                 table, html_table, txt_table = generate_table(results,
-                                                            best_results,
-                                                            options,
-                                                            group_dir,
-                                                            pp_locations,
-                                                            table_names[suffix],
-                                                            suffix)
+                                                              best_results,
+                                                              options,
+                                                              group_dir,
+                                                              pp_locations,
+                                                              table_names[suffix],
+                                                              suffix)
+            except IncompatibleTableError as excp:
+                LOGGER.warning(str(excp))
+                del table_names[suffix]
+                continue
 
-                table_title = table.table_title
-                file_path = table.file_path
+            table_title = table.table_title
+            file_path = table.file_path
 
-                description = table.get_description(description)
+            description = table.get_description(description)
 
-                table_format = None if suffix == 'local_min' \
-                    else description[options.comparison_mode]
+            table_format = None if suffix == 'local_min' \
+                else description[options.comparison_mode]
 
-                has_pp = table.has_pp
+            has_pp = table.has_pp
 
-                pp_filenames = table.pp_filenames
+            pp_filenames = table.pp_filenames
 
-                root = os.path.dirname(getfile(fitbenchmarking))
-                template_dir = os.path.join(root, 'templates')
-                css = get_css(options, group_dir)
-                js = get_js(options, group_dir)
-                env = Environment(loader=FileSystemLoader(template_dir))
-                template = env.get_template("table_template.html")
-                html_output_file = file_path + 'html'
-                txt_output_file = file_path + 'txt'
+            root = os.path.dirname(getfile(fitbenchmarking))
+            template_dir = os.path.join(root, 'templates')
+            css = get_css(options, group_dir)
+            js = get_js(options, group_dir)
+            env = Environment(loader=FileSystemLoader(template_dir))
+            template = env.get_template("table_template.html")
+            html_output_file = file_path + 'html'
+            txt_output_file = file_path + 'txt'
 
-                with open(txt_output_file, "w") as f:
-                    f.write(txt_table)
-                failed_minimzers = sum(list(unselected_minimzers.values()), [])
-                report_failed_min = failed_minimzers != []
+            with open(txt_output_file, "w") as f:
+                f.write(txt_table)
+            failed_minimzers = sum(list(unselected_minimzers.values()), [])
+            report_failed_min = failed_minimzers != []
 
-                with open(html_output_file, "w", encoding="utf-8") as f:
-                    f.write(
-                        template.render(css_style_sheet=css['main'],
-                                        custom_style=css['custom'],
-                                        table_style=css['table'],
-                                        mathjax=js['mathjax'],
-                                        table_description=description[suffix],
-                                        table_format=table_format,
-                                        result_name=table_title,
-                                        has_pp=has_pp,
-                                        pp_filenames=pp_filenames,
-                                        table=html_table,
-                                        error_message=ERROR_OPTIONS,
-                                        failed_problems=failed_problems,
-                                        unselected_minimzers=unselected_minimzers,
-                                        algorithm_type=options.algorithm_type,
-                                        report_failed_min=report_failed_min))
+            with open(html_output_file, "w", encoding="utf-8") as f:
+                f.write(
+                    template.render(css_style_sheet=css['main'],
+                                    custom_style=css['custom'],
+                                    table_style=css['table'],
+                                    mathjax=js['mathjax'],
+                                    table_description=description[suffix],
+                                    table_format=table_format,
+                                    result_name=table_title,
+                                    has_pp=has_pp,
+                                    pp_filenames=pp_filenames,
+                                    table=html_table,
+                                    error_message=ERROR_OPTIONS,
+                                    failed_problems=failed_problems,
+                                    unselected_minimzers=unselected_minimzers,
+                                    algorithm_type=options.algorithm_type,
+                                    report_failed_min=report_failed_min))
 
     return table_names, description
 

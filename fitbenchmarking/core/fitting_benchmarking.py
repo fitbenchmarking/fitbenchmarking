@@ -16,9 +16,9 @@ import numpy as np
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.utils.exceptions import NoResultsError, \
-    UnknownMinimizerError, UnsupportedMinimizerError, MissingSoftwareError, \
-    ControllerAttributeError, NoJacobianError, IncompatibleMinimizerError
+from fitbenchmarking.utils.exceptions import UnknownMinimizerError, \
+    UnsupportedMinimizerError, ControllerAttributeError, NoJacobianError, \
+    IncompatibleMinimizerError
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 
@@ -273,14 +273,15 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
         except UnknownMinimizerError as excp:
             minimizer_failed.append(minimizer)
             minimizer_check = False
-            LOGGER.warn(str(excp))
+            LOGGER.warning(str(excp))
 
-        try: 
-            controller.cost_func.validate_algorithm_type(controller.algorithm_check,minimizer)
+        try:
+            controller.cost_func.validate_algorithm_type(
+                controller.algorithm_check, minimizer)
         except IncompatibleMinimizerError as excp:
             minimizer_failed.append(minimizer)
             minimizer_check = False
-            LOGGER.warn(str(excp))
+            LOGGER.warning(str(excp))
 
         if minimizer_check:
             ########################
@@ -292,7 +293,8 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                                     grabbed_output)
             for result in results:
                 if problem.multifit:
-                    # Multi fit (will raise TypeError if these are not iterable)
+                    # Multi fit
+                    # (will raise TypeError if these are not iterable)
                     for i in range(len(chi_sq)):
                         result.update({'dataset_id': i,
                                        'name': '{}, Dataset {}'.format(
@@ -353,12 +355,10 @@ def loop_over_jacobians(controller, options, grabbed_output):
                 try:
                     jacobian = jacobian_cls(cost_func)
                 except NoJacobianError as excp:
-                    LOGGER.warn(str(excp))
-                    jacobian = False             
+                    LOGGER.warning(str(excp))
+                    jacobian = False
 
                 if jacobian:
-                    jacobian.method = num_method    
-                    jacobian = jacobian_cls(cost_func)
                     jacobian.method = num_method
 
                     controller.jacobian = jacobian
@@ -368,7 +368,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                             # number = 1
                             runtime_list = \
                                 timeit.Timer(setup=controller.prepare,
-                                            stmt=controller.fit).repeat(
+                                             stmt=controller.fit).repeat(
                                     num_runs, 1)
                             runtime = sum(runtime_list) / num_runs
                             controller.cleanup()
@@ -409,15 +409,15 @@ def loop_over_jacobians(controller, options, grabbed_output):
                             else [np.inf] * len(controller.data_x)
 
                     result_args = {'options': options,
-                                'cost_func': cost_func,
-                                'jac': jacobian,
-                                'chi_sq': chi_sq,
-                                'runtime': runtime,
-                                'minimizer': minimizer_name,
-                                'initial_params': controller.initial_params,
-                                'params': controller.final_params,
-                                'error_flag': controller.flag,
-                                'name': problem.name}
+                                   'cost_func': cost_func,
+                                   'jac': jacobian,
+                                   'chi_sq': chi_sq,
+                                   'runtime': runtime,
+                                   'minimizer': minimizer_name,
+                                   'initial_params': controller.initial_params,
+                                   'params': controller.final_params,
+                                   'error_flag': controller.flag,
+                                   'name': problem.name}
                     results.append(result_args)
                     new_minimizer_list.append(minimizer_name)
 

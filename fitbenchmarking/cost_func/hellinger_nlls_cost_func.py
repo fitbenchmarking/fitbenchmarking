@@ -41,8 +41,6 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         #: Container cached residual evaluation
         self.cache_rx = {'params': None, 'value': None}
 
-        self.invalid_algorithm_types = [None]
-
     def eval_r(self, params, **kwargs):
         """
         Calculate residuals

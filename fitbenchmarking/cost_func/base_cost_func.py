@@ -3,7 +3,8 @@ Implements the base class for the cost function class.
 """
 
 from abc import ABCMeta, abstractmethod
-from fitbenchmarking.utils.exceptions import CostFuncError, IncompatibleMinimizerError
+from fitbenchmarking.utils.exceptions import CostFuncError, \
+    IncompatibleMinimizerError
 
 
 class CostFunc:
@@ -30,9 +31,9 @@ class CostFunc:
         #: Container cached residual squared evaluation (cost function)
         self.cache_cost_x = {'params': None, 'value': None}
 
-        # Used to check whether the algorithm type of the 
+        # Used to check whether the algorithm type of the
         # selected minimizer is incompatible with the cost function
-        self.invalid_algorithm_types = [None]
+        self.invalid_algorithm_types = ['ls']
 
     @abstractmethod
     def eval_cost(self, params, **kwargs):
@@ -60,11 +61,9 @@ class CostFunc:
         :type minimizer: str
         """
 
-        for alg_type in list(algorithm_check.keys()):
-            if minimizer in algorithm_check[alg_type]:
-                incompatible = alg_type in self.invalid_algorithm_types
-                if incompatible:
-                    message = 'The algorithm type of the selected ' \
-                            'minimizer, {}, is not compatible with ' \
-                            'the selected cost function'.format(minimizer)
-                    raise IncompatibleMinimizerError(message)
+        for k, v in algorithm_check.items():
+            if minimizer in v and k in self.invalid_algorithm_types:
+                message = 'The algorithm type of the selected ' \
+                          'minimizer, {}, is not compatible with ' \
+                          'the selected cost function'.format(minimizer)
+                raise IncompatibleMinimizerError(message)
