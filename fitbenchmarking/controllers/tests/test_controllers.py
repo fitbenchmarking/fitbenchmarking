@@ -11,13 +11,13 @@ from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.bumps_controller import BumpsController
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.controllers.dfo_controller import DFOController
-from fitbenchmarking.controllers.levmar_controller import LevmarController
 from fitbenchmarking.controllers.minuit_controller import MinuitController
 from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.controllers.scipy_ls_controller import ScipyLSController
 
 if TEST_TYPE != "default":
     from fitbenchmarking.controllers.gsl_controller import GSLController
+    from fitbenchmarking.controllers.levmar_controller import LevmarController
     from fitbenchmarking.controllers.mantid_controller import MantidController
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
 

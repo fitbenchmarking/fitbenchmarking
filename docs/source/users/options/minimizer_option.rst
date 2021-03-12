@@ -183,9 +183,9 @@ The Mantid minimizers are set as follows:
 Levmar (``levmar``)
 -------------------
 
-The `levmar <http://users.ics.forth.gr/~lourakis/levmar/>` package
+The `levmar <http://users.ics.forth.gr/~lourakis/levmar/>`_ package
 which implements the Levenberg-Marquardt method for nonlinear least-squares.
-We interface via the python interface `available on PyPI <https://pypi.org/project/levmar/>`.
+We interface via the python interface `available on PyPI <https://pypi.org/project/levmar/>`_.
 
 * Levenberg-Marquardt with supplied Jacobian (:code:`levmar`)  - the Levenberg-Marquardt method
 * Levenberg-Marquardt with no Jacobian passed (:code:`levmar-no-jac`)  - as above, but using levmar's approximate Jacobian
@@ -201,7 +201,8 @@ The `levmar` minimizers are set as follows:
 
 .. warning::
    The additional dependency levmar must be installed for this to be available;
-   See :ref:`extra_dependencies`.
+   See :ref:`extra_dependencies`. This package also requires the BLAS and LAPACK
+   libraries to be present on the system.
 	   
 Minuit (``minuit``)
 -------------------
