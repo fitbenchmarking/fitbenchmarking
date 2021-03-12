@@ -6,6 +6,13 @@ from unittest import TestCase
 import pytest
 from pytest import test_type as TEST_TYPE
 
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
+from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import exceptions
+from fitbenchmarking.utils.options import Options
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+
 from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.bumps_controller import BumpsController
@@ -22,18 +29,11 @@ if TEST_TYPE != "default":
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
 
 
-from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
-    WeightedNLLSCostFunc
-from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.utils import exceptions
-from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
-
-
 def make_cost_func(file_name='cubic.dat'):
     """
     Helper function that returns a simple fitting problem
     """
+
     options = Options()
 
     bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
