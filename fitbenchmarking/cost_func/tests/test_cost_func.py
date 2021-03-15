@@ -62,6 +62,31 @@ class TestNLLSCostFunc(TestCase):
                                                    y=self.y_val)
         self.assertEqual(eval_result, 25)
 
+    def test_validate_algorithm_type_error(self):
+        """
+        Test that validate_algorithm_type raises an error 
+        for incompatible options
+        """
+        self.cost_function.invalid_algorithm_types = ['ls']
+        algorithm_check = {'ls':['ls-min']}
+        minimizer = 'ls-min'
+
+        self.assertRaises(exceptions.IncompatibleMinimizerError,
+                          self.cost_function.validate_algorithm_type,
+                          algorithm_check = algorithm_check,
+                          minimizer = minimizer)
+
+    def test_validate_algorithm_type_correct(self):
+        """
+        Test that validate_algorithm_type does not raise 
+        an error for compaitble options
+        """
+        self.cost_function.invalid_algorithm_types = []
+        algorithm_check = {'ls':['ls-min']}
+        minimizer = 'ls-min'
+
+        self.cost_function.validate_algorithm_type(algorithm_check, minimizer)
+
 
 class TestWeightedNLLSCostFunc(TestCase):
     """
