@@ -5,6 +5,7 @@ within FitBenchmarking.
 from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 
+from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
 
@@ -29,7 +30,8 @@ def create_cost_func(cost_func_type):
                             '{}.'.format(cost_func_type))
     classes = getmembers(module, lambda m: (isclass(m)
                                             and not isabstract(m)
-                                            and issubclass(m, BaseNLLSCostFunc)
+                                            and issubclass(m, CostFunc)
+                                            and m is not CostFunc
                                             and m is not BaseNLLSCostFunc))
 
     return classes[0][1]

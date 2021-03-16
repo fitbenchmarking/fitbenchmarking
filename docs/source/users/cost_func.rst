@@ -4,7 +4,7 @@
 Cost functions
 ##############
 
-Fitbenchmarking supports multiple different nonlinear least squares cost functions. These can be set via the ``cost_func_type`` option in :ref:`fitting_option`.
+Fitbenchmarking supports multiple different cost functions. These can be set via the ``cost_func_type`` option in :ref:`fitting_option`.
 
 The cost functions that are currently supported are:
 
@@ -22,4 +22,10 @@ The cost functions that are currently supported are:
 
     .. currentmodule:: fitbenchmarking.cost_func.hellinger_nlls_cost_func
     .. autoclass:: fitbenchmarking.cost_func.hellinger_nlls_cost_func.HellingerNLLSCostFunc
+               :noindex:
+
+- Poisson deviance cost function
+
+    .. currentmodule:: fitbenchmarking.cost_func.poisson_cost_func
+    .. autoclass:: fitbenchmarking.cost_func.poisson_cost_func.PoissonCostFunc
                :noindex:

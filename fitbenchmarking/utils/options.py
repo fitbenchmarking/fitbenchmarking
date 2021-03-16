@@ -42,7 +42,8 @@ class Options(object):
          'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'minuit',
                       'ralfit', 'scipy', 'scipy_ls'],
          'jac_method': ['scipy', 'analytic', 'numdifftools'],
-         'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls']}
+         'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
+                            'poisson']}
     VALID_JACOBIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
          'analytic': ['cutest'],

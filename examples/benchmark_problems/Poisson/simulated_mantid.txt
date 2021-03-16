@@ -1,0 +1,6 @@
+# FitBenchmark Problem
+software = 'Mantid'
+name = 'Simulated poisson (Mantid) '
+description = 'A simulated dataset for testing poisson costfunctions, based on a simple simulation from Mantid.'
+input_file = 'simulated_mantid.txt'
+function = 'name=UserFunction,Formula=N*((1+A*cos(omega*x+phi)*exp(-(sigma*x)^2))*exp(-x/2.197)+bg),N=7.0,A=0.3,omega=0.9,phi=0.2,sigma=0.12,bg=0.001'
