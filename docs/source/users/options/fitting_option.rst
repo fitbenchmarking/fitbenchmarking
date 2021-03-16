@@ -125,10 +125,12 @@ functions supported are:
 
 * ``weighted_nlls`` - This sets the cost function to be weighted non-linear least squares, :class:`~fitbenchmarking.cost_func.weighted_nlls_cost_func.WeightedNLLSCostFunc`.
 
-* ``hellinger_nlls`` - This sets the cost function to be the Hellinger cost function, :class:`~fitbenchmarking.cost_func.root_nlls_cost_func.HellingerNLLSCostFunc`.
+* ``hellinger_nlls`` - This sets the cost function to be the Hellinger cost function, :class:`~fitbenchmarking.cost_func.hellinger_nlls_cost_func.HellingerNLLSCostFunc`.
+
+* ``poisson`` - This sets the cost function to be the Poisson Deviation cost function, :class:`~fitbenchmarking.cost_func.poisson_cost_func.PoissonCostFunc`.
 
 
-Default is ``nlls``
+Default is ``weighted_nlls``
 
 .. code-block:: rst
 

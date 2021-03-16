@@ -108,7 +108,7 @@ class TestJacobianClass(TestCase):
             jac.method = method
             eval_result = jac.eval(params=self.params)
             self.assertTrue(np.isclose(self.actual, eval_result).all())
-        
+
     def test_analytic_cutest_no_errors(self):
         """
         Test analytic Jacobian
@@ -132,16 +132,30 @@ class TestJacobianClass(TestCase):
         scaled_actual = self.actual / e[:, None]
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
 
-    def test_analytic_cutest_root(self):
+    def test_analytic_cutest_hellinger(self):
         """
         Test analytic Jacobian
         """
-        self.fitting_problem.options.cost_func_type = "root_nlls"
+        self.fitting_problem.options.cost_func_type = "hellinger_nlls"
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.cost_func)
         eval_result = jac.eval(params=self.params)
         scaled_actual = self.actual * \
             self.fitting_problem.eval_model(self.params)[:, None] / 2
+
+        self.assertTrue(np.isclose(scaled_actual, eval_result).all())
+
+    def test_analytic_cutest_poisson(self):
+        """
+        Test analytic jacobian for the poisson cost function.
+        """
+        self.fitting_problem.options.cost_func_type = "poisson"
+        self.fitting_problem.format = "cutest"
+        jac = Analytic(self.cost_func)
+        eval_result = jac.eval(params=self.params)
+        scaled_actual = self.actual * \
+            (1 - self.fitting_problem.data_y /
+                self.fitting_problem.eval_model(self.params))[:, None]
 
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
 

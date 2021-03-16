@@ -3,11 +3,13 @@ Implements a controller for the Bumps fitting software.
 """
 
 from bumps.fitters import fit as bumpsFit
-from bumps.names import Curve, FitProblem
+from bumps.names import Curve, FitProblem, PoissonCurve
 
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
+from fitbenchmarking.utils.exceptions import CostFuncError
 
 
 class BumpsController(Controller):
@@ -71,11 +73,25 @@ class BumpsController(Controller):
 
         # Create a Function Wrapper for the problem function. The type of the
         # Function Wrapper is acceptable by Bumps.
-        func_wrapper = Curve(fn=model,
-                             x=self.data_x,
-                             y=self.data_y,
-                             dy=self.data_e,
-                             **param_dict)
+        if isinstance(self.cost_func, create_cost_func('nlls')):
+            func_wrapper = Curve(fn=model,
+                                 x=self.data_x,
+                                 y=self.data_y,
+                                 **param_dict)
+        elif isinstance(self.cost_func, create_cost_func('weighted_nlls')):
+            func_wrapper = Curve(fn=model,
+                                 x=self.data_x,
+                                 y=self.data_y,
+                                 dy=self.data_e,
+                                 **param_dict)
+        elif isinstance(self.cost_func, create_cost_func('poisson')):
+            func_wrapper = PoissonCurve(fn=model,
+                                        x=self.data_x,
+                                        y=self.data_y,
+                                        **param_dict)
+        else:
+            raise CostFuncError('Bumps controller is not compatible with the '
+                                'chosen cost function.')
 
         # Set a range for each parameter
         val_ranges = self.problem.value_ranges
