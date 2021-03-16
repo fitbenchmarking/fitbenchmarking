@@ -150,20 +150,5 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_cost_func_descriptions)
 
-    @unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
-    def test_check_no_results_produced(self, loop_over_starting_values):
-        """
-        Checks that multiple failed problems are reported correctly
-        """
-        loop_over_starting_values.side_effect = self.mock_func_call
-        problem_group = [os.path.join(self.default_parsers_dir,
-                                      "META.txt")]
-
-        with self.assertRaises(exceptions.NoResultsError):
-            _, _, _ = \
-                loop_over_benchmark_problems(problem_group,
-                                             self.options)
-
-
 if __name__ == "__main__":
     unittest.main()

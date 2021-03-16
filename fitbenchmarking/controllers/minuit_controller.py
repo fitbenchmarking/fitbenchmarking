@@ -5,9 +5,11 @@ using the iminuit python interface
 http://iminuit.readthedocs.org
 """
 from iminuit import Minuit
+from iminuit import __version__ as iminuit_version
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
 class MinuitController(Controller):
@@ -24,6 +26,12 @@ class MinuitController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
 
         """
+
+        if int(iminuit_version[:1]) < 2:
+            raise MissingSoftwareError('iminuit version {} is not supported, '
+                                       'please upgrade to at least version '
+                                       '2.0.0'.format(iminuit_version))
+
         super(MinuitController, self).__init__(cost_func)
         self._popt = None
         self._initial_step = None
@@ -55,24 +63,24 @@ class MinuitController(Controller):
         self._initial_step = 0.1 * np.array(self.initial_params)
         # set small steps to something sensible(?)
         self._initial_step[self._initial_step < 1e-12] = 1e-12
-        self._minuit_problem = Minuit.from_array_func(self.cost_func.eval_cost,
-                                                      self.initial_params,
-                                                      error=self._initial_step,
-                                                      errordef=1)
+        self._minuit_problem = Minuit(self.cost_func.eval_cost,
+                                      self.initial_params)
+        self._minuit_problem.errordef = 1
+        self._minuit_problem.errors = self._initial_step
 
     def fit(self):
         """
         Run problem with Minuit
         """
         self._minuit_problem.migrad()  # run optimizer
-        self._status = 0 if self._minuit_problem.migrad_ok() else 1
+        self._status = 0 if self._minuit_problem.valid else 1
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-        fmin = self._minuit_problem.get_fmin()
+        fmin = self._minuit_problem.fmin
         if self._status == 0:
             self.flag = 0
         elif fmin.has_reached_call_limit:
@@ -80,5 +88,5 @@ class MinuitController(Controller):
         else:
             self.flag = 2
 
-        self._popt = self._minuit_problem.np_values()
+        self._popt = np.array(self._minuit_problem.values)
         self.final_params = self._popt

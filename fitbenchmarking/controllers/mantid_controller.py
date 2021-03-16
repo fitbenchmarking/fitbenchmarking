@@ -3,10 +3,12 @@ Implements a controller for the Mantid fitting software.
 """
 
 from mantid import simpleapi as msapi
-from mantid.fitfunctions import FunctionFactory, FunctionWrapper, IFunction1D
+from mantid.fitfunctions import FunctionFactory, IFunction1D
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
+from fitbenchmarking.utils.exceptions import ControllerAttributeError
 
 
 class MantidController(Controller):
@@ -16,6 +18,12 @@ class MantidController(Controller):
     Mantid requires subscribing a custom function in a predefined format,
     so this controller creates that in setup.
     """
+    #: A map from fitbenchmarking cost functions to mantid ones.
+    COST_FUNCTION_MAP = {
+        'nlls': 'Unweighted least squares',
+        'weighted_nlls': 'Least squares',
+        'poisson': 'Poisson',
+    }
 
     def __init__(self, cost_func):
         """
@@ -27,6 +35,15 @@ class MantidController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super(MantidController, self).__init__(cost_func)
+
+        for fb_cf, mantid_cf in self.COST_FUNCTION_MAP.items():
+            if isinstance(self.cost_func, create_cost_func(fb_cf)):
+                self._cost_function = mantid_cf
+                break
+        else:
+            raise ControllerAttributeError('Mantid Controller does not support'
+                                           ' the requested cost function '
+                                           f'{self.cost_funct.__class__}')
 
         self._param_names = self.problem.param_names
         self.algorithm_check = {
@@ -44,7 +61,6 @@ class MantidController(Controller):
 
         if self.problem.multifit:
             # Multi Fit
-            use_errors = self.data_e[0] is not None
             data_obj = msapi.CreateWorkspace(DataX=self.data_x[0],
                                              DataY=self.data_y[0],
                                              DataE=self.data_e[0],
@@ -58,15 +74,12 @@ class MantidController(Controller):
             self._multi_fit = len(other_inputs) + 1
         else:
             # Normal Fitting
-            use_errors = self.data_e is not None
             data_obj = msapi.CreateWorkspace(DataX=self.data_x,
                                              DataY=self.data_y,
                                              DataE=self.data_e)
             other_inputs = []
             self._multi_fit = 0
 
-        self._cost_function = 'Least squares' if use_errors \
-            else 'Unweighted least squares'
         self._mantid_data = data_obj
         self._mantid_function = None
         self._mantid_results = None
@@ -144,7 +157,7 @@ class MantidController(Controller):
                     fit_param = get_params(ff_self)
 
                     return self.problem.eval_model(x=xdata,
-                                                 params=fit_param)
+                                                   params=fit_param)
 
                 def functionDeriv1D(ff_self, xvals, jacobian):
                     fit_param = get_params(ff_self)

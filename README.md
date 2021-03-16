@@ -9,6 +9,11 @@
 
 FitBenchmarking is an open source tool for comparing different minimizers/fitting frameworks. FitBenchmarking is cross platform and we support Windows, Linux and Mac OS. For questions, feature requests or any other inquiries, please open an issue on GitHub, or send us an e-mail at support@fitbenchmarking.com.
 
+- **Installation Instructions:** https://fitbenchmarking.readthedocs.io/en/latest/users/install_instructions/index.html
+- **User Documentation & Example Usage:** https://fitbenchmarking.readthedocs.io/en/latest/users/index.html
+- **Community Guidelines:** https://fitbenchmarking.readthedocs.io/en/latest/contributors/guidelines.html
+- **Automated Tests:** Run via GitHub Actions, https://github.com/fitbenchmarking/fitbenchmarking/actions, and tests are documented at https://fitbenchmarking.readthedocs.io/en/latest/users/tests.html
+
 The package is the result of a collaboration between STFC’s Scientific Computing Department and ISIS Neutron and Muon Facility and the Diamond Light Source. We also would like to acknowledge support from:
 
 * EU SINE2020 WP-10, which received funding from the European Union’s Horizon2020 research and innovation programme under grant agreement No 654000.
