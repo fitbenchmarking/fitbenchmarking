@@ -37,6 +37,8 @@ class BaseNLLSCostFunc(CostFunc):
         #: Container cached residual evaluation
         self.cache_rx = {'params': None, 'value': None}
 
+        self.invalid_algorithm_types = []
+
     @abstractmethod
     def eval_r(self, params, **kwargs):
         """

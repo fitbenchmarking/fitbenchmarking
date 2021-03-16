@@ -22,7 +22,7 @@ import fitbenchmarking
 from fitbenchmarking.cli.exception_handler import exception_handler
 from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.core.results_output import save_results
-from fitbenchmarking.utils.exceptions import OptionsError
+from fitbenchmarking.utils.exceptions import OptionsError, NoResultsError
 from fitbenchmarking.utils.log import get_logger, setup_logger
 from fitbenchmarking.utils.misc import get_css
 from fitbenchmarking.utils.options import Options
@@ -43,7 +43,8 @@ def get_parser():
     $ fitbenchmarking
     $ fitbenchmarking -p examples/benchmark_problems/NIST/*
     $ fitbenchmarking -o examples/options_template.ini \
--p examples/benchmark_problems/simple_tests examples/benchmark_problems/Muon '''
+    -p examples/benchmark_problems/simple_tests \
+    examples/benchmark_problems/Muon '''
 
     parser = argparse.ArgumentParser(
         prog='FitBenchmarking', add_help=True, epilog=epilog,
@@ -139,24 +140,47 @@ def run(problem_sets, options_file='', debug=False):
             cost_func_description = \
             benchmark(options=options,
                       data_dir=data_dir)
-        LOGGER.info('Producing output for the %s problem set', label)
-        # Display the runtime and accuracy results in a table
-        group_results_dir = \
-            save_results(group_name=label,
-                         results=results,
-                         options=options,
-                         failed_problems=failed_problems,
-                         unselected_minimzers=unselected_minimzers,
-                         cost_func_description=cost_func_description)
 
-        LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
-        group_results_dir = os.path.relpath(path=group_results_dir,
-                                            start=options.results_dir)
-        result_dir.append(group_results_dir)
-        groups.append(label)
+        # If the results are an empty list then this means that all minimizers
+        # raise an exception and the tables will produce errors if they run
+        # for that problem set.
+        if results == []:
+            message = "\nWARNING: \nThe user chosen options and/or problem " \
+                      " setup resulted in all minimizers and/or parsers " \
+                      "raising an exception. Because of this, results for " \
+                      "the {} problem set will not be displayed. " \
+                      "Please see the logs for more detail on why this is " \
+                      "the case.".format(label)
+            LOGGER.warning(message)
+        else:
+            LOGGER.info('Producing output for the %s problem set', label)
+            # Display the runtime and accuracy results in a table
+            group_results_dir = \
+                save_results(group_name=label,
+                             results=results,
+                             options=options,
+                             failed_problems=failed_problems,
+                             unselected_minimzers=unselected_minimzers,
+                             cost_func_description=cost_func_description)
+
+            LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
+            group_results_dir = os.path.relpath(path=group_results_dir,
+                                                start=options.results_dir)
+            result_dir.append(group_results_dir)
+            groups.append(label)
 
         # resets options to original values
         options.reset()
+
+    # Check result_dir is non empty before producing output
+    if result_dir == []:
+        message = "The user chosen options and/or problem setup resulted in " \
+                  "all minimizers and/or parsers raising an exception. " \
+                  "For more detail on what caused this, please see the " \
+                  "above logs before reviewing your options setup " \
+                  "and/or problem set then re-run FitBenchmarking"
+        raise NoResultsError(message)
+
     if os.path.basename(options.results_dir) == \
             options.DEFAULT_PLOTTING['results_dir']:
         LOGGER.info("\nWARNING: \nThe FitBenchmarking results will be "
@@ -177,9 +201,9 @@ def run(problem_sets, options_file='', debug=False):
     copy_tree(os.path.join(root, 'fonts'),
               os.path.join(options.results_dir, "fonts"))
     # Copying js directory into results directory
-    copy_tree(os.path.join(template_dir,'js'),
+    copy_tree(os.path.join(template_dir, 'js'),
               os.path.join(options.results_dir, "js"))
-    
+
     with open(output_file, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=css['main'],
