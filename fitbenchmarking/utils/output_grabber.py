@@ -29,7 +29,7 @@ class OutputGrabber:
         return self
 
     def __exit__(self, type, value, traceback):
-        if self.system and self.external_output:
+        if self.system and self.external_output != 'debug':
             self.stdout_grabber.stop()
             self.stderr_grabber.stop()
             if self.stdout_grabber.capturedtext:
