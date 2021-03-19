@@ -56,7 +56,7 @@ repository so that other can use this package.  To do this need to follow our
    controllers, this can be done by following the example of the others.
 
 6. If `pip` installable add to ``install_requires`` in ``setup.py`` and
-   add to the installation step in ``.github/workflows/release.yml``.  I
+   add to the installation step in ``.github/workflows/release.yml``.
    If not, document the installation procedure in :ref:`external-instructions`
    and update the ``FullInstall`` Docker Container -- the main developers will
    help you with this.
@@ -89,4 +89,3 @@ following members of the
 .. autoclass:: fitbenchmarking.jacobian.base_jacobian.Jacobian
           :members: eval, eval_cost
           :noindex:
-
