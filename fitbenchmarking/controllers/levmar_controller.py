@@ -59,7 +59,7 @@ class LevmarController(Controller):
         :rtype: numpy array
         """
 
-        fx = self.problem.function(self.data_x, *p)  # (eval_model(params=p)
+        fx = self.problem.function(self.data_x, *p) 
         return fx
 
     def _jeval(self, p, x):
