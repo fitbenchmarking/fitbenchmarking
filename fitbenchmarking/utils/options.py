@@ -32,14 +32,15 @@ class Options(object):
                     'SteepestDescent', 'Trust Region'],
          'minuit': ['minuit'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
-         'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                   'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-         'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf',
-                      'dogbox']}
+         'scipy': ['Nelder-Mead', 'CG', 'BFGS', 'Newton-CG'],
+         'scipy_supports_bounds' : ['Powell','L-BFGS-B','TNC','SLSQP'],
+         'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy'],
+         'scipy_ls_supports_bounds' : ['trf', 'dogbox']}
     VALID_FITTING = \
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general'],
          'software': ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
-                      'ralfit', 'scipy', 'scipy_ls'],
+                      'ralfit', 'scipy', 'scipy_supports_bounds',
+                      'scipy_ls', 'scipy_ls_supports_bounds'],
          'jac_method': ['scipy', 'analytic', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
@@ -79,10 +80,10 @@ class Options(object):
                     'SteepestDescent', 'Trust Region'],
          'minuit': ['minuit'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
-         'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                   'Newton-CG', 'L-BFGS-B', 'TNC'],
-         'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf',
-                      'dogbox']}
+         'scipy': ['Nelder-Mead', 'CG', 'BFGS', 'Newton-CG'],
+         'scipy_supports_bounds' : ['Powell','L-BFGS-B','TNC','SLSQP'],
+         'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy'],
+         'scipy_ls_supports_bounds' : ['trf', 'dogbox']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': 'all',
@@ -99,7 +100,8 @@ class Options(object):
                           (1.33, "#fdcc8a"),
                           (1.75, "#fc8d59"),
                           (3, "#e34a33"),
-                          (np.inf, "#b30000")],
+                          (np.inf, "#b30000"),
+                          (np.nan, "#ffffff")],
          'comparison_mode': 'both',
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
          'results_dir': 'fitbenchmarking_results'}
