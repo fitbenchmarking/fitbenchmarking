@@ -87,6 +87,10 @@ class Controller:
                                 'deriv_free': [None],
                                 'general': [None]}
 
+        # Used to check whether the selected minimizers is compatible with
+        # problems that have parameter bounds
+        self.no_bounds_minimizers = []
+
     @property
     def flag(self):
         """
@@ -94,7 +98,7 @@ class Controller:
         | 1: `Software reported maximum number of iterations exceeded`
         | 2: `Software run but didn't converge to solution`
         | 3: `Software raised an exception`
-        | 4: `Problem not applicable to minimizer`
+        | 4: `Solver doesn't support bounded problems`
         """
 
         return self._flag
@@ -164,7 +168,7 @@ class Controller:
                     minimizer, minimzer_selection)
             raise UnknownMinimizerError(message)
 
-    def check_minimizer_bounds(self):
+    def check_minimizer_bounds(self, minimizer):
         """
         Helper function which checks whether the selected minimizer from the
         options (options.minimizer) supports problems with parameter bounds
@@ -174,12 +178,12 @@ class Controller:
         :type minimizer: str
         """
 
-        no_bounds_software = ['ScipyController', 'ScipyLSController', 'DFOController', 'GSLController',
+        no_bounds_software = ['DFOController', 'GSLController',
                               'MantidController', 'MinuitController', 'RALFitController']
 
-        if self.__class__.__name__ in no_bounds_software:
-            message = 'The fitting software selected does not currently support ' \
-                      'problems with parameter bounds within Fitbenchmarking'
+        if self.__class__.__name__ in no_bounds_software or minimizer in self.no_bounds_minimizers:
+            message = 'The selected minimizers does not currently support ' \
+                      'problems with parameter bounds'
             raise IncompatibleMinimizerError(message)
 
     def check_attributes(self):

@@ -144,7 +144,14 @@ def run(problem_sets, options_file='', debug=False):
         # If the results are an empty list then this means that all minimizers
         # raise an exception and the tables will produce errors if they run
         # for that problem set.
-        if results == []:
+        all_dummy_results_flag = True
+        for result in results:
+            for res in result:
+                if res.error_flag != 4:
+                    all_dummy_results_flag = False
+                    continue
+
+        if results == [] or all_dummy_results_flag is True :
             message = "\nWARNING: \nThe user chosen options and/or problem " \
                       " setup resulted in all minimizers and/or parsers " \
                       "raising an exception. Because of this, results for " \

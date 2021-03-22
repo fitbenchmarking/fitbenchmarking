@@ -285,27 +285,26 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
 
         if controller.problem.value_ranges is not None:
             try:
-                controller.check_minimizer_bounds()
+                controller.check_minimizer_bounds(minimizer)
             except IncompatibleMinimizerError as excp:
-                minimizer_failed.append(minimizer)
                 minimizer_check = False
                 controller.flag = 4
+                dummy_results = [{'options': options,
+                           'cost_func': controller.cost_func,
+                           'jac': None,
+                           'chi_sq': np.inf,
+                           'runtime': np.inf,
+                           'minimizer': minimizer,
+                           'initial_params': controller.initial_params,
+                           'params': None,
+                           'error_flag': controller.flag,
+                           'name': problem.name}]
+                for result in dummy_results:
+                   individual_result = fitbm_result.FittingResult(
+                       **result)
+                   results_problem.append(individual_result)
+                new_minimizer_list.append(minimizer)
                 LOGGER.warning(str(excp))
-                #dummy_results = [{'options': options,
-                #            'cost_func': controller.cost_func,
-                #            'jac': None,
-                #            'chi_sq': np.inf,
-                #            'runtime': np.inf,
-                #            'minimizer': minimizer,
-                #            'initial_params': controller.initial_params,
-                #            'params': controller.final_params,
-                #            'error_flag': controller.flag,
-                #            'name': problem.name}]
-                #for result in dummy_results:
-                #    individual_result = fitbm_result.FittingResult(
-                #        **result)
-                #    results_problem.append(individual_result)
-                #new_minimizer_list.append(minimizer)
               
         if minimizer_check:
             ########################
