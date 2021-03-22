@@ -3,6 +3,7 @@ Set up and build the results tables.
 """
 
 from __future__ import (absolute_import, division, print_function)
+import numpy as np
 import copy
 from importlib import import_module
 from inspect import getfile, getmembers, isabstract, isclass
@@ -21,14 +22,15 @@ LOGGER = get_logger()
 ERROR_OPTIONS = {0: "Successfully converged",
                  1: "Software reported maximum number of iterations exceeded",
                  2: "Software run but didn't converge to solution",
-                 3: "Software raised an exception"}
+                 3: "Software raised an exception",
+                 4: "Problem not applicable"}
 
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
 def create_results_tables(options, results, best_results, group_name,
                           group_dir, pp_locations, failed_problems,
-                          unselected_minimzers):
+                          unselected_minimzers, dummy_results, save_array_pos):
     """
     Saves the results of the fitting to html/txt tables.
 
@@ -77,6 +79,8 @@ def create_results_tables(options, results, best_results, group_name,
             try:
                 table, html_table, txt_table = generate_table(results,
                                                               best_results,
+                                                              dummy_results,
+                                                              save_array_pos,
                                                               options,
                                                               group_dir,
                                                               pp_locations,
@@ -160,7 +164,7 @@ def load_table(table):
     return classes[0][1]
 
 
-def generate_table(results, best_results, options, group_dir,
+def generate_table(results, best_results, dummy_results, save_array_pos, options, group_dir,
                    pp_locations, table_name, suffix):
     """
     Generate html/txt tables.
@@ -194,8 +198,33 @@ def generate_table(results, best_results, options, group_dir,
                          pp_locations, table_name)
 
     results_dict = table.create_results_dict()
-
     disp_results = table.get_values(results_dict)
+
+    #if dummy_results is not None:
+    #    for i in range(len(dummy_results)):
+    #        problem_name = dummy_results[i].name
+    #        add_to_disp_results = {'add': np.nan}
+    #        add_to_results_dict = {'add': dummy_results[i]}
+    #        results_dict[problem_name].insert(
+    #            save_array_pos[i][1], add_to_results_dict['add'])
+
+    #        if table.__class__.__name__ == 'LocalMinTable':
+    #            add_str_to_disp_results = {'add': 'nan'}
+    #            disp_results[0][problem_name].insert(
+    #                save_array_pos[i][1], add_str_to_disp_results['add'])
+    #            disp_results[1][problem_name].insert(
+    #                save_array_pos[i][1], add_to_disp_results['add'])
+    #        else:
+    #            for j in range(len(disp_results)):
+    #                if table.__class__.__name__ == 'CompareTable':
+    #                    disp_results[j][problem_name][0].insert(
+    #                        save_array_pos[i][1], add_to_disp_results['add'])
+    #                    disp_results[j][problem_name][1].insert(
+    #                        save_array_pos[i][1], add_to_disp_results['add'])
+    #                else:
+    #                    disp_results[j][problem_name].insert(
+    #                        save_array_pos[i][1], add_to_disp_results['add'])
+
     error = table.get_error(results_dict)
     links = table.get_links(results_dict)
     colour = table.get_colour(disp_results)
@@ -203,7 +232,10 @@ def generate_table(results, best_results, options, group_dir,
 
     pandas_html = table.create_pandas_data_frame(str_results)
     pandas_txt = copy.copy(pandas_html)
-
     html_table = table.to_html(pandas_html, colour, links, error)
     txt_table = table.to_txt(pandas_txt, error)
+
+    #for result in results:
+    #    results[results.index(result)] = [res for res in result if res.error_flag!=4]   
+
     return table, html_table, txt_table

@@ -51,6 +51,15 @@ def save_results(options, results, group_name, failed_problems,
     for css_file in ["main_style", "custom_style", "table_style"]:
         copy2(os.path.join(template_dir, css_file + ".css"), local_css_dir)
 
+    dummy_results = []
+    save_array_pos = []
+    #for result in results:
+    #    for res in result:
+    #        if res.error_flag == 4:
+    #            dummy_results.append(res)
+    #            save_array_pos.append([results.index(result),result.index(res)])
+    #    results[results.index(result)] = [res for res in result[:] if res not in dummy_results]
+
     best_results = preproccess_data(results)
 
     pp_locations = performance_profiler.profile(results, fig_dir)
@@ -70,7 +79,9 @@ def save_results(options, results, group_name, failed_problems,
                                      group_dir,
                                      pp_locations,
                                      failed_problems,
-                                     unselected_minimzers)
+                                     unselected_minimzers,
+                                     dummy_results,
+                                     save_array_pos)
 
     create_problem_level_index(options,
                                table_names,

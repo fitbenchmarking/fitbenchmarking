@@ -212,15 +212,15 @@ class CostFuncError(FitBenchmarkException):
 
 class IncompatibleMinimizerError(FitBenchmarkException):
     """
-    Indicates that selected cost function and minimizer are
-    not compatible
+    Indicates that the selected minimizer is not compatible
+    with selected options/problem set
     """
 
     def __init__(self, message=''):
         super(IncompatibleMinimizerError, self).__init__(message)
 
         self._class_message = 'Minimizer cannot be used with ' \
-                              'selected cost function'
+                              'selected options/problem set'
         self.error_code = 17
 
 

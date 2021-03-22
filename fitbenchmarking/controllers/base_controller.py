@@ -6,7 +6,7 @@ from abc import ABCMeta, abstractmethod
 import numpy
 
 from fitbenchmarking.utils.exceptions import ControllerAttributeError, \
-    UnknownMinimizerError
+    UnknownMinimizerError, IncompatibleMinimizerError
 
 
 class Controller:
@@ -19,7 +19,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    VALID_FLAGS = [0, 1, 2, 3]
+    VALID_FLAGS = [0, 1, 2, 3, 4]
 
     def __init__(self, cost_func):
         """
@@ -94,6 +94,7 @@ class Controller:
         | 1: `Software reported maximum number of iterations exceeded`
         | 2: `Software run but didn't converge to solution`
         | 3: `Software raised an exception`
+        | 4: `Problem not applicable to minimizer`
         """
 
         return self._flag
@@ -162,6 +163,24 @@ class Controller:
                 'algorithm_check[options.algorithm_type] = {1}\n'.format(
                     minimizer, minimzer_selection)
             raise UnknownMinimizerError(message)
+
+    def check_minimizer_bounds(self):
+        """
+        Helper function which checks whether the selected minimizer from the
+        options (options.minimizer) supports problems with parameter bounds
+
+        :param minimizer: string of minimizers selected from the
+                          options
+        :type minimizer: str
+        """
+
+        no_bounds_software = ['ScipyController', 'ScipyLSController', 'DFOController', 'GSLController',
+                              'MantidController', 'MinuitController', 'RALFitController']
+
+        if self.__class__.__name__ in no_bounds_software:
+            message = 'The fitting software selected does not currently support ' \
+                      'problems with parameter bounds within Fitbenchmarking'
+            raise IncompatibleMinimizerError(message)
 
     def check_attributes(self):
         """
