@@ -1,7 +1,6 @@
 """
 Implements a controller for the scipy ls fitting software.
-In particular, for the scipy least_squares solver and minimizers
-that do not support problems with parameter ranges.
+In particular, for the scipy least_squares solver.
 """
 
 from scipy.optimize import least_squares
@@ -46,18 +45,22 @@ class ScipyLSController(Controller):
         Setup problem ready to be run with SciPy LS
         """
 
-        # If parameter ranges have been set in problem, then set up bounds option for
-        # scipy minimize function. Here the bounds option is a sequence of (lb,ub)
-        # pairs for each parameter.
-        self.value_ranges = []
+        # If parameter ranges have been set in problem, then set up bounds
+        # option for scipy least_squares function. Here the bounds option
+        # must be a 2 tuple array like object, the first tuple containing
+        # the lower bounds for each parameter and the second containing all
+        # upper bounds.
+        value_ranges_lb = []
+        value_ranges_ub = []
         for name in self._param_names:
             if self.problem.value_ranges is not None \
                     and name in self.problem.value_ranges:
-                self.value_ranges.append(
-                    (self.problem.value_ranges[name][0],
-                     self.problem.value_ranges[name][1]))
+                value_ranges_lb.extend([self.problem.value_ranges[name][0]])
+                value_ranges_ub.extend([self.problem.value_ranges[name][1]])
             else:
-                self.value_ranges.append((-np.inf, np.inf))
+                value_ranges_lb.extend([-np.inf])
+                value_ranges_ub.extend([np.inf])
+        self.value_ranges = (value_ranges_lb, value_ranges_ub)
 
     def fit(self):
         """
@@ -79,7 +82,6 @@ class ScipyLSController(Controller):
                                         x0=self.initial_params,
                                         method=self.minimizer,
                                         jac=self.jacobian.eval,
-                                        bounds=self.value_ranges,
                                         max_nfev=500)
         else:
             self.result = least_squares(fun=self.cost_func.eval_r,

@@ -1,7 +1,7 @@
 """
 Implements a controller for the scipy fitting software.
-In particular, here for the scipy minimize solver for general minimization problems
-that do not support problems with parameter bounds
+In particular, here for the scipy minimize solver for general minimization
+problems.
 """
 
 from scipy.optimize import minimize
@@ -51,9 +51,9 @@ class ScipyController(Controller):
         """
         self.options = {'maxiter': 500}
 
-        # If parameter ranges have been set in problem, then set up bounds option for
-        # scipy minimize function. Here the bounds option is a sequence of (lb,ub)
-        # pairs for each parameter.
+        # If parameter ranges have been set in problem, then set up bounds
+        # option for scipy minimize function. Here the bounds option is a
+        # sequence of (lb,ub) pairs for each parameter.
         self.value_ranges = []
         for name in self._param_names:
             if self.problem.value_ranges is not None \
