@@ -208,3 +208,32 @@ class CostFuncError(FitBenchmarkException):
 
         self._class_message = 'FitBenchmarking ran with no results'
         self.error_code = 16
+
+
+class IncompatibleMinimizerError(FitBenchmarkException):
+    """
+    Indicates that selected cost function and minimizer are
+    not compatible
+    """
+
+    def __init__(self, message=''):
+        super(IncompatibleMinimizerError, self).__init__(message)
+
+        self._class_message = 'Minimizer cannot be used with ' \
+                              'selected cost function'
+        self.error_code = 17
+
+
+class IncompatibleTableError(FitBenchmarkException):
+    """
+    Indicates that selected cost function and table are
+    not compatible
+    """
+
+    def __init__(self, message=''):
+        super(IncompatibleTableError, self).__init__(message)
+
+        self._class_message = 'The table type selected is not ' \
+                              'compatible with the selected ' \
+                              'cost function'
+        self.error_code = 18
