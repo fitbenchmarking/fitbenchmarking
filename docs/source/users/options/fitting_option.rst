@@ -16,6 +16,7 @@ a newline-separated list. Available options are:
 * ``bumps`` (default software)
 * ``dfo`` (default software)
 * ``gsl`` (external software -- see :ref:`external-instructions`)
+* ``levmar`` (external software -- see :ref:`extra_dependencies`)
 * ``mantid`` (external software -- see :ref:`external-instructions`)
 * ``minuit`` (default software)
 * ``ralfit`` (external software -- see :ref:`external-instructions`)

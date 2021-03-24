@@ -6,7 +6,6 @@ from unittest import TestCase
 import pytest
 from pytest import test_type as TEST_TYPE
 
-from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.bumps_controller import BumpsController
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
@@ -17,9 +16,9 @@ from fitbenchmarking.controllers.scipy_ls_controller import ScipyLSController
 
 if TEST_TYPE != "default":
     from fitbenchmarking.controllers.gsl_controller import GSLController
+    from fitbenchmarking.controllers.levmar_controller import LevmarController
     from fitbenchmarking.controllers.mantid_controller import MantidController
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
-
 
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
@@ -28,11 +27,14 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
+from fitbenchmarking import mock_problems
+
 
 def make_cost_func(file_name='cubic.dat'):
     """
     Helper function that returns a simple fitting problem
     """
+
     options = Options()
 
     bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
@@ -371,6 +373,30 @@ class ExternalControllerTests(TestCase):
         self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
+
+    def test_levmar(self):
+        """
+        LevmarController: Tests for output shape
+        """
+        controller = LevmarController(self.cost_func)
+        controller.minimizer = 'levmar'
+        controller.jacobian = self.jac
+        self.shared_tests.controller_run_test(controller)
+        self.shared_tests.check_jac_info(controller,
+                                         True,
+                                         ["levmar-no-jac"])
+
+        controller._info = (0, 1, 2, "Stop by small Dp", 4, 5, 6)
+        self.shared_tests.check_converged(controller)
+        controller._info = (0, 1, 2, "Stopped by small gradient J^T e",
+                            4, 5, 6)
+        self.shared_tests.check_converged(controller)
+        controller._info = (0, 1, 2, "Stopped by small ||e||_2", 4, 5, 6)
+        self.shared_tests.check_converged(controller)
+        controller._info = (0, 1, 2, "maxit", 4, 5, 6)
+        self.shared_tests.check_max_iterations(controller)
+        controller._info = (0, 1, 2, "diverged", 4, 5, 6)
+        self.shared_tests.check_diverged(controller)
 
     def test_mantid(self):
         """

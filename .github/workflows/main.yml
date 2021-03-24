@@ -43,7 +43,7 @@ jobs:
     - name: Installing
       run: |
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,minuit,SAS,numdifftools]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,levmar,minuit,SAS,numdifftools]
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
     - name: 'Running Tests'
@@ -77,7 +77,7 @@ jobs:
     - name: Installing
       run: |
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,minuit,SAS,numdifftools]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,levmar,minuit,SAS,numdifftools]
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
     - name: 'Running Tests'
