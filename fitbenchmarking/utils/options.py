@@ -99,8 +99,7 @@ class Options(object):
                           (1.33, "#fdcc8a"),
                           (1.75, "#fc8d59"),
                           (3, "#e34a33"),
-                          (np.inf, "#b30000"),
-                          (np.nan, "#ffffff")],
+                          (np.inf, "#b30000")],
          'comparison_mode': 'both',
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
          'results_dir': 'fitbenchmarking_results'}
