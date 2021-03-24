@@ -85,13 +85,12 @@ class LevmarController(Controller):
         else:
             jac = self._jeval
 
-        (self.final_params,
-         _,
-         self._info) = levmar.levmar(self._feval,
-                                     self.initial_params,
-                                     self.data_y,
-                                     args=(self.data_x,),
-                                     jacf=jac)
+        (self.final_params, _, self._info) = levmar.levmar(
+            self._feval,
+            self.initial_params,
+            self.data_y,
+            args=(self.data_x,),
+            jacf=jac)
         # self._info isn't documented (other than in the levmar source),
         # but returns:
         # self._info[0] = ||e||_2 at `p0`
