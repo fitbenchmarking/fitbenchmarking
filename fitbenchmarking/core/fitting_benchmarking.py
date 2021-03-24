@@ -290,22 +290,22 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                 minimizer_check = False
                 controller.flag = 4
                 dummy_results = [{'options': options,
-                           'cost_func': controller.cost_func,
-                           'jac': None,
-                           'chi_sq': np.inf,
-                           'runtime': np.inf,
-                           'minimizer': minimizer,
-                           'initial_params': controller.initial_params,
-                           'params': None,
-                           'error_flag': controller.flag,
-                           'name': problem.name}]
+                                 'cost_func': controller.cost_func,
+                                 'jac': None,
+                                 'chi_sq': np.inf,
+                                 'runtime': np.inf,
+                                 'minimizer': minimizer,
+                                 'initial_params': controller.initial_params,
+                                 'params': None,
+                                 'error_flag': controller.flag,
+                                 'name': problem.name}]
                 for result in dummy_results:
-                   individual_result = fitbm_result.FittingResult(
-                       **result)
-                   results_problem.append(individual_result)
+                    individual_result = fitbm_result.FittingResult(
+                        **result)
+                    results_problem.append(individual_result)
                 new_minimizer_list.append(minimizer)
                 LOGGER.warning(str(excp))
-              
+
         if minimizer_check:
             ########################
             # Loops over Jacobians #
@@ -420,7 +420,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                     # calculated
                     # pylint: disable=broad-except
                     except Exception as excp:
-                        LOGGER.warn(str(excp))
+                        LOGGER.warning(str(excp))
 
                         runtime = np.inf
                         controller.flag = 3

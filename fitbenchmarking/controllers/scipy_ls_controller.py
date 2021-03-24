@@ -45,6 +45,9 @@ class ScipyLSController(Controller):
         Setup problem ready to be run with SciPy LS
         """
 
+        if self.minimizer == "lm-scipy":
+            self.minimizer = "lm"
+
         # If parameter ranges have been set in problem, then set up bounds
         # option for scipy least_squares function. Here the bounds option
         # must be a 2 tuple array like object, the first tuple containing

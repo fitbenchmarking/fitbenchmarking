@@ -179,10 +179,12 @@ class Controller:
         """
 
         no_bounds_software = ['DFOController', 'GSLController',
-                              'MantidController', 'MinuitController', 'RALFitController']
+                              'MantidController', 'MinuitController',
+                              'RALFitController']
 
-        if self.__class__.__name__ in no_bounds_software or minimizer in self.no_bounds_minimizers:
-            message = 'The selected minimizers does not currently support ' \
+        if self.__class__.__name__ in no_bounds_software or \
+                minimizer in self.no_bounds_minimizers:
+            message = 'The selected minimizer does not currently support ' \
                       'problems with parameter bounds'
             raise IncompatibleMinimizerError(message)
 
