@@ -11,8 +11,12 @@ from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
 from fitbenchmarking.results_processing.base_table import Table
-from fitbenchmarking.utils.exceptions import UnknownTableError
+from fitbenchmarking.utils.exceptions import UnknownTableError, \
+    IncompatibleTableError
 from fitbenchmarking.utils.misc import get_css, get_js
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 ERROR_OPTIONS = {0: "Successfully converged",
                  1: "Software reported maximum number of iterations exceeded",
@@ -64,18 +68,24 @@ def create_results_tables(options, results, best_results, group_name,
     description = {}
     for suffix in SORTED_TABLE_NAMES:
         if suffix in options.table_type:
+
             table_names[suffix] = \
                 '{0}_{1}_{2}_table.'.format(group_name,
                                             suffix,
                                             options.cost_func_type)
 
-            table, html_table, txt_table = generate_table(results,
-                                                          best_results,
-                                                          options,
-                                                          group_dir,
-                                                          pp_locations,
-                                                          table_names[suffix],
-                                                          suffix)
+            try:
+                table, html_table, txt_table = generate_table(results,
+                                                              best_results,
+                                                              options,
+                                                              group_dir,
+                                                              pp_locations,
+                                                              table_names[suffix],
+                                                              suffix)
+            except IncompatibleTableError as excp:
+                LOGGER.warning(str(excp))
+                del table_names[suffix]
+                continue
 
             table_title = table.table_title
             file_path = table.file_path

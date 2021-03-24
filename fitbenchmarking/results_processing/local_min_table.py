@@ -4,6 +4,8 @@ compare table
 import numpy as np
 import os
 from fitbenchmarking.results_processing.base_table import Table
+from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
+from fitbenchmarking.utils.exceptions import IncompatibleTableError
 
 GRAD_TOL = 1e-1
 RES_TOL = 1e-8
@@ -60,6 +62,16 @@ class LocalMinTable(Table):
         self.has_pp = True
         self.pp_filenames = \
             [os.path.relpath(pp, group_dir) for pp in pp_locations]
+
+        # Check whether the selected cost function is a least squares
+        # problem - if not then local min table is not appropriate
+        # and option should be ignored
+        if not isinstance(results[0][0].cost_func, BaseNLLSCostFunc):
+            raise IncompatibleTableError("The local_min table cannot be "
+                                         "produced with the {} cost "
+                                         "function. As a result, this "
+                                         "table will not be produced.".format(
+                                             options.cost_func_type))
 
     def get_values(self, results_dict):
         """
