@@ -28,8 +28,8 @@ class LevmarController(Controller):
         self.algorithm_check = {
             'all': ['levmar', 'levmar-no-jac'],
             'ls': ['levmar', 'levmar-no-jac'],
-            'deriv_free': [None],
-            'general': [None]}
+            'deriv_free': [],
+            'general': []}
         self._info = None
 
     def jacobian_information(self):
