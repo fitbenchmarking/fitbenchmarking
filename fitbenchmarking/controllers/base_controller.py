@@ -180,7 +180,7 @@ class Controller:
 
         no_bounds_software = ['DFOController', 'GSLController',
                               'MantidController', 'MinuitController',
-                              'RALFitController']
+                              'RALFitController', 'LevmarController']
 
         if self.__class__.__name__ in no_bounds_software or \
                 minimizer in self.no_bounds_minimizers:
