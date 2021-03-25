@@ -27,6 +27,7 @@ class ScipyController(Controller):
         super(ScipyController, self).__init__(cost_func)
 
         self._param_names = self.problem.param_names
+        self.support_for_bounds = True
         self.no_bounds_minimizers = ['Nelder-Mead', 'CG', 'BFGS', 'Newton-CG']
         self._popt = None
         self.algorithm_check = {

@@ -91,6 +91,11 @@ class Controller:
         # problems that have parameter bounds
         self.no_bounds_minimizers = []
 
+        # Used to check whether the fitting software has support for
+        # bounded problems, set as True if at least some minimizers
+        # in the fitting software have support for bounds
+        self.support_for_bounds = False
+
     @property
     def flag(self):
         """
@@ -178,11 +183,7 @@ class Controller:
         :type minimizer: str
         """
 
-        no_bounds_software = ['DFOController', 'GSLController',
-                              'MantidController', 'MinuitController',
-                              'RALFitController', 'LevmarController']
-
-        if self.__class__.__name__ in no_bounds_software or \
+        if self.support_for_bounds == False or \
                 minimizer in self.no_bounds_minimizers:
             message = 'The selected minimizer does not currently support ' \
                       'problems with parameter bounds'
