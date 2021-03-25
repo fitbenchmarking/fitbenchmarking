@@ -266,6 +266,7 @@ class BaseControllerTests(TestCase):
                                 minimizer that supports bounds
         """
         controller = DummyController(self.cost_func)
+        controller.support_for_bounds = True
         controller.no_bounds_minimizers = ['no_bounds_minimizer']
         minimizer = 'bounds_minimizer'
         controller.check_minimizer_bounds(minimizer)
@@ -276,6 +277,7 @@ class BaseControllerTests(TestCase):
                                 minimizer that does not support bounds
         """
         controller = DummyController(self.cost_func)
+        controller.support_for_bounds = True
         controller.no_bounds_minimizers = ['no_bounds_minimizer']
         minimizer = 'no_bounds_minimizer'
         with self.assertRaises(exceptions.IncompatibleMinimizerError):
