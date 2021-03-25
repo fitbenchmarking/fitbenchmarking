@@ -29,7 +29,7 @@ class Controller:
         ``super(<software_name>Controller, self).__init__(problem)``
         (the base class's ``__init__`` implementation).
         In this function, you must initialize the a dictionary,
-        ``self.algorithm_type``, such that the **keys** are given by:
+        ``self.algorithm_check``, such that the **keys** are given by:
 
         - ``all`` - all minimizers
         - ``ls`` - least-squares fitting algorithms

@@ -24,6 +24,7 @@ class Options(object):
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                  'vector_bfgs2', 'steepest_descent'],
+         'levmar': ['levmar','levmar-no-jac'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
@@ -38,7 +39,7 @@ class Options(object):
                       'dogbox']}
     VALID_FITTING = \
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general'],
-         'software': ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
+         'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'minuit',
                       'ralfit', 'scipy', 'scipy_ls'],
          'jac_method': ['scipy', 'analytic', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
@@ -71,6 +72,7 @@ class Options(object):
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                  'vector_bfgs2', 'steepest_descent'],
+         'levmar': ['levmar'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
