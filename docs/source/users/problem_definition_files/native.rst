@@ -17,7 +17,7 @@ Examples of native problems are:
 
 .. literalinclude:: ../../../../examples/benchamrk_problems/SAS_modelling/1D/prob_def_1.txt
 
-These examples shows the basic structure in which the file starts with a comment
+These examples show the basic structure in which the file starts with a comment
 indicating it is a FitBenchmark problem followed by key-value pairs. Available
 keys are described below:
 
