@@ -1,8 +1,8 @@
 # Tests for the controllers available from a default fitbenchmarking install
 import inspect
-import numpy as np
 import os
 from unittest import TestCase
+import numpy as np
 import pytest
 from pytest import test_type as TEST_TYPE
 
@@ -127,7 +127,6 @@ class ControllerSharedTesting:
         controller.cleanup()
         assert controller.flag == 2
 
-
 class BaseControllerTests(TestCase):
     """
     Tests for base software controller class methods.
@@ -239,6 +238,10 @@ class BaseControllerTests(TestCase):
             controller.check_attributes()
 
     def test_validate_minimizer_true(self):
+        """
+        BaseSoftwareController: Test validate_minimizer with valid
+                                minimizer
+        """
         controller = DummyController(self.cost_func)
         controller.algorithm_check = {'all': ['min1', 'min2']}
         algorithm_type = 'all'
@@ -246,12 +249,39 @@ class BaseControllerTests(TestCase):
         controller.validate_minimizer(minimizer, algorithm_type)
 
     def test_validate_minimizer_false(self):
+        """
+        BaseSoftwareController: Test validate_minimizer with invalid
+                                minimizer
+        """
         controller = DummyController(self.cost_func)
         controller.algorithm_check = {'all': ['min1', 'min2']}
         algorithm_type = 'all'
         minimizer = 'min_unknown'
         with self.assertRaises(exceptions.UnknownMinimizerError):
             controller.validate_minimizer(minimizer, algorithm_type)
+
+    def test_check_minimizer_bounds_true(self):
+        """
+        BaseSoftwareController: Test check_minimizer_bounds with
+                                minimizer that supports bounds
+        """
+        controller = DummyController(self.cost_func)
+        controller.support_for_bounds = True
+        controller.no_bounds_minimizers = ['no_bounds_minimizer']
+        minimizer = 'bounds_minimizer'
+        controller.check_minimizer_bounds(minimizer)
+
+    def test_check_minimizer_bounds_false(self):
+        """
+        BaseSoftwareController: Test check_minimizer_bounds with
+                                minimizer that does not support bounds
+        """
+        controller = DummyController(self.cost_func)
+        controller.support_for_bounds = True
+        controller.no_bounds_minimizers = ['no_bounds_minimizer']
+        minimizer = 'no_bounds_minimizer'
+        with self.assertRaises(exceptions.IncompatibleMinimizerError):
+            controller.check_minimizer_bounds(minimizer)
 
 
 class DefaultControllerTests(TestCase):
@@ -360,6 +390,52 @@ class DefaultControllerTests(TestCase):
         controller._status = -1
         self.shared_tests.check_diverged(controller)
 
+class DefaultControllerBoundsTests(TestCase):
+
+    def setUp(self):
+        """
+        Setup for bounded problem
+        """
+        self.cost_func = make_cost_func('prob_def_1_test_bounds.txt')
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.cost_func)
+        self.jac.method = '2-point'
+
+    def test_scipy(self):
+        """
+        ScipyController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = ScipyController(self.cost_func)
+        controller.minimizer = 'L-BFGS-B'
+        controller.jacobian = self.jac
+
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            assert controller.value_ranges[count][0] <= value \
+                <= controller.value_ranges[count][1]
+
+    def test_scipy_ls(self):
+        """
+        ScipyLSController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = ScipyLSController(self.cost_func)
+        controller.minimizer = 'trf'
+        controller.jacobian = self.jac
+
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            assert controller.value_ranges[0][count] <= value \
+                <= controller.value_ranges[1][count]
 
 @pytest.mark.skipif("TEST_TYPE == 'default'")
 class ExternalControllerTests(TestCase):

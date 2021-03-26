@@ -21,7 +21,8 @@ LOGGER = get_logger()
 ERROR_OPTIONS = {0: "Successfully converged",
                  1: "Software reported maximum number of iterations exceeded",
                  2: "Software run but didn't converge to solution",
-                 3: "Software raised an exception"}
+                 3: "Software raised an exception",
+                 4: "Solver doesn't support bounded problems"}
 
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
@@ -203,7 +204,7 @@ def generate_table(results, best_results, options, group_dir,
 
     pandas_html = table.create_pandas_data_frame(str_results)
     pandas_txt = copy.copy(pandas_html)
-
     html_table = table.to_html(pandas_html, colour, links, error)
     txt_table = table.to_txt(pandas_txt, error)
+
     return table, html_table, txt_table

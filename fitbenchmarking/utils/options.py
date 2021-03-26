@@ -82,7 +82,7 @@ class Options(object):
          'minuit': ['minuit'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                   'Newton-CG', 'L-BFGS-B', 'TNC'],
+                   'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
          'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf',
                       'dogbox']}
     DEFAULT_FITTING = \

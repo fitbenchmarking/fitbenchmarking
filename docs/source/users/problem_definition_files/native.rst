@@ -11,12 +11,13 @@ In this format, data is separated from the function. This allows running the
 same dataset against multiple different models to assess which is the most
 appropriate.
 
-An example of a native problem is:
+Examples of native problems are:
 
 .. literalinclude:: ../../../../examples/benchmark_problems/Muon/Muon_HIFI_113856.txt
 
+.. literalinclude:: ../../../../examples/benchamrk_problems/SAS_modelling/1D/prob_def_1.txt
 
-This example shows the basic structure in which the file starts with a comment
+These examples show the basic structure in which the file starts with a comment
 indicating it is a FitBenchmark problem followed by key-value pairs. Available
 keys are described below:
 
@@ -85,3 +86,14 @@ fit_ranges
 
   It takes the form shown in the example, where the first number
   is the minimum in the range and the second is the maximum.
+
+parameter_ranges
+  An optional setting which specifies upper and lower bounds for 
+  parameters in the problem. This setting cannot currently be used
+  with Mantid problems.
+
+  Similarly to `fit_ranges`, it takes the form where the first number
+  is the minimum in the range and the second is the maximum.
+
+  Currently in Fitbenchmarking, problems with `parameter_ranges` can only
+  be handled by SciPy fitting software.

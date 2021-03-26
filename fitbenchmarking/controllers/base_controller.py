@@ -6,7 +6,7 @@ from abc import ABCMeta, abstractmethod
 import numpy
 
 from fitbenchmarking.utils.exceptions import ControllerAttributeError, \
-    UnknownMinimizerError
+    UnknownMinimizerError, IncompatibleMinimizerError
 
 
 class Controller:
@@ -19,7 +19,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    VALID_FLAGS = [0, 1, 2, 3]
+    VALID_FLAGS = [0, 1, 2, 3, 4]
 
     def __init__(self, cost_func):
         """
@@ -87,6 +87,15 @@ class Controller:
                                 'deriv_free': [None],
                                 'general': [None]}
 
+        # Used to check whether the selected minimizers is compatible with
+        # problems that have parameter bounds
+        self.no_bounds_minimizers = []
+
+        # Used to check whether the fitting software has support for
+        # bounded problems, set as True if at least some minimizers
+        # in the fitting software have support for bounds
+        self.support_for_bounds = False
+
     @property
     def flag(self):
         """
@@ -94,6 +103,7 @@ class Controller:
         | 1: `Software reported maximum number of iterations exceeded`
         | 2: `Software run but didn't converge to solution`
         | 3: `Software raised an exception`
+        | 4: `Solver doesn't support bounded problems`
         """
 
         return self._flag
@@ -162,6 +172,22 @@ class Controller:
                 'algorithm_check[options.algorithm_type] = {1}\n'.format(
                     minimizer, minimzer_selection)
             raise UnknownMinimizerError(message)
+
+    def check_minimizer_bounds(self, minimizer):
+        """
+        Helper function which checks whether the selected minimizer from the
+        options (options.minimizer) supports problems with parameter bounds
+
+        :param minimizer: string of minimizers selected from the
+                          options
+        :type minimizer: str
+        """
+
+        if self.support_for_bounds == False or \
+                minimizer in self.no_bounds_minimizers:
+            message = 'The selected minimizer does not currently support ' \
+                      'problems with parameter bounds'
+            raise IncompatibleMinimizerError(message)
 
     def check_attributes(self):
         """
