@@ -37,6 +37,7 @@ class DummyController(Controller):
                                 'ls': [None],
                                 'deriv_free': ['deriv_free_algorithm'],
                                 'general': ['general']}
+        self.no_bounds_minimizers = ['general']
         self.final_params_expected = [[1, 2, 3, 4], [4, 3, 2, 1]]
         self.flag_expected = [0, 1]
         self.count = 0
@@ -167,6 +168,22 @@ class LoopOverMinimizersTests(unittest.TestCase):
         assert minimizer_failed == []
         assert new_minimizer_list == ["general", "deriv_free_algorithm"]
 
+    def test_no_bounds_minimizer(self):
+        """
+        Test that if a minimizer that doesn't support bounds is
+        selected with a bounded problem, results have the
+        correct error flag
+        """
+        self.controller.problem.value_ranges = {'test':(0,1)}
+        self.minimizers = ["general"]
+
+        results_problem, minimizer_failed, new_minimizer_list = \
+            loop_over_minimizers(self.controller, self.minimizers,
+                                 self.options, self.grabbed_output)
+
+        assert results_problem[0].error_flag == 4
+        assert minimizer_failed == []
+        assert new_minimizer_list == ["general"]
 
 if __name__ == "__main__":
     unittest.main()
