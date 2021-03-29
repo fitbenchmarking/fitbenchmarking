@@ -437,6 +437,46 @@ class DefaultControllerBoundsTests(TestCase):
             assert controller.value_ranges[0][count] <= value \
                 <= controller.value_ranges[1][count]
 
+    def test_minuit(self):
+        """
+        MinuitController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = MinuitController(self.cost_func)
+        controller.minimizer = 'minuit'
+
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        lower = [controller.value_ranges[i][0] for i in range(len(controller.value_ranges))]
+        upper = [controller.value_ranges[i][1] for i in range(len(controller.value_ranges))]
+
+        # Convert None values to -inf/inf 
+        lower = [-np.inf if x is None else x for x in lower]
+        upper = [np.inf if x is None else x for x in upper]
+
+        for count, value in enumerate(controller.final_params):
+            assert lower[count] <= value <= upper[count]
+
+    def test_dfo(self):
+        """
+        DFOController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = DFOController(self.cost_func)
+        controller.minimizer = 'dfogn'
+
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            assert controller.value_ranges[0][count] <= value \
+                <= controller.value_ranges[1][count]
+
 @pytest.mark.skipif("TEST_TYPE == 'default'")
 class ExternalControllerTests(TestCase):
     """
@@ -607,6 +647,35 @@ class ExternalControllerTests(TestCase):
             controller._status = 2
             self.shared_tests.check_diverged(controller)
 
+@pytest.mark.skipif("TEST_TYPE == 'default'")
+class ExternalControllerBoundsTests(TestCase):
+
+    def setUp(self):
+        """
+        Setup for bounded problem
+        """
+        self.cost_func = make_cost_func('prob_def_1_test_bounds.txt')
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.cost_func)
+        self.jac.method = '2-point'
+
+    def test_ralfit(self):
+        """
+        RALFitController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = RALFitController(self.cost_func)
+        controller.minimizer = 'gn'
+        controller.jacobian = self.jac
+
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            assert controller.value_ranges[0][count] <= value \
+                <= controller.value_ranges[1][count]
 
 class FactoryTests(TestCase):
     """

@@ -33,6 +33,9 @@ class MinuitController(Controller):
                                        '2.0.0'.format(iminuit_version))
 
         super(MinuitController, self).__init__(cost_func)
+        
+        self.support_for_bounds = True
+        self._param_names = self.problem.param_names
         self._popt = None
         self._initial_step = None
         self._minuit_problem = None
@@ -67,6 +70,18 @@ class MinuitController(Controller):
                                       self.initial_params)
         self._minuit_problem.errordef = 1
         self._minuit_problem.errors = self._initial_step
+
+        self.value_ranges = []
+        for name in self._param_names:
+            if self.problem.value_ranges is not None \
+                    and name in self.problem.value_ranges:
+                self.value_ranges.append(
+                    (self.problem.value_ranges[name][0],
+                     self.problem.value_ranges[name][1]))
+            else:
+                self.value_ranges.append((None, None))
+        
+        self._minuit_problem.limits = self.value_ranges
 
     def fit(self):
         """

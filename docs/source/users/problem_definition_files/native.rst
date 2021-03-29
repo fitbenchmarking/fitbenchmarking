@@ -95,5 +95,5 @@ parameter_ranges
   Similarly to `fit_ranges`, it takes the form where the first number
   is the minimum in the range and the second is the maximum.
 
-  Currently in Fitbenchmarking, problems with `parameter_ranges` can only
-  be handled by SciPy fitting software.
+  Currently in Fitbenchmarking, problems with `parameter_ranges` can
+  be handled by SciPy, Minuit, DFO, and RALFit fitting software.
