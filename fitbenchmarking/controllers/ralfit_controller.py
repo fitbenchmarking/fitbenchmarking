@@ -87,8 +87,8 @@ class RALFitController(Controller):
                                     self.cost_func.eval_r,
                                     self.jacobian.eval,
                                     options=self._options,
-                                    lower_bounds = self.value_ranges[0],
-                                    upper_bounds = self.value_ranges[1])[0]
+                                    lower_bounds=self.value_ranges[0],
+                                    upper_bounds=self.value_ranges[1])[0]
         self._status = 0 if self._popt is not None else 1
 
     def cleanup(self):

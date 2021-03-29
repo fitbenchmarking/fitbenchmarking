@@ -56,23 +56,22 @@ class DFOController(Controller):
         for name in self._param_names:
             if self.problem.value_ranges is not None \
                     and name in self.problem.value_ranges:
-                value_ranges_lb = np.append(value_ranges_lb, \
-                    self.problem.value_ranges[name][0])
-                value_ranges_ub = np.append(value_ranges_ub, \
-                    self.problem.value_ranges[name][1])
-                bound_range = np.append(bound_range, \
-                    self.problem.value_ranges[name][1] \
-                    - self.problem.value_ranges[name][0])
+                value_ranges_lb = np.append(value_ranges_lb,
+                                            self.problem.value_ranges[name][0])
+                value_ranges_ub = np.append(value_ranges_ub,
+                                            self.problem.value_ranges[name][1])
+                bound_range = np.append(bound_range,
+                                        self.problem.value_ranges[name][1]
+                                        - self.problem.value_ranges[name][0])
             else:
                 value_ranges_lb = np.append(value_ranges_lb, -10e+20)
                 value_ranges_ub = np.append(value_ranges_ub, 10e+20)
         self.value_ranges = (value_ranges_lb, value_ranges_ub)
 
-
         # if bounds are set then gap between lower and upper bound must
         # be at least 2*rhobeg so check that default rhobeg value
         # satisfies this condition
-        self.rhobeg = 0.1*max(np.linalg.norm(self._pinit, np.inf),1)
+        self.rhobeg = 0.1*max(np.linalg.norm(self._pinit, np.inf), 1)
         if bound_range.size:
             if min(bound_range) <= 2*self.rhobeg:
                 self.rhobeg = min(bound_range/2)
@@ -84,13 +83,13 @@ class DFOController(Controller):
         if self.minimizer == 'dfogn':
             self._soln = dfogn.solve(self.cost_func.eval_r,
                                      self._pinit,
-                                     rhobeg = self.rhobeg,
+                                     rhobeg=self.rhobeg,
                                      lower=self.value_ranges[0],
                                      upper=self.value_ranges[1])
         elif self.minimizer == 'dfols':
             self._soln = dfols.solve(self.cost_func.eval_r,
                                      self._pinit,
-                                     rhobeg = self.rhobeg,
+                                     rhobeg=self.rhobeg,
                                      bounds=(self.value_ranges))
 
         self._popt = self._soln.x

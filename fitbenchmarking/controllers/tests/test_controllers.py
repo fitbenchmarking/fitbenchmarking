@@ -127,6 +127,7 @@ class ControllerSharedTesting:
         controller.cleanup()
         assert controller.flag == 2
 
+
 class BaseControllerTests(TestCase):
     """
     Tests for base software controller class methods.
@@ -390,6 +391,7 @@ class DefaultControllerTests(TestCase):
         controller._status = -1
         self.shared_tests.check_diverged(controller)
 
+
 class DefaultControllerBoundsTests(TestCase):
 
     def setUp(self):
@@ -450,10 +452,12 @@ class DefaultControllerBoundsTests(TestCase):
         controller.fit()
         controller.cleanup()
 
-        lower = [controller.value_ranges[i][0] for i in range(len(controller.value_ranges))]
-        upper = [controller.value_ranges[i][1] for i in range(len(controller.value_ranges))]
+        lower = [controller.value_ranges[i][0]
+                 for i in range(len(controller.value_ranges))]
+        upper = [controller.value_ranges[i][1]
+                 for i in range(len(controller.value_ranges))]
 
-        # Convert None values to -inf/inf 
+        # Convert None values to -inf/inf
         lower = [-np.inf if x is None else x for x in lower]
         upper = [np.inf if x is None else x for x in upper]
 
@@ -476,6 +480,7 @@ class DefaultControllerBoundsTests(TestCase):
         for count, value in enumerate(controller.final_params):
             assert controller.value_ranges[0][count] <= value \
                 <= controller.value_ranges[1][count]
+
 
 @pytest.mark.skipif("TEST_TYPE == 'default'")
 class ExternalControllerTests(TestCase):
@@ -647,6 +652,7 @@ class ExternalControllerTests(TestCase):
             controller._status = 2
             self.shared_tests.check_diverged(controller)
 
+
 @pytest.mark.skipif("TEST_TYPE == 'default'")
 class ExternalControllerBoundsTests(TestCase):
 
@@ -676,6 +682,7 @@ class ExternalControllerBoundsTests(TestCase):
         for count, value in enumerate(controller.final_params):
             assert controller.value_ranges[0][count] <= value \
                 <= controller.value_ranges[1][count]
+
 
 class FactoryTests(TestCase):
     """

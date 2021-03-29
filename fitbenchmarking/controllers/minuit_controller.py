@@ -33,7 +33,7 @@ class MinuitController(Controller):
                                        '2.0.0'.format(iminuit_version))
 
         super(MinuitController, self).__init__(cost_func)
-        
+
         self.support_for_bounds = True
         self._param_names = self.problem.param_names
         self._popt = None
@@ -80,7 +80,7 @@ class MinuitController(Controller):
                      self.problem.value_ranges[name][1]))
             else:
                 self.value_ranges.append((None, None))
-        
+
         self._minuit_problem.limits = self.value_ranges
 
     def fit(self):
