@@ -89,8 +89,7 @@ fit_ranges
 
 parameter_ranges
   An optional setting which specifies upper and lower bounds for 
-  parameters in the problem. This setting cannot currently be used
-  with Mantid problems.
+  parameters in the problem.
 
   Similarly to `fit_ranges`, it takes the form where the first number
   is the minimum in the range and the second is the maximum.
