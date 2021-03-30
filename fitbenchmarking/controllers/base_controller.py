@@ -96,6 +96,10 @@ class Controller:
         # in the fitting software have support for bounds
         self.support_for_bounds = False
 
+        # Format parameter names so they are lower case and can be compared
+        # to lower case parameter_range names
+        self._param_names = [x.lower() for x in self.problem.param_names]
+
     @property
     def flag(self):
         """

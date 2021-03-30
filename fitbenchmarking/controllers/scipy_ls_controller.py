@@ -23,7 +23,6 @@ class ScipyLSController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super(ScipyLSController, self).__init__(cost_func)
-        self._param_names = self.problem.param_names
         self.support_for_bounds = True
         self.no_bounds_minimizers = ['lm-scipy-no-jac', 'lm-scipy']
         self._popt = None

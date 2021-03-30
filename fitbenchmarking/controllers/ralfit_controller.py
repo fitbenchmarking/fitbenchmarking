@@ -26,7 +26,6 @@ class RALFitController(Controller):
         super(RALFitController, self).__init__(cost_func)
 
         self.support_for_bounds = True
-        self._param_names = self.problem.param_names
         self._popt = None
         self._options = {}
         self.algorithm_check = {
