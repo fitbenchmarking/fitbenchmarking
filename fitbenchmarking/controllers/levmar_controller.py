@@ -24,6 +24,9 @@ class LevmarController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super(LevmarController, self).__init__(cost_func)
+
+        self._param_names = self.problem.param_names
+        self.support_for_bounds = True
         self._popt = None
         self.algorithm_check = {
             'all': ['levmar', 'levmar-no-jac'],
@@ -45,7 +48,18 @@ class LevmarController(Controller):
         Setup problem ready to be run with levmar
         """
 
-        return
+        # If parameter ranges have been set in problem, then set up bounds
+        # option for scipy minimize function. Here the bounds option is a
+        # sequence of (lb,ub) pairs for each parameter.
+        self.value_ranges = []
+        for name in self._param_names:
+            if self.problem.value_ranges is not None \
+                    and name in self.problem.value_ranges:
+                self.value_ranges.append(
+                    (self.problem.value_ranges[name][0],
+                     self.problem.value_ranges[name][1]))
+            else:
+                self.value_ranges.append((None, None))
 
     def _feval(self, p, x):
         """
@@ -59,7 +73,7 @@ class LevmarController(Controller):
         :rtype: numpy array
         """
 
-        fx = self.problem.function(self.data_x, *p) 
+        fx = self.problem.function(self.data_x, *p)
         return fx
 
     def _jeval(self, p, x):
@@ -85,24 +99,35 @@ class LevmarController(Controller):
         else:
             jac = self._jeval
 
-        (self.final_params, _, self._info) = levmar.levmar(
-            self._feval,
-            self.initial_params,
-            self.data_y,
-            args=(self.data_x,),
-            jacf=jac)
-        # self._info isn't documented (other than in the levmar source),
-        # but returns:
-        # self._info[0] = ||e||_2 at `p0`
-        # self._info[1] = ( ||e||_2 at `p`
-        #                   ||J^T.e||_inf
-        #                   ||Dp||_2
-        #                   mu / max[J^T.J]_ii),
-        # self._info[2] = number of iterations
-        # self._info[3] = reason for terminating (as a string)
-        # self._info[4] = number of `func` evaluations
-        # self._info[5] = number of `jacf` evaluations
-        # self._info[6] = number of linear system solved
+        if self.problem.value_ranges is None:
+            (self.final_params, _, self._info) = levmar.levmar(
+                self._feval,
+                self.initial_params,
+                self.data_y,
+                args=(self.data_x,),
+                jacf=jac)
+        else:
+            # if parameter bounds have been set for the problem, then use
+            # levmar_bc function to solve
+            (self.final_params, _, self._info) = levmar.levmar_bc(
+                self._feval,
+                self.initial_params,
+                self.data_y,
+                self.value_ranges,
+                args=(self.data_x,),
+                jacf=jac)
+            # self._info isn't documented (other than in the levmar source),
+            # but returns:
+            # self._info[0] = ||e||_2 at `p0`
+            # self._info[1] = ( ||e||_2 at `p`
+            #                   ||J^T.e||_inf
+            #                   ||Dp||_2
+            #                   mu / max[J^T.J]_ii),
+            # self._info[2] = number of iterations
+            # self._info[3] = reason for terminating (as a string)
+            # self._info[4] = number of `func` evaluations
+            # self._info[5] = number of `jacf` evaluations
+            # self._info[6] = number of linear system solved
 
     def cleanup(self):
         """
