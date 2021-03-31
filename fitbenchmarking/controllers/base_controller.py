@@ -186,7 +186,7 @@ class Controller:
         :type minimizer: str
         """
 
-        if self.support_for_bounds == False or \
+        if self.support_for_bounds is False or \
                 minimizer in self.no_bounds_minimizers:
             message = 'The selected minimizer does not currently support ' \
                       'problems with parameter bounds'
@@ -229,10 +229,10 @@ class Controller:
 
         - ``has_jacobian``: a True or False value whether the controller
           requires Jacobian information.
-        - ``jacobian_free_solvers``: a list of minimizers in a specific software
-          that do not require Jacobian information to be passed into the fitting
-          algorithm. For example in the ``ScipyLS`` controller this would return
-          ``lm-scipy-no-jac``.
+        - ``jacobian_free_solvers``: a list of minimizers in a specific
+          software that do not require Jacobian information to be passed
+          into the fitting algorithm. For example in the ``ScipyLS``
+          controller this would return ``lm-scipy-no-jac``.
 
         :return: (``has_jacobian``, ``jacobian_free_solvers``)
         :rtype: (`string`, `list`)
@@ -250,8 +250,8 @@ class Controller:
 
         If a solver supports bounded problems, then this is where
         `value_ranges` should be set up for that specific solver. The default
-        format is a list of tuples containing the lower and upper bounds for 
-        each parameter e.g. [(p1_lb, p2_ub), (p2_lb, p2_ub),...]
+        format is a list of tuples containing the lower and upper bounds
+        for each parameter e.g. [(p1_lb, p2_ub), (p2_lb, p2_ub),...]
         """
         raise NotImplementedError
 

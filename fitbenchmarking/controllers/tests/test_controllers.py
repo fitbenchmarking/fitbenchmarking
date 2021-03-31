@@ -449,7 +449,6 @@ class DefaultControllerBoundsTests(TestCase):
 
         self.check_bounds(controller)
 
-
     def test_dfo(self):
         """
         DFOController: Test that parameter bounds are
@@ -684,10 +683,12 @@ class ExternalControllerBoundsTests(TestCase):
         controller.fit()
         controller.cleanup()
 
-        lower = [controller.value_ranges[i][0] for i in range(len(controller.value_ranges))]
-        upper = [controller.value_ranges[i][1] for i in range(len(controller.value_ranges))]
+        lower = [controller.value_ranges[i][0]
+                 for i in range(len(controller.value_ranges))]
+        upper = [controller.value_ranges[i][1]
+                 for i in range(len(controller.value_ranges))]
 
-        # Convert None values to -inf/inf 
+        # Convert None values to -inf/inf
         lower = [-np.inf if x is None else x for x in lower]
         upper = [np.inf if x is None else x for x in upper]
 

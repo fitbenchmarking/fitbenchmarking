@@ -101,9 +101,10 @@ class TestFittingProblem(TestCase):
         Tests that value_ranges are formatted correctly
         """
         fitting_problem = FittingProblem(self.options)
-        fitting_problem.starting_values = [OrderedDict([('param1',0),('param2',0),('param3',0)])]
-        value_ranges_prob_def = {'param1':(0,5),'param2':(5,10)}
-        expected_value_ranges = [(0,5),(5,10),(-np.inf,np.inf)]
+        fitting_problem.starting_values = [OrderedDict(
+            [('param1', 0), ('param2', 0), ('param3', 0)])]
+        value_ranges_prob_def = {'param1': (0, 5), 'param2': (5, 10)}
+        expected_value_ranges = [(0, 5), (5, 10), (-np.inf, np.inf)]
         fitting_problem.set_value_ranges(value_ranges_prob_def)
         self.assertEqual(fitting_problem.value_ranges, expected_value_ranges)
 
