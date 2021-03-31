@@ -67,6 +67,9 @@ class Controller:
         self.initial_params = None
         # Staring Valuess: The list of starting parameters
         self.starting_values = self.problem.starting_values
+        # Parameter Bounds: List of tuples of lower and upper bounds
+        # for each parameter
+        self.value_ranges = self.problem.value_ranges
         # Parameter set: The index of the starting parameters to use
         self.parameter_set = None
         # Minimizer: The current minimizer to use

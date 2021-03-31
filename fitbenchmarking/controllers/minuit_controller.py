@@ -35,7 +35,6 @@ class MinuitController(Controller):
         super(MinuitController, self).__init__(cost_func)
 
         self.support_for_bounds = True
-        self._param_names = self.problem.param_names
         self._popt = None
         self._initial_step = None
         self._minuit_problem = None
@@ -71,17 +70,18 @@ class MinuitController(Controller):
         self._minuit_problem.errordef = 1
         self._minuit_problem.errors = self._initial_step
 
-        self.value_ranges = []
-        for name in self._param_names:
-            if self.problem.value_ranges is not None \
-                    and name in self.problem.value_ranges:
-                self.value_ranges.append(
-                    (self.problem.value_ranges[name][0],
-                     self.problem.value_ranges[name][1]))
-            else:
-                self.value_ranges.append((None, None))
+        # If parameter ranges have been set in problem, then set up bounds
+        # option. For minuit, is a sequence of (lb,ub) pairs for each
+        # parameter. None is used to denote no bound for a parameter.
+        if self.value_ranges is not None:
+            lb,ub = zip(*self.value_ranges)
+            lb = [None if x==-np.inf else x for x in list(lb)]
+            ub = [None if x==np.inf else x for x in list(ub)]
+            self.param_ranges = list(zip(tuple(lb),tuple(ub)))
+        else:
+            self.param_ranges = [(-np.inf,np.inf)]*len(self.initial_params)
 
-        self._minuit_problem.limits = self.value_ranges
+        self._minuit_problem.limits = self.param_ranges
 
     def fit(self):
         """
