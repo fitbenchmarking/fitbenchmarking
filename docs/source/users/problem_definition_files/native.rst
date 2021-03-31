@@ -96,4 +96,4 @@ parameter_ranges
   is the minimum in the range and the second is the maximum.
 
   Currently in Fitbenchmarking, problems with `parameter_ranges` can
-  be handled by SciPy, Minuit, DFO, and RALFit fitting software.
+  be handled by SciPy, Minuit, DFO, Levmar and RALFit fitting software.

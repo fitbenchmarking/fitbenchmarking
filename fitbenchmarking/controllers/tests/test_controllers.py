@@ -669,6 +669,31 @@ class ExternalControllerBoundsTests(TestCase):
 
         self.check_bounds(controller)
 
+    def test_levmar(self):
+        """
+        LevmarController: Test that parameter bounds are
+        respected for bounded problems
+        """
+
+        controller = LevmarController(self.cost_func)
+        controller.minimizer = 'levmar'
+        controller.jacobian = self.jac
+
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        lower = [controller.value_ranges[i][0] for i in range(len(controller.value_ranges))]
+        upper = [controller.value_ranges[i][1] for i in range(len(controller.value_ranges))]
+
+        # Convert None values to -inf/inf 
+        lower = [-np.inf if x is None else x for x in lower]
+        upper = [np.inf if x is None else x for x in upper]
+
+        for count, value in enumerate(controller.final_params):
+            assert lower[count] <= value <= upper[count]
+
 
 class FactoryTests(TestCase):
     """
