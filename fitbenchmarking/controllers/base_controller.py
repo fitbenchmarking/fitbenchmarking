@@ -247,6 +247,11 @@ class Controller:
         Anything needed for "fit" that can only be done after knowing the
         minimizer to use and the function to fit should be done here.
         Any variables needed should be saved to self (as class attributes).
+
+        If a solver supports bounded problems, then this is where
+        `value_ranges` should be set up for that specific solver. The default
+        format is a list of tuples containing the lower and upper bounds for 
+        each parameter e.g. [(p1_lb, p2_ub), (p2_lb, p2_ub),...]
         """
         raise NotImplementedError
 
