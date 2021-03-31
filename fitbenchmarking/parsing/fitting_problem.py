@@ -225,7 +225,7 @@ class FittingProblem:
         """
         if value_ranges is not None:
             self.value_ranges = []
-            for name in self.starting_values[0].keys():
+            for name in self._param_names:
                 param_name = name.lower()
                 if value_ranges is not None and param_name in value_ranges:
                     self.value_ranges.append(
