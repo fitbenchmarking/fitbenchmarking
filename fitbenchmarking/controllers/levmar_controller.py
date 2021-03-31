@@ -5,6 +5,7 @@ via the python interface
 https://pypi.org/project/levmar/
 """
 
+import numpy as np
 import levmar
 
 from fitbenchmarking.controllers.base_controller import Controller
@@ -25,7 +26,6 @@ class LevmarController(Controller):
         """
         super(LevmarController, self).__init__(cost_func)
 
-        self._param_names = self.problem.param_names
         self.support_for_bounds = True
         self._popt = None
         self.algorithm_check = {
@@ -48,18 +48,11 @@ class LevmarController(Controller):
         Setup problem ready to be run with levmar
         """
 
-        # If parameter ranges have been set in problem, then set up bounds
-        # option for scipy minimize function. Here the bounds option is a
-        # sequence of (lb,ub) pairs for each parameter.
-        self.value_ranges = []
-        for name in self._param_names:
-            if self.problem.value_ranges is not None \
-                    and name in self.problem.value_ranges:
-                self.value_ranges.append(
-                    (self.problem.value_ranges[name][0],
-                     self.problem.value_ranges[name][1]))
-            else:
-                self.value_ranges.append((None, None))
+        if self.value_ranges is not None:
+            lb,ub = zip(*self.value_ranges)
+            lb = [None if x==-np.inf else x for x in list(lb)]
+            ub = [None if x==np.inf else x for x in list(ub)]
+            self.param_ranges = list(zip(tuple(lb),tuple(ub)))
 
     def _feval(self, p, x):
         """
@@ -99,7 +92,7 @@ class LevmarController(Controller):
         else:
             jac = self._jeval
 
-        if self.problem.value_ranges is None:
+        if self.value_ranges is None:
             (self.final_params, _, self._info) = levmar.levmar(
                 self._feval,
                 self.initial_params,
@@ -113,21 +106,21 @@ class LevmarController(Controller):
                 self._feval,
                 self.initial_params,
                 self.data_y,
-                self.value_ranges,
+                self.param_ranges,
                 args=(self.data_x,),
                 jacf=jac)
-            # self._info isn't documented (other than in the levmar source),
-            # but returns:
-            # self._info[0] = ||e||_2 at `p0`
-            # self._info[1] = ( ||e||_2 at `p`
-            #                   ||J^T.e||_inf
-            #                   ||Dp||_2
-            #                   mu / max[J^T.J]_ii),
-            # self._info[2] = number of iterations
-            # self._info[3] = reason for terminating (as a string)
-            # self._info[4] = number of `func` evaluations
-            # self._info[5] = number of `jacf` evaluations
-            # self._info[6] = number of linear system solved
+        # self._info isn't documented (other than in the levmar source),
+        # but returns:
+        # self._info[0] = ||e||_2 at `p0`
+        # self._info[1] = ( ||e||_2 at `p`
+        #                   ||J^T.e||_inf
+        #                   ||Dp||_2
+        #                   mu / max[J^T.J]_ii),
+        # self._info[2] = number of iterations
+        # self._info[3] = reason for terminating (as a string)
+        # self._info[4] = number of `func` evaluations
+        # self._info[5] = number of `jacf` evaluations
+        # self._info[6] = number of linear system solved
 
     def cleanup(self):
         """
