@@ -1,0 +1,3 @@
+CrystalField
+
+A test set for inelastic neutron scattering measurements of transitions between crystal field energy levels
