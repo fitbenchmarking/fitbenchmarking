@@ -92,34 +92,6 @@ class ScipyLSController(Controller):
                                         max_nfev=500)
         else:
             self.result = least_squares(**kwargs)
-
-#        elif self.minimizer == "lm":
-#            if self.jacobian.use_solver_jac:
-#                self.result = least_squares(fun=self.cost_func.eval_r,
-#                                            x0=self.initial_params,
-#                                            method=self.minimizer,
-#                                            max_nfev=500)
-#            else:
-#                self.result = least_squares(fun=self.cost_func.eval_r,
-#                                        x0=self.initial_params,
-#                                        method=self.minimizer,
-#                                        jac=self.jacobian.eval,
-#                                        max_nfev=500)
-#        else:
-#            if self.jacobian.use_solver_jac:
-#                self.result = least_squares(fun=self.cost_func.eval_r,
-#                                            x0=self.initial_params,
-#                                            method=self.minimizer,
-#                                            bounds=self.value_ranges,
-#                                            max_nfev=500)
-#            else:
-#                self.result = least_squares(fun=self.cost_func.eval_r,
-#                                            x0=self.initial_params,
-#                                            method=self.minimizer,
-#                                            jac=self.jacobian.eval,
-#                                            bounds=self.value_ranges,
-#                                            max_nfev=500)
-
         self._popt = self.result.x
         self._status = self.result.status
 
