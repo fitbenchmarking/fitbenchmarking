@@ -98,36 +98,32 @@ class LevmarController(Controller):
             jac = None
         else:
             jac = self._jeval
-
+            
         if self.problem.value_ranges is None:
-            (self.final_params, _, self._info) = levmar.levmar(
-                self._feval,
-                self.initial_params,
-                self.data_y,
-                args=(self.data_x,),
-                jacf=jac)
+            solve_levmar = getattr(levmar,"levmar")
         else:
-            # if parameter bounds have been set for the problem, then use
-            # levmar_bc function to solve
-            (self.final_params, _, self._info) = levmar.levmar_bc(
-                self._feval,
+            solve_levmar = getattr(levmar,"levmar_bc")
+        args = [self._feval,
                 self.initial_params,
-                self.data_y,
-                self.value_ranges,
-                args=(self.data_x,),
-                jacf=jac)
-            # self._info isn't documented (other than in the levmar source),
-            # but returns:
-            # self._info[0] = ||e||_2 at `p0`
-            # self._info[1] = ( ||e||_2 at `p`
-            #                   ||J^T.e||_inf
-            #                   ||Dp||_2
-            #                   mu / max[J^T.J]_ii),
-            # self._info[2] = number of iterations
-            # self._info[3] = reason for terminating (as a string)
-            # self._info[4] = number of `func` evaluations
-            # self._info[5] = number of `jacf` evaluations
-            # self._info[6] = number of linear system solved
+                self.data_y]
+        if self.problem.value_ranges is not None:
+            args.append(self.value_ranges)
+        kwargs = {"args": (self.data_x,)}
+        if not self.jacobian.use_solver_jac:
+            kwargs["jacf"] = self._jeval
+        (self.final_params, _, self._info) = solve_levmar(*args, **kwargs)
+        # self._info isn't documented (other than in the levmar source),
+        # but returns:
+        # self._info[0] = ||e||_2 at `p0`
+        # self._info[1] = ( ||e||_2 at `p`
+        #                   ||J^T.e||_inf
+        #                   ||Dp||_2
+        #                   mu / max[J^T.J]_ii),
+        # self._info[2] = number of iterations
+        # self._info[3] = reason for terminating (as a string)
+        # self._info[4] = number of `func` evaluations
+        # self._info[5] = number of `jacf` evaluations
+        # self._info[6] = number of linear system solved
 
     def cleanup(self):
         """
