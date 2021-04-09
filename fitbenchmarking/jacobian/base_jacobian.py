@@ -35,7 +35,7 @@ class Jacobian:
         :return: Computed Jacobian
         :rtype: numpy array
         """
-        return NotImplementedError
+        raise NotImplementedError
 
     @abstractmethod
     def eval_cost(self, params, **kwargs):
@@ -48,7 +48,7 @@ class Jacobian:
         :return: Computed derivative of the cost function
         :rtype: numpy array
         """
-        return NotImplementedError
+        raise NotImplementedError
 
     def cached_func_values(self, cached_dict, eval_model, params, **kwargs):
         """
@@ -83,7 +83,7 @@ class Jacobian:
     @method.setter
     def method(self, value):
         """
-        Utility function to get the numerical method
+        Utility function to set the numerical method
 
         :param value: the name of the numerical method
         :type value: str
