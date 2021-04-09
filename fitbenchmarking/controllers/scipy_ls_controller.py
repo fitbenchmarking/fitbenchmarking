@@ -76,24 +76,49 @@ class ScipyLSController(Controller):
         # Jacobian evaluation. We do not see significant speed changes or
         # difference in the accuracy results when running trf or dogbox with
         # or without problem.jac.eval for the Jacobian evaluation
+        kwargs = {'fun': self.cost_func.eval_r,
+                  'x0': self.initial_params,
+                  'method': self.minimizer,
+                  'max_nfev': 500}
+        if not self.jacobian.use_solver_jac:
+            kwargs['jac'] = self.jacobian.eval
+        if self.minimizer != "lm":
+            kwargs['bounds'] = self.value_ranges
+
         if self.minimizer == "lm-scipy-no-jac":
             self.result = least_squares(fun=self.cost_func.eval_r,
                                         x0=self.initial_params,
                                         method="lm",
                                         max_nfev=500)
-        elif self.minimizer == "lm":
-            self.result = least_squares(fun=self.cost_func.eval_r,
-                                        x0=self.initial_params,
-                                        method=self.minimizer,
-                                        jac=self.jacobian.eval,
-                                        max_nfev=500)
         else:
-            self.result = least_squares(fun=self.cost_func.eval_r,
-                                        x0=self.initial_params,
-                                        method=self.minimizer,
-                                        jac=self.jacobian.eval,
-                                        bounds=self.value_ranges,
-                                        max_nfev=500)
+            self.result = least_squares(**kwargs)
+
+#        elif self.minimizer == "lm":
+#            if self.jacobian.use_solver_jac:
+#                self.result = least_squares(fun=self.cost_func.eval_r,
+#                                            x0=self.initial_params,
+#                                            method=self.minimizer,
+#                                            max_nfev=500)
+#            else:
+#                self.result = least_squares(fun=self.cost_func.eval_r,
+#                                        x0=self.initial_params,
+#                                        method=self.minimizer,
+#                                        jac=self.jacobian.eval,
+#                                        max_nfev=500)
+#        else:
+#            if self.jacobian.use_solver_jac:
+#                self.result = least_squares(fun=self.cost_func.eval_r,
+#                                            x0=self.initial_params,
+#                                            method=self.minimizer,
+#                                            bounds=self.value_ranges,
+#                                            max_nfev=500)
+#            else:
+#                self.result = least_squares(fun=self.cost_func.eval_r,
+#                                            x0=self.initial_params,
+#                                            method=self.minimizer,
+#                                            jac=self.jacobian.eval,
+#                                            bounds=self.value_ranges,
+#                                            max_nfev=500)
 
         self._popt = self.result.x
         self._status = self.result.status

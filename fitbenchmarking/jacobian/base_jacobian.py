@@ -22,6 +22,7 @@ class Jacobian:
         self.cost_func = cost_func
         self.problem = self.cost_func.problem
 
+        self.use_solver_jac = False
         self._method = None
 
     @abstractmethod
