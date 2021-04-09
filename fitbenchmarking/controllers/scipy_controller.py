@@ -69,36 +69,18 @@ class ScipyController(Controller):
         """
         Run problem with Scipy.
         """
-        # Neither the Nelder-Mead or Powell minimizers require a Jacobian
-        # so are run without that argument.
-        if self.minimizer in ["Nelder-Mead", "Powell"] and \
-                self.minimizer in self.no_bounds_minimizers:
-            self.result = minimize(fun=self.cost_func.eval_cost,
-                                   x0=self.initial_params,
-                                   method=self.minimizer,
-                                   options=self.options)
-        elif self.minimizer in ["Nelder-Mead", "Powell"] and \
-                self.minimizer not in self.no_bounds_minimizers:
-            self.result = minimize(fun=self.cost_func.eval_cost,
-                                   x0=self.initial_params,
-                                   method=self.minimizer,
-                                   bounds=self.value_ranges,
-                                   options=self.options)
-        elif self.minimizer not in ["Nelder-Mead", "Powell"] and \
-                self.minimizer in self.no_bounds_minimizers:
-            self.result = minimize(fun=self.cost_func.eval_cost,
-                                   x0=self.initial_params,
-                                   method=self.minimizer,
-                                   jac=self.jacobian.eval_cost,
-                                   options=self.options)
-        else:
-            self.result = minimize(fun=self.cost_func.eval_cost,
-                                   x0=self.initial_params,
-                                   method=self.minimizer,
-                                   jac=self.jacobian.eval_cost,
-                                   bounds=self.value_ranges,
-                                   options=self.options)
-
+        kwargs = {"fun": self.cost_func.eval_cost,
+                  "x0": self.initial_params,
+                  "method": self.minimizer,
+                  "options": self.options}
+        if self.minimizer not in ["Nelder-Mead", "Powell"]:
+            # Neither the Nelder-Mead or Powell minimizers require a Jacobian
+            # so are run without that argument.
+            if not self.jacobian.use_solver_jac:
+                kwargs["jac"] = self.jacobian.eval_cost
+        if self.minimizer not in self.no_bounds_minimizers:
+            kwargs["bounds"] = self.value_ranges
+        self.result = minimize(**kwargs)
         self._popt = self.result.x
         self._status = self.result.status
 
