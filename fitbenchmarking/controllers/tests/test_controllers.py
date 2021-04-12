@@ -403,6 +403,20 @@ class DefaultControllerBoundsTests(TestCase):
         self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
 
+    def check_bounds(self, controller):
+        """
+        Run bounded problem and check `final_params` respect
+        parameter bounds
+        """
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            assert controller.value_ranges[count][0] <= value \
+                <= controller.value_ranges[count][1]
+
     def test_scipy(self):
         """
         ScipyController: Test that parameter bounds are
@@ -412,14 +426,7 @@ class DefaultControllerBoundsTests(TestCase):
         controller.minimizer = 'L-BFGS-B'
         controller.jacobian = self.jac
 
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        for count, value in enumerate(controller.final_params):
-            assert controller.value_ranges[count][0] <= value \
-                <= controller.value_ranges[count][1]
+        self.check_bounds(controller)
 
     def test_scipy_ls(self):
         """
@@ -430,14 +437,7 @@ class DefaultControllerBoundsTests(TestCase):
         controller.minimizer = 'trf'
         controller.jacobian = self.jac
 
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        for count, value in enumerate(controller.final_params):
-            assert controller.value_ranges[0][count] <= value \
-                <= controller.value_ranges[1][count]
+        self.check_bounds(controller)
 
     def test_minuit(self):
         """
@@ -447,22 +447,7 @@ class DefaultControllerBoundsTests(TestCase):
         controller = MinuitController(self.cost_func)
         controller.minimizer = 'minuit'
 
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        lower = [controller.value_ranges[i][0]
-                 for i in range(len(controller.value_ranges))]
-        upper = [controller.value_ranges[i][1]
-                 for i in range(len(controller.value_ranges))]
-
-        # Convert None values to -inf/inf
-        lower = [-np.inf if x is None else x for x in lower]
-        upper = [np.inf if x is None else x for x in upper]
-
-        for count, value in enumerate(controller.final_params):
-            assert lower[count] <= value <= upper[count]
+        self.check_bounds(controller)
 
     def test_dfo(self):
         """
@@ -472,14 +457,7 @@ class DefaultControllerBoundsTests(TestCase):
         controller = DFOController(self.cost_func)
         controller.minimizer = 'dfogn'
 
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        for count, value in enumerate(controller.final_params):
-            assert controller.value_ranges[0][count] <= value \
-                <= controller.value_ranges[1][count]
+        self.check_bounds(controller)
 
 
 @pytest.mark.skipif("TEST_TYPE == 'default'")
@@ -665,6 +643,20 @@ class ExternalControllerBoundsTests(TestCase):
         self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
 
+    def check_bounds(self, controller):
+        """
+        Run bounded problem and check `final_params` respect
+        parameter bounds
+        """
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            assert controller.value_ranges[count][0] <= value \
+                <= controller.value_ranges[count][1]
+
     def test_ralfit(self):
         """
         RALFitController: Test that parameter bounds are
@@ -674,14 +666,7 @@ class ExternalControllerBoundsTests(TestCase):
         controller.minimizer = 'gn'
         controller.jacobian = self.jac
 
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        for count, value in enumerate(controller.final_params):
-            assert controller.value_ranges[0][count] <= value \
-                <= controller.value_ranges[1][count]
+        self.check_bounds(controller)
 
     def test_levmar(self):
         """
@@ -698,10 +683,10 @@ class ExternalControllerBoundsTests(TestCase):
         controller.fit()
         controller.cleanup()
 
-        lower = [controller.value_ranges[i][0] for i in range(len(controller.value_ranges))]
-        upper = [controller.value_ranges[i][1] for i in range(len(controller.value_ranges))]
+        lower = [value_range[0] for value_range in controller.value_ranges]
+        upper = [value_range[1] for value_range in controller.value_ranges]
 
-        # Convert None values to -inf/inf 
+        # Convert None values to -inf/inf
         lower = [-np.inf if x is None else x for x in lower]
         upper = [np.inf if x is None else x for x in upper]
 
