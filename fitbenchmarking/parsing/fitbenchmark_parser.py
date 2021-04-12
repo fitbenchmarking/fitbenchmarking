@@ -299,12 +299,15 @@ class FitbenchmarkParser(Parser):
         :return: Starting values for the function
         :rtype: list of OrderedDict
         """
+        # SasView functions can have reserved keywords so ignore these
+        ignore = ['name']
 
         name_template = '{1}' if len(self._parsed_func) == 1 else 'f{0}_{1}'
         starting_values = [
             OrderedDict([(name_template.format(i, name), val)
                          for i, f in enumerate(self._parsed_func)
-                         for name, val in f.items()])]
+                         for name, val in f.items()
+                         if name not in ignore])]
 
         return starting_values
 
@@ -321,7 +324,7 @@ class FitbenchmarkParser(Parser):
         name_template = '{1}' if len(self._parsed_func) == 1 else 'f{0}_{1}'
         starting_values = []
         for i, f in enumerate(self._parsed_func):
-            
+
             # use mantid function factory to seperate attributes and parameters
             fcopy = f.copy()
             if 'ties' in fcopy:
@@ -332,14 +335,14 @@ class FitbenchmarkParser(Parser):
             
             # filter parameters
             params = f.copy()
-            for key in ignore: # filter reserved keywords from params
+            for key in ignore:  # filter reserved keywords from params
                 if key in params:
                     params.pop(key)
-            for attr in attr_names: # filter attributes from params
+            for attr in attr_names:  # filter attributes from params
                 if attr in params:
                     params.pop(attr)
             starting_values += [(name_template.format(i, name), val) for name, val in params.items()]
-            
+ 
         starting_values = [OrderedDict(starting_values)]
 
         return starting_values
@@ -366,11 +369,11 @@ class FitbenchmarkParser(Parser):
 
             # filter parameters
             params = f.copy()
-            for key in ['name', 'ties']: # filter name, ties from params
+            for key in ['name', 'ties']:  # filter name, ties from params
                 if key in params:
                     params.pop(key)
             attributes = {}
-            for attr in attr_names: # filter attributes from params
+            for attr in attr_names:  # filter attributes from params
                 if attr in params:
                     attributes[attr] = params[attr]
                     params.pop(attr)
@@ -378,11 +381,11 @@ class FitbenchmarkParser(Parser):
             # create mantid callable
             name = f['name']
             tmp_function = msapi.__dict__[name](**params)
-            for key, value in attributes.items(): # set attributes
-                tmp_function.setAttributeValue(key,value)
-            if 'ties' in f: # set ties
+            for key, value in attributes.items():  # set attributes
+                tmp_function.setAttributeValue(key, value)
+            if 'ties' in f:  # set ties
                 tmp_function.tie(f['ties'])
-            if fit_function is None: # concatenate multiple callables
+            if fit_function is None:  # concatenate multiple callables
                 fit_function = tmp_function
             else:
                 fit_function += tmp_function
