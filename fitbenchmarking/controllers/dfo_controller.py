@@ -52,8 +52,8 @@ class DFOController(Controller):
         # set parameter ranges
         if self.value_ranges is not None:
             lb, ub = zip(*self.value_ranges)
-            lb = [-10e+20 if x == -np.inf else x for x in list(lb)]
-            ub = [10e+20 if x == np.inf else x for x in list(ub)]
+            lb = [-10e+20 if x == -np.inf else x for x in lb]
+            ub = [10e+20 if x == np.inf else x for x in ub]
             self.param_ranges = (np.array(lb), np.array(ub))
 
             # if bounds are set then gap between lower and upper bound must

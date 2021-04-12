@@ -52,7 +52,7 @@ class LevmarController(Controller):
             lb, ub = zip(*self.value_ranges)
             lb = [None if x == -np.inf else x for x in list(lb)]
             ub = [None if x == np.inf else x for x in list(ub)]
-            self.param_ranges = list(zip(tuple(lb), tuple(ub)))
+            self.param_ranges = list(zip(lb, ub))
 
     def _feval(self, p, x):
         """

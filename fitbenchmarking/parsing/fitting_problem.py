@@ -223,16 +223,15 @@ class FittingProblem:
         :type params: dict
 
         """
-        if value_ranges is not None:
-            self.value_ranges = []
-            for name in self.starting_values[0].keys():
-                param_name = name.lower()
-                if param_name in value_ranges:
-                    self.value_ranges.append(
-                        (value_ranges[param_name][0],
-                            value_ranges[param_name][1]))
-                else:
-                    self.value_ranges.append((-np.inf, np.inf))
+        self.value_ranges = []
+        for name in self.starting_values[0].keys():
+            param_name = name.lower()
+            if param_name in value_ranges:
+                self.value_ranges.append(
+                    (value_ranges[param_name][0],
+                        value_ranges[param_name][1]))
+            else:
+                self.value_ranges.append((-np.inf, np.inf))
 
 
 def correct_data(x, y, e, startx, endx, use_errors):
