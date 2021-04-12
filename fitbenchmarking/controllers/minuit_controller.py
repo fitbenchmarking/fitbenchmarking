@@ -75,9 +75,9 @@ class MinuitController(Controller):
         # parameter. None is used to denote no bound for a parameter.
         if self.value_ranges is not None:
             lb,ub = zip(*self.value_ranges)
-            lb = [None if x==-np.inf else x for x in list(lb)]
-            ub = [None if x==np.inf else x for x in list(ub)]
-            self.param_ranges = list(zip(tuple(lb),tuple(ub)))
+            lb = [None if x==-np.inf else x for x in lb]
+            ub = [None if x==np.inf else x for x in ub]
+            self.param_ranges = list(zip(lb, ub))
         else:
             self.param_ranges = [(-np.inf,np.inf)]*len(self.initial_params)
 
