@@ -92,7 +92,8 @@ class FitbenchmarkParser(Parser):
 
         # STARTING VALUES
         if software == 'mantid':
-            fitting_problem.starting_values = self._get_mantid_starting_values()
+            fitting_problem.starting_values \
+                = self._get_mantid_starting_values()
         else:
             fitting_problem.starting_values = self._get_starting_values()
 
@@ -329,7 +330,8 @@ class FitbenchmarkParser(Parser):
             fcopy = f.copy()
             if 'ties' in fcopy:
                 fcopy.pop('ties')
-            fstring = ", ".join(f"{key}={value}" for key, value in fcopy.items())
+            fstring = ", ".join(f"{key}={value}"
+                                for key, value in fcopy.items())
             ffun = msapi.FunctionFactory.createInitialized(fstring)
             attr_names = [s for s in ffun.attributeNames()]
 
@@ -341,7 +343,8 @@ class FitbenchmarkParser(Parser):
             for attr in attr_names:  # filter attributes from params
                 if attr in params:
                     params.pop(attr)
-            starting_values += [(name_template.format(i, name), val) for name, val in params.items()]
+            starting_values += [(name_template.format(i, name), val)
+                                for name, val in params.items()]
 
         starting_values = [OrderedDict(starting_values)]
 
@@ -363,7 +366,8 @@ class FitbenchmarkParser(Parser):
             fcopy = f.copy()
             if 'ties' in fcopy:
                 fcopy.pop('ties')
-            fstring = ", ".join(f"{key}={value}" for key, value in fcopy.items())
+            fstring = ", ".join(f"{key}={value}"
+                                for key, value in fcopy.items())
             ffun = msapi.FunctionFactory.createInitialized(fstring)
             attr_names = [s for s in ffun.attributeNames()]
 
