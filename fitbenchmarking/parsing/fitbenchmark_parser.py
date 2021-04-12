@@ -91,7 +91,10 @@ class FitbenchmarkParser(Parser):
             fitting_problem.equation = '{} Functions'.format(equation_count)
 
         # STARTING VALUES
-        fitting_problem.starting_values = self._get_starting_values()
+        if software == 'mantid':
+            fitting_problem.starting_values = self._get_mantid_starting_values()
+        else:
+            fitting_problem.starting_values = self._get_starting_values()
 
         # PARAMETER RANGES
         vr = _parse_range(self._entries.get('parameter_ranges', ''))
@@ -296,16 +299,48 @@ class FitbenchmarkParser(Parser):
         :return: Starting values for the function
         :rtype: list of OrderedDict
         """
-        # Mantid functions can have reserved keywords so ignore these as they
-        # are not parameters.
-        ignore = ['name', 'BinWidth', 'ties', 'Formula', 'constraints']
 
         name_template = '{1}' if len(self._parsed_func) == 1 else 'f{0}_{1}'
         starting_values = [
             OrderedDict([(name_template.format(i, name), val)
                          for i, f in enumerate(self._parsed_func)
-                         for name, val in f.items()
-                         if name not in ignore])]
+                         for name, val in f.items()])]
+
+        return starting_values
+
+    def _get_mantid_starting_values(self):
+        """
+        Get the starting values for the problem
+
+        :return: Starting values for the function
+        :rtype: list of OrderedDict
+        """
+        # Mantid functions can have reserved keywords so ignore these
+        ignore = ['name', 'ties', 'constraints']
+
+        name_template = '{1}' if len(self._parsed_func) == 1 else 'f{0}_{1}'
+        starting_values = []
+        for i, f in enumerate(self._parsed_func):
+            
+            # use mantid function factory to seperate attributes and parameters
+            fcopy = f.copy()
+            if 'ties' in fcopy:
+                fcopy.pop('ties')
+            fstring = ", ".join(f"{key}={value}" for key, value in fcopy.items())
+            ffun = msapi.FunctionFactory.createInitialized(fstring)
+            attr_names = [s for s in ffun.attributeNames()]
+            
+            # filter parameters
+            params = f.copy()
+            for key in ignore: # filter reserved keywords from params
+                if key in params:
+                    params.pop(key)
+            for attr in attr_names: # filter attributes from params
+                if attr in params:
+                    params.pop(attr)
+            starting_values += [(name_template.format(i, name), val) for name, val in params.items()]
+            
+        starting_values = [OrderedDict(starting_values)]
 
         return starting_values
 
@@ -320,15 +355,34 @@ class FitbenchmarkParser(Parser):
         fit_function = None
 
         for f in self._parsed_func:
-            name = f['name']
+
+            # use mantid function factory to seperate attributes and parameters
+            fcopy = f.copy()
+            if 'ties' in fcopy:
+                fcopy.pop('ties')
+            fstring = ", ".join(f"{key}={value}" for key, value in fcopy.items())
+            ffun = msapi.FunctionFactory.createInitialized(fstring)
+            attr_names = [s for s in ffun.attributeNames()]
+
+            # filter parameters
             params = f.copy()
-            for key in ['name', 'ties']:
+            for key in ['name', 'ties']: # filter name, ties from params
                 if key in params:
                     params.pop(key)
+            attributes = {}
+            for attr in attr_names: # filter attributes from params
+                if attr in params:
+                    attributes[attr] = params[attr]
+                    params.pop(attr)
+
+            # create mantid callable
+            name = f['name']
             tmp_function = msapi.__dict__[name](**params)
-            if 'ties' in f:
+            for key, value in attributes.items(): # set attributes
+                tmp_function.setAttributeValue(key,value)
+            if 'ties' in f: # set ties
                 tmp_function.tie(f['ties'])
-            if fit_function is None:
+            if fit_function is None: # concatenate multiple callables
                 fit_function = tmp_function
             else:
                 fit_function += tmp_function
