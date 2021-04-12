@@ -332,7 +332,7 @@ class FitbenchmarkParser(Parser):
             fstring = ", ".join(f"{key}={value}" for key, value in fcopy.items())
             ffun = msapi.FunctionFactory.createInitialized(fstring)
             attr_names = [s for s in ffun.attributeNames()]
-            
+
             # filter parameters
             params = f.copy()
             for key in ignore:  # filter reserved keywords from params
@@ -342,7 +342,7 @@ class FitbenchmarkParser(Parser):
                 if attr in params:
                     params.pop(attr)
             starting_values += [(name_template.format(i, name), val) for name, val in params.items()]
- 
+
         starting_values = [OrderedDict(starting_values)]
 
         return starting_values
@@ -375,6 +375,8 @@ class FitbenchmarkParser(Parser):
             attributes = {}
             for attr in attr_names:  # filter attributes from params
                 if attr in params:
+                    if attr == 'Formula':  # handle formulas hack
+                        continue
                     attributes[attr] = params[attr]
                     params.pop(attr)
 
