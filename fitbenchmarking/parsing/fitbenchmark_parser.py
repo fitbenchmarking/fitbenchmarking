@@ -343,6 +343,10 @@ class FitbenchmarkParser(Parser):
             for attr in attr_names:  # filter attributes from params
                 if attr in params:
                     params.pop(attr)
+            if 'ties' in f:  # filter tied params from params
+                for tie in f['ties']:
+                    if tie in params:
+                        params.pop(tie)
             starting_values += [(name_template.format(i, name), val)
                                 for name, val in params.items()]
 
