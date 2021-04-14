@@ -322,17 +322,15 @@ class FitbenchmarkParser(Parser):
         # Mantid functions can have reserved keywords so ignore these
         ignore = ['name', 'ties', 'constraints']
 
+        # get function string(s)
+        fstrings = self._entries['function'].split(';')
+
         name_template = '{1}' if len(self._parsed_func) == 1 else 'f{0}_{1}'
         starting_values = []
         for i, f in enumerate(self._parsed_func):
 
             # use mantid function factory to seperate attributes and parameters
-            fcopy = f.copy()
-            if 'ties' in fcopy:
-                fcopy.pop('ties')
-            fstring = ", ".join(f"{key}={value}"
-                                for key, value in fcopy.items())
-            ffun = msapi.FunctionFactory.createInitialized(fstring)
+            ffun = msapi.FunctionFactory.createInitialized(fstrings[i])
             attr_names = [s for s in ffun.attributeNames()]
 
             # filter parameters
