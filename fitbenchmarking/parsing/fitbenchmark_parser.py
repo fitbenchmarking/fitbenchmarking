@@ -319,8 +319,6 @@ class FitbenchmarkParser(Parser):
         :return: Starting values for the function
         :rtype: list of OrderedDict
         """
-        # Mantid functions can have reserved keywords so ignore these
-        ignore = ['name', 'ties', 'constraints']
 
         # get function string(s)
         fstrings = self._entries['function'].split(';')
@@ -331,20 +329,9 @@ class FitbenchmarkParser(Parser):
 
             # use mantid function factory to seperate attributes and parameters
             ffun = msapi.FunctionFactory.createInitialized(fstrings[i])
-            attr_names = [s for s in ffun.attributeNames()]
 
-            # filter parameters
-            params = f.copy()
-            for key in ignore:  # filter reserved keywords from params
-                if key in params:
-                    params.pop(key)
-            for attr in attr_names:  # filter attributes from params
-                if attr in params:
-                    params.pop(attr)
-            if 'ties' in f:  # filter tied params from params
-                for tie in f['ties']:
-                    if tie in params:
-                        params.pop(tie)
+            params = {ffun.getParamName(i): ffun.getParamValue(
+                i) for i in range(ffun.nParams()) if not ffun.isFixed(i)}
             starting_values += [(name_template.format(i, name), val)
                                 for name, val in params.items()]
 
