@@ -32,17 +32,17 @@ Please ensure our :ref:`guidelines` are adhered to throughout
 the branch.
 
 When you think your new code is ready to be merged into the codebase,
-you should open a pull request to master.
+you should open a pull request (PR) to master.
 The description should contain the
 words `Fixes #<nnn>`, where `<nnn>` is the issue number; this will ensure
 the issue is closed when the code is merged into master.  At this point
 the automated tests will trigger, and you can see if the code passes on
 an independent system.
 
-Sometimes it is desirable to open a pull request when the code is not
+Sometimes it is desirable to open a PR when the code is not
 quite ready to be merged.  This is a good idea, for example, if you want
 to get an early opinion on a coding descision.  If this is the case, you
-should mark the pull request as a *draft* on GitHub.
+should mark the PR as a *draft* on GitHub.
 
 Once the work is ready to be reviewed, you may want to assign a reviewer,
 if you think someone would be well suited to review this change.  It is worth
@@ -55,7 +55,7 @@ Release branches
 
 Branches named `release-*` are protected branches; code must be approved by
 a reviewer before being added to them, and automated tests will be run on
-pull requests to these branches.  If code is to be included in the release, it
+PRs to these branches.  If code is to be included in the release, it
 must be pulled into this branch from master.
 
 Release branches should have the format `release-major.minor.x`, starting from
@@ -65,7 +65,7 @@ be created accordingly.  If at some point we don't want to provide hot-fixes
 to a given minor release, then the corresponding release branch may be deleted.
 
 All changes must be initially merged into master.
-There is a `backport-candidate` label, which must be put on pull requests
+There is a `backport-candidate` label, which must be put on PRs
 that in addition must be merged into the release branch.
 
 The recommended mechanism for merging PRs lablelled with `backport-candidate` into
