@@ -365,37 +365,15 @@ class FitbenchmarkParser(Parser):
         fit_function = None
 
         for f in self._parsed_func:
-
-            # use mantid function factory to seperate attributes and parameters
-            fcopy = f.copy()
-            if 'ties' in fcopy:
-                fcopy.pop('ties')
-            fstring = ", ".join(f"{key}={value}"
-                                for key, value in fcopy.items())
-            ffun = msapi.FunctionFactory.createInitialized(fstring)
-            attr_names = [s for s in ffun.attributeNames()]
-
-            # filter parameters
+            name = f['name']
             params = f.copy()
-            for key in ['name', 'ties']:  # filter name, ties from params
+            for key in ['name', 'ties']:
                 if key in params:
                     params.pop(key)
-            attributes = {}
-            for attr in attr_names:  # filter attributes from params
-                if attr in params:
-                    if attr == 'Formula':  # handle formulas hack
-                        continue
-                    attributes[attr] = params[attr]
-                    params.pop(attr)
-
-            # create mantid callable
-            name = f['name']
             tmp_function = msapi.__dict__[name](**params)
-            for key, value in attributes.items():  # set attributes
-                tmp_function.setAttributeValue(key, value)
-            if 'ties' in f:  # set ties
+            if 'ties' in f:
                 tmp_function.tie(f['ties'])
-            if fit_function is None:  # concatenate multiple callables
+            if fit_function is None:
                 fit_function = tmp_function
             else:
                 fit_function += tmp_function
