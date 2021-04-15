@@ -6,6 +6,8 @@ from __future__ import absolute_import, division, print_function
 
 import os
 from collections import OrderedDict
+import importlib
+import inspect
 
 import numpy as np
 
@@ -17,6 +19,13 @@ from fitbenchmarking.utils.log import get_logger
 LOGGER = get_logger()
 
 import_success = {}
+try:
+    from scipy.integrate import solve_ivp
+    import_success['ivp'] = (True, None)
+except ImportError as ex:
+    import_success['ivp'] = (False, ex)
+
+
 try:
     import mantid.simpleapi as msapi
     import_success['mantid'] = (True, None)
@@ -59,10 +68,15 @@ class FitbenchmarkParser(Parser):
 
         self._entries = self._get_data_problem_entries()
         software = self._entries['software'].lower()
-        if not (software in import_success and import_success[software][0]):
+        if software not in import_success:
+            raise MissingSoftwareError(
+                f'Did not recognise software: {software}'
+            )
+        elif not import_success[software][0]:
             error = import_success[software][1]
-            raise MissingSoftwareError('Requirements are missing for {} parser'
-                                       ': {}'.format(software, error))
+            raise MissingSoftwareError(
+                f'Requirements are missing for {software} parser: {error}'
+            )
 
         self._parsed_func = self._parse_function()
 
@@ -82,16 +96,26 @@ class FitbenchmarkParser(Parser):
         elif software == 'sasview':
             fitting_problem.function = self._create_sasview_function()
             fitting_problem.format = 'sasview'
+        elif software == 'ivp':
+            fitting_problem.function = self._create_ivp_function()
+            fitting_problem.format = 'ivp'
 
         # EQUATION
-        equation_count = len(self._parsed_func)
-        if equation_count == 1:
-            fitting_problem.equation = self._parsed_func[0]['name']
+        if software == 'ivp':
+            fitting_problem.equation = self._equation_name
         else:
-            fitting_problem.equation = '{} Functions'.format(equation_count)
+            equation_count = len(self._parsed_func)
+            if equation_count == 1:
+                fitting_problem.equation = self._parsed_func[0]['name']
+            else:
+                fitting_problem.equation = '{} Functions'.format(
+                    equation_count)
 
         # STARTING VALUES
-        fitting_problem.starting_values = self._get_starting_values()
+        if software == 'ivp':
+            fitting_problem.starting_values = self._ivp_starting_values
+        else:
+            fitting_problem.starting_values = self._get_starting_values()
 
         # PARAMETER RANGES
         # Creates list containing tuples of lower and upper bounds
@@ -364,6 +388,43 @@ class FitbenchmarkParser(Parser):
             func_wrapper = Experiment(data=data, model=model_wrapper)
 
             return func_wrapper.theory()
+
+        return fitFunction
+
+    def _create_ivp_function(self):
+        """
+        Process the IVP formatted function into a callable.
+
+        Expected function format:
+        function='module=my_python_file,func=my_function_name,p0=0.1,p1...'
+
+        :return: the model
+        :rtype: callable
+        """
+        if len(self._parsed_func) > 1:
+            raise ParsingError('Could not parse IVP problem. Please ensure '
+                               'only 1 function definition is present')
+
+        pf = self._parsed_func[0]
+        module = importlib.import_module(pf['module'])
+        fun = getattr(module, pf['func'])
+        time_step = pf['step']
+        sig = inspect.signature(fun)
+        # params[0] should be t
+        # parmas[1] should be x so start after.
+        p_names = list(sig.parameters.keys())[2:]
+
+        self._ivp_equation_name = fun.__name__
+        self._ivp_starting_values = [
+            OrderedDict([(n, pf[n])
+                         for n in p_names])
+            ]
+
+        def fitFunction(x, *p):
+            return solve_ivp(fun=fun,
+                             t_span=[0, time_step],
+                             y0=x,
+                             args=p)
 
         return fitFunction
 
