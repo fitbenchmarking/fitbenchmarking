@@ -92,8 +92,7 @@ class FitbenchmarkParser(Parser):
 
         # STARTING VALUES
         if software == 'mantid':
-            fitting_problem.starting_values \
-                = self._get_mantid_starting_values()
+            fitting_problem.starting_values = self._mantid_starting_values
         else:
             fitting_problem.starting_values = self._get_starting_values()
 
@@ -312,33 +311,6 @@ class FitbenchmarkParser(Parser):
 
         return starting_values
 
-    def _get_mantid_starting_values(self):
-        """
-        Get the starting values for the problem
-
-        :return: Starting values for the function
-        :rtype: list of OrderedDict
-        """
-
-        # get function string(s)
-        fstrings = self._entries['function'].split(';')
-
-        name_template = '{1}' if len(self._parsed_func) == 1 else 'f{0}_{1}'
-        starting_values = []
-        for i, f in enumerate(self._parsed_func):
-
-            # use mantid function factory to seperate attributes and parameters
-            ffun = msapi.FunctionFactory.createInitialized(fstrings[i])
-
-            params = {ffun.getParamName(i): ffun.getParamValue(i)
-                      for i in range(ffun.nParams())}
-            starting_values += [(name_template.format(i, name), val)
-                                for name, val in params.items()]
-
-        starting_values = [OrderedDict(starting_values)]
-
-        return starting_values
-
     def _create_mantid_function(self):
         """
         Processing the function in the FitBenchmark problem definition into a
@@ -347,23 +319,40 @@ class FitbenchmarkParser(Parser):
         :return: A callable function
         :rtype: callable
         """
-        fit_function = None
+        # Get mantid to build the function
+        ifun = msapi.FunctionFactory.createInitialized(
+            self._entries['function'])
 
-        for f in self._parsed_func:
-            name = f['name']
-            params = f.copy()
-            for key in ['name', 'ties']:
-                if key in params:
-                    params.pop(key)
-            tmp_function = msapi.__dict__[name](**params)
-            if 'ties' in f:
-                tmp_function.tie(f['ties'])
-            if fit_function is None:
-                fit_function = tmp_function
-            else:
-                fit_function += tmp_function
+        # Extract the parameter info
+        all_params = [(ifun.getParamName(i),
+                       ifun.getParamValue(i),
+                       ifun.isFixed(i))
+                      for i in range(ifun.nParams())]
 
-        return fit_function
+        # This list will be used to input fixed values alongside unfixed ones
+        all_params_dict = {name: value
+                           for name, value, _ in all_params}
+
+        # Extract starting parameters
+        params = {name: value
+                  for name, value, fixed in all_params
+                  if not fixed}
+        self._mantid_starting_values = [OrderedDict(params)]
+
+        # Convert to callable
+        fit_function = msapi.FunctionWrapper(ifun)
+
+        # Use a wrapper to inject fixed parameters into the function
+        def wrapped(x, *p):
+            # Use the full param dict from above, but update the non-fixed
+            # values
+            update_dict = {name: value
+                           for name, value in zip(params.keys(), p)}
+            all_params_dict.update(update_dict)
+
+            return fit_function(x, *all_params_dict.values())
+
+        return wrapped
 
     def _create_sasview_function(self):
         """

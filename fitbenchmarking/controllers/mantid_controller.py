@@ -2,6 +2,7 @@
 Implements a controller for the Mantid fitting software.
 """
 
+from numpy.core.fromnumeric import sort
 from mantid import simpleapi as msapi
 from mantid.fitfunctions import FunctionFactory, IFunction1D
 import numpy as np
@@ -197,8 +198,12 @@ class MantidController(Controller):
         else:
             self.flag = 2
 
-        # Mantid gives chi sq as last elem in params
-        final_params = self._mantid_results.OutputParameters.column(1)[:-1]
+        final_params_dict = {name: value for name, value in zip(
+            self._mantid_results.OutputParameters.column(0),
+            self._mantid_results.OutputParameters.column(1))}
+
+        final_params = [final_params_dict[key] for key in self._param_names]
+
         num_params = len(self.initial_params)
         if self._multi_fit:
             self.final_params = [final_params[i * num_params:(i + 1) * num_params]
