@@ -330,8 +330,8 @@ class FitbenchmarkParser(Parser):
             # use mantid function factory to seperate attributes and parameters
             ffun = msapi.FunctionFactory.createInitialized(fstrings[i])
 
-            params = {ffun.getParamName(i): ffun.getParamValue(
-                i) for i in range(ffun.nParams()) if not ffun.isFixed(i)}
+            params = {ffun.getParamName(i): ffun.getParamValue(i)
+                      for i in range(ffun.nParams())}
             starting_values += [(name_template.format(i, name), val)
                                 for name, val in params.items()]
 
