@@ -1,5 +1,5 @@
 """
-Implements a controller for the CERN pacakage Minuit
+Implements a controller for the CERN package Minuit
 https://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/
 using the iminuit python interface
 http://iminuit.readthedocs.org
