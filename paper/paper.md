@@ -52,11 +52,11 @@ Representatives of each of these communities have got together to build `FitBenc
 # State of the field
 
 Fitting data to models is a form of optimization, and 
-for general optimization, `CUTEst` [@cutest], and its predecessors, has been the
-standard tool to benchmark packages for some time. `CUTEst` can benchmark any problem
+`CUTEst` [@cutest], and its predecessors, has been the standard tool to
+benchmark optimization packages for some time. `CUTEst` can benchmark any problem
 written in a custom `SIF` format.  However, only the hooks to run the same problem are
 provided, the user must provide their own data analysis.  Tools such as
-`Paver` [@paver], with is part of the COIN-OR initiative, can be used
+`Paver` [@paver], part of the COIN-OR initiative, can be used
 alongside `CUTEst` (or other tools) for this purpose.
 The packages `Olympus` [@olympus] and `Benchopt` [@benchopt] have been recently
 developed as benchmarking and analysis frameworks for optimization problems.
@@ -82,10 +82,11 @@ what makes our software unique is:
 * While being easy to extend using new software, or new data from currently supported
   packages, `FitBechmarking` ships with open datasets that all can use for testing.
 * FitBenchmarking tests implementations of algorithms, not just algorithms.
-  A growing number of packages that can be used for data fitting are supported, and
-  it is straightforward to extend our `controller` class to add new software.
-* `FitBenchmarking` performs its own data analysis and processing, and the output
-  generated can be customized if appropriate for new data sets and/or minimizers.  
+  A growing number of optimization packages that can be used for data fitting are
+  supported, and it is straightforward to extend our `controller` class to add new
+  software.
+* `FitBenchmarking` performs its own data processing and analysis and, if needed,
+  the output generated can be customized for new data sets and/or minimizers.  
 
 As far as we are aware, `FitBenchmarking` is the only package that is designed
 specifically to interface directly with optimization  packages and individual
