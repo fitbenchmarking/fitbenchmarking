@@ -398,7 +398,7 @@ class DefaultControllerBoundsTests(TestCase):
         """
         Setup for bounded problem
         """
-        self.cost_func = make_cost_func('prob_def_1_test_bounds.txt')
+        self.cost_func = make_cost_func('cubic-fba-test-bounds.txt')
         self.problem = self.cost_func.problem
         self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
@@ -456,6 +456,16 @@ class DefaultControllerBoundsTests(TestCase):
         """
         controller = DFOController(self.cost_func)
         controller.minimizer = 'dfogn'
+
+        self.check_bounds(controller)
+
+    def test_bumps(self):
+        """
+        BumpsController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = BumpsController(self.cost_func)
+        controller.minimizer = 'amoeba'
 
         self.check_bounds(controller)
 
@@ -638,7 +648,7 @@ class ExternalControllerBoundsTests(TestCase):
         """
         Setup for bounded problem
         """
-        self.cost_func = make_cost_func('prob_def_1_test_bounds.txt')
+        self.cost_func = make_cost_func('cubic-fba-test-bounds.txt')
         self.problem = self.cost_func.problem
         self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
