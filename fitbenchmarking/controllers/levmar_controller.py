@@ -5,6 +5,7 @@ via the python interface
 https://pypi.org/project/levmar/
 """
 
+import numpy as np
 import levmar
 
 from fitbenchmarking.controllers.base_controller import Controller
@@ -25,7 +26,6 @@ class LevmarController(Controller):
         """
         super(LevmarController, self).__init__(cost_func)
 
-        self._param_names = self.problem.param_names
         self.support_for_bounds = True
         self._popt = None
         self.algorithm_check = {
@@ -48,18 +48,11 @@ class LevmarController(Controller):
         Setup problem ready to be run with levmar
         """
 
-        # If parameter ranges have been set in problem, then set up bounds
-        # option for scipy minimize function. Here the bounds option is a
-        # sequence of (lb,ub) pairs for each parameter.
-        self.value_ranges = []
-        for name in self._param_names:
-            if self.problem.value_ranges is not None \
-                    and name in self.problem.value_ranges:
-                self.value_ranges.append(
-                    (self.problem.value_ranges[name][0],
-                     self.problem.value_ranges[name][1]))
-            else:
-                self.value_ranges.append((None, None))
+        if self.value_ranges is not None:
+            lb, ub = zip(*self.value_ranges)
+            lb = [None if x == -np.inf else x for x in lb]
+            ub = [None if x == np.inf else x for x in ub]
+            self.param_ranges = list(zip(lb, ub))
 
     def _feval(self, p, x):
         """
@@ -98,7 +91,6 @@ class LevmarController(Controller):
             jac = None
         else:
             jac = self._jeval
-            
         if self.problem.value_ranges is None:
             solve_levmar = getattr(levmar,"levmar")
         else:
@@ -106,8 +98,8 @@ class LevmarController(Controller):
         args = [self._feval,
                 self.initial_params,
                 self.data_y]
-        if self.problem.value_ranges is not None:
-            args.append(self.value_ranges)
+        if self.value_ranges is not None:
+            args.append(self.param_ranges)
         kwargs = {"args": (self.data_x,)}
         if not self.jacobian.use_solver_jac:
             kwargs["jacf"] = self._jeval

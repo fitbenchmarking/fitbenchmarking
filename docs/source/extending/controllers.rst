@@ -80,7 +80,7 @@ following members of the
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
-          :members: eval_model, data_x, data_y, data_e
+          :members: eval_model, data_x, data_y, data_e, set_value_ranges
           :noindex:
 
 .. currentmodule:: fitbenchmarking.cost_func.base_cost_func

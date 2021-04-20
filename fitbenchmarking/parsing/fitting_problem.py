@@ -69,11 +69,11 @@ class FittingProblem:
         #: {p1_name: p1_val2, ...}, ...]`
         self.starting_values = None
 
-        #: *dict*
+        #: *list*
         #: Smallest and largest values of interest in the data
         #:
         #: e.g.
-        #: :code:`{p1_name: [p1_min, p1_max], ...}`
+        #: :code:`[(p1_min, p1_max), (p2_min, p2_max),...]`
         self.value_ranges = None
 
         #: Callable function
@@ -210,6 +210,28 @@ class FittingProblem:
                 self.data_y[i] = correct_vals[1]
                 self.data_e[i] = correct_vals[2]
                 self.sorted_index.append(correct_vals[3])
+
+    def set_value_ranges(self, value_ranges):
+        """
+        Function to format parameter bounds before passing to controllers,
+        so self.value_ranges is a list of tuples, which contain lower and
+        upper bounds (lb,ub) for each parameter in the problem
+
+        :param value_ranges: dictionary of bounded parameter names with
+                             lower and upper bound values e.g.
+                            :code:`{p1_name: [p1_min, p1_max], ...}`
+        :type params: dict
+
+        """
+        self.value_ranges = []
+        for name in self.starting_values[0].keys():
+            param_name = name.lower()
+            if param_name in value_ranges:
+                self.value_ranges.append(
+                    (value_ranges[param_name][0],
+                        value_ranges[param_name][1]))
+            else:
+                self.value_ranges.append((-np.inf, np.inf))
 
 
 def correct_data(x, y, e, startx, endx, use_errors):

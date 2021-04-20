@@ -26,7 +26,6 @@ class ScipyController(Controller):
         """
         super(ScipyController, self).__init__(cost_func)
 
-        self._param_names = self.problem.param_names
         self.support_for_bounds = True
         self.no_bounds_minimizers = ['Nelder-Mead', 'CG', 'BFGS', 'Newton-CG']
         self._popt = None
@@ -51,19 +50,6 @@ class ScipyController(Controller):
         Setup problem ready to be run with SciPy
         """
         self.options = {'maxiter': 500}
-
-        # If parameter ranges have been set in problem, then set up bounds
-        # option for scipy minimize function. Here the bounds option is a
-        # sequence of (lb,ub) pairs for each parameter.
-        self.value_ranges = []
-        for name in self._param_names:
-            if self.problem.value_ranges is not None \
-                    and name in self.problem.value_ranges:
-                self.value_ranges.append(
-                    (self.problem.value_ranges[name][0],
-                     self.problem.value_ranges[name][1]))
-            else:
-                self.value_ranges.append((-np.inf, np.inf))
 
     def fit(self):
         """

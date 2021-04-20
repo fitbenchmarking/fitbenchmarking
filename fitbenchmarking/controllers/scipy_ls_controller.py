@@ -23,7 +23,7 @@ class ScipyLSController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super(ScipyLSController, self).__init__(cost_func)
-        self._param_names = self.problem.param_names
+
         self.support_for_bounds = True
         self.no_bounds_minimizers = ['lm-scipy-no-jac', 'lm-scipy']
         self._popt = None
@@ -54,17 +54,12 @@ class ScipyLSController(Controller):
         # must be a 2 tuple array like object, the first tuple containing
         # the lower bounds for each parameter and the second containing all
         # upper bounds.
-        value_ranges_lb = []
-        value_ranges_ub = []
-        for name in self._param_names:
-            if self.problem.value_ranges is not None \
-                    and name in self.problem.value_ranges:
-                value_ranges_lb.extend([self.problem.value_ranges[name][0]])
-                value_ranges_ub.extend([self.problem.value_ranges[name][1]])
-            else:
-                value_ranges_lb.extend([-np.inf])
-                value_ranges_ub.extend([np.inf])
-        self.value_ranges = (value_ranges_lb, value_ranges_ub)
+        if self.value_ranges is not None:
+            value_ranges_lb, value_ranges_ub = zip(*self.value_ranges)
+            self.param_ranges = (list(value_ranges_lb), list(value_ranges_ub))
+        else:
+            self.param_ranges = (
+                [-np.inf]*len(self.initial_params), [np.inf]*len(self.initial_params))
 
     def fit(self):
         """
@@ -83,7 +78,7 @@ class ScipyLSController(Controller):
         if not self.jacobian.use_solver_jac:
             kwargs['jac'] = self.jacobian.eval
         if self.minimizer != "lm":
-            kwargs['bounds'] = self.value_ranges
+            kwargs['bounds'] = self.param_ranges
 
         if self.minimizer == "lm-scipy-no-jac":
             self.result = least_squares(fun=self.cost_func.eval_r,

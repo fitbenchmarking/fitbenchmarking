@@ -26,7 +26,6 @@ class RALFitController(Controller):
         super(RALFitController, self).__init__(cost_func)
 
         self.support_for_bounds = True
-        self._param_names = self.problem.param_names
         self._popt = None
         self._options = {}
         self.algorithm_check = {
@@ -67,17 +66,16 @@ class RALFitController(Controller):
             raise UnknownMinimizerError(
                 "No {} minimizer for RALFit".format(self.minimizer))
 
-        value_ranges_lb = []
-        value_ranges_ub = []
-        for name in self._param_names:
-            if self.problem.value_ranges is not None \
-                    and name in self.problem.value_ranges:
-                value_ranges_lb.extend([self.problem.value_ranges[name][0]])
-                value_ranges_ub.extend([self.problem.value_ranges[name][1]])
-            else:
-                value_ranges_lb.extend([-np.inf])
-                value_ranges_ub.extend([np.inf])
-        self.value_ranges = (value_ranges_lb, value_ranges_ub)
+        # If parameter ranges have been set in problem, then set up bounds
+        # option. For RALFit, this must be a 2 tuple array like object,
+        # the first tuple containing the lower bounds for each parameter
+        # and the second containing all upper bounds.
+        if self.value_ranges is not None:
+            value_ranges_lb, value_ranges_ub = zip(*self.value_ranges)
+            self.param_ranges = (value_ranges_lb, value_ranges_ub)
+        else:
+            self.param_ranges = (
+                [-np.inf]*len(self.initial_params), [np.inf]*len(self.initial_params))
 
     def fit(self):
         """
@@ -87,8 +85,8 @@ class RALFitController(Controller):
                                     self.cost_func.eval_r,
                                     self.jacobian.eval,
                                     options=self._options,
-                                    lower_bounds=self.value_ranges[0],
-                                    upper_bounds=self.value_ranges[1])[0]
+                                    lower_bounds=self.param_ranges[0],
+                                    upper_bounds=self.param_ranges[1])[0]
         self._status = 0 if self._popt is not None else 1
 
     def cleanup(self):
