@@ -96,5 +96,10 @@ parameter_ranges
 
   Currently in Fitbenchmarking, problems with `parameter_ranges` can
   be handled by SciPy, Bumps, Minuit, DFO, Levmar and RALFit fitting
-  software. Please note that for SASView problems, Bumps does not
-  necessarily respect parameter bounds.
+  software.
+  
+  Please note that for SASView problems, Bumps does not
+  necessarily respect parameter bounds. Additionally, the following
+  Mantid minimizers currently throw an exception when `parameter_ranges`
+  are used: BFGS, Conjugate gradient (Fletcher-Reeves imp.),
+  Conjugate gradient (Polak-Ribiere imp.) and SteepestDescent.
