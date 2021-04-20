@@ -42,14 +42,14 @@ Default is ``2-point``
     [JACOBIAN]
     scipy: 2-point
 
-.. _solver-jac:
+.. _solver:
 
-Solver Default Jacobian (:code:`solver-jac`)
+Solver Default Jacobian (:code:`solver`)
 --------------------------------------------
 
 This uses the approximation of the Jacobian that is used by default in the solver,
 and will vary between solvers.  If the solver requires the user to pass a Jacobian,
-a warning will be printed to the screen and the `scipy-jac`_ 2-point
+a warning will be printed to the screen and the :ref:`scipy-jac` 2-point
 approximation will be used.  The only options is:
 
 * ``default`` - use the default derivative approxmation provided by the software.
@@ -59,7 +59,7 @@ Default is ``default``
 .. code-block:: rst
 
     [JACOBIAN]
-    solver-jac: default
+    solver: default
     
 .. _numdifftools-jac:
 
