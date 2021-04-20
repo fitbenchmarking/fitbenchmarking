@@ -97,8 +97,11 @@ class FitbenchmarkParser(Parser):
             fitting_problem.starting_values = self._get_starting_values()
 
         # PARAMETER RANGES
+        # Creates list containing tuples of lower and upper bounds
+        # (lb,ub) for each parameter
         vr = _parse_range(self._entries.get('parameter_ranges', ''))
-        fitting_problem.value_ranges = vr if vr != {} else None
+        if vr:
+            fitting_problem.set_value_ranges(vr)
 
         # FIT RANGES
         fit_ranges_str = self._entries.get('fit_ranges', '')

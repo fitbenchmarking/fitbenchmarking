@@ -94,13 +94,13 @@ class BumpsController(Controller):
                                 'chosen cost function.')
 
         # Set a range for each parameter
-        val_ranges = self.problem.value_ranges
-        for name in self._param_names:
-            min_val = -np.inf
-            max_val = np.inf
-            if val_ranges is not None and name in val_ranges:
-                min_val = val_ranges[name][0]
-                max_val = val_ranges[name][1]
+        for ind, name in enumerate(self._param_names):
+            if self.value_ranges is not None:
+                min_val = self.value_ranges[ind][0]
+                max_val = self.value_ranges[ind][1]
+            else:
+                min_val = -np.inf
+                max_val = np.inf
             func_wrapper.__dict__[name].range(min_val, max_val)
 
         # Create a Problem Wrapper. The type of the Problem Wrapper is
