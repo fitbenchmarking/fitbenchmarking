@@ -177,14 +177,26 @@ class GenerateTableTests(unittest.TestCase):
             html_id_expected = expected[1].strip(' ').split('row')[0][1:]
             html_id = table.splitlines()[1].strip(' ').split('row')[0][1:]
         diff = []
-        for act_line, exp_line in zip(table.splitlines(), expected):
+        for i, (act_line, exp_line) in enumerate(
+                zip(table.splitlines(), expected)):
             exp_line = '' if exp_line is None else exp_line.strip('\n')
             act_line = '' if act_line is None else act_line.strip('\n')
             exp_line = exp_line.replace(html_id_expected, html_id)
             # to pass on windows need to first do this before comparing
             act_line = act_line.replace('href=\"..\\', 'href=\"../')
             if act_line != exp_line:
-                diff.append([exp_line, act_line])
+                diff.append([i, exp_line, act_line])
+        if diff != []:
+            print("Comparing against {}".format(expected_table))
+            for change in diff:
+                print("== Line {} ==".format(change[0]))
+                print("Expected: {}".format(change[1]))
+                print("Actual:   {}".format(change[2]))
+            print("\n==\n")
+            print("Output generated (also saved as actual.out):")
+            print(table)
+            with open("actual.out","w") as outfile:
+                print(table, file=outfile)
         self.assertListEqual([], diff)
 
 
