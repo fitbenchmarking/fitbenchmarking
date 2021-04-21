@@ -29,8 +29,8 @@ class LevmarController(Controller):
         self.support_for_bounds = True
         self._popt = None
         self.algorithm_check = {
-            'all': ['levmar', 'levmar-no-jac'],
-            'ls': ['levmar', 'levmar-no-jac'],
+            'all': ['levmar'],
+            'ls': ['levmar'],
             'deriv_free': [],
             'general': []}
         self._info = None
@@ -40,7 +40,7 @@ class LevmarController(Controller):
         levmar can use Jacobian information
         """
         has_jacobian = True
-        jacobian_free_solvers = ["levmar-no-jac"]
+        jacobian_free_solvers = []
         return has_jacobian, jacobian_free_solvers
 
     def setup(self):
@@ -87,10 +87,6 @@ class LevmarController(Controller):
         """
         run problem with levmar
         """
-        if self.minimizer == "levmar-no-jac":
-            jac = None
-        else:
-            jac = self._jeval
         if self.problem.value_ranges is None:
             solve_levmar = getattr(levmar,"levmar")
         else:

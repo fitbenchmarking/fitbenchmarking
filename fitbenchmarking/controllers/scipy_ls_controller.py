@@ -25,11 +25,11 @@ class ScipyLSController(Controller):
         super(ScipyLSController, self).__init__(cost_func)
 
         self.support_for_bounds = True
-        self.no_bounds_minimizers = ['lm-scipy-no-jac', 'lm-scipy']
+        self.no_bounds_minimizers = ['lm-scipy']
         self._popt = None
         self.algorithm_check = {
-            'all': ['lm-scipy-no-jac', 'lm-scipy', 'trf', 'dogbox'],
-            'ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf', 'dogbox'],
+            'all': ['lm-scipy', 'trf', 'dogbox'],
+            'ls': ['lm-scipy', 'trf', 'dogbox'],
             'deriv_free': [None],
             'general': [None]}
 
@@ -38,7 +38,7 @@ class ScipyLSController(Controller):
         Scipy LS can use Jacobian information
         """
         has_jacobian = True
-        jacobian_free_solvers = ["lm-scipy-no-jac"]
+        jacobian_free_solvers = [None]
         return has_jacobian, jacobian_free_solvers
 
     def setup(self):
@@ -65,12 +65,6 @@ class ScipyLSController(Controller):
         """
         Run problem with Scipy LS.
         """
-        # The minimizer "lm-scipy-no-jac" uses MINPACK's Jacobian evaluation
-        # which are significantly faster and gives different results than
-        # using the minimizer "lm-scipy" which uses jacobian.eval for the
-        # Jacobian evaluation. We do not see significant speed changes or
-        # difference in the accuracy results when running trf or dogbox with
-        # or without problem.jac.eval for the Jacobian evaluation
         kwargs = {'fun': self.cost_func.eval_r,
                   'x0': self.initial_params,
                   'method': self.minimizer,
@@ -79,14 +73,7 @@ class ScipyLSController(Controller):
             kwargs['jac'] = self.jacobian.eval
         if self.minimizer != "lm":
             kwargs['bounds'] = self.param_ranges
-
-        if self.minimizer == "lm-scipy-no-jac":
-            self.result = least_squares(fun=self.cost_func.eval_r,
-                                        x0=self.initial_params,
-                                        method="lm",
-                                        max_nfev=500)
-        else:
-            self.result = least_squares(**kwargs)
+        self.result = least_squares(**kwargs)
         self._popt = self.result.x
         self._status = self.result.status
 

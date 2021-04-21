@@ -37,9 +37,6 @@ class Controller:
           that cannot use derivative information. For example, the
           ``Simplex`` method in ``Mantid`` does not require Jacobians, and so
           is derivative free.
-          However, ``lm-scipy-no-jac`` in ``scipy_ls`` is designed to use
-          derivatives, but calculates an approximation internally if one is not
-          supplied.)
         - ``general`` - minimizers which solve a generic `min f(x)`.
 
         The **values** of the dictionary are given as a list of minimizers
@@ -230,9 +227,9 @@ class Controller:
         - ``has_jacobian``: a True or False value whether the controller
           requires Jacobian information.
         - ``jacobian_free_solvers``: a list of minimizers in a specific
-          software that do not require Jacobian information to be passed
-          into the fitting algorithm. For example in the ``ScipyLS``
-          controller this would return ``lm-scipy-no-jac``.
+          software that do not allow Jacobian information to be passed
+          into the fitting algorithm. For example in the ``Scipy``
+          controller this would return ``Nelder-Mead`` and ``Powell``.
 
         :return: (``has_jacobian``, ``jacobian_free_solvers``)
         :rtype: (`string`, `list`)

@@ -24,7 +24,7 @@ class Options(object):
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                  'vector_bfgs2', 'steepest_descent'],
-         'levmar': ['levmar','levmar-no-jac'],
+         'levmar': ['levmar'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
@@ -35,8 +35,7 @@ class Options(object):
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-         'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf',
-                      'dogbox']}
+         'scipy_ls': ['lm-scipy', 'trf', 'dogbox']}
     VALID_FITTING = \
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general'],
          'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'minuit',
@@ -84,8 +83,7 @@ class Options(object):
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-         'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf',
-                      'dogbox']}
+         'scipy_ls': ['lm-scipy', 'trf', 'dogbox']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': 'all',
