@@ -62,7 +62,8 @@ The options are:
 
 * ``all`` - all minimizers
 * ``ls`` - least-squares fitting algorithms
-* ``deriv_free`` - derivative free algorithms (these are algorithms that do not require an information about derivatives. For example, the ``Simplex`` method in ``Mantid`` does not require derivative information but ``lm-scipy-no-jac`` in ``scipy_ls`` does but the derivative is handle internally within the software package)
+* ``deriv_free`` - derivative free algorithms (these are algorithms that cannot use
+  information about derivatives -- e.g., the ``Simplex`` method in ``Mantid``)
 * ``general`` - minimizers which solve a generic `min f(x)`
 
 Default is ``all``
