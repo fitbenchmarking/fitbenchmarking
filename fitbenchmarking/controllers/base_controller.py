@@ -19,7 +19,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    VALID_FLAGS = [0, 1, 2, 3, 4]
+    VALID_FLAGS = [0, 1, 2, 3, 4, 5]
 
     def __init__(self, cost_func):
         """
@@ -107,6 +107,7 @@ class Controller:
         | 2: `Software run but didn't converge to solution`
         | 3: `Software raised an exception`
         | 4: `Solver doesn't support bounded problems`
+        | 5: `Solution doesn't respect parameter bounds`
         """
 
         return self._flag
@@ -191,6 +192,16 @@ class Controller:
             message = 'The selected minimizer does not currently support ' \
                       'problems with parameter bounds'
             raise IncompatibleMinimizerError(message)
+
+    def check_bounds_respected(self):
+        """
+            Check whether the selected minimizer has respected
+            parameter bounds
+        """
+        for count, value in enumerate(self.final_params):
+            if not self.value_ranges[count][0] <= value \
+                <= self.value_ranges[count][1]:
+                self.flag = 5
 
     def check_attributes(self):
         """
