@@ -200,7 +200,7 @@ class Controller:
         """
         for count, value in enumerate(self.final_params):
             if not self.value_ranges[count][0] <= value \
-                <= self.value_ranges[count][1]:
+                    <= self.value_ranges[count][1]:
                 self.flag = 5
 
     def check_attributes(self):

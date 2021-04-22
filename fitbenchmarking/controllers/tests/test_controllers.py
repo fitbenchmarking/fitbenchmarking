@@ -287,8 +287,8 @@ class BaseControllerTests(TestCase):
     def test_bounds_respected_true(self):
 
         controller = DummyController(self.cost_func)
-        controller.value_ranges = [(10,20),(20,30)]
-        controller.final_params = [15,30]
+        controller.value_ranges = [(10, 20), (20, 30)]
+        controller.final_params = [15, 30]
         controller.flag = 0
 
         controller.check_bounds_respected()
@@ -298,8 +298,8 @@ class BaseControllerTests(TestCase):
     def test_bounds_respected_false(self):
 
         controller = DummyController(self.cost_func)
-        controller.value_ranges = [(10,20),(20,30)]
-        controller.final_params = [25,35]
+        controller.value_ranges = [(10, 20), (20, 30)]
+        controller.final_params = [25, 35]
         controller.flag = 0
 
         controller.check_bounds_respected()
