@@ -2,7 +2,6 @@
 Implements a controller for the Mantid fitting software.
 """
 
-from numpy.core.fromnumeric import sort
 from mantid import simpleapi as msapi
 from mantid.fitfunctions import FunctionFactory, IFunction1D
 import numpy as np

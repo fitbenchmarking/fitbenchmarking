@@ -26,12 +26,27 @@ The following list details all cases where we are aware of a possible bias:
   than for all other minimizers. You should account for this when interpreting the
   results obtained in this case.
 
-- **Using ties in native FitBenchmarking problems with the Mantid software.**
+- **Using non-scalar ties in native FitBenchmarking problems with the Mantid software.**
 
-  This is not available for non-Mantid fitting software.
-  In these cases, a warning will be generated.
+  Mantid allows parameters to be tied to expressions - e.g. X0=5.0 or X0=X1*2.
+  While scalar ties are now supported for all minimizers the more complicated
+  expressions are not supported. If you need this feature please get in touch
+  with the development team with your use case.
 
 
 In all cases, the stopping criterion of each minimizer is set to the default
 value.
 An experienced user can change this.
+
+
+***************************************
+Specific Problem/Minimizer Combinations
+***************************************
+
+- **CrystalField Example with Mantid - DampedGaussNewton Minimizer.**
+
+  With this combination, GSL is known to crash during Mantid's fitting.
+  This causes python to exit without completing any remaining runs or
+  generating output files.
+  More information may be available via
+  `the issue on Mantids github page <https://github.com/mantidproject/mantid/issues/31176>`__.

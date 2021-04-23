@@ -305,11 +305,9 @@ class FitbenchmarkParser(Parser):
         # SasView functions can have reserved keywords so ignore these
         ignore = ['name']
 
-        name_template = '{1}' if len(self._parsed_func) == 1 else 'f{0}_{1}'
         starting_values = [
-            OrderedDict([(name_template.format(i, name), val)
-                         for i, f in enumerate(self._parsed_func)
-                         for name, val in f.items()
+            OrderedDict([(name, val)
+                         for name, val in self._parsed_func[0].items()
                          if name not in ignore])]
 
         return starting_values
