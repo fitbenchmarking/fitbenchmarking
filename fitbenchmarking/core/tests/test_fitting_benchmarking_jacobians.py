@@ -4,7 +4,8 @@ Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians
 from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
-import unittest
+from unittest import TestCase
+from unittest.mock import patch
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
@@ -14,7 +15,6 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
-
 
 # Due to construction of the controllers two folder functions
 # pylint: disable=unnecessary-pass
@@ -85,7 +85,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     return cost_func
 
 
-class LoopOverJacobiansTests(unittest.TestCase):
+class LoopOverJacobiansTests(TestCase):
     """
     loop_over_jacobians tests
     """
@@ -160,6 +160,17 @@ class LoopOverJacobiansTests(unittest.TestCase):
                    name in zip(results, new_name))
         assert new_minimizer_list == new_name
 
+    @patch.object(DummyController,"check_bounds_respected")
+    def test_bounds_respected_func_called(self, check_bounds_respected):
+        self.controller.problem.value_ranges = {'test':(0,1)}
+        self.controller.has_jacobian = [True]
+        self.controller.invalid_jacobians = ["deriv_free_algorithm"]
+        self.controller.minimizer = "deriv_free_algorithm"
+        results, chi_sq, new_minimizer_list = \
+            loop_over_jacobians(self.controller,
+                                self.options,
+                                self.grabbed_output)
+        check_bounds_respected.assert_called()
 
 if __name__ == "__main__":
     unittest.main()
