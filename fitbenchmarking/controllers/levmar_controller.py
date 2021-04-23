@@ -88,9 +88,9 @@ class LevmarController(Controller):
         run problem with levmar
         """
         if self.problem.value_ranges is None:
-            solve_levmar = getattr(levmar,"levmar")
+            solve_levmar = getattr(levmar, "levmar")
         else:
-            solve_levmar = getattr(levmar,"levmar_bc")
+            solve_levmar = getattr(levmar, "levmar_bc")
         args = [self._feval,
                 self.initial_params,
                 self.data_y]

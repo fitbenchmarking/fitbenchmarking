@@ -257,7 +257,8 @@ class Controller:
         """
         Run the fitting.
 
-        This will be timed so should include only what is needed to fit the data.
+        This will be timed so should include only what is needed to
+        fit the data.
         """
         raise NotImplementedError
 

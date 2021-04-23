@@ -59,7 +59,8 @@ class ScipyLSController(Controller):
             self.param_ranges = (list(value_ranges_lb), list(value_ranges_ub))
         else:
             self.param_ranges = (
-                [-np.inf]*len(self.initial_params), [np.inf]*len(self.initial_params))
+                [-np.inf]*len(self.initial_params),
+                [np.inf]*len(self.initial_params))
 
     def fit(self):
         """

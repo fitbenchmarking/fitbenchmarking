@@ -219,10 +219,12 @@ class PreproccessDataTests(unittest.TestCase):
 
         for result in best_result:
             assert result.is_best_fit
-
         for result, chi_sq, runtime in zip(self.results,
                                            self.min_chi_sq,
                                            self.min_runtime):
+            for r in result:
+                print("chi_sq  = {} | {}".format(r.min_chi_sq, chi_sq))
+                print("runtime = {} | {}".format(r.runtime, runtime))
             assert all(r.min_chi_sq == chi_sq for r in result)
             assert all(r.min_runtime == runtime for r in result)
 

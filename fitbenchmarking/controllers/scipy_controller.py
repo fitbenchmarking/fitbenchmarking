@@ -5,7 +5,6 @@ problems.
 """
 
 from scipy.optimize import minimize
-import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 

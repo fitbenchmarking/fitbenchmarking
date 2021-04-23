@@ -1,5 +1,4 @@
 
-from collections import OrderedDict
 from unittest import TestCase
 
 import numpy as np
@@ -102,7 +101,7 @@ class TestJacobianClass(TestCase):
         """
         jac = solver(self.cost_func)
         self.assertTrue(jac.use_solver_jac)
-    
+
     def test_numdifftools_eval(self):
         """
         Test whether numdifftools evaluation is correct
@@ -227,6 +226,7 @@ class TestCachedFuncValues(TestCase):
                                                           self.func,
                                                           params)
         assert expected_value == computed_value
+
 
 class TestDerivCostFunc(TestCase):
     """

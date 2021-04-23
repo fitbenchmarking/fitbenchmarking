@@ -201,7 +201,8 @@ class MantidController(Controller):
         final_params = self._mantid_results.OutputParameters.column(1)[:-1]
         num_params = len(self.initial_params)
         if self._multi_fit:
-            self.final_params = [final_params[i * num_params:(i + 1) * num_params]
+            self.final_params =[final_params[i * num_params:
+                                             (i + 1) * num_params]
                                  for i in range(self._multi_fit)]
         else:
             self.final_params = final_params
