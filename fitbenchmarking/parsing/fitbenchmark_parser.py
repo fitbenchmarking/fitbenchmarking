@@ -347,7 +347,6 @@ class FitbenchmarkParser(Parser):
         """
         equation = self._parsed_func[0]['name']
         starting_values = self._get_starting_values()
-        value_ranges = _parse_range(self._entries.get('parameter_ranges', ''))
         param_names = starting_values[0].keys()
 
         def fitFunction(x, *tmp_params):
@@ -358,9 +357,6 @@ class FitbenchmarkParser(Parser):
             param_dict = dict(zip(param_names, tmp_params))
 
             model_wrapper = Model(model, **param_dict)
-            if value_ranges is not None:
-                for name, values in value_ranges.items():
-                    model_wrapper.__dict__[name].range(values[0], values[1])
             func_wrapper = Experiment(data=data, model=model_wrapper)
 
             return func_wrapper.theory()
