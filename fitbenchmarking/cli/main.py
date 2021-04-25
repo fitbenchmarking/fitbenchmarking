@@ -73,6 +73,7 @@ def get_parser():
 
 @exception_handler
 def run(problem_sets, options_file='', debug=False):
+    #pylint: disable=unused-argument
     """
     Run benchmarking for the problems sets and options file given.
     Opens a webbrowser to the results_index after fitting.
@@ -193,9 +194,9 @@ def run(problem_sets, options_file='', debug=False):
     if os.path.basename(options.results_dir) == \
             options.DEFAULT_PLOTTING['results_dir']:
         LOGGER.info("\nWARNING: \nThe FitBenchmarking results will be "
-                    "placed into the folder: \n\n   {}\n\nTo change this "
+                    "placed into the folder: \n\n   %s\n\nTo change this "
                     "alter the input options "
-                    "file.\n".format(options.results_dir))
+                    "file.\n", options.results_dir)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
