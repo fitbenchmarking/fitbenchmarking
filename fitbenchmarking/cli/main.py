@@ -193,7 +193,7 @@ def run(problem_sets, options_file='', debug=False):
 
     if os.path.basename(options.results_dir) == \
             options.DEFAULT_PLOTTING['results_dir']:
-        LOGGER.info("\nWARNING: \nThe FitBenchmarking results will be "
+        LOGGER.info("\nINFO: \nThe FitBenchmarking results will be "
                     "placed into the folder: \n\n   %s\n\nTo change this "
                     "alter the input options "
                     "file.\n", options.results_dir)
