@@ -57,12 +57,12 @@ class TestMain(TestCase):
         """
         Mock function to be used instead of benchmark
         """
-        self.options = Options()
-        self.cost_func = make_cost_function()
+        options = Options()
+        cost_func = make_cost_function()
 
         results = []
-        result_args = {'options': self.options,
-                       'cost_func': self.cost_func,
+        result_args = {'options': options,
+                       'cost_func': cost_func,
                        'jac': 'jac',
                        'initial_params': [],
                        'params': [],
