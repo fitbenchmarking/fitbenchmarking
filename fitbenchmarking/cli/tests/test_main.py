@@ -10,6 +10,7 @@ from fitbenchmarking.utils import fitbm_result, exceptions
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 
+
 def make_cost_function(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
@@ -25,6 +26,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     fitting_problem.correct_data()
     cost_func = NLLSCostFunc(fitting_problem)
     return cost_func
+
 
 class TestMain(TestCase):
     """
@@ -61,8 +63,8 @@ class TestMain(TestCase):
         results = []
         result_args = {'options': self.options,
                        'cost_func': self.cost_func,
-                       'jac':'jac',
-                       'initial_params':[],
+                       'jac': 'jac',
+                       'initial_params': [],
                        'params': [],
                        'error_flag': 4}
         result = fitbm_result.FittingResult(**result_args)
@@ -71,4 +73,5 @@ class TestMain(TestCase):
         failed_problems = []
         unselected_minimzers = {}
         cost_func_description = []
-        return results, failed_problems, unselected_minimzers, cost_func_description
+        return (results, failed_problems, unselected_minimzers,
+                cost_func_description)
