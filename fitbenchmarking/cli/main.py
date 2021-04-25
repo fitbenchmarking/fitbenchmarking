@@ -73,7 +73,7 @@ def get_parser():
 
 @exception_handler
 def run(problem_sets, options_file='', debug=False):
-    #pylint: disable=unused-argument
+    # pylint: disable=unused-argument
     """
     Run benchmarking for the problems sets and options file given.
     Opens a webbrowser to the results_index after fitting.
