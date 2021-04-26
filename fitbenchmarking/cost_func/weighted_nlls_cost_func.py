@@ -55,6 +55,9 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
                                 'the same, len(x)={}, len(y)={} and '
                                 'len(e)={}'.format(len(x), len(y), len(e)))
         result = (y - self.problem.eval_model(params=params, x=x)) / e
+
+        # Flatten in case of a vector function
+        result = result.flatten()
         self.cache_rx['params'] = params
         self.cache_rx['value'] = result
         return result

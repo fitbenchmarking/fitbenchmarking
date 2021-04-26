@@ -4,7 +4,6 @@ Implements the base non-linear least squares cost function
 from numpy import dot
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
-from fitbenchmarking.utils.exceptions import CostFuncError
 from abc import ABCMeta, abstractmethod
 
 

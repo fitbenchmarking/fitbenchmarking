@@ -4,13 +4,12 @@ This file implements a parser for the Fitbenchmark data format.
 
 from __future__ import absolute_import, division, print_function
 
-import os
-from collections import OrderedDict
 import importlib
 import inspect
+import os
+from collections import OrderedDict
 
 import numpy as np
-
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import MissingSoftwareError, ParsingError
@@ -34,9 +33,9 @@ except ImportError as ex:
 
 
 try:
-    from sasmodels.data import empty_data1D
-    from sasmodels.core import load_model
     from sasmodels.bumps_model import Experiment, Model
+    from sasmodels.core import load_model
+    from sasmodels.data import empty_data1D
     import_success['sasview'] = (True, None)
 except ImportError as ex:
     import_success['sasview'] = (False, ex)
@@ -100,6 +99,24 @@ class FitbenchmarkParser(Parser):
             fitting_problem.function = self._create_ivp_function()
             fitting_problem.format = 'ivp'
 
+        # If using a multivariate function wrap the call to take a single
+        # argument
+        if len(data_points[0]['x']) > 1:
+            old_function = fitting_problem.function
+            all_data = []
+            count = 0
+            for dp in data_points:
+                all_data.append(dp['x'])
+                dp['x'] = np.arange(count, count + dp['x'].shape[0])
+                count = count + dp['x'].shape[0]
+            all_data = np.concatenate(all_data)
+
+            def new_function(x, *p):
+                input = all_data[x]
+                return old_function(input, *p)
+
+            fitting_problem.function = new_function
+
         # EQUATION
         if software == 'ivp':
             fitting_problem.equation = self._equation_name
@@ -132,9 +149,9 @@ class FitbenchmarkParser(Parser):
 
         if fitting_problem.multifit:
             num_files = len(data_points)
-            fitting_problem.data_x = [d[:, 0] for d in data_points]
-            fitting_problem.data_y = [d[:, 1] for d in data_points]
-            fitting_problem.data_e = [d[:, 2] if d.shape[1] > 2 else None
+            fitting_problem.data_x = [d['x'] for d in data_points]
+            fitting_problem.data_y = [d['y'] for d in data_points]
+            fitting_problem.data_e = [d['e'] if 'e' in d else None
                                       for d in data_points]
 
             if not fit_ranges:
@@ -146,10 +163,10 @@ class FitbenchmarkParser(Parser):
                                      for f in fit_ranges]
 
         else:
-            fitting_problem.data_x = data_points[0][:, 0]
-            fitting_problem.data_y = data_points[0][:, 1]
-            if data_points[0].shape[1] > 2:
-                fitting_problem.data_e = data_points[0][:, 2]
+            fitting_problem.data_x = data_points[0]['x']
+            fitting_problem.data_y = data_points[0]['y']
+            if 'e' in data_points[0]:
+                fitting_problem.data_e = data_points[0]['e']
 
             if fit_ranges and 'x' in fit_ranges[0]:
                 fitting_problem.start_x = fit_ranges[0]['x'][0]
@@ -169,12 +186,12 @@ class FitbenchmarkParser(Parser):
 
     def _get_data_file(self):
         """
-        Find/create the (full) path to a data_file specified in a FitBenchmark
-        definition file, where the data_file is searched for in the directory
-        of the definition file and subfolders of this file.
+        Find/create the (full) path to a data_file(s) specified in a
+        FitBenchmark definition file, where the data_file is searched for in
+        the directory of the definition file and subfolders of this file.
 
         :return: (full) path to a data file. Return None if not found
-        :rtype: str or None
+        :rtype: list<str>
         """
         data_file_name = self._entries['input_file']
         if data_file_name.startswith('['):
@@ -418,13 +435,14 @@ class FitbenchmarkParser(Parser):
         self._ivp_starting_values = [
             OrderedDict([(n, pf[n])
                          for n in p_names])
-            ]
+        ]
 
         def fitFunction(x, *p):
-            return solve_ivp(fun=fun,
+            soln = solve_ivp(fun=fun,
                              t_span=[0, time_step],
                              y0=x,
                              args=p)
+            return np.array(soln.y)[:, -1]
 
         return fitFunction
 
@@ -506,8 +524,8 @@ def _get_data_points(data_file_path):
     :param data_file_path: The path to the file to load the points from
     :type data_file_path: str
 
-    :return: data points
-    :rtype: np.ndarray
+    :return: data
+    :rtype: dict<str, np.ndarray>
     """
 
     with open(data_file_path, 'r') as f:
@@ -516,24 +534,59 @@ def _get_data_points(data_file_path):
     # Find the line where data starts
     # i.e. the first line with a float on it
     first_row = 0
-
-    # Loop until break statement
-    while True:
+    for i, line in enumerate(data_text):
+        line = line.strip()
+        if not line:
+            continue
         try:
-            line = data_text[first_row].strip()
-        except IndexError:
-            raise ParsingError('Could not find data points')
-        if line != '':
-            x_val = line.split()[0]
-            try:
-                _ = float(x_val)
-            except ValueError:
-                pass
-            else:
-                break
-        first_row += 1
+            float(line.split()[0])
+        except ValueError:
+            continue
+        first_row = i
+        break
+    else:
+        raise ParsingError('Could not find data points')
 
     dim = len(data_text[first_row].split())
+    cols = {'x': [],
+            'y': [],
+            'e': []}
+    num_cols = 0
+    if first_row != 0:
+        header = data_text[0].split()
+        for heading in header:
+            if heading == '#':
+                continue
+            if heading[0] == '<' and heading[-1] == '>':
+                heading = heading[1:-1]
+            col_type = heading[0].lower()
+            if col_type in ['x', 'y', 'e']:
+                cols[col_type].append(num_cols)
+                num_cols += 1
+            else:
+                raise ParsingError(
+                    'Unrecognised header line, header names must start with '
+                    '"x", "y", or "e".'
+                    'Examples are: '
+                    '"# X Y E", "#   x0 x1 y e", "# X0 X1 Y0 Y1 E0 E1", '
+                    '"<X> <Y> <E>", "<X0> <X1> <Y> <E>"...')
+        if dim != num_cols:
+            raise ParsingError('Could not match header to columns.')
+    else:
+        cols['x'] = [0]
+        cols['y'] = [1]
+        if dim == 3:
+            cols['e'] = [2]
+        elif dim != 2:
+            raise ParsingError(
+                'Cannot infer size of inputs and outputs in datafile. '
+                'Headers are required when not using 1D inputs and outputs.')
+
+    if not cols['x'] or not cols['y']:
+        raise ParsingError('Input files need both X and Y values.')
+    if cols['e'] and len(cols['y']) != len(cols['e']):
+        raise ParsingError('Error must be of the same dimension as Y.')
+
     data_points = np.zeros((len(data_text) - first_row, dim))
 
     for idx, line in enumerate(data_text[first_row:]):
@@ -542,10 +595,16 @@ def _get_data_points(data_file_path):
         try:
             point = [float(val) for val in point_text]
         except ValueError:
-            point = [np.nan for val in point_text]
+            point = [np.nan for _ in point_text]
         data_points[idx, :] = point
 
     # Strip all np.nan entries
     data_points = data_points[~np.isnan(data_points[:, 0]), :]
 
-    return data_points
+    # Split into x, y, and e
+    data = {key: data_points[:, cols[key]]
+            for key in ['x', 'y']}
+    if cols['e']:
+        data['e'] = data_points[:, cols['e']]
+
+    return data

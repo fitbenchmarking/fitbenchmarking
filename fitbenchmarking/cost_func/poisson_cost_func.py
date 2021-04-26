@@ -71,7 +71,11 @@ class PoissonCostFunc(CostFunc):
         # Penalise nagative f(x, p)
         f_xp[f_xp <= 0.0] = finfo(float).max
 
-        result = sum(_safe_a_log_b(y, y) - _safe_a_log_b(y, f_xp) - (y - f_xp))
+        residuals = _safe_a_log_b(y, y) - _safe_a_log_b(y, f_xp) - (y - f_xp)
+
+        # Flatten in case of a vector function
+        result = sum(residuals.flatten())
+
         self.cache_cost_x['params'] = params
         self.cache_cost_x['value'] = result
         return result

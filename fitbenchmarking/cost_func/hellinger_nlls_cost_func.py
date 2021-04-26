@@ -58,6 +58,10 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
                                 'len(x)={} and len(y)= {}.'.format(len(x),
                                                                    len(y)))
         result = sqrt(y) - sqrt(self.problem.eval_model(params=params, x=x))
+
+        # Flatten in case of a vector function
+        result = result.flatten()
+
         self.cache_rx['params'] = params
         self.cache_rx['value'] = result
         return result
