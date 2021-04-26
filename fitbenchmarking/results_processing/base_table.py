@@ -133,7 +133,7 @@ class Table:
                                                        rel_results[key])]
         return table_output
 
-    def get_colour(self, results):
+    def get_colour(self, results, error):
         """
         Converts the result from
         :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()`
@@ -144,6 +144,8 @@ class Table:
 
         :param results: tuple containing absolute and relative values
         :type results: tuple
+        :param: error: dictionary containing error codes from the minimizers
+        :type: dict
 
         :return: dictionary containing HTML colours for the table
         :rtype: dict
@@ -153,14 +155,19 @@ class Table:
         for key, value in rel_value.items():
             if not all(isinstance(elem, list) for elem in value):
                 colour_index = np.searchsorted(self.colour_bounds, value)
-                colour[key] = [self.html_colours[i]
-                               for i in colour_index]
+                # if result has an error flag of 5, this means parameter
+                # bounds have not been selected so set colour to darkest red
+                colour[key] = [self.html_colours[i] if error[key][ind] != 5
+                               else self.html_colours[-1]
+                               for ind, i in enumerate(colour_index)]
             else:
                 colour[key] = []
                 for v in value:
                     colour_index = np.searchsorted(self.colour_bounds, v)
-                    colour[key].append([self.html_colours[i]
-                                        for i in colour_index])
+                    colour[key].append([self.html_colours[i] 
+                                        if error[key][ind] != 5
+                                        else self.html_colours[-1]
+                                        for ind, i in enumerate(colour_index)])
         return colour
 
     def get_links(self, results_dict):
@@ -285,7 +292,7 @@ class Table:
         i = 0
         for l, v in zip(support_page_link, value.array):
             tmp_link = os.path.relpath(path=l,
-                                        start=self.group_dir)
+                                       start=self.group_dir)
             value.array[i] = '<a href="{0}">{1}</a>'.format(tmp_link, v)
             i += 1
         return value

@@ -118,7 +118,7 @@ class LocalMinTable(Table):
 
         return local_min, norm_rel
 
-    def get_colour(self, results):
+    def get_colour(self, results, error):
         """
         Uses the local minimizer dictionary values to set the HTML colour
 
@@ -127,14 +127,17 @@ class LocalMinTable(Table):
                         dictionary containing
                         :math:`\\frac{|| J^T r||}{||r||}` values
         :type results: tuple
+        :param: error: dictionary containing error codes from the minimizers
+        :type: dict
 
         :return: dictionary containing error codes from the minimizers
         :rtype: dict
         """
         local_min, _ = results
         colour = {key: [self.html_colours[0]
-                        if v == "True" else self.html_colours[-1]
-                        for v in value]
+                        if v == "True" and error[key][i] != 5
+                        else self.html_colours[-1]
+                        for i, v in enumerate(value)]
                   for key, value in local_min.items()}
         return colour
 
