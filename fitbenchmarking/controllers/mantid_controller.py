@@ -197,14 +197,17 @@ class MantidController(Controller):
         else:
             self.flag = 2
 
-        # Mantid gives chi sq as last elem in params
-        final_params = self._mantid_results.OutputParameters.column(1)[:-1]
-        num_params = len(self.initial_params)
-        if self._multi_fit:
-            self.final_params = [final_params[i * num_params:(i + 1) * num_params]
-                                 for i in range(self._multi_fit)]
+        final_params_dict = {name: value for name, value in zip(
+            self._mantid_results.OutputParameters.column(0),
+            self._mantid_results.OutputParameters.column(1))}
+
+        if not self._multi_fit:
+            self.final_params = [final_params_dict[key]
+                                 for key in self._param_names]
         else:
-            self.final_params = final_params
+            self.final_params = [[final_params_dict[f'f{i}.{name}']
+                                  for name in self._param_names]
+                                 for i in range(self._multi_fit)]
 
     # Override if multi-fit
     # =====================
