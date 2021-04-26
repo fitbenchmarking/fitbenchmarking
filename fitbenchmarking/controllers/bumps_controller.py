@@ -30,7 +30,8 @@ class BumpsController(Controller):
         """
         super(BumpsController, self).__init__(cost_func)
 
-        self._param_names = self.problem.param_names
+        self._param_names = [name.replace('.', '_')
+                             for name in self.problem.param_names]
         self.support_for_bounds = True
         self._func_wrapper = None
         self._fit_problem = None
