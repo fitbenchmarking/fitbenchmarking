@@ -13,6 +13,7 @@ LOGGER = get_logger()
 
 
 def exception_handler(f):
+    # pylint: disable=W0703
     """
     Decorator to simplify handling exceptions within FitBenchmarking
     This will strip off any 'debug' inputs.
