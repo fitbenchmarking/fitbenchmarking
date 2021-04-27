@@ -131,6 +131,8 @@ class FitbenchmarkParser(Parser):
         # STARTING VALUES
         if software == 'ivp':
             fitting_problem.starting_values = self._ivp_starting_values
+        elif software == 'mantid':
+            fitting_problem.starting_values = self._mantid_starting_values
         else:
             fitting_problem.starting_values = self._get_starting_values()
 
@@ -340,15 +342,12 @@ class FitbenchmarkParser(Parser):
         :return: Starting values for the function
         :rtype: list of OrderedDict
         """
-        # Mantid functions can have reserved keywords so ignore these as they
-        # are not parameters.
-        ignore = ['name', 'BinWidth', 'ties', 'Formula', 'constraints']
+        # SasView functions can have reserved keywords so ignore these
+        ignore = ['name']
 
-        name_template = '{1}' if len(self._parsed_func) == 1 else 'f{0}_{1}'
         starting_values = [
-            OrderedDict([(name_template.format(i, name), val)
-                         for i, f in enumerate(self._parsed_func)
-                         for name, val in f.items()
+            OrderedDict([(name, val)
+                         for name, val in self._parsed_func[0].items()
                          if name not in ignore])]
 
         return starting_values
@@ -361,23 +360,40 @@ class FitbenchmarkParser(Parser):
         :return: A callable function
         :rtype: callable
         """
-        fit_function = None
+        # Get mantid to build the function
+        ifun = msapi.FunctionFactory.createInitialized(
+            self._entries['function'])
 
-        for f in self._parsed_func:
-            name = f['name']
-            params = f.copy()
-            for key in ['name', 'ties']:
-                if key in params:
-                    params.pop(key)
-            tmp_function = msapi.__dict__[name](**params)
-            if 'ties' in f:
-                tmp_function.tie(f['ties'])
-            if fit_function is None:
-                fit_function = tmp_function
-            else:
-                fit_function += tmp_function
+        # Extract the parameter info
+        all_params = [(ifun.getParamName(i),
+                       ifun.getParamValue(i),
+                       ifun.isFixed(i))
+                      for i in range(ifun.nParams())]
 
-        return fit_function
+        # This list will be used to input fixed values alongside unfixed ones
+        all_params_dict = {name: value
+                           for name, value, _ in all_params}
+
+        # Extract starting parameters
+        params = {name: value
+                  for name, value, fixed in all_params
+                  if not fixed}
+        self._mantid_starting_values = [OrderedDict(params)]
+
+        # Convert to callable
+        fit_function = msapi.FunctionWrapper(ifun)
+
+        # Use a wrapper to inject fixed parameters into the function
+        def wrapped(x, *p):
+            # Use the full param dict from above, but update the non-fixed
+            # values
+            update_dict = {name: value
+                           for name, value in zip(params.keys(), p)}
+            all_params_dict.update(update_dict)
+
+            return fit_function(x, *all_params_dict.values())
+
+        return wrapped
 
     def _create_sasview_function(self):
         """
@@ -388,7 +404,6 @@ class FitbenchmarkParser(Parser):
         """
         equation = self._parsed_func[0]['name']
         starting_values = self._get_starting_values()
-        value_ranges = _parse_range(self._entries.get('parameter_ranges', ''))
         param_names = starting_values[0].keys()
 
         def fitFunction(x, *tmp_params):
@@ -399,9 +414,6 @@ class FitbenchmarkParser(Parser):
             param_dict = dict(zip(param_names, tmp_params))
 
             model_wrapper = Model(model, **param_dict)
-            if value_ranges is not None:
-                for name, values in value_ranges.items():
-                    model_wrapper.__dict__[name].range(values[0], values[1])
             func_wrapper = Experiment(data=data, model=model_wrapper)
 
             return func_wrapper.theory()

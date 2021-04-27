@@ -30,7 +30,8 @@ class BumpsController(Controller):
         """
         super(BumpsController, self).__init__(cost_func)
 
-        self._param_names = self.problem.param_names
+        self._param_names = [name.replace('.', '_')
+                             for name in self.problem.param_names]
         self.support_for_bounds = True
         self._func_wrapper = None
         self._fit_problem = None
@@ -107,6 +108,14 @@ class BumpsController(Controller):
         # acceptable by Bumps fitting.
         self._func_wrapper = func_wrapper
         self._fit_problem = FitProblem(func_wrapper)
+
+        # Determine the order of the parameters in `self.fit_problem` as this
+        # could differ from the ordering of parameters in `self._param_names`
+        param_order = []
+        for i in range(len(self._param_names)):
+            param_order.append(str(self._fit_problem._parameters[i]))
+        self.fit_order = param_order
+
         if self.minimizer == "lm-bumps":
             self.minimizer = "lm"
 
@@ -131,4 +140,14 @@ class BumpsController(Controller):
         else:
             self.flag = 2
 
-        self.final_params = self._bumps_result.x
+        # Set result variable where parameters are in the same
+        # order that are listed in `self._param_names`
+        result = []
+        if self.fit_order != self._param_names:
+            for name in self._param_names:
+                ind = self.fit_order.index(name)
+                result.append(self._bumps_result.x[ind])
+        else:
+            result = self._bumps_result.x
+
+        self.final_params = result
