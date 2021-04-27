@@ -12,7 +12,8 @@ except ImportError:
     from itertools import zip_longest as izip_longest
 import numpy as np
 
-from fitbenchmarking.utils.exceptions import FittingProblemError
+from fitbenchmarking.utils.exceptions import FittingProblemError, \
+    IncorrectBoundsError
 
 
 # Using property getters and setters means that the setter does not always use
@@ -223,6 +224,13 @@ class FittingProblem:
         :type params: dict
 
         """
+        if not all(name in self.starting_values[0].keys()
+                   for name in value_ranges):
+            raise IncorrectBoundsError('One or more of the parameter names in '
+                                       'the `parameter_ranges` dictionary is '
+                                       'incorrect, please check the problem '
+                                       'definiton file for this problem.')
+
         self.value_ranges = []
         for name in self.starting_values[0].keys():
             param_name = name.lower()

@@ -108,6 +108,19 @@ class TestFittingProblem(TestCase):
         fitting_problem.set_value_ranges(value_ranges_prob_def)
         self.assertEqual(fitting_problem.value_ranges, expected_value_ranges)
 
+    def test_set_value_ranges_incorrect_names(self):
+        """
+        Tests that an exception is raised if parameter names
+        in `parameter_ranges` are incorrect
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.starting_values = [OrderedDict(
+            [('param1', 0), ('param2', 0), ('param3', 0)])]
+        value_ranges_prob_def = {'incorrect_name': (0, 5), 'param2': (5, 10)}
+        self.assertRaises(exceptions.IncorrectBoundsError,
+                          fitting_problem.set_value_ranges,
+                          value_ranges_prob_def)
+
     def test_correct_data_single_fit(self):
         """
         Tests that correct data gives the expected result
