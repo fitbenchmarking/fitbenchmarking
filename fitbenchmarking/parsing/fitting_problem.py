@@ -224,20 +224,20 @@ class FittingProblem:
         :type params: dict
 
         """
-        if not all(name in self.starting_values[0].keys()
-                   for name in value_ranges):
+        lower_param_names = [name.lower()
+                             for name in self.starting_values[0].keys()]
+        if not all(name in lower_param_names for name in value_ranges):
             raise IncorrectBoundsError('One or more of the parameter names in '
                                        'the `parameter_ranges` dictionary is '
                                        'incorrect, please check the problem '
                                        'definiton file for this problem.')
 
         self.value_ranges = []
-        for name in self.starting_values[0].keys():
-            param_name = name.lower()
-            if param_name in value_ranges:
+        for name in lower_param_names:
+            if name in value_ranges:
                 self.value_ranges.append(
-                    (value_ranges[param_name][0],
-                        value_ranges[param_name][1]))
+                    (value_ranges[name][0],
+                        value_ranges[name][1]))
             else:
                 self.value_ranges.append((-np.inf, np.inf))
 
