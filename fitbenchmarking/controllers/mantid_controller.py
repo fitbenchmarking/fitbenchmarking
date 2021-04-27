@@ -117,15 +117,13 @@ class MantidController(Controller):
                     for j in range(0, self._multi_fit))
                 function_def += '; constraints=({})'.format(constraints)
             elif self.value_ranges is not None:
-                if ';' in function_def:
-                    constraints = ','.join('{0} < {1} < {2}'.format(
-                        self.value_ranges[i][0], p, self.value_ranges[i][1])
-                        for i, p in enumerate(self._param_names))
-                else:
-                    constraints = ','.join('{0} < f0.{1} < {2}'.format(
-                        self.value_ranges[i][0], p, self.value_ranges[i][1])
-                        for i, p in enumerate(self._param_names))
+
+                if not ';' in function_def:
                     self._param_names = ['f0.'+name for name in self._param_names]
+
+                constraints = ','.join('{0} < {1} < {2}'.format(
+                        self.value_ranges[i][0], p, self.value_ranges[i][1])
+                        for i, p in enumerate(self._param_names))
                 function_def += '; constraints=({})'.format(constraints)
 
             self._mantid_function = function_def
