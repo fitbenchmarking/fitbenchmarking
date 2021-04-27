@@ -7,6 +7,7 @@ from __future__ import absolute_import, division, print_function
 import importlib
 import inspect
 import os
+import sys
 from collections import OrderedDict
 
 import numpy as np
@@ -119,7 +120,7 @@ class FitbenchmarkParser(Parser):
 
         # EQUATION
         if software == 'ivp':
-            fitting_problem.equation = self._equation_name
+            fitting_problem.equation = self._ivp_equation_name
         else:
             equation_count = len(self._parsed_func)
             if equation_count == 1:
@@ -425,7 +426,8 @@ class FitbenchmarkParser(Parser):
         Process the IVP formatted function into a callable.
 
         Expected function format:
-        function='module=my_python_file,func=my_function_name,p0=0.1,p1...'
+        function='module=my_python_file,func=my_function_name,
+                  step=0.5,p0=0.1,p1...'
 
         :return: the model
         :rtype: callable
@@ -435,7 +437,9 @@ class FitbenchmarkParser(Parser):
                                'only 1 function definition is present')
 
         pf = self._parsed_func[0]
-        module = importlib.import_module(pf['module'])
+        path = os.path.join(os.path.dirname(self._filename), pf['module'])
+        sys.path.append(os.path.dirname(path))
+        module = importlib.import_module(os.path.basename(path))
         fun = getattr(module, pf['func'])
         time_step = pf['step']
         sig = inspect.signature(fun)
@@ -450,11 +454,17 @@ class FitbenchmarkParser(Parser):
         ]
 
         def fitFunction(x, *p):
-            soln = solve_ivp(fun=fun,
-                             t_span=[0, time_step],
-                             y0=x,
-                             args=p)
-            return np.array(soln.y)[:, -1]
+            if len(x.shape) == 1:
+                x = np.array([x])
+            y = np.zeros_like(x)
+            for i, inp in enumerate(x):
+                soln = solve_ivp(fun=fun,
+                                 t_span=[0, time_step],
+                                 y0=inp,
+                                 args=p,
+                                 vectorized=False)
+                y[i, :] = soln.y[:, -1]
+            return y
 
         return fitFunction
 

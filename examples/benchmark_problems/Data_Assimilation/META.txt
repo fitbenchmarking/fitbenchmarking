@@ -1,0 +1,4 @@
+Data_Assimilation
+
+This a collection of simulated data assimilation problems.
+These files are not from real examples, they have been created to test the functionality within fitbenchmarking.
