@@ -71,7 +71,6 @@ class TestRegressionAll(TestCase):
                          'all_parsers_set',
                          'all_parsers_set_acc_weighted_nlls_table.txt')
 
-
         with open(expected_file, 'r') as f:
             expected = f.readlines()
 
@@ -207,7 +206,7 @@ def setup_options(multifit=False):
         opts.software = ['mantid']
         opts.minimizers = {'mantid': [opts.minimizers['mantid'][0]]}
     elif TEST_TYPE != "default":
-        opts.software = ['bumps', 'gsl', 'mantid', 'ralfit', 'scipy',
+        opts.software = ['bumps', 'gsl', 'levmar', 'mantid', 'ralfit', 'scipy',
                          'scipy_ls']
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
     else:

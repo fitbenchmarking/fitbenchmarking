@@ -4,6 +4,7 @@ https://github.com/ralna/RALFit
 """
 
 import ral_nlls
+import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
@@ -24,6 +25,7 @@ class RALFitController(Controller):
         """
         super(RALFitController, self).__init__(cost_func)
 
+        self.support_for_bounds = True
         self._popt = None
         self._options = {}
         self.algorithm_check = {
@@ -64,6 +66,17 @@ class RALFitController(Controller):
             raise UnknownMinimizerError(
                 "No {} minimizer for RALFit".format(self.minimizer))
 
+        # If parameter ranges have been set in problem, then set up bounds
+        # option. For RALFit, this must be a 2 tuple array like object,
+        # the first tuple containing the lower bounds for each parameter
+        # and the second containing all upper bounds.
+        if self.value_ranges is not None:
+            value_ranges_lb, value_ranges_ub = zip(*self.value_ranges)
+            self.param_ranges = (value_ranges_lb, value_ranges_ub)
+        else:
+            self.param_ranges = (
+                [-np.inf]*len(self.initial_params), [np.inf]*len(self.initial_params))
+
     def fit(self):
         """
         Run problem with RALFit.
@@ -71,7 +84,9 @@ class RALFitController(Controller):
         self._popt = ral_nlls.solve(self.initial_params,
                                     self.cost_func.eval_r,
                                     self.jacobian.eval,
-                                    options=self._options)[0]
+                                    options=self._options,
+                                    lower_bounds=self.param_ranges[0],
+                                    upper_bounds=self.param_ranges[1])[0]
         self._status = 0 if self._popt is not None else 1
 
     def cleanup(self):

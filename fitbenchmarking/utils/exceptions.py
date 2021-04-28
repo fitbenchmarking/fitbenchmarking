@@ -212,15 +212,15 @@ class CostFuncError(FitBenchmarkException):
 
 class IncompatibleMinimizerError(FitBenchmarkException):
     """
-    Indicates that selected cost function and minimizer are
-    not compatible
+    Indicates that the selected minimizer is not compatible
+    with selected options/problem set
     """
 
     def __init__(self, message=''):
         super(IncompatibleMinimizerError, self).__init__(message)
 
         self._class_message = 'Minimizer cannot be used with ' \
-                              'selected cost function'
+                              'selected options/problem set'
         self.error_code = 17
 
 
@@ -237,3 +237,17 @@ class IncompatibleTableError(FitBenchmarkException):
                               'compatible with the selected ' \
                               'cost function'
         self.error_code = 18
+        
+
+class IncorrectBoundsError(FitBenchmarkException):
+    """
+    Indicates that `parameter_ranges` have been set incorrectly
+    """
+
+    def __init__(self, message=''):
+        super(IncorrectBoundsError, self).__init__(message)
+
+        self._class_message = 'Bounds for this problem are ' \
+                              'unable to be set, so this ' \
+                              'problem will be skipped.'
+        self.error_code = 19

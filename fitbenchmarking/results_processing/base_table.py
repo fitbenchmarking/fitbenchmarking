@@ -285,7 +285,7 @@ class Table:
         i = 0
         for l, v in zip(support_page_link, value.array):
             tmp_link = os.path.relpath(path=l,
-                                       start=self.group_dir)
+                                        start=self.group_dir)
             value.array[i] = '<a href="{0}">{1}</a>'.format(tmp_link, v)
             i += 1
         return value

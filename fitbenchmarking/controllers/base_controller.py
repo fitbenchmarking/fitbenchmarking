@@ -6,7 +6,7 @@ from abc import ABCMeta, abstractmethod
 import numpy
 
 from fitbenchmarking.utils.exceptions import ControllerAttributeError, \
-    UnknownMinimizerError
+    UnknownMinimizerError, IncompatibleMinimizerError
 
 
 class Controller:
@@ -19,7 +19,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    VALID_FLAGS = [0, 1, 2, 3]
+    VALID_FLAGS = [0, 1, 2, 3, 4]
 
     def __init__(self, cost_func):
         """
@@ -29,7 +29,7 @@ class Controller:
         ``super(<software_name>Controller, self).__init__(problem)``
         (the base class's ``__init__`` implementation).
         In this function, you must initialize the a dictionary,
-        ``self.algorithm_type``, such that the **keys** are given by:
+        ``self.algorithm_check``, such that the **keys** are given by:
 
         - ``all`` - all minimizers
         - ``ls`` - least-squares fitting algorithms
@@ -67,6 +67,9 @@ class Controller:
         self.initial_params = None
         # Staring Valuess: The list of starting parameters
         self.starting_values = self.problem.starting_values
+        # Parameter Bounds: List of tuples of lower and upper bounds
+        # for each parameter
+        self.value_ranges = self.problem.value_ranges
         # Parameter set: The index of the starting parameters to use
         self.parameter_set = None
         # Minimizer: The current minimizer to use
@@ -87,6 +90,15 @@ class Controller:
                                 'deriv_free': [None],
                                 'general': [None]}
 
+        # Used to check whether the selected minimizers is compatible with
+        # problems that have parameter bounds
+        self.no_bounds_minimizers = []
+
+        # Used to check whether the fitting software has support for
+        # bounded problems, set as True if at least some minimizers
+        # in the fitting software have support for bounds
+        self.support_for_bounds = False
+
     @property
     def flag(self):
         """
@@ -94,6 +106,7 @@ class Controller:
         | 1: `Software reported maximum number of iterations exceeded`
         | 2: `Software run but didn't converge to solution`
         | 3: `Software raised an exception`
+        | 4: `Solver doesn't support bounded problems`
         """
 
         return self._flag
@@ -163,6 +176,22 @@ class Controller:
                     minimizer, minimzer_selection)
             raise UnknownMinimizerError(message)
 
+    def check_minimizer_bounds(self, minimizer):
+        """
+        Helper function which checks whether the selected minimizer from the
+        options (options.minimizer) supports problems with parameter bounds
+
+        :param minimizer: string of minimizers selected from the
+                          options
+        :type minimizer: str
+        """
+
+        if self.support_for_bounds is False or \
+                minimizer in self.no_bounds_minimizers:
+            message = 'The selected minimizer does not currently support ' \
+                      'problems with parameter bounds'
+            raise IncompatibleMinimizerError(message)
+
     def check_attributes(self):
         """
         A helper function which checks all required attributes are set
@@ -200,10 +229,10 @@ class Controller:
 
         - ``has_jacobian``: a True or False value whether the controller
           requires Jacobian information.
-        - ``jacobian_free_solvers``: a list of minimizers in a specific software
-          that do not require Jacobian information to be passed into the fitting
-          algorithm. For example in the ``ScipyLS`` controller this would return
-          ``lm-scipy-no-jac``.
+        - ``jacobian_free_solvers``: a list of minimizers in a specific
+          software that do not require Jacobian information to be passed
+          into the fitting algorithm. For example in the ``ScipyLS``
+          controller this would return ``lm-scipy-no-jac``.
 
         :return: (``has_jacobian``, ``jacobian_free_solvers``)
         :rtype: (`string`, `list`)
@@ -218,6 +247,11 @@ class Controller:
         Anything needed for "fit" that can only be done after knowing the
         minimizer to use and the function to fit should be done here.
         Any variables needed should be saved to self (as class attributes).
+
+        If a solver supports bounded problems, then this is where
+        `value_ranges` should be set up for that specific solver. The default
+        format is a list of tuples containing the lower and upper bounds
+        for each parameter e.g. [(p1_lb, p2_ub), (p2_lb, p2_ub),...]
         """
         raise NotImplementedError
 

@@ -1,5 +1,5 @@
 """
-Implements a controller for the CERN pacakage Minuit
+Implements a controller for the CERN package Minuit
 https://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/
 using the iminuit python interface
 http://iminuit.readthedocs.org
@@ -33,6 +33,8 @@ class MinuitController(Controller):
                                        '2.0.0'.format(iminuit_version))
 
         super(MinuitController, self).__init__(cost_func)
+
+        self.support_for_bounds = True
         self._popt = None
         self._initial_step = None
         self._minuit_problem = None
@@ -67,6 +69,19 @@ class MinuitController(Controller):
                                       self.initial_params)
         self._minuit_problem.errordef = 1
         self._minuit_problem.errors = self._initial_step
+
+        # If parameter ranges have been set in problem, then set up bounds
+        # option. For minuit, is a sequence of (lb,ub) pairs for each
+        # parameter. None is used to denote no bound for a parameter.
+        if self.value_ranges is not None:
+            lb,ub = zip(*self.value_ranges)
+            lb = [None if x==-np.inf else x for x in lb]
+            ub = [None if x==np.inf else x for x in ub]
+            self.param_ranges = list(zip(lb, ub))
+        else:
+            self.param_ranges = [(-np.inf,np.inf)]*len(self.initial_params)
+
+        self._minuit_problem.limits = self.param_ranges
 
     def fit(self):
         """

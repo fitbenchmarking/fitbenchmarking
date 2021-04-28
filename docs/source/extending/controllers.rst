@@ -55,9 +55,14 @@ repository so that other can use this package.  To do this need to follow our
    Unless the new controller is more complicated than the currently available
    controllers, this can be done by following the example of the others.
 
-6. If `pip` installable add to ``install_requires`` in ``setup.py`` otherwise document
-   the installation procedure in :ref:`external-instructions`.  Update the ``FullInstall``
-   Docker Container -- the main developers will help you with this step.
+6. If the software is deterministic, add the software to the regression tests in
+   ``fitbenchmarking/systests/test_regression.py``. 
+   
+7. If `pip` installable add to ``install_requires`` in ``setup.py`` and
+   add to the installation step in ``.github/workflows/release.yml``.
+   If not, document the installation procedure in :ref:`external-instructions`
+   and update the ``FullInstall`` Docker Container -- the main developers will
+   help you with this.
 
 .. note::
    For ease of maintenance, please add new controllers to a list of
@@ -75,7 +80,7 @@ following members of the
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
-          :members: eval_model, data_x, data_y, data_e
+          :members: eval_model, data_x, data_y, data_e, set_value_ranges
           :noindex:
 
 .. currentmodule:: fitbenchmarking.cost_func.base_cost_func
@@ -87,4 +92,3 @@ following members of the
 .. autoclass:: fitbenchmarking.jacobian.base_jacobian.Jacobian
           :members: eval, eval_cost
           :noindex:
-

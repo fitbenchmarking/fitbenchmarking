@@ -73,6 +73,7 @@ def get_parser():
 
 @exception_handler
 def run(problem_sets, options_file='', debug=False):
+    # pylint: disable=unused-argument
     """
     Run benchmarking for the problems sets and options file given.
     Opens a webbrowser to the results_index after fitting.
@@ -141,10 +142,19 @@ def run(problem_sets, options_file='', debug=False):
             benchmark(options=options,
                       data_dir=data_dir)
 
+        # If a result has error flag 4 then the result contains dummy values,
+        # if this is the case for all results then output should not be
+        # produced as results tables won't show meaningful values.
+        all_dummy_results_flag = True
+        for result in results:
+            for res in result:
+                if res.error_flag != 4:
+                    all_dummy_results_flag = False
+                    continue
         # If the results are an empty list then this means that all minimizers
         # raise an exception and the tables will produce errors if they run
         # for that problem set.
-        if results == []:
+        if results == [] or all_dummy_results_flag is True:
             message = "\nWARNING: \nThe user chosen options and/or problem " \
                       " setup resulted in all minimizers and/or parsers " \
                       "raising an exception. Because of this, results for " \
@@ -183,10 +193,10 @@ def run(problem_sets, options_file='', debug=False):
 
     if os.path.basename(options.results_dir) == \
             options.DEFAULT_PLOTTING['results_dir']:
-        LOGGER.info("\nWARNING: \nThe FitBenchmarking results will be "
-                    "placed into the folder: \n\n   {}\n\nTo change this "
+        LOGGER.info("\nINFO: \nThe FitBenchmarking results will be "
+                    "placed into the folder: \n\n   %s\n\nTo change this "
                     "alter the input options "
-                    "file.\n".format(options.results_dir))
+                    "file.\n", options.results_dir)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')

@@ -1,12 +1,11 @@
 # Tests for the controllers available from a default fitbenchmarking install
 import inspect
-import numpy as np
 import os
 from unittest import TestCase
+import numpy as np
 import pytest
 from pytest import test_type as TEST_TYPE
 
-from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.bumps_controller import BumpsController
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
@@ -17,9 +16,9 @@ from fitbenchmarking.controllers.scipy_ls_controller import ScipyLSController
 
 if TEST_TYPE != "default":
     from fitbenchmarking.controllers.gsl_controller import GSLController
+    from fitbenchmarking.controllers.levmar_controller import LevmarController
     from fitbenchmarking.controllers.mantid_controller import MantidController
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
-
 
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
@@ -28,11 +27,14 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
+from fitbenchmarking import mock_problems
+
 
 def make_cost_func(file_name='cubic.dat'):
     """
     Helper function that returns a simple fitting problem
     """
+
     options = Options()
 
     bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
@@ -237,6 +239,10 @@ class BaseControllerTests(TestCase):
             controller.check_attributes()
 
     def test_validate_minimizer_true(self):
+        """
+        BaseSoftwareController: Test validate_minimizer with valid
+                                minimizer
+        """
         controller = DummyController(self.cost_func)
         controller.algorithm_check = {'all': ['min1', 'min2']}
         algorithm_type = 'all'
@@ -244,12 +250,39 @@ class BaseControllerTests(TestCase):
         controller.validate_minimizer(minimizer, algorithm_type)
 
     def test_validate_minimizer_false(self):
+        """
+        BaseSoftwareController: Test validate_minimizer with invalid
+                                minimizer
+        """
         controller = DummyController(self.cost_func)
         controller.algorithm_check = {'all': ['min1', 'min2']}
         algorithm_type = 'all'
         minimizer = 'min_unknown'
         with self.assertRaises(exceptions.UnknownMinimizerError):
             controller.validate_minimizer(minimizer, algorithm_type)
+
+    def test_check_minimizer_bounds_true(self):
+        """
+        BaseSoftwareController: Test check_minimizer_bounds with
+                                minimizer that supports bounds
+        """
+        controller = DummyController(self.cost_func)
+        controller.support_for_bounds = True
+        controller.no_bounds_minimizers = ['no_bounds_minimizer']
+        minimizer = 'bounds_minimizer'
+        controller.check_minimizer_bounds(minimizer)
+
+    def test_check_minimizer_bounds_false(self):
+        """
+        BaseSoftwareController: Test check_minimizer_bounds with
+                                minimizer that does not support bounds
+        """
+        controller = DummyController(self.cost_func)
+        controller.support_for_bounds = True
+        controller.no_bounds_minimizers = ['no_bounds_minimizer']
+        minimizer = 'no_bounds_minimizer'
+        with self.assertRaises(exceptions.IncompatibleMinimizerError):
+            controller.check_minimizer_bounds(minimizer)
 
 
 class DefaultControllerTests(TestCase):
@@ -358,6 +391,118 @@ class DefaultControllerTests(TestCase):
         controller._status = -1
         self.shared_tests.check_diverged(controller)
 
+@pytest.mark.skipif("TEST_TYPE == 'default'")
+class ControllerBoundsTests(TestCase):
+
+    def setUp(self):
+        """
+        Setup for bounded problem
+        """
+        self.cost_func = make_cost_func('cubic-fba-test-bounds.txt')
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.cost_func)
+        self.jac.method = '2-point'
+
+    def check_bounds(self, controller):
+        """
+        Run bounded problem and check `final_params` respect
+        parameter bounds
+        """
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            assert controller.value_ranges[count][0] <= value \
+                <= controller.value_ranges[count][1]
+
+    def test_scipy(self):
+        """
+        ScipyController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = ScipyController(self.cost_func)
+        controller.minimizer = 'L-BFGS-B'
+        controller.jacobian = self.jac
+
+        self.check_bounds(controller)
+
+    def test_scipy_ls(self):
+        """
+        ScipyLSController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = ScipyLSController(self.cost_func)
+        controller.minimizer = 'trf'
+        controller.jacobian = self.jac
+
+        self.check_bounds(controller)
+
+    def test_minuit(self):
+        """
+        MinuitController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = MinuitController(self.cost_func)
+        controller.minimizer = 'minuit'
+
+        self.check_bounds(controller)
+
+    def test_dfo(self):
+        """
+        DFOController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = DFOController(self.cost_func)
+        controller.minimizer = 'dfogn'
+
+        self.check_bounds(controller)
+
+    def test_bumps(self):
+        """
+        BumpsController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = BumpsController(self.cost_func)
+        controller.minimizer = 'amoeba'
+
+        self.check_bounds(controller)
+
+    def test_ralfit(self):
+        """
+        RALFitController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = RALFitController(self.cost_func)
+        controller.minimizer = 'gn'
+        controller.jacobian = self.jac
+
+        self.check_bounds(controller)
+
+    def test_levmar(self):
+        """
+        LevmarController: Test that parameter bounds are
+        respected for bounded problems
+        """
+
+        controller = LevmarController(self.cost_func)
+        controller.minimizer = 'levmar'
+        controller.jacobian = self.jac
+
+        self.check_bounds(controller)
+
+    def test_mantid(self):
+        """
+        MantidController: Test that parameter bounds are
+        respected for bounded problems
+        """
+
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'Levenberg-Marquardt'
+        controller.jacobian = self.jac
+
+        self.check_bounds(controller)        
 
 @pytest.mark.skipif("TEST_TYPE == 'default'")
 class ExternalControllerTests(TestCase):
@@ -371,6 +516,30 @@ class ExternalControllerTests(TestCase):
         self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
+
+    def test_levmar(self):
+        """
+        LevmarController: Tests for output shape
+        """
+        controller = LevmarController(self.cost_func)
+        controller.minimizer = 'levmar'
+        controller.jacobian = self.jac
+        self.shared_tests.controller_run_test(controller)
+        self.shared_tests.check_jac_info(controller,
+                                         True,
+                                         ["levmar-no-jac"])
+
+        controller._info = (0, 1, 2, "Stop by small Dp", 4, 5, 6)
+        self.shared_tests.check_converged(controller)
+        controller._info = (0, 1, 2, "Stopped by small gradient J^T e",
+                            4, 5, 6)
+        self.shared_tests.check_converged(controller)
+        controller._info = (0, 1, 2, "Stopped by small ||e||_2", 4, 5, 6)
+        self.shared_tests.check_converged(controller)
+        controller._info = (0, 1, 2, "maxit", 4, 5, 6)
+        self.shared_tests.check_max_iterations(controller)
+        controller._info = (0, 1, 2, "diverged", 4, 5, 6)
+        self.shared_tests.check_diverged(controller)
 
     def test_mantid(self):
         """
@@ -504,7 +673,6 @@ class ExternalControllerTests(TestCase):
             self.shared_tests.check_converged(controller)
             controller._status = 2
             self.shared_tests.check_diverged(controller)
-
 
 class FactoryTests(TestCase):
     """
