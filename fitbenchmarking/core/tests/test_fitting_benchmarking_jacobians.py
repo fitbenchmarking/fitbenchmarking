@@ -1,19 +1,17 @@
 """
 Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians
 """
-from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 import unittest
 
 from fitbenchmarking import mock_problems
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.utils import fitbm_result, output_grabber
-from fitbenchmarking.core.fitting_benchmarking import loop_over_jacobians
-from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.core.fitting_benchmarking import loop_over_jacobians
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import output_grabber
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
 
 # Due to construction of the controllers two folder functions
@@ -35,6 +33,8 @@ class DummyController(Controller):
                                 'ls': [None],
                                 'deriv_free': ['deriv_free_algorithm'],
                                 'general': ['general']}
+        self.final_params_expected = [[1, 2, 3, 4], [4, 3, 2, 1]]
+        self.flag_expected = [0, 1]
         self.count = 0
         self.has_jacobian = []
         self.invalid_jacobians = []
@@ -66,6 +66,7 @@ class DummyController(Controller):
         self.final_params = self.final_params_expected[self.count]
         self.flag = self.flag_expected[self.count]
         self.count += 1
+        self.count = self.count % len(self.flag_expected)
 
 
 def make_cost_function(file_name='cubic.dat', minimizers=None):
@@ -112,7 +113,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "general"
         new_name = ['general: scipy 3-point']
-        results, chi_sq, new_minimizer_list = \
+        results, _, new_minimizer_list = \
             loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
@@ -131,7 +132,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "general"
         new_name = ['general: scipy 3-point', 'general: scipy 2-point']
-        results, chi_sq, new_minimizer_list = \
+        results, _, new_minimizer_list = \
             loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
@@ -151,7 +152,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
         new_name = ['deriv_free_algorithm']
-        results, chi_sq, new_minimizer_list = \
+        results, _, new_minimizer_list = \
             loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
