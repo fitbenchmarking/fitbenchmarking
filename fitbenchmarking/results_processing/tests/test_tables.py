@@ -187,17 +187,17 @@ class GenerateTableTests(unittest.TestCase):
             if act_line != exp_line:
                 diff.append([i, exp_line, act_line])
         if diff != []:
-            print("Comparing against {}".format(expected_table))
-            for change in diff:
-                print("== Line {} ==".format(change[0]))
-                print("Expected: {}".format(change[1]))
-                print("Actual:   {}".format(change[2]))
+            msg = "Comparing against {}".format(expected_table)) \
+                  + "\n".join(['== Line {} ==\n'\
+                               'Expected :{}\n'\
+                               'Actual   :{}'.format(*change)
+                               for change in diff])
             print("\n==\n")
             print("Output generated (also saved as actual.out):")
             print(table)
             with open("actual.out","w") as outfile:
-                print(table, file=outfile)
-        self.assertListEqual([], diff)
+                outfile.write(table)
+        self.assertListEqual([], diff, msg)
 
 
 class CreateResultsTableTests(unittest.TestCase):
