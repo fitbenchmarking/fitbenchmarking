@@ -9,7 +9,8 @@ import unittest
 from fitbenchmarking import mock_problems
 from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_benchmark_problems
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.utils.options import Options
@@ -34,7 +35,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    cost_func = NLLSCostFunc(fitting_problem)
+    cost_func = WeightedNLLSCostFunc(fitting_problem)
     return cost_func
 
 
