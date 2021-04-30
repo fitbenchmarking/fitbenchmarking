@@ -129,6 +129,6 @@ For example, For a first beta version of release 0.1.0, one would run:
 
    git checkout release-0.1.x
    ci/prep_and_tag_release.sh v0.1.0-beta1
-   git push origin release-0.1.x
+   git push origin v0.1.0-beta1
 
    <And make the release on GitHub>
