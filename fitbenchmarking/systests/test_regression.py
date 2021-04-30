@@ -160,33 +160,40 @@ class TestRegressionDefault(TestCase):
         self.assertListEqual([], diff, msg)
 
 
-def diff_result(expected, actual):
+def diff_result(actual, expected):
     """
     Return the lines which differ between expected and actual along with a
     formatted message.
 
+    :type actual: list of strings
+    :param actual: The actual result
     :param expected: The expected result
     :type expected: list of strings
-    :param actual: The actual result
-    :type actual: list of strings
     :return: The lines which differ and a formatted message
     :rtype: list of list of strings and str
     """
     diff = []
-    for exp_line, act_line in zip_longest(expected, actual):
+    for i, (exp_line, act_line) in enumerate(
+            zip_longest(expected, actual)):
         exp_line = '' if exp_line is None else exp_line.strip('\n')
         act_line = '' if act_line is None else act_line.strip('\n')
         if exp_line != act_line:
-            diff.append([exp_line, act_line])
+            diff.append([i, exp_line, act_line])
 
-    num_diff = min(6, len(diff))
-    msg = 'Accuracy has changed in at least 1 minimizer-' \
-          + 'problem pair. \n' \
-          + 'First {} of {} differences: \n'.format(num_diff, len(diff)) \
-          + '\n'.join(['{} \n{}'.format(*diff[i])
-                       for i in range(num_diff)])
+    msg = '\n\nOutput has changed in {} '.format(len(diff)) \
+          + 'minimizer-problem pairs. \n' \
+          + '\n'.join(['== Line {} ==\n'\
+                       'Expected :{}\n'\
+                       'Actual   :{}'.format(*line_change)
+                       for line_change in diff])
+    if diff !=[]:
+        print("\n==\n")
+        print("Output generated (also saved as actual.out):")
+        with open("actual.out","w") as outfile:
+            for line in actual:
+                print(line)
+                outfile.write(line)
     return diff, msg
-
 
 def setup_options(multifit=False):
     """
