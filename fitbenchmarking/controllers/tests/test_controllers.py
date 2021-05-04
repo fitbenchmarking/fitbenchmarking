@@ -512,20 +512,19 @@ class ControllerBoundsTests(TestCase):
         controller.minimizer = 'levmar'
         controller.jacobian = self.jac
 
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
+        self.check_bounds(controller)
 
-        lower = [value_range[0] for value_range in controller.value_ranges]
-        upper = [value_range[1] for value_range in controller.value_ranges]
+    def test_mantid(self):
+        """
+        MantidController: Test that parameter bounds are
+        respected for bounded problems
+        """
 
-        # Convert None values to -inf/inf
-        lower = [-np.inf if x is None else x for x in lower]
-        upper = [np.inf if x is None else x for x in upper]
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'Levenberg-Marquardt'
+        controller.jacobian = self.jac
 
-        for count, value in enumerate(controller.final_params):
-            assert lower[count] <= value <= upper[count]
+        self.check_bounds(controller)        
 
 @pytest.mark.skipif("TEST_TYPE == 'default'")
 class ExternalControllerTests(TestCase):
