@@ -133,7 +133,7 @@ class Table:
                                                        rel_results[key])]
         return table_output
 
-    def get_colour(self, results, error):
+    def get_colour(self, results):
         """
         Converts the result from
         :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()`
@@ -141,12 +141,8 @@ class Table:
         used in the tables. The base class implementation, for example,
         uses the relative results and ``colour_scale`` within
         :class:`~fitbenchmarking.utils.options.Options`.
-
         :param results: tuple containing absolute and relative values
         :type results: tuple
-        :param: error: dictionary containing error codes from the minimizers
-        :type: dict
-
         :return: dictionary containing HTML colours for the table
         :rtype: dict
         """
@@ -155,19 +151,14 @@ class Table:
         for key, value in rel_value.items():
             if not all(isinstance(elem, list) for elem in value):
                 colour_index = np.searchsorted(self.colour_bounds, value)
-                # if result has an error flag of 5, this means parameter
-                # bounds have not been selected so set colour to darkest red
-                colour[key] = [self.html_colours[i] if error[key][ind] != 5
-                               else self.html_colours[-1]
-                               for ind, i in enumerate(colour_index)]
+                colour[key] = [self.html_colours[i]
+                               for i in colour_index]
             else:
                 colour[key] = []
                 for v in value:
                     colour_index = np.searchsorted(self.colour_bounds, v)
-                    colour[key].append([self.html_colours[i] 
-                                        if error[key][ind] != 5
-                                        else self.html_colours[-1]
-                                        for ind, i in enumerate(colour_index)])
+                    colour[key].append([self.html_colours[i]
+                                        for i in colour_index])
         return colour
 
     def get_links(self, results_dict):

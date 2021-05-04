@@ -200,7 +200,7 @@ def generate_table(results, best_results, options, group_dir,
     disp_results = table.get_values(results_dict)
     error = table.get_error(results_dict)
     links = table.get_links(results_dict)
-    colour = table.get_colour(disp_results, error)
+    colour = table.get_colour(disp_results)
     str_results = table.display_str(disp_results)
 
     pandas_html = table.create_pandas_data_frame(str_results)
