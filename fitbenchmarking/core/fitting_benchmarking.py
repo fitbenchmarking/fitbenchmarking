@@ -290,15 +290,15 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                 minimizer_check = False
                 controller.flag = 4
                 dummy_results = [{'options': options,
-                                 'cost_func': controller.cost_func,
-                                 'jac': None,
-                                 'chi_sq': np.inf,
-                                 'runtime': np.inf,
-                                 'minimizer': minimizer,
-                                 'initial_params': controller.initial_params,
-                                 'params': None,
-                                 'error_flag': controller.flag,
-                                 'name': problem.name}]
+                                  'cost_func': controller.cost_func,
+                                  'jac': None,
+                                  'chi_sq': np.inf,
+                                  'runtime': np.inf,
+                                  'minimizer': minimizer,
+                                  'initial_params': controller.initial_params,
+                                  'params': None,
+                                  'error_flag': controller.flag,
+                                  'name': problem.name}]
                 for result in dummy_results:
                     individual_result = fitbm_result.FittingResult(
                         **result)
@@ -430,6 +430,13 @@ def loop_over_jacobians(controller, options, grabbed_output):
 
                         chi_sq = np.inf if not problem.multifit \
                             else [np.inf] * len(controller.data_x)
+
+                    # If bounds have been set, check that they have
+                    # been respected by the minimizer and set error
+                    # flag if not
+                    if controller.problem.value_ranges is not None \
+                            and controller.flag != 3:
+                        controller.check_bounds_respected()
 
                     result_args = {'options': options,
                                    'cost_func': cost_func,

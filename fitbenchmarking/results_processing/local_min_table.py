@@ -117,7 +117,10 @@ class LocalMinTable(Table):
                     norm_r = np.linalg.norm(res)
                     norm_min_test = np.linalg.norm(min_test)
 
-                    norm_rel[key].append(norm_min_test / norm_r)
+                    if v.error_flag != 5:
+                        norm_rel[key].append(norm_min_test / norm_r)
+                    else:
+                        norm_rel[key].append(np.inf)
 
                     for r, m, n in zip([norm_r],
                                        [norm_min_test],
@@ -132,13 +135,11 @@ class LocalMinTable(Table):
     def get_colour(self, results):
         """
         Uses the local minimizer dictionary values to set the HTML colour
-
         :param results: a dictionary containing true or false values whether
                         the return parameters is a local minimizer and a
                         dictionary containing
                         :math:`\\frac{|| J^T r||}{||r||}` values
         :type results: tuple
-
         :return: dictionary containing error codes from the minimizers
         :rtype: dict
         """

@@ -237,3 +237,17 @@ class IncompatibleTableError(FitBenchmarkException):
                               'compatible with the selected ' \
                               'cost function'
         self.error_code = 18
+        
+
+class IncorrectBoundsError(FitBenchmarkException):
+    """
+    Indicates that `parameter_ranges` have been set incorrectly
+    """
+
+    def __init__(self, message=''):
+        super(IncorrectBoundsError, self).__init__(message)
+
+        self._class_message = 'Bounds for this problem are ' \
+                              'unable to be set, so this ' \
+                              'problem will be skipped.'
+        self.error_code = 19
