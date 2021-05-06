@@ -13,9 +13,10 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import output_grabber
 from fitbenchmarking.utils.options import Options
 
-
 # Due to construction of the controllers two folder functions
 # pylint: disable=unnecessary-pass
+
+
 class DummyController(Controller):
     """
     Minimal instantiatable subclass of Controller class for testing
@@ -160,6 +161,34 @@ class LoopOverJacobiansTests(unittest.TestCase):
         assert all(x["minimizer"] == name for x,
                    name in zip(results, new_name))
         assert new_minimizer_list == new_name
+
+    @unittest.mock.patch.object(DummyController, "check_bounds_respected")
+    @unittest.mock.patch.object(DummyController, "cleanup")
+    def test_bounds_respected_func_called(
+            self, check_bounds_respected, cleanup):
+        self.controller.problem.value_ranges = {'test': (0, 1)}
+        self.controller.has_jacobian = [True]
+        self.controller.invalid_jacobians = ["deriv_free_algorithm"]
+        self.controller.minimizer = "deriv_free_algorithm"
+        self.controller.flag == 0
+        _ = loop_over_jacobians(self.controller,
+                                self.options,
+                                self.grabbed_output)
+        check_bounds_respected.assert_called()
+
+    @unittest.mock.patch.object(DummyController, "check_bounds_respected")
+    @unittest.mock.patch.object(DummyController, "cleanup")
+    def test_bounds_respected_func_not_called(
+            self, check_bounds_respected, cleanup):
+        self.controller.problem.value_ranges = {'test': (0, 1)}
+        self.controller.has_jacobian = [True]
+        self.controller.invalid_jacobians = ["deriv_free_algorithm"]
+        self.controller.minimizer = "deriv_free_algorithm"
+        self.controller.flag == 3
+        _ = loop_over_jacobians(self.controller,
+                                self.options,
+                                self.grabbed_output)
+        assert not check_bounds_respected.assert_called()
 
 
 if __name__ == "__main__":

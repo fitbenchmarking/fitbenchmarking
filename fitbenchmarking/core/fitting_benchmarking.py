@@ -435,6 +435,13 @@ def loop_over_jacobians(controller, options, grabbed_output):
                         chi_sq = np.inf if not problem.multifit \
                             else [np.inf] * len(controller.data_x)
 
+                    # If bounds have been set, check that they have
+                    # been respected by the minimizer and set error
+                    # flag if not
+                    if controller.problem.value_ranges is not None \
+                            and controller.flag != 3:
+                        controller.check_bounds_respected()
+
                     result_args = {'options': options,
                                    'cost_func': cost_func,
                                    'jac': jacobian,
