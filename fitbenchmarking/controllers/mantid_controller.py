@@ -36,6 +36,8 @@ class MantidController(Controller):
         """
         super(MantidController, self).__init__(cost_func)
 
+        self.support_for_bounds = True
+
         for fb_cf, mantid_cf in self.COST_FUNCTION_MAP.items():
             if isinstance(self.cost_func, create_cost_func(fb_cf)):
                 self._cost_function = mantid_cf
@@ -107,6 +109,23 @@ class MantidController(Controller):
                                 for i in range(1, self._multi_fit))
                 function_def += 'ties=({})'.format(ties)
 
+            # Add constraints if parameter bounds are set
+            if self.value_ranges is not None and self._multi_fit:
+                constraints = ','.join('{0} < f{1}.{2} < {3}'.format(
+                    self.value_ranges[i][0], j, p, self.value_ranges[i][1])
+                    for i, p in enumerate(self._param_names)
+                    for j in range(0, self._multi_fit))
+                function_def += '; constraints=({})'.format(constraints)
+            elif self.value_ranges is not None:
+
+                if not ';' in function_def:
+                    self._param_names = ['f0.'+name for name in self._param_names]
+
+                constraints = ','.join('{0} < {1} < {2}'.format(
+                        self.value_ranges[i][0], p, self.value_ranges[i][1])
+                        for i, p in enumerate(self._param_names))
+                function_def += '; constraints=({})'.format(constraints)
+
             self._mantid_function = function_def
         except KeyError:
             # This will be completed in setup as it requires initial params
@@ -149,8 +168,11 @@ class MantidController(Controller):
             class fitFunction(IFunction1D):
                 def init(ff_self):
 
-                    for param in self._param_names:
-                        ff_self.declareParameter(param)
+                    for i, p in enumerate(self._param_names):
+                        ff_self.declareParameter(p)
+                        if self.value_ranges is not None:
+                            ff_self.addConstraints('{0} < {1} < {2}'.format(
+                                self.value_ranges[i][0], p, self.value_ranges[i][1]))
 
                 def function1D(ff_self, xdata):
 

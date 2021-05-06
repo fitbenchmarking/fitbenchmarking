@@ -1,20 +1,18 @@
 """
 Tests for fitbenchmarking.core.fitting_benchmarking.benchmark
 """
-from __future__ import (absolute_import, division, print_function)
-import inspect
 import copy
+import inspect
 import os
 import unittest
 from unittest import mock
 
 from fitbenchmarking import mock_problems
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.core.fitting_benchmarking import benchmark
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.utils.exceptions import NoResultsError
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
