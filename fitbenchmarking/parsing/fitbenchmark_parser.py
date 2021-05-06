@@ -102,7 +102,7 @@ class FitbenchmarkParser(Parser):
 
         # If using a multivariate function wrap the call to take a single
         # argument
-        if len(data_points[0]['x']) > 1:
+        if len(data_points[0]['x'].shape) > 1:
             old_function = fitting_problem.function
             all_data = []
             count = 0
@@ -628,5 +628,10 @@ def _get_data_points(data_file_path):
             for key in ['x', 'y']}
     if cols['e']:
         data['e'] = data_points[:, cols['e']]
+
+    # Flatten if the columns are 1D
+    for key, col in cols.items():
+        if len(col) == 1:
+            data[key] = data[key].flatten()
 
     return data
