@@ -2,10 +2,14 @@
 Higher level functions that are used for plotting the fit plot and a starting
 guess plot.
 """
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 import os
+
+import matplotlib
+
+from fitbenchmarking.utils.exceptions import PlottingError
+
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt  # noqa: E402
 
 
 class Plot(object):
@@ -16,6 +20,9 @@ class Plot(object):
     def __init__(self, best_result, options, figures_dir):
         self.cost_func = best_result.cost_func
         self.problem = self.cost_func.problem
+        if self.problem.multivariate:
+            raise PlottingError(
+                'Plots cannot be generated for multivariate problems')
         self.options = options
 
         self.result = best_result

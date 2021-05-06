@@ -100,6 +100,11 @@ class FittingProblem:
         #: Container cached function evaluation
         self.cache_model_x = {'params': None, 'value': None}
 
+        #: *bool*
+        #: Whether the function has been wrapped to reduce the dimension of x
+        #: on function calls
+        self.multivariate = False
+
     def eval_model(self, params, **kwargs):
         """
         Function evaluation method

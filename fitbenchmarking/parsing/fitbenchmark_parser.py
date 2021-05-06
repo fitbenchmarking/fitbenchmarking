@@ -117,6 +117,11 @@ class FitbenchmarkParser(Parser):
                 return old_function(input, *p)
 
             fitting_problem.function = new_function
+            fitting_problem.multivariate = True
+
+        # Set this flag if the output is non-scalar either
+        if len(data_points[0]['y'].shape) > 2:
+            fitting_problem.multivariate = True
 
         # EQUATION
         if software == 'ivp':

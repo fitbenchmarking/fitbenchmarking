@@ -237,7 +237,7 @@ class IncompatibleTableError(FitBenchmarkException):
                               'compatible with the selected ' \
                               'cost function'
         self.error_code = 18
-        
+
 
 class IncorrectBoundsError(FitBenchmarkException):
     """
@@ -251,3 +251,15 @@ class IncorrectBoundsError(FitBenchmarkException):
                               'unable to be set, so this ' \
                               'problem will be skipped.'
         self.error_code = 19
+
+
+class PlottingError(FitBenchmarkException):
+    """
+    Indicates an error during plotting results
+    """
+
+    def __init__(self, message=''):
+        super(PlottingError, self).__init__(message)
+
+        self._class_message = 'An error occurred during plotting.'
+        self.error_code = 20
