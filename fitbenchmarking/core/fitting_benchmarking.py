@@ -205,9 +205,9 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
         LOGGER.info("        Software: %s", s.upper())
         try:
             minimizers = options.minimizers[s]
-        except KeyError:
+        except KeyError as e:
             raise UnsupportedMinimizerError(
-                'No minimizer given for software: {}'.format(s))
+                'No minimizer given for software: {}'.format(s)) from e
         with grabbed_output:
             controller_cls = ControllerFactory.create_controller(
                 software=s)
