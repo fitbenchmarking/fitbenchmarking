@@ -97,7 +97,7 @@ class LevmarController(Controller):
         if self.value_ranges is not None:
             args.append(self.param_ranges)
         kwargs = {"args": (self.data_x,)}
-        if not self.jacobian.use_solver_jac:
+        if not self.jacobian.use_default_jac:
             kwargs["jacf"] = self._jeval
         (self.final_params, _, self._info) = solve_levmar(*args, **kwargs)
         # self._info isn't documented (other than in the levmar source),

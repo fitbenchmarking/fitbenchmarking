@@ -70,7 +70,7 @@ class ScipyLSController(Controller):
                   'x0': self.initial_params,
                   'method': self.minimizer,
                   'max_nfev': 500}
-        if not self.jacobian.use_solver_jac:
+        if not self.jacobian.use_default_jac:
             kwargs['jac'] = self.jacobian.eval
         if self.minimizer != "lm":
             kwargs['bounds'] = self.param_ranges

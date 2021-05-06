@@ -28,7 +28,7 @@ class JacobianOptionTesJacobians(unittest.TestCase):
         expected = {'scipy': ['2-point'],
                     'analytic': ['cutest'],
                     'numdifftools': ['central'],
-                    'solver': ['default']}
+                    'default': ['default']}
         actual = self.options.num_method
         self.assertEqual(expected, actual)
 
@@ -115,7 +115,7 @@ class UserJacobianOptionTests(unittest.TestCase):
         set_option = {'scipy': ['cs'],
                       'analytic': ['cutest'],
                       'numdifftools': ['central'],
-                      'solver': ['default']}
+                      'default': ['default']}
         config_str = \
             "[JACOBIAN]\nscipy: cs"
         self.shared_valid('num_method', set_option, config_str)

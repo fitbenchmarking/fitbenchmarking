@@ -61,7 +61,7 @@ class ScipyController(Controller):
         if self.minimizer not in ["Nelder-Mead", "Powell"]:
             # Neither the Nelder-Mead or Powell minimizers require a Jacobian
             # so are run without that argument.
-            if not self.jacobian.use_solver_jac:
+            if not self.jacobian.use_default_jac:
                 kwargs["jac"] = self.jacobian.eval_cost
         if self.minimizer not in self.no_bounds_minimizers:
             kwargs["bounds"] = self.value_ranges

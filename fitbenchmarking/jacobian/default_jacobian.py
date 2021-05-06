@@ -1,15 +1,15 @@
 """
-Module which uses the solver's default jacobian
+Module which uses the minimizer's default jacobian
 """
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 
 
 # pylint: disable=useless-super-delegation
-class solver(Jacobian):
+class default(Jacobian):
     """
-    Use the solver jacobian/derivative approximation
+    Use the minimizer's jacobian/derivative approximation
     """
 
     def __init__(self, cost_func):
-        super(solver, self).__init__(cost_func)
-        self.use_solver_jac = True
+        super(default, self).__init__(cost_func)
+        self.use_default_jac = True

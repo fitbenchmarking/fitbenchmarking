@@ -40,13 +40,13 @@ class Options(object):
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general'],
          'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'minuit',
                       'ralfit', 'scipy', 'scipy_ls'],
-         'jac_method': ['analytic', 'scipy', 'solver', 'numdifftools'],
+         'jac_method': ['analytic', 'scipy', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
     VALID_JACOBIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
          'analytic': ['cutest'],
-         'solver': ['default'],
+         'default': ['default'],
          'numdifftools': ['central', 
                           'complex', 'multicomplex',
                           'forward', 'backward']}
@@ -93,7 +93,7 @@ class Options(object):
     DEFAULT_JACOBIAN = \
         {'analytic': ['cutest'],
          'scipy': ['2-point'],
-         'solver': ['default'],
+         'default': ['default'],
          'numdifftools': ['central']}
     DEFAULT_PLOTTING = \
         {'make_plots': True,

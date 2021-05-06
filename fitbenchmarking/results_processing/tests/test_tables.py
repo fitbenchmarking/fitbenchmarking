@@ -15,7 +15,7 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
 from fitbenchmarking.results_processing.tables import SORTED_TABLE_NAMES
 from fitbenchmarking.results_processing.tables import generate_table
 from fitbenchmarking.results_processing.tables import create_results_tables
-from fitbenchmarking.jacobian.solver_jacobian import solver as SolverJac
+from fitbenchmarking.jacobian.default_jacobian import default as DefaultJac
 from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -105,7 +105,7 @@ def generate_mock_results():
         for j in range(num_min):
             p.starting_values = starting_values
             cost_func = WeightedNLLSCostFunc(p)
-            jac = SolverJac(cost_func)
+            jac = DefaultJac(cost_func)
             r = FittingResult(options=options, cost_func=cost_func, jac=jac,
                               initial_params=starting_values,
                               params=params_in[i][j])
