@@ -404,7 +404,7 @@ class DefaultControllerTests(TestCase):
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
                                          True,
-                                         ["lm-scipy-no-jac"])
+                                         [None])
 
         controller._status = 1
         self.shared_tests.check_converged(controller)
