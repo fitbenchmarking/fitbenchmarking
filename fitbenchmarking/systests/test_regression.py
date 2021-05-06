@@ -161,7 +161,7 @@ class TestRegressionDefault(TestCase):
         self.assertListEqual([], diff, msg)
 
 
-def diff_result(expected, actual):
+def diff_result(actual, expected):
     """
     Return the lines which differ between expected and actual along with a
     formatted message.
