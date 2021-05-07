@@ -103,10 +103,10 @@ This sets the Jacobian used. Current Jacobian methods are:
 
 * ``analytic`` - uses the analytic Jacobian extracted from the fitting problem.
 * ``scipy`` -  uses :ref:`SciPy's finite difference Jacobian approximations <scipy-jac>`.
-* ``solver`` - uses the default derivative approxmation implemted in the solver.
+* ``default`` - uses the default derivative approxmation implemented in the minimizer.
 * ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-jac>`.
   
-Default is ``solver``
+Default is ``default``
 
 .. code-block:: rst
 
