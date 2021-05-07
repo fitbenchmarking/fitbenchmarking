@@ -1,17 +1,16 @@
 """
 Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_minimizers
 """
-from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 import unittest
 
 from fitbenchmarking import mock_problems
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.utils import fitbm_result, output_grabber
-from fitbenchmarking.core.fitting_benchmarking import loop_over_minimizers
-from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.core.fitting_benchmarking import loop_over_minimizers
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import fitbm_result, output_grabber
 from fitbenchmarking.utils.options import Options
 
 # Defines the module which we mock out certain function calls for
@@ -86,6 +85,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     return cost_func
 
 
+# pylint: disable=attribute-defined-outside-init
 class LoopOverMinimizersTests(unittest.TestCase):
     """
     loop_over_minimizers tests
@@ -174,7 +174,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         selected with a bounded problem, results have the
         correct error flag
         """
-        self.controller.problem.value_ranges = {'test':(0,1)}
+        self.controller.problem.value_ranges = {'test': (0, 1)}
         self.minimizers = ["general"]
 
         results_problem, minimizer_failed, new_minimizer_list = \
@@ -184,6 +184,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         assert results_problem[0].error_flag == 4
         assert minimizer_failed == []
         assert new_minimizer_list == ["general"]
+
 
 if __name__ == "__main__":
     unittest.main()

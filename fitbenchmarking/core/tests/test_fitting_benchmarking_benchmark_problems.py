@@ -2,17 +2,17 @@
 Tests for
 fitbenchmarking.core.fitting_benchmarking.loop_over_benchmark_problems
 """
-from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 import unittest
 
 from fitbenchmarking import mock_problems
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.utils import fitbm_result, exceptions
 from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_benchmark_problems
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.utils.options import Options
 
 # Defines the module which we mock out certain function calls for
@@ -35,7 +35,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    cost_func = NLLSCostFunc(fitting_problem)
+    cost_func = WeightedNLLSCostFunc(fitting_problem)
     return cost_func
 
 
@@ -96,7 +96,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
             unselected_minimzers, expect_minimizers
 
     def shared_tests(self, list_len, expected_problem_fails,
-                     expected_cost_func_descriptions):
+                     expected_cost_func_description):
         """
         Shared tests for the `loop_over_starting_values` function
 
@@ -108,10 +108,12 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         :type expected_cost_func_descriptions: str
         """
         results, failed_problems, unselected_minimzers, minimizer_dict, \
-            cost_func_descriptions = loop_over_benchmark_problems(
+            cost_func_description = loop_over_benchmark_problems(
                 self.problem_group, self.options)
         assert len(results) == list_len
         assert failed_problems == expected_problem_fails
+        self.assertEqual(expected_cost_func_description,
+                         cost_func_description)
         dict_test(unselected_minimzers, {"scipy": []})
         dict_test(minimizer_dict, {"scipy": ['TNC', 'lm-scipy']})
 
@@ -149,6 +151,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         expected_cost_func_descriptions = self.cost_func.__doc__
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_cost_func_descriptions)
+
 
 if __name__ == "__main__":
     unittest.main()

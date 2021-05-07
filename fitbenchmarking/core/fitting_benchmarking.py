@@ -6,22 +6,24 @@ for a certain fitting software.
 
 from __future__ import absolute_import, division, print_function
 
-from collections import defaultdict
+import os
 import timeit
 import warnings
-import os
+from collections import defaultdict
 
 import numpy as np
 
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
-from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.utils.exceptions import UnknownMinimizerError, \
-    UnsupportedMinimizerError, ControllerAttributeError, NoJacobianError, \
-    IncompatibleMinimizerError
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
+from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result, misc, output_grabber
-
+from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
+                                              ControllerAttributeError,
+                                              IncompatibleMinimizerError,
+                                              NoJacobianError,
+                                              UnknownMinimizerError,
+                                              UnsupportedMinimizerError)
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
@@ -97,17 +99,17 @@ def loop_over_benchmark_problems(problem_group, options):
         problem_passed = True
         info_str = " Running data from: {} {}/{}".format(
             os.path.basename(p), i + 1, len(problem_group))
-        LOGGER.info('\n' + '#' * (len(info_str) + 1))
+        LOGGER.info('\n%s', '#' * (len(info_str) + 1))
         LOGGER.info(info_str)
         LOGGER.info('#' * (len(info_str) + 1))
         try:
             with grabbed_output:
                 parsed_problem = parse_problem_file(p, options)
                 parsed_problem.correct_data()
-        except Exception as e:
+        except FitBenchmarkException as e:
             info_str = " Could not run data from: {} {}/{}".format(
                 p, i + 1, len(problem_group))
-            LOGGER.warn(e)
+            LOGGER.warning(e)
             problem_passed = False
 
         if problem_passed:
@@ -149,8 +151,7 @@ def loop_over_starting_values(cost_func, options, grabbed_output):
     num_start_vals = len(problem.starting_values)
     problem_results = []
     for index in range(num_start_vals):
-        LOGGER.info("    Starting value: {0}/{1}".format(index + 1,
-                                                         num_start_vals))
+        LOGGER.info("    Starting value: %i/%i", index + 1, num_start_vals)
         if num_start_vals > 1:
             problem.name = name + ', Start {}'.format(index + 1)
 
@@ -204,9 +205,9 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
         LOGGER.info("        Software: %s", s.upper())
         try:
             minimizers = options.minimizers[s]
-        except KeyError:
+        except KeyError as e:
             raise UnsupportedMinimizerError(
-                'No minimizer given for software: {}'.format(s))
+                'No minimizer given for software: {}'.format(s)) from e
         with grabbed_output:
             controller_cls = ControllerFactory.create_controller(
                 software=s)
@@ -290,15 +291,15 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                 minimizer_check = False
                 controller.flag = 4
                 dummy_results = [{'options': options,
-                                 'cost_func': controller.cost_func,
-                                 'jac': None,
-                                 'chi_sq': np.inf,
-                                 'runtime': np.inf,
-                                 'minimizer': minimizer,
-                                 'initial_params': controller.initial_params,
-                                 'params': None,
-                                 'error_flag': controller.flag,
-                                 'name': problem.name}]
+                                  'cost_func': controller.cost_func,
+                                  'jac': None,
+                                  'chi_sq': np.inf,
+                                  'runtime': np.inf,
+                                  'minimizer': minimizer,
+                                  'initial_params': controller.initial_params,
+                                  'params': None,
+                                  'error_flag': controller.flag,
+                                  'name': problem.name}]
                 for result in dummy_results:
                     individual_result = fitbm_result.FittingResult(
                         **result)
@@ -368,11 +369,13 @@ def loop_over_jacobians(controller, options, grabbed_output):
         for jac_method in jacobian_list:
             for num_method in options.num_method[jac_method]:
                 if minimizer_check:
-                    LOGGER.info(
-                        "                Jacobian: {} ".format(jac_method)
-                        + (num_method if jac_method != "analytic" else ''))
-                    minimizer_name = "{}: {} ".format(minimizer, jac_method) \
-                        + (num_method if jac_method != "analytic" else '')
+                    num_method_str = ''
+                    if jac_method != "analytic":
+                        num_method_str = ' ' + num_method
+                    LOGGER.info("                Jacobian: %s%s",
+                                jac_method, num_method_str)
+                    minimizer_name = "{}: {}{}".format(
+                        minimizer, jac_method, num_method_str)
                 # Creates Jacobian class
                 jacobian_cls = create_jacobian(jac_method)
                 try:
@@ -389,10 +392,11 @@ def loop_over_jacobians(controller, options, grabbed_output):
                         with grabbed_output:
                             # Calls timeit repeat with repeat = num_runs and
                             # number = 1
-                            runtime_list = \
-                                timeit.Timer(setup=controller.prepare,
-                                             stmt=controller.fit).repeat(
-                                    num_runs, 1)
+                            runtime_list = timeit.Timer(
+                                setup=controller.prepare,
+                                stmt=controller.fit
+                            ).repeat(num_runs, 1)
+
                             runtime = sum(runtime_list) / num_runs
                             controller.cleanup()
                             controller.check_attributes()
@@ -430,6 +434,13 @@ def loop_over_jacobians(controller, options, grabbed_output):
 
                         chi_sq = np.inf if not problem.multifit \
                             else [np.inf] * len(controller.data_x)
+
+                    # If bounds have been set, check that they have
+                    # been respected by the minimizer and set error
+                    # flag if not
+                    if controller.problem.value_ranges is not None \
+                            and controller.flag != 3:
+                        controller.check_bounds_respected()
 
                     result_args = {'options': options,
                                    'cost_func': cost_func,

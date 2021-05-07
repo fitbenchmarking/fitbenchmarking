@@ -194,10 +194,10 @@ class LoopOverSoftwareTests(unittest.TestCase):
         """
         self.options.software = ['incorrect_software']
         with self.assertRaises(UnsupportedMinimizerError):
-            _, _, _ = loop_over_fitting_software(self.cost_func,
-                                                 self.options,
-                                                 self.start_values_index,
-                                                 self.grabbed_output)
+            _ = loop_over_fitting_software(self.cost_func,
+                                           self.options,
+                                           self.start_values_index,
+                                           self.grabbed_output)
 
 
 if __name__ == "__main__":
