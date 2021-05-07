@@ -43,7 +43,7 @@ class CompareTable(Table):
 
         self.has_pp = True
         self.pp_filenames = \
-                        [os.path.relpath(pp,group_dir) for pp in pp_locations]
+            [os.path.relpath(pp, group_dir) for pp in pp_locations]
 
     def get_values(self, results_dict):
         """
@@ -63,12 +63,27 @@ class CompareTable(Table):
         rel_value = {}
         for key, value in results_dict.items():
             acc_abs_value = [v.chi_sq for v in value]
-            acc_min_value = np.min(acc_abs_value)
-            acc_rel_value = [v.chi_sq / acc_min_value for v in value]
+
+            # exclude results with error flag 5 when finding
+            # min value
+            error_flags = [v.error_flag for v in value]
+            to_exclude = [i for i, e in enumerate(error_flags) if e == 5]
+
+            acc_min_value = np.min(
+                [x for i, x in enumerate(acc_abs_value)
+                 if i not in to_exclude])
+            acc_rel_value = [
+                v.chi_sq / acc_min_value if v.error_flag != 5
+                else np.inf for v in value]
 
             runtime_abs_value = [v.runtime for v in value]
-            runtime_min_value = np.min(runtime_abs_value)
-            runtime_rel_value = [v.runtime / runtime_min_value for v in value]
+
+            runtime_min_value = np.min(
+                [x for i, x in enumerate(runtime_abs_value)
+                 if i not in to_exclude])
+            runtime_rel_value = [v.runtime / runtime_min_value
+                                 if v.error_flag != 5
+                                 else np.inf for v in value]
 
             abs_value[key] = [acc_abs_value, runtime_abs_value]
             rel_value[key] = [acc_rel_value, runtime_rel_value]
