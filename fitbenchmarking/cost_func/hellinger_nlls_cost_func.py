@@ -1,7 +1,7 @@
 """
 Implements the root non-linear least squares cost function
 """
-from numpy import dot, sqrt
+from numpy import sqrt
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError

@@ -1,8 +1,6 @@
 """
 Implements the non-weighted non-linear least squares cost function
 """
-from numpy import dot
-
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
 

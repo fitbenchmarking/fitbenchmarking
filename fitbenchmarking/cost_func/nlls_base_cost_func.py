@@ -1,15 +1,20 @@
 """
 Implements the base non-linear least squares cost function
 """
-from numpy import dot
 
+from abc import abstractmethod
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
-from fitbenchmarking.utils.exceptions import CostFuncError
-from abc import ABCMeta, abstractmethod
+from numpy import dot
 
 
 class BaseNLLSCostFunc(CostFunc):
     """
+    This defines a base cost function for objectives of the type
+
+    .. math:: \\min_p \\sum_{i=1}^n  r(y_i, x_i, p)^2
+
+    where :math:`p` is a vector of length :math:`m`, and we start from a
+    given initial guess for the optimal parameters.
     """
 
     def __init__(self, problem):
@@ -21,7 +26,7 @@ class BaseNLLSCostFunc(CostFunc):
         function :math:`f(x,p)`, we find the optimal parameters in the
         least-squares sense by solving:
 
-        .. math:: \min_p \sum_{i=1}^n \left( r(x) \right)^2
+        .. math:: \\min_p \\sum_{i=1}^n \\left( r(x) \\right)^2
 
         where :math:`p` is a vector of length :math:`m`, :math:`r(x)` is
         the calculated residual and we start from a
