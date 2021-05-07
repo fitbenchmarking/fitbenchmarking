@@ -9,7 +9,7 @@ from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
-from fitbenchmarking.jacobian.minimizer_jacobian import default
+from fitbenchmarking.jacobian.default_jacobian import default
 from fitbenchmarking.jacobian.numdifftools_jacobian import numdifftools
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
