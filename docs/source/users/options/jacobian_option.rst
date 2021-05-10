@@ -59,7 +59,7 @@ Default is ``default``
 .. code-block:: rst
 
     [JACOBIAN]
-    solver: default
+    default: default
     
 .. _numdifftools-jac:
 
