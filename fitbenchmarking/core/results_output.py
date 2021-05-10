@@ -1,17 +1,16 @@
 """
 Functions that create the tables, support pages, figures, and indexes.
 """
-
-from __future__ import (absolute_import, division, print_function)
 import inspect
-import docutils
 import os
-from jinja2 import Environment, FileSystemLoader
 from shutil import copy2
 
+import docutils
+from jinja2 import Environment, FileSystemLoader
+
 import fitbenchmarking
-from fitbenchmarking.results_processing import performance_profiler, plots, \
-    support_page, tables
+from fitbenchmarking.results_processing import (performance_profiler, plots,
+                                                support_page, tables)
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.misc import get_css, get_js
 
@@ -202,9 +201,10 @@ def create_problem_level_index(options, table_names, group_name,
     docsettings = {
         'math_output': 'MathJax '+js['mathjax']
     }
-    description_page = docutils.core.publish_parts(cost_func_description,
-                                                   writer_name='html',
-                                                   settings_overrides=docsettings)
+    description_page = docutils.core.publish_parts(
+        cost_func_description,
+        writer_name='html',
+        settings_overrides=docsettings)
     cost_func = description_page['body'].replace('<blockquote>\n', '')
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))

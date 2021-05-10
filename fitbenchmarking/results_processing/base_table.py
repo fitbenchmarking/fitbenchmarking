@@ -141,10 +141,8 @@ class Table:
         used in the tables. The base class implementation, for example,
         uses the relative results and ``colour_scale`` within
         :class:`~fitbenchmarking.utils.options.Options`.
-
         :param results: tuple containing absolute and relative values
         :type results: tuple
-
         :return: dictionary containing HTML colours for the table
         :rtype: dict
         """
@@ -285,7 +283,7 @@ class Table:
         i = 0
         for l, v in zip(support_page_link, value.array):
             tmp_link = os.path.relpath(path=l,
-                                        start=self.group_dir)
+                                       start=self.group_dir)
             value.array[i] = '<a href="{0}">{1}</a>'.format(tmp_link, v)
             i += 1
         return value
