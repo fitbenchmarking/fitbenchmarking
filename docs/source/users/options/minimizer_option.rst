@@ -188,15 +188,13 @@ which implements the Levenberg-Marquardt method for nonlinear least-squares.
 We interface via the python interface `available on PyPI <https://pypi.org/project/levmar/>`_.
 
 * Levenberg-Marquardt with supplied Jacobian (:code:`levmar`)  - the Levenberg-Marquardt method
-* Levenberg-Marquardt with no Jacobian passed (:code:`levmar-no-jac`)  - as above, but using levmar's approximate Jacobian
 
-The `levmar` minimizers are set as follows:
+The `levmar` minimizer is set as follows:
 
 .. code-block:: rst
 
    [MINIMIZERS]
    levmar: levmar
-           levmar-no-jac
 
 
 .. warning::
@@ -298,7 +296,6 @@ solver for Least-Squares minimization problems from the optimization chapter
 the SciPy's library.
 
 * Levenberg-Marquardt with supplied Jacobian (:code:`lm-scipy`)  - a wrapper around MINPACK
-* Levenberg-Marquardt with no Jacobian passed (:code:`lm-scipy-no-jac`)  - as above, but using MINPACK's approximate Jacobian
 * The Trust Region Reflective algorithm (:code:`trf`)
 * A dogleg algorithm with rectangular trust regions (:code:`dogbox`)
 
@@ -309,7 +306,6 @@ The SciPy least squares minimizers are set as follows:
 .. code-block:: rst
 
     [MINIMIZERS]
-    scipy_ls: lm-scipy-no-jac
-              lm-scipy
+    scipy_ls: lm-scipy
               trf
               dogbox
