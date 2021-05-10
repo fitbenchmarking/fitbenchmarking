@@ -50,7 +50,7 @@ Solver Default Jacobian (:code:`default`)
 This uses the approximation of the Jacobian that is used by default in the minimizer,
 and will vary between solvers.  If the minimizer requires the user to pass a Jacobian,
 a warning will be printed to the screen and the :ref:`scipy-jac` 2-point
-approximation will be used.  The only options is:
+approximation will be used.  The only option is:
 
 * ``default`` - use the default derivative approxmation provided by the software.
 
