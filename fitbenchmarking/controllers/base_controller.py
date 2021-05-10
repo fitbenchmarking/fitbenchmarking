@@ -283,7 +283,7 @@ class Controller:
 
         The flag corresponds to the following messages:
 
-        .. automethod:: fitbenchmarking.controllers.
+        .. automethod:: fitbenchmarking.controllers. \
                             base_controller.Controller.flag()
                       :noindex:
         """
