@@ -1,11 +1,14 @@
-# Tests for the controllers available from a default fitbenchmarking install
+"""
+Tests for the controllers available from a default fitbenchmarking install
+"""
 import inspect
 import os
 from unittest import TestCase
 import numpy as np
 import pytest
+# pylint: disable=E0611
 from pytest import test_type as TEST_TYPE
-
+# pylint: enable=E0611
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.bumps_controller import BumpsController
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
@@ -28,6 +31,8 @@ from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
 from fitbenchmarking import mock_problems
+
+# pylint: disable=W0201,W0212
 
 
 def make_cost_func(file_name='cubic.dat'):
@@ -413,9 +418,12 @@ class DefaultControllerTests(TestCase):
         controller._status = -1
         self.shared_tests.check_diverged(controller)
 
+
 @pytest.mark.skipif("TEST_TYPE == 'default'")
 class ControllerBoundsTests(TestCase):
-
+    """
+    Tests to ensure controllers handle and respect bounds correctly
+    """
     def setUp(self):
         """
         Setup for bounded problem
@@ -524,7 +532,8 @@ class ControllerBoundsTests(TestCase):
         controller.minimizer = 'Levenberg-Marquardt'
         controller.jacobian = self.jac
 
-        self.check_bounds(controller)        
+        self.check_bounds(controller)
+
 
 @pytest.mark.skipif("TEST_TYPE == 'default'")
 class ExternalControllerTests(TestCase):
@@ -695,6 +704,7 @@ class ExternalControllerTests(TestCase):
             self.shared_tests.check_converged(controller)
             controller._status = 2
             self.shared_tests.check_diverged(controller)
+
 
 class FactoryTests(TestCase):
     """

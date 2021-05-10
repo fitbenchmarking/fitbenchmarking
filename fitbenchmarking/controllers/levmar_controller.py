@@ -27,6 +27,7 @@ class LevmarController(Controller):
         super(LevmarController, self).__init__(cost_func)
 
         self.support_for_bounds = True
+        self.param_ranges = None
         self._popt = None
         self.algorithm_check = {
             'all': ['levmar'],
@@ -54,6 +55,7 @@ class LevmarController(Controller):
             ub = [None if x == np.inf else x for x in ub]
             self.param_ranges = list(zip(lb, ub))
 
+    # pylint: disable=W0613
     def _feval(self, p, x):
         """
         Utility function to call problem.eval_model with correct args
@@ -82,6 +84,7 @@ class LevmarController(Controller):
         """
         jac = -self.jacobian.eval(p)
         return jac
+    # pylint: enable=W0613
 
     def fit(self):
         """

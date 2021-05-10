@@ -54,6 +54,7 @@ class GSLController(Controller):
         jacobian_free_solvers = ['nmsimplex', 'nmsimplex2']
         return has_jacobian, jacobian_free_solvers
 
+    # pylint: disable=W0613
     def _prediction_error(self, p, data=None):
         """
         Utility function to call cost_func.eval_r with correct args
@@ -137,6 +138,7 @@ class GSLController(Controller):
         f = self.cost_func.eval_cost(p)
         df = self._jac_chi_squared(p)
         return f, df
+    # pylint: enable=W0613
 
     def setup(self):
         """

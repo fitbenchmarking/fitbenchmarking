@@ -26,6 +26,9 @@ class ScipyLSController(Controller):
 
         self.support_for_bounds = True
         self.no_bounds_minimizers = ['lm-scipy']
+        self.param_ranges = None
+        self.result = None
+        self._status = None
         self._popt = None
         self.algorithm_check = {
             'all': ['lm-scipy', 'trf', 'dogbox'],

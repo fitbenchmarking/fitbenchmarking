@@ -27,6 +27,9 @@ class ScipyController(Controller):
 
         self.support_for_bounds = True
         self.no_bounds_minimizers = ['Nelder-Mead', 'CG', 'BFGS', 'Newton-CG']
+        self.options = None
+        self.result = None
+        self._status = None
         self._popt = None
         self.algorithm_check = {
             'all': ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
