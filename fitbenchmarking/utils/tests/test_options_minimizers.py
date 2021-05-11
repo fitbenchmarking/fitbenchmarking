@@ -92,7 +92,7 @@ class MininimizerOptionTests(unittest.TestCase):
         """
         Checks valid scipy_ls minimizers are set correctly
         """
-        expected = ['lm-scipy-no-jac', 'lm-scipy', 'trf', 'dogbox']
+        expected = ['lm-scipy', 'trf', 'dogbox']
         actual = self.options.minimizers['scipy_ls']
         self.assertEqual(expected, actual)
 

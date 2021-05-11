@@ -62,7 +62,8 @@ The options are:
 
 * ``all`` - all minimizers
 * ``ls`` - least-squares fitting algorithms
-* ``deriv_free`` - derivative free algorithms (these are algorithms that do not require an information about derivatives. For example, the ``Simplex`` method in ``Mantid`` does not require derivative information but ``lm-scipy-no-jac`` in ``scipy_ls`` does but the derivative is handle internally within the software package)
+* ``deriv_free`` - derivative free algorithms (these are algorithms that cannot use
+  information about derivatives -- e.g., the ``Simplex`` method in ``Mantid``)
 * ``general`` - minimizers which solve a generic `min f(x)`
 
 Default is ``all``
@@ -101,10 +102,11 @@ Jacobian method (:code:`jac_method`)
 This sets the Jacobian used. Current Jacobian methods are:
 
 * ``analytic`` - uses the analytic Jacobian extracted from the fitting problem.
-* ``scipy`` -  uses :ref:`SciPy's finite difference Jacobian approximations <scipy-jac>`
+* ``scipy`` -  uses :ref:`SciPy's finite difference Jacobian approximations <scipy-jac>`.
+* ``default`` - uses the default derivative approxmation implemented in the minimizer.
 * ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-jac>`.
   
-Default is ``scipy``
+Default is ``default``
 
 .. code-block:: rst
 

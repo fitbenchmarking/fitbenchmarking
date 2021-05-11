@@ -1,5 +1,4 @@
 
-from collections import OrderedDict
 from unittest import TestCase
 
 import numpy as np
@@ -10,6 +9,7 @@ from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.jacobian.default_jacobian import default
 from fitbenchmarking.jacobian.numdifftools_jacobian import numdifftools
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
@@ -94,6 +94,13 @@ class TestJacobianClass(TestCase):
         jac.method = 'cs'
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+    def test_default(self):
+        """
+        Test that minimizer default jacobian does what it should
+        """
+        jac = default(self.cost_func)
+        self.assertTrue(jac.use_default_jac)
 
     def test_numdifftools_eval(self):
         """

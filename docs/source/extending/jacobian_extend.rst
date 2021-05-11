@@ -38,6 +38,9 @@ you will need to:
      ``<jac_method>``, with the associated element being a subset of the
      valid options added in ``VALID_JACOBIAN`` in the previous step.
 
+   * Amend the file ``fitbenchmarking/utils/tests/test_options_jacobian.py`` to
+     include tests for the new options.
+
 3. Document the available Jacobians by:
 
   * adding a list of available ``method`` options to the docs for :ref:`jacobian_option`.
