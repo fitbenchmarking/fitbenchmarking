@@ -1,0 +1,6 @@
+# Fitbenchmark Problem
+software = 'ivp'
+name = 'Nonlinear Oscillator'
+description = 'A nonlinear oscillator generated to test the ivp parser. Exact results should be 10, -0.1.'
+input_file = 'nonlinear_oscillator.txt'
+function = 'module=functions/nonlinear_oscillator,func=nonlinear_oscillator,step=0.1,gamma=15,mu=-0.5'
