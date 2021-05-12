@@ -27,6 +27,10 @@ In the example below, this means that values less than 1.1 will
 have the top ranking (brightest) and values over 3 will show as
 the worst ranking (deep red). 
 
+If `parameter_ranges` have been set for a problem, then solutions
+flagged as not respecting the specified bounds will be given the
+worst ranking colour.
+
 Default thresholds are ``1.1, 1.33, 1.75, 3, and inf``
 
 .. code-block:: rst

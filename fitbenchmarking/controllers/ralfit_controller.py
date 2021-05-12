@@ -75,7 +75,8 @@ class RALFitController(Controller):
             self.param_ranges = (value_ranges_lb, value_ranges_ub)
         else:
             self.param_ranges = (
-                [-np.inf]*len(self.initial_params), [np.inf]*len(self.initial_params))
+                [-np.inf]*len(self.initial_params),
+                [np.inf]*len(self.initial_params))
 
     def fit(self):
         """

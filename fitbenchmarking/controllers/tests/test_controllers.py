@@ -284,6 +284,28 @@ class BaseControllerTests(TestCase):
         with self.assertRaises(exceptions.IncompatibleMinimizerError):
             controller.check_minimizer_bounds(minimizer)
 
+    def test_bounds_respected_true(self):
+
+        controller = DummyController(self.cost_func)
+        controller.value_ranges = [(10, 20), (20, 30)]
+        controller.final_params = [15, 30]
+        controller.flag = 0
+
+        controller.check_bounds_respected()
+
+        assert controller.flag == 0
+
+    def test_bounds_respected_false(self):
+
+        controller = DummyController(self.cost_func)
+        controller.value_ranges = [(10, 20), (20, 30)]
+        controller.final_params = [25, 35]
+        controller.flag = 0
+
+        controller.check_bounds_respected()
+
+        assert controller.flag == 5
+
 
 class DefaultControllerTests(TestCase):
     """
@@ -382,7 +404,7 @@ class DefaultControllerTests(TestCase):
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
                                          True,
-                                         ["lm-scipy-no-jac"])
+                                         [None])
 
         controller._status = 1
         self.shared_tests.check_converged(controller)
@@ -527,7 +549,7 @@ class ExternalControllerTests(TestCase):
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
                                          True,
-                                         ["levmar-no-jac"])
+                                         [])
 
         controller._info = (0, 1, 2, "Stop by small Dp", 4, 5, 6)
         self.shared_tests.check_converged(controller)
