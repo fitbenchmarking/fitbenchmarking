@@ -41,7 +41,19 @@ Mantid
 Mantid is used both as fitting software, and to parse data files.
 
 Instructions on how to install Mantid for range of systems are available
-at `<https://download.mantidproject.org/>`_.  
+at `<https://download.mantidproject.org/>`_.
+
+MATLAB
+------
+
+MATLAB is available to use as fitting software in FitBenchmarking, and is
+called via the MATLAB Engine API for Python.
+
+To use this fitting software, both MATLAB and the MATLAB engine must be
+installed. Installation instructions for MATLAB are available at
+`<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`,
+and instructions for installing and setting up the MATLAB engine are
+here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`
 
 RALFit
 ------
