@@ -1,3 +1,6 @@
+"""
+Tests for misc.py
+"""
 from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
@@ -10,7 +13,11 @@ from fitbenchmarking.utils.misc import get_problem_files
 from fitbenchmarking.utils.misc import get_css, get_js
 from fitbenchmarking.utils.options import Options
 
+
 class CreateDirsTests(unittest.TestCase):
+    """
+    Tests for the file and directory setting in misc.py
+    """
 
     def base_path(self):
         """
@@ -57,32 +64,38 @@ class CreateDirsTests(unittest.TestCase):
         self.assertEqual(self.expected, sorted(problems))
 
     def test_get_css(self):
-        
+        """
+        Test that the right css files are returned
+        """
         options = Options()
         print(options.results_dir)
-        test_dir = os.path.join(options.results_dir,"foo")
-        
-        expected_css_dir = os.path.join("..","css")
-        expected_main_css = os.path.join(expected_css_dir,"main_style.css")
-        expected_table_css = os.path.join(expected_css_dir,"table_style.css")
-        expected_custom_css = os.path.join(expected_css_dir,"custom_style.css")
-        css = get_css(options,test_dir)
+        test_dir = os.path.join(options.results_dir, "foo")
+
+        expected_css_dir = os.path.join("..", "css")
+        expected_main_css = os.path.join(expected_css_dir, "main_style.css")
+        expected_table_css = os.path.join(expected_css_dir, "table_style.css")
+        expected_custom_css = os.path.join(expected_css_dir,
+                                           "custom_style.css")
+        css = get_css(options, test_dir)
 
         self.assertEqual(css['main'], expected_main_css)
         self.assertEqual(css['table'], expected_table_css)
         self.assertEqual(css['custom'], expected_custom_css)
 
     def test_get_js(self):
-        
+        """
+        Test that the right js files are returned
+        """
         options = Options()
         print(options.results_dir)
-        test_dir = os.path.join(options.results_dir,"foo")
-        
-        expected_js_dir = os.path.join("..","js")
-        expected_mathjax_js = os.path.join(expected_js_dir,"tex-mml-chtml.js")
-        js = get_js(options,test_dir)
+        test_dir = os.path.join(options.results_dir, "foo")
+
+        expected_js_dir = os.path.join("..", "js")
+        expected_mathjax_js = os.path.join(expected_js_dir, "tex-mml-chtml.js")
+        js = get_js(options, test_dir)
 
         self.assertEqual(js['mathjax'], expected_mathjax_js)
+
 
 if __name__ == "__main__":
     unittest.main()
