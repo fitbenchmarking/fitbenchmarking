@@ -20,7 +20,6 @@ if TEST_TYPE not in ["default", "matlab"]:
     from fitbenchmarking.controllers.gsl_controller import GSLController
     from fitbenchmarking.controllers.levmar_controller import LevmarController
     from fitbenchmarking.controllers.mantid_controller import MantidController
-    from fitbenchmarking.controllers.matlab_controller import MatlabController
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
 
 if TEST_TYPE == 'matlab':
