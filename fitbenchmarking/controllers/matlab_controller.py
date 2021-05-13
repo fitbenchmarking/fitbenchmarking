@@ -14,6 +14,7 @@ from fitbenchmarking.controllers.base_controller import Controller
 
 eng = matlab.engine.start_matlab()
 
+
 class MatlabController(Controller):
     """
     Controller for MATLAB fitting (fminsearch)
@@ -33,9 +34,9 @@ class MatlabController(Controller):
         self.result = None
         self.algorithm_check = {
             'all': ['Nelder-Mead Simplex'],
-            'ls': ['Nelder-Mead Simplex'],
-            'deriv_free': [None],
-            'general': [None]}
+            'ls': [None],
+            'deriv_free': ['Nelder-Mead Simplex'],
+            'general': ['Nelder-Mead Simplex']}
 
     def jacobian_information(self):
         """
@@ -44,7 +45,7 @@ class MatlabController(Controller):
         has_jacobian = False
         jacobian_free_solvers = []
         return has_jacobian, jacobian_free_solvers
-    
+
     def setup(self):
         """
         Setup for Matlab fitting
@@ -71,8 +72,9 @@ class MatlabController(Controller):
         """
         Run problem with Matlab
         """
-        [self.result, _, exitflag] = eng.fminsearch(eng.workspace['eval_cost_mat'],
-                                                    self.initial_params_mat, nargout=3)
+        [self.result, _, exitflag] = eng.fminsearch(
+            eng.workspace['eval_cost_mat'],
+            self.initial_params_mat, nargout=3)
         self._status = int(exitflag)
 
     def cleanup(self):
