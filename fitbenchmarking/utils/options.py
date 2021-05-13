@@ -24,7 +24,7 @@ class Options(object):
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                  'vector_bfgs2', 'steepest_descent'],
-         'levmar': ['levmar','levmar-no-jac'],
+         'levmar': ['levmar'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
@@ -36,18 +36,18 @@ class Options(object):
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-         'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf',
-                      'dogbox']}
+         'scipy_ls': ['lm-scipy', 'trf', 'dogbox']}
     VALID_FITTING = \
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general'],
          'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'matlab',
                       'minuit', 'ralfit', 'scipy', 'scipy_ls'],
-         'jac_method': ['scipy', 'analytic', 'numdifftools'],
+         'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
     VALID_JACOBIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
          'analytic': ['cutest'],
+         'default': ['default'],
          'numdifftools': ['central', 
                           'complex', 'multicomplex',
                           'forward', 'backward']}
@@ -85,8 +85,7 @@ class Options(object):
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-         'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf',
-                      'dogbox']}
+         'scipy_ls': ['lm-scipy', 'trf', 'dogbox']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': 'all',
@@ -94,8 +93,9 @@ class Options(object):
          'jac_method': ['scipy'],
          'cost_func_type': 'weighted_nlls'}
     DEFAULT_JACOBIAN = \
-        {'scipy': ['2-point'],
-         'analytic': ['cutest'],
+        {'analytic': ['cutest'],
+         'scipy': ['2-point'],
+         'default': ['default'],
          'numdifftools': ['central']}
     DEFAULT_PLOTTING = \
         {'make_plots': True,

@@ -19,7 +19,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    VALID_FLAGS = [0, 1, 2, 3, 4]
+    VALID_FLAGS = [0, 1, 2, 3, 4, 5]
 
     def __init__(self, cost_func):
         """
@@ -37,9 +37,6 @@ class Controller:
           that cannot use derivative information. For example, the
           ``Simplex`` method in ``Mantid`` does not require Jacobians, and so
           is derivative free.
-          However, ``lm-scipy-no-jac`` in ``scipy_ls`` is designed to use
-          derivatives, but calculates an approximation internally if one is not
-          supplied.)
         - ``general`` - minimizers which solve a generic `min f(x)`.
 
         The **values** of the dictionary are given as a list of minimizers
@@ -107,6 +104,7 @@ class Controller:
         | 2: `Software run but didn't converge to solution`
         | 3: `Software raised an exception`
         | 4: `Solver doesn't support bounded problems`
+        | 5: `Solution doesn't respect parameter bounds`
         """
 
         return self._flag
@@ -192,6 +190,16 @@ class Controller:
                       'problems with parameter bounds'
             raise IncompatibleMinimizerError(message)
 
+    def check_bounds_respected(self):
+        """
+            Check whether the selected minimizer has respected
+            parameter bounds
+        """
+        for count, value in enumerate(self.final_params):
+            if not self.value_ranges[count][0] <= value \
+                    <= self.value_ranges[count][1]:
+                self.flag = 5
+
     def check_attributes(self):
         """
         A helper function which checks all required attributes are set
@@ -230,9 +238,9 @@ class Controller:
         - ``has_jacobian``: a True or False value whether the controller
           requires Jacobian information.
         - ``jacobian_free_solvers``: a list of minimizers in a specific
-          software that do not require Jacobian information to be passed
-          into the fitting algorithm. For example in the ``ScipyLS``
-          controller this would return ``lm-scipy-no-jac``.
+          software that do not allow Jacobian information to be passed
+          into the fitting algorithm. For example in the ``Scipy``
+          controller this would return ``Nelder-Mead`` and ``Powell``.
 
         :return: (``has_jacobian``, ``jacobian_free_solvers``)
         :rtype: (`string`, `list`)
@@ -260,7 +268,8 @@ class Controller:
         """
         Run the fitting.
 
-        This will be timed so should include only what is needed to fit the data.
+        This will be timed so should include only what is needed to
+        fit the data.
         """
         raise NotImplementedError
 
