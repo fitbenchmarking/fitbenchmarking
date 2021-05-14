@@ -3,9 +3,10 @@ Higher level functions that are used for plotting the fit plot and a starting
 guess plot.
 """
 import os
-import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
+# pylint: disable=wrong-import-position
+import matplotlib.pyplot as plt  # noqa: E402
 
 
 class Plot:

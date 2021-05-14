@@ -38,8 +38,8 @@ class RuntimeTable(Table):
         :type table_name: str
         """
 
-        super(RuntimeTable, self).__init__(results, best_results, options,
-                                           group_dir, pp_locations, table_name)
+        super().__init__(results, best_results, options,
+                         group_dir, pp_locations, table_name)
         self.name = 'runtime'
         self.has_pp = True
         self.pp_filenames = [os.path.relpath(self.pp_locations[1], group_dir)]

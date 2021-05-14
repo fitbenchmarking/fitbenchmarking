@@ -37,8 +37,8 @@ class CompareTable(Table):
         :param table_name: Name of the table
         :type table_name: str
         """
-        super(CompareTable, self).__init__(results, best_results, options,
-                                           group_dir, pp_locations, table_name)
+        super().__init__(results, best_results, options,
+                         group_dir, pp_locations, table_name)
         self.name = 'compare'
         self.has_pp = True
         self.pp_filenames = \

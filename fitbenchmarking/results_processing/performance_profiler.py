@@ -5,10 +5,11 @@ import os
 from collections import OrderedDict
 from textwrap import wrap
 import numpy as np
-import matplotlib.pyplot as plt
 
 import matplotlib
 matplotlib.use('Agg')
+# pylint: disable=wrong-import-position
+import matplotlib.pyplot as plt  # noqa: E402
 
 
 def profile(results, fig_dir):

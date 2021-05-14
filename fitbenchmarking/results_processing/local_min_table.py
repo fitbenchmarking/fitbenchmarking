@@ -55,9 +55,8 @@ class LocalMinTable(Table):
         :param table_name: Name of the table
         :type table_name: str
         """
-        super(LocalMinTable, self).__init__(results, best_results, options,
-                                            group_dir, pp_locations,
-                                            table_name)
+        super().__init__(results, best_results, options,
+                         group_dir, pp_locations, table_name)
         self.name = 'local_min'
 
         self.has_pp = True
