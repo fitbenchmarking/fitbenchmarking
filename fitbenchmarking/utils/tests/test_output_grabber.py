@@ -1,3 +1,6 @@
+"""
+Tests for the output grabber
+"""
 from __future__ import absolute_import, division, print_function
 
 import platform
@@ -9,7 +12,9 @@ from fitbenchmarking.utils.output_grabber import OutputGrabber
 
 
 class OutputGrabberTests(unittest.TestCase):
-
+    """
+    Tests for the Output Grabber
+    """
     def setUp(self):
         self.options = Options()
         self.plt = platform.system()
