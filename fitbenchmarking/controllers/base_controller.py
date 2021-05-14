@@ -283,8 +283,7 @@ class Controller:
 
         The flag corresponds to the following messages:
 
-        .. automethod:: fitbenchmarking.controllers.\
-                            base_controller.Controller.flag()
+        .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag()  # noqa: E501
                 :noindex:
         """
         raise NotImplementedError
