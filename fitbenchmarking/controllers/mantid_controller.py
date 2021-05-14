@@ -10,6 +10,8 @@ from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.utils.exceptions import ControllerAttributeError
 
+# pylint: disable=protected-access
+
 
 class MantidController(Controller):
     """
@@ -34,7 +36,7 @@ class MantidController(Controller):
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(MantidController, self).__init__(cost_func)
+        super().__init__(cost_func)
 
         self.support_for_bounds = True
 
@@ -47,7 +49,7 @@ class MantidController(Controller):
                                            ' the requested cost function '
                                            f'{self.cost_func.__class__}')
 
-        self.param_names = self.problem.param_names
+        self._param_names = self.problem.param_names
         self._status = None
         self.algorithm_check = {
             'all': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
@@ -114,18 +116,18 @@ class MantidController(Controller):
             if self.value_ranges is not None and self._multi_fit:
                 constraints = ','.join('{0} < f{1}.{2} < {3}'.format(
                     self.value_ranges[i][0], j, p, self.value_ranges[i][1])
-                    for i, p in enumerate(self.param_names)
+                    for i, p in enumerate(self._param_names)
                     for j in range(0, self._multi_fit))
                 function_def += '; constraints=({})'.format(constraints)
             elif self.value_ranges is not None:
 
                 if ';' not in function_def:
-                    self.param_names = [
-                        'f0.'+name for name in self.param_names]
+                    self._param_names = [
+                        'f0.'+name for name in self._param_names]
 
                 constraints = ','.join('{0} < {1} < {2}'.format(
                     self.value_ranges[i][0], p, self.value_ranges[i][1])
-                    for i, p in enumerate(self.param_names))
+                    for i, p in enumerate(self._param_names))
                 function_def += '; constraints=({})'.format(constraints)
 
             self._mantid_function = function_def
@@ -155,23 +157,23 @@ class MantidController(Controller):
         if self._mantid_function is None:
             start_val_list = ['{0}={1}'.format(name, value)
                               for name, value
-                              in zip(self.param_names, self.initial_params)]
+                              in zip(self._param_names, self.initial_params)]
 
             start_val_str = ', '.join(start_val_list)
             function_def = "name=fitFunction, " + start_val_str
 
             def get_params(ff_self):
-                fit_param = np.zeros(len(self.param_names))
+                fit_param = np.zeros(len(self._param_names))
                 fit_param.setflags(write=1)
-                for i, param in enumerate(self.param_names):
+                for i, param in enumerate(self._param_names):
                     fit_param[i] = ff_self.getParameterValue(param)
                 return fit_param
 
-            # pylint: disable=E0213
+            # pylint: disable=no-self-argument
             class fitFunction(IFunction1D):
                 def init(ff_self):
 
-                    for i, p in enumerate(self.param_names):
+                    for i, p in enumerate(self._param_names):
                         ff_self.declareParameter(p)
                         if self.value_ranges is not None:
                             ff_self.addConstraints('{0} < {1} < {2}'.format(
@@ -196,7 +198,7 @@ class MantidController(Controller):
             FunctionFactory.subscribe(fitFunction)
 
             self._mantid_function = function_def
-        # pylint: enable=E0213
+        # pylint: enable=no-self-argument
 
     def fit(self):
         """
@@ -230,10 +232,10 @@ class MantidController(Controller):
 
         if not self._multi_fit:
             self.final_params = [final_params_dict[key]
-                                 for key in self.param_names]
+                                 for key in self._param_names]
         else:
             self.final_params = [[final_params_dict[f'f{i}.{name}']
-                                  for name in self.param_names]
+                                  for name in self._param_names]
                                  for i in range(self._multi_fit)]
 
     # Override if multi-fit
@@ -274,5 +276,4 @@ class MantidController(Controller):
                 e = [None for _ in range(num_inps)]
             return [super(MantidController, self).eval_chisq(p, xi, yi, ei)
                     for p, xi, yi, ei in zip(params, x, y, e)]
-        else:
-            return super(MantidController, self).eval_chisq(params, x, y, e)
+        return super(MantidController, self).eval_chisq(params, x, y, e)

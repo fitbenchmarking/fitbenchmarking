@@ -32,7 +32,7 @@ class MinuitController(Controller):
                                        'please upgrade to at least version '
                                        '2.0.0'.format(iminuit_version))
 
-        super(MinuitController, self).__init__(cost_func)
+        super().__init__(cost_func)
 
         self.support_for_bounds = True
         self.param_ranges = None

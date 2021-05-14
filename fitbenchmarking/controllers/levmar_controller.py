@@ -24,7 +24,7 @@ class LevmarController(Controller):
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(LevmarController, self).__init__(cost_func)
+        super().__init__(cost_func)
 
         self.support_for_bounds = True
         self.param_ranges = None
@@ -55,7 +55,7 @@ class LevmarController(Controller):
             ub = [None if x == np.inf else x for x in ub]
             self.param_ranges = list(zip(lb, ub))
 
-    # pylint: disable=W0613
+    # pylint: disable=unused-argument
     def _feval(self, p, x):
         """
         Utility function to call problem.eval_model with correct args
@@ -84,7 +84,7 @@ class LevmarController(Controller):
         """
         jac = -self.jacobian.eval(p)
         return jac
-    # pylint: enable=W0613
+    # pylint: enable=unused-argument
 
     def fit(self):
         """

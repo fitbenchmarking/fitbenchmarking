@@ -23,7 +23,7 @@ class RALFitController(Controller):
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(RALFitController, self).__init__(cost_func)
+        super().__init__(cost_func)
 
         self.support_for_bounds = True
         self.param_ranges = None

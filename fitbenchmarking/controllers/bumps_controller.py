@@ -28,7 +28,7 @@ class BumpsController(Controller):
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(BumpsController, self).__init__(cost_func)
+        super().__init__(cost_func)
 
         self._param_names = [name.replace('.', '_')
                              for name in self.problem.param_names]
@@ -53,7 +53,7 @@ class BumpsController(Controller):
         return has_jacobian, jacobian_free_solvers
 
     def setup(self):
-        # pylint: disable=W0122,W0212
+        # pylint: disable=exec-used,protected-access
         """
         Setup problem ready to run with Bumps.
 
