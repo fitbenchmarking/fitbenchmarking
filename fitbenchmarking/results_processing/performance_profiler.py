@@ -1,14 +1,14 @@
 """
 Set up performance profiles for both accuracy and runtime tables
 """
-from collections import OrderedDict
 import os
+from collections import OrderedDict
 from textwrap import wrap
+import numpy as np
+import matplotlib.pyplot as plt
 
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import numpy as np
 
 
 def profile(results, fig_dir):
@@ -127,7 +127,7 @@ def plot(acc, runtime, fig_dir):
         # legend
         ax[legend_ax].axis('off')
         handles, labels = ax[0].get_legend_handles_labels()
-        wrapped_labels = ['\n'.join(wrap(l, 22)) for l in labels]
+        wrapped_labels = ['\n'.join(wrap(label, 22)) for label in labels]
         ax[legend_ax].legend(handles, wrapped_labels, loc=2, prop={'size': 7})
 
         # Common parts

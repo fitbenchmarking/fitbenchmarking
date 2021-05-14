@@ -1,8 +1,8 @@
 """
 compare table
 """
-import numpy as np
 import os
+import numpy as np
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -37,10 +37,9 @@ class CompareTable(Table):
         :param table_name: Name of the table
         :type table_name: str
         """
-        self.name = 'compare'
         super(CompareTable, self).__init__(results, best_results, options,
                                            group_dir, pp_locations, table_name)
-
+        self.name = 'compare'
         self.has_pp = True
         self.pp_filenames = \
             [os.path.relpath(pp, group_dir) for pp in pp_locations]

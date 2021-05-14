@@ -54,6 +54,7 @@ class Table:
         self.group_dir = group_dir
         self.pp_locations = pp_locations
         self.table_name = table_name
+        self.name = None
 
         colour_scale = self.options.colour_scale
 
@@ -281,8 +282,8 @@ class Table:
         name = value.name
         support_page_link = links[name]
         i = 0
-        for l, v in zip(support_page_link, value.array):
-            tmp_link = os.path.relpath(path=l,
+        for page_path, v in zip(support_page_link, value.array):
+            tmp_link = os.path.relpath(path=page_path,
                                        start=self.group_dir)
             value.array[i] = '<a href="{0}">{1}</a>'.format(tmp_link, v)
             i += 1
