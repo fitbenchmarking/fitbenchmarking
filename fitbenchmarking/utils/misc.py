@@ -12,13 +12,14 @@ from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
 
+
 def get_problem_files(data_dir):
     """
     Gets all the problem definition files from the specified problem
     set directory.
 
     :param data_dir: directory containing the problems
-    :type data_dir: str 
+    :type data_dir: str
 
     :return: array containing of paths to the problems
              e.g. In NIST we would have
@@ -40,40 +41,42 @@ def get_problem_files(data_dir):
 
     return problems
 
-def get_css(options,working_directory):
+
+def get_css(options, working_directory):
     """
     Returns the path of the local css folder
-    
+
     :param working_directory: location of current directory
     :type working_directory: string
-    
+
     :return: A dictionary containing relative links to the local css directory
     :rtype: dict of strings
     """
-    local_css_dir = os.path.join(options.results_dir,"css")
-    css_path = os.path.relpath(local_css_dir,working_directory)
+    local_css_dir = os.path.join(options.results_dir, "css")
+    css_path = os.path.relpath(local_css_dir, working_directory)
     css_dict = {
-        'main'   : os.path.join(css_path,'main_style.css'),
-        'table'  : os.path.join(css_path,'table_style.css'),
-        'custom' : os.path.join(css_path,'custom_style.css')
+        'main': os.path.join(css_path, 'main_style.css'),
+        'table': os.path.join(css_path, 'table_style.css'),
+        'custom': os.path.join(css_path, 'custom_style.css')
     }
-    
+
     return css_dict
 
-def get_js(options,working_directory):
+
+def get_js(options, working_directory):
     """
     Returns the path of the local js folder
-    
+
     :param working_directory: location of current directory
     :type working_directory: string
-    
+
     :return: A dictionary containing relative links to the local js directory
     :rtype: dict of strings
     """
-    local_js_dir = os.path.join(options.results_dir,"js")
-    js_path = os.path.relpath(local_js_dir,working_directory)
+    local_js_dir = os.path.join(options.results_dir, "js")
+    js_path = os.path.relpath(local_js_dir, working_directory)
     js_dict = {
-        'mathjax'   : os.path.join(js_path,'tex-mml-chtml.js'),
+        'mathjax': os.path.join(js_path, 'tex-mml-chtml.js'),
     }
-    
+
     return js_dict

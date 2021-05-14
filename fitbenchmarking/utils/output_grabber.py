@@ -1,3 +1,7 @@
+'''
+This file will capture output that would be printed to the terminal
+'''
+
 import os
 import sys
 import platform
@@ -28,7 +32,7 @@ class OutputGrabber:
             self.stderr_grabber.start()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_value, traceback):
         if self.system and self.external_output != 'debug':
             self.stdout_grabber.stop()
             self.stderr_grabber.stop()
@@ -58,6 +62,9 @@ class StreamGrabber:
         self.origstream = stream
         self.origstreamfd = stream.fileno()
         self.encoding = stream.encoding
+        self.pipe_out = None
+        self.pipe_in = None
+        self.streamfd = None
 
         self.capturedtext = ""
 
