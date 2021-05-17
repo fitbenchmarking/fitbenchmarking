@@ -1,7 +1,7 @@
 """
 Implements the non-weighted non-linear least squares cost function
 """
-from numpy import dot
+from numpy import dot, ravel
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
@@ -57,7 +57,7 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         result = y - self.problem.eval_model(params=params, x=x)
 
         # Flatten in case of a vector function
-        result = result.flatten()
+        result = ravel(result)
 
         self.cache_rx['params'] = params
         self.cache_rx['value'] = result
