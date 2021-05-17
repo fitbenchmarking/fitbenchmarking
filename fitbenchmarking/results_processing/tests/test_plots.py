@@ -1,19 +1,16 @@
-from __future__ import (absolute_import, division, print_function)
+import os
+import unittest
+from tempfile import TemporaryDirectory
 
 import numpy as np
-import os
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
-import unittest
 
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.results_processing import plots
+from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.results_processing import plots
 
 
 class PlotTests(unittest.TestCase):
@@ -115,6 +112,17 @@ class PlotTests(unittest.TestCase):
         self.assertEqual(file_name, 'fit_fit_for_full_name.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
+
+    def test_multivariate_plot(self):
+        """
+        Test that the plotting fails gracefully for multivariate problems.
+        """
+        self.fr.cost_func.problem.multivariate = True
+
+        with self.assertRaises(PlottingError):
+            self.plot = plots.Plot(best_result=self.fr,
+                                   options=self.opts,
+                                   figures_dir=self.dir.name)
 
 
 if __name__ == "__main__":

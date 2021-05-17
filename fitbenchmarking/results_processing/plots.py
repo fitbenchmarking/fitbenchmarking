@@ -80,7 +80,8 @@ class Plot(object):
         """
         Close the matplotlib figure
         """
-        plt.close(self.fig)
+        if not self.problem.multivariate:
+            plt.close(self.fig)
 
     def format_plot(self):
         """
