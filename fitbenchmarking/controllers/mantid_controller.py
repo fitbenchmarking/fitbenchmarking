@@ -171,9 +171,9 @@ class MantidController(Controller):
 
             # pylint: disable=no-self-argument
             class fitFunction(IFunction1D):
-            """
-            A wrapper to register a custom function in Mantid.
-            """
+                """
+                A wrapper to register a custom function in Mantid.
+                """
                 def init(ff_self):
                     """
                     Initialiser for the Mantid wrapper.
