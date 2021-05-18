@@ -20,9 +20,6 @@ from fitbenchmarking.utils.log import get_logger
 LOGGER = get_logger()
 
 
-# By design the parsers may have functions that do not necessarily use self
-# within them
-# pylint: no-self-use
 class NISTParser(Parser):
     """
     Parser for the NIST problem definition file.
@@ -63,8 +60,8 @@ class NISTParser(Parser):
                 nist_jacobian_definition(jacobian=jacobian,
                                          param_names=starting_values[0].keys())
         except NoJacobianError:
-            LOGGER.warn("WARNING: Could not find analytic Jacobian "
-                        "information for {} problem".format(name))
+            LOGGER.warning("Could not find analytic Jacobian "
+                           "information for %s problem", name)
 
         return fitting_problem
 
