@@ -171,7 +171,13 @@ class MantidController(Controller):
 
             # pylint: disable=no-self-argument
             class fitFunction(IFunction1D):
+            """
+            A wrapper to register a custom function in Mantid.
+            """
                 def init(ff_self):
+                    """
+                    Initialiser for the Mantid wrapper.
+                    """
 
                     for i, p in enumerate(self._param_names):
                         ff_self.declareParameter(p)
@@ -181,6 +187,9 @@ class MantidController(Controller):
                                 self.value_ranges[i][1]))
 
                 def function1D(ff_self, xdata):
+                    """
+                    Pass through for cost-function evaluation.
+                    """
 
                     fit_param = get_params(ff_self)
 
@@ -188,6 +197,9 @@ class MantidController(Controller):
                                                    params=fit_param)
 
                 def functionDeriv1D(ff_self, xvals, jacobian):
+                    """
+                    Pass through for jacobian evaluation.
+                    """
                     fit_param = get_params(ff_self)
 
                     jac = -self.jacobian.eval(fit_param)
@@ -274,6 +286,6 @@ class MantidController(Controller):
                 y = [None for _ in range(num_inps)]
             if e is None:
                 e = [None for _ in range(num_inps)]
-            return [super(MantidController, self).eval_chisq(p, xi, yi, ei)
+            return [super().eval_chisq(p, xi, yi, ei)
                     for p, xi, yi, ei in zip(params, x, y, e)]
-        return super(MantidController, self).eval_chisq(params, x, y, e)
+        return super().eval_chisq(params, x, y, e)

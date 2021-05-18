@@ -285,5 +285,5 @@ class Controller:
 
         .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag()  # noqa: E501
                 :noindex:
-        """
+        """  # noqa: E501
         raise NotImplementedError
