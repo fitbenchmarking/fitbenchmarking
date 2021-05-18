@@ -22,10 +22,13 @@ class ScipyLSController(Controller):
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(ScipyLSController, self).__init__(cost_func)
+        super().__init__(cost_func)
 
         self.support_for_bounds = True
         self.no_bounds_minimizers = ['lm-scipy']
+        self.param_ranges = None
+        self.result = None
+        self._status = None
         self._popt = None
         self.algorithm_check = {
             'all': ['lm-scipy', 'trf', 'dogbox'],

@@ -1,10 +1,12 @@
-# Tests for the controllers available from a default fitbenchmarking install
+"""
+Tests for the controllers available from a default fitbenchmarking install
+"""
 import inspect
 import os
 from unittest import TestCase
 import numpy as np
 import pytest
-from pytest import test_type as TEST_TYPE
+from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.bumps_controller import BumpsController
@@ -14,12 +16,6 @@ from fitbenchmarking.controllers.minuit_controller import MinuitController
 from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.controllers.scipy_ls_controller import ScipyLSController
 
-if TEST_TYPE != "default":
-    from fitbenchmarking.controllers.gsl_controller import GSLController
-    from fitbenchmarking.controllers.levmar_controller import LevmarController
-    from fitbenchmarking.controllers.mantid_controller import MantidController
-    from fitbenchmarking.controllers.ralfit_controller import RALFitController
-
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
@@ -28,6 +24,14 @@ from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
 from fitbenchmarking import mock_problems
+
+if TEST_TYPE != "default":
+    from fitbenchmarking.controllers.gsl_controller import GSLController
+    from fitbenchmarking.controllers.levmar_controller import LevmarController
+    from fitbenchmarking.controllers.mantid_controller import MantidController
+    from fitbenchmarking.controllers.ralfit_controller import RALFitController
+
+# pylint: disable=attribute-defined-outside-init, protected-access
 
 
 def make_cost_func(file_name='cubic.dat'):
@@ -50,7 +54,7 @@ class DummyController(Controller):
     """
     Minimal instantiatable subclass of Controller class for testing
     """
-
+    # pylint: disable=missing-function-docstring
     def setup(self):
         self.setup_result = 53
 
@@ -62,9 +66,13 @@ class DummyController(Controller):
 
     def error_flags(self):
         raise NotImplementedError
+    # pylint: enable=missing-function-docstring
 
 
 class ControllerSharedTesting:
+    '''
+    Tests used by all controllers
+    '''
 
     def controller_run_test(self, controller):
         """
@@ -285,7 +293,10 @@ class BaseControllerTests(TestCase):
             controller.check_minimizer_bounds(minimizer)
 
     def test_bounds_respected_true(self):
-
+        '''
+        Test that correct error flag is set when
+        final params respect specified parameter bounds
+        '''
         controller = DummyController(self.cost_func)
         controller.value_ranges = [(10, 20), (20, 30)]
         controller.final_params = [15, 30]
@@ -296,7 +307,10 @@ class BaseControllerTests(TestCase):
         assert controller.flag == 0
 
     def test_bounds_respected_false(self):
-
+        '''
+        Test that correct error flag is set when
+        final params do not respect specified parameter bounds
+        '''
         controller = DummyController(self.cost_func)
         controller.value_ranges = [(10, 20), (20, 30)]
         controller.final_params = [25, 35]
@@ -413,9 +427,12 @@ class DefaultControllerTests(TestCase):
         controller._status = -1
         self.shared_tests.check_diverged(controller)
 
+
 @pytest.mark.skipif("TEST_TYPE == 'default'")
 class ControllerBoundsTests(TestCase):
-
+    """
+    Tests to ensure controllers handle and respect bounds correctly
+    """
     def setUp(self):
         """
         Setup for bounded problem
@@ -524,7 +541,8 @@ class ControllerBoundsTests(TestCase):
         controller.minimizer = 'Levenberg-Marquardt'
         controller.jacobian = self.jac
 
-        self.check_bounds(controller)        
+        self.check_bounds(controller)
+
 
 @pytest.mark.skipif("TEST_TYPE == 'default'")
 class ExternalControllerTests(TestCase):
@@ -696,6 +714,7 @@ class ExternalControllerTests(TestCase):
             controller._status = 2
             self.shared_tests.check_diverged(controller)
 
+
 class FactoryTests(TestCase):
     """
     Tests for the ControllerFactory
@@ -721,13 +740,19 @@ class FactoryTests(TestCase):
         self.check_valid(valid, valid_names)
 
     def check_valid(self, valid, valid_names):
-
+        '''
+        Check that correct controller generated for valid
+        software names
+        '''
         for software, v in zip(valid, valid_names):
             controller = ControllerFactory.create_controller(software)
             self.assertTrue(controller.__name__.lower().startswith(v))
 
     def check_invalid(self, invalid):
-
+        '''
+        Check that correct exception is raised when invalid
+        software name is used.
+        '''
         for software in invalid:
             self.assertRaises(exceptions.NoControllerError,
                               ControllerFactory.create_controller,
