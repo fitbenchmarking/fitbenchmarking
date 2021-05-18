@@ -286,6 +286,8 @@ class MantidController(Controller):
                 y = [None for _ in range(num_inps)]
             if e is None:
                 e = [None for _ in range(num_inps)]
-            return [super().eval_chisq(p, xi, yi, ei)
+
+            # pylint: disable=super-with-arguments
+            return [super(MantidController, self).eval_chisq(p, xi, yi, ei)
                     for p, xi, yi, ei in zip(params, x, y, e)]
         return super().eval_chisq(params, x, y, e)
