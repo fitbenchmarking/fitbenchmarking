@@ -11,7 +11,6 @@ import os
 from unittest import TestCase
 
 from fitbenchmarking.utils.log import get_logger, setup_logger
-from fitbenchmarking.utils.output_grabber import OutputGrabber
 
 
 class TestSetupLogger(TestCase):
