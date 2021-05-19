@@ -6,8 +6,6 @@ This is used to manage the imports and reduce effort in adding new parsers.
 import os
 from importlib import import_module
 from inspect import getmembers, isabstract, isclass
-# import pycutest to clear cache if SIF problem set selected
-import pycutest
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.utils.exceptions import (MissingSoftwareError,
@@ -43,11 +41,6 @@ class ParserFactory:
         extension = os.path.splitext(filename)[1]
         if "SIF" in extension.upper():
             parser_name = 'cutest'
-
-            if os.path.isdir(os.environ["PYCUTEST_CACHE"]+"/pycutest_cache_holder"):
-                # clear the cache
-                for cached_problem in pycutest.all_cached_problems():
-                    pycutest.clear_cache(cached_problem[0], cached_problem[1])
 
         else:  # Otherwise, take the first section of text
             parser_name = ''
