@@ -36,12 +36,6 @@ from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
 from fitbenchmarking import mock_problems
 
-if TEST_TYPE != "default":
-    from fitbenchmarking.controllers.gsl_controller import GSLController
-    from fitbenchmarking.controllers.levmar_controller import LevmarController
-    from fitbenchmarking.controllers.mantid_controller import MantidController
-    from fitbenchmarking.controllers.ralfit_controller import RALFitController
-
 # pylint: disable=attribute-defined-outside-init, protected-access
 
 
