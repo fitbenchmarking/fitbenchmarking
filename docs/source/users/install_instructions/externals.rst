@@ -51,9 +51,9 @@ called via the MATLAB Engine API for Python.
 
 To use this fitting software, both MATLAB and the MATLAB engine must be
 installed. Installation instructions for MATLAB are available at
-`<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`,
+`<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_,
 and instructions for installing and setting up the MATLAB engine are
-here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`
+here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`_
 
 RALFit
 ------

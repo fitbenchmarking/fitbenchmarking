@@ -206,8 +206,8 @@ The `levmar` minimizer is set as follows:
 Matlab (``matlab``)
 -------------------
 
-We call the `fminsearch <https://uk.mathworks.com/help/matlab/ref/fminsearch.html>`
-function from `MATLAB <https://uk.mathworks.com/products/matlab.html>`, using the
+We call the `fminsearch <https://uk.mathworks.com/help/matlab/ref/fminsearch.html>`_
+function from `MATLAB <https://uk.mathworks.com/products/matlab.html>`_, using the
 MATLAB Engine API for Python.
 
 * Nelder-Mead Simplex (:code:`Nelder-Mead Simplex`)
