@@ -10,13 +10,25 @@ from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 
 from fitbenchmarking.controllers.base_controller import Controller
 
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
+from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import exceptions
+from fitbenchmarking.utils.options import Options
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+
+from fitbenchmarking import mock_problems
+
 if TEST_TYPE != "matlab":
     from fitbenchmarking.controllers.bumps_controller import BumpsController
-    from fitbenchmarking.controllers.controller_factory import ControllerFactory
+    from fitbenchmarking.controllers.controller_factory import\
+        ControllerFactory
     from fitbenchmarking.controllers.dfo_controller import DFOController
-    from fitbenchmarking.controllers.minuit_controller import MinuitController
+    from fitbenchmarking.controllers.minuit_controller import\
+        MinuitController
     from fitbenchmarking.controllers.scipy_controller import ScipyController
-    from fitbenchmarking.controllers.scipy_ls_controller import ScipyLSController
+    from fitbenchmarking.controllers.scipy_ls_controller import\
+        ScipyLSController
 
 if TEST_TYPE not in ["default", "matlab"]:
     from fitbenchmarking.controllers.gsl_controller import GSLController
@@ -26,15 +38,6 @@ if TEST_TYPE not in ["default", "matlab"]:
 
 if TEST_TYPE == 'matlab':
     from fitbenchmarking.controllers.matlab_controller import MatlabController
-
-from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
-    WeightedNLLSCostFunc
-from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.utils import exceptions
-from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
-
-from fitbenchmarking import mock_problems
 
 # pylint: disable=attribute-defined-outside-init, protected-access
 
@@ -324,6 +327,7 @@ class BaseControllerTests(TestCase):
         controller.check_bounds_respected()
 
         assert controller.flag == 5
+
 
 @pytest.mark.skipif("TEST_TYPE == 'matlab'")
 class DefaultControllerTests(TestCase):
@@ -721,6 +725,7 @@ class ExternalControllerTests(TestCase):
             controller._status = 2
             self.shared_tests.check_diverged(controller)
 
+
 @pytest.mark.skipif("TEST_TYPE == 'default'")
 @pytest.mark.skipif("TEST_TYPE == 'all'")
 class MatlabControllerTests(TestCase):
@@ -756,6 +761,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_max_iterations(controller)
             controller._status = -1
             self.shared_tests.check_diverged(controller)
+
 
 @pytest.mark.skipif("TEST_TYPE == 'matlab'")
 class FactoryTests(TestCase):

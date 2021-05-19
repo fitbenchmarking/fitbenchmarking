@@ -28,7 +28,7 @@ class MatlabController(Controller):
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(MatlabController, self).__init__(cost_func)
+        super().__init__(cost_func)
         self.initial_params_mat = None
         self._status = None
         self.result = None
