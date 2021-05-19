@@ -107,6 +107,7 @@ class OptionsWriteTests(unittest.TestCase):
         self.assertDictEqual(options.__dict__, new_options.__dict__)
 
     def test_create_config(self):
+        # pylint: disable=W0212
         """
         Test that created config object contains all valid sections.
         """

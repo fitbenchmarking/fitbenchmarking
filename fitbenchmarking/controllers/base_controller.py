@@ -268,8 +268,8 @@ class Controller:
         """
         Run the fitting.
 
-        This will be timed so should include only what is needed to
-        fit the data.
+        This will be timed so should include only what is needed
+        to fit the data.
         """
         raise NotImplementedError
 
@@ -283,7 +283,7 @@ class Controller:
 
         The flag corresponds to the following messages:
 
-        .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag()
-                      :noindex:
-        """
+        .. automethod:: fitbenchmarking.controllers.base_controller.Controller.flag()  # noqa: E501
+                :noindex:
+        """  # noqa: E501
         raise NotImplementedError

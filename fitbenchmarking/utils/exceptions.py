@@ -237,7 +237,7 @@ class IncompatibleTableError(FitBenchmarkException):
                               'compatible with the selected ' \
                               'cost function'
         self.error_code = 18
-        
+
 
 class IncorrectBoundsError(FitBenchmarkException):
     """
