@@ -8,6 +8,7 @@ import os
 import shutil
 import unittest
 from tempfile import TemporaryDirectory
+from unittest import mock
 
 import numpy as np
 
@@ -251,7 +252,7 @@ class CreatePlotsTests(unittest.TestCase):
             generate_mock_results()
         self.best_results = preproccess_data(self.results)
 
-    @unittest.mock.patch('fitbenchmarking.results_processing.plots.Plot')
+    @mock.patch('fitbenchmarking.results_processing.plots.Plot')
     def test_create_plots_with_params(self, plot_mock):
         """
         Tests for create_plots where the results object params are not None
@@ -259,7 +260,7 @@ class CreatePlotsTests(unittest.TestCase):
         expected_plot_initial_guess = "initial_guess"
         expected_plot_best = "plot_best"
         expected_plot_fit = "plot_fit"
-        plot_instance = unittest.mock.MagicMock()
+        plot_instance = mock.MagicMock()
         plot_instance.plot_initial_guess.return_value = \
             expected_plot_initial_guess
         plot_instance.plot_best.return_value = expected_plot_best
@@ -280,7 +281,7 @@ class CreatePlotsTests(unittest.TestCase):
             assert all(r.figure_link == expected_plot_fit
                        if not r.is_best_fit else True for r in result)
 
-    @unittest.mock.patch('fitbenchmarking.results_processing.plots.Plot')
+    @mock.patch('fitbenchmarking.results_processing.plots.Plot')
     def test_create_plots_without_params(self, plot_mock):
         """
         Tests for create_plots where the results object params are None
@@ -290,7 +291,7 @@ class CreatePlotsTests(unittest.TestCase):
             for r in result:
                 r.params = None
         expected_plot_initial_guess = "initial_guess"
-        plot_instance = unittest.mock.MagicMock()
+        plot_instance = mock.MagicMock()
         plot_instance.plot_initial_guess.return_value = \
             expected_plot_initial_guess
 
@@ -320,7 +321,7 @@ class CreatePlotsTests(unittest.TestCase):
         """
         Test that errors are passed correctly when the plotting fails.
         """
-        with unittest.mock.patch(
+        with mock.patch(
                 'fitbenchmarking.results_processing.plots.Plot',
                 side_effect=PlottingError('Faked plot')):
 
