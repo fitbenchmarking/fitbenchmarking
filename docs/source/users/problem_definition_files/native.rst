@@ -4,7 +4,7 @@
 Native File Format
 ******************
 
-In FitBenchmarking, the native file format is used to read Mantid and
+In FitBenchmarking, the native file format is used to read IVP, Mantid, and
 SASView problems.
 
 In this format, data is separated from the function. This allows running the
@@ -13,18 +13,20 @@ appropriate.
 
 Examples of native problems are:
 
+.. literalinclude:: ../../../../examples/benchmark_problems/Data_Assimilation/lorentz.txt
+
 .. literalinclude:: ../../../../examples/benchmark_problems/Muon/Muon_HIFI_113856.txt
 
-.. literalinclude:: ../../../../examples/benchamrk_problems/SAS_modelling/1D/prob_def_1.txt
+.. literalinclude:: ../../../../examples/benchmark_problems/SAS_modelling/1D/prob_def_1.txt
 
 These examples show the basic structure in which the file starts with a comment
 indicating it is a FitBenchmark problem followed by key-value pairs. Available
 keys are described below:
 
 software
-  Either 'Mantid' or 'SasView' (case insensitive).
+  Either 'IVP', 'Mantid', or 'SasView' (case insensitive).
   
-  This defines whether to use Mantid or SasView to generate the model.
+  This defines whether to use an IVP format, Mantid, or SasView to generate the model.
   The 'Mantid' software also supports Mantid's MultiFit functionality, which
   requires the parameters listed here to be defined slightly differently.
   More information can be found in :ref:`multifit`.
@@ -45,23 +47,51 @@ description
 input_file
   The name of a file containing the data to fit.
 
-  The file must be in a subdirectory named `data_files`, and should have the form::
+  The file must be in a subdirectory named ``data_files``, and should have the form::
 
      header
 
-     x1 y1 [e1]
-     x2 y2 [e2]
+     x11 [x12 [x13 ...]] y11 [y12 [y13 ...]] [e11 [e12 ...]]
+     x21 [x22 [x23 ...]] y21 [y22 [y23 ...]] [e21 [e22 ...]]
      ...
 
   Mantid uses the convention of ``# X Y E`` as the header and SASView uses
   the convention ``<X>   <Y>   <E>``, although neither of these are enforced.
   The error column is optional in this format.
 
+  If the data contains multiple inputs or outputs, the header must be written
+  in one of the above conventions with the labels as "x", "y", or "e" followed by
+  a number. An example of this can be seen in
+  ``examples/benchmark_problems/Data_Assimilation/data_files/lorentz.txt``
+
 function
   This defines the function that will be used as a model for the fitting.
 
   Inside FitBenchmarking, this is passed on to the specified software and, as
   such, the format is specific to the package we wish to use, as described below.
+
+  **IVP**
+
+  The IVP parser allows a user to define ``f`` in the following equation:
+
+  .. math:: x' = f(t, x, *args)
+
+  To do this we use a python module to define the function. As in the above
+  formula, the function can take the following arguments:
+
+  - *t* (float): The time to evaluate at
+  - *x* (np.array): A value for x to evaluate at
+  - *\*args* (floats): The parameters to fit
+
+  To link to this function we use a function string with the following
+  parameters:
+
+  - *module*: The path to the module
+  - *func*: The name of the function within the module
+  - *step*: The time step that the input data uses
+    (currently only fixed steps are supported - if you need
+    varying time steps please raise an issue on our GitHub)
+  - *\*args*: Starting values for the parameters
 
   **Mantid**
 
@@ -91,12 +121,12 @@ parameter_ranges
   An optional setting which specifies upper and lower bounds for 
   parameters in the problem.
 
-  Similarly to `fit_ranges`, it takes the form where the first number
+  Similarly to ``fit_ranges``, it takes the form where the first number
   is the minimum in the range and the second is the maximum.
 
-  Currently in Fitbenchmarking, problems with `parameter_ranges` can
+  Currently in Fitbenchmarking, problems with ``parameter_ranges`` can
   be handled by SciPy, Bumps, Minuit, Mantid, DFO, Levmar and RALFit fitting
   software. Please note that the following Mantid minimizers currently
-  throw an exception when `parameter_ranges` are used: BFGS, Conjugate
+  throw an exception when ``parameter_ranges`` are used: BFGS, Conjugate
   gradient (Fletcher-Reeves imp.), Conjugate gradient (Polak-Ribiere imp.)
   and SteepestDescent.

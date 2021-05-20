@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def nonlinear_oscillator(t, x, gamma, mu):
+def simplified_anac(t, x, gamma, mu):
     """
     Calculates the rhs of the system defined by:
 
@@ -25,4 +25,4 @@ def nonlinear_oscillator(t, x, gamma, mu):
             gamma * x[:, 0] + 2 * mu * x[:, 0]**3
         ])
     else:
-        raise ValueError('x is the wrong shape in nonlinear_oscillator call.')
+        raise ValueError('x is the wrong shape in simplified_anac call.')
