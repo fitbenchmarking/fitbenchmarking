@@ -1,10 +1,11 @@
 """
 compare table
 """
-import numpy as np
 import os
+import numpy as np
 from fitbenchmarking.results_processing.base_table import Table
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
+from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.utils.exceptions import IncompatibleTableError
 
 GRAD_TOL = 1e-1
@@ -54,10 +55,9 @@ class LocalMinTable(Table):
         :param table_name: Name of the table
         :type table_name: str
         """
+        super().__init__(results, best_results, options,
+                         group_dir, pp_locations, table_name)
         self.name = 'local_min'
-        super(LocalMinTable, self).__init__(results, best_results, options,
-                                            group_dir, pp_locations,
-                                            table_name)
 
         self.has_pp = True
         self.pp_filenames = \
@@ -99,8 +99,18 @@ class LocalMinTable(Table):
                 else:
                     res = v.cost_func.eval_r(
                         v.params, x=v.data_x, y=v.data_y, e=v.data_e)
-                    jac = v.jac.eval(v.params, x=v.data_x,
-                                     y=v.data_y, e=v.data_e)
+                    try:
+                        jac = v.jac.eval(v.params, x=v.data_x,
+                                         y=v.data_y, e=v.data_e)
+                    except NotImplementedError:
+                        # If using a solver dependent Jacobian, we want
+                        # to switch to a common jacobian here to generate
+                        # comparisons
+                        jacobian_cls = create_jacobian('scipy')
+                        jacobian_instance = jacobian_cls(v.cost_func)
+                        jacobian_instance.method = "2-point"
+                        jac = jacobian_instance.eval(v.params, x=v.data_x,
+                                                     y=v.data_y, e=v.data_e)
                     min_test = np.matmul(res, jac)
 
                     norm_r = np.linalg.norm(res)

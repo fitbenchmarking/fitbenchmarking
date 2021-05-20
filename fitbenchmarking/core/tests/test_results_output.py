@@ -83,7 +83,7 @@ def generate_mock_results():
                 [0, 1, 3, 1]]
     link_in = [['link1', 'link2', 'link3', 'link4'],
                ['link5', 'link6', 'link7', 'link8']]
-    min_chi_sq = [1, 1]
+    min_chi_sq = [1, 3]
     acc_in = [[1, 5, 2, 1.54],
               [7, 3, 5, 1]]
     min_runtime = [4.2e-5, 5.0e-14]
@@ -219,10 +219,12 @@ class PreproccessDataTests(unittest.TestCase):
 
         for result in best_result:
             assert result.is_best_fit
-
         for result, chi_sq, runtime in zip(self.results,
                                            self.min_chi_sq,
                                            self.min_runtime):
+            for r in result:
+                print("chi_sq  = {} | {}".format(r.min_chi_sq, chi_sq))
+                print("runtime = {} | {}".format(r.runtime, runtime))
             assert all(r.min_chi_sq == chi_sq for r in result)
             assert all(r.min_runtime == runtime for r in result)
 

@@ -32,9 +32,11 @@ class MinuitController(Controller):
                                        'please upgrade to at least version '
                                        '2.0.0'.format(iminuit_version))
 
-        super(MinuitController, self).__init__(cost_func)
+        super().__init__(cost_func)
 
         self.support_for_bounds = True
+        self.param_ranges = None
+        self._status = None
         self._popt = None
         self._initial_step = None
         self._minuit_problem = None
@@ -74,12 +76,12 @@ class MinuitController(Controller):
         # option. For minuit, is a sequence of (lb,ub) pairs for each
         # parameter. None is used to denote no bound for a parameter.
         if self.value_ranges is not None:
-            lb,ub = zip(*self.value_ranges)
-            lb = [None if x==-np.inf else x for x in lb]
-            ub = [None if x==np.inf else x for x in ub]
+            lb, ub = zip(*self.value_ranges)
+            lb = [None if x == -np.inf else x for x in lb]
+            ub = [None if x == np.inf else x for x in ub]
             self.param_ranges = list(zip(lb, ub))
         else:
-            self.param_ranges = [(-np.inf,np.inf)]*len(self.initial_params)
+            self.param_ranges = [(-np.inf, np.inf)]*len(self.initial_params)
 
         self._minuit_problem.limits = self.param_ranges
 

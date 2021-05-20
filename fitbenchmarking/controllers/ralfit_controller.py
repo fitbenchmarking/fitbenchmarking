@@ -23,9 +23,11 @@ class RALFitController(Controller):
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(RALFitController, self).__init__(cost_func)
+        super().__init__(cost_func)
 
         self.support_for_bounds = True
+        self.param_ranges = None
+        self._status = None
         self._popt = None
         self._options = {}
         self.algorithm_check = {
@@ -75,7 +77,8 @@ class RALFitController(Controller):
             self.param_ranges = (value_ranges_lb, value_ranges_ub)
         else:
             self.param_ranges = (
-                [-np.inf]*len(self.initial_params), [np.inf]*len(self.initial_params))
+                [-np.inf]*len(self.initial_params),
+                [np.inf]*len(self.initial_params))
 
     def fit(self):
         """

@@ -24,13 +24,14 @@ class LevmarController(Controller):
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(LevmarController, self).__init__(cost_func)
+        super().__init__(cost_func)
 
         self.support_for_bounds = True
+        self.param_ranges = None
         self._popt = None
         self.algorithm_check = {
-            'all': ['levmar', 'levmar-no-jac'],
-            'ls': ['levmar', 'levmar-no-jac'],
+            'all': ['levmar'],
+            'ls': ['levmar'],
             'deriv_free': [],
             'general': []}
         self._info = None
@@ -40,7 +41,7 @@ class LevmarController(Controller):
         levmar can use Jacobian information
         """
         has_jacobian = True
-        jacobian_free_solvers = ["levmar-no-jac"]
+        jacobian_free_solvers = []
         return has_jacobian, jacobian_free_solvers
 
     def setup(self):
@@ -54,6 +55,7 @@ class LevmarController(Controller):
             ub = [None if x == np.inf else x for x in ub]
             self.param_ranges = list(zip(lb, ub))
 
+    # pylint: disable=unused-argument
     def _feval(self, p, x):
         """
         Utility function to call problem.eval_model with correct args
@@ -82,33 +84,25 @@ class LevmarController(Controller):
         """
         jac = -self.jacobian.eval(p)
         return jac
+    # pylint: enable=unused-argument
 
     def fit(self):
         """
         run problem with levmar
         """
-        if self.minimizer == "levmar-no-jac":
-            jac = None
+        if self.problem.value_ranges is None:
+            solve_levmar = getattr(levmar, "levmar")
         else:
-            jac = self._jeval
-
-        if self.value_ranges is None:
-            (self.final_params, _, self._info) = levmar.levmar(
-                self._feval,
+            solve_levmar = getattr(levmar, "levmar_bc")
+        args = [self._feval,
                 self.initial_params,
-                self.data_y,
-                args=(self.data_x,),
-                jacf=jac)
-        else:
-            # if parameter bounds have been set for the problem, then use
-            # levmar_bc function to solve
-            (self.final_params, _, self._info) = levmar.levmar_bc(
-                self._feval,
-                self.initial_params,
-                self.data_y,
-                self.param_ranges,
-                args=(self.data_x,),
-                jacf=jac)
+                self.data_y]
+        if self.value_ranges is not None:
+            args.append(self.param_ranges)
+        kwargs = {"args": (self.data_x,)}
+        if not self.jacobian.use_default_jac:
+            kwargs["jacf"] = self._jeval
+        (self.final_params, _, self._info) = solve_levmar(*args, **kwargs)
         # self._info isn't documented (other than in the levmar source),
         # but returns:
         # self._info[0] = ||e||_2 at `p0`
