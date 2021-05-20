@@ -1,8 +1,8 @@
 """
 Runtime table
 """
-import numpy as np
 import os
+import numpy as np
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -38,10 +38,9 @@ class RuntimeTable(Table):
         :type table_name: str
         """
 
+        super().__init__(results, best_results, options,
+                         group_dir, pp_locations, table_name)
         self.name = 'runtime'
-        super(RuntimeTable, self).__init__(results, best_results, options,
-                                           group_dir, pp_locations, table_name)
-
         self.has_pp = True
         self.pp_filenames = [os.path.relpath(self.pp_locations[1], group_dir)]
 

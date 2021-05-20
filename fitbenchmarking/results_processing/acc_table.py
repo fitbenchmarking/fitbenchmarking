@@ -1,8 +1,8 @@
 """
 Accuracy table
 """
-import numpy as np
 import os
+import numpy as np
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -36,10 +36,9 @@ class AccTable(Table):
         :param table_name: Name of the table
         :type table_name: str
         """
+        super().__init__(results, best_results, options,
+                         group_dir, pp_locations, table_name)
         self.name = 'acc'
-        super(AccTable, self).__init__(results, best_results, options,
-                                       group_dir, pp_locations, table_name)
-
         self.has_pp = True
         self.pp_filenames = [os.path.relpath(self.pp_locations[0], group_dir)]
 

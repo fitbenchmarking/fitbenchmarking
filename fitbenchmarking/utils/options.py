@@ -24,7 +24,7 @@ class Options(object):
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                  'vector_bfgs2', 'steepest_descent'],
-         'levmar': ['levmar','levmar-no-jac'],
+         'levmar': ['levmar'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
@@ -35,19 +35,19 @@ class Options(object):
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-         'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf',
-                      'dogbox']}
+         'scipy_ls': ['lm-scipy', 'trf', 'dogbox']}
     VALID_FITTING = \
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general'],
          'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'minuit',
                       'ralfit', 'scipy', 'scipy_ls'],
-         'jac_method': ['scipy', 'analytic', 'numdifftools'],
+         'jac_method': ['analytic', 'scipy', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
     VALID_JACOBIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
          'analytic': ['cutest'],
-         'numdifftools': ['central', 
+         'default': ['default'],
+         'numdifftools': ['central',
                           'complex', 'multicomplex',
                           'forward', 'backward']}
     VALID_PLOTTING = \
@@ -58,7 +58,7 @@ class Options(object):
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
                    'CRITICAL'],
          'append': [True, False],
-         'external_output': ['debug','display','log_only']}
+         'external_output': ['debug', 'display', 'log_only']}
 
     VALID = {'MINIMIZERS': VALID_MINIMIZERS,
              'FITTING': VALID_FITTING,
@@ -83,8 +83,7 @@ class Options(object):
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-         'scipy_ls': ['lm-scipy-no-jac', 'lm-scipy', 'trf',
-                      'dogbox']}
+         'scipy_ls': ['lm-scipy', 'trf', 'dogbox']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': 'all',
@@ -92,8 +91,9 @@ class Options(object):
          'jac_method': ['scipy'],
          'cost_func_type': 'weighted_nlls'}
     DEFAULT_JACOBIAN = \
-        {'scipy': ['2-point'],
-         'analytic': ['cutest'],
+        {'analytic': ['cutest'],
+         'scipy': ['2-point'],
+         'default': ['default'],
          'numdifftools': ['central']}
     DEFAULT_PLOTTING = \
         {'make_plots': True,
@@ -151,12 +151,13 @@ class Options(object):
             for key in self.VALID_SECTIONS:
                 default_options_list = list(self.DEFAULTS[key].keys())
                 user_options_list = [option[0] for option in config.items(key)]
-                if not (set(user_options_list) <= set(default_options_list)):
+                if not set(user_options_list) <= set(default_options_list):
                     raise OptionsError(
-                        "Invalid options key set in the {2} Section: \n{0}, \n the valid keys "
-                        "are: \n{1}".format(user_options_list,
-                                            default_options_list,
-                                            key))
+                        "Invalid options key set in the {2} Section: \n{0}, \n"
+                        " the valid keys are: \n{1}".format(
+                            user_options_list,
+                            default_options_list,
+                            key))
 
         minimizers = config['MINIMIZERS']
         self._minimizers = {}
@@ -243,6 +244,9 @@ class Options(object):
 
     @property
     def results_dir(self):
+        """
+        Returns the path to the results directory
+        """
         return self._results_dir
 
     @results_dir.setter
@@ -251,6 +255,9 @@ class Options(object):
 
     @property
     def minimizers(self):
+        """
+        Returns the minimizers in a software package
+        """
         return {s: self._minimizers[s] for s in self.software}
 
     @minimizers.setter
@@ -267,8 +274,8 @@ class Options(object):
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str})
 
-        def list_to_string(l):
-            return '\n'.join(l)
+        def list_to_string(mylist):
+            return '\n'.join(mylist)
 
         config['MINIMIZERS'] = {k: list_to_string(m)
                                 for k, m in self.minimizers.items()}

@@ -6,8 +6,8 @@ from __future__ import absolute_import, division, print_function
 import unittest
 from collections import OrderedDict
 
-import numpy as np
 import os
+import numpy as np
 
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.core.results_output import preproccess_data
@@ -112,15 +112,17 @@ class PerformanceProfillerTests(unittest.TestCase):
         for k, v in runtime_dict.items():
             assert np.allclose(v, runtime[k])
 
+    # pylint: disable=W0632
     def test_correct_profile(self):
         """
-        Test that th performance profiler returns the expected paths
+        Test that the performance profiler returns the expected paths
         """
         acc, runtime = performance_profiler.profile(self.results,
                                                     self.fig_dir)
 
         assert acc == "acc_profile.png"
         assert runtime == "runtime_profile.png"
+    # pylint: enable=W0632
 
 
 if __name__ == "__main__":

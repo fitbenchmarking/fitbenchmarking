@@ -4,8 +4,9 @@ Test the PLOTTING section for the options file
 import inspect
 import shutil
 import os
-import numpy as np
 import unittest
+
+import numpy as np
 
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options

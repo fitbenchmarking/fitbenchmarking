@@ -3,16 +3,16 @@ Higher level functions that are used for plotting the fit plot and a starting
 guess plot.
 """
 import os
-
 import matplotlib
 
 from fitbenchmarking.utils.exceptions import PlottingError
 
 matplotlib.use('Agg')
+# pylint: disable=wrong-import-position
 import matplotlib.pyplot as plt  # noqa: E402
 
 
-class Plot(object):
+class Plot:
     """
     Class providing plotting functionality.
     """
@@ -65,8 +65,7 @@ class Plot(object):
         self.ax = self.fig.add_subplot(1, 1, 1)
         self.line_plot = None
 
-        use_errors = True if self.options.cost_func_type == "weighted_nlls" \
-            else False
+        use_errors = bool(self.options.cost_func_type == "weighted_nlls")
         # Plot the data that functions were fitted to
         self.plot_data(use_errors,
                        self.data_plot_options)
