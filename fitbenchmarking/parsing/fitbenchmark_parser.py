@@ -338,6 +338,7 @@ class FitbenchmarkParser(Parser):
         params = {name: value
                   for name, value, fixed in all_params
                   if not fixed}
+        # pylint: disable=attribute-defined-outside-init
         self._mantid_starting_values = [OrderedDict(params)]
 
         # Convert to callable

@@ -7,7 +7,7 @@ from inspect import isclass, isabstract, getmembers
 from json import load
 import os
 from unittest import TestCase
-from pytest import test_type as TEST_TYPE
+from pytest import test_type as TEST_TYPE # pylint: disable=no-name-in-module
 
 import numpy as np
 
