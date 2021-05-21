@@ -40,7 +40,7 @@ class MatlabController(Controller):
 
     def jacobian_information(self):
         """
-        DFO cannot use Jacobian information
+        MATLAB cannot use Jacobian information
         """
         has_jacobian = False
         jacobian_free_solvers = []
