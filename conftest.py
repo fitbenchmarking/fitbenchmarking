@@ -3,7 +3,7 @@ import pytest
 
 def pytest_addoption(parser):
     """
-    Command line input function which requires 'all', 'default' or 'external'
+    Command line input function which requires 'all', 'default' or 'matlab'
     as an input
     """
     parser.addoption(
