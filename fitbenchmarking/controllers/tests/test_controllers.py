@@ -5,7 +5,6 @@ import inspect
 import os
 from unittest import TestCase
 import numpy as np
-import pytest
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 
 from fitbenchmarking.controllers.base_controller import Controller
@@ -16,10 +15,11 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from conftest import run_for_test_types
 
 from fitbenchmarking import mock_problems
 
-if TEST_TYPE != "matlab":
+if TEST_TYPE in ['default', 'all']:
     from fitbenchmarking.controllers.bumps_controller import BumpsController
     from fitbenchmarking.controllers.controller_factory import\
         ControllerFactory
@@ -30,7 +30,7 @@ if TEST_TYPE != "matlab":
     from fitbenchmarking.controllers.scipy_ls_controller import\
         ScipyLSController
 
-if TEST_TYPE not in ["default", "matlab"]:
+if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.gsl_controller import GSLController
     from fitbenchmarking.controllers.levmar_controller import LevmarController
     from fitbenchmarking.controllers.mantid_controller import MantidController
@@ -40,7 +40,6 @@ if TEST_TYPE == 'matlab':
     from fitbenchmarking.controllers.matlab_controller import MatlabController
 
 # pylint: disable=attribute-defined-outside-init, protected-access
-
 
 def make_cost_func(file_name='cubic.dat'):
     """
@@ -329,7 +328,7 @@ class BaseControllerTests(TestCase):
         assert controller.flag == 5
 
 
-@pytest.mark.skipif("TEST_TYPE == 'matlab'")
+@run_for_test_types(TEST_TYPE, 'default', 'all')
 class DefaultControllerTests(TestCase):
     """
     Tests for each controller class
@@ -437,8 +436,7 @@ class DefaultControllerTests(TestCase):
         self.shared_tests.check_diverged(controller)
 
 
-@pytest.mark.skipif("TEST_TYPE == 'default'")
-@pytest.mark.skipif("TEST_TYPE == 'matlab'")
+@run_for_test_types(TEST_TYPE, 'all')
 class ControllerBoundsTests(TestCase):
     """
     Tests to ensure controllers handle and respect bounds correctly
@@ -554,8 +552,7 @@ class ControllerBoundsTests(TestCase):
         self.check_bounds(controller)
 
 
-@pytest.mark.skipif("TEST_TYPE == 'default'")
-@pytest.mark.skipif("TEST_TYPE == 'matlab'")
+@run_for_test_types(TEST_TYPE, 'all')
 class ExternalControllerTests(TestCase):
     """
     Tests for each controller class
@@ -726,8 +723,7 @@ class ExternalControllerTests(TestCase):
             self.shared_tests.check_diverged(controller)
 
 
-@pytest.mark.skipif("TEST_TYPE == 'default'")
-@pytest.mark.skipif("TEST_TYPE == 'all'")
+@run_for_test_types(TEST_TYPE, 'matlab')
 class MatlabControllerTests(TestCase):
     """
     Tests for each controller class
@@ -763,7 +759,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_diverged(controller)
 
 
-@pytest.mark.skipif("TEST_TYPE == 'matlab'")
+@run_for_test_types(TEST_TYPE, 'default', 'all')
 class FactoryTests(TestCase):
     """
     Tests for the ControllerFactory
@@ -779,7 +775,7 @@ class FactoryTests(TestCase):
         self.check_valid(valid, valid_names)
         self.check_invalid(invalid)
 
-    @ pytest.mark.skipif("TEST_TYPE == 'default'")
+    @run_for_test_types(TEST_TYPE, 'all')
     def test_external_imports(self):
         """
         Test that the factory returns the correct external class for inputs

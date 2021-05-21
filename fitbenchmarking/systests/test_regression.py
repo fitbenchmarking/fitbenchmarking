@@ -10,15 +10,13 @@ import os
 from sys import platform
 import tempfile
 from unittest import TestCase
-import pytest
 from pytest import test_type as TEST_TYPE
+from conftest import run_for_test_types
 
 from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
 
-
-@pytest.mark.skipif("TEST_TYPE == 'default'")
-@pytest.mark.skipif("TEST_TYPE == 'matlab'")
+@run_for_test_types(TEST_TYPE, 'all')
 class TestRegressionAll(TestCase):
     """
     Regression tests for the Fitbenchmarking software with all fitting software
@@ -105,8 +103,7 @@ class TestRegressionAll(TestCase):
         diff, msg = diff_result(actual, expected)
         self.assertListEqual([], diff, msg)
 
-@pytest.mark.skipif("TEST_TYPE == 'default'")
-@pytest.mark.skipif("TEST_TYPE == 'all'")
+@run_for_test_types(TEST_TYPE, 'matlab')
 class TestRegressionMatlab(TestCase):
     """
     Regression tests for the Fitbenchmarking software with matlab fitting software
@@ -157,8 +154,7 @@ class TestRegressionMatlab(TestCase):
         self.assertListEqual([], diff, msg)
 
 
-@pytest.mark.skipif("TEST_TYPE == 'all'")
-@pytest.mark.skipif("TEST_TYPE == 'matlab'")
+@run_for_test_types(TEST_TYPE, 'default')
 class TestRegressionDefault(TestCase):
     """
     Regression tests for the Fitbenchmarking software with all default fitting
