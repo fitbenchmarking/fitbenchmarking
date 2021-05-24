@@ -1,3 +1,6 @@
+'''
+Test support page
+'''
 from __future__ import (absolute_import, division, print_function)
 
 import inspect
@@ -18,7 +21,9 @@ from fitbenchmarking.utils.options import Options
 
 
 class CreateTests(unittest.TestCase):
-
+    '''
+    Create tests for support page
+    '''
     def setUp(self):
         self.options = Options()
         cost_func = []
@@ -36,8 +41,8 @@ class CreateTests(unittest.TestCase):
                                        params=[],
                                        minimizer=m)
                          for m in minimizers]
-                         for c in cost_func]
-        
+                        for c in cost_func]
+
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         self.dir = TemporaryDirectory(dir=root)
 

@@ -15,7 +15,7 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
 from fitbenchmarking.results_processing.tables import SORTED_TABLE_NAMES
 from fitbenchmarking.results_processing.tables import generate_table
 from fitbenchmarking.results_processing.tables import create_results_tables
-from fitbenchmarking.jacobian.default_jacobian import default as DefaultJac
+from fitbenchmarking.jacobian.default_jacobian import Default as DefaultJac
 from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -187,15 +187,15 @@ class GenerateTableTests(unittest.TestCase):
             if act_line != exp_line:
                 diff.append([i, exp_line, act_line])
         if diff != []:
-            print("Comparing against {}".format(expected_table) \
-                  + "\n".join(['== Line {} ==\n'\
-                               'Expected :{}\n'\
+            print("Comparing against {}".format(expected_table)
+                  + "\n".join(['== Line {} ==\n'
+                               'Expected :{}\n'
                                'Actual   :{}'.format(*change)
                                for change in diff]))
             print("\n==\n")
             print("Output generated (also saved as actual.out):")
             print(table)
-            with open("actual.out","w") as outfile:
+            with open("actual.out", "w") as outfile:
                 outfile.write(table)
         self.assertListEqual([], diff)
 

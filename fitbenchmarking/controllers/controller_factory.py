@@ -43,11 +43,10 @@ class ControllerFactory:
             if os.path.exists(full_path):
                 raise MissingSoftwareError('Requirements are missing for the '
                                            '{} controller: {}'.format(
-                                               software, e))
-            else:
-                raise NoControllerError('Could not find controller for {}. '
-                                        'Check the input is correct and try '
-                                        'again.'.format(software))
+                                               software, e)) from e
+            raise NoControllerError('Could not find controller for {}. '
+                                    'Check the input is correct and try '
+                                    'again.'.format(software)) from e
 
         classes = getmembers(module, lambda m: (isclass(m)
                                                 and not isabstract(m)

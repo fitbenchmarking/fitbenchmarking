@@ -26,7 +26,7 @@ class GSLController(Controller):
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(GSLController, self).__init__(cost_func)
+        super().__init__(cost_func)
 
         self._solver = None
         self._residual_methods = None
@@ -54,6 +54,7 @@ class GSLController(Controller):
         jacobian_free_solvers = ['nmsimplex', 'nmsimplex2']
         return has_jacobian, jacobian_free_solvers
 
+    # pylint: disable=unused-argument
     def _prediction_error(self, p, data=None):
         """
         Utility function to call cost_func.eval_r with correct args
@@ -137,6 +138,7 @@ class GSLController(Controller):
         f = self.cost_func.eval_cost(p)
         df = self._jac_chi_squared(p)
         return f, df
+    # pylint: enable=unused-argument
 
     def setup(self):
         """
@@ -229,7 +231,7 @@ class GSLController(Controller):
             if status == errno.GSL_SUCCESS:
                 self.flag = 0
                 break
-            elif status != errno.GSL_CONTINUE:
+            if status != errno.GSL_CONTINUE:
                 self.flag = 2
         else:
             self.flag = 1
