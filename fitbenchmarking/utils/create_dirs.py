@@ -85,6 +85,7 @@ def figures(support_pages_dir):
 
     return figures_dir
 
+
 def css(results_dir):
     """
     Creates a local css directory inside the results directory.

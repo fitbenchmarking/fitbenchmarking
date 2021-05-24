@@ -28,13 +28,15 @@ class BumpsController(Controller):
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        super(BumpsController, self).__init__(cost_func)
+        super().__init__(cost_func)
 
         self._param_names = [name.replace('.', '_')
                              for name in self.problem.param_names]
         self.support_for_bounds = True
         self._func_wrapper = None
         self._fit_problem = None
+        self.fit_order = None
+        self._status = None
         self._bumps_result = None
         self.algorithm_check = {
             'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
@@ -51,6 +53,7 @@ class BumpsController(Controller):
         return has_jacobian, jacobian_free_solvers
 
     def setup(self):
+        # pylint: disable=exec-used,protected-access
         """
         Setup problem ready to run with Bumps.
 
@@ -68,9 +71,7 @@ class BumpsController(Controller):
 
         # Remove any function attribute. BinWidth is the only attribute in all
         # FitBenchmark (Mantid) problems.
-        param_dict = {name: value
-                      for name, value
-                      in zip(self._param_names, self.initial_params)}
+        param_dict = dict(zip(self._param_names, self.initial_params))
 
         # Create a Function Wrapper for the problem function. The type of the
         # Function Wrapper is acceptable by Bumps.

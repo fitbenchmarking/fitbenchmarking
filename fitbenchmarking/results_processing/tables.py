@@ -77,13 +77,14 @@ def create_results_tables(options, results, best_results, group_name,
                                             options.cost_func_type)
 
             try:
-                table, html_table, txt_table = generate_table(results,
-                                                              best_results,
-                                                              options,
-                                                              group_dir,
-                                                              pp_locations,
-                                                              table_names[suffix],
-                                                              suffix)
+                table, html_table, txt_table = \
+                    generate_table(results,
+                                   best_results,
+                                   options,
+                                   group_dir,
+                                   pp_locations,
+                                   table_names[suffix],
+                                   suffix)
             except IncompatibleTableError as excp:
                 LOGGER.warning(str(excp))
                 del table_names[suffix]
@@ -153,7 +154,7 @@ def load_table(table):
         module = import_module('.' + module_name, __package__)
     except ImportError as e:
         raise UnknownTableError('Given table option {} '
-                                'was not found: {}'.format(table, e))
+                                'was not found: {}'.format(table, e)) from e
 
     classes = getmembers(module, lambda m: (isclass(m)
                                             and not isabstract(m)
