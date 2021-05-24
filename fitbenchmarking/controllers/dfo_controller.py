@@ -36,7 +36,14 @@ class DFOController(Controller):
             'all': ['dfogn', 'dfols'],
             'ls': ['dfogn', 'dfols'],
             'deriv_free': ['dfogn', 'dfols'],
-            'general': [None]}
+            'general': [],
+            'simplex': [],
+            'trust_region': ['dfols', 'dfogn'],
+            'levenberg-marquardt': [],
+            'gauss_newton': ['dfogn'],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': []}
 
     def jacobian_information(self):
         """

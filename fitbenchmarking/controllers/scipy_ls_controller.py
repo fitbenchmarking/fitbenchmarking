@@ -34,7 +34,14 @@ class ScipyLSController(Controller):
             'all': ['lm-scipy', 'trf', 'dogbox'],
             'ls': ['lm-scipy', 'trf', 'dogbox'],
             'deriv_free': [None],
-            'general': [None]}
+            'general': [None],
+            'simplex': [],
+            'trust_region': ['lm-scipy', 'trf', 'dogbox'],
+            'levenberg-marquardt': ['lm-scipy'],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': []}
 
     def jacobian_information(self):
         """

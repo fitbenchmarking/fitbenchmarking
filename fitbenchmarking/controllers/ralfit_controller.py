@@ -33,8 +33,15 @@ class RALFitController(Controller):
         self.algorithm_check = {
             'all': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
             'ls': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
-            'deriv_free': [None],
-            'general': [None]}
+            'deriv_free': [],
+            'general': [],
+            'simplex': [],
+            'trust_region': ['gn', 'hybrid'],
+            'levenberg-marquardt': [],
+            'gauss_newton': ['gn', 'gn_reg'],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': []}
 
     def jacobian_information(self):
         """

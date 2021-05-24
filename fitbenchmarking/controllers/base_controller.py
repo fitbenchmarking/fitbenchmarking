@@ -82,10 +82,17 @@ class Controller:
         # minimizer/minimizers from the options is within the softwares
         # algorithms. It also used to filter out algorithms based on the keys
         # of the dictionary
-        self.algorithm_check = {'all': [None],
-                                'ls': [None],
-                                'deriv_free': [None],
-                                'general': [None]}
+        self.algorithm_check = {'all': [],
+                                'ls': [],
+                                'deriv_free': [],
+                                'general': [],
+                                'simplex': [],
+                                'trust_region': [],
+                                'levenberg-marquardt': [],
+                                'gauss_newton': [],
+                                'bfgs': [],
+                                'conjugate_gradient': [],
+                                'steepest_descent': []}
 
         # Used to check whether the selected minimizers is compatible with
         # problems that have parameter bounds
@@ -163,16 +170,35 @@ class Controller:
                           options
         :type minimizer: str
         :param algorithm_type: the algorithm type selected from the options
-        :type algorithm_type: str
+        :type algorithm_type: list
         """
-        minimzer_selection = self.algorithm_check[algorithm_type]
-        result = minimizer in minimzer_selection
+        minimzer_selection = [[] for _ in range(len(algorithm_type))]
+        for ind, alg in enumerate(algorithm_type):
+            minimzer_selection[ind] = self.algorithm_check[alg]
+        result = any(minimizer in list for list in minimzer_selection)
 
         if not result:
             message = 'The minimizer selected, {0}, is not within ' \
                 'algorithm_check[options.algorithm_type] = {1}\n'.format(
                     minimizer, minimzer_selection)
             raise UnknownMinimizerError(message)
+
+    def record_alg_type(self, minimizer, algorithm_type):
+        """
+        Helper function which records the algorithm types of
+        the selected minimizer that match those chosen in options
+
+        :param minimizer: string of minimizers selected from the
+                          options
+        :type minimizer: str
+        :param algorithm_type: the algorithm type selected from the options
+        :type algorithm_type: list
+        """
+        types = [k for k, v in self.algorithm_check.items()
+                 if minimizer in v and k in algorithm_type]
+        type_str = ", ".join(types)
+
+        return type_str
 
     def check_minimizer_bounds(self, minimizer):
         """
