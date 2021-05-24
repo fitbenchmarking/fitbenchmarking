@@ -285,7 +285,7 @@ class Options(object):
         config['MINIMIZERS'] = {k: list_to_string(m)
                                 for k, m in self.minimizers.items()}
         config['FITTING'] = {'num_runs': self.num_runs,
-                             'algorithm_type': self.algorithm_type,
+                             'algorithm_type': list_to_string(self.algorithm_type),
                              'software': list_to_string(self.software),
                              'jac_method': list_to_string(self.jac_method)}
         cs = list_to_string(['{0}, {1}'.format(*pair)
