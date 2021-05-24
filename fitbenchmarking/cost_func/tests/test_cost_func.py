@@ -16,6 +16,7 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
+# pylint: disable=attribute-defined-outside-init
 
 
 class TestNLLSCostFunc(TestCase):
@@ -191,7 +192,6 @@ class TestPoissonCostFunc(TestCase):
     """
     Class to test the PoissonCostFunc class
     """
-
     def setUp(self):
         """
         Setting up poisson cost function tests

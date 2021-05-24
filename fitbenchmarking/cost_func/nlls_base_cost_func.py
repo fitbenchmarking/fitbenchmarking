@@ -3,8 +3,9 @@ Implements the base non-linear least squares cost function
 """
 
 from abc import abstractmethod
-from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from numpy import dot
+
+from fitbenchmarking.cost_func.base_cost_func import CostFunc
 
 
 class BaseNLLSCostFunc(CostFunc):
