@@ -1,18 +1,20 @@
-
+"""
+Unit testing for the jacobian directory.
+"""
 from unittest import TestCase
 
 import numpy as np
 
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.utils.options import Options
-from fitbenchmarking.utils import exceptions
-from fitbenchmarking.jacobian.base_jacobian import Jacobian
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
-from fitbenchmarking.jacobian.default_jacobian import default
-from fitbenchmarking.jacobian.numdifftools_jacobian import numdifftools
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
+from fitbenchmarking.jacobian.base_jacobian import Jacobian
+from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
+from fitbenchmarking.jacobian.numdifftools_jacobian import Numdifftools
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.utils import exceptions
+from fitbenchmarking.utils.options import Options
 
 
 def f(x, p1, p2):
@@ -99,7 +101,7 @@ class TestJacobianClass(TestCase):
         """
         Test that minimizer default jacobian does what it should
         """
-        jac = default(self.cost_func)
+        jac = Default(self.cost_func)
         self.assertTrue(jac.use_default_jac)
 
     def test_numdifftools_eval(self):
@@ -111,7 +113,7 @@ class TestJacobianClass(TestCase):
                        'backward',
                        'complex',
                        'multicomplex']:
-            jac = numdifftools(self.cost_func)
+            jac = Numdifftools(self.cost_func)
             jac.method = method
             eval_result = jac.eval(params=self.params)
             self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -147,6 +149,7 @@ class TestJacobianClass(TestCase):
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.cost_func)
         eval_result = jac.eval(params=self.params)
+        #  pylint: disable=unsubscriptable-object
         scaled_actual = self.actual * \
             self.fitting_problem.eval_model(self.params)[:, None] / 2
 
@@ -191,7 +194,8 @@ class TestCachedFuncValues(TestCase):
         self.cost_func = NLLSCostFunc(self.fitting_problem)
         self.jacobian = Jacobian(self.cost_func)
 
-    def func(self, x):
+    @staticmethod
+    def func(x):
         """
         Test function for cached value tests.
 
@@ -289,7 +293,7 @@ class TestDerivCostFunc(TestCase):
                        'backward',
                        'complex',
                        'multicomplex']:
-            jac = numdifftools(self.cost_func)
+            jac = Numdifftools(self.cost_func)
             jac.method = method
             eval_result = jac.eval_cost(params=self.params)
             self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -305,17 +309,17 @@ class TestDerivCostFunc(TestCase):
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
 
-class FactoryTests(TestCase):
+class TestFactory(TestCase):
     """
     Tests for the Jacobian factory
     """
+    def setUp(self):
+        self.options = Options()
 
     def test_imports(self):
         """
         Test that the factory returns the correct class for inputs
         """
-        self.options = Options()
-
         valid = ['scipy', 'analytic']
 
         invalid = ['numpy', 'random_jac']
