@@ -1,7 +1,6 @@
 """
 Implements the base non-linear least squares cost function
 """
-
 from abc import abstractmethod
 from numpy import dot
 
@@ -19,7 +18,7 @@ class BaseNLLSCostFunc(CostFunc):
     """
 
     def __init__(self, problem):
-        """
+        r"""
         Initialise anything that is needed specifically for the new cost
         function.
         This defines a fitting problem where, given a set of :math:`n` data
@@ -38,7 +37,7 @@ class BaseNLLSCostFunc(CostFunc):
 
         """
         # Problem: The problem object from parsing
-        super(BaseNLLSCostFunc, self).__init__(problem)
+        super().__init__(problem)
         #: *dict*
         #: Container cached residual evaluation
         self.cache_rx = {'params': None, 'value': None}

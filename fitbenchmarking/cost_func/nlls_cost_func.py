@@ -31,7 +31,7 @@ class NLLSCostFunc(BaseNLLSCostFunc):
 
         """
         # Problem: The problem object from parsing
-        super(NLLSCostFunc, self).__init__(problem)
+        super().__init__(problem)
         #: *dict*
         #: Container cached residual evaluation
         self.cache_rx = {'params': None, 'value': None}

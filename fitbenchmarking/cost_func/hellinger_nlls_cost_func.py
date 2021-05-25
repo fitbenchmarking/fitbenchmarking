@@ -36,7 +36,7 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
 
         """
         # Problem: The problem object from parsing
-        super(HellingerNLLSCostFunc, self).__init__(problem)
+        super().__init__(problem)
         #: *dict*
         #: Container cached residual evaluation
         self.cache_rx = {'params': None, 'value': None}
