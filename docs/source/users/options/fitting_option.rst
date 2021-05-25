@@ -65,7 +65,7 @@ The options are:
 * ``deriv_free`` - derivative free algorithms (these are algorithms that cannot use
   information about derivatives -- e.g., the ``Simplex`` method in ``Mantid``)
 * ``general`` - minimizers which solve a generic `min f(x)`
-* ``simplex`` - derivative free simplect based algorithms e.g. Nelder-Mead
+* ``simplex`` - derivative free simplex based algorithms e.g. Nelder-Mead
 * ``trust_region`` - algorithms which emply a trust region approach
 * ``levenberg-marquardt`` - minimizers that use the Levenberg Marquardt algorithm
 * ``gauss_newton`` - minimizers that use the Gauss Newton algorithm
