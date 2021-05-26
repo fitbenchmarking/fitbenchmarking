@@ -7,7 +7,7 @@ from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
-from fitbenchmarking.utils.exceptions import NoJacobianError, OptionsError
+from fitbenchmarking.utils.exceptions import NoJacobianError
 
 
 def create_jacobian(jac_method):
@@ -25,9 +25,9 @@ def create_jacobian(jac_method):
 
     try:
         module = import_module('.' + module_name, __package__)
-    except ImportError:
+    except ImportError as e:
         raise NoJacobianError('Could not find Jacobian class with type as '
-                              '{}.'.format(jac_method))
+                              '{}.'.format(jac_method)) from e
 
     classes = getmembers(module, lambda m: (isclass(m)
                                             and not isabstract(m)

@@ -13,9 +13,6 @@ class Scipy(Jacobian):
     Implements SciPy finite difference approximations to the derivative
     """
 
-    def __init__(self, cost_func):
-        super(Scipy, self).__init__(cost_func)
-
     def eval(self, params, **kwargs):
         """
         Evaluates Jacobian

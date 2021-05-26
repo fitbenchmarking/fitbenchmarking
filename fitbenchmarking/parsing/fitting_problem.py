@@ -96,7 +96,6 @@ class FittingProblem:
         #: Callable function for the Jacobian
         self.jacobian = None
 
-
     def eval_model(self, params, **kwargs):
         """
         Function evaluation method
