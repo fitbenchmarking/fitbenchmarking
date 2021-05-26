@@ -65,44 +65,27 @@ class MatlabController(Controller):
         
         print('size of y data: ')
         print(self.y_data_mat.size)
+     
+        def _eval(p, xdata):
+            feval = self.problem.eval_model(p, x=self.data_x)
+            return feval
 
         # serialize _eval and open within matlab engine
         # so that matlab fitting function can be called
         temp_dir = TemporaryDirectory()
         temp_file = os.path.join(temp_dir.name, 'temp.pickle')
         with open(temp_file, 'wb') as f:
-            dill.dump(self._eval, f)
+            dill.dump(_eval, f)
         eng.workspace['temp_file'] = temp_file
         eng.evalc('py_f = py.open(temp_file,"rb")')
         eng.evalc('eval_mat = py.dill.load(py_f)')
         eng.evalc('py_f.close()')
-
-    def _eval(self, p, xdata):
-
-        kwargs = {"x": self.data_x}
-        feval = self.problem.eval_model(p, x=self.data_x)
-
-        eng.workspace['feval'] = matlab.double(feval.tolist())
-        print('feval size printed in _eval function: ')
-        print(eng.workspace['feval'].size)
-
-        #if nargout > 1:
-        #    jeval = -self.jacobian.eval(p)
-        #    return feval, jeval
-    
-        return feval
+        eng.evalc('matlab_wrapper = @(p, x)double(eval_mat(p, x))')
 
     def fit(self):
         """
         Run problem with Matlab
         """
-        # test output of eval function
-        eng.workspace['p'] = self.initial_params_mat
-        eng.workspace['xdata'] = self.x_data_mat
-        out = eng.eval('eval_mat(p, xdata)')
-        print('_eval function output: ')
-        print(out.size)
-        print(out)
 
         # if self.jacobian.use_default_jac:
         #     eng.workspace['nargout'] = 1
@@ -111,9 +94,10 @@ class MatlabController(Controller):
         #     eng.workspace['nargout'] = 2
         #     eng.evalc('fun = @(p,xdata)eval_mat(p,xdata,nargout)')    
             
-        [self.result, _, exitflag] = eng.lsqcurvefit(
-            eng.workspace['eval_mat'], self.initial_params_mat,
-            self.x_data_mat, self.y_data_mat, nargout=3)
+        self.result, _, _, exitflag, _ = eng.lsqcurvefit(
+            eng.workspace['matlab_wrapper'], self.initial_params_mat,
+            self.x_data_mat, self.y_data_mat, nargout=5)
+        print(exitflag)
         self._status = int(exitflag)
 
     def cleanup(self):
@@ -130,3 +114,4 @@ class MatlabController(Controller):
             self.flag = 2
 
         self.final_params = self.result[0]
+
