@@ -221,6 +221,27 @@ The `matlab` minimizer is set as follows:
 
 .. warning::
    MATLAB must be installed for this to be available; See :ref:`extra_dependencies`.
+
+Matlab Optimization Toolbox (``matlab_opt``)
+--------------------------------------------
+
+We call the `lsqcurvefit <https://uk.mathworks.com/help/optim/ug/lsqcurvefit.html>`_
+function from the `MATLAB Optimization Toolbox <https://uk.mathworks.com/products/optimization.html>`_,
+using the MATLAB Engine API for Python.
+
+* Levenberg-Marquardt (:code:`levenberg-marquardt`)
+* Trust-Region-Reflective (:code: `trust-region-reflective`)
+
+The `matlab_opt` minimizers are set as follows:
+
+.. code-block:: rst
+
+   [MINIMIZERS]
+   matlab_opt: levenberg-marquardt
+               trust-region-reflective
+
+.. warning::
+   MATLAB Optimization Toolbox must be installed for this to be available; See :ref:`extra_dependencies`.
 	   
 Minuit (``minuit``)
 -------------------
