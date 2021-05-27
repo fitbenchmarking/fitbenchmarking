@@ -115,10 +115,6 @@ class MatlabOptController(Controller):
         eng.evalc('py_f.close()')
         eng.evalc('f_wrapper = @(p, x)double(eval_f(p))')
 
-        eng.workspace['eval_func'] = eng.workspace['f_wrapper']
-        eng.evalc('options = optimoptions("lsqcurvefit", \
-                                          "Algorithm", minimizer)')
-
         # if default jacobian is not selected then pass _jeval
         # function to matlab
         if not self.jacobian.use_default_jac:
@@ -139,6 +135,10 @@ class MatlabOptController(Controller):
                 optimoptions("lsqcurvefit", \
                              "Algorithm", minimizer, \
                              "SpecifyObjectiveGradient", true)')
+        else:
+            eng.workspace['eval_func'] = eng.workspace['f_wrapper']
+            eng.evalc('options = optimoptions("lsqcurvefit", \
+                                          "Algorithm", minimizer)')
 
     def fit(self):
         """
