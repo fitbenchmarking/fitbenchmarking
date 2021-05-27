@@ -41,6 +41,7 @@ class ParserFactory:
         extension = os.path.splitext(filename)[1]
         if "SIF" in extension.upper():
             parser_name = 'cutest'
+
         else:  # Otherwise, take the first section of text
             parser_name = ''
             for line in lines.strip('#').strip():

@@ -18,6 +18,7 @@ a newline-separated list. Available options are:
 * ``gsl`` (external software -- see :ref:`external-instructions`)
 * ``levmar`` (external software -- see :ref:`extra_dependencies`)
 * ``mantid`` (external software -- see :ref:`external-instructions`)
+* ``matlab`` (external software -- see :ref:`external-instructions`)
 * ``minuit`` (default software)
 * ``ralfit`` (external software -- see :ref:`external-instructions`)
 * ``scipy`` (default software)

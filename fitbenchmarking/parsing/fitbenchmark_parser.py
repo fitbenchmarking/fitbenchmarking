@@ -364,7 +364,7 @@ class FitbenchmarkParser(Parser):
         """
         equation = self._parsed_func[0]['name']
         starting_values = self._get_starting_values()
-        param_names = starting_values[0].keys()
+        param_names = list(starting_values[0].keys())
 
         def fitFunction(x, *tmp_params):
 
