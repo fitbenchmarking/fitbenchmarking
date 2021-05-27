@@ -37,7 +37,7 @@ class RALFitController(Controller):
             'general': [],
             'simplex': [],
             'trust_region': ['gn', 'hybrid'],
-            'levenberg-marquardt': [],
+            'levenberg-marquardt': ['gn', 'gn_reg'],
             'gauss_newton': ['gn', 'gn_reg'],
             'bfgs': [],
             'conjugate_gradient': [],
