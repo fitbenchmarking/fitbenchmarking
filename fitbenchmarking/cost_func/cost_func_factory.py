@@ -25,9 +25,9 @@ def create_cost_func(cost_func_type):
 
     try:
         module = import_module('.' + module_name, __package__)
-    except ImportError:
+    except ImportError as e:
         raise CostFuncError('Could not find Cost function class with type as '
-                            '{}.'.format(cost_func_type))
+                            '{}.'.format(cost_func_type)) from e
     classes = getmembers(module, lambda m: (isclass(m)
                                             and not isabstract(m)
                                             and issubclass(m, CostFunc)
