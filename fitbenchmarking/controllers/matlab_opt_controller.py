@@ -9,6 +9,7 @@ except ImportError:
 import os
 import dill
 import matlab.engine
+import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
@@ -55,14 +56,19 @@ class MatlabOptController(Controller):
         """
         Setup for Matlab fitting
         """
-        if not isinstance(self.cost_func, create_cost_func('nlls')):
+        # Convert initial params into matlab array
+        if isinstance(self.cost_func, create_cost_func('nlls')):
+            self.y_data_mat = matlab.double(self.data_y.tolist())
+        elif isinstance(self.cost_func, create_cost_func('weighted_nlls')):
+            self.y_data_mat = matlab.double((self.data_y/self.data_e).tolist())
+        elif isinstance(self.cost_func, create_cost_func('hellinger_nlls')):
+            self.y_data_mat = matlab.double(np.sqrt(self.data_y).tolist())
+        else:
             raise CostFuncError('Matlab Optimization controller is not '
                                 'compatible with the chosen cost function.')
 
-        # Convert initial params into matlab array
         self.initial_params_mat = matlab.double([self.initial_params])
         self.x_data_mat = matlab.double(self.data_x.tolist())
-        self.y_data_mat = matlab.double(self.data_y.tolist())
 
         # set matlab workspace variable for selected minimizer
         eng.workspace['minimizer'] = self.minimizer
@@ -80,14 +86,19 @@ class MatlabOptController(Controller):
             """
             Function to call from matlab which evaluates the model
             """
-            feval = self.problem.eval_model(p, x=self.data_x)
+            if isinstance(self.cost_func, create_cost_func('nlls')):
+                feval = self.problem.eval_model(p, x=self.data_x)
+            else:
+                feval = -self.cost_func.eval_r(p, x=self.data_x,
+                                               y=np.zeros(len(self.data_y)),
+                                               e=self.data_e)
             return feval
 
         def _jeval(p):
             """
             Function to call from matlab which evaluates the jacobian
             """
-            jeval = self.jacobian.eval(p)
+            jeval = -self.jacobian.eval(p)
             return jeval
 
         # serialize _feval and _jeval functions (if not using default
