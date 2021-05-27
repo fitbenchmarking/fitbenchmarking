@@ -230,7 +230,7 @@ function from the `MATLAB Optimization Toolbox <https://uk.mathworks.com/product
 using the MATLAB Engine API for Python.
 
 * Levenberg-Marquardt (:code:`levenberg-marquardt`)
-* Trust-Region-Reflective (:code: `trust-region-reflective`)
+* Trust-Region-Reflective (:code:`trust-region-reflective`)
 
 The `matlab_opt` minimizers are set as follows:
 

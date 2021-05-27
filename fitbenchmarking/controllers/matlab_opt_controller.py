@@ -108,8 +108,8 @@ class MatlabOptController(Controller):
         eng.evalc('options = optimoptions("lsqcurvefit", \
                                           "Algorithm", minimizer)')
 
-        # if default jacobian is selected then pass _jeval function
-        # to matlab
+        # if default jacobian is not selected then pass _jeval
+        # function to matlab
         if not self.jacobian.use_default_jac:
             jeval_file = os.path.join(temp_dir.name, 'jeval.pickle')
             with open(jeval_file, 'wb') as f:
