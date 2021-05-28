@@ -28,6 +28,7 @@ class LevmarController(Controller):
 
         self.support_for_bounds = True
         self.param_ranges = None
+        self.lm_y = None
         self._popt = None
         self.algorithm_check = {
             'all': ['levmar'],
@@ -54,9 +55,10 @@ class LevmarController(Controller):
             lb = [None if x == -np.inf else x for x in lb]
             ub = [None if x == np.inf else x for x in ub]
             self.param_ranges = list(zip(lb, ub))
+        self.lm_y = np.zeros(self.data_y.shape)
 
     # pylint: disable=unused-argument
-    def _feval(self, p, x):
+    def _feval(self, p):
         """
         Utility function to call problem.eval_model with correct args
 
@@ -68,10 +70,10 @@ class LevmarController(Controller):
         :rtype: numpy array
         """
 
-        fx = self.problem.function(self.data_x, *p)
+        fx = self.cost_func.eval_r(p)
         return fx
 
-    def _jeval(self, p, x):
+    def _jeval(self, p):
         """
         Utility function to call jac.eval with correct args
 
@@ -96,10 +98,10 @@ class LevmarController(Controller):
             solve_levmar = getattr(levmar, "levmar_bc")
         args = [self._feval,
                 self.initial_params,
-                self.data_y]
+                self.lm_y]
         if self.value_ranges is not None:
             args.append(self.param_ranges)
-        kwargs = {"args": (self.data_x,)}
+        kwargs = {}
         if not self.jacobian.use_default_jac:
             kwargs["jacf"] = self._jeval
         (self.final_params, _, self._info) = solve_levmar(*args, **kwargs)
