@@ -367,6 +367,8 @@ def loop_over_jacobians(controller, options, grabbed_output):
     minimizer_check = has_jacobian and minimizer not in invalid_jacobians
     try:
         for jac_method in jacobian_list:
+            # Creates Jacobian class
+            jacobian_cls = create_jacobian(jac_method)
             for num_method in options.num_method[jac_method]:
                 if minimizer_check:
                     num_method_str = ''
@@ -376,8 +378,6 @@ def loop_over_jacobians(controller, options, grabbed_output):
                                 jac_method, num_method_str)
                     minimizer_name = "{}: {}{}".format(
                         minimizer, jac_method, num_method_str)
-                # Creates Jacobian class
-                jacobian_cls = create_jacobian(jac_method)
                 try:
                     jacobian = jacobian_cls(cost_func)
                 except NoJacobianError as excp:
