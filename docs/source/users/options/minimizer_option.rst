@@ -201,6 +201,26 @@ The `levmar` minimizer is set as follows:
    The additional dependency levmar must be installed for this to be available;
    See :ref:`extra_dependencies`. This package also requires the BLAS and LAPACK
    libraries to be present on the system.
+
+
+Matlab (``matlab``)
+-------------------
+
+We call the `fminsearch <https://uk.mathworks.com/help/matlab/ref/fminsearch.html>`_
+function from `MATLAB <https://uk.mathworks.com/products/matlab.html>`_, using the
+MATLAB Engine API for Python.
+
+* Nelder-Mead Simplex (:code:`Nelder-Mead Simplex`)
+
+The `matlab` minimizer is set as follows:
+
+.. code-block:: rst
+
+   [MINIMIZERS]
+   matlab: Nelder-Mead Simplex
+
+.. warning::
+   MATLAB must be installed for this to be available; See :ref:`extra_dependencies`.
 	   
 Minuit (``minuit``)
 -------------------

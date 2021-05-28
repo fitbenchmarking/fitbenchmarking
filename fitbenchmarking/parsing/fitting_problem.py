@@ -96,10 +96,6 @@ class FittingProblem:
         #: Callable function for the Jacobian
         self.jacobian = None
 
-        #: *dict*
-        #: Container cached function evaluation
-        self.cache_model_x = {'params': None, 'value': None}
-
     def eval_model(self, params, **kwargs):
         """
         Function evaluation method
@@ -114,10 +110,7 @@ class FittingProblem:
             raise FittingProblemError('Cannot call function before setting '
                                       'function.')
         x = kwargs.get("x", self.data_x)
-        # pylint: disable=not-callable
-        self.cache_model_x['params'] = params
-        self.cache_model_x['value'] = self.function(x, *params)
-        return self.cache_model_x['value']
+        return self.function(x, *params)
 
     @property
     def param_names(self):

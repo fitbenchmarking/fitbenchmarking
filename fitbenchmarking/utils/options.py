@@ -31,6 +31,7 @@ class Options(object):
                     'Damped GaussNewton', 'Levenberg-Marquardt',
                     'Levenberg-MarquardtMD', 'Simplex',
                     'SteepestDescent', 'Trust Region'],
+         'matlab': ['Nelder-Mead Simplex'],
          'minuit': ['minuit'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
@@ -38,9 +39,9 @@ class Options(object):
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox']}
     VALID_FITTING = \
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general'],
-         'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'minuit',
-                      'ralfit', 'scipy', 'scipy_ls'],
-         'jac_method': ['analytic', 'scipy', 'default', 'numdifftools'],
+         'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'matlab',
+                      'minuit', 'ralfit', 'scipy', 'scipy_ls'],
+         'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
     VALID_JACOBIAN = \
@@ -79,6 +80,7 @@ class Options(object):
                     'Damped GaussNewton', 'Levenberg-Marquardt',
                     'Levenberg-MarquardtMD', 'Simplex',
                     'SteepestDescent', 'Trust Region'],
+         'matlab': ['Nelder-Mead Simplex'],
          'minuit': ['minuit'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',

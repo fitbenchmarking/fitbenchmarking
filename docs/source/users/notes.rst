@@ -33,6 +33,13 @@ The following list details all cases where we are aware of a possible bias:
   expressions are not supported. If you need this feature please get in touch
   with the development team with your use case.
 
+- **Running Mantid problems with Matlab fitting software.**
+
+  To run problems with Matlab fitting software through FitBenchmarking, within
+  the Matlab Controller the dynaically created `cost_func.eval_model` function
+  is serialized and then loaded in the Matlab Engine workspace. However for
+  Mantid problems, this function is not pickable resulting in the problem
+  being skipped over.
 
 In all cases, the stopping criterion of each minimizer is set to the default
 value.

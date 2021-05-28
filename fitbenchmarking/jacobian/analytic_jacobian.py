@@ -1,10 +1,10 @@
 """
 Module which acts as a analytic Jacobian calculator
 """
+from numpy import matmul
+
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.utils.exceptions import NoJacobianError
-
-from numpy import matmul
 
 
 # pylint: disable=useless-super-delegation
@@ -14,7 +14,7 @@ class Analytic(Jacobian):
     """
 
     def __init__(self, cost_func):
-        super(Analytic, self).__init__(cost_func)
+        super().__init__(cost_func)
         if not callable(self.problem.jacobian):
             raise NoJacobianError("Problem set selected does not currently "
                                   "support analytic Jacobians")
