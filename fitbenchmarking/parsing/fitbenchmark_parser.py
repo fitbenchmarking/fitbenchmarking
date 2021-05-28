@@ -452,7 +452,7 @@ class FitbenchmarkParser(Parser):
         # parmas[1] should be x so start after.
         p_names = list(sig.parameters.keys())[2:]
 
-        #pylint: disable=attribute-defined-outside-init
+        # pylint: disable=attribute-defined-outside-init
         self._ivp_equation_name = fun.__name__
         self._ivp_starting_values = [
             OrderedDict([(n, pf[n])
