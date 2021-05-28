@@ -93,9 +93,9 @@ Results directory (:code:`results_dir`)
 
 This is used to select where the output should be saved
 
-Default is ``results``
+Default is ``fitbenchmarking_results``
 
 .. code-block:: rst
 
     [PLOTTING]
-    results_dir: results
+    results_dir: fitbenchmarking_results
