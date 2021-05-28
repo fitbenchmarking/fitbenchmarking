@@ -16,7 +16,7 @@ Default is ``True`` (``yes``/``no`` can also be used)
 
 .. code-block:: rst
 
-    [FITTING]
+    [PLOTTING]
     make_plots: yes
 
 Colour scale (:code:`colour_scale`)
@@ -31,7 +31,7 @@ Default thresholds are ``1.1, 1.33, 1.75, 3, and inf``
 
 .. code-block:: rst
 
-    [FITTING]
+    [PLOTTING]
     colour_scale: 1.1, #fef0d9
                   1.33, #fdcc8a
                   1.75, #fc8d59
@@ -55,7 +55,7 @@ Default is ``both``
 
 .. code-block:: rst
 
-    [FITTING]
+    [PLOTTING]
     comparison_mode: both
 
 
@@ -74,7 +74,7 @@ Default is ``acc``, ``runtime``, ``compare``, and ``local_min``.
 
 .. code-block:: rst
 
-    [FITTING]
+    [PLOTTING]
     table_type: acc
                 runtime
                 compare
@@ -86,9 +86,9 @@ Results directory (:code:`results_dir`)
 
 This is used to select where the output should be saved
 
-Default is ``results``
+Default is ``fitbenchmarking_results``
 
 .. code-block:: rst
 
-    [FITTING]
-    results_dir: results
+    [PLOTTING]
+    results_dir: fitbenchmarking_results
