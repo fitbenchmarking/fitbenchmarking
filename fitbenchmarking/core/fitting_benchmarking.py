@@ -367,24 +367,26 @@ def loop_over_jacobians(controller, options, grabbed_output):
     minimizer_check = has_jacobian and minimizer not in invalid_jacobians
     try:
         for jac_method in jacobian_list:
+
             # Creates Jacobian class
             jacobian_cls = create_jacobian(jac_method)
-            for num_method in options.num_method[jac_method]:
-                if minimizer_check:
-                    num_method_str = ''
-                    if jac_method != "analytic":
-                        num_method_str = ' ' + num_method
-                    LOGGER.info("                Jacobian: %s%s",
-                                jac_method, num_method_str)
-                    minimizer_name = "{}: {}{}".format(
-                        minimizer, jac_method, num_method_str)
-                try:
-                    jacobian = jacobian_cls(cost_func)
-                except NoJacobianError as excp:
-                    LOGGER.warning(str(excp))
-                    jacobian = False
+            try:
+                jacobian = jacobian_cls(cost_func)
+            except NoJacobianError as excp:
+                LOGGER.warning(str(excp))
+                jacobian = False
+            
+            if jacobian:
+                for num_method in options.num_method[jac_method]:
+                    if minimizer_check:
+                        num_method_str = ''
+                        if jac_method != "analytic":
+                            num_method_str = ' ' + num_method
+                        LOGGER.info("                Jacobian: %s%s",
+                                    jac_method, num_method_str)
+                        minimizer_name = "{}: {}{}".format(
+                            minimizer, jac_method, num_method_str)
 
-                if jacobian:
                     jacobian.method = num_method
 
                     controller.jacobian = jacobian
@@ -455,11 +457,11 @@ def loop_over_jacobians(controller, options, grabbed_output):
                     results.append(result_args)
                     new_minimizer_list.append(minimizer_name)
 
-                # For minimizers that do not accept minimizers we raise an
-                # StopIteration exception to exit the loop through the
-                # Jacobians
-                if not minimizer_check:
-                    raise StopIteration
+                    # For minimizers that do not accept minimizers we raise an
+                    # StopIteration exception to exit the loop through the
+                    # Jacobians
+                    if not minimizer_check:
+                        raise StopIteration
     except StopIteration:
         pass
 
