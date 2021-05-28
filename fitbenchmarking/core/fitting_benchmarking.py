@@ -457,7 +457,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                     results.append(result_args)
                     new_minimizer_list.append(minimizer_name)
 
-                    # For minimizers that do not accept minimizers we raise an
+                    # For minimizers that do not accept jacobians we raise an
                     # StopIteration exception to exit the loop through the
                     # Jacobians
                     if not minimizer_check:
