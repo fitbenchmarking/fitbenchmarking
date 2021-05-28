@@ -1,6 +1,10 @@
+"""
+This file contains the functions required to run lorentz system examples.
+"""
 import numpy as np
 
 
+# pylint: disable=unused-argument
 def lorentz3d(t, x, sigma, r, b):
     """
     Calculates the rhs of a Lorentz system defined by:
@@ -22,11 +26,5 @@ def lorentz3d(t, x, sigma, r, b):
             r * x[0] - x[1] - x[0] * x[1],
             x[0] * x[1] - b * x[2]
         ])
-    elif len(x.shape) == 2:
-        return np.array([
-            sigma * (x[:, 1] - x[:, 0]),
-            r * x[:, 0] - x[:, 1] - x[:, 0] * x[:, 1],
-            x[:, 0] * x[:, 1] - b * x[:, 2]
-        ])
-    else:
-        raise ValueError('x is the wrong shape in lorentz3d call.')
+
+    raise ValueError('x is the wrong shape in lorentz3d call.')

@@ -1,6 +1,11 @@
+"""
+This file contains the functions required to run the simplified anac system
+examples.
+"""
 import numpy as np
 
 
+# pylint: disable=unused-argument
 def simplified_anac(t, x, gamma, mu):
     """
     Calculates the rhs of the system defined by:
@@ -19,10 +24,5 @@ def simplified_anac(t, x, gamma, mu):
             x[1],
             gamma * x[0] + 2 * mu * x[0]**3
         ])
-    elif len(x.shape) == 2:
-        return np.array([
-            x[:, 1],
-            gamma * x[:, 0] + 2 * mu * x[:, 0]**3
-        ])
-    else:
-        raise ValueError('x is the wrong shape in simplified_anac call.')
+
+    raise ValueError('x is the wrong shape in simplified_anac call.')

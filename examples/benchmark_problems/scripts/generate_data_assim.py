@@ -7,6 +7,25 @@ from scipy.integrate import solve_ivp
 
 
 def write_data(fun, args, fname='data.txt', step=0.1, sd=0.1):
+    """
+    Generate a dataset consisting of 10^n points arranged in a grid,
+    where n in the dimension of the function input.
+    These points are then propagated through time using scipy.solve_ivp
+    and gaussian noise is added.
+
+    This format of data can be thought of as random samples from a time
+    series rather than the time series itself.
+
+    Args:
+        fun (callable): The function f in the problem definition: x' = f(x, p)
+        args (list): The parameters p in the problem definition: x' = f(x, p)
+        fname (str, optional): The name of the generated file.
+                               Defaults to 'data.txt'.
+        step (float, optional): The amount of time that passes between the x
+                                and y values. Defaults to 0.1.
+        sd (float, optional): The standard deviation of the gaussian noise.
+                              Defaults to 0.1.
+    """
     out = fun(0, np.zeros((10)), *args)
     dim = len(out)
     tmp_x = [[i/10] for i in range(10)]
