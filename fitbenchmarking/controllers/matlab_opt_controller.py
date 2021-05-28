@@ -56,17 +56,9 @@ class MatlabOptController(Controller):
         """
         Setup for Matlab fitting
         """
-        # Convert initial params into matlab array
-        if isinstance(self.cost_func, create_cost_func('nlls')):
-            self.y_data_mat = matlab.double(self.data_y.tolist())
-        elif isinstance(self.cost_func, create_cost_func('weighted_nlls')):
-            self.y_data_mat = matlab.double((self.data_y/self.data_e).tolist())
-        elif isinstance(self.cost_func, create_cost_func('hellinger_nlls')):
-            self.y_data_mat = matlab.double(np.sqrt(self.data_y).tolist())
-        else:
-            raise CostFuncError('Matlab Optimization controller is not '
-                                'compatible with the chosen cost function.')
 
+        # Convert initial params into matlab array
+        self.y_data_mat = matlab.double(np.zeros(self.data_y.shape).tolist())
         self.initial_params_mat = matlab.double([self.initial_params])
         self.x_data_mat = matlab.double(self.data_x.tolist())
 
@@ -84,14 +76,9 @@ class MatlabOptController(Controller):
 
         def _feval(p):
             """
-            Function to call from matlab which evaluates the model
+            Function to call from matlab which evaluates the residuals
             """
-            if isinstance(self.cost_func, create_cost_func('nlls')):
-                feval = self.problem.eval_model(p, x=self.data_x)
-            else:
-                feval = -self.cost_func.eval_r(p, x=self.data_x,
-                                               y=np.zeros(len(self.data_y)),
-                                               e=self.data_e)
+            feval = -self.cost_func.eval_r(p)
             return feval
 
         def _jeval(p):
