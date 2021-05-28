@@ -162,6 +162,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
                    name in zip(results, new_name))
         assert new_minimizer_list == new_name
 
+    # pylint: disable=unused-argument
     @unittest.mock.patch.object(DummyController, "check_bounds_respected")
     @unittest.mock.patch.object(DummyController, "cleanup")
     def test_bounds_respected_func_called(
@@ -170,7 +171,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.flag == 0
+        self.controller.flag == 0 # pylint: disable=pointless-statement
         _ = loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
@@ -184,11 +185,12 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.flag == 3
+        self.controller.flag == 3 # pylint: disable=pointless-statement
         _ = loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
         assert not check_bounds_respected.assert_called()
+    # pylint: enable=unused-argument
 
 
 if __name__ == "__main__":

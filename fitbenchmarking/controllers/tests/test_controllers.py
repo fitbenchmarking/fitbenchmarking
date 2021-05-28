@@ -41,6 +41,7 @@ if TEST_TYPE == 'matlab':
 
 # pylint: disable=attribute-defined-outside-init, protected-access
 
+
 def make_cost_func(file_name='cubic.dat'):
     """
     Helper function that returns a simple fitting problem
