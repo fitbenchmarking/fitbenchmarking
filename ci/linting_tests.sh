@@ -4,9 +4,9 @@ status=0
 
 for dir in cli controllers core cost_func jacobian parsing results_processing utils
 do 
-    pylint -r y fitbenchmarking/$dir/* --exit-zero
+    pylint -r y fitbenchmarking/$dir/* || pylint-exit $? --error-fail --warn-fail
     status=$(($status + $?))
-    flake8 fitbenchmarking/$dir/*
+    flake8 fitbenchmarking/$dir/
     status=$(($status + $?))
 done
 
