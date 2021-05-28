@@ -171,7 +171,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.flag == 0 # pylint: disable=pointless-statement
+        self.controller.flag == 0  # pylint: disable=pointless-statement
         _ = loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
@@ -185,7 +185,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.flag == 3 # pylint: disable=pointless-statement
+        self.controller.flag == 3  # pylint: disable=pointless-statement
         _ = loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
