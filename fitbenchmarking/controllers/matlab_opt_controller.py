@@ -46,7 +46,8 @@ class MatlabOptController(Controller):
 
     def jacobian_information(self):
         """
-        DFO cannot use Jacobian information
+        Matlab Optimization Toolbox can use
+        Jacobian information
         """
         has_jacobian = True
         jacobian_free_solvers = []
@@ -54,7 +55,7 @@ class MatlabOptController(Controller):
 
     def setup(self):
         """
-        Setup for Matlab fitting
+        Setup for Matlab Optimization Toolbox fitting
         """
 
         # Convert initial params into matlab array
@@ -129,7 +130,7 @@ class MatlabOptController(Controller):
 
     def fit(self):
         """
-        Run problem with Matlab
+        Run problem with Matlab Optimization Toolbox
         """
 
         self.result, _, _, exitflag, _ = eng.lsqcurvefit(
