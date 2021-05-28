@@ -109,7 +109,7 @@ function
   **SASView**
 
   SASView functions can be any of
-  `these <https://www.sasview.org/docs/user/sasgui/perspectives/fitting/models/index.html>`__.
+  `these <http://www.sasview.org/docs/user/qtgui/Perspectives/Fitting/models/index.html>`__.
 
 fit_ranges
   This specifies the region to be fit.

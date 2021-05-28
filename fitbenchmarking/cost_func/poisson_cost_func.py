@@ -30,18 +30,6 @@ class PoissonCostFunc(CostFunc):
     See options docs (:ref:`fitting_option`) for information on how to do this.
     """
 
-    def __init__(self, problem):
-        """
-        Initialise the poisson cost function class
-
-        :param problem: The parsed problem
-        :type problem:
-                :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-
-        """
-        # Problem: The problem object from parsing
-        super().__init__(problem)
-
     def eval_cost(self, params, **kwargs):
         """
         Evaluate the cost function
