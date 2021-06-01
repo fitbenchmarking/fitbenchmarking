@@ -173,14 +173,22 @@ class Controller:
         :type algorithm_type: list
         """
         minimzer_selection = [[] for _ in range(len(algorithm_type))]
+
         for ind, alg in enumerate(algorithm_type):
             minimzer_selection[ind] = self.algorithm_check[alg]
         result = any(minimizer in list for list in minimzer_selection)
 
+        if minimzer_selection == [[]]:
+            message = 'For the selected software, there are no minimizers '\
+                      'with the algorithm type(s) selected in the '\
+                      'options file'
+            raise UnknownMinimizerError(message)
+
         if not result:
-            message = 'The minimizer selected, {0}, is not within ' \
-                'algorithm_check[options.algorithm_type] = {1}\n'.format(
-                    minimizer, minimzer_selection)
+            message = 'The algorithm type(s) of the minimizer selected, {0}, '\
+                      'does not match the algorithm type(s) selected in the '\
+                      'options file. For this software, available minimizers '\
+                      'are: {1}'.format(minimizer, minimzer_selection)
             raise UnknownMinimizerError(message)
 
     def record_alg_type(self, minimizer, algorithm_type):
