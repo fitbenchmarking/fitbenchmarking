@@ -87,23 +87,6 @@ Default is ``all``
    minimizers set in the options file
 
 
-
-Use errors (:code:`use_errors`)
--------------------------------
-
-This will switch between weighted and unweighted least squares.
-If ``use_errors=True``, and no errors are supplied, then
-``e[i]`` will be set to ``sqrt(abs(y[i]))``.
-Errors below ``1.0e-8`` will be clipped to that value.
-
-Default is ``True`` (``yes``/``no`` can also be used)
-
-.. code-block:: rst
-
-    [FITTING]
-    use_errors: yes
-
-
 Jacobian method (:code:`jac_method`)
 ------------------------------------
 

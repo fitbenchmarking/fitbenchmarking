@@ -1,8 +1,6 @@
 """
 Implements the non-weighted non-linear least squares cost function
 """
-from numpy import dot
-
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
 
@@ -33,7 +31,7 @@ class NLLSCostFunc(BaseNLLSCostFunc):
 
         """
         # Problem: The problem object from parsing
-        super(NLLSCostFunc, self).__init__(problem)
+        super().__init__(problem)
         #: *dict*
         #: Container cached residual evaluation
         self.cache_rx = {'params': None, 'value': None}
