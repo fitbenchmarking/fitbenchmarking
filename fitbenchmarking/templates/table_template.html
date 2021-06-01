@@ -57,14 +57,15 @@
                             </p>
                             <p>
                                 {% for software, minimizer in unselected_minimzers.items() %}
-                                    Withing <strong>{{software}}</strong> the following
-                                    minimizers we were not run due to the selected
-                                    minimizers:
-                                    <ol>
-                                        {% for m in minimizer -%}
-                                            {{ m }} <br/>
-                                            {%- endfor %}
-                                        </ol>
+                                    {% if minimizer != [] %}
+                                        Within <strong>{{software}}</strong> the following
+                                        minimizer(s) were not run due to the chosen algorithm_type:
+                                        <ol>
+                                            {% for m in minimizer -%}
+                                                {{ m }} <br/>
+                                                {%- endfor %}
+                                            </ol>
+                                        {% endif %}
                                     {% endfor %}
                                 </p>
                             {% endif %}
