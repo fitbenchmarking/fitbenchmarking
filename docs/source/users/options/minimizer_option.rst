@@ -221,6 +221,25 @@ The `matlab` minimizer is set as follows:
 
 .. warning::
    MATLAB must be installed for this to be available; See :ref:`extra_dependencies`.
+
+Matlab Statistics Toolbox (``matlab_stats``)
+--------------------------------------------
+
+We call the `nlinfit <https://uk.mathworks.com/help/stats/nlinfit.html>`_
+function from the `MATLAB Statistics Toolbox <https://uk.mathworks.com/products/statistics.html>`_,
+using the MATLAB Engine API for Python.
+
+* Levenberg-Marquardt (:code:`Levenberg-Marquardt`)
+
+The `matlab_stats` minimizer is set as follows:
+
+.. code-block:: rst
+
+   [MINIMIZERS]
+   matlab_stats: Levenberg-Marquardt
+
+.. warning::
+   MATLAB Statistics Toolbox must be installed for this to be available; See :ref:`extra_dependencies`.
 	   
 Minuit (``minuit``)
 -------------------

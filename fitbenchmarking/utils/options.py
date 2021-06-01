@@ -32,6 +32,7 @@ class Options(object):
                     'Levenberg-MarquardtMD', 'Simplex',
                     'SteepestDescent', 'Trust Region'],
          'matlab': ['Nelder-Mead Simplex'],
+         'matlab_stats': ['Levenberg-Marquardt'],
          'minuit': ['minuit'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
@@ -40,7 +41,7 @@ class Options(object):
     VALID_FITTING = \
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general'],
          'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'matlab',
-                      'minuit', 'ralfit', 'scipy', 'scipy_ls'],
+                      'matlab_stats', 'minuit', 'ralfit', 'scipy', 'scipy_ls'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
@@ -81,6 +82,7 @@ class Options(object):
                     'Levenberg-MarquardtMD', 'Simplex',
                     'SteepestDescent', 'Trust Region'],
          'matlab': ['Nelder-Mead Simplex'],
+         'matlab_stats': ['Levenberg-Marquardt'],
          'minuit': ['minuit'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
