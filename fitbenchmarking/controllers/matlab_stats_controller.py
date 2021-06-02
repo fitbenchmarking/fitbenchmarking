@@ -39,7 +39,14 @@ class MatlabStatsController(Controller):
             'all': ['Levenberg-Marquardt'],
             'ls': ['Levenberg-Marquardt'],
             'deriv_free': [],
-            'general': []}
+            'general': [],
+            'simplex': [],
+            'trust_region': ['Levenberg-Marquardt'],
+            'levenberg-marquardt': ['Levenberg-Marquardt'],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': []}
 
     def jacobian_information(self):
         """
