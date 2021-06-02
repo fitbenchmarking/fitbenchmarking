@@ -42,9 +42,16 @@ class MinuitController(Controller):
         self._minuit_problem = None
         self.algorithm_check = {
             'all': ['minuit'],
-            'ls': [None],
-            'deriv_free': [None],
-            'general': ['minuit']}
+            'ls': [],
+            'deriv_free': [],
+            'general': ['minuit'],
+            'simplex': [],
+            'trust_region': [],
+            'levenberg-marquardt': [],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': []}
 
     def jacobian_information(self):
         """
