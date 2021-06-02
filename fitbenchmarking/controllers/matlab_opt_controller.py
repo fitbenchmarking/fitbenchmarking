@@ -12,8 +12,6 @@ import matlab.engine
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
-from fitbenchmarking.utils.exceptions import CostFuncError
 
 eng = matlab.engine.start_matlab()
 
@@ -42,7 +40,14 @@ class MatlabOptController(Controller):
             'all': ['levenberg-marquardt', 'trust-region-reflective'],
             'ls': ['levenberg-marquardt', 'trust-region-reflective'],
             'deriv_free': [],
-            'general': []}
+            'general': [],
+            'simplex': [],
+            'trust_region': ['levenberg-marquardt', 'trust-region-reflective'],
+            'levenberg-marquardt': ['levenberg-marquardt'],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': []}
 
     def jacobian_information(self):
         """
