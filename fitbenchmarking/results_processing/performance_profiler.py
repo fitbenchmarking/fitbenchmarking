@@ -49,8 +49,10 @@ def prepare_profile_data(results):
         out_acc.append([r.norm_acc for r in res])
         out_runtime.append([r.norm_runtime for r in res])
     minimizers = [r.minimizer for r in results[0]]
+    print(minimizers)
 
     acc_array = np.array(out_acc).T
+    print(acc_array)
     runtime_array = np.array(out_runtime).T
     acc_dict = OrderedDict()
     runtime_dict = OrderedDict()
