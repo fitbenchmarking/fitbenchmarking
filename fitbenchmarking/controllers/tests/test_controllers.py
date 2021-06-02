@@ -29,6 +29,8 @@ if TEST_TYPE in ['default', 'all']:
     from fitbenchmarking.controllers.scipy_controller import ScipyController
     from fitbenchmarking.controllers.scipy_ls_controller import\
         ScipyLSController
+    from fitbenchmarking.controllers.scipy_go_controller import\
+        ScipyGOController
 
 if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.gsl_controller import GSLController
@@ -40,6 +42,7 @@ if TEST_TYPE == 'matlab':
     from fitbenchmarking.controllers.matlab_controller import MatlabController
 
 # pylint: disable=attribute-defined-outside-init, protected-access
+
 
 def make_cost_func(file_name='cubic.dat'):
     """
@@ -62,6 +65,7 @@ class DummyController(Controller):
     Minimal instantiatable subclass of Controller class for testing
     """
     # pylint: disable=missing-function-docstring
+
     def setup(self):
         self.setup_result = 53
 
@@ -447,12 +451,33 @@ class DefaultControllerTests(TestCase):
         controller._status = -1
         self.shared_tests.check_diverged(controller)
 
+    def test_scipy_go(self):
+        """
+        ScipyGOController: Test for output shape
+        """
+        controller = ScipyGOController(self.cost_func)
+        controller.minimizer = 'dual_annealing'
+        controller.jacobian = self.jac
+
+        self.shared_tests.controller_run_test(controller)
+        self.shared_tests.check_jac_info(controller,
+                                         True,
+                                         ['differential_evolution'])
+
+        controller._status = 1
+        self.shared_tests.check_converged(controller)
+        controller._status = 0
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = -1
+        self.shared_tests.check_diverged(controller)
+
 
 @run_for_test_types(TEST_TYPE, 'all')
 class ControllerBoundsTests(TestCase):
     """
     Tests to ensure controllers handle and respect bounds correctly
     """
+
     def setUp(self):
         """
         Setup for bounded problem
@@ -494,6 +519,17 @@ class ControllerBoundsTests(TestCase):
         """
         controller = ScipyLSController(self.cost_func)
         controller.minimizer = 'trf'
+        controller.jacobian = self.jac
+
+        self.check_bounds(controller)
+
+    def test_scipy_go(self):
+        """
+        ScipyGOController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = ScipyGOController(self.cost_func)
+        controller.minimizer = 'dual_annealing'
         controller.jacobian = self.jac
 
         self.check_bounds(controller)
