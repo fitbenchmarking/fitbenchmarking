@@ -1,4 +1,4 @@
-SAS_1D_Modelling_Shapes_Low_Difficulty
+SASView_Simple_Shapes_1D
 
 6 problems synthesised from the SASView models on Fri May 28 11:50:38 2021. See table below for details.
 
