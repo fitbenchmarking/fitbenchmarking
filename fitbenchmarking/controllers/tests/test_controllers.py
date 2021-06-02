@@ -263,7 +263,7 @@ class BaseControllerTests(TestCase):
         """
         controller = DummyController(self.cost_func)
         controller.algorithm_check = {'all': ['min1', 'min2']}
-        algorithm_type = 'all'
+        algorithm_type = ['all']
         minimizer = 'min1'
         controller.validate_minimizer(minimizer, algorithm_type)
 
@@ -274,7 +274,7 @@ class BaseControllerTests(TestCase):
         """
         controller = DummyController(self.cost_func)
         controller.algorithm_check = {'all': ['min1', 'min2']}
-        algorithm_type = 'all'
+        algorithm_type = ['all']
         minimizer = 'min_unknown'
         with self.assertRaises(exceptions.UnknownMinimizerError):
             controller.validate_minimizer(minimizer, algorithm_type)
@@ -301,6 +301,18 @@ class BaseControllerTests(TestCase):
         minimizer = 'no_bounds_minimizer'
         with self.assertRaises(exceptions.IncompatibleMinimizerError):
             controller.check_minimizer_bounds(minimizer)
+
+    def test_record_alg_type(self):
+        """
+        BaseSoftwareController: Test record_alg_type function
+        """
+        controller = DummyController(self.cost_func)
+        controller.algorithm_check = {'all': ['min1', 'min2'],
+                                      'general': ['min1']}
+        algorithm_type = ['general']
+        minimizer = 'min1'
+        type_str = controller.record_alg_type(minimizer, algorithm_type)
+        assert type_str == 'general'
 
     def test_bounds_respected_true(self):
         '''
