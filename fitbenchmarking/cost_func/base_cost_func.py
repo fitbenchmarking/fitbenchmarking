@@ -3,8 +3,7 @@ Implements the base class for the cost function class.
 """
 
 from abc import ABCMeta, abstractmethod
-from fitbenchmarking.utils.exceptions import CostFuncError, \
-    IncompatibleMinimizerError
+from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
 
 
 class CostFunc:

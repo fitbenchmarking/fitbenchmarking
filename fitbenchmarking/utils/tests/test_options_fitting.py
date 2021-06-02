@@ -33,7 +33,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks algorithm_type default
         """
-        expected = 'all'
+        expected = ['all']
         actual = self.options.algorithm_type
         self.assertEqual(expected, actual)
 
@@ -158,7 +158,7 @@ class UserFittingOptionTests(unittest.TestCase):
         """
         Checks user set algorithm_type is valid
         """
-        set_option = 'general'
+        set_option = ['general']
         config_str = \
             "[FITTING]\nalgorithm_type: general"
         self.shared_valid('algorithm_type', set_option, config_str)
