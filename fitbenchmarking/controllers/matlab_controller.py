@@ -36,7 +36,14 @@ class MatlabController(Controller):
             'all': ['Nelder-Mead Simplex'],
             'ls': [None],
             'deriv_free': ['Nelder-Mead Simplex'],
-            'general': ['Nelder-Mead Simplex']}
+            'general': ['Nelder-Mead Simplex'],
+            'simplex': ['Nelder-Mead Simplex'],
+            'trust_region': [],
+            'levenberg-marquardt': [],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': []}
 
     def jacobian_information(self):
         """
