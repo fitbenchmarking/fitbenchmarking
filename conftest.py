@@ -1,12 +1,13 @@
 import pytest
 
 # set choices for --test-type
-test_choices = ['all', 'default', 'matlab']
+test_choices = ['all', 'default', 'matlab', 'global_optimization']
+
 
 def pytest_addoption(parser):
     """
-    Command line input function which requires 'all', 'default' or 'matlab'
-    as an input
+    Command line input function which requires 'all', 'default', 'matlab'
+    or 'global_optimization' as an input
     """
     parser.addoption(
         "--test-type", action="store", default="all", type=str,
