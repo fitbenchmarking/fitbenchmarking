@@ -16,6 +16,7 @@ from conftest import run_for_test_types
 from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
 
+
 @run_for_test_types(TEST_TYPE, 'all')
 class TestRegressionAll(TestCase):
     """
@@ -103,6 +104,7 @@ class TestRegressionAll(TestCase):
         diff, msg = diff_result(actual, expected)
         self.assertListEqual([], diff, msg)
 
+
 @run_for_test_types(TEST_TYPE, 'matlab')
 class TestRegressionMatlab(TestCase):
     """
@@ -154,7 +156,7 @@ class TestRegressionMatlab(TestCase):
         self.assertListEqual([], diff, msg)
 
 
-@run_for_test_types(TEST_TYPE, 'global_optimization')
+@run_for_test_types(TEST_TYPE, 'default', 'all')
 class TestRegressionGlobalOptimization(TestCase):
     """
     Regression tests for the Fitbenchmarking software with global optimzation
@@ -284,14 +286,14 @@ def diff_result(actual, expected):
 
     msg = '\n\nOutput has changed in {} '.format(len(diff)) \
           + 'minimizer-problem pairs. \n' \
-          + '\n'.join(['== Line {} ==\n'\
-                       'Expected :{}\n'\
+          + '\n'.join(['== Line {} ==\n'
+                       'Expected :{}\n'
                        'Actual   :{}'.format(*line_change)
                        for line_change in diff])
-    if diff !=[]:
+    if diff != []:
         print("\n==\n")
         print("Output generated (also saved as actual.out):")
-        with open("actual.out","w") as outfile:
+        with open("actual.out", "w") as outfile:
             for line in actual:
                 print(line)
                 outfile.write(line)
@@ -311,20 +313,16 @@ def setup_options(multifit=False):
     opts.num_runs = 1
     opts.make_plots = False
     # Use only the first minimizer from the selected software packages
-    # except for scipy_go where dual_annealing is used (others too slow) 
     if multifit:
         opts.software = ['mantid']
         opts.minimizers = {'mantid': [opts.minimizers['mantid'][0]]}
-    elif TEST_TYPE not in ['default', 'matlab', 'global_optimization']:
+    elif TEST_TYPE not in ['default', 'matlab']:
         opts.software = ['bumps', 'gsl', 'levmar', 'mantid', 'ralfit', 'scipy',
-                         'scipy_ls']
+                         'scipy_ls', 'scipy_go']
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
     elif TEST_TYPE == "matlab":
         opts.software = ['matlab']
         opts.minimizers = {'matlab': [opts.minimizers['matlab'][0]]}
-    elif TEST_TYPE == 'global_optimization':
-        opts.software = ['scipy_go']
-        opts.minimizers = {'scipy_go': ['dual_annealing']}
     else:
         opts.software = ['bumps', 'scipy', 'scipy_ls']
         opts.minimizers = {s: [opts.minimizers[s][0]] for s in opts.software}

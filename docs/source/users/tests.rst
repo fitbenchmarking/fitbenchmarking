@@ -5,14 +5,13 @@ FitBenchmarking Tests
 #####################
 
 The tests for FitBenchmarking require ``pytest>=3.6``. We have split the tests
-into four categories:
+into three categories:
 
 * ``default``: denotes tests involving ``pip`` installable
   :ref:`software packages<getting-started>`,
 * ``all``: in addition to ``default``, also runs tests on
   :ref:`external packages <external-instructions>`, with the
   exception of matlab.
-* ``global_optimization``: Runs tests for global optimization fitting software.
 * ``matlab``: Runs tests for matlab fitting software. Please
   note that these tests can currently only be run locally
   through pytest.

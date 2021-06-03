@@ -29,6 +29,8 @@ if TEST_TYPE in ['default', 'all']:
     from fitbenchmarking.controllers.scipy_controller import ScipyController
     from fitbenchmarking.controllers.scipy_ls_controller import\
         ScipyLSController
+    from fitbenchmarking.controllers.scipy_go_controller import\
+        ScipyGOController
 
 if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.gsl_controller import GSLController
@@ -39,9 +41,6 @@ if TEST_TYPE == 'all':
 if TEST_TYPE == 'matlab':
     from fitbenchmarking.controllers.matlab_controller import MatlabController
 
-if TEST_TYPE == 'global_optimization':
-    from fitbenchmarking.controllers.scipy_go_controller import\
-        ScipyGOController
 
 # pylint: disable=attribute-defined-outside-init, protected-access
 
@@ -778,7 +777,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_diverged(controller)
 
 
-@run_for_test_types(TEST_TYPE, 'global_optimization')
+@run_for_test_types(TEST_TYPE, 'default', 'all')
 class GlobalOptimizationControllerTests(TestCase):
     """
     Tests for each controller class
