@@ -7,6 +7,7 @@ problems.
 import scipy.optimize as optimize
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.utils.exceptions import MissingBoundsError
 
 
 class ScipyGOController(Controller):
@@ -71,7 +72,7 @@ class ScipyGOController(Controller):
                 "jac": self.jacobian.eval_cost}}
         fun = self.cost_func.eval_cost
         if self.value_ranges is None:
-            raise RuntimeError("SciPy GO requires bounds on parameters")
+            raise MissingBoundsError("SciPy GO requires bounds on parameters")
         bounds = self.value_ranges
         algorithm = getattr(optimize, self.minimizer)
         self.result = algorithm(fun, bounds, **kwargs)
