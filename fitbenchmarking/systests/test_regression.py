@@ -168,7 +168,7 @@ class TestRegressionGlobalOptimization(TestCase):
         """
         Create an options file, run it, and get the results.
         """
-        opts = setup_options()
+        opts = setup_options(global_optimization=True)
         opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
                                                mode='w',
                                                delete=False)
@@ -300,7 +300,7 @@ def diff_result(actual, expected):
     return diff, msg
 
 
-def setup_options(multifit=False):
+def setup_options(multifit=False, global_optimization=False):
     """
     Setups up options class for system tests
 
@@ -313,12 +313,16 @@ def setup_options(multifit=False):
     opts.num_runs = 1
     opts.make_plots = False
     # Use only the first minimizer from the selected software packages
+    # except for scipy_go where dual_annealing is used (others too slow)
     if multifit:
         opts.software = ['mantid']
         opts.minimizers = {'mantid': [opts.minimizers['mantid'][0]]}
+    elif global_optimization:
+        opts.software = ['scipy_go']
+        opts.minimizers = {'scipy_go': ['dual_annealing']}
     elif TEST_TYPE not in ['default', 'matlab']:
         opts.software = ['bumps', 'gsl', 'levmar', 'mantid', 'ralfit', 'scipy',
-                         'scipy_ls', 'scipy_go']
+                         'scipy_ls']
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
     elif TEST_TYPE == "matlab":
         opts.software = ['matlab']
