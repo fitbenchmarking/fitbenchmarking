@@ -8,6 +8,8 @@ from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.controllers.base_matlab_controller import\
+    BaseMatlabController
 from fitbenchmarking.utils.exceptions import (MissingSoftwareError,
                                               NoControllerError)
 
@@ -48,9 +50,10 @@ class ControllerFactory:
                                     'Check the input is correct and try '
                                     'again.'.format(software)) from e
 
-        classes = getmembers(module, lambda m: (isclass(m)
-                                                and not isabstract(m)
-                                                and issubclass(m, Controller)
-                                                and m is not Controller))
-
+        classes = getmembers(module,
+                             lambda m: (isclass(m)
+                                        and not isabstract(m)
+                                        and issubclass(m, Controller)
+                                        and m is not Controller
+                                        and m is not BaseMatlabController))
         return classes[0][1]
