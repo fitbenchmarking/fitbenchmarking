@@ -505,17 +505,6 @@ class ControllerBoundsTests(TestCase):
 
         self.check_bounds(controller)
 
-    def test_scipy_go(self):
-        """
-        ScipyGOController: Test that parameter bounds are
-        respected for bounded problems
-        """
-        controller = ScipyGOController(self.cost_func)
-        controller.minimizer = 'dual_annealing'
-        controller.jacobian = self.jac
-
-        self.check_bounds(controller)
-
     def test_minuit(self):
         """
         MinuitController: Test that parameter bounds are
