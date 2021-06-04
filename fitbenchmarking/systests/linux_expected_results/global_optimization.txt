@@ -1,3 +1,3 @@
-                          scipy_go
-                    dual_annealing
-cubic              1.66e-05 (1)[1]
+                               scipy_go
+          dual_annealing: scipy 2-point
+cubic-fba                    0.8841 (1)
