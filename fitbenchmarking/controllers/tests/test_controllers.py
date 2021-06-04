@@ -777,7 +777,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_diverged(controller)
 
 
-@run_for_test_types(TEST_TYPE, 'default', 'all')
+@run_for_test_types(TEST_TYPE, 'all')
 class GlobalOptimizationControllerTests(TestCase):
     """
     Tests for each controller class
