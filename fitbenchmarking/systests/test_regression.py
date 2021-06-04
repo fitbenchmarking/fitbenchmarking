@@ -313,13 +313,13 @@ def setup_options(multifit=False, global_optimization=False):
     opts.num_runs = 1
     opts.make_plots = False
     # Use only the first minimizer from the selected software packages
-    # except for scipy_go where dual_annealing is used (others too slow)
+    # except for scipy_go where shgo is used (others too slow)
     if multifit:
         opts.software = ['mantid']
         opts.minimizers = {'mantid': [opts.minimizers['mantid'][0]]}
     elif global_optimization:
         opts.software = ['scipy_go']
-        opts.minimizers = {'scipy_go': ['dual_annealing']}
+        opts.minimizers = {'scipy_go': ['shgo']}
     elif TEST_TYPE not in ['default', 'matlab']:
         opts.software = ['bumps', 'gsl', 'levmar', 'mantid', 'ralfit', 'scipy',
                          'scipy_ls']
