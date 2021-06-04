@@ -805,9 +805,9 @@ class GlobalOptimizationControllerTests(TestCase):
 
         controller._status = 0
         self.shared_tests.check_converged(controller)
-        controller._status = 2
-        self.shared_tests.check_max_iterations(controller)
         controller._status = 1
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = 2
         self.shared_tests.check_diverged(controller)
 
 

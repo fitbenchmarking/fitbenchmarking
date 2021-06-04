@@ -4,6 +4,7 @@ In particular, here for the scipy minimize solver for general minimization
 problems.
 """
 
+import numpy as np
 import scipy.optimize as optimize
 
 from fitbenchmarking.controllers.base_controller import Controller
@@ -28,6 +29,8 @@ class ScipyGOController(Controller):
 
         self.support_for_bounds = True
         self._popt = None
+        self._status = None
+        self._maxiter = None
         self.algorithm_check = {
             'all': ['differential_evolution', 'shgo', 'dual_annealing'],
             'ls': [None],
@@ -57,6 +60,9 @@ class ScipyGOController(Controller):
         Setup problem ready to be run with SciPy GO
         """
         self._maxiter = 1000
+        if self.value_ranges is None or np.any(np.isinf(self.value_ranges)):
+            raise MissingBoundsError(
+                "SciPy GO requires finite bounds on all parameters")
 
     def fit(self):
         """
@@ -71,13 +77,16 @@ class ScipyGOController(Controller):
             kwargs = {"maxiter": self._maxiter, "local_search_options": {
                 "jac": self.jacobian.eval_cost}}
         fun = self.cost_func.eval_cost
-        if self.value_ranges is None:
-            raise MissingBoundsError("SciPy GO requires bounds on parameters")
         bounds = self.value_ranges
         algorithm = getattr(optimize, self.minimizer)
-        self.result = algorithm(fun, bounds, **kwargs)
-        self._popt = self.result.x
-        self._status = self.result.status
+        result = algorithm(fun, bounds, **kwargs)
+        self._popt = result.x
+        if result.success:
+            self._status = 0
+        elif "Maximum number of iteration" in result.message:
+            self._status = 1
+        else:
+            self._status = 2
 
     def cleanup(self):
         """
@@ -86,7 +95,7 @@ class ScipyGOController(Controller):
         """
         if self._status == 0:
             self.flag = 0
-        elif self._status == 2:
+        elif self._status == 1:
             self.flag = 1
         else:
             self.flag = 2
