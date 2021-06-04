@@ -102,11 +102,11 @@ class Options(object):
          'numdifftools': ['central']}
     DEFAULT_PLOTTING = \
         {'make_plots': True,
-         'colour_scale': [(1.1, "#fef0d9"),
-                          (1.33, "#fdcc8a"),
-                          (1.75, "#fc8d59"),
-                          (3, "#e34a33"),
-                          (np.inf, "#b30000")],
+         'colour_scale': [(1.0, "#34d5ae"),
+                          (1.33, "#00a788"),
+                          (1.75, "#16978a"),
+                          (3, "#005e54"),
+                          (np.inf, "#005e54")],
          'comparison_mode': 'both',
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
          'results_dir': 'fitbenchmarking_results'}

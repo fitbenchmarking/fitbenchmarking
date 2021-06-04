@@ -64,3 +64,21 @@ a {
   vertical-align: middle;
 }
 
+.cbar {
+  background-image: linear-gradient(to right, #34d5ae , #005e54);
+  color: #fff;
+  text-align: center;
+  width: 80%;
+}
+
+.float-container {
+  border: none;
+  padding: 20px;
+}
+
+.float-child {
+  float: left;
+  padding: 20px;
+  border: none;
+}  
+

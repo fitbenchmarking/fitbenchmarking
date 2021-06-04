@@ -32,12 +32,64 @@
                             <p>
                                 {{ table_format }}
                             </p>
-                        {% endif %}
+                        {% endif %}                       
                         <center>
                         <div class="table">
                             {{ table }}
                         </div>
                         </center>
+                        <div class="float-container" style="width: 100%">
+                            <div class="float-child" style="width: 10%">
+                                <h4 style="text-align:right">Key:</h4>
+                            </div>
+
+                            <div class="float-child" style="width: 30%">
+                                <p style=text-align:center>Colour</p>
+                                <center>
+                                <div class="cbar">
+                                    <table style="width:100%;height: 100%;border: none">
+                                        <tr>
+                                            <td style="text-align:left; border: none">Best</td>
+                                            <td style="text-align:right; border: none">Worst</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                </center>
+                            </div>
+                        
+                            <div class="float-child" style="width: 60%">
+                                <p style=text-align:center>Cell Contents</p>   
+                                <table style="width:55% ;border: 1px solid black;color: white">
+                                    {% if "compare" in result_name %}   
+                                    <tr>
+                                        <td style="border: none; background: #34d5ae;">Absolute Accuracy (Relative Accuracy)</td>
+                                        <td style="color: black; border: none; background: none">--Accuracy Colour</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: none; background: #005e54;">Absolute Runtime [s] (Relative Runtime)</td>
+                                        <td style="color: black; border: none; background: none">--Runtime Colour</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% if "acc" in result_name %}   
+                                    <tr>
+                                        <td style="border: none; background: #34d5ae;">Absolute Accuracy (Relative Accuracy)</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% if "runtime" in result_name %}   
+                                    <tr>
+                                        <td style="border: none; background: #34d5ae;">Absolute Runtime [s] (Relative Runtime)</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% if "local_min" in result_name %}   
+                                    <tr>
+                                        <td style="border: none; background: #34d5ae;">True/False ({ :math:`\frac{|| J^T r||}{||r||}` })</td>
+                                    </tr>
+                                    {% endif %}
+                                </table>
+                                
+                            </div>
+                        
+                        </div>
                         <p>
                             Clicking a result in the tables will give more details,
                             such as graphs of the fit against the data and the parameters that the minimizer found.
