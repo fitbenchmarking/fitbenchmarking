@@ -1,3 +1,0 @@
-go_set
-
-This dataset contains the global optimization test problems. It is used during testing.

@@ -16,7 +16,6 @@ from conftest import run_for_test_types
 from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
 
-
 @run_for_test_types(TEST_TYPE, 'all')
 class TestRegressionAll(TestCase):
     """
@@ -104,7 +103,6 @@ class TestRegressionAll(TestCase):
         diff, msg = diff_result(actual, expected)
         self.assertListEqual([], diff, msg)
 
-
 @run_for_test_types(TEST_TYPE, 'matlab')
 class TestRegressionMatlab(TestCase):
     """
@@ -145,58 +143,6 @@ class TestRegressionMatlab(TestCase):
                          'fitbenchmarking_results',
                          'all_parsers_set',
                          'all_parsers_set_acc_weighted_nlls_table.txt')
-
-        with open(expected_file, 'r') as f:
-            expected = f.readlines()
-
-        with open(actual_file, 'r') as f:
-            actual = f.readlines()
-
-        diff, msg = diff_result(actual, expected)
-        self.assertListEqual([], diff, msg)
-
-
-@run_for_test_types(TEST_TYPE, 'default', 'all')
-class TestRegressionGlobalOptimization(TestCase):
-    """
-    Regression tests for the Fitbenchmarking software with global optimzation
-    fitting software
-    """
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        Create an options file, run it, and get the results.
-        """
-        opts = setup_options(global_optimization=True)
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
-                                               mode='w',
-                                               delete=False)
-        opts.write_to_stream(opt_file)
-        opt_file.close()
-        problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               os.pardir,
-                                               'mock_problems',
-                                               'go_set'))
-        run([problem], options_file=opt_file.name, debug=True)
-        os.remove(opt_file.name)
-
-    def test_results_consistent_all(self):
-        """
-        Regression testing that the results of fitting a set of problems
-        containing all problem types against a single minimizer from each of
-        the supported softwares
-        """
-
-        expected_file = os.path.join(os.path.dirname(__file__),
-                                     '{}_expected_results'.format(platform),
-                                     'global_optimization.txt')
-
-        actual_file = \
-            os.path.join(os.path.dirname(__file__),
-                         'fitbenchmarking_results',
-                         'go_set',
-                         'go_set_acc_weighted_nlls_table.txt')
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()
@@ -286,21 +232,21 @@ def diff_result(actual, expected):
 
     msg = '\n\nOutput has changed in {} '.format(len(diff)) \
           + 'minimizer-problem pairs. \n' \
-          + '\n'.join(['== Line {} ==\n'
-                       'Expected :{}\n'
+          + '\n'.join(['== Line {} ==\n'\
+                       'Expected :{}\n'\
                        'Actual   :{}'.format(*line_change)
                        for line_change in diff])
-    if diff != []:
+    if diff !=[]:
         print("\n==\n")
         print("Output generated (also saved as actual.out):")
-        with open("actual.out", "w") as outfile:
+        with open("actual.out","w") as outfile:
             for line in actual:
                 print(line)
                 outfile.write(line)
     return diff, msg
 
 
-def setup_options(multifit=False, global_optimization=False):
+def setup_options(multifit=False):
     """
     Setups up options class for system tests
 
@@ -313,13 +259,9 @@ def setup_options(multifit=False, global_optimization=False):
     opts.num_runs = 1
     opts.make_plots = False
     # Use only the first minimizer from the selected software packages
-    # except for scipy_go where shgo is used (others too slow)
     if multifit:
         opts.software = ['mantid']
         opts.minimizers = {'mantid': [opts.minimizers['mantid'][0]]}
-    elif global_optimization:
-        opts.software = ['scipy_go']
-        opts.minimizers = {'scipy_go': ['shgo']}
     elif TEST_TYPE not in ['default', 'matlab']:
         opts.software = ['bumps', 'gsl', 'levmar', 'mantid', 'ralfit', 'scipy',
                          'scipy_ls']
