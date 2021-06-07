@@ -59,11 +59,11 @@ class ParserFactory:
             if os.path.exists(full_path):
                 raise MissingSoftwareError('Requirements are missing for the '
                                            '{} parser: {}'.format(
-                                               parser_name, str(e)))
+                                               parser_name, str(e))) from e
 
             raise NoParserError('Could not find parser for {}. '
                                 'Check the input is correct and try '
-                                'again.'.format(filename))
+                                'again.'.format(filename)) from e
 
         classes = getmembers(module, lambda m: (isclass(m)
                                                 and not isabstract(m)

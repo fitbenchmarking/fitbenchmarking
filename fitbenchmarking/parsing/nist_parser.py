@@ -76,9 +76,9 @@ class NISTParser(Parser):
         jac_file = os.path.join(file_dir, "data_files", "{}.jac".format(name))
         try:
             jac_data = open(jac_file, "r")
-        except FileNotFoundError:
+        except FileNotFoundError as e:
             raise NoJacobianError('Could not find data for NIST Jacobian '
-                                  'file, {}'.format(jac_file))
+                                  'file, {}'.format(jac_file)) from e
         jac_lines = jac_data.readlines()
         jac_str = ""
         for line in jac_lines:

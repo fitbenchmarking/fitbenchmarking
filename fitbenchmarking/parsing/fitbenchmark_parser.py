@@ -440,8 +440,8 @@ def _parse_range(range_str):
         val = [v.strip() for v in val]
         try:
             pair = [float(val[0]), float(val[1])]
-        except ValueError:
-            raise ParsingError('Expected floats in range: {}'.format(r))
+        except ValueError as e:
+            raise ParsingError('Expected floats in range: {}'.format(r)) from e
 
         if pair[0] >= pair[1]:
             raise ParsingError('Min value must be smaller than max value '
@@ -474,8 +474,8 @@ def _get_data_points(data_file_path):
     while True:
         try:
             line = data_text[first_row].strip()
-        except IndexError:
-            raise ParsingError('Could not find data points')
+        except IndexError as e:
+            raise ParsingError('Could not find data points') from e
         if line != '':
             x_val = line.split()[0]
             try:
