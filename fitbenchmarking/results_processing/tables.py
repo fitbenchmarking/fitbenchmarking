@@ -132,7 +132,10 @@ def create_results_tables(options, results, best_results, group_name,
                                     failed_problems=failed_problems,
                                     unselected_minimzers=unselected_minimzers,
                                     algorithm_type=options.algorithm_type,
-                                    report_failed_min=report_failed_min))
+                                    report_failed_min=report_failed_min,
+                                    colour_scale=options.colour_scale)
+                )
+
 
     return table_names, description
 

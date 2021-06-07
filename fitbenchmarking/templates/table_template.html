@@ -46,7 +46,17 @@
                             <div class="float-child" style="width: 30%">
                                 <p style=text-align:center>Colour</p>
                                 <center>
+                                {% if "local_min" in result_name %}
                                 <div class="cbar">
+                                    <table style="width:100%;height: 100%;border: none">
+                                        <tr>
+                                            <td style="text-align:left; border: none; background: {{ colour_scale[0][1] }};">True</td>
+                                            <td style="text-align:right; border: none; background: {{ colour_scale[-1][1] }};">False</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <div class="cbar" style="background-image: linear-gradient(to right,{{ colour_scale[0][1] }} , {{ colour_scale[-1][1] }})">
                                     <table style="width:100%;height: 100%;border: none">
                                         <tr>
                                             <td style="text-align:left; border: none">Best</td>
@@ -54,38 +64,45 @@
                                         </tr>
                                     </table>
                                 </div>
+                                {% endif %}
                                 </center>
                             </div>
                         
                             <div class="float-child" style="width: 60%">
                                 <p style=text-align:center>Cell Contents</p>   
-                                <table style="width:55% ;border: 1px solid black;color: white">
-                                    {% if "compare" in result_name %}   
+                                {% if "compare" in result_name %}
+                                <table style="width:80%; border: none; color: white">
                                     <tr>
-                                        <td style="border: none; background: #34d5ae;">Absolute Accuracy (Relative Accuracy)</td>
-                                        <td style="color: black; border: none; background: none">--Accuracy Colour</td>
+                                        <td rowspan = "2" style="border: none; background-image: linear-gradient({{ colour_scale[0][1] }} , {{ colour_scale[-1][1] }})">
+                                        Absolute Accuracy (Relative Accuracy)<br>Absolute Runtime [s] (Relative Runtime)</td>
+                                        <td style="color: black; border: none; background-color: none">\(\leftarrow\)Accuracy Colour</td>
                                     </tr>
                                     <tr>
-                                        <td style="border: none; background: #005e54;">Absolute Runtime [s] (Relative Runtime)</td>
-                                        <td style="color: black; border: none; background: none">--Runtime Colour</td>
+                                        <td style="color: black; border: none;">\(\leftarrow\)Runtime Colour</td>
                                     </tr>
-                                    {% endif %}
-                                    {% if "acc" in result_name %}   
-                                    <tr>
-                                        <td style="border: none; background: #34d5ae;">Absolute Accuracy (Relative Accuracy)</td>
-                                    </tr>
-                                    {% endif %}
-                                    {% if "runtime" in result_name %}   
-                                    <tr>
-                                        <td style="border: none; background: #34d5ae;">Absolute Runtime [s] (Relative Runtime)</td>
-                                    </tr>
-                                    {% endif %}
-                                    {% if "local_min" in result_name %}   
-                                    <tr>
-                                        <td style="border: none; background: #34d5ae;">True/False ({ :math:`\frac{|| J^T r||}{||r||}` })</td>
-                                    </tr>
-                                    {% endif %}
                                 </table>
+                                {% endif %}
+                                {% if "acc" in result_name %}
+                                <table style="width:70% ;color: white; border: none;">
+                                    <tr>
+                                        <td style="border: none; background: {{ colour_scale[0][1] }};">Absolute Accuracy (Relative Accuracy)</td>
+                                    </tr>
+                                </table>
+                                {% endif %}
+                                {% if "runtime" in result_name %}
+                                <table style="width:70% ; color: white; border: none;">
+                                    <tr>
+                                        <td style="border: none; background: {{ colour_scale[0][1] }};">Absolute Runtime [s] (Relative Runtime)</td>
+                                    </tr>
+                                </table>
+                                {% endif %}
+                                {% if "local_min" in result_name %}
+                                <table style="width:45% ; color: white; border: none;"> 
+                                    <tr>
+                                        <td style="border: none; background: {{ colour_scale[0][1] }};">True/False (\( \frac{|| J^T r||}{||r||}\)) </td>
+                                    </tr>
+                                </table>
+                                {% endif %}
                                 
                             </div>
                         
