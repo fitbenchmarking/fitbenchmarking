@@ -228,12 +228,15 @@ class Table:
         link_template = '<a href="https://fitbenchmarking.readthedocs.io/'\
                         'en/latest/users/options/minimizer_option.html#'\
                         '{0}-{0}" target="_blank">{0}</a>'
+        minimizer_template = '<span title="{0}">{1}</span>'
         table.apply(lambda x: self.enable_error(x, error, "<sup>{}</sup>"),
                     axis=1, result_type='expand')
         table.apply(lambda x: self.enable_link(x, links), axis=1,
                     result_type='expand')
 
-        minimizers_list = [(link_template.format(s.replace("_", "-")), m)
+        minimizers_list = [(link_template.format(s.replace("_", "-")),
+                           minimizer_template.format(
+                               self.options.minimizer_alg_type[m], m))
                            for s in self.options.software
                            for m in self.options.minimizers[s]]
         columns = pd.MultiIndex.from_tuples(minimizers_list)

@@ -120,6 +120,8 @@ def generate_mock_results():
             r.support_page_link = link_in[i][j]
             r.minimizer = options.minimizers[software][j]
             results.append(r)
+            options.minimizer_alg_type[options.minimizers[software]
+                                       [j]] = 'all, ls'
         results_out.append(results)
     return results_out, options, min_chi_sq, min_runtime
 
