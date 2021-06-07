@@ -31,16 +31,20 @@ class Options(object):
                     'Damped GaussNewton', 'Levenberg-Marquardt',
                     'Levenberg-MarquardtMD', 'Simplex',
                     'SteepestDescent', 'Trust Region'],
+         'matlab': ['Nelder-Mead Simplex'],
          'minuit': ['minuit'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox']}
     VALID_FITTING = \
-        {'algorithm_type': ['all', 'ls', 'deriv_free', 'general'],
-         'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'minuit',
-                      'ralfit', 'scipy', 'scipy_ls'],
-         'jac_method': ['analytic', 'scipy', 'default', 'numdifftools'],
+        {'algorithm_type': ['all', 'ls', 'deriv_free', 'general', 'simplex',
+                            'trust_region', 'levenberg-marquardt',
+                            'gauss_newton', 'bfgs', 'conjugate_gradient',
+                            'steepest_descent'],
+         'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'matlab',
+                      'minuit', 'ralfit', 'scipy', 'scipy_ls'],
+         'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
     VALID_JACOBIAN = \
@@ -79,6 +83,7 @@ class Options(object):
                     'Damped GaussNewton', 'Levenberg-Marquardt',
                     'Levenberg-MarquardtMD', 'Simplex',
                     'SteepestDescent', 'Trust Region'],
+         'matlab': ['Nelder-Mead Simplex'],
          'minuit': ['minuit'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
@@ -86,7 +91,7 @@ class Options(object):
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
-         'algorithm_type': 'all',
+         'algorithm_type': ['all'],
          'software': ['scipy', 'scipy_ls'],
          'jac_method': ['scipy'],
          'cost_func_type': 'weighted_nlls'}
@@ -161,13 +166,15 @@ class Options(object):
 
         minimizers = config['MINIMIZERS']
         self._minimizers = {}
+        self.minimizer_alg_type = {}
         for key in self.VALID_FITTING["software"]:
             self._minimizers[key] = self.read_value(minimizers.getlist,
                                                     key)
 
         fitting = config['FITTING']
         self.num_runs = self.read_value(fitting.getint, 'num_runs')
-        self.algorithm_type = self.read_value(fitting.getstr, 'algorithm_type')
+        self.algorithm_type = self.read_value(
+            fitting.getlist, 'algorithm_type')
         self.software = self.read_value(fitting.getlist, 'software')
         self.jac_method = self.read_value(fitting.getlist, 'jac_method')
         self.cost_func_type = self.read_value(fitting.getstr, 'cost_func_type')
@@ -280,7 +287,7 @@ class Options(object):
         config['MINIMIZERS'] = {k: list_to_string(m)
                                 for k, m in self.minimizers.items()}
         config['FITTING'] = {'num_runs': self.num_runs,
-                             'algorithm_type': self.algorithm_type,
+                             'algorithm_type': list_to_string(self.algorithm_type),
                              'software': list_to_string(self.software),
                              'jac_method': list_to_string(self.jac_method)}
         cs = list_to_string(['{0}, {1}'.format(*pair)

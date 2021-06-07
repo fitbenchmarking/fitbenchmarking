@@ -42,7 +42,14 @@ class BumpsController(Controller):
             'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
             'ls': ['lm-bumps', 'mp'],
             'deriv_free': ['amoeba', 'de'],
-            'general': ['amoeba', 'newton', 'de']}
+            'general': ['amoeba', 'newton', 'de'],
+            'simplex': ['amoeba'],
+            'trust_region': ['lm-bumps'],
+            'levenberg-marquardt': ['lm-bumps'],
+            'gauss_newton': [],
+            'bfgs': ['newton'],
+            'conjugate_gradient': [],
+            'steepest_descent': []}
 
     def jacobian_information(self):
         """

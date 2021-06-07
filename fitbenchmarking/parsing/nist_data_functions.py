@@ -150,7 +150,7 @@ def is_safe(func_str):
 
     # These are all safe and can be stripped out
     if 'np' in func_str:
-        np_funcs = ['np.exp', 'np.cos', 'np.sin', 'np.tan', 'np.pi', 'np.log']
+        np_funcs = ['np.exp', 'np.cos', 'np.sin', 'np.tan', 'np.log']
         for s in np_funcs:
             func_str = func_str.replace(s, '')
 
@@ -211,6 +211,10 @@ def is_safe(func_str):
 
             # Return True if both sub parts are safe
             return is_safe(left) and is_safe(right)
+
+    # np.pi is acceptable
+    if func_str == 'np.pi':
+        return True
 
     # Floating points are acceptable
     try:

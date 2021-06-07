@@ -5,16 +5,9 @@ import inspect
 import os
 from unittest import TestCase
 import numpy as np
-import pytest
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.controllers.bumps_controller import BumpsController
-from fitbenchmarking.controllers.controller_factory import ControllerFactory
-from fitbenchmarking.controllers.dfo_controller import DFOController
-from fitbenchmarking.controllers.minuit_controller import MinuitController
-from fitbenchmarking.controllers.scipy_controller import ScipyController
-from fitbenchmarking.controllers.scipy_ls_controller import ScipyLSController
 
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
@@ -22,17 +15,31 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from conftest import run_for_test_types
 
 from fitbenchmarking import mock_problems
 
-if TEST_TYPE != "default":
+if TEST_TYPE in ['default', 'all']:
+    from fitbenchmarking.controllers.bumps_controller import BumpsController
+    from fitbenchmarking.controllers.controller_factory import\
+        ControllerFactory
+    from fitbenchmarking.controllers.dfo_controller import DFOController
+    from fitbenchmarking.controllers.minuit_controller import\
+        MinuitController
+    from fitbenchmarking.controllers.scipy_controller import ScipyController
+    from fitbenchmarking.controllers.scipy_ls_controller import\
+        ScipyLSController
+
+if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.gsl_controller import GSLController
     from fitbenchmarking.controllers.levmar_controller import LevmarController
     from fitbenchmarking.controllers.mantid_controller import MantidController
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
 
-# pylint: disable=attribute-defined-outside-init, protected-access
+if TEST_TYPE == 'matlab':
+    from fitbenchmarking.controllers.matlab_controller import MatlabController
 
+# pylint: disable=attribute-defined-outside-init, protected-access
 
 def make_cost_func(file_name='cubic.dat'):
     """
@@ -253,7 +260,7 @@ class BaseControllerTests(TestCase):
         """
         controller = DummyController(self.cost_func)
         controller.algorithm_check = {'all': ['min1', 'min2']}
-        algorithm_type = 'all'
+        algorithm_type = ['all']
         minimizer = 'min1'
         controller.validate_minimizer(minimizer, algorithm_type)
 
@@ -264,7 +271,7 @@ class BaseControllerTests(TestCase):
         """
         controller = DummyController(self.cost_func)
         controller.algorithm_check = {'all': ['min1', 'min2']}
-        algorithm_type = 'all'
+        algorithm_type = ['all']
         minimizer = 'min_unknown'
         with self.assertRaises(exceptions.UnknownMinimizerError):
             controller.validate_minimizer(minimizer, algorithm_type)
@@ -291,6 +298,18 @@ class BaseControllerTests(TestCase):
         minimizer = 'no_bounds_minimizer'
         with self.assertRaises(exceptions.IncompatibleMinimizerError):
             controller.check_minimizer_bounds(minimizer)
+
+    def test_record_alg_type(self):
+        """
+        BaseSoftwareController: Test record_alg_type function
+        """
+        controller = DummyController(self.cost_func)
+        controller.algorithm_check = {'all': ['min1', 'min2'],
+                                      'general': ['min1']}
+        algorithm_type = ['general']
+        minimizer = 'min1'
+        type_str = controller.record_alg_type(minimizer, algorithm_type)
+        assert type_str == 'general'
 
     def test_bounds_respected_true(self):
         '''
@@ -321,6 +340,7 @@ class BaseControllerTests(TestCase):
         assert controller.flag == 5
 
 
+@run_for_test_types(TEST_TYPE, 'default', 'all')
 class DefaultControllerTests(TestCase):
     """
     Tests for each controller class
@@ -428,7 +448,7 @@ class DefaultControllerTests(TestCase):
         self.shared_tests.check_diverged(controller)
 
 
-@pytest.mark.skipif("TEST_TYPE == 'default'")
+@run_for_test_types(TEST_TYPE, 'all')
 class ControllerBoundsTests(TestCase):
     """
     Tests to ensure controllers handle and respect bounds correctly
@@ -544,7 +564,7 @@ class ControllerBoundsTests(TestCase):
         self.check_bounds(controller)
 
 
-@pytest.mark.skipif("TEST_TYPE == 'default'")
+@run_for_test_types(TEST_TYPE, 'all')
 class ExternalControllerTests(TestCase):
     """
     Tests for each controller class
@@ -715,6 +735,43 @@ class ExternalControllerTests(TestCase):
             self.shared_tests.check_diverged(controller)
 
 
+@run_for_test_types(TEST_TYPE, 'matlab')
+class MatlabControllerTests(TestCase):
+    """
+    Tests for each controller class
+    """
+
+    def setUp(self):
+        self.cost_func = make_cost_func()
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.cost_func)
+        self.jac.method = '2-point'
+        self.shared_tests = ControllerSharedTesting()
+
+    def test_matlab(self):
+        """
+        MatlabController: Tests for output shape
+        """
+        controller = MatlabController(self.cost_func)
+        controller.jacobian = self.jac
+        self.shared_tests.check_jac_info(controller,
+                                         False,
+                                         [])
+
+        minimizers = ['Nelder-Mead Simplex']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._status = 1
+            self.shared_tests.check_converged(controller)
+            controller._status = 0
+            self.shared_tests.check_max_iterations(controller)
+            controller._status = -1
+            self.shared_tests.check_diverged(controller)
+
+
+@run_for_test_types(TEST_TYPE, 'default', 'all')
 class FactoryTests(TestCase):
     """
     Tests for the ControllerFactory
@@ -730,7 +787,7 @@ class FactoryTests(TestCase):
         self.check_valid(valid, valid_names)
         self.check_invalid(invalid)
 
-    @ pytest.mark.skipif("TEST_TYPE == 'default'")
+    @run_for_test_types(TEST_TYPE, 'all')
     def test_external_imports(self):
         """
         Test that the factory returns the correct external class for inputs

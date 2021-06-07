@@ -48,23 +48,29 @@
                         <p>
                             Clicking the software name will take you to FitBenchmarking Read the Docs documentation for the selected software.
                         </p>
+                        <p>
+                            Hovering over each minimizer name will display its matching algorithm types out of those selected in options.
+                        </p>
                         {% if report_failed_min %}
                             <h3>Failed minimizers</h3>
                             <p>
                                 The `algorithm_type` has been selected to be
-                                <strong>{{algorithm_type}}</strong>. Please review
-                                current options setup and re-run FitBenmarking.
+                                <strong>{{algorithm_type}}</strong> and not all minimizers
+                                specified in the options setup file are compatible. If this was not intended, please review
+                                current options setup and re-run FitBenchmarking.
                             </p>
                             <p>
                                 {% for software, minimizer in unselected_minimzers.items() %}
-                                    Withing <strong>{{software}}</strong> the following
-                                    minimizers we were not run due to the selected
-                                    minimizers:
-                                    <ol>
-                                        {% for m in minimizer -%}
-                                            {{ m }} <br/>
-                                            {%- endfor %}
-                                        </ol>
+                                    {% if minimizer != [] %}
+                                        Within <strong>{{software}}</strong>, the following
+                                        minimizer(s) were not run due to the choice of <strong>{{algorithm_type}}</strong> 
+                                        for the algorithm type:
+                                        <ol>
+                                            {% for m in minimizer -%}
+                                                {{ m }} <br/>
+                                                {%- endfor %}
+                                            </ol>
+                                        {% endif %}
                                     {% endfor %}
                                 </p>
                             {% endif %}
