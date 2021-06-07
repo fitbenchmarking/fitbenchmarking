@@ -15,7 +15,7 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
 from fitbenchmarking.results_processing.tables import SORTED_TABLE_NAMES
 from fitbenchmarking.results_processing.tables import generate_table
 from fitbenchmarking.results_processing.tables import create_results_tables
-from fitbenchmarking.jacobian.default_jacobian import default as DefaultJac
+from fitbenchmarking.jacobian.default_jacobian import Default as DefaultJac
 from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -115,6 +115,8 @@ def generate_mock_results():
             r.support_page_link = link_in[i][j]
             r.minimizer = options.minimizers[software][j]
             results.append(r)
+            options.minimizer_alg_type[options.minimizers[software]
+                                       [j]] = 'all, ls'
         results_out.append(results)
     best = preproccess_data(results_out)
     return best, results_out, options

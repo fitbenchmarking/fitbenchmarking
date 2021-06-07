@@ -10,14 +10,13 @@ import os
 from sys import platform
 import tempfile
 from unittest import TestCase
-import pytest
 from pytest import test_type as TEST_TYPE
+from conftest import run_for_test_types
 
 from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
 
-
-@pytest.mark.skipif("TEST_TYPE == 'default'")
+@run_for_test_types(TEST_TYPE, 'all')
 class TestRegressionAll(TestCase):
     """
     Regression tests for the Fitbenchmarking software with all fitting software
@@ -104,8 +103,58 @@ class TestRegressionAll(TestCase):
         diff, msg = diff_result(actual, expected)
         self.assertListEqual([], diff, msg)
 
+@run_for_test_types(TEST_TYPE, 'matlab')
+class TestRegressionMatlab(TestCase):
+    """
+    Regression tests for the Fitbenchmarking software with matlab fitting software
+    """
 
-@pytest.mark.skipif("TEST_TYPE == 'all'")
+    @classmethod
+    def setUpClass(cls):
+        """
+        Create an options file, run it, and get the results.
+        """
+        opts = setup_options()
+        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
+                                               mode='w',
+                                               delete=False)
+        opts.write_to_stream(opt_file)
+        opt_file.close()
+        problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                               os.pardir,
+                                               'mock_problems',
+                                               'all_parsers_set'))
+        run([problem], options_file=opt_file.name, debug=True)
+        os.remove(opt_file.name)
+
+    def test_results_consistent_all(self):
+        """
+        Regression testing that the results of fitting a set of problems
+        containing all problem types against a single minimizer from each of
+        the supported softwares
+        """
+
+        expected_file = os.path.join(os.path.dirname(__file__),
+                                     '{}_expected_results'.format(platform),
+                                     'matlab.txt')
+
+        actual_file = \
+            os.path.join(os.path.dirname(__file__),
+                         'fitbenchmarking_results',
+                         'all_parsers_set',
+                         'all_parsers_set_acc_weighted_nlls_table.txt')
+
+        with open(expected_file, 'r') as f:
+            expected = f.readlines()
+
+        with open(actual_file, 'r') as f:
+            actual = f.readlines()
+
+        diff, msg = diff_result(actual, expected)
+        self.assertListEqual([], diff, msg)
+
+
+@run_for_test_types(TEST_TYPE, 'default')
 class TestRegressionDefault(TestCase):
     """
     Regression tests for the Fitbenchmarking software with all default fitting
@@ -213,10 +262,13 @@ def setup_options(multifit=False):
     if multifit:
         opts.software = ['mantid']
         opts.minimizers = {'mantid': [opts.minimizers['mantid'][0]]}
-    elif TEST_TYPE != "default":
+    elif TEST_TYPE not in ['default', 'matlab']:
         opts.software = ['bumps', 'gsl', 'levmar', 'mantid', 'ralfit', 'scipy',
                          'scipy_ls']
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
+    elif TEST_TYPE == "matlab":
+        opts.software = ['matlab']
+        opts.minimizers = {'matlab': [opts.minimizers['matlab'][0]]}
     else:
         opts.software = ['bumps', 'scipy', 'scipy_ls']
         opts.minimizers = {s: [opts.minimizers[s][0]] for s in opts.software}

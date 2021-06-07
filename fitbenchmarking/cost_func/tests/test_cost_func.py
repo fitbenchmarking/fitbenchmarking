@@ -2,11 +2,9 @@
 Tests available cost function classes in FitBenchmarking.
 """
 
-from collections import OrderedDict
 from unittest import TestCase
 
 import numpy as np
-from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.cost_func.hellinger_nlls_cost_func import \
     HellingerNLLSCostFunc
@@ -18,6 +16,7 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
+# pylint: disable=attribute-defined-outside-init
 
 
 class TestNLLSCostFunc(TestCase):
@@ -66,25 +65,25 @@ class TestNLLSCostFunc(TestCase):
 
     def test_validate_algorithm_type_error(self):
         """
-        Test that validate_algorithm_type raises an error 
+        Test that validate_algorithm_type raises an error
         for incompatible options
         """
         self.cost_function.invalid_algorithm_types = ['ls']
-        algorithm_check = {'ls':['ls-min']}
+        algorithm_check = {'ls': ['ls-min']}
         minimizer = 'ls-min'
 
         self.assertRaises(exceptions.IncompatibleMinimizerError,
                           self.cost_function.validate_algorithm_type,
-                          algorithm_check = algorithm_check,
-                          minimizer = minimizer)
+                          algorithm_check=algorithm_check,
+                          minimizer=minimizer)
 
     def test_validate_algorithm_type_correct(self):
         """
-        Test that validate_algorithm_type does not raise 
+        Test that validate_algorithm_type does not raise
         an error for compaitble options
         """
         self.cost_function.invalid_algorithm_types = []
-        algorithm_check = {'ls':['ls-min']}
+        algorithm_check = {'ls': ['ls-min']}
         minimizer = 'ls-min'
 
         self.cost_function.validate_algorithm_type(algorithm_check, minimizer)
@@ -193,7 +192,6 @@ class TestPoissonCostFunc(TestCase):
     """
     Class to test the PoissonCostFunc class
     """
-
     def setUp(self):
         """
         Setting up poisson cost function tests

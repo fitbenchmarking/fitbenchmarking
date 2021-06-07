@@ -5,6 +5,7 @@ This file calls the pycutest interface for SIF data
 from __future__ import print_function
 
 import os
+import time
 from collections import OrderedDict
 
 import numpy as np
@@ -20,12 +21,18 @@ except ImportError:
     from backports.tempfile import TemporaryDirectory
 
 if os.path.isdir(os.environ["PYCUTEST_CACHE"]+"/pycutest_cache_holder"):
-    # clear the cache
+    # clear problems from cache that are older than 1 hour, do not clear
+    # all problems as when running with matlab the cache is cleared again
+    # when dill.load is called in controller
     for cached_problem in pycutest.all_cached_problems():
-        pycutest.clear_cache(cached_problem[0], cached_problem[1])
-
+        file_age = time.time() - os.path.getmtime(
+            os.environ["PYCUTEST_CACHE"] +
+            "/pycutest_cache_holder/"+cached_problem[0])
+        if file_age > 7200:
+            pycutest.clear_cache(cached_problem[0], cached_problem[1])
 
 # pylint: disable=attribute-defined-outside-init, too-few-public-methods
+
 
 class CutestParser(Parser):
     """

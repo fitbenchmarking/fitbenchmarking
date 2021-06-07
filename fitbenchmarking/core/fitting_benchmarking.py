@@ -288,24 +288,30 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
             try:
                 controller.check_minimizer_bounds(minimizer)
             except IncompatibleMinimizerError as excp:
-                minimizer_check = False
-                controller.flag = 4
-                dummy_results = [{'options': options,
-                                  'cost_func': controller.cost_func,
-                                  'jac': None,
-                                  'chi_sq': np.inf,
-                                  'runtime': np.inf,
-                                  'minimizer': minimizer,
-                                  'initial_params': controller.initial_params,
-                                  'params': None,
-                                  'error_flag': controller.flag,
-                                  'name': problem.name}]
-                for result in dummy_results:
-                    individual_result = fitbm_result.FittingResult(
-                        **result)
-                    results_problem.append(individual_result)
-                new_minimizer_list.append(minimizer)
-                LOGGER.warning(str(excp))
+                if minimizer_check:
+                    minimizer_check = False
+                    controller.flag = 4
+                    dummy_results =\
+                        [{'options': options,
+                          'cost_func': controller.cost_func,
+                          'jac': None,
+                          'chi_sq': np.inf,
+                          'runtime': np.inf,
+                          'minimizer': minimizer,
+                          'initial_params': controller.initial_params,
+                          'params': None,
+                          'error_flag': controller.flag,
+                          'name': problem.name}]
+                    # record algorithm type for specified minimizer
+                    type_str = controller.record_alg_type(
+                        minimizer, options.algorithm_type)
+                    options.minimizer_alg_type[minimizer] = type_str
+                    for result in dummy_results:
+                        individual_result = fitbm_result.FittingResult(
+                            **result)
+                        results_problem.append(individual_result)
+                    new_minimizer_list.append(minimizer)
+                    LOGGER.warning(str(excp))
 
         if minimizer_check:
             ########################
@@ -367,6 +373,15 @@ def loop_over_jacobians(controller, options, grabbed_output):
     minimizer_check = has_jacobian and minimizer not in invalid_jacobians
     try:
         for jac_method in jacobian_list:
+
+            # Creates Jacobian class
+            jacobian_cls = create_jacobian(jac_method)
+            try:
+                jacobian = jacobian_cls(cost_func)
+            except NoJacobianError as excp:
+                LOGGER.warning(str(excp))
+                continue
+            
             for num_method in options.num_method[jac_method]:
                 if minimizer_check:
                     num_method_str = ''
@@ -376,86 +391,83 @@ def loop_over_jacobians(controller, options, grabbed_output):
                                 jac_method, num_method_str)
                     minimizer_name = "{}: {}{}".format(
                         minimizer, jac_method, num_method_str)
-                # Creates Jacobian class
-                jacobian_cls = create_jacobian(jac_method)
+
+                jacobian.method = num_method
+
+                controller.jacobian = jacobian
                 try:
-                    jacobian = jacobian_cls(cost_func)
-                except NoJacobianError as excp:
+                    with grabbed_output:
+                        # Calls timeit repeat with repeat = num_runs and
+                        # number = 1
+                        runtime_list = timeit.Timer(
+                            setup=controller.prepare,
+                            stmt=controller.fit
+                        ).repeat(num_runs, 1)
+
+                        runtime = sum(runtime_list) / num_runs
+                        controller.cleanup()
+                        controller.check_attributes()
+                    ratio = np.max(runtime_list) / np.min(runtime_list)
+                    tol = 4
+                    if ratio > tol:
+                        warnings.warn(
+                            'The ratio of the max time to the min is {0}'
+                            ' which is  larger than the tolerance of {1},'
+                            ' which may indicate that caching has occurred'
+                            ' in the timing results'.format(ratio, tol))
+                    chi_sq = controller.eval_chisq(
+                        params=controller.final_params,
+                        x=controller.data_x,
+                        y=controller.data_y,
+                        e=controller.data_e)
+
+                    chi_sq_check = any(np.isnan(n) for n in chi_sq) \
+                        if problem.multifit else np.isnan(chi_sq)
+                    if np.isnan(runtime) or chi_sq_check:
+                        raise ControllerAttributeError(
+                            "Either the computed runtime or chi_sq values "
+                            "was a NaN.")
+                # Catching all exceptions as this means runtime cannot be
+                # calculated
+                # pylint: disable=broad-except
+                except Exception as excp:
                     LOGGER.warning(str(excp))
-                    jacobian = False
 
-                if jacobian:
-                    jacobian.method = num_method
+                    runtime = np.inf
+                    controller.flag = 3
+                    controller.final_params = \
+                        None if not problem.multifit \
+                        else [None] * len(controller.data_x)
 
-                    controller.jacobian = jacobian
-                    try:
-                        with grabbed_output:
-                            # Calls timeit repeat with repeat = num_runs and
-                            # number = 1
-                            runtime_list = timeit.Timer(
-                                setup=controller.prepare,
-                                stmt=controller.fit
-                            ).repeat(num_runs, 1)
+                    chi_sq = np.inf if not problem.multifit \
+                        else [np.inf] * len(controller.data_x)
 
-                            runtime = sum(runtime_list) / num_runs
-                            controller.cleanup()
-                            controller.check_attributes()
-                        ratio = np.max(runtime_list) / np.min(runtime_list)
-                        tol = 4
-                        if ratio > tol:
-                            warnings.warn(
-                                'The ratio of the max time to the min is {0}'
-                                ' which is  larger than the tolerance of {1},'
-                                ' which may indicate that caching has occurred'
-                                ' in the timing results'.format(ratio, tol))
-                        chi_sq = controller.eval_chisq(
-                            params=controller.final_params,
-                            x=controller.data_x,
-                            y=controller.data_y,
-                            e=controller.data_e)
+                # If bounds have been set, check that they have
+                # been respected by the minimizer and set error
+                # flag if not
+                if controller.problem.value_ranges is not None \
+                        and controller.flag != 3:
+                    controller.check_bounds_respected()
 
-                        chi_sq_check = any(np.isnan(n) for n in chi_sq) \
-                            if problem.multifit else np.isnan(chi_sq)
-                        if np.isnan(runtime) or chi_sq_check:
-                            raise ControllerAttributeError(
-                                "Either the computed runtime or chi_sq values "
-                                "was a NaN.")
-                    # Catching all exceptions as this means runtime cannot be
-                    # calculated
-                    # pylint: disable=broad-except
-                    except Exception as excp:
-                        LOGGER.warning(str(excp))
+                # record algorithm type for specified minimizer
+                type_str = controller.record_alg_type(
+                    minimizer, options.algorithm_type)
+                options.minimizer_alg_type[minimizer_name] = type_str
 
-                        runtime = np.inf
-                        controller.flag = 3
-                        controller.final_params = \
-                            None if not problem.multifit \
-                            else [None] * len(controller.data_x)
+                result_args = {'options': options,
+                            'cost_func': cost_func,
+                            'jac': jacobian,
+                            'chi_sq': chi_sq,
+                            'runtime': runtime,
+                            'minimizer': minimizer_name,
+                            'initial_params': controller.initial_params,
+                            'params': controller.final_params,
+                            'error_flag': controller.flag,
+                            'name': problem.name}
+                results.append(result_args)
+                new_minimizer_list.append(minimizer_name)
 
-                        chi_sq = np.inf if not problem.multifit \
-                            else [np.inf] * len(controller.data_x)
-
-                    # If bounds have been set, check that they have
-                    # been respected by the minimizer and set error
-                    # flag if not
-                    if controller.problem.value_ranges is not None \
-                            and controller.flag != 3:
-                        controller.check_bounds_respected()
-
-                    result_args = {'options': options,
-                                   'cost_func': cost_func,
-                                   'jac': jacobian,
-                                   'chi_sq': chi_sq,
-                                   'runtime': runtime,
-                                   'minimizer': minimizer_name,
-                                   'initial_params': controller.initial_params,
-                                   'params': controller.final_params,
-                                   'error_flag': controller.flag,
-                                   'name': problem.name}
-                    results.append(result_args)
-                    new_minimizer_list.append(minimizer_name)
-
-                # For minimizers that do not accept minimizers we raise an
+                # For minimizers that do not accept jacobians we raise an
                 # StopIteration exception to exit the loop through the
                 # Jacobians
                 if not minimizer_check:
