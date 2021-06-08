@@ -57,15 +57,12 @@ class LevmarController(Controller):
             self.param_ranges = list(zip(lb, ub))
         self.lm_y = np.zeros(self.data_y.shape)
 
-    # pylint: disable=unused-argument
     def _feval(self, p):
         """
         Utility function to call problem.eval_model with correct args
 
         :param p: parameters
         :type p: list
-        :param data: x data
-        :type data: list
         :return: result from problem.eval_model
         :rtype: numpy array
         """
@@ -79,8 +76,6 @@ class LevmarController(Controller):
 
         :param p: parameters
         :type p: list
-        :param data: x data, this is discarded as the defaults can be used.
-        :type data: N/A
         :return: result from jac.eval
         :rtype: numpy array
         """
