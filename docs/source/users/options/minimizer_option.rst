@@ -131,7 +131,10 @@ The `gradient_free` minimizers are set as follows:
 
 .. warning::
    The additional dependency Gradient-Free-Optimizers must be installed for this to be available;
-   See :ref:`extra_dependencies`.	 
+   See :ref:`extra_dependencies`.
+
+.. note::
+   BayesianOptimizer, TreeStructuredParzenEstimators and DecisionTreeOptimizer may be slow running	 
 
 	 
 GSL (``gsl``)
