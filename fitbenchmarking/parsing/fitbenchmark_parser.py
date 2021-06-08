@@ -42,7 +42,7 @@ class FitbenchmarkParser(Parser):
     """
 
     def __init__(self, filename, options):
-        super(FitbenchmarkParser, self).__init__(filename, options)
+        super().__init__(filename, options)
 
         self._entries = None
         self._parsed_func = None
@@ -348,8 +348,7 @@ class FitbenchmarkParser(Parser):
         def wrapped(x, *p):
             # Use the full param dict from above, but update the non-fixed
             # values
-            update_dict = {name: value
-                           for name, value in zip(params.keys(), p)}
+            update_dict = dict(zip(params.keys(), p))
             all_params_dict.update(update_dict)
 
             return fit_function(x, *all_params_dict.values())
