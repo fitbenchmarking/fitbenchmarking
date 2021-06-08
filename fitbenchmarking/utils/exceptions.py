@@ -251,3 +251,17 @@ class IncorrectBoundsError(FitBenchmarkException):
                               'unable to be set, so this ' \
                               'problem will be skipped.'
         self.error_code = 19
+
+
+class MissingBoundsError(FitBenchmarkException):
+    """
+    Indicates that `parameter_ranges` have not been set but are required
+    """
+
+    def __init__(self, message=''):
+        super(MissingBoundsError, self).__init__(message)
+
+        self._class_message = 'Bounds on all parameters ' \
+                              'are required to use this ' \
+                              'software.'
+        self.error_code = 20
