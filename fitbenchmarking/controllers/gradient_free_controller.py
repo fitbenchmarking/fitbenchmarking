@@ -26,9 +26,9 @@ class GradientFreeController(Controller):
 
         self.support_for_bounds = True
         self._status = None
-        self._soln = None
-        self._popt = None
-        self._pinit = None
+        self.search_space = None
+        self.initialize = None
+        self.results = None
         self.algorithm_check = {
             'all': ['HillClimbingOptimizer',
                     'RepulsingHillClimbingOptimizer',
@@ -79,14 +79,15 @@ class GradientFreeController(Controller):
 
         if self.value_ranges is None or np.any(np.isinf(self.value_ranges)):
             raise MissingBoundsError(
-                "Gradient-Free-Optimizers requires finite bounds on all parameters")
+                "Gradient-Free-Optimizers requires finite bounds"
+                "on all parameters")
 
         # set search_space to be the space where the minimizer can search
         # for the best parameters i.e. parameter bounds
-        param_ranges = [np.arange(b[0],b[1],0.1) for b in self.value_ranges]
+        param_ranges = [np.arange(b[0], b[1], 0.1) for b in self.value_ranges]
         self.search_space = dict(zip(self.problem.param_names, param_ranges))
 
-        param_dict = {self.problem.param_names[i]:self.initial_params[i]
+        param_dict = {self.problem.param_names[i]: self.initial_params[i]
                       for i in range(len(self.initial_params))}
 
         self.initialize = {"warm_start": param_dict}
@@ -113,7 +114,7 @@ class GradientFreeController(Controller):
         """
         Run problem with Gradient Free Optimizers
         """
-        
+
         method_to_call = getattr(gfo, self.minimizer)
 
         opt = method_to_call(self.search_space)
@@ -134,5 +135,3 @@ class GradientFreeController(Controller):
             self.flag = 0
         else:
             self.flag = 2
-
-
