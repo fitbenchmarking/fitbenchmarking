@@ -9,7 +9,7 @@ import numpy as np
 from fitbenchmarking.utils.exceptions import OptionsError
 
 
-class Options(object):
+class Options:
     """
     An options class to store and handle all options for fitbenchmarking
     """

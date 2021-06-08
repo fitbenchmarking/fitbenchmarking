@@ -381,7 +381,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
             except NoJacobianError as excp:
                 LOGGER.warning(str(excp))
                 continue
-            
+
             for num_method in options.num_method[jac_method]:
                 if minimizer_check:
                     num_method_str = ''
