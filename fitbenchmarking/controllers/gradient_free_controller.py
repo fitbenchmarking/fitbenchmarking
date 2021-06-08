@@ -6,6 +6,7 @@ import gradient_free_optimizers as gfo
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.utils.exceptions import MissingBoundsError
 
 
 class GradientFreeController(Controller):
@@ -75,12 +76,18 @@ class GradientFreeController(Controller):
         """
         Setup for Gradient Free Optimizers
         """
+
+        if self.value_ranges is None or np.any(np.isinf(self.value_ranges)):
+            raise MissingBoundsError(
+                "Gradient-Free-Optimizers requires finite bounds on all parameters")
+
         # set search_space to be the space where the minimizer can search
         # for the best parameters i.e. parameter bounds
         param_ranges = [np.arange(b[0],b[1],0.1) for b in self.value_ranges]
         self.search_space = dict(zip(self.problem.param_names, param_ranges))
 
-        param_dict = {self.problem.param_names[i]:self.initial_params[i] for i in range(len(self.initial_params))}
+        param_dict = {self.problem.param_names[i]:self.initial_params[i]
+                      for i in range(len(self.initial_params))}
 
         self.initialize = {"warm_start": param_dict}
 

@@ -37,6 +37,8 @@ if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.levmar_controller import LevmarController
     from fitbenchmarking.controllers.mantid_controller import MantidController
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
+    from fitbenchmarking.controllers.gradient_free_controller import\
+        GradientFreeController
 
 if TEST_TYPE == 'matlab':
     from fitbenchmarking.controllers.matlab_controller import MatlabController
@@ -807,6 +809,22 @@ class GlobalOptimizationControllerTests(TestCase):
         self.shared_tests.check_converged(controller)
         controller._status = 1
         self.shared_tests.check_max_iterations(controller)
+        controller._status = 2
+        self.shared_tests.check_diverged(controller)
+
+    def test_gradient_free(self):
+        """
+        GradientFreeController: Tests for output shape
+        """
+        controller = GradientFreeController(self.cost_func)
+        controller.minimizer = 'HillClimbingOptimizer'
+        self.shared_tests.controller_run_test(controller)
+        self.shared_tests.check_jac_info(controller,
+                                         False,
+                                         [])
+
+        controller._status = 0
+        self.shared_tests.check_converged(controller)
         controller._status = 2
         self.shared_tests.check_diverged(controller)
 
