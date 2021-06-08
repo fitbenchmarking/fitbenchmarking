@@ -83,11 +83,9 @@ class Plot:
         if self.problem.format == "sasview":
             self.ax.set_xscale("log", nonpositive='clip')
             self.ax.set_yscale("log", nonpositive='clip')
-            self.ax.set_xlabel("log(X)")
-            self.ax.set_ylabel("log(Y)")
-        else: # linear scale if otherwise
-            self.ax.set_xlabel("X")
-            self.ax.set_ylabel("Y")
+        # linear scale if otherwise
+        self.ax.set_xlabel("X")
+        self.ax.set_ylabel("Y")
         self.ax.set_title(self.result.name,
                           fontsize=self.title_size)
         self.ax.legend(loc=self.legend_location)
