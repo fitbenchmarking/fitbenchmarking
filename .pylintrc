@@ -19,6 +19,6 @@ disable=too-many-instance-attributes,
 
 [IMPORTS]
 ignored-modules=mantid,
-                ral-nlls,
+                ral_nlls,
                 matlab,
                 levmar
