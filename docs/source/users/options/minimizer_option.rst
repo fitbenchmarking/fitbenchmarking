@@ -352,3 +352,6 @@ The SciPy global optimization minimizers are set as follows:
     scipy_go: differential_evolution
               shgo
               dual_annealing
+
+.. note::
+   The shgo solver is particularly slow running and should generally be avoided.

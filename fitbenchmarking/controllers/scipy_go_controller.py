@@ -59,7 +59,10 @@ class ScipyGOController(Controller):
         """
         Setup problem ready to be run with SciPy GO
         """
-        self._maxiter = 1000
+        if self.minimizer == "shgo":
+            self._maxiter = 100
+        else:
+            self._maxiter = 1000
         if self.value_ranges is None or np.any(np.isinf(self.value_ranges)):
             raise MissingBoundsError(
                 "SciPy GO requires finite bounds on all parameters")
