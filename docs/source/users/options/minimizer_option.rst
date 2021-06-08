@@ -220,7 +220,7 @@ The `matlab` minimizer is set as follows:
    matlab: Nelder-Mead Simplex
 
 .. warning::
-   MATLAB must be installed for this to be available; See :ref:`external_instructions`.
+   MATLAB must be installed for this to be available; See :ref:`external-instructions`.
 
 Matlab Optimization Toolbox (``matlab_opt``)
 --------------------------------------------
@@ -241,7 +241,7 @@ The `matlab_opt` minimizers are set as follows:
                trust-region-reflective
 
 .. warning::
-   MATLAB Optimization Toolbox must be installed for this to be available; See :ref:`external_instructions`.
+   MATLAB Optimization Toolbox must be installed for this to be available; See :ref:`external-instructions`.
 	   
 Minuit (``minuit``)
 -------------------
