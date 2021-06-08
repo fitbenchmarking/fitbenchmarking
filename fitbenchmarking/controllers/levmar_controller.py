@@ -33,7 +33,14 @@ class LevmarController(Controller):
             'all': ['levmar'],
             'ls': ['levmar'],
             'deriv_free': [],
-            'general': []}
+            'general': [],
+            'simplex': [],
+            'trust_region': ['levmar'],
+            'levenberg-marquardt': ['levmar'],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': []}
         self._info = None
 
     def jacobian_information(self):
@@ -90,6 +97,8 @@ class LevmarController(Controller):
         """
         run problem with levmar
         """
+        print('test')
+        print(self.jacobian.use_default_jac)
         if self.problem.value_ranges is None:
             solve_levmar = getattr(levmar, "levmar")
         else:

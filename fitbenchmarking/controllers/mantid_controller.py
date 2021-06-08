@@ -62,7 +62,17 @@ class MantidController(Controller):
             'deriv_free': ['Simplex'],
             'general': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
                         'Conjugate gradient (Polak-Ribiere imp.)',
-                        'Damped GaussNewton', 'Simplex', 'SteepestDescent']}
+                        'Damped GaussNewton', 'Simplex', 'SteepestDescent'],
+            'simplex': ['Simplex'],
+            'trust_region': ['Trust Region', 'Levenberg-Marquardt',
+                             'Levenberg-MarquardtMD'],
+            'levenberg-marquardt': ['Levenberg-Marquardt',
+                                    'Levenberg-MarquardtMD'],
+            'gauss_newton': ['Damped GaussNewton'],
+            'bfgs': ['BFGS'],
+            'conjugate_gradient': ['Conjugate gradient (Fletcher-Reeves imp.)',
+                                   'Conjugate gradient (Polak-Ribiere imp.)'],
+            'steepest_descent': ['SteepestDescent']}
 
         if self.problem.multifit:
             # Multi Fit

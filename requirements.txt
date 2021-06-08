@@ -1,7 +1,7 @@
 pytest>=3.6
 pytest-cov
 coveralls
-urllib3==1.23
+urllib3==1.26.5
 coverage<5.0
 pylint
 flake8
