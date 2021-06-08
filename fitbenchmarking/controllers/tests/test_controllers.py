@@ -42,6 +42,8 @@ if TEST_TYPE == 'all':
 
 if TEST_TYPE == 'matlab':
     from fitbenchmarking.controllers.matlab_controller import MatlabController
+    from fitbenchmarking.controllers.matlab_opt_controller import\
+        MatlabOptController
 
 
 # pylint: disable=attribute-defined-outside-init, protected-access
@@ -767,6 +769,28 @@ class MatlabControllerTests(TestCase):
                                          [])
 
         minimizers = ['Nelder-Mead Simplex']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._status = 1
+            self.shared_tests.check_converged(controller)
+            controller._status = 0
+            self.shared_tests.check_max_iterations(controller)
+            controller._status = -1
+            self.shared_tests.check_diverged(controller)
+
+    def test_matlab_opt(self):
+        """
+        MatlabOptController: Tests for output shape
+        """
+        controller = MatlabOptController(self.cost_func)
+        controller.jacobian = self.jac
+        self.shared_tests.check_jac_info(controller,
+                                         True,
+                                         [])
+
+        minimizers = ['levenberg-marquardt', 'trust-region-reflective']
         for minimizer in minimizers:
             controller.minimizer = minimizer
             self.shared_tests.controller_run_test(controller)
