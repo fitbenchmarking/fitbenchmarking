@@ -270,7 +270,7 @@ def setup_options(multifit=False):
                          'scipy_ls']
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
     elif TEST_TYPE == "matlab":
-        opts.software = ['matlab', 'matlab_stats']
+        opts.software = ['matlab', 'matlab_opt', 'matlab_stats']
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
     else:
         opts.software = ['bumps', 'scipy', 'scipy_ls']
