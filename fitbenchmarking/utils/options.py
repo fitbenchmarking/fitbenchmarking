@@ -48,14 +48,15 @@ class Options(object):
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-         'scipy_ls': ['lm-scipy', 'trf', 'dogbox']}
+         'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
+         'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing']}
     VALID_FITTING = \
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general', 'simplex',
                             'trust_region', 'levenberg-marquardt',
                             'gauss_newton', 'bfgs', 'conjugate_gradient',
-                            'steepest_descent'],
+                            'steepest_descent', 'global_optimization'],
          'software': ['bumps', 'dfo', 'gradient_free', 'gsl', 'levmar', 'mantid', 'matlab',
-                      'minuit', 'ralfit', 'scipy', 'scipy_ls'],
+                      'minuit', 'ralfit', 'scipy', 'scipy_ls', 'scipy_go'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
@@ -112,7 +113,8 @@ class Options(object):
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-         'scipy_ls': ['lm-scipy', 'trf', 'dogbox']}
+         'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
+         'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': ['all'],
