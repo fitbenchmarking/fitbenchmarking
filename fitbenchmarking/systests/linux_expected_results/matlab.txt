@@ -1,5 +1,6 @@
-                            matlab
-               Nelder-Mead Simplex
-BENNETT5           1.66e-05 (1)[1]
-cubic, Start 1     0.003982 (1)[1]
-cubic, Start 2       7.176e-11 (1)
+                                 matlab                         matlab_opt
+                    Nelder-Mead Simplex levenberg-marquardt: scipy 2-point
+BENNETT5            1.66e-05 (1.004)[1]                      1.652e-05 (1)
+cubic, Start 1  0.003982 (4.348e+11)[1]                      9.158e-15 (1)
+cubic, Start 2    7.176e-11 (4.506e+06)                      1.592e-17 (1)
+Problem Def 1              inf (inf)[4]                   1.299e-10 (1)[2]
