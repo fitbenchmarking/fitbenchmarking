@@ -1,14 +1,10 @@
 #!/bin/bash
 
-status=0
+pylint fitbenchmarking || pylint-exit $? --error-fail --warn-fail
+status=$?
 
-for dir in cli controllers core cost_func jacobian parsing results_processing utils
-do 
-    pylint -r y fitbenchmarking/$dir/* || pylint-exit $? --error-fail --warn-fail
-    status=$(($status + $?))
-    flake8 fitbenchmarking/$dir/
-    status=$(($status + $?))
-done
+flake8 fitbenchmarking
+status=$(($status + $?))
 
 if [[ $status != 0 ]]
 then

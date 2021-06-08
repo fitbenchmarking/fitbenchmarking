@@ -1,3 +1,47 @@
+[MASTER]
+
+# Files or directories to be skipped. They should be base names, not paths.
+ignore=benchmark_problems,
+       fonts,
+       mock_problems,
+       templates
+
+# Files or directories matching the regex patterns are skipped. The regex
+# matches against base names, not paths.
+#ignore-patterns=
+
+[MESSAGES CONTROL]
+
+disable=too-many-instance-attributes,
+        invalid-name,
+        too-few-public-methods,
+        duplicate-code  # This should be investigated at a later date
+
+[REPORTS]
+# Set the output format. Available formats are text, parseable, colorized, json
+# and msvs (visual studio). You can also give a reporter class, e.g.
+# mypackage.mymodule.MyReporterClass.
+output-format=colorized
+
+# Tells whether to display a full report or only the messages.
+reports=yes
+
+[VARIABLES]
+
+# Ignores pylint errors for args and kwargs
+ignored-argument-names=arg|args|kwargs
+
+[TYPECHECK]
+
+# List of module names for which member attributes should not be checked
+# (useful for modules/projects where namespaces are manipulated during runtime
+# and thus existing member attributes cannot be deduced by static analysis). It
+# supports qualified module names, as well as Unix pattern matching.
+ignored-modules=mantid,
+                ral_nlls,
+                matlab,
+                levmar
+
 [DESIGN]
 
 # Maximum number of locals for function / method body
@@ -8,17 +52,3 @@ max-statements=60
 
 # Certain functions require more arguments due to design
 max-args=10
-
-# Ignores pylint errors for args and kwargs
-ignored-argument-names=arg|args|kwargs
-
-[MESSAGES CONTROL]
-disable=too-many-instance-attributes,
-        invalid-name,
-        too-few-public-methods
-
-[IMPORTS]
-ignored-modules=mantid,
-                ral_nlls,
-                matlab,
-                levmar
