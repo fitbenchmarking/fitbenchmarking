@@ -4,6 +4,7 @@ Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians
 import inspect
 import os
 import unittest
+from unittest import mock
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
@@ -29,7 +30,7 @@ class DummyController(Controller):
         :param cost_func: cost function class
         :type cost_func: CostFunc class
         """
-        super(DummyController, self).__init__(cost_func)
+        super().__init__(cost_func)
         self.algorithm_check = {'all': ['deriv_free_algorithm', 'general'],
                                 'ls': [None],
                                 'deriv_free': ['deriv_free_algorithm'],
@@ -163,33 +164,49 @@ class LoopOverJacobiansTests(unittest.TestCase):
         assert new_minimizer_list == new_name
 
     # pylint: disable=unused-argument
-    @unittest.mock.patch.object(DummyController, "check_bounds_respected")
     @unittest.mock.patch.object(DummyController, "cleanup")
+    @unittest.mock.patch.object(DummyController, "check_bounds_respected")
     def test_bounds_respected_func_called(
             self, check_bounds_respected, cleanup):
+        """
+        Test that the check to verify that bounds are respected is called when
+        the controller runs succesfully.
+        """
         self.controller.problem.value_ranges = {'test': (0, 1)}
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.flag == 0  # pylint: disable=pointless-statement
+
+        # Cleanup has been mocked out with a no-op, so set the outputs now.
+        self.controller.flag = 0
+        self.controller.final_params = [1, 2, 3, 4]
+
         _ = loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
         check_bounds_respected.assert_called()
 
-    @unittest.mock.patch.object(DummyController, "check_bounds_respected")
     @unittest.mock.patch.object(DummyController, "cleanup")
+    @unittest.mock.patch.object(DummyController, "check_bounds_respected")
     def test_bounds_respected_func_not_called(
             self, check_bounds_respected, cleanup):
+        """
+        Test that the check to verify that bounds are respected is not called
+        when the controller fails.
+        """
         self.controller.problem.value_ranges = {'test': (0, 1)}
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.flag == 3  # pylint: disable=pointless-statement
+        
+        # Cleanup has been mocked out with a no-op, so set the outputs now.
+        self.controller.flag = 3
+        self.controller.final_params = [1, 2, 3, 4]
+
         _ = loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
-        assert not check_bounds_respected.assert_called()
+        check_bounds_respected.assert_not_called()
     # pylint: enable=unused-argument
 
 
