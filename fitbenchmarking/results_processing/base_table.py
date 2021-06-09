@@ -6,6 +6,8 @@ import os
 import docutils.core
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 from fitbenchmarking.utils.misc import get_js
 
@@ -55,6 +57,10 @@ class Table:
         self.pp_locations = pp_locations
         self.table_name = table_name
         self.name = None
+
+        #for problem in results:
+        #    print(min([r.runtime for r in problem]))
+        #    print(max([r.runtime for r in problem]))
 
         colour_scale = self.options.colour_scale
 
@@ -147,19 +153,24 @@ class Table:
         :return: dictionary containing HTML colours for the table
         :rtype: dict
         """
+        # cmap_name = self.options.colour_map
+        cmap_name = "turbo"
+        # cmap_ulim = self.options.colour_ulim
+        cmap_ulim = 100
         _, rel_value = results
         colour = {}
         for key, value in rel_value.items():
-            if not all(isinstance(elem, list) for elem in value):
-                colour_index = np.searchsorted(self.colour_bounds, value)
-                colour[key] = [self.html_colours[i]
-                               for i in colour_index]
-            else:
-                colour[key] = []
-                for v in value:
-                    colour_index = np.searchsorted(self.colour_bounds, v)
-                    colour[key].append([self.html_colours[i]
-                                        for i in colour_index])
+            log_val = np.log10(value)
+            log_ulim = np.log10(cmap_ulim)
+            norm_val = (log_val-min(log_val))/(log_ulim-min(log_val))
+            norm_val[norm_val>1] = 1
+            cmap = plt.get_cmap(cmap_name)
+            rgba_list = cmap(norm_val)
+            hex_list = []
+            for c in rgba_list:
+                hex_list.append(mpl.colors.rgb2hex(c))
+            colour[key] = hex_list
+        print(colour)
         return colour
 
     def get_links(self, results_dict):
