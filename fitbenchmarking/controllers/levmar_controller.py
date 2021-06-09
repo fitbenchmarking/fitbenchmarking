@@ -64,49 +64,22 @@ class LevmarController(Controller):
             self.param_ranges = list(zip(lb, ub))
         self.lm_y = np.zeros(self.data_y.shape)
 
-    def _feval(self, p):
-        """
-        Utility function to call problem.eval_model with correct args
-
-        :param p: parameters
-        :type p: list
-        :return: result from problem.eval_model
-        :rtype: numpy array
-        """
-
-        fx = self.cost_func.eval_r(p)
-        return fx
-
-    def _jeval(self, p):
-        """
-        Utility function to call jac.eval with correct args
-
-        :param p: parameters
-        :type p: list
-        :return: result from jac.eval
-        :rtype: numpy array
-        """
-        jac = -self.jacobian.eval(p)
-        return jac
-
     def fit(self):
         """
         run problem with levmar
         """
-        print('test')
-        print(self.jacobian.use_default_jac)
         if self.problem.value_ranges is None:
             solve_levmar = getattr(levmar, "levmar")
         else:
             solve_levmar = getattr(levmar, "levmar_bc")
-        args = [self._feval,
+        args = [self.cost_func.eval_r,
                 self.initial_params,
                 self.lm_y]
         if self.value_ranges is not None:
             args.append(self.param_ranges)
         kwargs = {}
         if not self.jacobian.use_default_jac:
-            kwargs["jacf"] = self._jeval
+            kwargs["jacf"] = self.jacobian.eval
         (self.final_params, _, self._info) = solve_levmar(*args, **kwargs)
         # self._info isn't documented (other than in the levmar source),
         # but returns:
