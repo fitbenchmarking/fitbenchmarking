@@ -37,7 +37,14 @@ class ScipyController(Controller):
             'ls': [None],
             'deriv_free': ['Nelder-Mead', 'Powell'],
             'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                        'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP']}
+                        'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
+            'simplex': ['Nelder-Mead'],
+            'trust_region': [],
+            'levenberg-marquardt': [],
+            'gauss_newton': [],
+            'bfgs': ['BFGS', 'L-BFGS-B'],
+            'conjugate_gradient': ['CG', 'Newton-CG', 'Powell'],
+            'steepest_descent': []}
 
     def jacobian_information(self):
         """

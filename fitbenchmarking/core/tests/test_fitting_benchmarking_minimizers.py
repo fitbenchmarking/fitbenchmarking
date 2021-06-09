@@ -123,7 +123,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         """
         Tests that no minimizers are selected
         """
-        self.options.algorithm_type = "ls"
+        self.options.algorithm_type = ["ls"]
         results_problem, minimizer_failed, new_minimizer_list = \
             loop_over_minimizers(self.controller, self.minimizers,
                                  self.options, self.grabbed_output)
@@ -136,7 +136,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         """
         Tests that some minimizers are selected
         """
-        self.options.algorithm_type = "general"
+        self.options.algorithm_type = ["general"]
         self.results = [[self.result_args]]
         self.chi_sq = 1
         self.minimizer_list = [["general"]]

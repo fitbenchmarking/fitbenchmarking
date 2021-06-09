@@ -152,6 +152,8 @@ class CutestParser(Parser):
         # `min ||r(x)||^2 s.t. r(x) = f(x)-y`, or eqivalently
         # `min ||r(x)||^2 s.t. r(x) = y-f(x)`.
         # CUTEst uses the second of these formulations.
+        # False positive pylint error because return type numpy
+        # pylint: disable=invalid-unary-operand-type
         return -gx
 
     def _get_starting_values(self):

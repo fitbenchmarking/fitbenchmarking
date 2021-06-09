@@ -44,7 +44,14 @@ class GSLController(Controller):
             'deriv_free': ['nmsimplex', 'nmsimplex2'],
             'general': ['nmsimplex', 'nmsimplex2', 'conjugate_pr',
                         'conjugate_fr', 'vector_bfgs', 'vector_bfgs2',
-                        'steepest_descent']}
+                        'steepest_descent'],
+            'simplex': ['nmsimplex', 'nmsimplex2'],
+            'trust_region': ['lmder', 'lmsder'],
+            'levenberg-marquardt': ['lmder', 'lmsder'],
+            'gauss_newton': [],
+            'bfgs': ['vector_bfgs', 'vector_bfgs2'],
+            'conjugate_gradient': ['conjugate_fr', 'conjugate_pr'],
+            'steepest_descent': ['steepest_descent']}
 
     def jacobian_information(self):
         """
