@@ -61,7 +61,7 @@ class TestFittingProblem(TestCase):
 
     def test_eval_model_raise_error(self):
         """
-        Test that eval_model raises and error
+        Test that eval_model raises an error if there is no function
         """
         fitting_problem = FittingProblem(self.options)
         self.assertRaises(exceptions.FittingProblemError,
@@ -73,6 +73,9 @@ class TestFittingProblem(TestCase):
         """
         Test that eval_model is running the correct function
         """
+        # Pylint identifies the parameters expected by **kwargs but not the
+        # default values so disable some check for the eval model calls.
+        # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         fitting_problem = FittingProblem(self.options)
         fitting_problem.function = lambda x, p1: x + p1
         x_val = np.array([1, 8, 11])
