@@ -81,7 +81,6 @@ class LevmarController(Controller):
         """
         jac = -self.jacobian.eval(p)
         return jac
-    # pylint: enable=unused-argument
 
     def fit(self):
         """
