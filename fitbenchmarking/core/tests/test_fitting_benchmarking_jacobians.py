@@ -4,7 +4,6 @@ Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians
 import inspect
 import os
 import unittest
-from unittest import mock
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
@@ -198,7 +197,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        
+
         # Cleanup has been mocked out with a no-op, so set the outputs now.
         self.controller.flag = 3
         self.controller.final_params = [1, 2, 3, 4]
