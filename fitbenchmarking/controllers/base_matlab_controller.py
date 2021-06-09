@@ -53,3 +53,17 @@ class BaseMatlabController(Controller):
         eng.evalc('py_f.close()')
 
         return eng.workspace['func_mat']
+
+    def _feval(self, p):
+        """
+        Function to call from matlab which evaluates the residuals
+        """
+        feval = -self.cost_func.eval_r(p)
+        return feval
+
+    def _jeval(self, p):
+        """
+        Function to call from matlab which evaluates the jacobian
+        """
+        jeval = -self.jacobian.eval(p)
+        return jeval
