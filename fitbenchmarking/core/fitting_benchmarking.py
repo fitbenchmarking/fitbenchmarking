@@ -455,15 +455,15 @@ def loop_over_jacobians(controller, options, grabbed_output):
                 options.minimizer_alg_type[minimizer_name] = type_str
 
                 result_args = {'options': options,
-                            'cost_func': cost_func,
-                            'jac': jacobian,
-                            'chi_sq': chi_sq,
-                            'runtime': runtime,
-                            'minimizer': minimizer_name,
-                            'initial_params': controller.initial_params,
-                            'params': controller.final_params,
-                            'error_flag': controller.flag,
-                            'name': problem.name}
+                               'cost_func': cost_func,
+                               'jac': jacobian,
+                               'chi_sq': chi_sq,
+                               'runtime': runtime,
+                               'minimizer': minimizer_name,
+                               'initial_params': controller.initial_params,
+                               'params': controller.final_params,
+                               'error_flag': controller.flag,
+                               'name': problem.name}
                 results.append(result_args)
                 new_minimizer_list.append(minimizer_name)
 
