@@ -779,7 +779,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_max_iterations(controller)
             controller._status = -1
             self.shared_tests.check_diverged(controller)
-            
+
     def test_matlab_opt(self):
         """
         MatlabOptController: Tests for output shape
@@ -794,7 +794,7 @@ class MatlabControllerTests(TestCase):
         for minimizer in minimizers:
             controller.minimizer = minimizer
             self.shared_tests.controller_run_test(controller)
-            
+
             controller._status = 1
             self.shared_tests.check_converged(controller)
             controller._status = 0
@@ -816,7 +816,7 @@ class MatlabControllerTests(TestCase):
         for minimizer in minimizers:
             controller.minimizer = minimizer
             self.shared_tests.controller_run_test(controller)
-            
+
             controller._status = 0
             self.shared_tests.check_converged(controller)
             controller._status = 1
