@@ -154,23 +154,34 @@ class Table:
         :rtype: dict
         """
         # cmap_name = self.options.colour_map
-        cmap_name = "turbo"
+        cmap_name = "YlOrBr"
+        cmap = plt.get_cmap(cmap_name)
         # cmap_ulim = self.options.colour_ulim
-        cmap_ulim = 100
+        cmap_ulim = 50
+        log_ulim = np.log10(cmap_ulim)
         _, rel_value = results
         colour = {}
         for key, value in rel_value.items():
-            log_val = np.log10(value)
-            log_ulim = np.log10(cmap_ulim)
-            norm_val = (log_val-min(log_val))/(log_ulim-min(log_val))
-            norm_val[norm_val>1] = 1
-            cmap = plt.get_cmap(cmap_name)
-            rgba_list = cmap(norm_val)
-            hex_list = []
-            for c in rgba_list:
-                hex_list.append(mpl.colors.rgb2hex(c))
-            colour[key] = hex_list
-        print(colour)
+            if not all(isinstance(elem, list) for elem in value):
+                log_val = np.log10(value)
+                norm_val = (log_val-min(log_val))/(log_ulim-min(log_val))
+                norm_val[norm_val>1] = 1
+                rgba_list = cmap(norm_val)
+                hex_list = []
+                for c in rgba_list:
+                    hex_list.append(mpl.colors.rgb2hex(c))
+                colour[key] = hex_list
+            else:
+                colour[key] = []
+                for v in value:
+                    log_val = np.log10(v)
+                    norm_val = (log_val-min(log_val))/(log_ulim-min(log_val))
+                    norm_val[norm_val>1] = 1
+                    rgba_list = cmap(norm_val)
+                    hex_list = []
+                    for c in rgba_list:
+                        hex_list.append(mpl.colors.rgb2hex(c))
+                    colour[key].append(hex_list)
         return colour
 
     def get_links(self, results_dict):
