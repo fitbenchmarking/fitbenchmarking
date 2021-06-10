@@ -29,7 +29,7 @@ class DummyController(Controller):
         :param cost_func: cost function class
         :type cost_func: CostFunc class
         """
-        super(DummyController, self).__init__(cost_func)
+        super().__init__(cost_func)
         self.algorithm_check = {'all': ['deriv_free_algorithm', 'general'],
                                 'ls': [None],
                                 'deriv_free': ['deriv_free_algorithm'],
@@ -162,33 +162,51 @@ class LoopOverJacobiansTests(unittest.TestCase):
                    name in zip(results, new_name))
         assert new_minimizer_list == new_name
 
-    @unittest.mock.patch.object(DummyController, "check_bounds_respected")
+    # pylint: disable=unused-argument
     @unittest.mock.patch.object(DummyController, "cleanup")
+    @unittest.mock.patch.object(DummyController, "check_bounds_respected")
     def test_bounds_respected_func_called(
             self, check_bounds_respected, cleanup):
+        """
+        Test that the check to verify that bounds are respected is called when
+        the controller runs succesfully.
+        """
         self.controller.problem.value_ranges = {'test': (0, 1)}
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.flag == 0
+
+        # Cleanup has been mocked out with a no-op, so set the outputs now.
+        self.controller.flag = 0
+        self.controller.final_params = [1, 2, 3, 4]
+
         _ = loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
         check_bounds_respected.assert_called()
 
-    @unittest.mock.patch.object(DummyController, "check_bounds_respected")
     @unittest.mock.patch.object(DummyController, "cleanup")
+    @unittest.mock.patch.object(DummyController, "check_bounds_respected")
     def test_bounds_respected_func_not_called(
             self, check_bounds_respected, cleanup):
+        """
+        Test that the check to verify that bounds are respected is not called
+        when the controller fails.
+        """
         self.controller.problem.value_ranges = {'test': (0, 1)}
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.flag == 3
+
+        # Cleanup has been mocked out with a no-op, so set the outputs now.
+        self.controller.flag = 3
+        self.controller.final_params = [1, 2, 3, 4]
+
         _ = loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
-        assert not check_bounds_respected.assert_called()
+        check_bounds_respected.assert_not_called()
+    # pylint: enable=unused-argument
 
 
 if __name__ == "__main__":

@@ -1,3 +1,6 @@
+"""
+This file contains unit tests for the main CLI script
+"""
 from unittest import TestCase
 from unittest.mock import patch
 import os
