@@ -33,15 +33,16 @@ def exception_handler(f):
                          'See below for more information.')
             if debug:
                 raise
-            else:
-                LOGGER.error(str(e))
-                sys.exit(1)
+
+            LOGGER.error(str(e))
+            sys.exit(1)
+
         except Exception as e:
             LOGGER.error('Unknown exception. Exiting.')
             if debug:
                 raise
-            else:
-                LOGGER.error(str(e))
-                sys.exit(1)
+
+            LOGGER.error(str(e))
+            sys.exit(1)
 
     return wrapped
