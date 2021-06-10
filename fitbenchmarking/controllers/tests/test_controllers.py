@@ -4,33 +4,31 @@ Tests for the controllers available from a default fitbenchmarking install
 import inspect
 import os
 from unittest import TestCase
+
 import numpy as np
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 
+from conftest import run_for_test_types
+from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
-
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
-from conftest import run_for_test_types
-
-from fitbenchmarking import mock_problems
 
 if TEST_TYPE in ['default', 'all']:
     from fitbenchmarking.controllers.bumps_controller import BumpsController
-    from fitbenchmarking.controllers.controller_factory import\
+    from fitbenchmarking.controllers.controller_factory import \
         ControllerFactory
     from fitbenchmarking.controllers.dfo_controller import DFOController
-    from fitbenchmarking.controllers.minuit_controller import\
-        MinuitController
+    from fitbenchmarking.controllers.minuit_controller import MinuitController
     from fitbenchmarking.controllers.scipy_controller import ScipyController
-    from fitbenchmarking.controllers.scipy_ls_controller import\
-        ScipyLSController
-    from fitbenchmarking.controllers.scipy_go_controller import\
+    from fitbenchmarking.controllers.scipy_go_controller import \
         ScipyGOController
+    from fitbenchmarking.controllers.scipy_ls_controller import \
+        ScipyLSController
 
 if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.gsl_controller import GSLController

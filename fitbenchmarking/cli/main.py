@@ -90,12 +90,14 @@ def run(problem_sets, options_file='', debug=False):
     if options_file != '':
         # Read custom minimizer options from file
         glob_options_file = glob.glob(options_file)
+
         if glob_options_file == []:
             raise OptionsError('Could not find file {}'.format(options_file))
+
         if not options_file.endswith(".ini"):
             raise OptionsError('Options file must be a ".ini" file')
-        else:
-            options = Options(glob_options_file)
+
+        options = Options(glob_options_file)
     else:
         options = Options()
 

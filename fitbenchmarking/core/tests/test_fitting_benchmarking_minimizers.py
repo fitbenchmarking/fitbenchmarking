@@ -31,7 +31,7 @@ class DummyController(Controller):
         :param cost_func: cost function class
         :type cost_func: CostFunc class
         """
-        super(DummyController, self).__init__(cost_func)
+        super().__init__(cost_func)
         self.algorithm_check = {'all': ['deriv_free_algorithm', 'general'],
                                 'ls': [None],
                                 'deriv_free': ['deriv_free_algorithm'],
