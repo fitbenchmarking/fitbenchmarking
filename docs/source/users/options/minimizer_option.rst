@@ -220,7 +220,50 @@ The `matlab` minimizer is set as follows:
    matlab: Nelder-Mead Simplex
 
 .. warning::
-   MATLAB must be installed for this to be available; See :ref:`extra_dependencies`.
+   MATLAB must be installed for this to be available; See :ref:`external-instructions`.
+   
+
+Matlab Optimization Toolbox (``matlab_opt``)
+--------------------------------------------
+
+We call the `lsqcurvefit <https://uk.mathworks.com/help/optim/ug/lsqcurvefit.html>`_
+function from the `MATLAB Optimization Toolbox <https://uk.mathworks.com/products/optimization.html>`_,
+using the MATLAB Engine API for Python.
+
+* Levenberg-Marquardt (:code:`levenberg-marquardt`)
+* Trust-Region-Reflective (:code:`trust-region-reflective`)
+
+The `matlab_opt` minimizers are set as follows:
+
+.. code-block:: rst
+
+   [MINIMIZERS]
+   matlab_opt: levenberg-marquardt
+               trust-region-reflective
+
+.. warning::
+   MATLAB Optimization Toolbox must be installed for this to be available; See :ref:`external-instructions`.
+
+
+Matlab Statistics Toolbox (``matlab_stats``)
+--------------------------------------------
+
+We call the `nlinfit <https://uk.mathworks.com/help/stats/nlinfit.html>`_
+function from the `MATLAB Statistics Toolbox <https://uk.mathworks.com/products/statistics.html>`_,
+using the MATLAB Engine API for Python.
+
+* Levenberg-Marquardt (:code:`Levenberg-Marquardt`)
+
+The `matlab_stats` minimizer is set as follows:
+
+.. code-block:: rst
+  
+  [MINIMIZERS]
+  matlab_stats: Levenberg-Marquardt
+
+.. warning::
+   MATLAB Statistics Toolbox must be installed for this to be available; See :ref:`external-instructions`.
+
 	   
 Minuit (``minuit``)
 -------------------
