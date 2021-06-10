@@ -107,6 +107,7 @@ jobs:
         sudo apt-get install libgsl-dev
         pip install pygsl
         pip install pycutest
+        pip install dill
     - name: 'Run Linting'
       run: |
         ci/linting_tests.sh
