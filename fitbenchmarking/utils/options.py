@@ -60,7 +60,11 @@ class Options(object):
     VALID_PLOTTING = \
         {'make_plots': [True, False],
          'comparison_mode': ['abs', 'rel', 'both'],
-         'table_type': ['acc', 'runtime', 'compare', 'local_min']}
+         'table_type': ['acc', 'runtime', 'compare', 'local_min'],
+         'colour_map': ['viridis', 'plasma', 'inferno', 'magma', 'cividis',
+                        'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
+                        'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
+                        'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']}
     VALID_LOGGING = \
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
                    'CRITICAL'],
@@ -107,11 +111,9 @@ class Options(object):
          'numdifftools': ['central']}
     DEFAULT_PLOTTING = \
         {'make_plots': True,
-         'colour_scale': [(1.1, "#fef0d9"),
-                          (1.33, "#fdcc8a"),
-                          (1.75, "#fc8d59"),
-                          (3, "#e34a33"),
-                          (np.inf, "#b30000")],
+         'colour_map': 'magma',
+         'colour_ulim': 100,
+         'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
          'results_dir': 'fitbenchmarking_results'}
@@ -192,12 +194,14 @@ class Options(object):
 
         plotting = config['PLOTTING']
         self.make_plots = self.read_value(plotting.getboolean, 'make_plots')
-        self.colour_scale = self.read_value(plotting.getlist, 'colour_scale')
-        check = [isinstance(c, tuple) for c in self.colour_scale]
-        if check.count(False) == len(check):
-            self.colour_scale = [(float(cs.split(',', 1)[0].strip()),
-                                  cs.split(',', 1)[1].strip())
-                                 for cs in self.colour_scale]
+        self.colour_map = self.read_value(plotting.getstr, 'colour_map')
+        self.colour_ulim = self.read_value(plotting.getfloat, 'colour_ulim')
+        self.cmap_range = self.read_value(plotting.getlist, 'cmap_range')
+        #check = [isinstance(c, tuple) for c in self.colour_scale]
+        #if check.count(False) == len(check):
+        #    self.colour_scale = [(float(cs.split(',', 1)[0].strip()),
+        #                          cs.split(',', 1)[1].strip())
+        #                         for cs in self.colour_scale]
         self.comparison_mode = self.read_value(plotting.getstr,
                                                'comparison_mode')
         self.table_type = self.read_value(plotting.getlist, 'table_type')
@@ -295,12 +299,12 @@ class Options(object):
                              'algorithm_type': list_to_string(self.algorithm_type),
                              'software': list_to_string(self.software),
                              'jac_method': list_to_string(self.jac_method)}
-        cs = list_to_string(['{0}, {1}'.format(*pair)
-                             for pair in self.colour_scale])
+        #cs = list_to_string(['{0}, {1}'.format(*pair)
+        #                     for pair in self.colour_scale])
         config['JACOBIAN'] = {k: list_to_string(m)
                               for k, m in self.num_method.items()}
 
-        config['PLOTTING'] = {'colour_scale': cs,
+        config['PLOTTING'] = {'colour_map': self.colour_map,
                               'comparison_mode': self.comparison_mode,
                               'make_plots': self.make_plots,
                               'results_dir': self.results_dir,

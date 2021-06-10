@@ -58,15 +58,6 @@ class Table:
         self.table_name = table_name
         self.name = None
 
-        #for problem in results:
-        #    print(min([r.runtime for r in problem]))
-        #    print(max([r.runtime for r in problem]))
-
-        colour_scale = self.options.colour_scale
-
-        self.colour_bounds = [colour[0] for colour in colour_scale]
-        self.html_colours = [colour[1] for colour in colour_scale]
-
         self.output_string_type = {"abs": '{:.4g}',
                                    "rel": '{:.4g}',
                                    "both": '{0:.4g} ({1:.4g})'}
@@ -144,20 +135,18 @@ class Table:
         """
         Converts the result from
         :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()`
-        into the HTML colours
-        used in the tables. The base class implementation, for example,
-        uses the relative results and ``colour_scale`` within
-        :class:`~fitbenchmarking.utils.options.Options`.
+        into the HTML colours used in the tables. The base class implementation, 
+        for example, uses the relative results and ``colour_map``, ``colour_ulim``
+        and ``cmap_range`` within :class:`~fitbenchmarking.utils.options.Options`.
         :param results: tuple containing absolute and relative values
         :type results: tuple
         :return: dictionary containing HTML colours for the table
         :rtype: dict
         """
-        # cmap_name = self.options.colour_map
-        cmap_name = "YlOrBr"
+        cmap_name = self.options.colour_map
         cmap = plt.get_cmap(cmap_name)
-        # cmap_ulim = self.options.colour_ulim
-        cmap_ulim = 50
+        cmap_ulim = self.options.colour_ulim
+        cmap_range = self.options.cmap_range
         log_ulim = np.log10(cmap_ulim)
         _, rel_value = results
         colour = {}
@@ -165,7 +154,8 @@ class Table:
             if not all(isinstance(elem, list) for elem in value):
                 log_val = np.log10(value)
                 norm_val = (log_val-min(log_val))/(log_ulim-min(log_val))
-                norm_val[norm_val>1] = 1
+                norm_val[norm_val>1] = 1 # applying upper cutoff
+                norm_val = cmap_range[0]+norm_val*(cmap_range[1]-cmap_range[0])
                 rgba_list = cmap(norm_val)
                 hex_list = []
                 for c in rgba_list:
@@ -176,7 +166,8 @@ class Table:
                 for v in value:
                     log_val = np.log10(v)
                     norm_val = (log_val-min(log_val))/(log_ulim-min(log_val))
-                    norm_val[norm_val>1] = 1
+                    norm_val[norm_val>1] = 1 # applying upper cutoff
+                    norm_val = cmap_range[0]+norm_val*(cmap_range[1]-cmap_range[0])
                     rgba_list = cmap(norm_val)
                     hex_list = []
                     for c in rgba_list:
