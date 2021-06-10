@@ -87,6 +87,8 @@ class GradientFreeController(Controller):
         param_ranges = [np.arange(b[0], b[1], 0.1) for b in self.value_ranges]
         self.search_space = dict(zip(self.problem.param_names, param_ranges))
 
+        # set dictionary of initial parameter values to pass to gfo search
+        # function
         param_dict = {self.problem.param_names[i]: self.initial_params[i]
                       for i in range(len(self.initial_params))}
 
