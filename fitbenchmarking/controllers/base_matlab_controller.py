@@ -7,9 +7,14 @@ try:
 except ImportError:
     from backports.tempfile import TemporaryDirectory
 import os
-import dill
+try:
+    import dill
+    import_success = True
+except ImportError:
+    import_success = False
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
 class BaseMatlabController(Controller):
@@ -23,6 +28,10 @@ class BaseMatlabController(Controller):
         fitting software
         """
         super().__init__(cost_func)
+
+        if not import_success:
+            raise MissingSoftwareError('Requirements are missing for Matlab '
+                                       'fitting, module "dill" is reuqired.')
 
         self.initial_params_mat = None
 
