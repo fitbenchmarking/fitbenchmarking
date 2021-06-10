@@ -10,7 +10,7 @@ import os
 from sys import platform
 import tempfile
 from unittest import TestCase
-from pytest import test_type as TEST_TYPE
+from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 from conftest import run_for_test_types
 
 from fitbenchmarking.cli.main import run

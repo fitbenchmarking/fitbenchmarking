@@ -1,8 +1,9 @@
 #!/bin/bash
 
-pylint -r y fitbenchmarking/parsing/* --exit-zero
+pylint fitbenchmarking || pylint-exit $? --error-fail --warn-fail
 status=$?
-flake8 fitbenchmarking/parsing/*
+
+flake8 fitbenchmarking
 status=$(($status + $?))
 
 if [[ $status != 0 ]]
