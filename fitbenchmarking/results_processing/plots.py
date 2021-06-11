@@ -79,8 +79,13 @@ class Plot:
         """
         Performs post plot processing to annotate the plot correctly
         """
-        self.ax.set_xlabel(r"Time ($\mu s$)")
-        self.ax.set_ylabel("Arbitrary units")
+        # log scale plot if problem is a SASView problem
+        if self.problem.format == "sasview":
+            self.ax.set_xscale("log", nonpositive='clip')
+            self.ax.set_yscale("log", nonpositive='clip')
+        # linear scale if otherwise
+        self.ax.set_xlabel("X")
+        self.ax.set_ylabel("Y")
         self.ax.set_title(self.result.name,
                           fontsize=self.title_size)
         self.ax.legend(loc=self.legend_location)
