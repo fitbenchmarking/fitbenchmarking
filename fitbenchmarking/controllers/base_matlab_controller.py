@@ -47,7 +47,8 @@ class BaseMatlabController(Controller):
     def cleanup(self):
         raise NotImplementedError
 
-    def py_to_mat(self, func, eng):
+    @staticmethod
+    def py_to_mat(func, eng):
         """
         Function that serializes a python function and then
         loads it into the Matlab engine workspace
@@ -57,11 +58,11 @@ class BaseMatlabController(Controller):
         with open(temp_file, 'wb') as f:
             dill.dump(func, f)
         eng.workspace['temp_file'] = temp_file
-        eng.evalc('py_f = py.open(temp_file,"rb")')
-        eng.evalc('func_mat = py.dill.load(py_f)')
-        eng.evalc('py_f.close()')
+        eng.evalc('fp = py.open(temp_file,"rb")')
+        eng.evalc('fm = py.dill.load(fp)')
+        eng.evalc('fp.close()')
 
-        return eng.workspace['func_mat']
+        return eng.workspace['fm']
 
     def _feval(self, p):
         """
