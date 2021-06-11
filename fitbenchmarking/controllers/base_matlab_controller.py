@@ -31,7 +31,7 @@ class BaseMatlabController(Controller):
 
         if not import_success:
             raise MissingSoftwareError('Requirements are missing for Matlab '
-                                       'fitting, module "dill" is reuqired.')
+                                       'fitting, module "dill" is required.')
 
         self.initial_params_mat = None
 
