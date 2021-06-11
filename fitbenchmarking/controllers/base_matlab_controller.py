@@ -68,12 +68,12 @@ class BaseMatlabController(Controller):
         """
         Function to call from matlab which evaluates the residuals
         """
-        feval = -self.cost_func.eval_r(p)
+        feval = self.cost_func.eval_r(p)
         return feval
 
     def _jeval(self, p):
         """
         Function to call from matlab which evaluates the jacobian
         """
-        jeval = -self.jacobian.eval(p)
+        jeval = self.jacobian.eval(p)
         return jeval
