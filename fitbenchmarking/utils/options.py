@@ -197,11 +197,6 @@ class Options(object):
         self.colour_map = self.read_value(plotting.getstr, 'colour_map')
         self.colour_ulim = self.read_value(plotting.getfloat, 'colour_ulim')
         self.cmap_range = self.read_value(plotting.getlist, 'cmap_range')
-        #check = [isinstance(c, tuple) for c in self.colour_scale]
-        #if check.count(False) == len(check):
-        #    self.colour_scale = [(float(cs.split(',', 1)[0].strip()),
-        #                          cs.split(',', 1)[1].strip())
-        #                         for cs in self.colour_scale]
         self.comparison_mode = self.read_value(plotting.getstr,
                                                'comparison_mode')
         self.table_type = self.read_value(plotting.getlist, 'table_type')
