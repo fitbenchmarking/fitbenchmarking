@@ -25,9 +25,11 @@ In order to add a new controller, you will need to:
       Please note that if the fitting package being added uses Matlab, then the
       new controller should be a new subclass of 
       :class:`~fitbenchmarking.controllers.base_matlab_controller.BaseMatlabController`.
-   
+
       This contains
-      .. automethod:: fitbenchmarking.controllers.base_matlab_controller.BaseMatlabController.py_to_mat()
+      .. autoclass:: fitbenchmarking.controllers.base_matlab_controller.BaseMatlabController
+          :members: py_to_mat
+          :noindex:
 
 
    The new controller should implement five functions:
