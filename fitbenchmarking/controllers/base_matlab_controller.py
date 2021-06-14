@@ -13,11 +13,10 @@ try:
 except ImportError:
     import_success = False
 
-from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
-class BaseMatlabController(Controller):
+class BaseMatlabController:
     """
     Base class for matlab fitting software controllers
     """
@@ -27,25 +26,13 @@ class BaseMatlabController(Controller):
         Initialise anything that is needed specifically for matlab
         fitting software
         """
-        super().__init__(cost_func)
 
         if not import_success:
             raise MissingSoftwareError('Requirements are missing for Matlab '
                                        'fitting, module "dill" is required.')
 
+        self.cost_func = cost_func
         self.initial_params_mat = None
-
-    def setup(self):
-        raise NotImplementedError
-
-    def jacobian_information(self):
-        raise NotImplementedError
-
-    def fit(self):
-        raise NotImplementedError
-
-    def cleanup(self):
-        raise NotImplementedError
 
     @staticmethod
     def py_to_mat(func, eng):

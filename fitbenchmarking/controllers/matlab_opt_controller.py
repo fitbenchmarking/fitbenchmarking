@@ -5,13 +5,14 @@ Implements a controller for MATLAB Optimization Toolbox
 import matlab.engine
 import numpy as np
 
+from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.base_matlab_controller import\
     BaseMatlabController
 
 eng = matlab.engine.start_matlab()
 
 
-class MatlabOptController(BaseMatlabController):
+class MatlabOptController(Controller, BaseMatlabController):
     """
     Controller for MATLAB Optimization Toolbox, implementing lsqcurvefit
     """
