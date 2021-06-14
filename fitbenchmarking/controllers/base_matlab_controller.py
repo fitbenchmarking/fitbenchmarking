@@ -64,16 +64,10 @@ class BaseMatlabController(Controller):
 
         return eng.workspace['fm']
 
-    def _feval(self, p):
+    def clear_cached_values(self):
         """
-        Function to call from matlab which evaluates the residuals
+        Clear cached values incase stored values are of type
+        matlab array as this causes a Python error
         """
-        feval = self.cost_func.eval_r(p)
-        return feval
-
-    def _jeval(self, p):
-        """
-        Function to call from matlab which evaluates the jacobian
-        """
-        jeval = self.jacobian.eval(p)
-        return jeval
+        self.cost_func.cache_cost_x = {'params': None, 'value': None}
+        self.cost_func.cache_rx = {'params': None, 'value': None}

@@ -55,8 +55,7 @@ class MatlabController(BaseMatlabController):
         self.initial_params_mat = matlab.double([self.initial_params])
 
         # clear out cached values
-        self.cost_func.cache_cost_x = {'params': None, 'value': None}
-        self.cost_func.cache_rx = {'params': None, 'value': None}
+        self.clear_cached_values()
 
         # serialize cost_func.eval_cost and open within matlab engine
         # so that matlab fitting function can be called

@@ -62,6 +62,9 @@ class MatlabOptController(BaseMatlabController):
         self.initial_params_mat = matlab.double([self.initial_params])
         self.x_data_mat = matlab.double(self.data_x.tolist())
 
+        # clear out cached values
+        self.clear_cached_values()
+
         # set matlab workspace variable for selected minimizer
         eng.workspace['minimizer'] = self.minimizer
 
@@ -74,16 +77,20 @@ class MatlabOptController(BaseMatlabController):
             # lsqcurvefit function
             self.param_ranges = (matlab.double([]), matlab.double([]))
 
-        # serialize _feval and _jeval functions (if not using default
-        # jacobian) and open within matlab engine so
-        # matlab fitting function can be called
-        eng.workspace['eval_f'] = self.py_to_mat(self._feval, eng)
+        # serialize cost_func.eval_r and jacobian.eval (if not
+        # using default jacobian) and open within matlab engine
+        # so matlab fitting function can be called
+        eng.workspace['eval_f'] = self.py_to_mat(self.cost_func.eval_r, eng)
         eng.evalc('f_wrapper = @(p, x)double(eval_f(p))')
+
+        eng.workspace['init'] = self.initial_params_mat
+        eng.workspace['x'] = self.x_data_mat
+        print(eng.eval('f_wrapper(init, x)'))
 
         # if default jacobian is not selected then pass _jeval
         # function to matlab
         if not self.jacobian.use_default_jac:
-            eng.workspace['eval_j'] = self.py_to_mat(self._jeval, eng)
+            eng.workspace['eval_j'] = self.py_to_mat(self.jacobian.eval, eng)
             eng.evalc('j_wrapper = @(p, x)double(eval_j(p))')
 
             eng.workspace['eval_func'] = [eng.workspace['f_wrapper'],
