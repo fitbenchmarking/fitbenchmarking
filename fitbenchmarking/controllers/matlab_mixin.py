@@ -1,5 +1,5 @@
 """
-Implements base class for the matlab fitting software controllers.
+Implements mixin class for the matlab fitting software controllers.
 """
 
 try:
@@ -16,9 +16,9 @@ except ImportError:
 from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
-class BaseMatlabController:
+class MatlabMixin:
     """
-    Base class for matlab fitting software controllers
+    Mixin class for matlab fitting software controllers
     """
 
     def __init__(self, cost_func):

@@ -23,10 +23,10 @@ In order to add a new controller, you will need to:
 
    .. note::
       Please note that if the fitting package being added uses Matlab, then the
-      new controller should be a new subclass of 
-      :class:`~fitbenchmarking.controllers.base_matlab_controller.BaseMatlabController`.
+      new controller should also inherit from the mixin class
+      :class:`~fitbenchmarking.controllers.matlab_mixin.MatlabMixin`.
 
-      .. autoclass:: fitbenchmarking.controllers.base_matlab_controller.BaseMatlabController
+      .. autoclass:: fitbenchmarking.controllers.matlab_mixin.MatlabMixin
           :members: py_to_mat, clear_cached_values
           :noindex:
 

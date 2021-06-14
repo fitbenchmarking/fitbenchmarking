@@ -6,13 +6,12 @@ import matlab.engine
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.controllers.base_matlab_controller import\
-    BaseMatlabController
+from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
 
 eng = matlab.engine.start_matlab()
 
 
-class MatlabStatsController(BaseMatlabController, Controller):
+class MatlabStatsController(MatlabMixin, Controller):
     """
     Controller for MATLAB Statistics Toolbox fitting (nlinfit)
     """

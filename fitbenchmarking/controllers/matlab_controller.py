@@ -5,13 +5,12 @@ Implements a controller for MATLAB
 import matlab.engine
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.controllers.base_matlab_controller import\
-    BaseMatlabController
+from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
 
 eng = matlab.engine.start_matlab()
 
 
-class MatlabController(BaseMatlabController, Controller):
+class MatlabController(MatlabMixin, Controller):
     """
     Controller for MATLAB fitting (fminsearch)
     """
