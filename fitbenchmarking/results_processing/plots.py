@@ -8,7 +8,7 @@ import matplotlib
 from fitbenchmarking.utils.exceptions import PlottingError
 
 matplotlib.use('Agg')
-# pylint: disable=wrong-import-position
+# pylint: disable=ungrouped-imports,wrong-import-position,wrong-import-order
 import matplotlib.pyplot as plt  # noqa: E402
 
 

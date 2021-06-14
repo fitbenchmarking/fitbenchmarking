@@ -72,7 +72,7 @@ class FitbenchmarkParser(Parser):
             raise MissingSoftwareError(
                 f'Did not recognise software: {software}'
             )
-        elif not import_success[software][0]:
+        if not import_success[software][0]:
             error = import_success[software][1]
             raise MissingSoftwareError(
                 f'Requirements are missing for {software} parser: {error}'
@@ -113,8 +113,8 @@ class FitbenchmarkParser(Parser):
             all_data = np.concatenate(all_data)
 
             def new_function(x, *p):
-                input = all_data[x]
-                return old_function(input, *p)
+                inp = all_data[x]
+                return old_function(inp, *p)
 
             fitting_problem.function = new_function
             fitting_problem.multivariate = True
