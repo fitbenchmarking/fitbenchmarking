@@ -124,9 +124,9 @@ parameter_ranges
   Similarly to ``fit_ranges``, it takes the form where the first number
   is the minimum in the range and the second is the maximum.
 
-  Currently in Fitbenchmarking, problems with ``parameter_ranges`` can
-  be handled by SciPy, Bumps, Minuit, Mantid, DFO, Levmar and RALFit fitting
-  software. Please note that the following Mantid minimizers currently
-  throw an exception when ``parameter_ranges`` are used: BFGS, Conjugate
-  gradient (Fletcher-Reeves imp.), Conjugate gradient (Polak-Ribiere imp.)
-  and SteepestDescent.
+  Currently in Fitbenchmarking, problems with `parameter_ranges` can
+  be handled by SciPy, Bumps, Minuit, Mantid, Matlab Optimization Toolbox,
+  DFO, Levmar and RALFit fitting software. Please note that the following
+  Mantid minimizers currently throw an exception when `parameter_ranges`
+  are used: BFGS, Conjugate gradient (Fletcher-Reeves imp.),
+  Conjugate gradient (Polak-Ribiere imp.) and SteepestDescent.

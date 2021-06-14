@@ -4,30 +4,30 @@ Tests for the controllers available from a default fitbenchmarking install
 import inspect
 import os
 from unittest import TestCase
+
 import numpy as np
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 
+from conftest import run_for_test_types
+from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
-
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
-from conftest import run_for_test_types
-
-from fitbenchmarking import mock_problems
 
 if TEST_TYPE in ['default', 'all']:
     from fitbenchmarking.controllers.bumps_controller import BumpsController
-    from fitbenchmarking.controllers.controller_factory import\
+    from fitbenchmarking.controllers.controller_factory import \
         ControllerFactory
     from fitbenchmarking.controllers.dfo_controller import DFOController
-    from fitbenchmarking.controllers.minuit_controller import\
-        MinuitController
+    from fitbenchmarking.controllers.minuit_controller import MinuitController
     from fitbenchmarking.controllers.scipy_controller import ScipyController
-    from fitbenchmarking.controllers.scipy_ls_controller import\
+    from fitbenchmarking.controllers.scipy_go_controller import \
+        ScipyGOController
+    from fitbenchmarking.controllers.scipy_ls_controller import \
         ScipyLSController
 
 if TEST_TYPE == 'all':
@@ -38,8 +38,14 @@ if TEST_TYPE == 'all':
 
 if TEST_TYPE == 'matlab':
     from fitbenchmarking.controllers.matlab_controller import MatlabController
+    from fitbenchmarking.controllers.matlab_opt_controller import\
+        MatlabOptController
+    from fitbenchmarking.controllers.matlab_stats_controller import\
+        MatlabStatsController
+
 
 # pylint: disable=attribute-defined-outside-init, protected-access
+
 
 def make_cost_func(file_name='cubic.dat'):
     """
@@ -62,6 +68,7 @@ class DummyController(Controller):
     Minimal instantiatable subclass of Controller class for testing
     """
     # pylint: disable=missing-function-docstring
+
     def setup(self):
         self.setup_result = 53
 
@@ -453,6 +460,7 @@ class ControllerBoundsTests(TestCase):
     """
     Tests to ensure controllers handle and respect bounds correctly
     """
+
     def setUp(self):
         """
         Setup for bounded problem
@@ -769,6 +777,82 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_max_iterations(controller)
             controller._status = -1
             self.shared_tests.check_diverged(controller)
+
+    def test_matlab_opt(self):
+        """
+        MatlabOptController: Tests for output shape
+        """
+        controller = MatlabOptController(self.cost_func)
+        controller.jacobian = self.jac
+        self.shared_tests.check_jac_info(controller,
+                                         True,
+                                         [])
+
+        minimizers = ['levenberg-marquardt', 'trust-region-reflective']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._status = 1
+            self.shared_tests.check_converged(controller)
+            controller._status = 0
+            self.shared_tests.check_max_iterations(controller)
+            controller._status = -1
+            self.shared_tests.check_diverged(controller)
+
+    def test_matlab_stats(self):
+        """
+        MatlabStatsController: Tests for output shape
+        """
+        controller = MatlabStatsController(self.cost_func)
+        controller.jacobian = self.jac
+        self.shared_tests.check_jac_info(controller,
+                                         False,
+                                         ['Levenberg-Marquardt'])
+
+        minimizers = ['Levenberg-Marquardt']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._status = 0
+            self.shared_tests.check_converged(controller)
+            controller._status = 1
+            self.shared_tests.check_diverged(controller)
+
+
+@run_for_test_types(TEST_TYPE, 'all')
+class GlobalOptimizationControllerTests(TestCase):
+    """
+    Tests for each controller class
+    """
+
+    def setUp(self):
+        self.cost_func = make_cost_func('cubic-fba-test-go.txt')
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.cost_func)
+        self.jac.method = '2-point'
+        self.shared_tests = ControllerSharedTesting()
+
+    def test_scipy_go(self):
+        """
+        ScipyGOController: Test for output shape
+        """
+        controller = ScipyGOController(self.cost_func)
+        controller.minimizer = 'dual_annealing'
+        controller.jacobian = self.jac
+
+        self.shared_tests.controller_run_test(controller)
+        self.shared_tests.check_jac_info(controller,
+                                         True,
+                                         ['differential_evolution'])
+
+        controller._status = 0
+        self.shared_tests.check_converged(controller)
+        controller._status = 1
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = 2
+        self.shared_tests.check_diverged(controller)
 
 
 @run_for_test_types(TEST_TYPE, 'default', 'all')

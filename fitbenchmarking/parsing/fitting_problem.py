@@ -182,8 +182,7 @@ class FittingProblem:
         and approximate errors if not given.
         Modifications happen on member variables.
         """
-        use_errors = True if self.options.cost_func_type == "weighted_nlls" \
-            else False
+        use_errors = self.options.cost_func_type == "weighted_nlls"
         if not self.multifit:
             correct_vals = correct_data(x=self.data_x,
                                         y=self.data_y,
@@ -199,6 +198,7 @@ class FittingProblem:
             # Mantid multifit problem
             self.sorted_index = []
             for i in range(len(self.data_x)):
+                # pylint: disable=unsubscriptable-object
                 correct_vals = correct_data(x=self.data_x[i],
                                             y=self.data_y[i],
                                             e=self.data_e[i],
@@ -234,8 +234,7 @@ class FittingProblem:
         for name in lower_param_names:
             if name in value_ranges:
                 self.value_ranges.append(
-                    (value_ranges[name][0],
-                        value_ranges[name][1]))
+                    (value_ranges[name][0], value_ranges[name][1]))
             else:
                 self.value_ranges.append((-np.inf, np.inf))
 

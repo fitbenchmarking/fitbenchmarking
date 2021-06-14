@@ -10,20 +10,20 @@ class FitBenchmarkException(Exception):
     To define a new exception, inherrit from this and override the
     _class_message
     """
+    class_message = 'An unknown exception occurred.'
+    error_code = 1
 
     def __init__(self, message=''):
-        super(FitBenchmarkException, self).__init__(message)
-        self._class_message = 'An unknown exception occurred.'
+        super().__init__(message)
         self._obj_message = message
-        self.error_code = 1
         self._error_string = None
 
     def __str__(self):
         if self._obj_message != '':
-            self._error_string = '{}\nDetails: {}'.format(self._class_message,
+            self._error_string = '{}\nDetails: {}'.format(self.class_message,
                                                           self._obj_message)
         else:
-            self._error_string = self._class_message
+            self._error_string = self.class_message
 
         return self._error_string.strip()
 
@@ -32,84 +32,56 @@ class OptionsError(FitBenchmarkException):
     """
     Indicates an error during processing options.
     """
-
-    def __init__(self, message=''):
-        super(OptionsError, self).__init__(message)
-
-        self._class_message = 'Failed to process options.'
-        self.error_code = 2
+    class_message = 'Failed to process options.'
+    error_code = 2
 
 
 class ParsingError(FitBenchmarkException):
     """
     Indicates an error during parsing.
     """
-
-    def __init__(self, message=''):
-        super(ParsingError, self).__init__(message)
-
-        self._class_message = 'Could not parse problem.'
-        self.error_code = 3
+    class_message = 'Could not parse problem.'
+    error_code = 3
 
 
 class NoParserError(FitBenchmarkException):
     """
     Indicates a parser could not be found.
     """
-
-    def __init__(self, message=''):
-        super(NoParserError, self).__init__(message)
-
-        self._class_message = 'Could not find parser.'
-        self.error_code = 4
+    class_message = 'Could not find parser.'
+    error_code = 4
 
 
 class MissingSoftwareError(FitBenchmarkException):
     """
     Indicates that the requirements for a software package are not available.
     """
-
-    def __init__(self, message=''):
-        super(MissingSoftwareError, self).__init__(message)
-
-        self._class_message = 'Missing dependencies for fit.'
-        self.error_code = 5
+    class_message = 'Missing dependencies for fit.'
+    error_code = 5
 
 
 class NoControllerError(FitBenchmarkException):
     """
     Indicates a controller could not be found
     """
-
-    def __init__(self, message=''):
-        super(NoControllerError, self).__init__(message)
-
-        self._class_message = 'Could not find controller.'
-        self.error_code = 6
+    class_message = 'Could not find controller.'
+    error_code = 6
 
 
 class ControllerAttributeError(FitBenchmarkException):
     """
     Indicates an issue with the attributes within a controller
     """
-
-    def __init__(self, message=''):
-        super(ControllerAttributeError, self).__init__(message)
-
-        self._class_message = 'Error in the controller attributes.'
-        self.error_code = 7
+    class_message = 'Error in the controller attributes.'
+    error_code = 7
 
 
 class NoDataError(FitBenchmarkException):
     """
     Indicates that no data could be found.
     """
-
-    def __init__(self, message=''):
-        super(NoDataError, self).__init__(message)
-
-        self._class_message = 'No data found.'
-        self.error_code = 8
+    class_message = 'No data found.'
+    error_code = 8
 
 
 class UnknownMinimizerError(FitBenchmarkException):
@@ -117,97 +89,65 @@ class UnknownMinimizerError(FitBenchmarkException):
     Indicates that the controller does not support a given minimizer given
     the current "algorithm_type" option set.
     """
-
-    def __init__(self, message=''):
-        super(UnknownMinimizerError, self).__init__(message)
-
-        self._class_message = 'Minimizer cannot be run with Controller with ' \
-                              'current "algorithm_type" option set.'
-        self.error_code = 9
+    class_message = 'Minimizer cannot be run with Controller with ' \
+                    'current "algorithm_type" option set.'
+    error_code = 9
 
 
 class FittingProblemError(FitBenchmarkException):
     """
     Indicates a problem with the fitting problem.
     """
-
-    def __init__(self, message=''):
-        super(FittingProblemError, self).__init__(message)
-
-        self._class_message = 'Fitting Problem raised and exception.'
-        self.error_code = 10
+    class_message = 'Fitting Problem raised and exception.'
+    error_code = 10
 
 
 class NoJacobianError(FitBenchmarkException):
     """
     Indicates a problem with the Jacobian import.
     """
-
-    def __init__(self, message=''):
-        super(NoJacobianError, self).__init__(message)
-
-        self._class_message = 'Could not find Jacobian class'
-        self.error_code = 11
+    class_message = 'Could not find Jacobian class'
+    error_code = 11
 
 
 class NoAnalyticJacobian(FitBenchmarkException):
     """
     Indicates when no Jacobian data files can be found
     """
-
-    def __init__(self, message=''):
-        super(NoAnalyticJacobian, self).__init__(message)
-
-        self._class_message = 'Could not find Jacobian data files'
-        self.error_code = 12
+    class_message = 'Could not find Jacobian data files'
+    error_code = 12
 
 
 class UnknownTableError(FitBenchmarkException):
     """
     Indicates a problem with the fitting problem.
     """
-
-    def __init__(self, message=''):
-        super(UnknownTableError, self).__init__(message)
-
-        self._class_message = 'Set table option could not be found'
-        self.error_code = 13
+    class_message = 'Set table option could not be found'
+    error_code = 13
 
 
 class NoResultsError(FitBenchmarkException):
     """
     Indicates a problem with the fitting problem.
     """
-
-    def __init__(self, message=''):
-        super(NoResultsError, self).__init__(message)
-
-        self._class_message = 'FitBenchmarking ran with no results'
-        self.error_code = 14
+    class_message = 'FitBenchmarking ran with no results'
+    error_code = 14
 
 
 class UnsupportedMinimizerError(FitBenchmarkException):
     """
     Indicates that the controller does not support a given minimizer.
     """
-
-    def __init__(self, message=''):
-        super(UnsupportedMinimizerError, self).__init__(message)
-
-        self._class_message = 'FitBenchmarking ran with no results'
-        self.error_code = 15
+    class_message = 'FitBenchmarking ran with no results'
+    error_code = 15
 
 
 class CostFuncError(FitBenchmarkException):
     """
     Indicates a problem with the cost function class.
     """
-
-    def __init__(self, message=''):
-        super(CostFuncError, self).__init__(message)
-
-        self._class_message = 'FitBenchmarking ran with no results'
-        self.error_code = 16
+    class_message = 'FitBenchmarking ran with no results'
+    error_code = 16
 
 
 class IncompatibleMinimizerError(FitBenchmarkException):
@@ -215,13 +155,9 @@ class IncompatibleMinimizerError(FitBenchmarkException):
     Indicates that the selected minimizer is not compatible
     with selected options/problem set
     """
-
-    def __init__(self, message=''):
-        super(IncompatibleMinimizerError, self).__init__(message)
-
-        self._class_message = 'Minimizer cannot be used with ' \
-                              'selected options/problem set'
-        self.error_code = 17
+    class_message = 'Minimizer cannot be used with ' \
+                    'selected options/problem set'
+    error_code = 17
 
 
 class IncompatibleTableError(FitBenchmarkException):
@@ -229,37 +165,35 @@ class IncompatibleTableError(FitBenchmarkException):
     Indicates that selected cost function and table are
     not compatible
     """
-
-    def __init__(self, message=''):
-        super(IncompatibleTableError, self).__init__(message)
-
-        self._class_message = 'The table type selected is not ' \
-                              'compatible with the selected ' \
-                              'cost function'
-        self.error_code = 18
+    class_message = 'The table type selected is not ' \
+                    'compatible with the selected ' \
+                    'cost function'
+    error_code = 18
 
 
 class IncorrectBoundsError(FitBenchmarkException):
     """
     Indicates that `parameter_ranges` have been set incorrectly
     """
+    class_message = 'Bounds for this problem are ' \
+                    'unable to be set, so this ' \
+                    'problem will be skipped.'
+    error_code = 19
 
-    def __init__(self, message=''):
-        super(IncorrectBoundsError, self).__init__(message)
 
-        self._class_message = 'Bounds for this problem are ' \
-                              'unable to be set, so this ' \
-                              'problem will be skipped.'
-        self.error_code = 19
+class MissingBoundsError(FitBenchmarkException):
+    """
+    Indicates that `parameter_ranges` have not been set but are required
+    """
+    class_message = 'Bounds on all parameters ' \
+                    'are required to use this ' \
+                    'software.'
+    error_code = 20
 
 
 class PlottingError(FitBenchmarkException):
     """
     Indicates an error during plotting results
     """
-
-    def __init__(self, message=''):
-        super(PlottingError, self).__init__(message)
-
-        self._class_message = 'An error occurred during plotting.'
-        self.error_code = 20
+    class_message = 'An error occurred during plotting.'
+    error_code = 21

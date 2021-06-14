@@ -51,7 +51,7 @@ class FitbenchmarkParser(Parser):
     """
 
     def __init__(self, filename, options):
-        super(FitbenchmarkParser, self).__init__(filename, options)
+        super().__init__(filename, options)
 
         self._entries = None
         self._parsed_func = None
@@ -384,6 +384,7 @@ class FitbenchmarkParser(Parser):
         params = {name: value
                   for name, value, fixed in all_params
                   if not fixed}
+        # pylint: disable=attribute-defined-outside-init
         self._mantid_starting_values = [OrderedDict(params)]
 
         # Convert to callable
@@ -393,8 +394,7 @@ class FitbenchmarkParser(Parser):
         def wrapped(x, *p):
             # Use the full param dict from above, but update the non-fixed
             # values
-            update_dict = {name: value
-                           for name, value in zip(params.keys(), p)}
+            update_dict = dict(zip(params.keys(), p))
             all_params_dict.update(update_dict)
 
             return fit_function(x, *all_params_dict.values())
@@ -533,8 +533,8 @@ def _parse_range(range_str):
         val = [v.strip() for v in val]
         try:
             pair = [float(val[0]), float(val[1])]
-        except ValueError:
-            raise ParsingError('Expected floats in range: {}'.format(r))
+        except ValueError as e:
+            raise ParsingError('Expected floats in range: {}'.format(r)) from e
 
         if pair[0] >= pair[1]:
             raise ParsingError('Min value must be smaller than max value '
