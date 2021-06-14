@@ -27,7 +27,7 @@ In order to add a new controller, you will need to:
       :class:`~fitbenchmarking.controllers.base_matlab_controller.BaseMatlabController`.
 
       .. autoclass:: fitbenchmarking.controllers.base_matlab_controller.BaseMatlabController
-          :members: py_to_mat
+          :members: py_to_mat, clear_cached_values
           :noindex:
 
 
