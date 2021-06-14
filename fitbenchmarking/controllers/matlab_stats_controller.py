@@ -12,7 +12,7 @@ from fitbenchmarking.controllers.base_matlab_controller import\
 eng = matlab.engine.start_matlab()
 
 
-class MatlabStatsController(Controller, BaseMatlabController):
+class MatlabStatsController(BaseMatlabController, Controller):
     """
     Controller for MATLAB Statistics Toolbox fitting (nlinfit)
     """

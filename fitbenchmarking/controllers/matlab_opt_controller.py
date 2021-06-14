@@ -12,7 +12,7 @@ from fitbenchmarking.controllers.base_matlab_controller import\
 eng = matlab.engine.start_matlab()
 
 
-class MatlabOptController(Controller, BaseMatlabController):
+class MatlabOptController(BaseMatlabController, Controller):
     """
     Controller for MATLAB Optimization Toolbox, implementing lsqcurvefit
     """

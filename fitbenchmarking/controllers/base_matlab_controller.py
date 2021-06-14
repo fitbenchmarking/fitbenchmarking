@@ -27,6 +27,8 @@ class BaseMatlabController:
         fitting software
         """
 
+        super().__init__(cost_func)
+
         if not import_success:
             raise MissingSoftwareError('Requirements are missing for Matlab '
                                        'fitting, module "dill" is required.')

@@ -11,7 +11,7 @@ from fitbenchmarking.controllers.base_matlab_controller import\
 eng = matlab.engine.start_matlab()
 
 
-class MatlabController(Controller, BaseMatlabController):
+class MatlabController(BaseMatlabController, Controller):
     """
     Controller for MATLAB fitting (fminsearch)
     """
