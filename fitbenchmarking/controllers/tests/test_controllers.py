@@ -760,7 +760,7 @@ class MatlabControllerTests(TestCase):
 
     def test_py_to_mat(self):
         """
-        Tests the static method py_to_mat in Base Matlab Controller,
+        Tests the static method py_to_mat in MatlabMixin,
         ensuring that evaluating a function through the matlab
         engine gives the same output as evaulating the function
         from python
