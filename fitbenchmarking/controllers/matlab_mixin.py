@@ -33,7 +33,6 @@ class MatlabMixin:
             raise MissingSoftwareError('Requirements are missing for Matlab '
                                        'fitting, module "dill" is required.')
 
-        self.cost_func = cost_func
         self.initial_params_mat = None
 
     @staticmethod
