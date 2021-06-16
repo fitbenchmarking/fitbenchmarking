@@ -42,6 +42,7 @@ if TEST_TYPE == 'matlab':
         MatlabOptController
     from fitbenchmarking.controllers.matlab_stats_controller import\
         MatlabStatsController
+    import matlab.engine
 
 
 # pylint: disable=attribute-defined-outside-init, protected-access
@@ -746,7 +747,8 @@ class ExternalControllerTests(TestCase):
 @run_for_test_types(TEST_TYPE, 'matlab')
 class MatlabControllerTests(TestCase):
     """
-    Tests for each controller class
+    Tests for each controller classb and for the
+    Base Matlab Controller
     """
 
     def setUp(self):
@@ -755,6 +757,26 @@ class MatlabControllerTests(TestCase):
         self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
+
+    def test_py_to_mat(self):
+        """
+        Tests the static method py_to_mat in MatlabMixin,
+        ensuring that evaluating a function through the matlab
+        engine gives the same output as evaulating the function
+        from python
+        """
+        controller = MatlabController(self.cost_func)
+        eng = matlab.engine.start_matlab()
+
+        eng.workspace['test_mat_func'] =\
+            controller.py_to_mat(self.cost_func.eval_cost, eng)
+
+        params = np.array([1, 2, 3, 4])
+
+        result_py = self.cost_func.eval_cost(params=params)
+        result_mat = eng.eval('test_mat_func([1, 2, 3, 4])')
+
+        assert result_py == result_mat
 
     def test_matlab(self):
         """
