@@ -150,7 +150,7 @@ class Plot:
         # include all sets of starting values
         try:
             ini_guess = self.problem.starting_values[start_index - 1].values()
-        except:
+        except IndexError:
             ini_guess = self.problem.starting_values[0].values()
 
         self.plot_data(errors=False,
