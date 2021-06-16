@@ -44,8 +44,8 @@ def get_parser():
     $ fitbenchmarking -p examples/benchmark_problems/NIST/*
     $ fitbenchmarking -o examples/options_template.ini \
     -p examples/benchmark_problems/simple_tests \
-    examples/benchmark_problems/Muon 
-    
+    examples/benchmark_problems/Muon
+
     Runtimes for these usage examples are approximately \
 75, 200 and 130 seconds respectively (on an i7 core laptop \
 with 32GB RAM) '''
