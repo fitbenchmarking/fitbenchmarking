@@ -16,7 +16,7 @@ FitBenchmarking can be installed via the command line by entering:
 
 .. code-block:: bash
 
-      python -m pip install fitbenchmarking[bumps,DFO,minuit,SAS,numdifftools]
+      python -m pip install fitbenchmarking[bumps,DFO,gradient_free,minuit,SAS,numdifftools]
 
 
 This will install the latest stable version of FitBenchmarking.
@@ -48,7 +48,7 @@ of the code that is still in development.
 
    .. code-block:: bash
 
-      python -m pip install .[bumps,DFO,minuit,SAS]
+      python -m pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools]
 
 4. Additional software that cannot be installed via pip can also be used
    with FitBenchmarking.  Follow the instructions at
