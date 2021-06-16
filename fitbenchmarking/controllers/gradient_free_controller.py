@@ -79,7 +79,7 @@ class GradientFreeController(Controller):
 
         if self.value_ranges is None or np.any(np.isinf(self.value_ranges)):
             raise MissingBoundsError(
-                "Gradient-Free-Optimizers requires finite bounds"
+                "Gradient-Free-Optimizers requires finite bounds "
                 "on all parameters")
 
         # set search_space to be the space where the minimizer can search
