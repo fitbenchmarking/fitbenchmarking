@@ -48,9 +48,9 @@ class ControllerFactory:
                                     'Check the input is correct and try '
                                     'again.'.format(software)) from e
 
-        classes = getmembers(module, lambda m: (isclass(m)
-                                                and not isabstract(m)
-                                                and issubclass(m, Controller)
-                                                and m is not Controller))
-
+        classes = getmembers(module,
+                             lambda m: (isclass(m)
+                                        and not isabstract(m)
+                                        and issubclass(m, Controller)
+                                        and m is not Controller))
         return classes[0][1]
