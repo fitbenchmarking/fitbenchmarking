@@ -85,7 +85,8 @@ Gradient-Free-Optimiziers (``gradient_free``)
 ---------------------------------------------
 
 `Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ are a collection of
-gradient-free methods capable of solving various optimization problems.
+gradient-free methods capable of solving various optimization problems. Please note that Gradient-Free-Optimizers
+must be run with problems that have finite bounds on all parameters.
 
 *  Hill Climbing (:code:`HillClimbingOptimizer`)
 
