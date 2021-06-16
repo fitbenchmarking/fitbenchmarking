@@ -138,17 +138,21 @@ class Plot:
         :return: path to the saved file
         :rtype: str
         """
-        if self.problem.format != "sasview":
-            # Parse which starting values to use from result name
-            start_index = self.result.name.partition('Start')[2].split(',')[0]
-            if start_index:
-                start_index = int(start_index.strip())
-            else:
-                start_index = 1
+        
+        # Parse which starting values to use from result name
+        start_index = self.result.name.partition('Start')[2].split(',')[0]
+        if start_index:
+            start_index = int(start_index.strip())
         else:
             start_index = 1
+        
+        # gracefully handle occasions where problem definition file does not 
+        # include all sets of starting values
+        try:
+            ini_guess = self.problem.starting_values[start_index - 1].values()
+        except:
+            ini_guess = self.problem.starting_values[0].values()
 
-        ini_guess = self.problem.starting_values[start_index - 1].values()
         self.plot_data(errors=False,
                        plot_options=self.ini_guess_plot_options,
                        x=self.x,
