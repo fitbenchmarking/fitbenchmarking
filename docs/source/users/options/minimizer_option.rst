@@ -220,7 +220,50 @@ The `matlab` minimizer is set as follows:
    matlab: Nelder-Mead Simplex
 
 .. warning::
-   MATLAB must be installed for this to be available; See :ref:`extra_dependencies`.
+   MATLAB must be installed for this to be available; See :ref:`external-instructions`.
+   
+
+Matlab Optimization Toolbox (``matlab_opt``)
+--------------------------------------------
+
+We call the `lsqcurvefit <https://uk.mathworks.com/help/optim/ug/lsqcurvefit.html>`_
+function from the `MATLAB Optimization Toolbox <https://uk.mathworks.com/products/optimization.html>`_,
+using the MATLAB Engine API for Python.
+
+* Levenberg-Marquardt (:code:`levenberg-marquardt`)
+* Trust-Region-Reflective (:code:`trust-region-reflective`)
+
+The `matlab_opt` minimizers are set as follows:
+
+.. code-block:: rst
+
+   [MINIMIZERS]
+   matlab_opt: levenberg-marquardt
+               trust-region-reflective
+
+.. warning::
+   MATLAB Optimization Toolbox must be installed for this to be available; See :ref:`external-instructions`.
+
+
+Matlab Statistics Toolbox (``matlab_stats``)
+--------------------------------------------
+
+We call the `nlinfit <https://uk.mathworks.com/help/stats/nlinfit.html>`_
+function from the `MATLAB Statistics Toolbox <https://uk.mathworks.com/products/statistics.html>`_,
+using the MATLAB Engine API for Python.
+
+* Levenberg-Marquardt (:code:`Levenberg-Marquardt`)
+
+The `matlab_stats` minimizer is set as follows:
+
+.. code-block:: rst
+  
+  [MINIMIZERS]
+  matlab_stats: Levenberg-Marquardt
+
+.. warning::
+   MATLAB Statistics Toolbox must be installed for this to be available; See :ref:`external-instructions`.
+
 	   
 Minuit (``minuit``)
 -------------------
@@ -278,7 +321,7 @@ SciPy (``scipy``)
 
 `SciPy <https://www.scipy.org>`_ is the standard python package for mathematical
 software.  In particular, we use the `minimize <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html>`_
-solver for general minimization problems from the optimization chapter the
+solver for general minimization problems from the optimization chapter of
 SciPy's library. Currently we only use the algorithms that do not require
 Hessian information as inputs.
 
@@ -313,7 +356,7 @@ SciPy LS (``scipy_ls``)
 `SciPy <https://www.scipy.org>`_ is the standard python package for mathematical
 software.  In particular, we use the `least_squares <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares>`_
 solver for Least-Squares minimization problems from the optimization chapter
-the SciPy's library.
+of SciPy's library.
 
 * Levenberg-Marquardt with supplied Jacobian (:code:`lm-scipy`)  - a wrapper around MINPACK
 * The Trust Region Reflective algorithm (:code:`trf`)
@@ -329,3 +372,29 @@ The SciPy least squares minimizers are set as follows:
     scipy_ls: lm-scipy
               trf
               dogbox
+
+SciPy GO (``scipy_go``)
+-----------------------
+
+`SciPy <https://www.scipy.org>`_ is the standard python package for mathematical
+software.  In particular, we use the `Global Optimization <https://docs.scipy.org/doc/scipy/reference/optimize.html#global-optimization>`_
+solvers for global optimization problems from the optimization chapter
+of SciPy's library.
+
+* Differential Evolution (derivative-free) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html#scipy.optimize.differential_evolution>`_ (:code:`differential_evolution`)
+* Simplicial Homology Global Optimization (SHGO) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.shgo.html#scipy.optimize.shgo>`_ (:code:`shgo`)
+* Dual Annealing <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.dual_annealing.html#scipy.optimize.dual_annealing>`_ (:code:`dual_annealing`)
+
+**Links** `Github - SciPy optimization <https://github.com/scipy/scipy/blob/master/scipy/optimize/>`_
+
+The SciPy global optimization minimizers are set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    scipy_go: differential_evolution
+              shgo
+              dual_annealing
+
+.. note::
+   The shgo solver is particularly slow running and should generally be avoided.

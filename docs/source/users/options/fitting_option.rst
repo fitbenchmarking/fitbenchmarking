@@ -19,13 +19,16 @@ a newline-separated list. Available options are:
 * ``levmar`` (external software -- see :ref:`extra_dependencies`)
 * ``mantid`` (external software -- see :ref:`external-instructions`)
 * ``matlab`` (external software -- see :ref:`external-instructions`)
+* ``matlab_opt`` (external software -- see :ref:`external-instructions`)
+* ``matlab_stats`` (external software -- see :ref:`external-instructions`)
 * ``minuit`` (default software)
 * ``ralfit`` (external software -- see :ref:`external-instructions`)
 * ``scipy`` (default software)
 * ``scipy_ls`` (default software)
+* ``scipy_go`` (default software)
 
 
-Default are ``bumps``, ``dfo``, ``minuit``, ``scipy``, and ``scipy_ls``
+Default are ``bumps``, ``dfo``, ``minuit``, ``scipy``, ``scipy_ls`` and ``scipy_go``
 
 .. code-block:: rst
 
@@ -35,6 +38,7 @@ Default are ``bumps``, ``dfo``, ``minuit``, ``scipy``, and ``scipy_ls``
               minuit
               scipy
               scipy_ls
+              scipy_go
 
 .. warning::
 
@@ -73,6 +77,7 @@ The options are:
 * ``bfgs`` - minimizers that use the BFGS algorithm
 * ``conjugate_gradient`` - Conjugate Gradient algorithms
 * ``steepest_descent`` - Steepest Descent algorithms
+* ``global_optimization`` - Global Optimization algorithms
 
 Default is ``all``
 
