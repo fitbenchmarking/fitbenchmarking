@@ -10,7 +10,7 @@ Once installed, issuing the command
 
    fitbenchmarking
 
-will run the NIST test example on SciPy minmizers.
+will run the NIST average difficulty problem set on SciPy minmizers.
 
 Running alternative problems
 ----------------------------
