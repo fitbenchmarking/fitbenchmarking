@@ -2,20 +2,15 @@
 Implements a controller for MATLAB Curve Fitting Toolbox
 """
 
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
-import os
-import dill
 import matlab.engine
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
 
 eng = matlab.engine.start_matlab()
 
 
-class MatlabController(Controller):
+class MatlabController(MatlabMixin, Controller):
     """
     Controller for MATLAB Curve Fitting Toolbox fitting (fit)
     """
@@ -29,7 +24,6 @@ class MatlabController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.initial_params_mat = None
         self.y_data_mat = None
         self.x_data_mat = None
         self.options = None
@@ -67,14 +61,8 @@ class MatlabController(Controller):
 
         # serialize cost_func.eval_cost and open within matlab engine
         # so that matlab fitting function can be called
-        temp_dir = TemporaryDirectory()
-        temp_file = os.path.join(temp_dir.name, 'temp.pickle')
-        with open(temp_file, 'wb') as f:
-            dill.dump(self.cost_func.eval_cost, f)
-        eng.workspace['temp_file'] = temp_file
-        eng.evalc('py_f = py.open(temp_file,"rb")')
-        eng.evalc('eval_cost_mat = py.dill.load(py_f)')
-        eng.evalc('py_f.close()')
+        eng.workspace['eval_cost_mat'] =\
+            self.py_to_mat(self.cost_func.eval_cost, eng)
 
         eng.evalc("ft = fittype(@(p,x)eval_cost_mat(p))")
 
