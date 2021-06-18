@@ -1,7 +1,7 @@
 """
 Implements a controller for MATLAB Curve Fitting Toolbox
 """
-
+import numpy as np
 import matlab.engine
 
 from fitbenchmarking.controllers.base_controller import Controller
@@ -55,41 +55,49 @@ class MatlabController(MatlabMixin, Controller):
         Setup for Matlab fitting
         """
         # Convert initial params into matlab array
-        self.initial_params_mat = matlab.double([self.initial_params])
-        self.y_data_mat = matlab.double(self.data_y.tolist())
-        self.x_data_mat = matlab.double(self.data_x.tolist())
+        self.initial_params_mat = matlab.double(list(self.initial_params))
+        eng.workspace['x_data'] = matlab.double(self.data_x.tolist())
+        eng.workspace['y_data'] = matlab.double(self.data_y.tolist())
+        
+        def wrapper(x, y, *p):
+            #with open('tmp.log', 'a') as f:
+            #    f.write(f'p: {p}\nx: {x}\ny: {np.array(y)}\n\n')
+            result = self.cost_func.eval_r(p,
+                                           x=np.array(x),
+                                           y=np.array(y))
+            return result
 
         # serialize cost_func.eval_cost and open within matlab engine
         # so that matlab fitting function can be called
         eng.workspace['eval_cost_mat'] =\
-            self.py_to_mat(self.cost_func.eval_cost, eng)
+            self.py_to_mat(wrapper, eng)
 
-        eng.evalc("ft = fittype(@(p,x)eval_cost_mat(p))")
+        params = self.problem.param_names
+        eng.workspace['init_params'] = self.initial_params_mat
+        eng.evalc("opts = fitoptions('StartPoint', init_params,"
+                  "'Method', 'NonLinearLeastSquares',"
+                  f"'Algorithm', '{self.minimizer}')")
+        eng.evalc(f"ft = fittype(@({', '.join(params)}, x, y)double(eval_cost_mat(x, y, {', '.join(params)}))', 'options', opts, 'independent', {{'x', 'y'}}, 'dependent', 'z')")
 
-        self.options = eng.fitoptions('StartPoint', self.initial_params_mat,
-                                      'Method', 'NonLinearLeastSquares',
-                                      'Algorithm', self.minimizer)
 
     def fit(self):
         """
         Run problem with Matlab
         """
-        [self.result, _, output] = eng.fit(self.x_data_mat,
-                                           self.y_data_mat,
-                                           eng.workspace['ft'],
-                                           self.options, nargout=3)
-        self._status = int(output.exitflag)
+        eng.evalc("[fitobj, gof, output] = fit([x_data', y_data'], zeros(size(x_data))', ft)")
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        if self._status == 1:
+        status = int(eng.workspace['output']['exitflag'])
+        if status == 1:
             self.flag = 0
-        elif self._status == 0:
+        elif status == 0:
             self.flag = 1
         else:
             self.flag = 2
 
-        self.final_params = self.result[0]
+        self.final_params = eng.coeffvalues(eng.workspace['fitobj'])[0]
+        print(self.final_params)
