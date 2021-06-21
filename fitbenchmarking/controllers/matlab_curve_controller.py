@@ -24,8 +24,7 @@ class MatlabController(MatlabMixin, Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.y_data_mat = None
-        self.x_data_mat = None
+        self.support_for_bounds = True
         self.options = None
         self._status = None
         self.result = None
@@ -58,13 +57,17 @@ class MatlabController(MatlabMixin, Controller):
         self.initial_params_mat = matlab.double(list(self.initial_params))
         eng.workspace['x_data'] = matlab.double(self.data_x.tolist())
         eng.workspace['y_data'] = matlab.double(self.data_y.tolist())
+        eng.workspace['e'] = matlab.double(self.data_y.tolist())
         
-        def wrapper(x, y, *p):
+        def wrapper(x, y, e, *p):
             #with open('tmp.log', 'a') as f:
             #    f.write(f'p: {p}\nx: {x}\ny: {np.array(y)}\n\n')
+            if len(e) != len(y):
+                e = y
             result = self.cost_func.eval_r(p,
                                            x=np.array(x),
-                                           y=np.array(y))
+                                           y=np.array(y),
+                                           e=np.array(e))
             return result
 
         # serialize cost_func.eval_cost and open within matlab engine
@@ -72,12 +75,26 @@ class MatlabController(MatlabMixin, Controller):
         eng.workspace['eval_cost_mat'] =\
             self.py_to_mat(wrapper, eng)
 
+        if self.value_ranges is not None:
+            lb, ub = zip(*self.value_ranges)
+            eng.workspace['lower_bounds'] = matlab.double(lb)
+            eng.workspace['upper_bounds'] = matlab.double(ub)
+        else:
+            # if no bounds are set, then pass empty arrays to
+            # fitoptions function
+            eng.workspace['lower_bounds'] = matlab.double([])
+            eng.workspace['upper_bounds'] = matlab.double([])
+
         params = self.problem.param_names
         eng.workspace['init_params'] = self.initial_params_mat
         eng.evalc("opts = fitoptions('StartPoint', init_params,"
                   "'Method', 'NonLinearLeastSquares',"
-                  f"'Algorithm', '{self.minimizer}')")
-        eng.evalc(f"ft = fittype(@({', '.join(params)}, x, y)double(eval_cost_mat(x, y, {', '.join(params)}))', 'options', opts, 'independent', {{'x', 'y'}}, 'dependent', 'z')")
+                  f"'Algorithm', '{self.minimizer}',"
+                  "'Weights', e,"
+                  "'Lower', lower_bounds,"
+                  "'Upper', upper_bounds)")
+      
+        eng.evalc(f"ft = fittype(@({', '.join(params)}, x, y)double(eval_cost_mat(x, y, e', {', '.join(params)}))', 'options', opts, 'independent', {{'x', 'y'}}, 'dependent', 'z')")
 
 
     def fit(self):
