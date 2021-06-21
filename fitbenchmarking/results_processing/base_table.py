@@ -260,7 +260,7 @@ class Table:
 
         index = []
         for b, i in zip(self.best_results, table.index):
-            rel_path = os.path.relpath(path=b.support_page_link,
+            rel_path = os.path.relpath(path=b.problem_summary_page_link,
                                        start=self.group_dir)
             index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
         table.index = index
