@@ -90,6 +90,7 @@ class FittingResult:
         self.error_flag = error_flag
 
         # Paths to various output files
+        self.problem_summary_page_link = ''
         self.support_page_link = ''
         self.start_figure_link = ''
         self.figure_link = ''

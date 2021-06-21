@@ -10,6 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import (performance_profiler, plots,
+                                                problem_summary_page,
                                                 support_page, tables)
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.misc import get_css, get_js
@@ -60,6 +61,10 @@ def save_results(options, results, group_name, failed_problems,
                         results_per_test=results,
                         group_name=group_name,
                         support_pages_dir=supp_dir)
+    problem_summary_page.create(options=options,
+                                best_results=best_results,
+                                group_name=group_name,
+                                support_pages_dir=supp_dir)
 
     table_names, table_descriptions = \
         tables.create_results_tables(options,
