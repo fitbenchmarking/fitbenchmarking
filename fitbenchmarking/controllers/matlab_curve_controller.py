@@ -6,6 +6,7 @@ import matlab.engine
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
+from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 
 eng = matlab.engine.start_matlab()
 
@@ -57,11 +58,17 @@ class MatlabController(MatlabMixin, Controller):
         self.initial_params_mat = matlab.double(list(self.initial_params))
         eng.workspace['x_data'] = matlab.double(self.data_x.tolist())
         eng.workspace['y_data'] = matlab.double(self.data_y.tolist())
-        eng.workspace['e'] = matlab.double(self.data_e.tolist())
-        
+
+        # set weights if required for cost_func choice, otherwise set
+        # empty array which will be ignored when input to cost_func.eval_r
+        if isinstance(self.cost_func, create_cost_func('weighted_nlls')):
+            eng.workspace['e'] = matlab.double(self.data_e.tolist())
+        else:
+            eng.workspace['e'] = matlab.double([])
+
         def wrapper(x, y, e, *p):
-            #with open('tmp.log', 'a') as f:
-            #    f.write(f'p: {p}\nx: {x}\ny: {np.array(y)}\n\n')
+            # To avoid errors in fittype function evaluation, if e is
+            # not the same length as y, then replace e with y
             if len(e) != len(y):
                 e = y
             result = self.cost_func.eval_r(p,
@@ -93,15 +100,18 @@ class MatlabController(MatlabMixin, Controller):
                   "'Weights', e,"
                   "'Lower', lower_bounds,"
                   "'Upper', upper_bounds)")
-      
-        eng.evalc(f"ft = fittype(@({', '.join(params)}, x, y)double(eval_cost_mat(x, y, e', {', '.join(params)}))', 'options', opts, 'independent', {{'x', 'y'}}, 'dependent', 'z')")
 
+        eng.evalc(f"ft = fittype(@({', '.join(params)}, x, y)"
+                  f"double(eval_cost_mat(x, y, e', {', '.join(params)}))',"
+                  f"'options', opts, 'independent', {{'x', 'y'}},"
+                  "'dependent', 'z')")
 
     def fit(self):
         """
         Run problem with Matlab
         """
-        eng.evalc("[fitobj, gof, output] = fit([x_data', y_data'], zeros(size(x_data))', ft)")
+        eng.evalc("[fitobj, gof, output] = fit([x_data', y_data'],"
+                  "zeros(size(x_data))', ft)")
 
     def cleanup(self):
         """
@@ -117,4 +127,3 @@ class MatlabController(MatlabMixin, Controller):
             self.flag = 2
 
         self.final_params = eng.coeffvalues(eng.workspace['fitobj'])[0]
-        print(self.final_params)
