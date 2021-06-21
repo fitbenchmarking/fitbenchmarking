@@ -57,7 +57,7 @@ class MatlabController(MatlabMixin, Controller):
         self.initial_params_mat = matlab.double(list(self.initial_params))
         eng.workspace['x_data'] = matlab.double(self.data_x.tolist())
         eng.workspace['y_data'] = matlab.double(self.data_y.tolist())
-        eng.workspace['e'] = matlab.double(self.data_y.tolist())
+        eng.workspace['e'] = matlab.double(self.data_e.tolist())
         
         def wrapper(x, y, e, *p):
             #with open('tmp.log', 'a') as f:
