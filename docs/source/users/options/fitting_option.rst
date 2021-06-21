@@ -19,6 +19,7 @@ a newline-separated list. Available options are:
 * ``levmar`` (external software -- see :ref:`extra_dependencies`)
 * ``mantid`` (external software -- see :ref:`external-instructions`)
 * ``matlab`` (external software -- see :ref:`external-instructions`)
+* ``matlab_curve`` (external software -- see :ref:`external-instructions`)
 * ``matlab_opt`` (external software -- see :ref:`external-instructions`)
 * ``matlab_stats`` (external software -- see :ref:`external-instructions`)
 * ``minuit`` (default software)

@@ -11,7 +11,7 @@ from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 eng = matlab.engine.start_matlab()
 
 
-class MatlabController(MatlabMixin, Controller):
+class MatlabCurveController(MatlabMixin, Controller):
     """
     Controller for MATLAB Curve Fitting Toolbox fitting (fit)
     """
@@ -112,16 +112,16 @@ class MatlabController(MatlabMixin, Controller):
         """
         eng.evalc("[fitobj, gof, output] = fit([x_data', y_data'],"
                   "zeros(size(x_data))', ft)")
+        self._status = int(eng.workspace['output']['exitflag'])
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        status = int(eng.workspace['output']['exitflag'])
-        if status == 1:
+        if self._status == 1:
             self.flag = 0
-        elif status == 0:
+        elif self._status == 0:
             self.flag = 1
         else:
             self.flag = 2
