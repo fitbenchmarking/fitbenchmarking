@@ -15,6 +15,7 @@ a newline-separated list. Available options are:
 
 * ``bumps`` (default software)
 * ``dfo`` (default software)
+* ``gradient_free`` (default software)
 * ``gsl`` (external software -- see :ref:`external-instructions`)
 * ``levmar`` (external software -- see :ref:`extra_dependencies`)
 * ``mantid`` (external software -- see :ref:`external-instructions`)
@@ -28,7 +29,7 @@ a newline-separated list. Available options are:
 * ``scipy_go`` (default software)
 
 
-Default are ``bumps``, ``dfo``, ``minuit``, ``scipy``, ``scipy_ls`` and ``scipy_go``
+Default are ``bumps``, ``dfo``, ``gradient_free``, ``minuit``, ``scipy``, ``scipy_ls`` and ``scipy_go``
 
 .. code-block:: rst
 
