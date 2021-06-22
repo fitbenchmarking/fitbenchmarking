@@ -237,11 +237,11 @@ The `matlab_curve` minimizers are set as follows:
 .. code-block:: rst
 
    [MINIMIZERS]
-   matlab_opt: Levenberg-Marquardt
-               Trust-Region
+   matlab_curve: Levenberg-Marquardt
+                 Trust-Region
 
 .. warning::
-   MATLAB Optimization Toolbox must be installed for this to be available; See :ref:`external-instructions`.
+   MATLAB Curve Fitting Toolbox must be installed for this to be available; See :ref:`external-instructions`.
 
 Matlab Optimization Toolbox (``matlab_opt``)
 --------------------------------------------
