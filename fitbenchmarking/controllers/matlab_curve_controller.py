@@ -67,10 +67,12 @@ class MatlabCurveController(MatlabMixin, Controller):
             eng.workspace['e'] = matlab.double([])
 
         def wrapper(x, y, e, *p):
+
             # To avoid errors in fittype function evaluation, if e is
             # not the same length as y, then replace e with y
             if len(e) != len(y):
                 e = y
+
             result = self.cost_func.eval_r(p,
                                            x=np.array(x),
                                            y=np.array(y),
