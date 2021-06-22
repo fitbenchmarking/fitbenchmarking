@@ -864,7 +864,7 @@ class MatlabControllerTests(TestCase):
             controller._status = 0
             self.shared_tests.check_max_iterations(controller)
             controller._status = -1
-            self.shared_tests.check_diverged(controller)    
+            self.shared_tests.check_diverged(controller)
 
 
 @run_for_test_types(TEST_TYPE, 'all')
