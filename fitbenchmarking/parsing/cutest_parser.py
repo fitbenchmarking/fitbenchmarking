@@ -112,7 +112,7 @@ class CutestParser(Parser):
         os.environ["MASTSIF"] = self.mastsif_dir.name
 
         for cx, cf in self._cache_f:
-            if len(x) == len(cx):
+            if x.size == cx.size:
                 if np.isclose(cx, x).all():
                     f = cf
                     break
