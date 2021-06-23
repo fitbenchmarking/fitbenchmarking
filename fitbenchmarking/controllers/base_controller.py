@@ -33,11 +33,17 @@ class Controller:
 
         - ``all`` - all minimizers
         - ``ls`` - least-squares fitting algorithms
-        - ``deriv_free`` - derivative free algorithms (these are algorithms
-          that cannot use derivative information. For example, the
-          ``Simplex`` method in ``Mantid`` does not require Jacobians, and so
-          is derivative free.
-        - ``general`` - minimizers which solve a generic `min f(x)`.
+        - ``deriv_free`` - derivative free algorithms (these are algorithms that cannot use
+          information about derivatives -- e.g., the ``Simplex`` method in ``Mantid``)
+        - ``general`` - minimizers which solve a generic `min f(x)`
+        - ``simplex`` - derivative free simplex based algorithms e.g. Nelder-Mead
+        - ``trust_region`` - algorithms which emply a trust region approach
+        - ``levenberg-marquardt`` - minimizers that use the Levenberg Marquardt algorithm
+        - ``gauss_newton`` - minimizers that use the Gauss Newton algorithm
+        - ``bfgs`` - minimizers that use the BFGS algorithm
+        - ``conjugate_gradient`` - Conjugate Gradient algorithms
+        - ``steepest_descent`` - Steepest Descent algorithms
+        - ``global_optimization`` - Global Optimization algorithms
 
         The **values** of the dictionary are given as a list of minimizers
         for that specific controller that fit into each of the above

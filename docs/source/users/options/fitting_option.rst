@@ -59,6 +59,8 @@ Default is ``5``
     [FITTING]
     num_runs: 5
 
+.. _algorithm_type:
+
 Algorithm type (:code:`algorithm_type`)
 ---------------------------------------
 
@@ -68,15 +70,16 @@ The options are:
 * ``all`` - all minimizers
 * ``ls`` - least-squares fitting algorithms
 * ``deriv_free`` - derivative free algorithms (these are algorithms that cannot use
-  information about derivatives -- e.g., the ``Simplex`` method in ``Mantid``)
+  information about derivatives -- e.g., the ``Simplex`` method in ``Mantid``),
+  see :ref:`deriv_free`.
 * ``general`` - minimizers which solve a generic `min f(x)`
-* ``simplex`` - derivative free simplex based algorithms e.g. Nelder-Mead
-* ``trust_region`` - algorithms which emply a trust region approach
-* ``levenberg-marquardt`` - minimizers that use the Levenberg Marquardt algorithm
-* ``gauss_newton`` - minimizers that use the Gauss Newton algorithm
-* ``bfgs`` - minimizers that use the BFGS algorithm
-* ``conjugate_gradient`` - Conjugate Gradient algorithms
-* ``steepest_descent`` - Steepest Descent algorithms
+* ``simplex`` - derivative free simplex based algorithms e.g. Nelder-Mead, see :ref:`Simplex <simplex>`
+* ``trust_region`` - algorithms which emply a trust region approach,  see :ref:`trust_region`
+* ``levenberg-marquardt`` - minimizers that use the Levenberg Marquardt algorithm, see :ref:`Levenberg-Marquardt <levenberg_marquardt>`.
+* ``gauss_newton`` - minimizers that use the Gauss Newton algorithm, see :ref:`Gauss-Newton <gauss_newton>`
+* ``bfgs`` - minimizers that use the BFGS algorithm, see :ref:`BFGS <bfgs>`
+* ``conjugate_gradient`` - Conjugate Gradient algorithms, see :ref:`Conjugate Gradient <conjugate_gradient>`
+* ``steepest_descent`` - Steepest Descent algorithms, see :ref:`Steepest Descent <steepest_descent>`
 * ``global_optimization`` - Global Optimization algorithms
 
 Default is ``all``

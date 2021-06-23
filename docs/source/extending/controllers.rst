@@ -58,6 +58,10 @@ repository so that other can use this package.  To do this need to follow our
    software links in the HTML tables link correctly to the documentation.
    Add the software to ``examples/all_software.ini``.
 
+   You should also ensure that the available minimizers are catagorised correctly in ``self.algorithm_check``
+   using the :ref:`algorithm type <algorithm_type>` options. Please refer to the :ref:`algorithms`
+   page for more information about each algorithm type.
+
 5. Create tests for the software in
    ``fitbenchmarking/controllers/tests/test_controllers.py``. If the package
    is ``pip`` installable then add the tests to the ``DefaultControllerTests`` class

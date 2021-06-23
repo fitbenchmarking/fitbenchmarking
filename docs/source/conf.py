@@ -31,8 +31,9 @@ os.environ["PYCUTEST_CACHE"] = mock_pycutest_cache
 
 # set mock imports
 autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfogn', 'dfols',
-                        'pygsl', 'iminuit', 'bumps', 'bumps.fitters',
-                        'tempfile', 'backports', 'backports.tempfile']
+                        'dill','matlab','pygsl', 'iminuit', 'bumps',
+                        'bumps.fitters', 'tempfile', 'backports',
+                        'backports.tempfile']
 
 
 # -- General configuration ------------------------------------------------
@@ -46,7 +47,7 @@ autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfogn', 'dfols',
 # ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.todo',
-              'sphinx.ext.imgmath',
+              'sphinx.ext.mathjax',
               'prettyprintvalue',
               'm2r2']
 
