@@ -16,3 +16,5 @@ by the algorithm type list, with options detailed below, along with advantages/d
     line_search
     trust_region
 
+    minimizer_types
+

@@ -8,6 +8,22 @@ from scipy.optimize import minimize
 
 from fitbenchmarking.controllers.base_controller import Controller
 
+ALGORITHM_CHECK = {
+            'all': ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
+                    'L-BFGS-B', 'TNC', 'SLSQP'],
+            'ls': [None],
+            'deriv_free': ['Nelder-Mead', 'Powell'],
+            'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
+                        'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
+            'simplex': ['Nelder-Mead'],
+            'trust_region': [],
+            'levenberg-marquardt': [],
+            'gauss_newton': [],
+            'bfgs': ['BFGS', 'L-BFGS-B'],
+            'conjugate_gradient': ['CG', 'Newton-CG', 'Powell'],
+            'steepest_descent': [],
+            'global_optimization': []}
+
 
 class ScipyController(Controller):
     """
@@ -31,20 +47,7 @@ class ScipyController(Controller):
         self.result = None
         self._status = None
         self._popt = None
-        self.algorithm_check = {
-            'all': ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
-                    'L-BFGS-B', 'TNC', 'SLSQP'],
-            'ls': [None],
-            'deriv_free': ['Nelder-Mead', 'Powell'],
-            'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                        'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-            'simplex': ['Nelder-Mead'],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': ['BFGS', 'L-BFGS-B'],
-            'conjugate_gradient': ['CG', 'Newton-CG', 'Powell'],
-            'steepest_descent': []}
+        self.algorithm_check = ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

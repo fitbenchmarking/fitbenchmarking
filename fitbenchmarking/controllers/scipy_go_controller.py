@@ -10,6 +10,22 @@ import scipy.optimize as optimize
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import MissingBoundsError
 
+ALGORITHM_CHECK = {
+            'all': ['differential_evolution', 'shgo', 'dual_annealing'],
+            'ls': [None],
+            'deriv_free': ['differential_evolution'],
+            'general': ['shgo', 'dual_annealing'],
+            'simplex': [],
+            'trust_region': [],
+            'levenberg-marquardt': [],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': ['differential_evolution', 'shgo',
+                                    'dual_annealing']
+        }
+
 
 class ScipyGOController(Controller):
     """
@@ -31,21 +47,7 @@ class ScipyGOController(Controller):
         self._popt = None
         self._status = None
         self._maxiter = None
-        self.algorithm_check = {
-            'all': ['differential_evolution', 'shgo', 'dual_annealing'],
-            'ls': [None],
-            'deriv_free': ['differential_evolution'],
-            'general': ['shgo', 'dual_annealing'],
-            'simplex': [],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': ['differential_evolution', 'shgo',
-                                    'dual_annealing']
-        }
+        self.algorithm_check = ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

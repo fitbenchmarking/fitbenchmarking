@@ -2,11 +2,24 @@
 Implements a controller for the scipy ls fitting software.
 In particular, for the scipy least_squares solver.
 """
-
 from scipy.optimize import least_squares
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
+
+ALGORITHM_CHECK = {
+            'all': ['lm-scipy', 'trf', 'dogbox'],
+            'ls': ['lm-scipy', 'trf', 'dogbox'],
+            'deriv_free': [None],
+            'general': [None],
+            'simplex': [],
+            'trust_region': ['lm-scipy', 'trf', 'dogbox'],
+            'levenberg-marquardt': ['lm-scipy'],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
 
 
 class ScipyLSController(Controller):
@@ -30,18 +43,7 @@ class ScipyLSController(Controller):
         self.result = None
         self._status = None
         self._popt = None
-        self.algorithm_check = {
-            'all': ['lm-scipy', 'trf', 'dogbox'],
-            'ls': ['lm-scipy', 'trf', 'dogbox'],
-            'deriv_free': [None],
-            'general': [None],
-            'simplex': [],
-            'trust_region': ['lm-scipy', 'trf', 'dogbox'],
-            'levenberg-marquardt': ['lm-scipy'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
+        self.algorithm_check = ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

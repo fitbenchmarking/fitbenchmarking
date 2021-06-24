@@ -9,6 +9,20 @@ from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
 
 eng = matlab.engine.start_matlab()
 
+ALGORITHM_CHECK = {
+            'all': ['Nelder-Mead Simplex'],
+            'ls': [],
+            'deriv_free': ['Nelder-Mead Simplex'],
+            'general': ['Nelder-Mead Simplex'],
+            'simplex': ['Nelder-Mead Simplex'],
+            'trust_region': [],
+            'levenberg-marquardt': [],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
 
 class MatlabController(MatlabMixin, Controller):
     """
@@ -26,18 +40,7 @@ class MatlabController(MatlabMixin, Controller):
         super().__init__(cost_func)
         self._status = None
         self.result = None
-        self.algorithm_check = {
-            'all': ['Nelder-Mead Simplex'],
-            'ls': [],
-            'deriv_free': ['Nelder-Mead Simplex'],
-            'general': ['Nelder-Mead Simplex'],
-            'simplex': ['Nelder-Mead Simplex'],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
+        self.algorithm_check = ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

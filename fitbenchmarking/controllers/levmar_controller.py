@@ -10,6 +10,20 @@ import levmar
 
 from fitbenchmarking.controllers.base_controller import Controller
 
+ALGORITHM_CHECK = {
+            'all': ['levmar'],
+            'ls': ['levmar'],
+            'deriv_free': [],
+            'general': [],
+            'simplex': [],
+            'trust_region': ['levmar'],
+            'levenberg-marquardt': ['levmar'],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
 
 class LevmarController(Controller):
     """
@@ -30,18 +44,7 @@ class LevmarController(Controller):
         self.param_ranges = None
         self.lm_y = None
         self._popt = None
-        self.algorithm_check = {
-            'all': ['levmar'],
-            'ls': ['levmar'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['levmar'],
-            'levenberg-marquardt': ['levmar'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
+        self.algorithm_check = ALGORITHM_CHECK
         self._info = None
 
     def jacobian_information(self):

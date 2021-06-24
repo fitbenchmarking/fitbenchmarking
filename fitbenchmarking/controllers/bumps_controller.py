@@ -11,6 +11,20 @@ from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.utils.exceptions import CostFuncError
 
+ALGORITHM_CHECK = {
+            'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
+            'ls': ['lm-bumps', 'mp'],
+            'deriv_free': ['amoeba', 'de'],
+            'general': ['amoeba', 'newton', 'de'],
+            'simplex': ['amoeba'],
+            'trust_region': ['lm-bumps'],
+            'levenberg-marquardt': ['lm-bumps'],
+            'gauss_newton': [],
+            'bfgs': ['newton'],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
 
 class BumpsController(Controller):
     """
@@ -38,18 +52,7 @@ class BumpsController(Controller):
         self.fit_order = None
         self._status = None
         self._bumps_result = None
-        self.algorithm_check = {
-            'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
-            'ls': ['lm-bumps', 'mp'],
-            'deriv_free': ['amoeba', 'de'],
-            'general': ['amoeba', 'newton', 'de'],
-            'simplex': ['amoeba'],
-            'trust_region': ['lm-bumps'],
-            'levenberg-marquardt': ['lm-bumps'],
-            'gauss_newton': [],
-            'bfgs': ['newton'],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
+        self.algorithm_check = ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

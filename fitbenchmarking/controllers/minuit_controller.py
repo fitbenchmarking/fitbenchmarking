@@ -11,6 +11,20 @@ import numpy as np
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
+ALGORITHM_CHECK = {
+            'all': ['minuit'],
+            'ls': [],
+            'deriv_free': [],
+            'general': ['minuit'],
+            'simplex': [],
+            'trust_region': [],
+            'levenberg-marquardt': [],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
 
 class MinuitController(Controller):
     """

@@ -12,6 +12,30 @@ from fitbenchmarking.utils.exceptions import ControllerAttributeError
 
 # pylint: disable=protected-access
 
+ALGORITHM_CHECK = {
+            'all': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
+                    'Conjugate gradient (Polak-Ribiere imp.)',
+                    'Damped GaussNewton', 'Levenberg-Marquardt',
+                    'Levenberg-MarquardtMD', 'Simplex', 'SteepestDescent',
+                    'Trust Region'],
+            'ls': ['Levenberg-Marquardt', 'Levenberg-MarquardtMD',
+                   'Trust Region'],
+            'deriv_free': ['Simplex'],
+            'general': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
+                        'Conjugate gradient (Polak-Ribiere imp.)',
+                        'Damped GaussNewton', 'Simplex', 'SteepestDescent'],
+            'simplex': ['Simplex'],
+            'trust_region': ['Trust Region', 'Levenberg-Marquardt',
+                             'Levenberg-MarquardtMD'],
+            'levenberg-marquardt': ['Levenberg-Marquardt',
+                                    'Levenberg-MarquardtMD'],
+            'gauss_newton': ['Damped GaussNewton'],
+            'bfgs': ['BFGS'],
+            'conjugate_gradient': ['Conjugate gradient (Fletcher-Reeves imp.)',
+                                   'Conjugate gradient (Polak-Ribiere imp.)'],
+            'steepest_descent': ['SteepestDescent'],
+            'global_optimization': []}
+
 
 class MantidController(Controller):
     """
@@ -51,28 +75,7 @@ class MantidController(Controller):
 
         self._param_names = self.problem.param_names
         self._status = None
-        self.algorithm_check = {
-            'all': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
-                    'Conjugate gradient (Polak-Ribiere imp.)',
-                    'Damped GaussNewton', 'Levenberg-Marquardt',
-                    'Levenberg-MarquardtMD', 'Simplex', 'SteepestDescent',
-                    'Trust Region'],
-            'ls': ['Levenberg-Marquardt', 'Levenberg-MarquardtMD',
-                   'Trust Region'],
-            'deriv_free': ['Simplex'],
-            'general': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
-                        'Conjugate gradient (Polak-Ribiere imp.)',
-                        'Damped GaussNewton', 'Simplex', 'SteepestDescent'],
-            'simplex': ['Simplex'],
-            'trust_region': ['Trust Region', 'Levenberg-Marquardt',
-                             'Levenberg-MarquardtMD'],
-            'levenberg-marquardt': ['Levenberg-Marquardt',
-                                    'Levenberg-MarquardtMD'],
-            'gauss_newton': ['Damped GaussNewton'],
-            'bfgs': ['BFGS'],
-            'conjugate_gradient': ['Conjugate gradient (Fletcher-Reeves imp.)',
-                                   'Conjugate gradient (Polak-Ribiere imp.)'],
-            'steepest_descent': ['SteepestDescent']}
+        self.algorithm_check = ALGORITHM_CHECK
 
         if self.problem.multifit:
             # Multi Fit

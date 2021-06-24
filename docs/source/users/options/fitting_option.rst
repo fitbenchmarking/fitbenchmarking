@@ -66,6 +66,7 @@ Algorithm type (:code:`algorithm_type`)
 ---------------------------------------
 
 This is used to select what type of algorithm is used within a specific software.
+For a full list of available minimizers for each algorithm type, see :ref:`minimizer_types`. 
 The options are:
 
 * ``all`` - all minimizers

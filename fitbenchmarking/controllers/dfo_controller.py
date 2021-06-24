@@ -9,6 +9,20 @@ import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 
+ALGORITHM_CHECK = {
+            'all': ['dfogn', 'dfols'],
+            'ls': ['dfogn', 'dfols'],
+            'deriv_free': ['dfogn', 'dfols'],
+            'general': [],
+            'simplex': [],
+            'trust_region': ['dfols', 'dfogn'],
+            'levenberg-marquardt': [],
+            'gauss_newton': ['dfogn'],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
 
 class DFOController(Controller):
     """
@@ -32,18 +46,7 @@ class DFOController(Controller):
         self._soln = None
         self._popt = None
         self._pinit = None
-        self.algorithm_check = {
-            'all': ['dfogn', 'dfols'],
-            'ls': ['dfogn', 'dfols'],
-            'deriv_free': ['dfogn', 'dfols'],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['dfols', 'dfogn'],
-            'levenberg-marquardt': [],
-            'gauss_newton': ['dfogn'],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
+        self.algorithm_check = ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

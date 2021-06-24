@@ -9,6 +9,20 @@ import numpy as np
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 
+ALGORITHM_CHECK = {
+            'all': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
+            'ls': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
+            'deriv_free': [],
+            'general': [],
+            'simplex': [],
+            'trust_region': ['gn', 'hybrid'],
+            'levenberg-marquardt': ['gn', 'gn_reg'],
+            'gauss_newton': ['gn', 'gn_reg'],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
 
 class RALFitController(Controller):
     """
@@ -30,18 +44,7 @@ class RALFitController(Controller):
         self._status = None
         self._popt = None
         self._options = {}
-        self.algorithm_check = {
-            'all': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
-            'ls': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['gn', 'hybrid'],
-            'levenberg-marquardt': ['gn', 'gn_reg'],
-            'gauss_newton': ['gn', 'gn_reg'],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
+        self.algorithm_check = ALGORITHM_CHECK
 
     def jacobian_information(self):
         """
