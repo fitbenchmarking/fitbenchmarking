@@ -1,0 +1,13 @@
+SASView_Shape_Independent_1D
+
+8 problems synthesised from the SASView models on Wed Jun 16 15:06:24 2021. See table below for details.
+
+SASmodel Name            Dimension                Data Format              Synthesis Style          
+broad peak               1D                       <Q> <I> <Idev>           neutron          
+broad peak               1D                       <Q> <I> <Idev>           x-ray
+dab                      1D                       <Q> <I> <Idev>           neutron
+dab                      1D                       <Q> <I> <Idev>           x-ray 
+line                     1D                       <Q> <I> <Idev>           neutron
+line                     1D                       <Q> <I> <Idev>           x-ray
+lorentz                  1D                       <Q> <I> <Idev>           neutron
+lorentz                  1D                       <Q> <I> <Idev>           x-ray
