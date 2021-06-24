@@ -13,7 +13,7 @@ The ideal step length would be :math:`min_{\alpha>0} f(x_k + \alpha p_k)` but th
     f(x_k + \alpha p_k) \leq f(x_k) + c_1 \alpha \nabla f_k^T p_k \\
     f(x_k + \alpha_k p_k)^T p_k \geq c_2 \nabla f_k^T p_k
 
-With :math:`0<c_1<c_2<1`. Here, the first condition ensures that :math:`\alpha_k` gives a sufficient decrease in $f$, whilst the second condition rules out unacceptably short steps. [Nocedal]_
+With :math:`0<c_1<c_2<1`. Here, the first condition ensures that :math:`\alpha_k` gives a sufficient decrease in :math:`f`, whilst the second condition rules out unacceptably short steps. [Nocedal]_
 
 .. _steepest_descent:
 
@@ -100,16 +100,16 @@ Modified Newton's method with line search. Instead of solving standard Newton eq
 solve the system
 
 .. math::
-    J_k^T J_K p_k^{GN} = - J_k^T r_k
+    J_k^T J_k p_k^{GN} = - J_k^T r_k
 
 (where :math:`J_k` is the Jacobian) to obtain the search direction :math:`p_k^{GN}`. The next iterate is then set as :math:`x_{k+1} = x_k + p_k^{GN}`.
 
-Here, the approximation of the Hessian :math:`\nabla^2 f_k \approx J_k^T J_K` has been made, which helps to save on computation time as only second derivatives are not calculated.
+Here, the approximation of the Hessian :math:`\nabla^2 f_k \approx J_k^T J_k` has been made, which helps to save on computation time as only second derivatives are not calculated.
 
 **Advantages**:
     - Calculation of second derivatives is not required.
     - If residuals or their second order partial derivatives are small, then :math:`J_k^T J_k` is a close approximation to :math:`\nabla^2 f_k` and convergence of Gauss-Newton is fast.
-    - The search direction :math:`p_J^{GN}` is always a descent direction as long as :math:`J_k` has full rank and the gradient :math:`\nabla f_K` is nonzero.
+    - The search direction :math:`p_J^{GN}` is always a descent direction as long as :math:`J_k` has full rank and the gradient :math:`\nabla f_k` is nonzero.
 
 **Disadvantages**:
     - Without a good initial guess, or if the matrix :math:`J_k^T J_k` is ill-conditioned, the Gauss Newton Algorithm is very slow to converge to a solution.

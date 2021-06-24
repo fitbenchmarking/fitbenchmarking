@@ -27,7 +27,7 @@ For Levenberg-Marquardt, the model function :math:`m_k`, is chosen to be
 .. math::
     m_k(p) = \frac{1}{2} \|r_k\|^2 + p^T J_k^T r_k + \frac{1}{2} p^T J_k^T J_k p
 
-So, for a spherical trsut region the subproblem to be solved at each iteration is :math:`\min_p \frac{1}{2} \|J_k p + r_k\|^2`, subject to :math:`\|p\| \leq \Delta_k`.
+So, for a spherical trust region, the subproblem to be solved at each iteration is :math:`\min_p \frac{1}{2} \|J_k p + r_k\|^2`, subject to :math:`\|p\| \leq \Delta_k`.
 
 Levenberg-Marquardt uses a combination of gradient descent and Gauss-Newton method. When the solution :math:`p^{GN}` lies inside of the trust region :math:`\Delta`, then :math:`p^{GN}` also solves the sub-problem. Otherwise, the current iteration is far from the optimal value and so the search direction is determined using steepest descent, which performs better than Gauss-Newton when far from the minimum.
 
