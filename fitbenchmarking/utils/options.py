@@ -141,7 +141,8 @@ class Options(object):
         self.error_message = []
         self._results_dir = ''
         config = configparser.ConfigParser(converters={'list': read_list,
-                                                       'str': str},
+                                                       'str': str,
+                                                       'rng': read_range},
                                            allow_no_value=True)
 
         for section in self.VALID_SECTIONS:
@@ -194,7 +195,14 @@ class Options(object):
         self.make_plots = self.read_value(plotting.getboolean, 'make_plots')
         self.colour_map = self.read_value(plotting.getstr, 'colour_map')
         self.colour_ulim = self.read_value(plotting.getfloat, 'colour_ulim')
-        self.cmap_range = eval(self.read_value(plotting.getstr, 'cmap_range'))
+        try:
+            self.cmap_range = self.read_value(plotting.getrng, 'cmap_range')
+        except:
+            OptionsError(
+                "Invalid range specified for cmap_range. cmap_range "\
+                "must be specified in the following format '[a, b]' where "\
+                "0 <= a <= 1 and 0 <= b <= 1 and a <= b"
+            )
         self.comparison_mode = self.read_value(plotting.getstr,
                                                'comparison_mode')
         self.table_type = self.read_value(plotting.getlist, 'table_type')
@@ -341,3 +349,25 @@ def read_list(s):
     :rtype: list of str
     """
     return str(s).split('\n')
+
+def read_range(s):
+    """
+    Utility function to allow ranges to be read by the config parser
+
+    :param s: string to convert to a list
+    :type s: string
+
+    :return: two element list [lower_lim, upper lim]
+    :rtype: list
+    """
+    try:
+        rng = [float(item) for item in s[1:-2].split(",")]
+        if len(rng) != 2:
+            raise ValueError
+        if rng[0] > rng[1]:
+            raise ValueError
+        if rng[0] > 1 or rng[1] > 1:
+            raise ValueError
+    except:
+        ValueError
+    return rng
