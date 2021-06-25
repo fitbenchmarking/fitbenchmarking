@@ -1,0 +1,24 @@
+fitbenchmarking.utils package
+=============================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fitbenchmarking.utils.create_dirs
+   fitbenchmarking.utils.exceptions
+   fitbenchmarking.utils.fitbm_result
+   fitbenchmarking.utils.log
+   fitbenchmarking.utils.misc
+   fitbenchmarking.utils.options
+   fitbenchmarking.utils.output_grabber
+
+Module contents
+---------------
+
+.. automodule:: fitbenchmarking.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

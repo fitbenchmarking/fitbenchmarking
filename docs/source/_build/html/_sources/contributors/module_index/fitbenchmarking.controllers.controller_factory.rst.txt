@@ -1,0 +1,7 @@
+fitbenchmarking.controllers.controller\_factory module
+======================================================
+
+.. automodule:: fitbenchmarking.controllers.controller_factory
+   :members:
+   :undoc-members:
+   :show-inheritance:

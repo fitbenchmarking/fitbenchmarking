@@ -1,0 +1,7 @@
+fitbenchmarking.cost\_func.poisson\_cost\_func module
+=====================================================
+
+.. automodule:: fitbenchmarking.cost_func.poisson_cost_func
+   :members:
+   :undoc-members:
+   :show-inheritance:

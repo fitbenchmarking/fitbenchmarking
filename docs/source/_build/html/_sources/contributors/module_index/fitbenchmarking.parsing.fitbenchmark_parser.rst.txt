@@ -1,0 +1,7 @@
+fitbenchmarking.parsing.fitbenchmark\_parser module
+===================================================
+
+.. automodule:: fitbenchmarking.parsing.fitbenchmark_parser
+   :members:
+   :undoc-members:
+   :show-inheritance:

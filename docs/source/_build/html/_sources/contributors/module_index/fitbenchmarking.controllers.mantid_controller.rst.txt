@@ -1,0 +1,7 @@
+fitbenchmarking.controllers.mantid\_controller module
+=====================================================
+
+.. automodule:: fitbenchmarking.controllers.mantid_controller
+   :members:
+   :undoc-members:
+   :show-inheritance:

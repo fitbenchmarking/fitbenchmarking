@@ -1,0 +1,7 @@
+fitbenchmarking.cli.exception\_handler module
+=============================================
+
+.. automodule:: fitbenchmarking.cli.exception_handler
+   :members:
+   :undoc-members:
+   :show-inheritance:

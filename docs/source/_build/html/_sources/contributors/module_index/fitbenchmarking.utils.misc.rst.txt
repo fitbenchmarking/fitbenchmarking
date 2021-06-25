@@ -1,0 +1,7 @@
+fitbenchmarking.utils.misc module
+=================================
+
+.. automodule:: fitbenchmarking.utils.misc
+   :members:
+   :undoc-members:
+   :show-inheritance:

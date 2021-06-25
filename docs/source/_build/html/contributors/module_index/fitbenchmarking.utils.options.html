@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>fitbenchmarking.utils.options module &mdash; FitBenchmarking 0.1.dev1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="fitbenchmarking.utils.output_grabber module" href="fitbenchmarking.utils.output_grabber.html" />
+    <link rel="prev" title="fitbenchmarking.utils.misc module" href="fitbenchmarking.utils.misc.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> FitBenchmarking
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../concept/index.html">Concept</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users/index.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending/index.html">Extending</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Contributors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines.html">Coding Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../workflow.html">Git Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../structure.html">Repository Structure</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="fitbenchmarking.html">Module Index</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.cli.html">fitbenchmarking.cli package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.controllers.html">fitbenchmarking.controllers package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.core.html">fitbenchmarking.core package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.cost_func.html">fitbenchmarking.cost_func package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.jacobian.html">fitbenchmarking.jacobian package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.parsing.html">fitbenchmarking.parsing package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.results_processing.html">fitbenchmarking.results_processing package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="fitbenchmarking.utils.html">fitbenchmarking.utils package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.utils.create_dirs.html">fitbenchmarking.utils.create_dirs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.utils.exceptions.html">fitbenchmarking.utils.exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.utils.fitbm_result.html">fitbenchmarking.utils.fitbm_result module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.utils.log.html">fitbenchmarking.utils.log module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.utils.misc.html">fitbenchmarking.utils.misc module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">fitbenchmarking.utils.options module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.utils.output_grabber.html">fitbenchmarking.utils.output_grabber module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FitBenchmarking</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">FitBenchmarking Contributor Documentation</a> &raquo;</li>
+        
+          <li><a href="fitbenchmarking.html">fitbenchmarking package</a> &raquo;</li>
+        
+          <li><a href="fitbenchmarking.utils.html">fitbenchmarking.utils package</a> &raquo;</li>
+        
+      <li>fitbenchmarking.utils.options module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/contributors/module_index/fitbenchmarking.utils.options.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-fitbenchmarking.utils.options">
+<span id="fitbenchmarking-utils-options-module"></span><h1>fitbenchmarking.utils.options module<a class="headerlink" href="#module-fitbenchmarking.utils.options" title="Permalink to this headline">¶</a></h1>
+<p>This file will handle all interaction with the options configuration file.</p>
+<dl class="py class">
+<dt id="fitbenchmarking.utils.options.Options">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">fitbenchmarking.utils.options.</span></code><code class="sig-name descname"><span class="pre">Options</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.utils.options.Options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An options class to store and handle all options for fitbenchmarking</p>
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.DEFAULTS">
+<code class="sig-name descname"><span class="pre">DEFAULTS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'FITTING':</span> <span class="pre">{'algorithm_type':</span> <span class="pre">['all'],</span> <span class="pre">'cost_func_type':</span> <span class="pre">'weighted_nlls',</span> <span class="pre">'jac_method':</span> <span class="pre">['scipy'],</span> <span class="pre">'num_runs':</span> <span class="pre">5,</span> <span class="pre">'software':</span> <span class="pre">['scipy',</span> <span class="pre">'scipy_ls']},</span> <span class="pre">'JACOBIAN':</span> <span class="pre">{'analytic':</span> <span class="pre">['cutest'],</span> <span class="pre">'default':</span> <span class="pre">['default'],</span> <span class="pre">'numdifftools':</span> <span class="pre">['central'],</span> <span class="pre">'scipy':</span> <span class="pre">['2-point']},</span> <span class="pre">'LOGGING':</span> <span class="pre">{'append':</span> <span class="pre">False,</span> <span class="pre">'external_output':</span> <span class="pre">'log_only',</span> <span class="pre">'file_name':</span> <span class="pre">'fitbenchmarking.log',</span> <span class="pre">'level':</span> <span class="pre">'INFO'},</span> <span class="pre">'MINIMIZERS':</span> <span class="pre">{'bumps':</span> <span class="pre">['amoeba',</span> <span class="pre">'lm-bumps',</span> <span class="pre">'newton',</span> <span class="pre">'mp'],</span> <span class="pre">'dfo':</span> <span class="pre">['dfogn',</span> <span class="pre">'dfols'],</span> <span class="pre">'gsl':</span> <span class="pre">['lmsder',</span> <span class="pre">'lmder',</span> <span class="pre">'nmsimplex',</span> <span class="pre">'nmsimplex2',</span> <span class="pre">'conjugate_pr',</span> <span class="pre">'conjugate_fr',</span> <span class="pre">'vector_bfgs',</span> <span class="pre">'vector_bfgs2',</span> <span class="pre">'steepest_descent'],</span> <span class="pre">'levmar':</span> <span class="pre">['levmar'],</span> <span class="pre">'mantid':</span> <span class="pre">['BFGS',</span> <span class="pre">'Conjugate</span> <span class="pre">gradient</span> <span class="pre">(Fletcher-Reeves</span> <span class="pre">imp.)',</span> <span class="pre">'Conjugate</span> <span class="pre">gradient</span> <span class="pre">(Polak-Ribiere</span> <span class="pre">imp.)',</span> <span class="pre">'Damped</span> <span class="pre">GaussNewton',</span> <span class="pre">'Levenberg-Marquardt',</span> <span class="pre">'Levenberg-MarquardtMD',</span> <span class="pre">'Simplex',</span> <span class="pre">'SteepestDescent',</span> <span class="pre">'Trust</span> <span class="pre">Region'],</span> <span class="pre">'matlab':</span> <span class="pre">['Nelder-Mead</span> <span class="pre">Simplex'],</span> <span class="pre">'matlab_opt':</span> <span class="pre">['levenberg-marquardt',</span> <span class="pre">'trust-region-reflective'],</span> <span class="pre">'minuit':</span> <span class="pre">['minuit'],</span> <span class="pre">'ralfit':</span> <span class="pre">['gn',</span> <span class="pre">'gn_reg',</span> <span class="pre">'hybrid',</span> <span class="pre">'hybrid_reg'],</span> <span class="pre">'scipy':</span> <span class="pre">['Nelder-Mead',</span> <span class="pre">'Powell',</span> <span class="pre">'CG',</span> <span class="pre">'BFGS',</span> <span class="pre">'Newton-CG',</span> <span class="pre">'L-BFGS-B',</span> <span class="pre">'TNC',</span> <span class="pre">'SLSQP'],</span> <span class="pre">'scipy_go':</span> <span class="pre">['differential_evolution',</span> <span class="pre">'shgo',</span> <span class="pre">'dual_annealing'],</span> <span class="pre">'scipy_ls':</span> <span class="pre">['lm-scipy',</span> <span class="pre">'trf',</span> <span class="pre">'dogbox']},</span> <span class="pre">'PLOTTING':</span> <span class="pre">{'cmap_range':</span> <span class="pre">'[0.2,</span> <span class="pre">0.8]',</span> <span class="pre">'colour_map':</span> <span class="pre">'magma_r',</span> <span class="pre">'colour_ulim':</span> <span class="pre">100,</span> <span class="pre">'comparison_mode':</span> <span class="pre">'both',</span> <span class="pre">'make_plots':</span> <span class="pre">True,</span> <span class="pre">'results_dir':</span> <span class="pre">'fitbenchmarking_results',</span> <span class="pre">'table_type':</span> <span class="pre">['acc',</span> <span class="pre">'runtime',</span> <span class="pre">'compare',</span> <span class="pre">'local_min']}}</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.DEFAULTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.DEFAULT_FITTING">
+<code class="sig-name descname"><span class="pre">DEFAULT_FITTING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'algorithm_type':</span> <span class="pre">['all'],</span> <span class="pre">'cost_func_type':</span> <span class="pre">'weighted_nlls',</span> <span class="pre">'jac_method':</span> <span class="pre">['scipy'],</span> <span class="pre">'num_runs':</span> <span class="pre">5,</span> <span class="pre">'software':</span> <span class="pre">['scipy',</span> <span class="pre">'scipy_ls']}</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.DEFAULT_FITTING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.DEFAULT_JACOBIAN">
+<code class="sig-name descname"><span class="pre">DEFAULT_JACOBIAN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'analytic':</span> <span class="pre">['cutest'],</span> <span class="pre">'default':</span> <span class="pre">['default'],</span> <span class="pre">'numdifftools':</span> <span class="pre">['central'],</span> <span class="pre">'scipy':</span> <span class="pre">['2-point']}</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.DEFAULT_JACOBIAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.DEFAULT_LOGGING">
+<code class="sig-name descname"><span class="pre">DEFAULT_LOGGING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'append':</span> <span class="pre">False,</span> <span class="pre">'external_output':</span> <span class="pre">'log_only',</span> <span class="pre">'file_name':</span> <span class="pre">'fitbenchmarking.log',</span> <span class="pre">'level':</span> <span class="pre">'INFO'}</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.DEFAULT_LOGGING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.DEFAULT_MINIMZERS">
+<code class="sig-name descname"><span class="pre">DEFAULT_MINIMZERS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'bumps':</span> <span class="pre">['amoeba',</span> <span class="pre">'lm-bumps',</span> <span class="pre">'newton',</span> <span class="pre">'mp'],</span> <span class="pre">'dfo':</span> <span class="pre">['dfogn',</span> <span class="pre">'dfols'],</span> <span class="pre">'gsl':</span> <span class="pre">['lmsder',</span> <span class="pre">'lmder',</span> <span class="pre">'nmsimplex',</span> <span class="pre">'nmsimplex2',</span> <span class="pre">'conjugate_pr',</span> <span class="pre">'conjugate_fr',</span> <span class="pre">'vector_bfgs',</span> <span class="pre">'vector_bfgs2',</span> <span class="pre">'steepest_descent'],</span> <span class="pre">'levmar':</span> <span class="pre">['levmar'],</span> <span class="pre">'mantid':</span> <span class="pre">['BFGS',</span> <span class="pre">'Conjugate</span> <span class="pre">gradient</span> <span class="pre">(Fletcher-Reeves</span> <span class="pre">imp.)',</span> <span class="pre">'Conjugate</span> <span class="pre">gradient</span> <span class="pre">(Polak-Ribiere</span> <span class="pre">imp.)',</span> <span class="pre">'Damped</span> <span class="pre">GaussNewton',</span> <span class="pre">'Levenberg-Marquardt',</span> <span class="pre">'Levenberg-MarquardtMD',</span> <span class="pre">'Simplex',</span> <span class="pre">'SteepestDescent',</span> <span class="pre">'Trust</span> <span class="pre">Region'],</span> <span class="pre">'matlab':</span> <span class="pre">['Nelder-Mead</span> <span class="pre">Simplex'],</span> <span class="pre">'matlab_opt':</span> <span class="pre">['levenberg-marquardt',</span> <span class="pre">'trust-region-reflective'],</span> <span class="pre">'minuit':</span> <span class="pre">['minuit'],</span> <span class="pre">'ralfit':</span> <span class="pre">['gn',</span> <span class="pre">'gn_reg',</span> <span class="pre">'hybrid',</span> <span class="pre">'hybrid_reg'],</span> <span class="pre">'scipy':</span> <span class="pre">['Nelder-Mead',</span> <span class="pre">'Powell',</span> <span class="pre">'CG',</span> <span class="pre">'BFGS',</span> <span class="pre">'Newton-CG',</span> <span class="pre">'L-BFGS-B',</span> <span class="pre">'TNC',</span> <span class="pre">'SLSQP'],</span> <span class="pre">'scipy_go':</span> <span class="pre">['differential_evolution',</span> <span class="pre">'shgo',</span> <span class="pre">'dual_annealing'],</span> <span class="pre">'scipy_ls':</span> <span class="pre">['lm-scipy',</span> <span class="pre">'trf',</span> <span class="pre">'dogbox']}</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.DEFAULT_MINIMZERS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.DEFAULT_PLOTTING">
+<code class="sig-name descname"><span class="pre">DEFAULT_PLOTTING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'cmap_range':</span> <span class="pre">'[0.2,</span> <span class="pre">0.8]',</span> <span class="pre">'colour_map':</span> <span class="pre">'magma_r',</span> <span class="pre">'colour_ulim':</span> <span class="pre">100,</span> <span class="pre">'comparison_mode':</span> <span class="pre">'both',</span> <span class="pre">'make_plots':</span> <span class="pre">True,</span> <span class="pre">'results_dir':</span> <span class="pre">'fitbenchmarking_results',</span> <span class="pre">'table_type':</span> <span class="pre">['acc',</span> <span class="pre">'runtime',</span> <span class="pre">'compare',</span> <span class="pre">'local_min']}</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.DEFAULT_PLOTTING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.VALID">
+<code class="sig-name descname"><span class="pre">VALID</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'FITTING':</span> <span class="pre">{'algorithm_type':</span> <span class="pre">['all',</span> <span class="pre">'ls',</span> <span class="pre">'deriv_free',</span> <span class="pre">'general',</span> <span class="pre">'simplex',</span> <span class="pre">'trust_region',</span> <span class="pre">'levenberg-marquardt',</span> <span class="pre">'gauss_newton',</span> <span class="pre">'bfgs',</span> <span class="pre">'conjugate_gradient',</span> <span class="pre">'steepest_descent',</span> <span class="pre">'global_optimization'],</span> <span class="pre">'cost_func_type':</span> <span class="pre">['nlls',</span> <span class="pre">'weighted_nlls',</span> <span class="pre">'hellinger_nlls',</span> <span class="pre">'poisson'],</span> <span class="pre">'jac_method':</span> <span class="pre">['scipy',</span> <span class="pre">'analytic',</span> <span class="pre">'default',</span> <span class="pre">'numdifftools'],</span> <span class="pre">'software':</span> <span class="pre">['bumps',</span> <span class="pre">'dfo',</span> <span class="pre">'gsl',</span> <span class="pre">'levmar',</span> <span class="pre">'mantid',</span> <span class="pre">'matlab',</span> <span class="pre">'matlab_opt',</span> <span class="pre">'minuit',</span> <span class="pre">'ralfit',</span> <span class="pre">'scipy',</span> <span class="pre">'scipy_ls',</span> <span class="pre">'scipy_go']},</span> <span class="pre">'JACOBIAN':</span> <span class="pre">{'analytic':</span> <span class="pre">['cutest'],</span> <span class="pre">'default':</span> <span class="pre">['default'],</span> <span class="pre">'numdifftools':</span> <span class="pre">['central',</span> <span class="pre">'complex',</span> <span class="pre">'multicomplex',</span> <span class="pre">'forward',</span> <span class="pre">'backward'],</span> <span class="pre">'scipy':</span> <span class="pre">['2-point',</span> <span class="pre">'3-point',</span> <span class="pre">'cs']},</span> <span class="pre">'LOGGING':</span> <span class="pre">{'append':</span> <span class="pre">[True,</span> <span class="pre">False],</span> <span class="pre">'external_output':</span> <span class="pre">['debug',</span> <span class="pre">'display',</span> <span class="pre">'log_only'],</span> <span class="pre">'level':</span> <span class="pre">['NOTSET',</span> <span class="pre">'DEBUG',</span> <span class="pre">'INFO',</span> <span class="pre">'WARNING',</span> <span class="pre">'ERROR',</span> <span class="pre">'CRITICAL']},</span> <span class="pre">'MINIMIZERS':</span> <span class="pre">{'bumps':</span> <span class="pre">['amoeba',</span> <span class="pre">'lm-bumps',</span> <span class="pre">'newton',</span> <span class="pre">'de',</span> <span class="pre">'mp'],</span> <span class="pre">'dfo':</span> <span class="pre">['dfogn',</span> <span class="pre">'dfols'],</span> <span class="pre">'gsl':</span> <span class="pre">['lmsder',</span> <span class="pre">'lmder',</span> <span class="pre">'nmsimplex',</span> <span class="pre">'nmsimplex2',</span> <span class="pre">'conjugate_pr',</span> <span class="pre">'conjugate_fr',</span> <span class="pre">'vector_bfgs',</span> <span class="pre">'vector_bfgs2',</span> <span class="pre">'steepest_descent'],</span> <span class="pre">'levmar':</span> <span class="pre">['levmar'],</span> <span class="pre">'mantid':</span> <span class="pre">['BFGS',</span> <span class="pre">'Conjugate</span> <span class="pre">gradient</span> <span class="pre">(Fletcher-Reeves</span> <span class="pre">imp.)',</span> <span class="pre">'Conjugate</span> <span class="pre">gradient</span> <span class="pre">(Polak-Ribiere</span> <span class="pre">imp.)',</span> <span class="pre">'Damped</span> <span class="pre">GaussNewton',</span> <span class="pre">'Levenberg-Marquardt',</span> <span class="pre">'Levenberg-MarquardtMD',</span> <span class="pre">'Simplex',</span> <span class="pre">'SteepestDescent',</span> <span class="pre">'Trust</span> <span class="pre">Region'],</span> <span class="pre">'matlab':</span> <span class="pre">['Nelder-Mead</span> <span class="pre">Simplex'],</span> <span class="pre">'matlab_opt':</span> <span class="pre">['levenberg-marquardt',</span> <span class="pre">'trust-region-reflective'],</span> <span class="pre">'minuit':</span> <span class="pre">['minuit'],</span> <span class="pre">'ralfit':</span> <span class="pre">['gn',</span> <span class="pre">'gn_reg',</span> <span class="pre">'hybrid',</span> <span class="pre">'hybrid_reg'],</span> <span class="pre">'scipy':</span> <span class="pre">['Nelder-Mead',</span> <span class="pre">'Powell',</span> <span class="pre">'CG',</span> <span class="pre">'BFGS',</span> <span class="pre">'Newton-CG',</span> <span class="pre">'L-BFGS-B',</span> <span class="pre">'TNC',</span> <span class="pre">'SLSQP'],</span> <span class="pre">'scipy_go':</span> <span class="pre">['differential_evolution',</span> <span class="pre">'shgo',</span> <span class="pre">'dual_annealing'],</span> <span class="pre">'scipy_ls':</span> <span class="pre">['lm-scipy',</span> <span class="pre">'trf',</span> <span class="pre">'dogbox']},</span> <span class="pre">'PLOTTING':</span> <span class="pre">{'colour_map':</span> <span class="pre">['Accent',</span> <span class="pre">'Accent_r',</span> <span class="pre">'Blues',</span> <span class="pre">'Blues_r',</span> <span class="pre">'BrBG',</span> <span class="pre">'BrBG_r',</span> <span class="pre">'BuGn',</span> <span class="pre">'BuGn_r',</span> <span class="pre">'BuPu',</span> <span class="pre">'BuPu_r',</span> <span class="pre">'CMRmap',</span> <span class="pre">'CMRmap_r',</span> <span class="pre">'Dark2',</span> <span class="pre">'Dark2_r',</span> <span class="pre">'GnBu',</span> <span class="pre">'GnBu_r',</span> <span class="pre">'Greens',</span> <span class="pre">'Greens_r',</span> <span class="pre">'Greys',</span> <span class="pre">'Greys_r',</span> <span class="pre">'OrRd',</span> <span class="pre">'OrRd_r',</span> <span class="pre">'Oranges',</span> <span class="pre">'Oranges_r',</span> <span class="pre">'PRGn',</span> <span class="pre">'PRGn_r',</span> <span class="pre">'Paired',</span> <span class="pre">'Paired_r',</span> <span class="pre">'Pastel1',</span> <span class="pre">'Pastel1_r',</span> <span class="pre">'Pastel2',</span> <span class="pre">'Pastel2_r',</span> <span class="pre">'PiYG',</span> <span class="pre">'PiYG_r',</span> <span class="pre">'PuBu',</span> <span class="pre">'PuBuGn',</span> <span class="pre">'PuBuGn_r',</span> <span class="pre">'PuBu_r',</span> <span class="pre">'PuOr',</span> <span class="pre">'PuOr_r',</span> <span class="pre">'PuRd',</span> <span class="pre">'PuRd_r',</span> <span class="pre">'Purples',</span> <span class="pre">'Purples_r',</span> <span class="pre">'RdBu',</span> <span class="pre">'RdBu_r',</span> <span class="pre">'RdGy',</span> <span class="pre">'RdGy_r',</span> <span class="pre">'RdPu',</span> <span class="pre">'RdPu_r',</span> <span class="pre">'RdYlBu',</span> <span class="pre">'RdYlBu_r',</span> <span class="pre">'RdYlGn',</span> <span class="pre">'RdYlGn_r',</span> <span class="pre">'Reds',</span> <span class="pre">'Reds_r',</span> <span class="pre">'Set1',</span> <span class="pre">'Set1_r',</span> <span class="pre">'Set2',</span> <span class="pre">'Set2_r',</span> <span class="pre">'Set3',</span> <span class="pre">'Set3_r',</span> <span class="pre">'Spectral',</span> <span class="pre">'Spectral_r',</span> <span class="pre">'Wistia',</span> <span class="pre">'Wistia_r',</span> <span class="pre">'YlGn',</span> <span class="pre">'YlGnBu',</span> <span class="pre">'YlGnBu_r',</span> <span class="pre">'YlGn_r',</span> <span class="pre">'YlOrBr',</span> <span class="pre">'YlOrBr_r',</span> <span class="pre">'YlOrRd',</span> <span class="pre">'YlOrRd_r',</span> <span class="pre">'afmhot',</span> <span class="pre">'afmhot_r',</span> <span class="pre">'autumn',</span> <span class="pre">'autumn_r',</span> <span class="pre">'binary',</span> <span class="pre">'binary_r',</span> <span class="pre">'bone',</span> <span class="pre">'bone_r',</span> <span class="pre">'brg',</span> <span class="pre">'brg_r',</span> <span class="pre">'bwr',</span> <span class="pre">'bwr_r',</span> <span class="pre">'cividis',</span> <span class="pre">'cividis_r',</span> <span class="pre">'cool',</span> <span class="pre">'cool_r',</span> <span class="pre">'coolwarm',</span> <span class="pre">'coolwarm_r',</span> <span class="pre">'copper',</span> <span class="pre">'copper_r',</span> <span class="pre">'cubehelix',</span> <span class="pre">'cubehelix_r',</span> <span class="pre">'flag',</span> <span class="pre">'flag_r',</span> <span class="pre">'gist_earth',</span> <span class="pre">'gist_earth_r',</span> <span class="pre">'gist_gray',</span> <span class="pre">'gist_gray_r',</span> <span class="pre">'gist_heat',</span> <span class="pre">'gist_heat_r',</span> <span class="pre">'gist_ncar',</span> <span class="pre">'gist_ncar_r',</span> <span class="pre">'gist_rainbow',</span> <span class="pre">'gist_rainbow_r',</span> <span class="pre">'gist_stern',</span> <span class="pre">'gist_stern_r',</span> <span class="pre">'gist_yarg',</span> <span class="pre">'gist_yarg_r',</span> <span class="pre">'gnuplot',</span> <span class="pre">'gnuplot2',</span> <span class="pre">'gnuplot2_r',</span> <span class="pre">'gnuplot_r',</span> <span class="pre">'gray',</span> <span class="pre">'gray_r',</span> <span class="pre">'hot',</span> <span class="pre">'hot_r',</span> <span class="pre">'hsv',</span> <span class="pre">'hsv_r',</span> <span class="pre">'inferno',</span> <span class="pre">'inferno_r',</span> <span class="pre">'jet',</span> <span class="pre">'jet_r',</span> <span class="pre">'magma',</span> <span class="pre">'magma_r',</span> <span class="pre">'nipy_spectral',</span> <span class="pre">'nipy_spectral_r',</span> <span class="pre">'ocean',</span> <span class="pre">'ocean_r',</span> <span class="pre">'pink',</span> <span class="pre">'pink_r',</span> <span class="pre">'plasma',</span> <span class="pre">'plasma_r',</span> <span class="pre">'prism',</span> <span class="pre">'prism_r',</span> <span class="pre">'rainbow',</span> <span class="pre">'rainbow_r',</span> <span class="pre">'seismic',</span> <span class="pre">'seismic_r',</span> <span class="pre">'spring',</span> <span class="pre">'spring_r',</span> <span class="pre">'summer',</span> <span class="pre">'summer_r',</span> <span class="pre">'tab10',</span> <span class="pre">'tab10_r',</span> <span class="pre">'tab20',</span> <span class="pre">'tab20_r',</span> <span class="pre">'tab20b',</span> <span class="pre">'tab20b_r',</span> <span class="pre">'tab20c',</span> <span class="pre">'tab20c_r',</span> <span class="pre">'terrain',</span> <span class="pre">'terrain_r',</span> <span class="pre">'turbo',</span> <span class="pre">'turbo_r',</span> <span class="pre">'twilight',</span> <span class="pre">'twilight_r',</span> <span class="pre">'twilight_shifted',</span> <span class="pre">'twilight_shifted_r',</span> <span class="pre">'viridis',</span> <span class="pre">'viridis_r',</span> <span class="pre">'winter',</span> <span class="pre">'winter_r'],</span> <span class="pre">'comparison_mode':</span> <span class="pre">['abs',</span> <span class="pre">'rel',</span> <span class="pre">'both'],</span> <span class="pre">'make_plots':</span> <span class="pre">[True,</span> <span class="pre">False],</span> <span class="pre">'table_type':</span> <span class="pre">['acc',</span> <span class="pre">'runtime',</span> <span class="pre">'compare',</span> <span class="pre">'local_min']}}</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.VALID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.VALID_FITTING">
+<code class="sig-name descname"><span class="pre">VALID_FITTING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'algorithm_type':</span> <span class="pre">['all',</span> <span class="pre">'ls',</span> <span class="pre">'deriv_free',</span> <span class="pre">'general',</span> <span class="pre">'simplex',</span> <span class="pre">'trust_region',</span> <span class="pre">'levenberg-marquardt',</span> <span class="pre">'gauss_newton',</span> <span class="pre">'bfgs',</span> <span class="pre">'conjugate_gradient',</span> <span class="pre">'steepest_descent',</span> <span class="pre">'global_optimization'],</span> <span class="pre">'cost_func_type':</span> <span class="pre">['nlls',</span> <span class="pre">'weighted_nlls',</span> <span class="pre">'hellinger_nlls',</span> <span class="pre">'poisson'],</span> <span class="pre">'jac_method':</span> <span class="pre">['scipy',</span> <span class="pre">'analytic',</span> <span class="pre">'default',</span> <span class="pre">'numdifftools'],</span> <span class="pre">'software':</span> <span class="pre">['bumps',</span> <span class="pre">'dfo',</span> <span class="pre">'gsl',</span> <span class="pre">'levmar',</span> <span class="pre">'mantid',</span> <span class="pre">'matlab',</span> <span class="pre">'matlab_opt',</span> <span class="pre">'minuit',</span> <span class="pre">'ralfit',</span> <span class="pre">'scipy',</span> <span class="pre">'scipy_ls',</span> <span class="pre">'scipy_go']}</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.VALID_FITTING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.VALID_JACOBIAN">
+<code class="sig-name descname"><span class="pre">VALID_JACOBIAN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'analytic':</span> <span class="pre">['cutest'],</span> <span class="pre">'default':</span> <span class="pre">['default'],</span> <span class="pre">'numdifftools':</span> <span class="pre">['central',</span> <span class="pre">'complex',</span> <span class="pre">'multicomplex',</span> <span class="pre">'forward',</span> <span class="pre">'backward'],</span> <span class="pre">'scipy':</span> <span class="pre">['2-point',</span> <span class="pre">'3-point',</span> <span class="pre">'cs']}</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.VALID_JACOBIAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.VALID_LOGGING">
+<code class="sig-name descname"><span class="pre">VALID_LOGGING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'append':</span> <span class="pre">[True,</span> <span class="pre">False],</span> <span class="pre">'external_output':</span> <span class="pre">['debug',</span> <span class="pre">'display',</span> <span class="pre">'log_only'],</span> <span class="pre">'level':</span> <span class="pre">['NOTSET',</span> <span class="pre">'DEBUG',</span> <span class="pre">'INFO',</span> <span class="pre">'WARNING',</span> <span class="pre">'ERROR',</span> <span class="pre">'CRITICAL']}</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.VALID_LOGGING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.VALID_MINIMIZERS">
+<code class="sig-name descname"><span class="pre">VALID_MINIMIZERS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'bumps':</span> <span class="pre">['amoeba',</span> <span class="pre">'lm-bumps',</span> <span class="pre">'newton',</span> <span class="pre">'de',</span> <span class="pre">'mp'],</span> <span class="pre">'dfo':</span> <span class="pre">['dfogn',</span> <span class="pre">'dfols'],</span> <span class="pre">'gsl':</span> <span class="pre">['lmsder',</span> <span class="pre">'lmder',</span> <span class="pre">'nmsimplex',</span> <span class="pre">'nmsimplex2',</span> <span class="pre">'conjugate_pr',</span> <span class="pre">'conjugate_fr',</span> <span class="pre">'vector_bfgs',</span> <span class="pre">'vector_bfgs2',</span> <span class="pre">'steepest_descent'],</span> <span class="pre">'levmar':</span> <span class="pre">['levmar'],</span> <span class="pre">'mantid':</span> <span class="pre">['BFGS',</span> <span class="pre">'Conjugate</span> <span class="pre">gradient</span> <span class="pre">(Fletcher-Reeves</span> <span class="pre">imp.)',</span> <span class="pre">'Conjugate</span> <span class="pre">gradient</span> <span class="pre">(Polak-Ribiere</span> <span class="pre">imp.)',</span> <span class="pre">'Damped</span> <span class="pre">GaussNewton',</span> <span class="pre">'Levenberg-Marquardt',</span> <span class="pre">'Levenberg-MarquardtMD',</span> <span class="pre">'Simplex',</span> <span class="pre">'SteepestDescent',</span> <span class="pre">'Trust</span> <span class="pre">Region'],</span> <span class="pre">'matlab':</span> <span class="pre">['Nelder-Mead</span> <span class="pre">Simplex'],</span> <span class="pre">'matlab_opt':</span> <span class="pre">['levenberg-marquardt',</span> <span class="pre">'trust-region-reflective'],</span> <span class="pre">'minuit':</span> <span class="pre">['minuit'],</span> <span class="pre">'ralfit':</span> <span class="pre">['gn',</span> <span class="pre">'gn_reg',</span> <span class="pre">'hybrid',</span> <span class="pre">'hybrid_reg'],</span> <span class="pre">'scipy':</span> <span class="pre">['Nelder-Mead',</span> <span class="pre">'Powell',</span> <span class="pre">'CG',</span> <span class="pre">'BFGS',</span> <span class="pre">'Newton-CG',</span> <span class="pre">'L-BFGS-B',</span> <span class="pre">'TNC',</span> <span class="pre">'SLSQP'],</span> <span class="pre">'scipy_go':</span> <span class="pre">['differential_evolution',</span> <span class="pre">'shgo',</span> <span class="pre">'dual_annealing'],</span> <span class="pre">'scipy_ls':</span> <span class="pre">['lm-scipy',</span> <span class="pre">'trf',</span> <span class="pre">'dogbox']}</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.VALID_MINIMIZERS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.VALID_PLOTTING">
+<code class="sig-name descname"><span class="pre">VALID_PLOTTING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'colour_map':</span> <span class="pre">['Accent',</span> <span class="pre">'Accent_r',</span> <span class="pre">'Blues',</span> <span class="pre">'Blues_r',</span> <span class="pre">'BrBG',</span> <span class="pre">'BrBG_r',</span> <span class="pre">'BuGn',</span> <span class="pre">'BuGn_r',</span> <span class="pre">'BuPu',</span> <span class="pre">'BuPu_r',</span> <span class="pre">'CMRmap',</span> <span class="pre">'CMRmap_r',</span> <span class="pre">'Dark2',</span> <span class="pre">'Dark2_r',</span> <span class="pre">'GnBu',</span> <span class="pre">'GnBu_r',</span> <span class="pre">'Greens',</span> <span class="pre">'Greens_r',</span> <span class="pre">'Greys',</span> <span class="pre">'Greys_r',</span> <span class="pre">'OrRd',</span> <span class="pre">'OrRd_r',</span> <span class="pre">'Oranges',</span> <span class="pre">'Oranges_r',</span> <span class="pre">'PRGn',</span> <span class="pre">'PRGn_r',</span> <span class="pre">'Paired',</span> <span class="pre">'Paired_r',</span> <span class="pre">'Pastel1',</span> <span class="pre">'Pastel1_r',</span> <span class="pre">'Pastel2',</span> <span class="pre">'Pastel2_r',</span> <span class="pre">'PiYG',</span> <span class="pre">'PiYG_r',</span> <span class="pre">'PuBu',</span> <span class="pre">'PuBuGn',</span> <span class="pre">'PuBuGn_r',</span> <span class="pre">'PuBu_r',</span> <span class="pre">'PuOr',</span> <span class="pre">'PuOr_r',</span> <span class="pre">'PuRd',</span> <span class="pre">'PuRd_r',</span> <span class="pre">'Purples',</span> <span class="pre">'Purples_r',</span> <span class="pre">'RdBu',</span> <span class="pre">'RdBu_r',</span> <span class="pre">'RdGy',</span> <span class="pre">'RdGy_r',</span> <span class="pre">'RdPu',</span> <span class="pre">'RdPu_r',</span> <span class="pre">'RdYlBu',</span> <span class="pre">'RdYlBu_r',</span> <span class="pre">'RdYlGn',</span> <span class="pre">'RdYlGn_r',</span> <span class="pre">'Reds',</span> <span class="pre">'Reds_r',</span> <span class="pre">'Set1',</span> <span class="pre">'Set1_r',</span> <span class="pre">'Set2',</span> <span class="pre">'Set2_r',</span> <span class="pre">'Set3',</span> <span class="pre">'Set3_r',</span> <span class="pre">'Spectral',</span> <span class="pre">'Spectral_r',</span> <span class="pre">'Wistia',</span> <span class="pre">'Wistia_r',</span> <span class="pre">'YlGn',</span> <span class="pre">'YlGnBu',</span> <span class="pre">'YlGnBu_r',</span> <span class="pre">'YlGn_r',</span> <span class="pre">'YlOrBr',</span> <span class="pre">'YlOrBr_r',</span> <span class="pre">'YlOrRd',</span> <span class="pre">'YlOrRd_r',</span> <span class="pre">'afmhot',</span> <span class="pre">'afmhot_r',</span> <span class="pre">'autumn',</span> <span class="pre">'autumn_r',</span> <span class="pre">'binary',</span> <span class="pre">'binary_r',</span> <span class="pre">'bone',</span> <span class="pre">'bone_r',</span> <span class="pre">'brg',</span> <span class="pre">'brg_r',</span> <span class="pre">'bwr',</span> <span class="pre">'bwr_r',</span> <span class="pre">'cividis',</span> <span class="pre">'cividis_r',</span> <span class="pre">'cool',</span> <span class="pre">'cool_r',</span> <span class="pre">'coolwarm',</span> <span class="pre">'coolwarm_r',</span> <span class="pre">'copper',</span> <span class="pre">'copper_r',</span> <span class="pre">'cubehelix',</span> <span class="pre">'cubehelix_r',</span> <span class="pre">'flag',</span> <span class="pre">'flag_r',</span> <span class="pre">'gist_earth',</span> <span class="pre">'gist_earth_r',</span> <span class="pre">'gist_gray',</span> <span class="pre">'gist_gray_r',</span> <span class="pre">'gist_heat',</span> <span class="pre">'gist_heat_r',</span> <span class="pre">'gist_ncar',</span> <span class="pre">'gist_ncar_r',</span> <span class="pre">'gist_rainbow',</span> <span class="pre">'gist_rainbow_r',</span> <span class="pre">'gist_stern',</span> <span class="pre">'gist_stern_r',</span> <span class="pre">'gist_yarg',</span> <span class="pre">'gist_yarg_r',</span> <span class="pre">'gnuplot',</span> <span class="pre">'gnuplot2',</span> <span class="pre">'gnuplot2_r',</span> <span class="pre">'gnuplot_r',</span> <span class="pre">'gray',</span> <span class="pre">'gray_r',</span> <span class="pre">'hot',</span> <span class="pre">'hot_r',</span> <span class="pre">'hsv',</span> <span class="pre">'hsv_r',</span> <span class="pre">'inferno',</span> <span class="pre">'inferno_r',</span> <span class="pre">'jet',</span> <span class="pre">'jet_r',</span> <span class="pre">'magma',</span> <span class="pre">'magma_r',</span> <span class="pre">'nipy_spectral',</span> <span class="pre">'nipy_spectral_r',</span> <span class="pre">'ocean',</span> <span class="pre">'ocean_r',</span> <span class="pre">'pink',</span> <span class="pre">'pink_r',</span> <span class="pre">'plasma',</span> <span class="pre">'plasma_r',</span> <span class="pre">'prism',</span> <span class="pre">'prism_r',</span> <span class="pre">'rainbow',</span> <span class="pre">'rainbow_r',</span> <span class="pre">'seismic',</span> <span class="pre">'seismic_r',</span> <span class="pre">'spring',</span> <span class="pre">'spring_r',</span> <span class="pre">'summer',</span> <span class="pre">'summer_r',</span> <span class="pre">'tab10',</span> <span class="pre">'tab10_r',</span> <span class="pre">'tab20',</span> <span class="pre">'tab20_r',</span> <span class="pre">'tab20b',</span> <span class="pre">'tab20b_r',</span> <span class="pre">'tab20c',</span> <span class="pre">'tab20c_r',</span> <span class="pre">'terrain',</span> <span class="pre">'terrain_r',</span> <span class="pre">'turbo',</span> <span class="pre">'turbo_r',</span> <span class="pre">'twilight',</span> <span class="pre">'twilight_r',</span> <span class="pre">'twilight_shifted',</span> <span class="pre">'twilight_shifted_r',</span> <span class="pre">'viridis',</span> <span class="pre">'viridis_r',</span> <span class="pre">'winter',</span> <span class="pre">'winter_r'],</span> <span class="pre">'comparison_mode':</span> <span class="pre">['abs',</span> <span class="pre">'rel',</span> <span class="pre">'both'],</span> <span class="pre">'make_plots':</span> <span class="pre">[True,</span> <span class="pre">False],</span> <span class="pre">'table_type':</span> <span class="pre">['acc',</span> <span class="pre">'runtime',</span> <span class="pre">'compare',</span> <span class="pre">'local_min']}</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.VALID_PLOTTING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.utils.options.Options.VALID_SECTIONS">
+<code class="sig-name descname"><span class="pre">VALID_SECTIONS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['MINIMIZERS',</span> <span class="pre">'FITTING',</span> <span class="pre">'JACOBIAN',</span> <span class="pre">'PLOTTING',</span> <span class="pre">'LOGGING']</span></em><a class="headerlink" href="#fitbenchmarking.utils.options.Options.VALID_SECTIONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.utils.options.Options.minimizers">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">minimizers</span></code><a class="headerlink" href="#fitbenchmarking.utils.options.Options.minimizers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the minimizers in a software package</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.utils.options.Options.read_value">
+<code class="sig-name descname"><span class="pre">read_value</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">option</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.utils.options.Options.read_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function which loads in the value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>callable</em>) – configparser function</p></li>
+<li><p><strong>option</strong> (<em>str</em>) – option to be read for file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>value of the option</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list/str/int/bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.utils.options.Options.reset">
+<code class="sig-name descname"><span class="pre">reset</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.utils.options.Options.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets options object when running multiple problem groups.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.utils.options.Options.results_dir">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">results_dir</span></code><a class="headerlink" href="#fitbenchmarking.utils.options.Options.results_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the path to the results directory</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.utils.options.Options.write">
+<code class="sig-name descname"><span class="pre">write</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.utils.options.Options.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the contents of the options object to a new options file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<em>str</em>) – The path to the new options file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.utils.options.Options.write_to_stream">
+<code class="sig-name descname"><span class="pre">write_to_stream</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.utils.options.Options.write_to_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the contents of the options object to a file object.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="fitbenchmarking.utils.options.read_list">
+<code class="sig-prename descclassname"><span class="pre">fitbenchmarking.utils.options.</span></code><code class="sig-name descname"><span class="pre">read_list</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.utils.options.read_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function to allow lists to be read by the config parser</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>string</em>) – string to convert to a list</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of items</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="fitbenchmarking.utils.output_grabber.html" class="btn btn-neutral float-right" title="fitbenchmarking.utils.output_grabber module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="fitbenchmarking.utils.misc.html" class="btn btn-neutral float-left" title="fitbenchmarking.utils.misc module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, STFC.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

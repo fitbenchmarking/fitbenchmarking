@@ -1,0 +1,7 @@
+fitbenchmarking.jacobian.base\_jacobian module
+==============================================
+
+.. automodule:: fitbenchmarking.jacobian.base_jacobian
+   :members:
+   :undoc-members:
+   :show-inheritance:

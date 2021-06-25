@@ -1,0 +1,7 @@
+fitbenchmarking.parsing.fitting\_problem module
+===============================================
+
+.. automodule:: fitbenchmarking.parsing.fitting_problem
+   :members:
+   :undoc-members:
+   :show-inheritance:

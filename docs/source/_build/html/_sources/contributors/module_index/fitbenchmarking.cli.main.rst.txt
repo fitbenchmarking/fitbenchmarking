@@ -1,0 +1,7 @@
+fitbenchmarking.cli.main module
+===============================
+
+.. automodule:: fitbenchmarking.cli.main
+   :members:
+   :undoc-members:
+   :show-inheritance:

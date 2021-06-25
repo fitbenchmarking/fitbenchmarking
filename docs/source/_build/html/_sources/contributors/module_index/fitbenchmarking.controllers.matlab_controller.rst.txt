@@ -1,0 +1,7 @@
+fitbenchmarking.controllers.matlab\_controller module
+=====================================================
+
+.. automodule:: fitbenchmarking.controllers.matlab_controller
+   :members:
+   :undoc-members:
+   :show-inheritance:

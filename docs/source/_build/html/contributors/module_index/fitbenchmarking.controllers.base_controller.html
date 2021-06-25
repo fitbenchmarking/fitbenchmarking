@@ -1,0 +1,426 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>fitbenchmarking.controllers.base_controller module &mdash; FitBenchmarking 0.1.dev1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="fitbenchmarking.controllers.bumps_controller module" href="fitbenchmarking.controllers.bumps_controller.html" />
+    <link rel="prev" title="fitbenchmarking.controllers package" href="fitbenchmarking.controllers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> FitBenchmarking
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../concept/index.html">Concept</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users/index.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending/index.html">Extending</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Contributors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines.html">Coding Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../workflow.html">Git Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../structure.html">Repository Structure</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="fitbenchmarking.html">Module Index</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.cli.html">fitbenchmarking.cli package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="fitbenchmarking.controllers.html">fitbenchmarking.controllers package</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">fitbenchmarking.controllers.base_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.bumps_controller.html">fitbenchmarking.controllers.bumps_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.controller_factory.html">fitbenchmarking.controllers.controller_factory module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.dfo_controller.html">fitbenchmarking.controllers.dfo_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.gsl_controller.html">fitbenchmarking.controllers.gsl_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.levmar_controller.html">fitbenchmarking.controllers.levmar_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.mantid_controller.html">fitbenchmarking.controllers.mantid_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.matlab_controller.html">fitbenchmarking.controllers.matlab_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.matlab_opt_controller.html">fitbenchmarking.controllers.matlab_opt_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.minuit_controller.html">fitbenchmarking.controllers.minuit_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.ralfit_controller.html">fitbenchmarking.controllers.ralfit_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.scipy_controller.html">fitbenchmarking.controllers.scipy_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.scipy_go_controller.html">fitbenchmarking.controllers.scipy_go_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.controllers.scipy_ls_controller.html">fitbenchmarking.controllers.scipy_ls_controller module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.core.html">fitbenchmarking.core package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.cost_func.html">fitbenchmarking.cost_func package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.jacobian.html">fitbenchmarking.jacobian package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.parsing.html">fitbenchmarking.parsing package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.results_processing.html">fitbenchmarking.results_processing package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.utils.html">fitbenchmarking.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FitBenchmarking</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">FitBenchmarking Contributor Documentation</a> &raquo;</li>
+        
+          <li><a href="fitbenchmarking.html">fitbenchmarking package</a> &raquo;</li>
+        
+          <li><a href="fitbenchmarking.controllers.html">fitbenchmarking.controllers package</a> &raquo;</li>
+        
+      <li>fitbenchmarking.controllers.base_controller module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/contributors/module_index/fitbenchmarking.controllers.base_controller.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-fitbenchmarking.controllers.base_controller">
+<span id="fitbenchmarking-controllers-base-controller-module"></span><h1>fitbenchmarking.controllers.base_controller module<a class="headerlink" href="#module-fitbenchmarking.controllers.base_controller" title="Permalink to this headline">¶</a></h1>
+<p>Implements the base class for the fitting software controllers.</p>
+<dl class="py class">
+<dt id="fitbenchmarking.controllers.base_controller.Controller">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">fitbenchmarking.controllers.base_controller.</span></code><code class="sig-name descname"><span class="pre">Controller</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cost_func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for all fitting software controllers.
+These controllers are intended to be the only interface into the fitting
+software, and should do so by implementing the abstract classes defined
+here.</p>
+<dl class="py attribute">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.VALID_FLAGS">
+<code class="sig-name descname"><span class="pre">VALID_FLAGS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">5]</span></em><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.VALID_FLAGS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.check_attributes">
+<code class="sig-name descname"><span class="pre">check_attributes</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.check_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper function which checks all required attributes are set
+in software controllers</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.check_bounds_respected">
+<code class="sig-name descname"><span class="pre">check_bounds_respected</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.check_bounds_respected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether the selected minimizer has respected
+parameter bounds</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.check_minimizer_bounds">
+<code class="sig-name descname"><span class="pre">check_minimizer_bounds</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minimizer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.check_minimizer_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function which checks whether the selected minimizer from the
+options (options.minimizer) supports problems with parameter bounds</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>minimizer</strong> (<em>str</em>) – string of minimizers selected from the
+options</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.cleanup">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">cleanup</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the result as a numpy array and store results.</p>
+<p>Convert the fitted parameters into a numpy array, saved to
+<code class="docutils literal notranslate"><span class="pre">self.final_params</span></code>, and store the error flag as <code class="docutils literal notranslate"><span class="pre">self.flag</span></code>.</p>
+<p>The flag corresponds to the following messages:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.eval_chisq">
+<code class="sig-name descname"><span class="pre">eval_chisq</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.eval_chisq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the chisq value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>list</em>) – The parameters to calculate residuals for</p></li>
+<li><p><strong>x</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – x data points, defaults to self.data_x</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – y data points, defaults to self.data_y</p></li>
+<li><p><strong>e</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – error at each data point, defaults to self.data_e</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The sum of squares of residuals for the datapoints at the
+given parameters</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.fit">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">fit</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the fitting.</p>
+<p>This will be timed so should include only what is needed
+to fit the data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.flag">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">flag</span></code><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.flag" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line">0: <cite>Successfully converged</cite></div>
+<div class="line">1: <cite>Software reported maximum number of iterations exceeded</cite></div>
+<div class="line">2: <cite>Software run but didn’t converge to solution</cite></div>
+<div class="line">3: <cite>Software raised an exception</cite></div>
+<div class="line">4: <cite>Solver doesn’t support bounded problems</cite></div>
+<div class="line">5: <cite>Solution doesn’t respect parameter bounds</cite></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.jacobian_information">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">jacobian_information</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.jacobian_information" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up Jacobian information for the controller.</p>
+<p>This should return the following arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">has_jacobian</span></code>: a True or False value whether the controller
+requires Jacobian information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jacobian_free_solvers</span></code>: a list of minimizers in a specific
+software that do not allow Jacobian information to be passed
+into the fitting algorithm. For example in the <code class="docutils literal notranslate"><span class="pre">Scipy</span></code>
+controller this would return <code class="docutils literal notranslate"><span class="pre">Nelder-Mead</span></code> and <code class="docutils literal notranslate"><span class="pre">Powell</span></code>.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(<code class="docutils literal notranslate"><span class="pre">has_jacobian</span></code>, <code class="docutils literal notranslate"><span class="pre">jacobian_free_solvers</span></code>)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(<cite>string</cite>, <cite>list</cite>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.prepare">
+<code class="sig-name descname"><span class="pre">prepare</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.prepare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that function and minimizer have been set.
+If both have been set, run self.setup().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.record_alg_type">
+<code class="sig-name descname"><span class="pre">record_alg_type</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.record_alg_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function which records the algorithm types of
+the selected minimizer that match those chosen in options</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>minimizer</strong> (<em>str</em>) – string of minimizers selected from the
+options</p></li>
+<li><p><strong>algorithm_type</strong> (<em>list</em>) – the algorithm type selected from the options</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.setup">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">setup</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup the specifics of the fitting.</p>
+<p>Anything needed for “fit” that can only be done after knowing the
+minimizer to use and the function to fit should be done here.
+Any variables needed should be saved to self (as class attributes).</p>
+<p>If a solver supports bounded problems, then this is where
+<cite>value_ranges</cite> should be set up for that specific solver. The default
+format is a list of tuples containing the lower and upper bounds
+for each parameter e.g. [(p1_lb, p2_ub), (p2_lb, p2_ub),…]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.controllers.base_controller.Controller.validate_minimizer">
+<code class="sig-name descname"><span class="pre">validate_minimizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.controllers.base_controller.Controller.validate_minimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function which checks that the selected minimizer from the
+options (options.minimizer) exists and whether the minimizer is in
+self.algorithm_check[options.algorithm_type] (this is a list set in
+the controller)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>minimizer</strong> (<em>str</em>) – string of minimizers selected from the
+options</p></li>
+<li><p><strong>algorithm_type</strong> (<em>list</em>) – the algorithm type selected from the options</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="fitbenchmarking.controllers.bumps_controller.html" class="btn btn-neutral float-right" title="fitbenchmarking.controllers.bumps_controller module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="fitbenchmarking.controllers.html" class="btn btn-neutral float-left" title="fitbenchmarking.controllers package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, STFC.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

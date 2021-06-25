@@ -1,0 +1,315 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Native File Format &mdash; FitBenchmarking 0.1.dev1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Native File Format (Mantid MultiFit)" href="multifit.html" />
+    <link rel="prev" title="CUTEst File Format" href="cutest.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> FitBenchmarking
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../concept/index.html">Concept</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Users</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../install_instructions/index.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../running.html">Running FitBenchmarking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cost_func.html">Cost functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../output/index.html">FitBenchmarking Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../BenchmarkProblems.html">Benchmark problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../options/index.html">FitBenchmarking Options</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Problem Definition Files</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="cutest.html">CUTEst File Format</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Native File Format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="multifit.html">Native File Format (Mantid MultiFit)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nist.html">NIST Format</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tests.html">FitBenchmarking Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notes.html">Known Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending/index.html">Extending</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributors/index.html">Contributors</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FitBenchmarking</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">FitBenchmarking User Documentation</a> &raquo;</li>
+        
+          <li><a href="index.html">Problem Definition Files</a> &raquo;</li>
+        
+      <li>Native File Format</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/users/problem_definition_files/native.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="native-file-format">
+<span id="native"></span><h1>Native File Format<a class="headerlink" href="#native-file-format" title="Permalink to this headline">¶</a></h1>
+<p>In FitBenchmarking, the native file format is used to read Mantid and
+SASView problems.</p>
+<p>In this format, data is separated from the function. This allows running the
+same dataset against multiple different models to assess which is the most
+appropriate.</p>
+<p>Examples of native problems are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># FitBenchmark Problem#</span>
+<span class="n">software</span> <span class="o">=</span> <span class="s1">&#39;Mantid&#39;</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;HIFI 113856&#39;</span>
+<span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;An example of (full) detector calibration for the HIFI instrument&#39;</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="s1">&#39;HIFIgrouped_113856.txt&#39;</span>
+<span class="n">function</span> <span class="o">=</span> <span class="s1">&#39;name=FlatBackground,A0=0;name=DynamicKuboToyabe,BinWidth=0.050000000000000003,Asym=0.2,Delta=0.2,Field=0,Nu=0.1&#39;</span>
+<span class="n">fit_ranges</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">16</span><span class="p">]}</span>
+</pre></div>
+</div>
+<p>These examples show the basic structure in which the file starts with a comment
+indicating it is a FitBenchmark problem followed by key-value pairs. Available
+keys are described below:</p>
+<dl>
+<dt>software</dt><dd><p>Either ‘Mantid’ or ‘SasView’ (case insensitive).</p>
+<p>This defines whether to use Mantid or SasView to generate the model.
+The ‘Mantid’ software also supports Mantid’s MultiFit functionality, which
+requires the parameters listed here to be defined slightly differently.
+More information can be found in <a class="reference internal" href="multifit.html#multifit"><span class="std std-ref">Native File Format (Mantid MultiFit)</span></a>.</p>
+</dd>
+<dt>name</dt><dd><p>The name of the problem.</p>
+<p>This will be used as a unique reference so should not match other names in the
+dataset. A sanitised version of this name will also be used in filenames with
+commas stripped out and spaces replaced by underscores.</p>
+</dd>
+<dt>description</dt><dd><p>A description of the dataset.</p>
+<p>This is currently unused within FitBenchmarking, but can be useful for
+explaining problems.</p>
+</dd>
+<dt>input_file</dt><dd><p>The name of a file containing the data to fit.</p>
+<p>The file must be in a subdirectory named <cite>data_files</cite>, and should have the form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">header</span>
+
+<span class="n">x1</span> <span class="n">y1</span> <span class="p">[</span><span class="n">e1</span><span class="p">]</span>
+<span class="n">x2</span> <span class="n">y2</span> <span class="p">[</span><span class="n">e2</span><span class="p">]</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Mantid uses the convention of <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">X</span> <span class="pre">Y</span> <span class="pre">E</span></code> as the header and SASView uses
+the convention <code class="docutils literal notranslate"><span class="pre">&lt;X&gt;</span>&#160;&#160; <span class="pre">&lt;Y&gt;</span>&#160;&#160; <span class="pre">&lt;E&gt;</span></code>, although neither of these are enforced.
+The error column is optional in this format.</p>
+</dd>
+<dt>function</dt><dd><p>This defines the function that will be used as a model for the fitting.</p>
+<p>Inside FitBenchmarking, this is passed on to the specified software and, as
+such, the format is specific to the package we wish to use, as described below.</p>
+<p><strong>Mantid</strong></p>
+<p>A Mantid function consists of one or more base functions separated by a semicolon.
+This allows for a powerful way of describing problems, which may have multiple
+components such as more than one Gaussian and a linear background.</p>
+<p>To use one of the base functions in Mantid, please see the list available
+<a class="reference external" href="https://docs.mantidproject.org/nightly/fitting/fitfunctions/categories/FitFunctions.html">here</a>.</p>
+<p><em>Note: Any non-standard arguments (e.g. ties, constraints, fixes, …) will
+only work with Mantid fitting software. Using other minimizers to fit these
+problems will result in the non-standard arguments being ignored.</em></p>
+<p><strong>SASView</strong></p>
+<p>SASView functions can be any of
+<a class="reference external" href="http://www.sasview.org/docs/user/qtgui/Perspectives/Fitting/models/index.html">these</a>.</p>
+</dd>
+<dt>fit_ranges</dt><dd><p>This specifies the region to be fit.</p>
+<p>It takes the form shown in the example, where the first number
+is the minimum in the range and the second is the maximum.</p>
+</dd>
+<dt>parameter_ranges</dt><dd><p>An optional setting which specifies upper and lower bounds for
+parameters in the problem.</p>
+<p>Similarly to <cite>fit_ranges</cite>, it takes the form where the first number
+is the minimum in the range and the second is the maximum.</p>
+<p>Currently in Fitbenchmarking, problems with <cite>parameter_ranges</cite> can
+be handled by SciPy, Bumps, Minuit, Mantid, Matlab Optimization Toolbox,
+DFO, Levmar and RALFit fitting software. Please note that the following
+Mantid minimizers currently throw an exception when <cite>parameter_ranges</cite>
+are used: BFGS, Conjugate gradient (Fletcher-Reeves imp.),
+Conjugate gradient (Polak-Ribiere imp.) and SteepestDescent.</p>
+</dd>
+</dl>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="multifit.html" class="btn btn-neutral float-right" title="Native File Format (Mantid MultiFit)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="cutest.html" class="btn btn-neutral float-left" title="CUTEst File Format" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, STFC.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

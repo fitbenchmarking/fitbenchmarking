@@ -1,0 +1,7 @@
+fitbenchmarking.parsing.nist\_parser module
+===========================================
+
+.. automodule:: fitbenchmarking.parsing.nist_parser
+   :members:
+   :undoc-members:
+   :show-inheritance:

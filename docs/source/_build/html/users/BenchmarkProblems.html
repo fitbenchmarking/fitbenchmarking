@@ -1,0 +1,396 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Benchmark problems &mdash; FitBenchmarking 0.1.dev1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FitBenchmarking Options" href="options/index.html" />
+    <link rel="prev" title="Local Minimizer Table" href="output/local_min.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> FitBenchmarking
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../concept/index.html">Concept</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Users</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="install_instructions/index.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running.html">Running FitBenchmarking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cost_func.html">Cost functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output/index.html">FitBenchmarking Output</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Benchmark problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options/index.html">FitBenchmarking Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="problem_definition_files/index.html">Problem Definition Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">FitBenchmarking Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes.html">Known Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extending/index.html">Extending</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors/index.html">Contributors</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FitBenchmarking</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">FitBenchmarking User Documentation</a> &raquo;</li>
+        
+      <li>Benchmark problems</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/users/BenchmarkProblems.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="benchmark-problems">
+<span id="benchmarkproblems"></span><h1>Benchmark problems<a class="headerlink" href="#benchmark-problems" title="Permalink to this headline">¶</a></h1>
+<p>To help choose between the different minimizers, we have made some curated
+problems available to use with FitBenchmarking.  It is also straightforward to
+add custom data sets to the benchmark, if that is more appropriate; see
+<a class="reference internal" href="problem_definition_files/index.html#problem-def"><span class="std std-ref">Problem Definition Files</span></a> for specifics of how to add additional problems in a
+supported file format.</p>
+<div class="topic">
+<p class="topic-title">Downloads</p>
+<div class="line-block">
+<div class="line"><strong>You can download a folder containing all examples here:</strong> <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/examples.zip"><code class="xref download docutils literal notranslate"><span class="pre">.zip</span></code></a> or <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/examples.tar.gz"><code class="xref download docutils literal notranslate"><span class="pre">.tar.gz</span></code></a></div>
+<div class="line">Individual problem sets are also available to download below.</div>
+</div>
+</div>
+<p>We supply some standard nonlinear least-squares test problems in the
+form of the <a class="reference external" href="https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml">NIST nonlinear regression set</a>
+and the relevant problems from the <a class="reference external" href="https://github.com/ralna/CUTEst/wiki">CUTEst problem set</a>,
+together with some real-world
+data sets that have been extracted from <a class="reference external" href="https://www.mantidproject.org">Mantid</a> and
+<a class="reference external" href="https://www.sasview.org">SASView</a> usage examples and system tests.
+We’ve made it possible to extend this list by following the steps in
+<a class="reference internal" href="../extending/parsers.html#parsers"><span class="std std-ref">Adding Fitting Problem Definition Types</span></a>.</p>
+<p>Each of the test problems contain:</p>
+<ul class="simple">
+<li><p>a data set consisting of points <span class="math">(x_i, y_i)</span> (with optional errors on <span class="math">y_i</span>, <span class="math">\sigma_i</span>);</p></li>
+<li><p>a definition of the fitting function, <span class="math">f({\boldsymbol{\beta}};x)</span>; and</p></li>
+<li><p>(at least) one set of initial values for the function parameters <span class="math">{\boldsymbol{\beta}}_0</span>.</p></li>
+</ul>
+<p>If a problem doesn’t have observational
+errors (e.g., the NIST problem set), then FitBenchmarking can
+approximate errors by taking <span class="math">\sigma_i = \sqrt{y_i}</span>.
+Alternatively, there is an option to disregard errors and solve the
+unweighted nonlinear least-squares problem, setting
+<span class="math">\sigma_i = 1.0</span> irrespective of what has been passed in with the
+problem data.</p>
+<p>As we work with scientists in other areas, we will extend the problem
+suite to encompass new categories. The FitBenchmarking framework has
+been designed to make it easy to integrate new problem sets, and any
+additional data added to the framework can be tested with any and all of
+the available fitting methods.</p>
+<p>Currently FitBenchmarking ships with data from the following sources:</p>
+<div class="section" id="powder-diffraction-data-sif-files">
+<h2>Powder Diffraction Data (SIF files)<a class="headerlink" href="#powder-diffraction-data-sif-files" title="Permalink to this headline">¶</a></h2>
+<p><strong>Download</strong> <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.zip"><code class="xref download docutils literal notranslate"><span class="pre">.zip</span></code></a> or <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.tar.gz"><code class="xref download docutils literal notranslate"><span class="pre">.tar.gz</span></code></a></p>
+<p>These problems (also found in the folder <cite>examples/benchmark_problems/DIAMOND_SIF</cite>)
+contain data from powder diffraction experiments.  The data supplied comes
+from the <a class="reference external" href="https://www.diamond.ac.uk/Instruments/Imaging-and-Microscopy/I14.html">I14 Hard X-Ray Nanoprobe</a> beamline at
+the Diamond Light source, and has been supplied in the SIF
+format used by <a class="reference external" href="https://github.com/ralna/CUTEst">CUTEst</a>.</p>
+<p>These problems have either 66 or 99 unknown parameters, and fit around 5,000 data points.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The external packages CUTEst and pycutest must be installed to run
+this data set.   See <a class="reference internal" href="install_instructions/externals.html#external-instructions"><span class="std std-ref">Installing External Software</span></a> for details.</p>
+</div>
+</div>
+<div class="section" id="multifit-data-mantid">
+<h2>MultiFit Data (Mantid)<a class="headerlink" href="#multifit-data-mantid" title="Permalink to this headline">¶</a></h2>
+<p><strong>Download</strong> <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/MultiFit.zip"><code class="xref download docutils literal notranslate"><span class="pre">.zip</span></code></a> or <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/MultiFit.tar.gz"><code class="xref download docutils literal notranslate"><span class="pre">.tar.gz</span></code></a></p>
+<p>These problems (also found in the folder <cite>examples/benchmark_problems/MultiFit</cite>)
+contain data
+for testing the MultFit functionality of Mantid.  This contains
+a simple data set, on which two fits are done, and a calibration
+dataset from the <a class="reference external" href="https://www.isis.stfc.ac.uk/Pages/musr.aspx">MuSR</a>
+spectrometer at ISIS, on which there are four fits available.
+See <a class="reference internal" href="problem_definition_files/multifit.html#multifit"><span class="std std-ref">The MultiFit documentation</span></a> for more details.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The external package Mantid must be installed to run
+this data set.  See <a class="reference internal" href="install_instructions/externals.html#external-instructions"><span class="std std-ref">Installing External Software</span></a> for details.</p>
+<p>This will also only work using the <a class="reference internal" href="options/minimizer_option.html#mantidminimizers"><span class="std std-ref">Mantid Minimizers</span></a>.</p>
+</div>
+</div>
+<div class="section" id="muon-data-mantid">
+<h2>Muon Data (Mantid)<a class="headerlink" href="#muon-data-mantid" title="Permalink to this headline">¶</a></h2>
+<p><strong>Download</strong> <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/Muon.zip"><code class="xref download docutils literal notranslate"><span class="pre">.zip</span></code></a> or <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/Muon.tar.gz"><code class="xref download docutils literal notranslate"><span class="pre">.tar.gz</span></code></a></p>
+<p>These problems (also found in the folder <cite>examples/benchmark_problems/Muon</cite>)
+contain data from Muon spectrometers.  The data supplied comes
+from the <a class="reference external" href="https://www.isis.stfc.ac.uk/Pages/hifi.aspx">HiFi</a> and
+<a class="reference external" href="https://www.isis.stfc.ac.uk/Pages/EMU.aspx">EMU</a> instruments at
+STFC’s ISIS Neutron and Muon source, and has been supplied in the
+format that <a class="reference external" href="https://mantidproject.org/">Mantid</a> uses to process
+the data.</p>
+<p>These problems have between 5 and 13 unknown parameters, and fit around 1,000 data points.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The external package Mantid must be installed to run
+this data set.  See <a class="reference internal" href="install_instructions/externals.html#external-instructions"><span class="std std-ref">Installing External Software</span></a> for details.</p>
+</div>
+</div>
+<div class="section" id="nist">
+<h2>NIST<a class="headerlink" href="#nist" title="Permalink to this headline">¶</a></h2>
+<p><strong>Download</strong> <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/NIST.zip"><code class="xref download docutils literal notranslate"><span class="pre">.zip</span></code></a> or <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/NIST.tar.gz"><code class="xref download docutils literal notranslate"><span class="pre">.tar.gz</span></code></a></p>
+<p>These problems (also found in the folder <cite>examples/benchmark_problems/NIST</cite>) contain
+data from the <a class="reference external" href="https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml">NIST Nonlinear Regression</a> test set.</p>
+<p>These problems are split into low, average and high difficulty.
+They have between 2 and 9 unknown parameters, and
+fit between 6 and 250 data points.</p>
+</div>
+<div class="section" id="neutron-data-mantid">
+<h2>Neutron Data (Mantid)<a class="headerlink" href="#neutron-data-mantid" title="Permalink to this headline">¶</a></h2>
+<p><strong>Download</strong> <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/Neutron.zip"><code class="xref download docutils literal notranslate"><span class="pre">.zip</span></code></a> or <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/Neutron.tar.gz"><code class="xref download docutils literal notranslate"><span class="pre">.tar.gz</span></code></a></p>
+<p>These problems (also found in the folder <cite>examples/benchmark_problems/Neutron</cite>)
+contain
+data from Neutron scattering experiments.  The data supplied comes
+from the <a class="reference external" href="https://www.isis.stfc.ac.uk/Pages/Engin-X.aspx">Engin-X</a>,
+<a class="reference external" href="https://www.isis.stfc.ac.uk/Pages/gem.aspx">GEM</a>,
+<a class="reference external" href="https://www.isis.stfc.ac.uk/Pages/Vesuvio.aspx">eVS</a>, and
+<a class="reference external" href="https://www.isis.stfc.ac.uk/Pages/wish.aspx">WISH</a> instruments at
+STFC’s ISIS Neutron and Muon source, and has been supplied in the
+format that <a class="reference external" href="https://mantidproject.org/">Mantid</a> uses to process
+the data.</p>
+<p>The size of these problems differ massively.
+The Engin-X calibration problems find 7 unknown parameters, and fit to
+56-67 data points.
+The Engin-X vanadium problems find 4 unknown parameters, and fit to around 14,168
+data points.
+The eVS problems find 8 unknown parameters, and fit to 1,025 data points.
+The GEM problem finds 105 unknown parameters, and fits to 1,314 data points.
+The WISH problems find 5 unknown parameters, and fit to 512 data points.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The external package Mantid must be installed to run
+this data set.  See <a class="reference internal" href="install_instructions/externals.html#external-instructions"><span class="std std-ref">Installing External Software</span></a> for details.</p>
+</div>
+</div>
+<div class="section" id="small-angle-scattering-sasview">
+<h2>Small Angle Scattering (SASView)<a class="headerlink" href="#small-angle-scattering-sasview" title="Permalink to this headline">¶</a></h2>
+<p><strong>Download</strong> <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.zip"><code class="xref download docutils literal notranslate"><span class="pre">.zip</span></code></a> or <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.tar.gz"><code class="xref download docutils literal notranslate"><span class="pre">.tar.gz</span></code></a></p>
+<p>These problems (also found in the folder <cite>examples/benchmark_problems/SAS_modelling/1D</cite>) are
+two data sets from small angle scattering experiments.
+These are from fitting data to a
+<a class="reference external" href="http://www.sasview.org/docs/user/models/cylinder.html">cylinder</a>,
+and have been supplied in the format that <a class="reference external" href="http://www.sasview.org">SASView</a>
+uses to process the data.</p>
+<p>These have 6 unknown parameters, and fit to either 20 or 54 data points.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The external package <code class="docutils literal notranslate"><span class="pre">sasmodels</span></code> must be installed to run this data
+set.  See <a class="reference internal" href="install_instructions/externals.html#external-instructions"><span class="std std-ref">Installing External Software</span></a> for details.</p>
+</div>
+</div>
+<div class="section" id="cutest-sif-files">
+<h2>CUTEst (SIF files)<a class="headerlink" href="#cutest-sif-files" title="Permalink to this headline">¶</a></h2>
+<p><strong>Download</strong> <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/SIF.zip"><code class="xref download docutils literal notranslate"><span class="pre">.zip</span></code></a> or <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/SIF.tar.gz"><code class="xref download docutils literal notranslate"><span class="pre">.tar.gz</span></code></a></p>
+<p>This directory (also found in the folder <cite>examples/benchmark_problems/SIF</cite>) contain
+<a class="reference external" href="https://github.com/ralna/SIFDecode">SIF files</a>
+encoding least squares problems
+from the <a class="reference external" href="https://github.com/ralna/CUTEst">CUTEst</a>
+continuous optimization testing environment.</p>
+<p>These are from a wide range of applications.  They have between
+2 and 9 unknown parameters, and for the most part fit between
+6 and 250 data points, although the <cite>VESUVIO</cite> examples (from
+the <a class="reference external" href="https://www.isis.stfc.ac.uk/Pages/Vesuvio.aspx">VESUVIO</a>
+instrument at ISIS) have 1,025 data points (with 8 unknown parameters).</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The external packages CUTEst and pycutest must be installed to run
+this data set.   See <a class="reference internal" href="install_instructions/externals.html#external-instructions"><span class="std std-ref">Installing External Software</span></a> for details.</p>
+</div>
+</div>
+<div class="section" id="simple-tests">
+<h2>Simple tests<a class="headerlink" href="#simple-tests" title="Permalink to this headline">¶</a></h2>
+<p><strong>Download</strong> <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/simple_tests.zip"><code class="xref download docutils literal notranslate"><span class="pre">.zip</span></code></a> or <a class="reference download external" download="" href="http://numerical.rl.ac.uk/fitbenchmarking/simple_tests.tar.gz"><code class="xref download docutils literal notranslate"><span class="pre">.tar.gz</span></code></a></p>
+<p>This folder (also found in <cite>examples/benchmark_problems/simple_tests</cite>) contains
+a number of simple tests with known, and easy to obtain,
+answers.  We recommend that this is used to test any new minimizers
+that are added, and also that any new parsers reimplement these
+data sets and models (if possible).</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="options/index.html" class="btn btn-neutral float-right" title="FitBenchmarking Options" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="output/local_min.html" class="btn btn-neutral float-left" title="Local Minimizer Table" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, STFC.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

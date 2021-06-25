@@ -1,0 +1,7 @@
+fitbenchmarking.utils.fitbm\_result module
+==========================================
+
+.. automodule:: fitbenchmarking.utils.fitbm_result
+   :members:
+   :undoc-members:
+   :show-inheritance:

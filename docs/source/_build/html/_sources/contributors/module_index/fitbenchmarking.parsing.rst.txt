@@ -1,0 +1,24 @@
+fitbenchmarking.parsing package
+===============================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fitbenchmarking.parsing.base_parser
+   fitbenchmarking.parsing.cutest_parser
+   fitbenchmarking.parsing.fitbenchmark_parser
+   fitbenchmarking.parsing.fitting_problem
+   fitbenchmarking.parsing.nist_data_functions
+   fitbenchmarking.parsing.nist_parser
+   fitbenchmarking.parsing.parser_factory
+
+Module contents
+---------------
+
+.. automodule:: fitbenchmarking.parsing
+   :members:
+   :undoc-members:
+   :show-inheritance:

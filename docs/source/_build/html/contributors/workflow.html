@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Git Workflow &mdash; FitBenchmarking 0.1.dev1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Repository Structure" href="structure.html" />
+    <link rel="prev" title="Coding Standards" href="guidelines.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> FitBenchmarking
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../concept/index.html">Concept</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/index.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../extending/index.html">Extending</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Contributors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="guidelines.html">Coding Standards</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Git Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structure.html">Repository Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_index/fitbenchmarking.html">Module Index</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FitBenchmarking</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">FitBenchmarking Contributor Documentation</a> &raquo;</li>
+        
+      <li>Git Workflow</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/contributors/workflow.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="git-workflow">
+<span id="workflow"></span><h1>Git Workflow<a class="headerlink" href="#git-workflow" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="issues">
+<h2>Issues<a class="headerlink" href="#issues" title="Permalink to this headline">¶</a></h2>
+<p>All new work should start with a
+<a class="reference external" href="https://github.com/fitbenchmarking/fitbenchmarking/issues/new/choose">new GitHub issue</a>
+being filed.
+This should clearly explain what the change to the code will do.
+There are templates for <em>Bug report</em>, <em>Documentation</em>,
+<em>Feature request</em> and <em>Test</em> issues on GitHub, and you can also
+open a blank issue if none of these work.</p>
+<p>If issues help meet a piece of work agreed with our funders, it
+is linked to the appropriate <a class="reference external" href="https://github.com/fitbenchmarking/fitbenchmarking/milestones">Milestone</a> in GitHub.</p>
+</div>
+<div class="section" id="adding-new-code">
+<h2>Adding new code<a class="headerlink" href="#adding-new-code" title="Permalink to this headline">¶</a></h2>
+<p>The first step in adding new code is to create a branch, where the work
+will be done. Branches should be named according to the convention
+<cite>&lt;nnn&gt;-description_of_work</cite>, where <cite>&lt;nnn&gt;</cite> is the issue number.</p>
+<p>Please ensure our <a class="reference internal" href="guidelines.html#guidelines"><span class="std std-ref">Coding Standards</span></a> are adhered to throughout
+the branch.</p>
+<p>When you think your new code is ready to be merged into the codebase,
+you should open a pull request (PR) to master.
+The description should contain the
+words <cite>Fixes #&lt;nnn&gt;</cite>, where <cite>&lt;nnn&gt;</cite> is the issue number; this will ensure
+the issue is closed when the code is merged into master.  At this point
+the automated tests will trigger, and you can see if the code passes on
+an independent system.</p>
+<p>Sometimes it is desirable to open a PR when the code is not
+quite ready to be merged.  This is a good idea, for example, if you want
+to get an early opinion on a coding descision.  If this is the case, you
+should mark the PR as a <em>draft</em> on GitHub.</p>
+<p>Once the work is ready to be reviewed, you may want to assign a reviewer,
+if you think someone would be well suited to review this change.  It is worth
+messaging them on, for example, Slack, as well as requesting their review on
+GitHub.</p>
+</div>
+<div class="section" id="release-branches">
+<h2>Release branches<a class="headerlink" href="#release-branches" title="Permalink to this headline">¶</a></h2>
+<p>Branches named <cite>release-*</cite> are protected branches; code must be approved by
+a reviewer before being added to them, and automated tests will be run on
+PRs to these branches.  If code is to be included in the release, it
+must be pulled into this branch from master.</p>
+<p>Release branches should have the format <cite>release-major.minor.x</cite>, starting from
+<cite>release-0.1.x</cite>.  When the code is released, we will tag that commit with
+a version number <cite>v0.1.0</cite>.  Any hotfixes will increment <cite>x</cite> by one, and a new tag will
+be created accordingly.  If at some point we don’t want to provide hot-fixes
+to a given minor release, then the corresponding release branch may be deleted.</p>
+<p>All changes must be initially merged into master.
+There is a <cite>backport-candidate</cite> label, which must be put on PRs
+that in addition must be merged into the release branch.</p>
+<p>The recommended mechanism for merging PRs lablelled with <cite>backport-candidate</cite> into
+master is to use the <cite>Squash and merge</cite> commit option:</p>
+<div class="figure align-default">
+<img alt="Squashing and merging" src="../_images/squash-and-merge.png" />
+</div>
+<p>After such a PR (with label <cite>backport-candidate</cite>) has been merged into master, it
+must then subsequently be merged into the release branch as soon as possible.
+It is the responsibility of the person merging such PRs to also perform this
+merge into the release branch.</p>
+<p>This can be done using git cherry
+pick:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git checkout release-x.x.x
+git cherry-pick -x &lt;commit-id&gt;
+git push
+</pre></div>
+</div>
+<p>If you didn’t do a squash merge, you will have to cherry pick each commit in
+the PR that this being backported separately.</p>
+<p>If you encounter problems with cherry picking into release branch please
+don’t hesitate to speak to an experienced member of the FitBenchmarking team.</p>
+</div>
+<div class="section" id="creating-a-release">
+<h2>Creating a release<a class="headerlink" href="#creating-a-release" title="Permalink to this headline">¶</a></h2>
+<p>In order to create a new release for FitBenchmarking, there are a few manual steps.
+These have been streamlined as much as possible.</p>
+<p>First checkout the branch to create the release from.  Releases should only be made from a <cite>release-x-x</cite> branch, not a development branch or master.</p>
+<p>From the root of the repo run the “ci/prep_and_tag_release.sh” script with the new version number.
+The version number will be rejected if it is not of the expected form.
+We expect a “v” followed by the major, minor, and patch numbers,
+and an optional numbered label to mark the type of release.</p>
+<dl class="simple">
+<dt>Possible labels are:</dt><dd><ul class="simple">
+<li><p>-beta (release for testing)</p></li>
+<li><p>-rc (release candidate)</p></li>
+</ul>
+</dd>
+</dl>
+<p>This script will create a new commit with the docs and testing links updated, tag it,
+and revert the change in a second commit so that the links point back to the latest versions.</p>
+<p>These commits will need to be pushed to github.</p>
+<p>Finally, you will need to create a release on github.
+This can be done by navigating to the releases page, selecting new release
+and typing in the tag that was given to the release
+(it should tell you the tag exists at this point!).</p>
+<p>For example, For a first beta version of release 0.1.0, one would run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git checkout release-0.1.x
+ci/prep_and_tag_release.sh v0.1.0-beta1
+git push origin release-0.1.x
+
+&lt;And make the release on GitHub&gt;
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="structure.html" class="btn btn-neutral float-right" title="Repository Structure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="guidelines.html" class="btn btn-neutral float-left" title="Coding Standards" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, STFC.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

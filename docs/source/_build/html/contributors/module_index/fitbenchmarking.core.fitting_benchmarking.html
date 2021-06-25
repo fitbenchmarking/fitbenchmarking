@@ -1,0 +1,401 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>fitbenchmarking.core.fitting_benchmarking module &mdash; FitBenchmarking 0.1.dev1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="fitbenchmarking.core.results_output module" href="fitbenchmarking.core.results_output.html" />
+    <link rel="prev" title="fitbenchmarking.core package" href="fitbenchmarking.core.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> FitBenchmarking
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../concept/index.html">Concept</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users/index.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending/index.html">Extending</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Contributors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines.html">Coding Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../workflow.html">Git Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../structure.html">Repository Structure</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="fitbenchmarking.html">Module Index</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.cli.html">fitbenchmarking.cli package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.controllers.html">fitbenchmarking.controllers package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="fitbenchmarking.core.html">fitbenchmarking.core package</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">fitbenchmarking.core.fitting_benchmarking module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.core.results_output.html">fitbenchmarking.core.results_output module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.cost_func.html">fitbenchmarking.cost_func package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.jacobian.html">fitbenchmarking.jacobian package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.parsing.html">fitbenchmarking.parsing package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.results_processing.html">fitbenchmarking.results_processing package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.utils.html">fitbenchmarking.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FitBenchmarking</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">FitBenchmarking Contributor Documentation</a> &raquo;</li>
+        
+          <li><a href="fitbenchmarking.html">fitbenchmarking package</a> &raquo;</li>
+        
+          <li><a href="fitbenchmarking.core.html">fitbenchmarking.core package</a> &raquo;</li>
+        
+      <li>fitbenchmarking.core.fitting_benchmarking module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/contributors/module_index/fitbenchmarking.core.fitting_benchmarking.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-fitbenchmarking.core.fitting_benchmarking">
+<span id="fitbenchmarking-core-fitting-benchmarking-module"></span><h1>fitbenchmarking.core.fitting_benchmarking module<a class="headerlink" href="#module-fitbenchmarking.core.fitting_benchmarking" title="Permalink to this headline">¶</a></h1>
+<p>Main module of the tool, this holds the master function that calls
+lower level functions to fit and benchmark a set of problems
+for a certain fitting software.</p>
+<dl class="py function">
+<dt id="fitbenchmarking.core.fitting_benchmarking.benchmark">
+<code class="sig-prename descclassname"><span class="pre">fitbenchmarking.core.fitting_benchmarking.</span></code><code class="sig-name descname"><span class="pre">benchmark</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.core.fitting_benchmarking.benchmark" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gather the user input and list of paths. Call benchmarking on these.
+The benchmarking structure is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">loop_over_benchmark_problems</span><span class="p">()</span>
+    <span class="n">loop_over_starting_values</span><span class="p">()</span>
+        <span class="n">loop_over_software</span><span class="p">()</span>
+            <span class="n">loop_over_minimizers</span><span class="p">()</span>
+                <span class="n">loop_over_jacobians</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>options</strong> (<a class="reference internal" href="fitbenchmarking.utils.options.html#fitbenchmarking.utils.options.Options" title="fitbenchmarking.utils.options.Options"><em>fitbenchmarking.utils.options.Options</em></a>) – dictionary containing software used in fitting
+the problem, list of minimizers and location of
+json file contain minimizers</p></li>
+<li><p><strong>data_dir</strong> – full path of a directory that holds a group of problem
+definition files</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>prob_results array of fitting results for the problem group,
+list of failed problems and dictionary of unselected minimizers,
+rst description of the cost function from the docstring</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple(list, list, dict, str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="fitbenchmarking.core.fitting_benchmarking.loop_over_benchmark_problems">
+<code class="sig-prename descclassname"><span class="pre">fitbenchmarking.core.fitting_benchmarking.</span></code><code class="sig-name descname"><span class="pre">loop_over_benchmark_problems</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem_group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.core.fitting_benchmarking.loop_over_benchmark_problems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loops over benchmark problems</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>problem_group</strong> (<em>list</em>) – locations of the benchmark problem files</p></li>
+<li><p><strong>options</strong> (<a class="reference internal" href="fitbenchmarking.utils.options.html#fitbenchmarking.utils.options.Options" title="fitbenchmarking.utils.options.Options"><em>fitbenchmarking.utils.options.Options</em></a>) – FitBenchmarking options for current run</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>prob_results array of fitting results for the problem group,
+list of failed problems and dictionary of unselected minimizers,
+rst description of the cost function from the docstring</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple(list, list, dict, str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="fitbenchmarking.core.fitting_benchmarking.loop_over_fitting_software">
+<code class="sig-prename descclassname"><span class="pre">fitbenchmarking.core.fitting_benchmarking.</span></code><code class="sig-name descname"><span class="pre">loop_over_fitting_software</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cost_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_values_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grabbed_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.core.fitting_benchmarking.loop_over_fitting_software" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loops over fitting software selected in the options</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cost_func</strong> (<em>CostFunction</em>) – a cost_func object containing information used in fitting</p></li>
+<li><p><strong>options</strong> (<a class="reference internal" href="fitbenchmarking.utils.options.html#fitbenchmarking.utils.options.Options" title="fitbenchmarking.utils.options.Options"><em>fitbenchmarking.utils.options.Options</em></a>) – FitBenchmarking options for current run</p></li>
+<li><p><strong>start_values_index</strong> (<em>int</em>) – Integer that selects the starting values when
+datasets have multiple ones.</p></li>
+<li><p><strong>grabbed_output</strong> (<a class="reference internal" href="fitbenchmarking.utils.output_grabber.html#fitbenchmarking.utils.output_grabber.OutputGrabber" title="fitbenchmarking.utils.output_grabber.OutputGrabber"><em>fitbenchmarking.utils.output_grabber.OutputGrabber</em></a>) – Object that removes third part output from console</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of all results, failed problem names, dictionary of
+unselected minimizers based on algorithm_type and
+dictionary of minimizers together with the Jacobian used</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
+list of failed problem names,
+dictionary of minimizers.
+dictionary of minimizers and Jacobians)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians">
+<code class="sig-prename descclassname"><span class="pre">fitbenchmarking.core.fitting_benchmarking.</span></code><code class="sig-name descname"><span class="pre">loop_over_jacobians</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grabbed_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loops over Jacobians set from the options file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>controller</strong> (<em>Object derived from BaseSoftwareController</em>) – The software controller for the fitting</p></li>
+<li><p><strong>options</strong> (<a class="reference internal" href="fitbenchmarking.utils.options.html#fitbenchmarking.utils.options.Options" title="fitbenchmarking.utils.options.Options"><em>fitbenchmarking.utils.options.Options</em></a>) – FitBenchmarking options for current run</p></li>
+<li><p><strong>grabbed_output</strong> (<a class="reference internal" href="fitbenchmarking.utils.output_grabber.html#fitbenchmarking.utils.output_grabber.OutputGrabber" title="fitbenchmarking.utils.output_grabber.OutputGrabber"><em>fitbenchmarking.utils.output_grabber.OutputGrabber</em></a>) – Object that removes third part output from console</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of all results, dictionary of unselected minimizers
+based on algorithm_type and dictionary of minimizers together
+with the Jacobian used</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
+list of failed minimizers,
+list of minimizers and Jacobians)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="fitbenchmarking.core.fitting_benchmarking.loop_over_minimizers">
+<code class="sig-prename descclassname"><span class="pre">fitbenchmarking.core.fitting_benchmarking.</span></code><code class="sig-name descname"><span class="pre">loop_over_minimizers</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimizers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grabbed_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.core.fitting_benchmarking.loop_over_minimizers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loops over minimizers in fitting software</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>controller</strong> (<em>Object derived from BaseSoftwareController</em>) – The software controller for the fitting</p></li>
+<li><p><strong>minimizers</strong> (<em>list</em>) – array of minimizers used in fitting</p></li>
+<li><p><strong>options</strong> (<a class="reference internal" href="fitbenchmarking.utils.options.html#fitbenchmarking.utils.options.Options" title="fitbenchmarking.utils.options.Options"><em>fitbenchmarking.utils.options.Options</em></a>) – FitBenchmarking options for current run</p></li>
+<li><p><strong>grabbed_output</strong> (<a class="reference internal" href="fitbenchmarking.utils.output_grabber.html#fitbenchmarking.utils.output_grabber.OutputGrabber" title="fitbenchmarking.utils.output_grabber.OutputGrabber"><em>fitbenchmarking.utils.output_grabber.OutputGrabber</em></a>) – Object that removes third part output from console</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of all results, dictionary of unselected minimizers
+based on algorithm_type and dictionary of minimizers together
+with the Jacobian used</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
+list of failed minimizers,
+list of minimizers and Jacobians)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="fitbenchmarking.core.fitting_benchmarking.loop_over_starting_values">
+<code class="sig-prename descclassname"><span class="pre">fitbenchmarking.core.fitting_benchmarking.</span></code><code class="sig-name descname"><span class="pre">loop_over_starting_values</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cost_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grabbed_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.core.fitting_benchmarking.loop_over_starting_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loops over starting values from the fitting cost_func</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cost_func</strong> (<a class="reference internal" href="fitbenchmarking.cost_func.base_cost_func.html#fitbenchmarking.cost_func.base_cost_func.CostFunc" title="fitbenchmarking.cost_func.base_cost_func.CostFunc"><em>CostFunc</em></a>) – a cost_func object containing information used in fitting</p></li>
+<li><p><strong>options</strong> (<a class="reference internal" href="fitbenchmarking.utils.options.html#fitbenchmarking.utils.options.Options" title="fitbenchmarking.utils.options.Options"><em>fitbenchmarking.utils.options.Options</em></a>) – FitBenchmarking options for current run</p></li>
+<li><p><strong>grabbed_output</strong> (<a class="reference internal" href="fitbenchmarking.utils.output_grabber.html#fitbenchmarking.utils.output_grabber.OutputGrabber" title="fitbenchmarking.utils.output_grabber.OutputGrabber"><em>fitbenchmarking.utils.output_grabber.OutputGrabber</em></a>) – Object that removes third part output from console</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>prob_results array of fitting results for the problem group,
+list of failed problems, dictionary of unselected minimizers and
+dictionary of minimizers together with the Jacobian used</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple(list, list, dict, dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="fitbenchmarking.core.results_output.html" class="btn btn-neutral float-right" title="fitbenchmarking.core.results_output module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="fitbenchmarking.core.html" class="btn btn-neutral float-left" title="fitbenchmarking.core package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, STFC.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

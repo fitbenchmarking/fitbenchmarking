@@ -1,0 +1,460 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>fitbenchmarking.parsing.fitting_problem module &mdash; FitBenchmarking 0.1.dev1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="fitbenchmarking.parsing.nist_data_functions module" href="fitbenchmarking.parsing.nist_data_functions.html" />
+    <link rel="prev" title="fitbenchmarking.parsing.fitbenchmark_parser module" href="fitbenchmarking.parsing.fitbenchmark_parser.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> FitBenchmarking
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../concept/index.html">Concept</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users/index.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending/index.html">Extending</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Contributors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines.html">Coding Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../workflow.html">Git Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../structure.html">Repository Structure</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="fitbenchmarking.html">Module Index</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.cli.html">fitbenchmarking.cli package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.controllers.html">fitbenchmarking.controllers package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.core.html">fitbenchmarking.core package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.cost_func.html">fitbenchmarking.cost_func package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.jacobian.html">fitbenchmarking.jacobian package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="fitbenchmarking.parsing.html">fitbenchmarking.parsing package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.parsing.base_parser.html">fitbenchmarking.parsing.base_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.parsing.cutest_parser.html">fitbenchmarking.parsing.cutest_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.parsing.fitbenchmark_parser.html">fitbenchmarking.parsing.fitbenchmark_parser module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">fitbenchmarking.parsing.fitting_problem module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.parsing.nist_data_functions.html">fitbenchmarking.parsing.nist_data_functions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.parsing.nist_parser.html">fitbenchmarking.parsing.nist_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitbenchmarking.parsing.parser_factory.html">fitbenchmarking.parsing.parser_factory module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.results_processing.html">fitbenchmarking.results_processing package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitbenchmarking.utils.html">fitbenchmarking.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FitBenchmarking</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">FitBenchmarking Contributor Documentation</a> &raquo;</li>
+        
+          <li><a href="fitbenchmarking.html">fitbenchmarking package</a> &raquo;</li>
+        
+          <li><a href="fitbenchmarking.parsing.html">fitbenchmarking.parsing package</a> &raquo;</li>
+        
+      <li>fitbenchmarking.parsing.fitting_problem module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/contributors/module_index/fitbenchmarking.parsing.fitting_problem.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-fitbenchmarking.parsing.fitting_problem">
+<span id="fitbenchmarking-parsing-fitting-problem-module"></span><h1>fitbenchmarking.parsing.fitting_problem module<a class="headerlink" href="#module-fitbenchmarking.parsing.fitting_problem" title="Permalink to this headline">¶</a></h1>
+<p>Implements the FittingProblem class, this will be the object that inputs are
+parsed into before being passed to the controllers</p>
+<dl class="py class">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">fitbenchmarking.parsing.fitting_problem.</span></code><code class="sig-name descname"><span class="pre">FittingProblem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Definition of a fitting problem, which will be populated by a parser from a
+problem definition file.</p>
+<p>Onces populated, this should include the data, the function and any other
+additional requirements from the data.</p>
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.additional_info">
+<code class="sig-name descname"><span class="pre">additional_info</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.additional_info" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em>
+Container for software specific information.
+This should be avoided if possible.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.correct_data">
+<code class="sig-name descname"><span class="pre">correct_data</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.correct_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip data that overruns the start and end x_range,
+and approximate errors if not given.
+Modifications happen on member variables.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.data_e">
+<code class="sig-name descname"><span class="pre">data_e</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.data_e" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy array</em> The errors or weights</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.data_x">
+<code class="sig-name descname"><span class="pre">data_x</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.data_x" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy array</em> The x-data</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.data_y">
+<code class="sig-name descname"><span class="pre">data_y</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.data_y" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy array</em> The y-data</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.end_x">
+<code class="sig-name descname"><span class="pre">end_x</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.end_x" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> The end of the range to fit model data over
+(if different from entire range) (/float/)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.equation">
+<code class="sig-name descname"><span class="pre">equation</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.equation" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>string</em> Equation (function or model) to fit against data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.eval_model">
+<code class="sig-name descname"><span class="pre">eval_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.eval_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function evaluation method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>list</em>) – parameter value(s)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>data values evaluated from the function of the problem</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.format">
+<code class="sig-name descname"><span class="pre">format</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.format" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>string</em> Name of the problem definition type (e.g., ‘cutest’)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.function">
+<code class="sig-name descname"><span class="pre">function</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callable function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.get_function_params">
+<code class="sig-name descname"><span class="pre">get_function_params</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.get_function_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the function definition in a string format for output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>list</em>) – The parameters to use in the function string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Representation of the function
+example format: ‘b1 * (b2+x) | b1=-2.0, b2=50.0’</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.jacobian">
+<code class="sig-name descname"><span class="pre">jacobian</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callable function for the Jacobian</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.multifit">
+<code class="sig-name descname"><span class="pre">multifit</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.multifit" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> Used to check if a problem is using multifit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.name">
+<code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.name" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>string</em> Name (title) of the fitting problem</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.param_names">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">param_names</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.param_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function to get the parameter names</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the names of the parameters</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.set_value_ranges">
+<code class="sig-name descname"><span class="pre">set_value_ranges</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value_ranges</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.set_value_ranges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to format parameter bounds before passing to controllers,
+so self.value_ranges is a list of tuples, which contain lower and
+upper bounds (lb,ub) for each parameter in the problem</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value_ranges</strong> – <dl class="simple">
+<dt>dictionary of bounded parameter names with</dt><dd><p>lower and upper bound values e.g.</p>
+</dd>
+</dl>
+<p><code class="code docutils literal notranslate"><span class="pre">{p1_name:</span> <span class="pre">[p1_min,</span> <span class="pre">p1_max],</span> <span class="pre">...}</span></code></p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.sorted_index">
+<code class="sig-name descname"><span class="pre">sorted_index</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.sorted_index" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy array</em> The index for sorting the data (used in plotting)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.start_x">
+<code class="sig-name descname"><span class="pre">start_x</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.start_x" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> The start of the range to fit model data over
+(if different from entire range)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.starting_values">
+<code class="sig-name descname"><span class="pre">starting_values</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.starting_values" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of dict</em>
+Starting values of the fitting parameters</p>
+<p>e.g.
+<code class="code docutils literal notranslate"><span class="pre">[{p1_name:</span> <span class="pre">p1_val1,</span> <span class="pre">p2_name:</span> <span class="pre">p2_val1,</span> <span class="pre">...},</span>
+<span class="pre">{p1_name:</span> <span class="pre">p1_val2,</span> <span class="pre">...},</span> <span class="pre">...]</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.value_ranges">
+<code class="sig-name descname"><span class="pre">value_ranges</span></code><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.value_ranges" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list</em>
+Smallest and largest values of interest in the data</p>
+<p>e.g.
+<code class="code docutils literal notranslate"><span class="pre">[(p1_min,</span> <span class="pre">p1_max),</span> <span class="pre">(p2_min,</span> <span class="pre">p2_max),...]</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fitbenchmarking.parsing.fitting_problem.FittingProblem.verify">
+<code class="sig-name descname"><span class="pre">verify</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.FittingProblem.verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic check that minimal set of attributes have been set.</p>
+<p>Raise FittingProblemError if object is not properly initialised.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="fitbenchmarking.parsing.fitting_problem.correct_data">
+<code class="sig-prename descclassname"><span class="pre">fitbenchmarking.parsing.fitting_problem.</span></code><code class="sig-name descname"><span class="pre">correct_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_errors</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fitbenchmarking.parsing.fitting_problem.correct_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip data that overruns the start and end x_range,
+and approximate errors if not given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.array</em>) – x data</p></li>
+<li><p><strong>y</strong> (<em>np.array</em>) – y data</p></li>
+<li><p><strong>e</strong> (<em>np.array</em>) – error data</p></li>
+<li><p><strong>startx</strong> (<em>float</em>) – minimum x value</p></li>
+<li><p><strong>endx</strong> (<em>float</em>) – maximum x value</p></li>
+<li><p><strong>use_errors</strong> (<em>bool</em>) – whether errors should be added if not present</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="fitbenchmarking.parsing.nist_data_functions.html" class="btn btn-neutral float-right" title="fitbenchmarking.parsing.nist_data_functions module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="fitbenchmarking.parsing.fitbenchmark_parser.html" class="btn btn-neutral float-left" title="fitbenchmarking.parsing.fitbenchmark_parser module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, STFC.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

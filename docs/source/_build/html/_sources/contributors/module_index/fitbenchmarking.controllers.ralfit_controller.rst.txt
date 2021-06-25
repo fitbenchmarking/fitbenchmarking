@@ -1,0 +1,7 @@
+fitbenchmarking.controllers.ralfit\_controller module
+=====================================================
+
+.. automodule:: fitbenchmarking.controllers.ralfit_controller
+   :members:
+   :undoc-members:
+   :show-inheritance:

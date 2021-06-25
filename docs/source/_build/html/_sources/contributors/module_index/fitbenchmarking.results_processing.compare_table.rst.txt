@@ -1,0 +1,7 @@
+fitbenchmarking.results\_processing.compare\_table module
+=========================================================
+
+.. automodule:: fitbenchmarking.results_processing.compare_table
+   :members:
+   :undoc-members:
+   :show-inheritance:

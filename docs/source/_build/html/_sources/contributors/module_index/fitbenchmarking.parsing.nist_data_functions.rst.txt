@@ -1,0 +1,7 @@
+fitbenchmarking.parsing.nist\_data\_functions module
+====================================================
+
+.. automodule:: fitbenchmarking.parsing.nist_data_functions
+   :members:
+   :undoc-members:
+   :show-inheritance:

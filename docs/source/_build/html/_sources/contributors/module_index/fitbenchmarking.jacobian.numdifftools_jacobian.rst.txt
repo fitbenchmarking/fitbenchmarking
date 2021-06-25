@@ -1,0 +1,7 @@
+fitbenchmarking.jacobian.numdifftools\_jacobian module
+======================================================
+
+.. automodule:: fitbenchmarking.jacobian.numdifftools_jacobian
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+fitbenchmarking.controllers.scipy\_go\_controller module
+========================================================
+
+.. automodule:: fitbenchmarking.controllers.scipy_go_controller
+   :members:
+   :undoc-members:
+   :show-inheritance:

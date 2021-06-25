@@ -1,0 +1,19 @@
+fitbenchmarking.cli package
+===========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fitbenchmarking.cli.exception_handler
+   fitbenchmarking.cli.main
+
+Module contents
+---------------
+
+.. automodule:: fitbenchmarking.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:

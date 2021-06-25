@@ -1,0 +1,23 @@
+fitbenchmarking.jacobian package
+================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fitbenchmarking.jacobian.analytic_jacobian
+   fitbenchmarking.jacobian.base_jacobian
+   fitbenchmarking.jacobian.default_jacobian
+   fitbenchmarking.jacobian.jacobian_factory
+   fitbenchmarking.jacobian.numdifftools_jacobian
+   fitbenchmarking.jacobian.scipy_jacobian
+
+Module contents
+---------------
+
+.. automodule:: fitbenchmarking.jacobian
+   :members:
+   :undoc-members:
+   :show-inheritance:
