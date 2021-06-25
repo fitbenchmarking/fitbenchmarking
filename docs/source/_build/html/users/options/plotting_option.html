@@ -195,41 +195,58 @@ make_plots: yes
 </pre></div>
 </div>
 </div>
-<div class="section" id="colour-map-colour-map-cmap-range-colour-ulim">
-<h2>Colour Map (<code class="code docutils literal notranslate"><span class="pre">colour_map</span></code>), (<code class="code docutils literal notranslate"><span class="pre">cmap_range</span></code>), (<code class="code docutils literal notranslate"><span class="pre">colour_ulim</span></code>)<a class="headerlink" href="#colour-map-colour-map-cmap-range-colour-ulim" title="Permalink to this headline">¶</a></h2>
-<p>Together these three options control the colours to be used for the shading of the html results tables from the
-library of colourmaps available in <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>, see the complete library <a class="reference external" href="https://matplotlib.org/stable/gallery/color/colormap_reference.html">here</a>.
-The following sequential colourmaps are recommended:</p>
+<div class="section" id="colourmap-colour-map">
+<h2>Colourmap (<code class="code docutils literal notranslate"><span class="pre">colour_map</span></code>)<a class="headerlink" href="#colourmap-colour-map" title="Permalink to this headline">¶</a></h2>
+<p>Specifies the name of the colourmap the user wishes to use, e.g. <code class="docutils literal notranslate"><span class="pre">magma</span></code>, <code class="docutils literal notranslate"><span class="pre">viridis</span></code>, <code class="docutils literal notranslate"><span class="pre">OrRd</span></code>. Options are:</p>
+<ul class="simple">
+<li><p>Any colourmap from the library in <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>, see the complete library <a class="reference external" href="https://matplotlib.org/stable/gallery/color/colormap_reference.html">here</a>.</p></li>
+<li><p>Appending <code class="docutils literal notranslate"><span class="pre">_r</span></code> to the end of the name will reverse the colourmap.</p></li>
+<li><p>The following sequential colourmaps are recommended:</p></li>
+</ul>
 <div class="figure align-default">
-<img alt="Recommended Colourmaps" src="images/recommended_cmaps.png" />
+<img alt="../../_images/recommended_perceptual_cmaps.png" src="../../_images/recommended_perceptual_cmaps.png" />
 </div>
-<p><cite>colour_map</cite> is used to specify a colourmap by name as a string, e.g. <cite>‘viridis’</cite> or <cite>‘Reds’</cite>. The <cite>cmap_range</cite> option allows the
-user to crop the colourmap by specifying a two element list in the options, e.g. <cite>[0.2, 0.8]</cite>, which controls the start and end
-The text in the html table currently is always white so caution must be taken when choosing a colourmap to ensure readability.
-The shading of a given cell in a row of a results table is sampled from the colourmap based on the relative result;
-sampling is done according to a logarithmic scale to accomodate large differences. Colourmap Range and Upper Shading Limit plotting options give further control of the use of the chosen colourmap.</p>
-<p>Default is <code class="docutils literal notranslate"><span class="pre">magma_r</span></code></p>
+<div class="figure align-default">
+<img alt="../../_images/recommended_sequential_cmaps.png" src="../../_images/recommended_sequential_cmaps.png" />
+</div>
+<p>Default colourmap is <code class="docutils literal notranslate"><span class="pre">magma_r</span></code></p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span>[PLOTTING]
+colour_map: magma_r
+</pre></div>
+</div>
 </div>
 <div class="section" id="colourmap-range-cmap-range">
 <h2>Colourmap Range (<code class="code docutils literal notranslate"><span class="pre">cmap_range</span></code>)<a class="headerlink" href="#colourmap-range-cmap-range" title="Permalink to this headline">¶</a></h2>
-<p>Chooses the</p>
+<p>A two-element list used to specify the lower and upper limit of the chosen colourmap. Options are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[lower_limit,</span> <span class="pre">upper_limit]</span></code> where limits consider the full colourscale limits to be 0 and 1, so any pair of values must fall within this range.</p></li>
+<li><p>Limits should be introduced to make the <strong>white text</strong> readable, see the following example.</p></li>
+</ul>
+<div class="figure align-default">
+<img alt="../../_images/example_cmaps.png" src="../../_images/example_cmaps.png" />
 </div>
-<div class="section" id="colour-scale-colour-scale">
-<h2>Colour scale (<code class="code docutils literal notranslate"><span class="pre">colour_scale</span></code>)<a class="headerlink" href="#colour-scale-colour-scale" title="Permalink to this headline">¶</a></h2>
-<p>Lists thresholds for each colour in the html table.
-In the example below, this means that values less than 1.1 will
-have the top ranking (brightest) and values over 3 will show as
-the worst ranking (deep red).</p>
-<p>If <cite>parameter_ranges</cite> have been set for a problem, then solutions
-flagged as not respecting the specified bounds will be given the
-worst ranking colour.</p>
-<p>Default thresholds are <code class="docutils literal notranslate"><span class="pre">1.1,</span> <span class="pre">1.33,</span> <span class="pre">1.75,</span> <span class="pre">3,</span> <span class="pre">and</span> <span class="pre">inf</span></code></p>
+<p>Default for <code class="docutils literal notranslate"><span class="pre">magma</span></code> is <code class="docutils literal notranslate"><span class="pre">[0.2,</span> <span class="pre">0.8]</span></code> (suitability depends on colourmap)</p>
 <div class="highlight-rst notranslate"><div class="highlight"><pre><span></span>[PLOTTING]
-colour_scale: 1.1, #fef0d9
-              1.33, #fdcc8a
-              1.75, #fc8d59
-              3, #e34a33
-              inf, #b30000
+colour_map: magma_r
+cmap_range: [0.2, 0.8]
+</pre></div>
+</div>
+</div>
+<div class="section" id="colour-upper-limit-colour-ulim">
+<h2>Colour Upper Limit <code class="code docutils literal notranslate"><span class="pre">colour_ulim</span></code>)<a class="headerlink" href="#colour-upper-limit-colour-ulim" title="Permalink to this headline">¶</a></h2>
+<p>Controls how relatively poorly a minimizer has to perform in order to receive the <cite>worst</cite> colour. For example,
+a value of 100 would mean that any performance greater than or equal to 100 times worse than the best
+minimizer would receive the worst colour. This ensures that colour scale is not compromised by especially
+poor relative results. Options are:</p>
+<ul class="simple">
+<li><p>Any float between <code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">np.inf</span></code></p></li>
+<li><p>Reccomended value <code class="docutils literal notranslate"><span class="pre">100</span></code></p></li>
+</ul>
+<p>Default is <code class="docutils literal notranslate"><span class="pre">100</span></code></p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span>[PLOTTING]
+colour_map: magma_r
+cmap_range: [0.2, 0.8]
+colour_ulim: 100
 </pre></div>
 </div>
 </div>
