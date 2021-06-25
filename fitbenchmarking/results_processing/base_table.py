@@ -143,8 +143,6 @@ class Table:
         :return: dictionary containing HTML colours for the table
         :rtype: dict
         """
-        # The colour maps in rev_cmaps must be reversed 
-        rev_cmaps = ['viridis', 'plasma', 'inferno', 'magma', 'cividis']
         cmap_name = self.options.colour_map
         cmap = plt.get_cmap(cmap_name)
         cmap_ulim = self.options.colour_ulim
@@ -157,8 +155,6 @@ class Table:
                 log_val = np.log10(value)
                 norm_val = (log_val-min(log_val))/(log_ulim-min(log_val))
                 norm_val[norm_val>1] = 1 # applying upper cutoff
-                if cmap_name in rev_cmaps:
-                    norm_val = abs(norm_val-1)
                 # trimming colour map according to default/user input
                 norm_val = cmap_range[0]+norm_val*(cmap_range[1]-cmap_range[0])
                 rgba_list = cmap(norm_val)
@@ -172,8 +168,6 @@ class Table:
                     log_val = np.log10(v)
                     norm_val = (log_val-min(log_val))/(log_ulim-min(log_val))
                     norm_val[norm_val>1] = 1 # applying upper cutoff
-                    if cmap_name in rev_cmaps:
-                        norm_val = abs(norm_val-1)
                     # trimming colour map according to default/user input
                     norm_val = cmap_range[0]+norm_val*(cmap_range[1]-cmap_range[0])
                     rgba_list = cmap(norm_val)

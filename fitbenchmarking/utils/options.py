@@ -5,6 +5,7 @@ This file will handle all interaction with the options configuration file.
 import configparser
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 
 from fitbenchmarking.utils.exceptions import OptionsError
 
@@ -61,10 +62,7 @@ class Options(object):
         {'make_plots': [True, False],
          'comparison_mode': ['abs', 'rel', 'both'],
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
-         'colour_map': ['viridis', 'plasma', 'inferno', 'magma', 'cividis',
-                        'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
-                        'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
-                        'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']}
+         'colour_map': plt.colormaps()}
     VALID_LOGGING = \
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
                    'CRITICAL'],
