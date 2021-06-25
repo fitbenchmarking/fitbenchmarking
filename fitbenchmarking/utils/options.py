@@ -109,9 +109,9 @@ class Options(object):
          'numdifftools': ['central']}
     DEFAULT_PLOTTING = \
         {'make_plots': True,
-         'colour_map': 'magma',
+         'colour_map': 'magma_r',
          'colour_ulim': 100,
-         'cmap_range': [0.2, 0.8],
+         'cmap_range': '[0.2, 0.8]',
          'comparison_mode': 'both',
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
          'results_dir': 'fitbenchmarking_results'}
@@ -194,7 +194,7 @@ class Options(object):
         self.make_plots = self.read_value(plotting.getboolean, 'make_plots')
         self.colour_map = self.read_value(plotting.getstr, 'colour_map')
         self.colour_ulim = self.read_value(plotting.getfloat, 'colour_ulim')
-        self.cmap_range = self.read_value(plotting.getlist, 'cmap_range')
+        self.cmap_range = eval(self.read_value(plotting.getstr, 'cmap_range'))
         self.comparison_mode = self.read_value(plotting.getstr,
                                                'comparison_mode')
         self.table_type = self.read_value(plotting.getlist, 'table_type')
