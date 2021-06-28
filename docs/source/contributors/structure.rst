@@ -38,9 +38,9 @@ The continuous integration process on Github Actions currently run on a Docker c
 and this directory holds the Dockerfiles.  The Docker containers are hosted on
 Dockerhub.
 
-``BasicInstall`` holds the Dockerfile that is pushed to the repository ``fitbenchmarking/fitbenchmarking-deps``, the lastest of which should have the tag ``latest``.  This contains a basic Ubuntu install, with just the minimal infrastructure needed to run the tests.
+``BasicInstall`` holds the Dockerfile that is pushed to the repository ``fitbenchmarking/fitbenchmarking-deps``, the latest of which should have the tag ``latest``.  This contains a basic Ubuntu install, with just the minimal infrastructure needed to run the tests.
 
-``FullInstall`` holds the Dockerfile that is pushed to the repository ``fitbenchmarking/fitbenchmarking-extras``, the lastest of which should have the tag ``latest``.  This is built on top of the basic container, and includes optional third party software that FitBenchmarking can work with.
+``FullInstall`` holds the Dockerfile that is pushed to the repository ``fitbenchmarking/fitbenchmarking-extras``, the latest of which should have the tag ``latest``.  This is built on top of the basic container, and includes optional third party software that FitBenchmarking can work with.
 
 The versions on Docker Hub can be updated from a connected account by issuing the commands:
 
@@ -131,7 +131,7 @@ Jacobian (:py:mod:`~fitbenchmarking.jacobian`)
 
 This directory holds the :class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian` class,
 and subclasses, which are used by the controllers to approximate derivatives.
-Currenlty available options are described in :ref:`jacobian_option`, and new
+Currently available options are described in :ref:`jacobian_option`, and new
 numerical Jacobians can be added by following the instructions in
 :ref:`jacobian_extend`.
 
