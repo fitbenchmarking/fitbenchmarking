@@ -197,12 +197,13 @@ class Options(object):
         self.colour_ulim = self.read_value(plotting.getfloat, 'colour_ulim')
         try:
             self.cmap_range = self.read_value(plotting.getrng, 'cmap_range')
-        except:
-            OptionsError(
-                "Invalid range specified for cmap_range. cmap_range "\
-                "must be specified in the following format '[a, b]' where "\
-                "0 <= a <= 1 and 0 <= b <= 1 and a <= b"
-            )
+        except ValueError:
+            self.error_message.append(\
+                "Invalid range specified for cmap_range: {0} \n"\
+                "cmap_range must be specified in the following format [a, b]\n"\
+                "where 0 <= a <= 1, 0 <= b <= 1 and a <= b" \
+                .format(self.read_value(plotting.getstr, 'cmap_range')))
+
         self.comparison_mode = self.read_value(plotting.getstr,
                                                'comparison_mode')
         self.table_type = self.read_value(plotting.getlist, 'table_type')
@@ -244,6 +245,7 @@ class Options(object):
             self.error_message.append(
                 "Incorrect options type for {}".format(option))
             value = None
+            raise ValueError
 
         if option in self.VALID[section]:
             if isinstance(value, list):
@@ -361,7 +363,7 @@ def read_range(s):
     :rtype: list
     """
     try:
-        rng = [float(item) for item in s[1:-2].split(",")]
+        rng = [float(item) for item in s[1:-1].split(",")]
         if len(rng) != 2:
             raise ValueError
         if rng[0] > rng[1]:
@@ -369,5 +371,5 @@ def read_range(s):
         if rng[0] > 1 or rng[1] > 1:
             raise ValueError
     except:
-        ValueError
+        raise ValueError
     return rng
