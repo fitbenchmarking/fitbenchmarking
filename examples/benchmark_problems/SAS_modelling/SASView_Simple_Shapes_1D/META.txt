@@ -1,0 +1,12 @@
+SASView_Simple_Shapes_1D
+
+6 problems synthesised from the SASView models on Fri May 28 11:50:38 2021. See table below for details.
+
+SASmodel Name            Dimension                Data Format              Synthesis Style          
+
+cylinder                 1D                       <Q> <I> <Idev>           neutron                  
+cylinder                 1D                       <Q> <I> <Idev>           x-ray                    
+ellipsoid                1D                       <Q> <I> <Idev>           neutron                  
+ellipsoid                1D                       <Q> <I> <Idev>           x-ray                    
+sphere                   1D                       <Q> <I> <Idev>           neutron                  
+sphere                   1D                       <Q> <I> <Idev>           x-ray                    

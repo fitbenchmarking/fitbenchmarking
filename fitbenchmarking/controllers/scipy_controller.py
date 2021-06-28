@@ -45,7 +45,6 @@ class ScipyController(Controller):
         self.no_bounds_minimizers = ['Nelder-Mead', 'CG', 'BFGS', 'Newton-CG']
         self.options = None
         self.result = None
-        self._status = None
         self._popt = None
         self.algorithm_check = ALGORITHM_CHECK
 
@@ -80,16 +79,21 @@ class ScipyController(Controller):
             kwargs["bounds"] = self.value_ranges
         self.result = minimize(**kwargs)
         self._popt = self.result.x
-        self._status = self.result.status
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        if self._status == 0:
+
+        max_iters_messages = ['maximum number of iterations',
+                              'iteration limit reached',
+                              'iterations reached limit']
+
+        if self.result.success:
             self.flag = 0
-        elif self._status == 2:
+        elif any(message in self.result.message.lower()
+                 for message in max_iters_messages):
             self.flag = 1
         else:
             self.flag = 2

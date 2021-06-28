@@ -138,6 +138,7 @@ class Plot:
         :return: path to the saved file
         :rtype: str
         """
+
         # Parse which starting values to use from result name
         start_index = self.result.name.partition('Start')[2].split(',')[0]
         if start_index:
@@ -145,7 +146,13 @@ class Plot:
         else:
             start_index = 1
 
-        ini_guess = self.problem.starting_values[start_index - 1].values()
+        # gracefully handle occasions where problem definition file does not
+        # include all sets of starting values
+        try:
+            ini_guess = self.problem.starting_values[start_index - 1].values()
+        except IndexError:
+            ini_guess = self.problem.starting_values[0].values()
+
         self.plot_data(errors=False,
                        plot_options=self.ini_guess_plot_options,
                        x=self.x,
