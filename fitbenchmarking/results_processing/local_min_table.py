@@ -151,7 +151,7 @@ class LocalMinTable(Table):
         colour = {key: [clrs.rgb2hex(cmap(cmap_range[0]))
                         if v == "True" else clrs.rgb2hex(cmap(cmap_range[1]))
                         for v in value]
-                for key, value in local_min.items()}
+                  for key, value in local_min.items()}
         return colour
 
     def display_str(self, results):

@@ -4,7 +4,6 @@ This file will handle all interaction with the options configuration file.
 
 import configparser
 import os
-import numpy as np
 import matplotlib.pyplot as plt
 
 from fitbenchmarking.utils.exceptions import OptionsError
@@ -293,11 +292,10 @@ class Options(object):
         config['MINIMIZERS'] = {k: list_to_string(m)
                                 for k, m in self.minimizers.items()}
         config['FITTING'] = {'num_runs': self.num_runs,
-                             'algorithm_type': list_to_string(self.algorithm_type),
+                             'algorithm_type':
+                             list_to_string(self.algorithm_type),
                              'software': list_to_string(self.software),
                              'jac_method': list_to_string(self.jac_method)}
-        #cs = list_to_string(['{0}, {1}'.format(*pair)
-        #                     for pair in self.colour_scale])
         config['JACOBIAN'] = {k: list_to_string(m)
                               for k, m in self.num_method.items()}
 
@@ -348,6 +346,7 @@ def read_list(s):
     """
     return str(s).split('\n')
 
+
 def read_range(s):
     """
     Utility function to allow ranges to be read by the config parser
@@ -365,9 +364,11 @@ def read_range(s):
     if len(rng) != 2:
         raise ValueError("cmap_range not specified with 2 elements.")
     if rng[0] > rng[1]:
-        raise ValueError("Incorrect element order; cmap_range[0] > cmap_range[1] "
-        "detected. The elements must satisfy cmap_range[0] < cmap_range[1].")
+        raise ValueError("Incorrect element order;"
+                         "cmap_range[0] > cmap_range[1] detected."
+                         "The elements must satisfy "
+                         "cmap_range[0] < cmap_range[1].")
     if rng[0] < 0 or rng[0] > 1 or rng[1] < 0 or rng[1] > 1:
         raise ValueError("One or more elements in cmap_range are "
-        "outside of the permitted range 0 <= a <= 1.")
+                         "outside of the permitted range 0 <= a <= 1.")
     return rng
