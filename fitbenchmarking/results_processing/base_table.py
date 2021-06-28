@@ -135,9 +135,10 @@ class Table:
         """
         Converts the result from
         :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()`
-        into the HTML colours used in the tables. The base class implementation,
-        for example, uses the relative results and ``colour_map``, ``colour_ulim``
-        and ``cmap_range`` within :class:`~fitbenchmarking.utils.options.Options`.
+        into the HTML colours used in the tables. The base class
+        implementation, for example, uses the relative results and
+        ``colour_map``, ``colour_ulim`` and ``cmap_range`` within
+        :class:`~fitbenchmarking.utils.options.Options`.
         :param results: tuple containing absolute and relative values
         :type results: tuple
         :return: dictionary containing HTML colours for the table
@@ -147,16 +148,18 @@ class Table:
         cmap = plt.get_cmap(cmap_name)
         cmap_ulim = self.options.colour_ulim
         cmap_range = self.options.cmap_range
-        log_ulim = np.log10(cmap_ulim) # colour map used with log spacing
+        log_ulim = np.log10(cmap_ulim)  # colour map used with log spacing
         _, rel_value = results
         colour = {}
         for key, value in rel_value.items():
             if not all(isinstance(elem, list) for elem in value):
                 log_val = np.log10(value)
-                norm_val = (log_val-min(log_val))/(log_ulim-min(log_val))
-                norm_val[norm_val>1] = 1 # applying upper cutoff
+                norm_val = (log_val - min(log_val)) /\
+                    (log_ulim - min(log_val))
+                norm_val[norm_val > 1] = 1  # applying upper cutoff
                 # trimming colour map according to default/user input
-                norm_val = cmap_range[0]+norm_val*(cmap_range[1]-cmap_range[0])
+                norm_val = cmap_range[0] + \
+                    norm_val*(cmap_range[1] - cmap_range[0])
                 rgba_list = cmap(norm_val)
                 hex_list = []
                 for c in rgba_list:
@@ -166,10 +169,12 @@ class Table:
                 colour[key] = []
                 for v in value:
                     log_val = np.log10(v)
-                    norm_val = (log_val-min(log_val))/(log_ulim-min(log_val))
-                    norm_val[norm_val>1] = 1 # applying upper cutoff
+                    norm_val = (log_val - min(log_val)) /\
+                        (log_ulim - min(log_val))
+                    norm_val[norm_val > 1] = 1  # applying upper cutoff
                     # trimming colour map according to default/user input
-                    norm_val = cmap_range[0]+norm_val*(cmap_range[1]-cmap_range[0])
+                    norm_val = cmap_range[0] + \
+                        norm_val * (cmap_range[1] - cmap_range[0])
                     rgba_list = cmap(norm_val)
                     hex_list = []
                     for c in rgba_list:
