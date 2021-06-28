@@ -3,7 +3,6 @@ Module which accesses the values in algorithm_check for each
 controller that correspond to a given key from the dictionary
 """
 
-from pprint import pformat
 from importlib import import_module
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
@@ -52,8 +51,6 @@ class AlgorithmCheckDocs(Directive):
             dict = getattr(module, 'ALGORITHM_CHECK')
 
             value = value + software_name + ':' + str(dict[inp_key]) + '\n'
-
-        value = pformat(value, 2, width=68)
 
         paragraph_node = nodes.literal_block(text=value)
         return [paragraph_node]
