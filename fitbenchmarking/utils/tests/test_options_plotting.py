@@ -44,7 +44,7 @@ class PlottingOptionTests(unittest.TestCase):
         expected = [0.2, 0.8]
         actual = self.options.cmap_range
         self.assertEqual(expected, actual)
-    
+
     def test_colour_ulim_default(self):
         """
         Checks colour_ulim default
