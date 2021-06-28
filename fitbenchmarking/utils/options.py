@@ -363,6 +363,8 @@ def read_range(s):
     :rtype: list
     """
     try:
+        if s[0] != '[' or s[-1] != ']':
+            raise ValueError
         rng = [float(item) for item in s[1:-1].split(",")]
         if len(rng) != 2:
             raise ValueError
