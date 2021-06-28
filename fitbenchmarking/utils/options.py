@@ -195,14 +195,7 @@ class Options(object):
         self.make_plots = self.read_value(plotting.getboolean, 'make_plots')
         self.colour_map = self.read_value(plotting.getstr, 'colour_map')
         self.colour_ulim = self.read_value(plotting.getfloat, 'colour_ulim')
-        try:
-            self.cmap_range = self.read_value(plotting.getrng, 'cmap_range')
-        except ValueError:
-            self.error_message.append(\
-                "Invalid range specified for cmap_range: {0} \n"\
-                "cmap_range must be specified in the following format [a, b]\n"\
-                "where 0 <= a <= 1, 0 <= b <= 1 and a <= b" \
-                .format(self.read_value(plotting.getstr, 'cmap_range')))
+        self.cmap_range = self.read_value(plotting.getrng, 'cmap_range')
 
         self.comparison_mode = self.read_value(plotting.getstr,
                                                'comparison_mode')
@@ -241,11 +234,10 @@ class Options(object):
         section = func.__str__().split("Section: ")[1].split('>')[0]
         try:
             value = func(option, fallback=self.DEFAULTS[section][option])
-        except ValueError as ve:
+        except ValueError as e:
             self.error_message.append(
-                "Incorrect options type for {}".format(option))
+                "Incorrect options type for {}.\n{}".format(option, e))
             value = None
-            raise ValueError(ve) from ve
 
         if option in self.VALID[section]:
             if isinstance(value, list):
@@ -290,6 +282,7 @@ class Options(object):
 
         :return: ConfigParser
         """
+        print(self.colour_map)
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str,
                                                        'rng': read_range})
@@ -365,16 +358,16 @@ def read_range(s):
     :return: two element list [lower_lim, upper lim]
     :rtype: list
     """
-    try:
-        if s[0] != '[' or s[-1] != ']':
-            raise ValueError
-        rng = [float(item) for item in s[1:-1].split(",")]
-        if len(rng) != 2:
-            raise ValueError
-        if rng[0] > rng[1]:
-            raise ValueError
-        if rng[0] > 1 or rng[1] > 1:
-            raise ValueError
-    except:
-        raise ValueError
+
+    if s[0] != '[' or s[-1] != ']':
+        raise ValueError("cmap_range specified without [] parentheses.")
+    rng = [float(item) for item in s[1:-1].split(",")]
+    if len(rng) != 2:
+        raise ValueError("cmap_range not specified with 2 elements.")
+    if rng[0] > rng[1]:
+        raise ValueError("Incorrect element order; cmap_range[0] > cmap_range[1] "
+        "detected. The elements must satisfy cmap_range[0] < cmap_range[1].")
+    if rng[0] < 0 or rng[0] > 1 or rng[1] < 0 or rng[1] > 1:
+        raise ValueError("One or more elements in cmap_range are "
+        "outside of the permitted range 0 <= a <= 1.")
     return rng

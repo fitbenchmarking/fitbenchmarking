@@ -44,7 +44,7 @@ class PlottingOptionTests(unittest.TestCase):
         expected = [0.2, 0.8]
         actual = self.options.cmap_range
         self.assertEqual(expected, actual)
-
+    
     def test_colour_ulim_default(self):
         """
         Checks colour_ulim default
@@ -191,18 +191,27 @@ class UserPlottingOptionTests(unittest.TestCase):
         """
         Checks user set cmap_range is valid
         """
-        set_option = [0.2, 0.8]
+        set_option = [0.1, 0.9]
         config_str = \
-            "[PLOTTING]\ncmap_range: [0.2, 0.8]"
+            "[PLOTTING]\ncmap_range: [0.1, 0.9]"
         self.shared_valid('cmap_range', set_option, config_str)
 
     def test_minimizer_cmap_range_invalid(self):
         """
         Checks user set cmap_range is invalid
         """
-        config_str = \
-            "[PLOTTING]\ncmap_range: [0.5, 0.3"
-        self.shared_invalid('cmap_range', config_str)
+        config_str1 = \
+            "[PLOTTING]\ncmap_range: [0.1, 0.3"
+        self.shared_invalid('cmap_range', config_str1)
+        config_str2 = \
+            "[PLOTTING]\ncmap_range: [0.5, 0.3]"
+        self.shared_invalid('cmap_range', config_str2)
+        config_str3 = \
+            "[PLOTTING]\ncmap_range: [0.1, 0.3, 0.4]"
+        self.shared_invalid('cmap_range', config_str3)
+        config_str4 = \
+            "[PLOTTING]\ncmap_range: [0.1, 5]"
+        self.shared_invalid('cmap_range', config_str4)
 
     def test_minimizer_comparison_mode_valid(self):
         """

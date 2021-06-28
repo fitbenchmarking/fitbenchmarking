@@ -135,7 +135,7 @@ class Table:
         """
         Converts the result from
         :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()`
-        into the HTML colours used in the tables. The base class implementation, 
+        into the HTML colours used in the tables. The base class implementation,
         for example, uses the relative results and ``colour_map``, ``colour_ulim``
         and ``cmap_range`` within :class:`~fitbenchmarking.utils.options.Options`.
         :param results: tuple containing absolute and relative values

@@ -144,22 +144,14 @@ class LocalMinTable(Table):
         :return: dictionary containing error codes from the minimizers
         :rtype: dict
         """
-        # The colour maps in rev_cmaps must be reversed 
-        rev_cmaps = ['viridis', 'plasma', 'inferno', 'magma', 'cividis']
         local_min, _ = results
         cmap_name = self.options.colour_map
         cmap = plt.get_cmap(cmap_name)
         cmap_range = self.options.cmap_range
-        if cmap_name in rev_cmaps:          
-            colour = {key: [clrs.rgb2hex(cmap(cmap_range[1]))
-                            if v == "True" else clrs.rgb2hex(cmap(cmap_range[0]))
-                            for v in value]
-                    for key, value in local_min.items()}
-        else:
-            colour = {key: [clrs.rgb2hex(cmap(cmap_range[0]))
-                            if v == "True" else clrs.rgb2hex(cmap(cmap_range[1]))
-                            for v in value]
-                    for key, value in local_min.items()}
+        colour = {key: [clrs.rgb2hex(cmap(cmap_range[0]))
+                        if v == "True" else clrs.rgb2hex(cmap(cmap_range[1]))
+                        for v in value]
+                for key, value in local_min.items()}
         return colour
 
     def display_str(self, results):
