@@ -241,11 +241,11 @@ class Options(object):
         section = func.__str__().split("Section: ")[1].split('>')[0]
         try:
             value = func(option, fallback=self.DEFAULTS[section][option])
-        except ValueError:
+        except ValueError as ve:
             self.error_message.append(
                 "Incorrect options type for {}".format(option))
             value = None
-            raise ValueError
+            raise ValueError(ve) from ve
 
         if option in self.VALID[section]:
             if isinstance(value, list):
@@ -291,7 +291,8 @@ class Options(object):
         :return: ConfigParser
         """
         config = configparser.ConfigParser(converters={'list': read_list,
-                                                       'str': str})
+                                                       'str': str,
+                                                       'rng': read_range})
 
         def list_to_string(mylist):
             return '\n'.join(mylist)
@@ -308,6 +309,8 @@ class Options(object):
                               for k, m in self.num_method.items()}
 
         config['PLOTTING'] = {'colour_map': self.colour_map,
+                              'cmap_range': self.cmap_range,
+                              'colour_ulim': self.colour_ulim,
                               'comparison_mode': self.comparison_mode,
                               'make_plots': self.make_plots,
                               'results_dir': self.results_dir,

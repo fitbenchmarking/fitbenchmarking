@@ -6,8 +6,6 @@ import shutil
 import os
 import unittest
 
-import numpy as np
-
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
@@ -31,18 +29,6 @@ class PlottingOptionTests(unittest.TestCase):
         actual = self.options.make_plots
         self.assertEqual(expected, actual)
 
-    # def test_colour_scale_default(self):
-    #     """
-    #     Checks colour_scale default
-    #     """
-    #     expected = [(1.1, "#fef0d9"),
-    #                 (1.33, "#fdcc8a"),
-    #                 (1.75, "#fc8d59"),
-    #                 (3, "#e34a33"),
-    #                 (np.inf, "#b30000")]
-    #     actual = self.options.colour_scale
-    #     self.assertEqual(expected, actual)
-
     def test_colour_map_default(self):
         """
         Checks colour_map default
@@ -58,7 +44,7 @@ class PlottingOptionTests(unittest.TestCase):
         expected = [0.2, 0.8]
         actual = self.options.cmap_range
         self.assertEqual(expected, actual)
-    
+
     def test_colour_ulim_default(self):
         """
         Checks colour_ulim default
@@ -184,16 +170,6 @@ class UserPlottingOptionTests(unittest.TestCase):
             "[PLOTTING]\nmake_plots: a selection of plots"
         self.shared_invalid('make_plots', config_str)
 
-    # def test_minimizer_colour_scale_valid(self):
-    #     """
-    #     Checks user set colour_scale is valid
-    #     """
-    #     set_option = [(1.1, "#fef0d9"),
-    #                   (1.33, "#fdcc8a")]
-    #     config_str = \
-    #         "[PLOTTING]\ncolour_scale: 1.1, #fef0d9\n 1.33, #fdcc8a"
-    #     self.shared_valid('colour_scale', set_option, config_str)
-
     def test_minimizer_colour_map_valid(self):
         """
         Checks user set colour_map is valid
@@ -209,7 +185,7 @@ class UserPlottingOptionTests(unittest.TestCase):
         """
         config_str = \
             "[PLOTTING]\ncolour_map: purple"
-        self.shared_valid('colour_map', config_str)
+        self.shared_invalid('colour_map', config_str)
 
     def test_minimizer_cmap_range_valid(self):
         """
