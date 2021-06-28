@@ -111,7 +111,7 @@ class Options(object):
         {'make_plots': True,
          'colour_map': 'magma_r',
          'colour_ulim': 100,
-         'cmap_range': '[0.2, 0.8]',
+         'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
          'results_dir': 'fitbenchmarking_results'}
