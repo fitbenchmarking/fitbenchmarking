@@ -10,7 +10,13 @@ from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
 
 eng = matlab.engine.start_matlab()
 
-ALGORITHM_CHECK = {
+
+class MatlabOptController(MatlabMixin, Controller):
+    """
+    Controller for MATLAB Optimization Toolbox, implementing lsqcurvefit
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['levenberg-marquardt', 'trust-region-reflective'],
             'ls': ['levenberg-marquardt', 'trust-region-reflective'],
             'deriv_free': [],
@@ -23,12 +29,6 @@ ALGORITHM_CHECK = {
             'conjugate_gradient': [],
             'steepest_descent': [],
             'global_optimization': []}
-
-
-class MatlabOptController(MatlabMixin, Controller):
-    """
-    Controller for MATLAB Optimization Toolbox, implementing lsqcurvefit
-    """
 
     def __init__(self, cost_func):
         """
@@ -44,7 +44,7 @@ class MatlabOptController(MatlabMixin, Controller):
         self.y_data_mat = None
         self._status = None
         self.result = None
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

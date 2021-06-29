@@ -12,7 +12,13 @@ from pygsl import _numobj as numx
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 
-ALGORITHM_CHECK = {
+
+class GSLController(Controller):
+    """
+    Controller for the GSL fitting software
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                     'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                     'vector_bfgs2', 'steepest_descent'],
@@ -29,12 +35,6 @@ ALGORITHM_CHECK = {
             'conjugate_gradient': ['conjugate_fr', 'conjugate_pr'],
             'steepest_descent': ['steepest_descent'],
             'global_optimization': []}
-
-
-class GSLController(Controller):
-    """
-    Controller for the GSL fitting software
-    """
 
     def __init__(self, cost_func):
         """
@@ -54,7 +54,7 @@ class GSLController(Controller):
         self._abserror = None
         self._relerror = None
         self._maxits = None
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

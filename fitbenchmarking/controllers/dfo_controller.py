@@ -9,7 +9,13 @@ import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 
-ALGORITHM_CHECK = {
+
+class DFOController(Controller):
+    """
+    Controller for the DFO-{GN/LS} fitting software.
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['dfogn', 'dfols'],
             'ls': ['dfogn', 'dfols'],
             'deriv_free': ['dfogn', 'dfols'],
@@ -22,12 +28,6 @@ ALGORITHM_CHECK = {
             'conjugate_gradient': [],
             'steepest_descent': [],
             'global_optimization': []}
-
-
-class DFOController(Controller):
-    """
-    Controller for the DFO-{GN/LS} fitting software.
-    """
 
     def __init__(self, cost_func):
         """
@@ -46,7 +46,7 @@ class DFOController(Controller):
         self._soln = None
         self._popt = None
         self._pinit = None
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

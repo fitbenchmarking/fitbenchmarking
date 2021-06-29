@@ -10,7 +10,13 @@ import scipy.optimize as optimize
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import MissingBoundsError
 
-ALGORITHM_CHECK = {
+
+class ScipyGOController(Controller):
+    """
+    Controller for the Scipy fitting software.
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['differential_evolution', 'shgo', 'dual_annealing'],
             'ls': [None],
             'deriv_free': ['differential_evolution'],
@@ -25,12 +31,6 @@ ALGORITHM_CHECK = {
             'global_optimization': ['differential_evolution', 'shgo',
                                     'dual_annealing']
         }
-
-
-class ScipyGOController(Controller):
-    """
-    Controller for the Scipy fitting software.
-    """
 
     def __init__(self, cost_func):
         """
@@ -47,7 +47,7 @@ class ScipyGOController(Controller):
         self._popt = None
         self._status = None
         self._maxiter = None
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

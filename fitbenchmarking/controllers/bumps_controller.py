@@ -11,7 +11,16 @@ from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.utils.exceptions import CostFuncError
 
-ALGORITHM_CHECK = {
+
+class BumpsController(Controller):
+    """
+    Controller for the Bumps fitting software.
+
+    Sasview requires a model to fit.
+    Setup creates a model with the correct function.
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
             'ls': ['lm-bumps', 'mp'],
             'deriv_free': ['amoeba', 'de'],
@@ -24,15 +33,6 @@ ALGORITHM_CHECK = {
             'conjugate_gradient': [],
             'steepest_descent': [],
             'global_optimization': []}
-
-
-class BumpsController(Controller):
-    """
-    Controller for the Bumps fitting software.
-
-    Sasview requires a model to fit.
-    Setup creates a model with the correct function.
-    """
 
     def __init__(self, cost_func):
         """
@@ -52,7 +52,7 @@ class BumpsController(Controller):
         self.fit_order = None
         self._status = None
         self._bumps_result = None
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

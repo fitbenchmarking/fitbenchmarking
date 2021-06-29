@@ -3,6 +3,7 @@ Module which accesses the values in algorithm_check for each
 controller that correspond to a given key from the dictionary
 """
 
+from pprint import pformat
 from importlib import import_module
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
@@ -31,27 +32,34 @@ class AlgorithmCheckDocs(Directive):
         """
         inp_key = self.options['key']
 
+        # import controller factory
+        factory = import_module(
+            'fitbenchmarking.controllers.controller_factory')
+
         # set relative path to controllers directory
         cwd = os.path.dirname(__file__)
         dirname = os.path.join(cwd, '../../../fitbenchmarking/controllers')
 
         # loop over all fitbenchmarking controllers, and extract the minimizers
         # in algorithm_check that correspond to the given dict key
-        value = ''
+        value = {}
         for filename in os.listdir(dirname):
-            if '.py' not in filename or filename in ['__init__.py', '__init__.pyc',
-                                                     'base_controller.py',
-                                                     'controller_factory.py',
-                                                     'matlab_mixin.py']:
+            if not filename.endswith('.py')\
+                or filename in ['__init__.py',
+                                'base_controller.py',
+                                'controller_factory.py',
+                                'matlab_mixin.py']:
                 continue
-            software_name = os.path.splitext(filename)[0]
-            module_name = 'fitbenchmarking.controllers.' + software_name
+            software_name =\
+                os.path.splitext(filename)[0].replace('_controller', '')
 
-            module = import_module(module_name)
-            dict = getattr(module, 'ALGORITHM_CHECK')
+            controller_class = \
+                factory.ControllerFactory.create_controller(software_name)
+            alg_dict = getattr(controller_class, 'ALGORITHM_CHECK')
 
-            value = value + software_name + ':' + str(dict[inp_key]) + '\n'
+            value[software_name] = alg_dict[inp_key]
 
+        value = pformat(value, width=80)
         paragraph_node = nodes.literal_block(text=value)
         return [paragraph_node]
 

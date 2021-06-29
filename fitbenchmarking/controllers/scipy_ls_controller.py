@@ -7,7 +7,13 @@ import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 
-ALGORITHM_CHECK = {
+
+class ScipyLSController(Controller):
+    """
+    Controller for the Scipy Least-Squares fitting software.
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['lm-scipy', 'trf', 'dogbox'],
             'ls': ['lm-scipy', 'trf', 'dogbox'],
             'deriv_free': [None],
@@ -20,12 +26,6 @@ ALGORITHM_CHECK = {
             'conjugate_gradient': [],
             'steepest_descent': [],
             'global_optimization': []}
-
-
-class ScipyLSController(Controller):
-    """
-    Controller for the Scipy Least-Squares fitting software.
-    """
 
     def __init__(self, cost_func):
         """
@@ -43,7 +43,7 @@ class ScipyLSController(Controller):
         self.result = None
         self._status = None
         self._popt = None
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

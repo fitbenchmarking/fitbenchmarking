@@ -10,7 +10,13 @@ import levmar
 
 from fitbenchmarking.controllers.base_controller import Controller
 
-ALGORITHM_CHECK = {
+
+class LevmarController(Controller):
+    """
+    Controller for the levmar fitting software
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['levmar'],
             'ls': ['levmar'],
             'deriv_free': [],
@@ -23,12 +29,6 @@ ALGORITHM_CHECK = {
             'conjugate_gradient': [],
             'steepest_descent': [],
             'global_optimization': []}
-
-
-class LevmarController(Controller):
-    """
-    Controller for the levmar fitting software
-    """
 
     def __init__(self, cost_func):
         """
@@ -44,7 +44,7 @@ class LevmarController(Controller):
         self.param_ranges = None
         self.lm_y = None
         self._popt = None
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
         self._info = None
 
     def jacobian_information(self):

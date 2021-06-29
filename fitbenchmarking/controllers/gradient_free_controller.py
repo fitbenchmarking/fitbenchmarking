@@ -8,7 +8,13 @@ import numpy as np
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import MissingBoundsError
 
-ALGORITHM_CHECK = {
+
+class GradientFreeController(Controller):
+    """
+    Controller for the Gradient Free Optimizers fitting software.
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['HillClimbingOptimizer',
                     'RepulsingHillClimbingOptimizer',
                     'SimulatedAnnealingOptimizer',
@@ -44,12 +50,6 @@ ALGORITHM_CHECK = {
             'steepest_descent': [],
             'global_optimization': []}
 
-
-class GradientFreeController(Controller):
-    """
-    Controller for the Gradient Free Optimizers fitting software.
-    """
-
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -65,7 +65,7 @@ class GradientFreeController(Controller):
         self.search_space = None
         self.initialize = None
         self.results = None
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

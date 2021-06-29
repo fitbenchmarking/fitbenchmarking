@@ -10,7 +10,13 @@ from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
 
 eng = matlab.engine.start_matlab()
 
-ALGORITHM_CHECK = {
+
+class MatlabStatsController(MatlabMixin, Controller):
+    """
+    Controller for MATLAB Statistics Toolbox fitting (nlinfit)
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['Levenberg-Marquardt'],
             'ls': ['Levenberg-Marquardt'],
             'deriv_free': [],
@@ -23,12 +29,6 @@ ALGORITHM_CHECK = {
             'conjugate_gradient': [],
             'steepest_descent': [],
             'global_optimization': []}
-
-
-class MatlabStatsController(MatlabMixin, Controller):
-    """
-    Controller for MATLAB Statistics Toolbox fitting (nlinfit)
-    """
 
     def __init__(self, cost_func):
         """
@@ -43,7 +43,7 @@ class MatlabStatsController(MatlabMixin, Controller):
         self.y_data_mat = None
         self._status = None
         self.result = None
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

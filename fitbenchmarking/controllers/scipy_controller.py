@@ -8,7 +8,13 @@ from scipy.optimize import minimize
 
 from fitbenchmarking.controllers.base_controller import Controller
 
-ALGORITHM_CHECK = {
+
+class ScipyController(Controller):
+    """
+    Controller for the Scipy fitting software.
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
                     'L-BFGS-B', 'TNC', 'SLSQP'],
             'ls': [None],
@@ -23,12 +29,6 @@ ALGORITHM_CHECK = {
             'conjugate_gradient': ['CG', 'Newton-CG', 'Powell'],
             'steepest_descent': [],
             'global_optimization': []}
-
-
-class ScipyController(Controller):
-    """
-    Controller for the Scipy fitting software.
-    """
 
     def __init__(self, cost_func):
         """
@@ -46,7 +46,7 @@ class ScipyController(Controller):
         self.options = None
         self.result = None
         self._popt = None
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

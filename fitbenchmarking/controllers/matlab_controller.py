@@ -9,7 +9,13 @@ from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
 
 eng = matlab.engine.start_matlab()
 
-ALGORITHM_CHECK = {
+
+class MatlabController(MatlabMixin, Controller):
+    """
+    Controller for MATLAB fitting (fminsearch)
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['Nelder-Mead Simplex'],
             'ls': [],
             'deriv_free': ['Nelder-Mead Simplex'],
@@ -23,12 +29,6 @@ ALGORITHM_CHECK = {
             'steepest_descent': [],
             'global_optimization': []}
 
-
-class MatlabController(MatlabMixin, Controller):
-    """
-    Controller for MATLAB fitting (fminsearch)
-    """
-
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -40,7 +40,7 @@ class MatlabController(MatlabMixin, Controller):
         super().__init__(cost_func)
         self._status = None
         self.result = None
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

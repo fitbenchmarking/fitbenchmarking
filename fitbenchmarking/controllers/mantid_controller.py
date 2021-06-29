@@ -12,7 +12,22 @@ from fitbenchmarking.utils.exceptions import ControllerAttributeError
 
 # pylint: disable=protected-access
 
-ALGORITHM_CHECK = {
+
+class MantidController(Controller):
+    """
+    Controller for the Mantid fitting software.
+
+    Mantid requires subscribing a custom function in a predefined format,
+    so this controller creates that in setup.
+    """
+    #: A map from fitbenchmarking cost functions to mantid ones.
+    COST_FUNCTION_MAP = {
+        'nlls': 'Unweighted least squares',
+        'weighted_nlls': 'Least squares',
+        'poisson': 'Poisson',
+    }
+
+    ALGORITHM_CHECK = {
             'all': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
                     'Damped GaussNewton', 'Levenberg-Marquardt',
@@ -35,21 +50,6 @@ ALGORITHM_CHECK = {
                                    'Conjugate gradient (Polak-Ribiere imp.)'],
             'steepest_descent': ['SteepestDescent'],
             'global_optimization': []}
-
-
-class MantidController(Controller):
-    """
-    Controller for the Mantid fitting software.
-
-    Mantid requires subscribing a custom function in a predefined format,
-    so this controller creates that in setup.
-    """
-    #: A map from fitbenchmarking cost functions to mantid ones.
-    COST_FUNCTION_MAP = {
-        'nlls': 'Unweighted least squares',
-        'weighted_nlls': 'Least squares',
-        'poisson': 'Poisson',
-    }
 
     def __init__(self, cost_func):
         """
@@ -75,7 +75,7 @@ class MantidController(Controller):
 
         self._param_names = self.problem.param_names
         self._status = None
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
 
         if self.problem.multifit:
             # Multi Fit

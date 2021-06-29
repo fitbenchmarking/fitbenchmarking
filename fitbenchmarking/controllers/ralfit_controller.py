@@ -9,7 +9,13 @@ import numpy as np
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 
-ALGORITHM_CHECK = {
+
+class RALFitController(Controller):
+    """
+    Controller for the RALFit fitting software.
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
             'ls': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
             'deriv_free': [],
@@ -22,12 +28,6 @@ ALGORITHM_CHECK = {
             'conjugate_gradient': [],
             'steepest_descent': [],
             'global_optimization': []}
-
-
-class RALFitController(Controller):
-    """
-    Controller for the RALFit fitting software.
-    """
 
     def __init__(self, cost_func):
         """
@@ -44,7 +44,7 @@ class RALFitController(Controller):
         self._status = None
         self._popt = None
         self._options = {}
-        self.algorithm_check = ALGORITHM_CHECK
+        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

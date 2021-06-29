@@ -11,7 +11,13 @@ import numpy as np
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
-ALGORITHM_CHECK = {
+
+class MinuitController(Controller):
+    """
+    Controller for the Minuit fitting software
+    """
+
+    ALGORITHM_CHECK = {
             'all': ['minuit'],
             'ls': [],
             'deriv_free': [],
@@ -24,12 +30,6 @@ ALGORITHM_CHECK = {
             'conjugate_gradient': [],
             'steepest_descent': [],
             'global_optimization': []}
-
-
-class MinuitController(Controller):
-    """
-    Controller for the Minuit fitting software
-    """
 
     def __init__(self, cost_func):
         """
@@ -54,18 +54,7 @@ class MinuitController(Controller):
         self._popt = None
         self._initial_step = None
         self._minuit_problem = None
-        self.algorithm_check = {
-            'all': ['minuit'],
-            'ls': [],
-            'deriv_free': [],
-            'general': ['minuit'],
-            'simplex': [],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
+        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """
