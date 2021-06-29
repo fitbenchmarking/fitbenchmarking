@@ -79,8 +79,13 @@ class Plot:
         """
         Performs post plot processing to annotate the plot correctly
         """
-        self.ax.set_xlabel(r"Time ($\mu s$)")
-        self.ax.set_ylabel("Arbitrary units")
+        # log scale plot if problem is a SASView problem
+        if self.problem.format == "sasview":
+            self.ax.set_xscale("log", nonpositive='clip')
+            self.ax.set_yscale("log", nonpositive='clip')
+        # linear scale if otherwise
+        self.ax.set_xlabel("X")
+        self.ax.set_ylabel("Y")
         self.ax.set_title(self.result.name,
                           fontsize=self.title_size)
         self.ax.legend(loc=self.legend_location)
@@ -133,6 +138,7 @@ class Plot:
         :return: path to the saved file
         :rtype: str
         """
+
         # Parse which starting values to use from result name
         start_index = self.result.name.partition('Start')[2].split(',')[0]
         if start_index:
@@ -140,7 +146,13 @@ class Plot:
         else:
             start_index = 1
 
-        ini_guess = self.problem.starting_values[start_index - 1].values()
+        # gracefully handle occasions where problem definition file does not
+        # include all sets of starting values
+        try:
+            ini_guess = self.problem.starting_values[start_index - 1].values()
+        except IndexError:
+            ini_guess = self.problem.starting_values[0].values()
+
         self.plot_data(errors=False,
                        plot_options=self.ini_guess_plot_options,
                        x=self.x,

@@ -4,44 +4,47 @@ Tests for the controllers available from a default fitbenchmarking install
 import inspect
 import os
 from unittest import TestCase
+
 import numpy as np
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 
+from conftest import run_for_test_types
+from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
-
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
-from conftest import run_for_test_types
-
-from fitbenchmarking import mock_problems
 
 if TEST_TYPE in ['default', 'all']:
     from fitbenchmarking.controllers.bumps_controller import BumpsController
-    from fitbenchmarking.controllers.controller_factory import\
+    from fitbenchmarking.controllers.controller_factory import \
         ControllerFactory
     from fitbenchmarking.controllers.dfo_controller import DFOController
-    from fitbenchmarking.controllers.minuit_controller import\
-        MinuitController
+    from fitbenchmarking.controllers.minuit_controller import MinuitController
     from fitbenchmarking.controllers.scipy_controller import ScipyController
-    from fitbenchmarking.controllers.scipy_ls_controller import\
-        ScipyLSController
-    from fitbenchmarking.controllers.scipy_go_controller import\
+    from fitbenchmarking.controllers.scipy_go_controller import \
         ScipyGOController
+    from fitbenchmarking.controllers.scipy_ls_controller import \
+        ScipyLSController
 
 if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.gsl_controller import GSLController
     from fitbenchmarking.controllers.levmar_controller import LevmarController
     from fitbenchmarking.controllers.mantid_controller import MantidController
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
+    from fitbenchmarking.controllers.gradient_free_controller import\
+        GradientFreeController
 
 if TEST_TYPE == 'matlab':
     from fitbenchmarking.controllers.matlab_controller import MatlabController
     from fitbenchmarking.controllers.matlab_opt_controller import\
         MatlabOptController
+    from fitbenchmarking.controllers.matlab_stats_controller import\
+        MatlabStatsController
+    import matlab.engine
 
 
 # pylint: disable=attribute-defined-outside-init, protected-access
@@ -427,12 +430,12 @@ class DefaultControllerTests(TestCase):
         self.shared_tests.check_jac_info(controller,
                                          True,
                                          ["Nelder-Mead", "Powell"])
-        controller._status = 0
+        controller.result.success = True
         self.shared_tests.check_converged(controller)
-        controller._status = 2
-        self.shared_tests.check_max_iterations(controller)
-        controller._status = 1
+        controller.result.success = False
         self.shared_tests.check_diverged(controller)
+        controller.result.message = 'iteration limit reached'
+        self.shared_tests.check_max_iterations(controller)
 
     def test_scipy_ls(self):
         """
@@ -746,7 +749,8 @@ class ExternalControllerTests(TestCase):
 @run_for_test_types(TEST_TYPE, 'matlab')
 class MatlabControllerTests(TestCase):
     """
-    Tests for each controller class
+    Tests for each controller classb and for the
+    Base Matlab Controller
     """
 
     def setUp(self):
@@ -755,6 +759,26 @@ class MatlabControllerTests(TestCase):
         self.jac = Scipy(self.cost_func)
         self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
+
+    def test_py_to_mat(self):
+        """
+        Tests the static method py_to_mat in MatlabMixin,
+        ensuring that evaluating a function through the matlab
+        engine gives the same output as evaulating the function
+        from python
+        """
+        controller = MatlabController(self.cost_func)
+        eng = matlab.engine.start_matlab()
+
+        eng.workspace['test_mat_func'] =\
+            controller.py_to_mat(self.cost_func.eval_cost, eng)
+
+        params = np.array([1, 2, 3, 4])
+
+        result_py = self.cost_func.eval_cost(params=params)
+        result_mat = eng.eval('test_mat_func([1, 2, 3, 4])')
+
+        assert result_py == result_mat
 
     def test_matlab(self):
         """
@@ -800,6 +824,26 @@ class MatlabControllerTests(TestCase):
             controller._status = -1
             self.shared_tests.check_diverged(controller)
 
+    def test_matlab_stats(self):
+        """
+        MatlabStatsController: Tests for output shape
+        """
+        controller = MatlabStatsController(self.cost_func)
+        controller.jacobian = self.jac
+        self.shared_tests.check_jac_info(controller,
+                                         False,
+                                         ['Levenberg-Marquardt'])
+
+        minimizers = ['Levenberg-Marquardt']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._status = 0
+            self.shared_tests.check_converged(controller)
+            controller._status = 1
+            self.shared_tests.check_diverged(controller)
+
 
 @run_for_test_types(TEST_TYPE, 'all')
 class GlobalOptimizationControllerTests(TestCase):
@@ -831,6 +875,22 @@ class GlobalOptimizationControllerTests(TestCase):
         self.shared_tests.check_converged(controller)
         controller._status = 1
         self.shared_tests.check_max_iterations(controller)
+        controller._status = 2
+        self.shared_tests.check_diverged(controller)
+
+    def test_gradient_free(self):
+        """
+        GradientFreeController: Tests for output shape
+        """
+        controller = GradientFreeController(self.cost_func)
+        controller.minimizer = 'HillClimbingOptimizer'
+        self.shared_tests.controller_run_test(controller)
+        self.shared_tests.check_jac_info(controller,
+                                         False,
+                                         [])
+
+        controller._status = 0
+        self.shared_tests.check_converged(controller)
         controller._status = 2
         self.shared_tests.check_diverged(controller)
 

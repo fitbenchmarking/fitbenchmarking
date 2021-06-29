@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from fitbenchmarking.utils.exceptions import OptionsError
 
 
-class Options(object):
+class Options:
     """
     An options class to store and handle all options for fitbenchmarking
     """
@@ -21,6 +21,18 @@ class Options(object):
     VALID_MINIMIZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
          'dfo': ['dfogn', 'dfols'],
+         'gradient_free': ['HillClimbingOptimizer',
+                           'RepulsingHillClimbingOptimizer',
+                           'SimulatedAnnealingOptimizer',
+                           'RandomSearchOptimizer',
+                           'RandomRestartHillClimbingOptimizer',
+                           'RandomAnnealingOptimizer',
+                           'ParallelTemperingOptimizer',
+                           'ParticleSwarmOptimizer',
+                           'EvolutionStrategyOptimizer',
+                           'BayesianOptimizer',
+                           'TreeStructuredParzenEstimators',
+                           'DecisionTreeOptimizer'],
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                  'vector_bfgs2', 'steepest_descent'],
@@ -33,6 +45,7 @@ class Options(object):
                     'SteepestDescent', 'Trust Region'],
          'matlab': ['Nelder-Mead Simplex'],
          'matlab_opt': ['levenberg-marquardt', 'trust-region-reflective'],
+         'matlab_stats': ['Levenberg-Marquardt'],
          'minuit': ['minuit'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
@@ -44,9 +57,9 @@ class Options(object):
                             'trust_region', 'levenberg-marquardt',
                             'gauss_newton', 'bfgs', 'conjugate_gradient',
                             'steepest_descent', 'global_optimization'],
-         'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'matlab',
-                      'matlab_opt', 'minuit', 'ralfit', 'scipy', 'scipy_ls',
-                      'scipy_go'],
+         'software': ['bumps', 'dfo', 'gradient_free', 'gsl', 'levmar',
+                      'mantid', 'matlab', 'matlab_opt', 'matlab_opt',
+                      'minuit', 'ralfit', 'scipy', 'scipy_ls', 'scipy_go'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
@@ -77,6 +90,15 @@ class Options(object):
     DEFAULT_MINIMZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'mp'],
          'dfo': ['dfogn', 'dfols'],
+         'gradient_free': ['HillClimbingOptimizer',
+                           'RepulsingHillClimbingOptimizer',
+                           'SimulatedAnnealingOptimizer',
+                           'RandomSearchOptimizer',
+                           'RandomRestartHillClimbingOptimizer',
+                           'RandomAnnealingOptimizer',
+                           'ParallelTemperingOptimizer',
+                           'ParticleSwarmOptimizer',
+                           'EvolutionStrategyOptimizer'],
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                  'vector_bfgs2', 'steepest_descent'],
@@ -89,6 +111,7 @@ class Options(object):
                     'SteepestDescent', 'Trust Region'],
          'matlab': ['Nelder-Mead Simplex'],
          'matlab_opt': ['levenberg-marquardt', 'trust-region-reflective'],
+         'matlab_stats': ['Levenberg-Marquardt'],
          'minuit': ['minuit'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
@@ -292,8 +315,8 @@ class Options(object):
         config['MINIMIZERS'] = {k: list_to_string(m)
                                 for k, m in self.minimizers.items()}
         config['FITTING'] = {'num_runs': self.num_runs,
-                             'algorithm_type':
-                             list_to_string(self.algorithm_type),
+                             'algorithm_type': list_to_string(
+                                 self.algorithm_type),
                              'software': list_to_string(self.software),
                              'jac_method': list_to_string(self.jac_method)}
         config['JACOBIAN'] = {k: list_to_string(m)

@@ -25,7 +25,7 @@ class ScipyGOController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
 
         """
-        super(ScipyGOController, self).__init__(cost_func)
+        super().__init__(cost_func)
 
         self.support_for_bounds = True
         self._popt = None

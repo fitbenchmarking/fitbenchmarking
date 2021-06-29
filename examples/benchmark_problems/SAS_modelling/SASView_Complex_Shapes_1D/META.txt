@@ -1,0 +1,14 @@
+SASView_Complex_Shapes_1D
+
+8 problems synthesised from the SASView models on Tue Jun 15 16:36:58 2021. See table below for details.
+
+SASmodel Name                   Dimension                Data Format              Synthesis Style          
+
+core shell parallelepiped       1D                       <Q> <I> <Idev>           neutron                  
+core shell parallelepiped       1D                       <Q> <I> <Idev>           x-ray                    
+flexible cylinder elliptical    1D                       <Q> <I> <Idev>           neutron                  
+flexible cylinder elliptical    1D                       <Q> <I> <Idev>           x-ray                    
+parallelepiped                  1D                       <Q> <I> <Idev>           neutron                  
+parallelepiped                  1D                       <Q> <I> <Idev>           x-ray                    
+triaxial ellipsoid              1D                       <Q> <I> <Idev>           neutron                  
+triaxial ellipsoid              1D                       <Q> <I> <Idev>           x-ray                    

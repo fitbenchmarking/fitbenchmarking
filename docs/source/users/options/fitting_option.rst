@@ -15,10 +15,13 @@ a newline-separated list. Available options are:
 
 * ``bumps`` (default software)
 * ``dfo`` (default software)
+* ``gradient_free`` (default software)
 * ``gsl`` (external software -- see :ref:`external-instructions`)
 * ``levmar`` (external software -- see :ref:`extra_dependencies`)
 * ``mantid`` (external software -- see :ref:`external-instructions`)
 * ``matlab`` (external software -- see :ref:`external-instructions`)
+* ``matlab_opt`` (external software -- see :ref:`external-instructions`)
+* ``matlab_stats`` (external software -- see :ref:`external-instructions`)
 * ``minuit`` (default software)
 * ``ralfit`` (external software -- see :ref:`external-instructions`)
 * ``scipy`` (default software)
@@ -26,7 +29,7 @@ a newline-separated list. Available options are:
 * ``scipy_go`` (default software)
 
 
-Default are ``bumps``, ``dfo``, ``minuit``, ``scipy``, ``scipy_ls`` and ``scipy_go``
+Default are ``bumps``, ``dfo``, ``gradient_free``, ``minuit``, ``scipy``, ``scipy_ls`` and ``scipy_go``
 
 .. code-block:: rst
 
@@ -69,7 +72,7 @@ The options are:
   information about derivatives -- e.g., the ``Simplex`` method in ``Mantid``)
 * ``general`` - minimizers which solve a generic `min f(x)`
 * ``simplex`` - derivative free simplex based algorithms e.g. Nelder-Mead
-* ``trust_region`` - algorithms which emply a trust region approach
+* ``trust_region`` - algorithms which employ a trust region approach
 * ``levenberg-marquardt`` - minimizers that use the Levenberg Marquardt algorithm
 * ``gauss_newton`` - minimizers that use the Gauss Newton algorithm
 * ``bfgs`` - minimizers that use the BFGS algorithm
@@ -97,7 +100,7 @@ This sets the Jacobian used. Current Jacobian methods are:
 
 * ``analytic`` - uses the analytic Jacobian extracted from the fitting problem.
 * ``scipy`` -  uses :ref:`SciPy's finite difference Jacobian approximations <scipy-jac>`.
-* ``default`` - uses the default derivative approxmation implemented in the minimizer.
+* ``default`` - uses the default derivative approximation implemented in the minimizer.
 * ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-jac>`.
   
 Default is ``default``

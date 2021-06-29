@@ -2,21 +2,16 @@
 Implements a controller for MATLAB Optimization Toolbox
 """
 
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
-import os
-import dill
 import matlab.engine
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
 
 eng = matlab.engine.start_matlab()
 
 
-class MatlabOptController(Controller):
+class MatlabOptController(MatlabMixin, Controller):
     """
     Controller for MATLAB Optimization Toolbox, implementing lsqcurvefit
     """
@@ -31,7 +26,6 @@ class MatlabOptController(Controller):
         super().__init__(cost_func)
         self.support_for_bounds = True
         self.param_ranges = None
-        self.initial_params_mat = None
         self.x_data_mat = None
         self.y_data_mat = None
         self._status = None
@@ -68,6 +62,9 @@ class MatlabOptController(Controller):
         self.initial_params_mat = matlab.double([self.initial_params])
         self.x_data_mat = matlab.double(self.data_x.tolist())
 
+        # clear out cached values
+        self.clear_cached_values()
+
         # set matlab workspace variable for selected minimizer
         eng.workspace['minimizer'] = self.minimizer
 
@@ -80,46 +77,20 @@ class MatlabOptController(Controller):
             # lsqcurvefit function
             self.param_ranges = (matlab.double([]), matlab.double([]))
 
-        def _feval(p):
-            """
-            Function to call from matlab which evaluates the residuals
-            """
-            feval = -self.cost_func.eval_r(p)
-            return feval
-
-        def _jeval(p):
-            """
-            Function to call from matlab which evaluates the jacobian
-            """
-            jeval = -self.jacobian.eval(p)
-            return jeval
-
-        # serialize _feval and _jeval functions (if not using default
-        # jacobian) and open within matlab engine so
-        # matlab fitting function can be called
-        temp_dir = TemporaryDirectory()
-        feval_file = os.path.join(temp_dir.name, 'feval.pickle')
-        with open(feval_file, 'wb') as f:
-            dill.dump(_feval, f)
-        eng.workspace['feval_file'] = feval_file
-        eng.evalc('py_f = py.open(feval_file,"rb")')
-
-        eng.evalc('eval_f = py.dill.load(py_f)')
-        eng.evalc('py_f.close()')
+        # serialize cost_func.eval_r and jacobian.eval (if not
+        # using default jacobian) and open within matlab engine
+        # so matlab fitting function can be called
+        eng.workspace['eval_f'] = self.py_to_mat(self.cost_func.eval_r, eng)
         eng.evalc('f_wrapper = @(p, x)double(eval_f(p))')
+
+        eng.workspace['init'] = self.initial_params_mat
+        eng.workspace['x'] = self.x_data_mat
+        print(eng.eval('f_wrapper(init, x)'))
 
         # if default jacobian is not selected then pass _jeval
         # function to matlab
         if not self.jacobian.use_default_jac:
-            jeval_file = os.path.join(temp_dir.name, 'jeval.pickle')
-            with open(jeval_file, 'wb') as f:
-                dill.dump(_jeval, f)
-            eng.workspace['jeval_file'] = jeval_file
-            eng.evalc('py_j = py.open(jeval_file,"rb")')
-
-            eng.evalc('eval_j = py.dill.load(py_j)')
-            eng.evalc('py_j.close()')
-
+            eng.workspace['eval_j'] = self.py_to_mat(self.jacobian.eval, eng)
             eng.evalc('j_wrapper = @(p, x)double(eval_j(p))')
 
             eng.workspace['eval_func'] = [eng.workspace['f_wrapper'],

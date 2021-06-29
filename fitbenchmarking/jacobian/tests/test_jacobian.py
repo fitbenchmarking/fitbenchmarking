@@ -151,7 +151,7 @@ class TestJacobianClass(TestCase):
         eval_result = jac.eval(params=self.params)
         #  pylint: disable=unsubscriptable-object
         scaled_actual = self.actual * \
-            self.fitting_problem.eval_model(self.params)[:, None] / 2
+            f(self.fitting_problem.data_x, *self.params)[:, None] / 2
 
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
 
@@ -165,7 +165,7 @@ class TestJacobianClass(TestCase):
         eval_result = jac.eval(params=self.params)
         scaled_actual = self.actual * \
             (1 - self.fitting_problem.data_y /
-                self.fitting_problem.eval_model(self.params))[:, None]
+                f(self.fitting_problem.data_x, *self.params))[:, None]
 
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
 

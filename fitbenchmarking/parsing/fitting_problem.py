@@ -193,6 +193,7 @@ class FittingProblem:
             # Mantid multifit problem
             self.sorted_index = []
             for i in range(len(self.data_x)):
+                # pylint: disable=unsubscriptable-object
                 correct_vals = correct_data(x=self.data_x[i],
                                             y=self.data_y[i],
                                             e=self.data_e[i],
@@ -216,6 +217,7 @@ class FittingProblem:
         :type params: dict
 
         """
+        # pylint: disable=unsubscriptable-object
         lower_param_names = [name.lower()
                              for name in self.starting_values[0].keys()]
         if not all(name in lower_param_names for name in value_ranges):

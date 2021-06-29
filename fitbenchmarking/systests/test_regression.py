@@ -10,11 +10,12 @@ import os
 from sys import platform
 import tempfile
 from unittest import TestCase
-from pytest import test_type as TEST_TYPE
+from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 from conftest import run_for_test_types
 
 from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
+
 
 @run_for_test_types(TEST_TYPE, 'all')
 class TestRegressionAll(TestCase):
@@ -103,10 +104,12 @@ class TestRegressionAll(TestCase):
         diff, msg = diff_result(actual, expected)
         self.assertListEqual([], diff, msg)
 
+
 @run_for_test_types(TEST_TYPE, 'matlab')
 class TestRegressionMatlab(TestCase):
     """
-    Regression tests for the Fitbenchmarking software with matlab fitting software
+    Regression tests for the Fitbenchmarking software with
+    matlab fitting software
     """
 
     @classmethod
@@ -232,14 +235,14 @@ def diff_result(actual, expected):
 
     msg = '\n\nOutput has changed in {} '.format(len(diff)) \
           + 'minimizer-problem pairs. \n' \
-          + '\n'.join(['== Line {} ==\n'\
-                       'Expected :{}\n'\
+          + '\n'.join(['== Line {} ==\n'
+                       'Expected :{}\n'
                        'Actual   :{}'.format(*line_change)
                        for line_change in diff])
-    if diff !=[]:
+    if diff != []:
         print("\n==\n")
         print("Output generated (also saved as actual.out):")
-        with open("actual.out","w") as outfile:
+        with open("actual.out", "w") as outfile:
             for line in actual:
                 print(line)
                 outfile.write(line)
@@ -267,7 +270,7 @@ def setup_options(multifit=False):
                          'scipy_ls']
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
     elif TEST_TYPE == "matlab":
-        opts.software = ['matlab', 'matlab_opt']
+        opts.software = ['matlab', 'matlab_opt', 'matlab_stats']
         opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
     else:
         opts.software = ['bumps', 'scipy', 'scipy_ls']
