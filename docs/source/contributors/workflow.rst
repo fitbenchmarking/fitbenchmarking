@@ -41,7 +41,7 @@ an independent system.
 
 Sometimes it is desirable to open a PR when the code is not
 quite ready to be merged.  This is a good idea, for example, if you want
-to get an early opinion on a coding descision.  If this is the case, you
+to get an early opinion on a coding decision.  If this is the case, you
 should mark the PR as a *draft* on GitHub.
 
 Once the work is ready to be reviewed, you may want to assign a reviewer,
@@ -68,7 +68,7 @@ All changes must be initially merged into master.
 There is a `backport-candidate` label, which must be put on PRs
 that in addition must be merged into the release branch.
 
-The recommended mechanism for merging PRs lablelled with `backport-candidate` into
+The recommended mechanism for merging PRs labeled with `backport-candidate` into
 master is to use the `Squash and merge` commit option:
 
 .. figure:: ../../images/squash-and-merge.png

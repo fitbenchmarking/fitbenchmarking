@@ -58,7 +58,7 @@ here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-
 RALFit
 ------
 
-RALFit is availble to use as fitting software.
+RALFit is available to use as fitting software.
 
 Instructions on how to build the python interface are at `<https://ralfit.readthedocs.io/projects/Python/en/latest/install.html>`_
 
