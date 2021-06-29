@@ -4,7 +4,7 @@
 Derivative Free
 ****************
 
-Derivative Free methods due not compute the gradient of a function and so are often used to minimize problems with
+Derivative Free methods do not compute the gradient of a function and so are often used to minimize problems with
 nondifferentiable functions. Some derivative free methods will attempt to approximate the gradient using a finite difference
 approach, another class of methods constructs a linear or quadratic model of the objective functions and uses a trust
 region approach to find the next iterate. Another widely used derivative free method is the Nelder-Mead simplex method. [Nocedal]_
@@ -31,7 +31,7 @@ In an iteration of the algorithm, the idea is to remove the vertex with the wors
     - Gives significant improvements in first few iterations - quick to produce satisfactory results.
 
 **Disadvantages**:
-    - Stagnation can occur at non-optimal points, with large numbers of iterations leading to negligible improvement even when no where near a minimum.
+    - Stagnation can occur at non-optimal points, with large numbers of iterations leading to negligible improvement even when nowhere near a minimum.
     - If numerical computation of function derivative can be trusted, then other algorithms are more robust.
 [Singer]_
 

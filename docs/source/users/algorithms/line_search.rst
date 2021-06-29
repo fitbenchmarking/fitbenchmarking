@@ -45,7 +45,7 @@ Carry out a line search to compute the next iterate, then evaluate :math:`\nabla
 
 Different variations of the Conjugate Gradient algorithm use different formulas for :math:`\beta_k`, for example:
 
-Fletcher-Reeves: :math:`\beta_{k+1} = \frac{f_{k+1}^T \nabla f+{k+1}}{\nabla f_k^T \nabla f_k}`
+Fletcher-Reeves: :math:`\beta_{k+1} = \frac{f_{k+1}^T \nabla f_{k+1}}{\nabla f_k^T \nabla f_k}`
 Polak-Ribiere:  :math:`\beta_{k+1} = \frac{ \nabla f_{k+1}^T ( \nabla f_{k+1} - \nabla f_k)}{\|\nabla f_k\|^2}`
 
 [Nocedal]_ [Poczos]_
