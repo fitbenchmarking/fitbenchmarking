@@ -304,7 +304,6 @@ class Options:
 
         :return: ConfigParser
         """
-        print(self.colour_map)
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str,
                                                        'rng': read_range})
