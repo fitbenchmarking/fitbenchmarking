@@ -29,7 +29,7 @@ Trust Region (``trust_region``):
 .. algorithmcheckdocs::
     :key: trust_region
 
-Levenberg-Marquardt (``levenberg-marqurdt``):
+Levenberg-Marquardt (``levenberg-marquardt``):
 
 .. algorithmcheckdocs::
     :key: levenberg-marquardt

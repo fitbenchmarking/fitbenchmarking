@@ -21,7 +21,7 @@ In an iteration of the algorithm, the idea is to remove the vertex with the wors
 
 1. **Ordering** the vertices of :math:`S` so that :math:`f(x_1) \leq f(x_2) \leq ... \leq f(x_{n+1})`
 
-2. Calculating the **centriod**, :math:`\bar{x}` of the best :math:`n` points :math:`\bar{x} = \frac{1}{n} \sum_{i=1}^n x_i`
+2. Calculating the **centroid**, :math:`\bar{x}` of the best :math:`n` points :math:`\bar{x} = \frac{1}{n} \sum_{i=1}^n x_i`
 
 3. Carry out a **transformation** to compute the new simplex. Try to replace only the worst vertex :math:`x_{n+1}` with a better point, which then becomes the new vertex. If this fails, the simplex is shrunk towards the best vertex :math:`x_1` and :math:`n` new vertices are computed.
    The algorithm terminates when the simplex :math:`S` is sufficiently small. [Singer]_

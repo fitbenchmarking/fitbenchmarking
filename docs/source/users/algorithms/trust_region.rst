@@ -14,7 +14,7 @@ where :math:`B_k` is an approximation of the Hessian.
 
 The subproblem to be solved at each iteration in order to find the step length is :math:`\min_p m_k(p)`, subject to :math:`\|p\| \leq \Delta_k`. [Nocedal]_
 
-To select all minimizers in fitbenchmarking that use a trsut region approach, use the algorithm type ``trust_region``.
+To select all minimizers in fitbenchmarking that use a trust region approach, use the algorithm type ``trust_region``.
 
 .. _levenberg_marquardt:
 
