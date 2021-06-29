@@ -32,7 +32,7 @@ So, for a spherical trust region, the subproblem to be solved at each iteration 
 Levenberg-Marquardt uses a combination of gradient descent and Gauss-Newton method. When the solution :math:`p^{GN}` lies inside of the trust region :math:`\Delta`, then :math:`p^{GN}` also solves the sub-problem. Otherwise, the current iteration is far from the optimal value and so the search direction is determined using steepest descent, which performs better than Gauss-Newton when far from the minimum.
 
 **Advantages**:
-    - Robust (more so that Gauss-Newton).
+    - Robust (more so than Gauss-Newton).
     - Avoids the weakness with Gauss-Newton that Jacobian must be full rank.
     - Fast to converge.
     - Good initial guess not required.
