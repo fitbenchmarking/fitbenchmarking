@@ -82,7 +82,7 @@ The algorithm claims to have found a local minimum with a Chi-squared error of
    GSL's :code:`lmsder` (Levenberg-Marquardt) algorithm on the data
 
 We also solved the nonlinear least squares problem using GSL's implementation of
-a Nedler-Mead simplex algorithm (:code:`nmsimplex2`), which again claimed to solve
+a Nelder-Mead simplex algorithm (:code:`nmsimplex2`), which again claimed to solve
 the problem, this time in a faster 1.5 seconds.  However, this time the Chi-squared error was
 0.8505, and we plot the curve obtained in green below.  The previous curve
 is in dotted-blue, for comparison.
