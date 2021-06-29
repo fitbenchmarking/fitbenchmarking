@@ -1,7 +1,0 @@
-fitbenchmarking.core.fitting\_benchmarking module
-=================================================
-
-.. automodule:: fitbenchmarking.core.fitting_benchmarking
-   :members:
-   :undoc-members:
-   :show-inheritance:

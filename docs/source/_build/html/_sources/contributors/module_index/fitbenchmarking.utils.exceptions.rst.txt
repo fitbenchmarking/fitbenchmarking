@@ -1,7 +1,0 @@
-fitbenchmarking.utils.exceptions module
-=======================================
-
-.. automodule:: fitbenchmarking.utils.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-fitbenchmarking.results\_processing.plots module
-================================================
-
-.. automodule:: fitbenchmarking.results_processing.plots
-   :members:
-   :undoc-members:
-   :show-inheritance:

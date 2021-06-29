@@ -1,7 +1,0 @@
-fitbenchmarking.controllers.dfo\_controller module
-==================================================
-
-.. automodule:: fitbenchmarking.controllers.dfo_controller
-   :members:
-   :undoc-members:
-   :show-inheritance:

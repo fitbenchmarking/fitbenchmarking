@@ -1,7 +1,0 @@
-fitbenchmarking.cost\_func.cost\_func\_factory module
-=====================================================
-
-.. automodule:: fitbenchmarking.cost_func.cost_func_factory
-   :members:
-   :undoc-members:
-   :show-inheritance:

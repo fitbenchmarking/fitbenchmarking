@@ -1,7 +1,0 @@
-fitbenchmarking.controllers.minuit\_controller module
-=====================================================
-
-.. automodule:: fitbenchmarking.controllers.minuit_controller
-   :members:
-   :undoc-members:
-   :show-inheritance:

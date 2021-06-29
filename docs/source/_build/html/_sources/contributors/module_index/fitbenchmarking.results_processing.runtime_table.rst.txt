@@ -1,7 +1,0 @@
-fitbenchmarking.results\_processing.runtime\_table module
-=========================================================
-
-.. automodule:: fitbenchmarking.results_processing.runtime_table
-   :members:
-   :undoc-members:
-   :show-inheritance:

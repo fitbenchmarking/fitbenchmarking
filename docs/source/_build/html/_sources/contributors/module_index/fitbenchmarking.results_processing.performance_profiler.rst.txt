@@ -1,7 +1,0 @@
-fitbenchmarking.results\_processing.performance\_profiler module
-================================================================
-
-.. automodule:: fitbenchmarking.results_processing.performance_profiler
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-fitbenchmarking.controllers.scipy\_ls\_controller module
-========================================================
-
-.. automodule:: fitbenchmarking.controllers.scipy_ls_controller
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-fitbenchmarking.parsing.cutest\_parser module
-=============================================
-
-.. automodule:: fitbenchmarking.parsing.cutest_parser
-   :members:
-   :undoc-members:
-   :show-inheritance:

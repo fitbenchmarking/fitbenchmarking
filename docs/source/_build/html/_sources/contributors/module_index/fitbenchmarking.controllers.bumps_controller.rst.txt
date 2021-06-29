@@ -1,7 +1,0 @@
-fitbenchmarking.controllers.bumps\_controller module
-====================================================
-
-.. automodule:: fitbenchmarking.controllers.bumps_controller
-   :members:
-   :undoc-members:
-   :show-inheritance:

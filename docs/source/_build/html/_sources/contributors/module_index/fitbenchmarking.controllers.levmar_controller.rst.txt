@@ -1,7 +1,0 @@
-fitbenchmarking.controllers.levmar\_controller module
-=====================================================
-
-.. automodule:: fitbenchmarking.controllers.levmar_controller
-   :members:
-   :undoc-members:
-   :show-inheritance:

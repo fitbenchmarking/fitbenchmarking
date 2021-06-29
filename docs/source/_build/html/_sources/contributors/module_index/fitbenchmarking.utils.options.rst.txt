@@ -1,7 +1,0 @@
-fitbenchmarking.utils.options module
-====================================
-
-.. automodule:: fitbenchmarking.utils.options
-   :members:
-   :undoc-members:
-   :show-inheritance:

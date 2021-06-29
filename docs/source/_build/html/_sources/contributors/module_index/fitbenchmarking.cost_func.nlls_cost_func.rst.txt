@@ -1,7 +1,0 @@
-fitbenchmarking.cost\_func.nlls\_cost\_func module
-==================================================
-
-.. automodule:: fitbenchmarking.cost_func.nlls_cost_func
-   :members:
-   :undoc-members:
-   :show-inheritance:

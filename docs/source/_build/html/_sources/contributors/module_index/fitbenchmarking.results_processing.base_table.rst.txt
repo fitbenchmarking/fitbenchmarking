@@ -1,7 +1,0 @@
-fitbenchmarking.results\_processing.base\_table module
-======================================================
-
-.. automodule:: fitbenchmarking.results_processing.base_table
-   :members:
-   :undoc-members:
-   :show-inheritance:

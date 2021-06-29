@@ -1,7 +1,0 @@
-fitbenchmarking.utils.create\_dirs module
-=========================================
-
-.. automodule:: fitbenchmarking.utils.create_dirs
-   :members:
-   :undoc-members:
-   :show-inheritance:

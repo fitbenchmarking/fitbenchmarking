@@ -1,7 +1,0 @@
-fitbenchmarking.utils.log module
-================================
-
-.. automodule:: fitbenchmarking.utils.log
-   :members:
-   :undoc-members:
-   :show-inheritance:

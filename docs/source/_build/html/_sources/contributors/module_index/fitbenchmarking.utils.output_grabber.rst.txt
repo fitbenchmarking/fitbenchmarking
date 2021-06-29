@@ -1,7 +1,0 @@
-fitbenchmarking.utils.output\_grabber module
-============================================
-
-.. automodule:: fitbenchmarking.utils.output_grabber
-   :members:
-   :undoc-members:
-   :show-inheritance:

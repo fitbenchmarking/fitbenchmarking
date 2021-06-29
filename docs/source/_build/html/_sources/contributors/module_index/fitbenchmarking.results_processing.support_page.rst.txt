@@ -1,7 +1,0 @@
-fitbenchmarking.results\_processing.support\_page module
-========================================================
-
-.. automodule:: fitbenchmarking.results_processing.support_page
-   :members:
-   :undoc-members:
-   :show-inheritance:

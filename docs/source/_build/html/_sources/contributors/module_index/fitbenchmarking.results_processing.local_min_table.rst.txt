@@ -1,7 +1,0 @@
-fitbenchmarking.results\_processing.local\_min\_table module
-============================================================
-
-.. automodule:: fitbenchmarking.results_processing.local_min_table
-   :members:
-   :undoc-members:
-   :show-inheritance:

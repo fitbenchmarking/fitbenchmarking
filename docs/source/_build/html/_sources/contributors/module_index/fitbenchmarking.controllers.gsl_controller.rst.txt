@@ -1,7 +1,0 @@
-fitbenchmarking.controllers.gsl\_controller module
-==================================================
-
-.. automodule:: fitbenchmarking.controllers.gsl_controller
-   :members:
-   :undoc-members:
-   :show-inheritance:

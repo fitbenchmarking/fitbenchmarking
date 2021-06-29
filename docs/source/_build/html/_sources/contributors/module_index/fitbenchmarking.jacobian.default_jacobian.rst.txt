@@ -1,7 +1,0 @@
-fitbenchmarking.jacobian.default\_jacobian module
-=================================================
-
-.. automodule:: fitbenchmarking.jacobian.default_jacobian
-   :members:
-   :undoc-members:
-   :show-inheritance:
