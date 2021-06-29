@@ -52,7 +52,7 @@ and will vary between solvers.  If the minimizer requires the user to pass a Jac
 a warning will be printed to the screen and the :ref:`scipy-jac` 2-point
 approximation will be used.  The only option is:
 
-* ``default`` - use the default derivative approxmation provided by the software.
+* ``default`` - use the default derivative approximation provided by the software.
 
 Default is ``default``
 
@@ -68,7 +68,7 @@ Numdifftools (:code:`numdifftools`)
 
 Calculates the Jacobian using the python package :code:`numdifftools`.
 We allow the user to change the method used, but other options
-(e.g, the step size generator and the order of the approximaton) are set the defaults.
+(e.g, the step size generator and the order of the approximation) are set the defaults.
 The supported options are:
 
 * ``central`` - central differencing.  Almost as accurate as complex, but with no restriction on the type of function.

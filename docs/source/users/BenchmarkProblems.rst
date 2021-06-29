@@ -71,7 +71,7 @@ MultiFit Data (Mantid)
 
 These problems (also found in the folder `examples/benchmark_problems/MultiFit`)
 contain data
-for testing the MultFit functionality of Mantid.  This contains
+for testing the MultiFit functionality of Mantid.  This contains
 a simple data set, on which two fits are done, and a calibration
 dataset from the `MuSR <https://www.isis.stfc.ac.uk/Pages/musr.aspx>`_
 spectrometer at ISIS, on which there are four fits available.

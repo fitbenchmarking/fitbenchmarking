@@ -20,7 +20,7 @@ FitBenchmarking can be installed via the command line by entering:
 
 
 This will install the latest stable version of FitBenchmarking.
-For all available versions please visit the FitBenchamarking
+For all available versions please visit the FitBenchmarking
 `PyPI project <https://pypi.org/project/fitbenchmarking/>`__.
 FitBenchmarking can also use additional software that cannot be installed
 using pip; please see :ref:`external-instructions` for details.
