@@ -58,7 +58,7 @@ class AlgorithmCheckDocs(Directive):
 
 def setup(app):
     """
-    Setup PrettyPrintModuleValue for use in docs
+    Setup AlgorithmCheckDocs for use in docs
     """
     app.add_directive("algorithmcheckdocs", AlgorithmCheckDocs)
 
