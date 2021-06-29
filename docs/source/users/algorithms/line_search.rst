@@ -104,7 +104,7 @@ solve the system
 
 (where :math:`J_k` is the Jacobian) to obtain the search direction :math:`p_k^{GN}`. The next iterate is then set as :math:`x_{k+1} = x_k + p_k^{GN}`.
 
-Here, the approximation of the Hessian :math:`\nabla^2 f_k \approx J_k^T J_k` has been made, which helps to save on computation time as only second derivatives are not calculated.
+Here, the approximation of the Hessian :math:`\nabla^2 f_k \approx J_k^T J_k` has been made, which helps to save on computation time as second derivatives are not calculated.
 
 **Advantages**:
     - Calculation of second derivatives is not required.
