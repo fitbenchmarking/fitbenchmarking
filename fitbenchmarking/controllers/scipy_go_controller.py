@@ -16,7 +16,7 @@ class ScipyGOController(Controller):
     Controller for the Scipy fitting software.
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['differential_evolution', 'shgo', 'dual_annealing'],
             'ls': [None],
             'deriv_free': ['differential_evolution'],
@@ -47,7 +47,6 @@ class ScipyGOController(Controller):
         self._popt = None
         self._status = None
         self._maxiter = None
-        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

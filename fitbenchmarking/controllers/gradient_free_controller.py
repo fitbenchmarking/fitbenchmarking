@@ -14,7 +14,7 @@ class GradientFreeController(Controller):
     Controller for the Gradient Free Optimizers fitting software.
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['HillClimbingOptimizer',
                     'RepulsingHillClimbingOptimizer',
                     'SimulatedAnnealingOptimizer',
@@ -65,7 +65,6 @@ class GradientFreeController(Controller):
         self.search_space = None
         self.initialize = None
         self.results = None
-        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

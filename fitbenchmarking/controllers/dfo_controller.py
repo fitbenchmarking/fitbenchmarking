@@ -15,7 +15,7 @@ class DFOController(Controller):
     Controller for the DFO-{GN/LS} fitting software.
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['dfogn', 'dfols'],
             'ls': ['dfogn', 'dfols'],
             'deriv_free': ['dfogn', 'dfols'],
@@ -46,7 +46,6 @@ class DFOController(Controller):
         self._soln = None
         self._popt = None
         self._pinit = None
-        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

@@ -18,7 +18,7 @@ class GSLController(Controller):
     Controller for the GSL fitting software
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                     'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                     'vector_bfgs2', 'steepest_descent'],
@@ -54,7 +54,6 @@ class GSLController(Controller):
         self._abserror = None
         self._relerror = None
         self._maxits = None
-        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

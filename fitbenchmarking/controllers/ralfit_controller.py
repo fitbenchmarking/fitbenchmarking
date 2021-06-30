@@ -15,7 +15,7 @@ class RALFitController(Controller):
     Controller for the RALFit fitting software.
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
             'ls': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
             'deriv_free': [],
@@ -44,7 +44,6 @@ class RALFitController(Controller):
         self._status = None
         self._popt = None
         self._options = {}
-        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

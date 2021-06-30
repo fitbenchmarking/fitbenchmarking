@@ -55,7 +55,7 @@ class AlgorithmCheckDocs(Directive):
 
             controller_class = \
                 factory.ControllerFactory.create_controller(software_name)
-            alg_dict = getattr(controller_class, 'ALGORITHM_CHECK')
+            alg_dict = getattr(controller_class, 'algorithm_check')
 
             value[software_name] = alg_dict[inp_key]
 

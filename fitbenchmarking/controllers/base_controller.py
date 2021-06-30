@@ -21,6 +21,22 @@ class Controller:
 
     VALID_FLAGS = [0, 1, 2, 3, 4, 5]
 
+    # Algorithm check: this is used to check whether the selected
+    # minimizer/minimizers from the options is within the softwares
+    # algorithms. It also used to filter out algorithms based on the keys
+    # of the dictionary
+    algorithm_check = {'all': [],
+                       'ls': [],
+                       'deriv_free': [],
+                       'general': [],
+                       'simplex': [],
+                       'trust_region': [],
+                       'levenberg-marquardt': [],
+                       'gauss_newton': [],
+                       'bfgs': [],
+                       'conjugate_gradient': [],
+                       'steepest_descent': []}
+
     def __init__(self, cost_func):
         """
         Initialise anything that is needed specifically for the
@@ -28,29 +44,6 @@ class Controller:
         minimizer to use, or function to fit, and call
         ``super(<software_name>Controller, self).__init__(problem)``
         (the base class's ``__init__`` implementation).
-        In this function, you must initialize the a dictionary,
-        ``self.algorithm_check``, such that the **keys** are given by:
-
-        - ``all`` - all minimizers
-        - ``ls`` - least-squares fitting algorithms
-        - ``deriv_free`` - derivative free algorithms (these are algorithms
-          that cannot use information about derivatives -- e.g., the
-          ``Simplex`` method in ``Mantid``)
-        - ``general`` - minimizers which solve a generic `min f(x)`
-        - ``simplex`` - derivative free simplex based algorithms
-          e.g. Nelder-Mead
-        - ``trust_region`` - algorithms which emply a trust region approach
-        - ``levenberg-marquardt`` - minimizers that use the
-          Levenberg-Marquardt algorithm
-        - ``gauss_newton`` - minimizers that use the Gauss Newton algorithm
-        - ``bfgs`` - minimizers that use the BFGS algorithm
-        - ``conjugate_gradient`` - Conjugate Gradient algorithms
-        - ``steepest_descent`` - Steepest Descent algorithms
-        - ``global_optimization`` - Global Optimization algorithms
-
-        The **values** of the dictionary are given as a list of minimizers
-        for that specific controller that fit into each of the above
-        categories. See for example the ``GSL`` controller.
 
         :param cost_func: Cost function object selected from options.
         :type cost_func: subclass of
@@ -86,22 +79,6 @@ class Controller:
 
         # Flag: error handling flag
         self._flag = None
-
-        # Algorithm check: this is used to check whether the selected
-        # minimizer/minimizers from the options is within the softwares
-        # algorithms. It also used to filter out algorithms based on the keys
-        # of the dictionary
-        self.algorithm_check = {'all': [],
-                                'ls': [],
-                                'deriv_free': [],
-                                'general': [],
-                                'simplex': [],
-                                'trust_region': [],
-                                'levenberg-marquardt': [],
-                                'gauss_newton': [],
-                                'bfgs': [],
-                                'conjugate_gradient': [],
-                                'steepest_descent': []}
 
         # Used to check whether the selected minimizers is compatible with
         # problems that have parameter bounds

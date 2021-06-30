@@ -20,7 +20,7 @@ class BumpsController(Controller):
     Setup creates a model with the correct function.
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
             'ls': ['lm-bumps', 'mp'],
             'deriv_free': ['amoeba', 'de'],
@@ -52,7 +52,6 @@ class BumpsController(Controller):
         self.fit_order = None
         self._status = None
         self._bumps_result = None
-        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

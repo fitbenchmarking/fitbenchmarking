@@ -27,7 +27,7 @@ class MantidController(Controller):
         'poisson': 'Poisson',
     }
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
                     'Damped GaussNewton', 'Levenberg-Marquardt',
@@ -75,7 +75,6 @@ class MantidController(Controller):
 
         self._param_names = self.problem.param_names
         self._status = None
-        self.algorithm_check = self.ALGORITHM_CHECK
 
         if self.problem.multifit:
             # Multi Fit

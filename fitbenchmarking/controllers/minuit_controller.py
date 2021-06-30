@@ -17,7 +17,7 @@ class MinuitController(Controller):
     Controller for the Minuit fitting software
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['minuit'],
             'ls': [],
             'deriv_free': [],
@@ -54,7 +54,6 @@ class MinuitController(Controller):
         self._popt = None
         self._initial_step = None
         self._minuit_problem = None
-        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

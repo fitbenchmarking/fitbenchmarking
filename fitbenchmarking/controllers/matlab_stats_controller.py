@@ -16,7 +16,7 @@ class MatlabStatsController(MatlabMixin, Controller):
     Controller for MATLAB Statistics Toolbox fitting (nlinfit)
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['Levenberg-Marquardt'],
             'ls': ['Levenberg-Marquardt'],
             'deriv_free': [],
@@ -43,7 +43,6 @@ class MatlabStatsController(MatlabMixin, Controller):
         self.y_data_mat = None
         self._status = None
         self.result = None
-        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

@@ -14,7 +14,7 @@ class ScipyController(Controller):
     Controller for the Scipy fitting software.
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
                     'L-BFGS-B', 'TNC', 'SLSQP'],
             'ls': [None],
@@ -46,7 +46,6 @@ class ScipyController(Controller):
         self.options = None
         self.result = None
         self._popt = None
-        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

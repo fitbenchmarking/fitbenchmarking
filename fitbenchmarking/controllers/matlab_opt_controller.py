@@ -16,7 +16,7 @@ class MatlabOptController(MatlabMixin, Controller):
     Controller for MATLAB Optimization Toolbox, implementing lsqcurvefit
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['levenberg-marquardt', 'trust-region-reflective'],
             'ls': ['levenberg-marquardt', 'trust-region-reflective'],
             'deriv_free': [],
@@ -44,7 +44,6 @@ class MatlabOptController(MatlabMixin, Controller):
         self.y_data_mat = None
         self._status = None
         self.result = None
-        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

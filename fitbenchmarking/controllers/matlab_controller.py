@@ -15,7 +15,7 @@ class MatlabController(MatlabMixin, Controller):
     Controller for MATLAB fitting (fminsearch)
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['Nelder-Mead Simplex'],
             'ls': [],
             'deriv_free': ['Nelder-Mead Simplex'],
@@ -40,7 +40,6 @@ class MatlabController(MatlabMixin, Controller):
         super().__init__(cost_func)
         self._status = None
         self.result = None
-        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """

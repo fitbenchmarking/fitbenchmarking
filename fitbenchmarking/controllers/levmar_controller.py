@@ -16,7 +16,7 @@ class LevmarController(Controller):
     Controller for the levmar fitting software
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['levmar'],
             'ls': ['levmar'],
             'deriv_free': [],
@@ -44,7 +44,6 @@ class LevmarController(Controller):
         self.param_ranges = None
         self.lm_y = None
         self._popt = None
-        self.algorithm_check = self.ALGORITHM_CHECK
         self._info = None
 
     def jacobian_information(self):

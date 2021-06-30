@@ -13,7 +13,7 @@ class ScipyLSController(Controller):
     Controller for the Scipy Least-Squares fitting software.
     """
 
-    ALGORITHM_CHECK = {
+    algorithm_check = {
             'all': ['lm-scipy', 'trf', 'dogbox'],
             'ls': ['lm-scipy', 'trf', 'dogbox'],
             'deriv_free': [None],
@@ -43,7 +43,6 @@ class ScipyLSController(Controller):
         self.result = None
         self._status = None
         self._popt = None
-        self.algorithm_check = self.ALGORITHM_CHECK
 
     def jacobian_information(self):
         """
