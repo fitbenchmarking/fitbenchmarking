@@ -105,8 +105,7 @@ def loop_over_benchmark_problems(problem_group, options):
                 parsed_problem = parse_problem_file(p, options)
                 parsed_problem.correct_data()
         except FitBenchmarkException as e:
-            LOGGER.info("Could not parse problem from: {}",
-                        p)
+            LOGGER.info("Could not parse problem from: %s", p)
             LOGGER.warning(e)
         else:
             name = parsed_problem.name
