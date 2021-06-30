@@ -43,11 +43,11 @@ def get_parser():
     $ fitbenchmarking
     $ fitbenchmarking -p examples/benchmark_problems/NIST/*
     $ fitbenchmarking -o examples/options_template.ini \
-    -p examples/benchmark_problems/simple_tests \
-    examples/benchmark_problems/Muon
+    -p examples/benchmark_problems/CUTEst \
+    examples/benchmark_problems/NIST/low_difficulty
 
     Runtimes for these usage examples are approximately \
-75, 200 and 130 seconds respectively (on an i7 core laptop \
+75, 200 and 90 seconds respectively (on an i7 core laptop \
 with 32GB RAM) '''
 
     parser = argparse.ArgumentParser(
