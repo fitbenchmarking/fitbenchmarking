@@ -81,6 +81,8 @@ class CutestParser(Parser):
 
         self._p = _import_problem(fname)
 
+        print(self._p.__dict__)
+
         fp.name = self._p.name
 
         fp.function = self._function  # self._p.objcons
@@ -90,6 +92,12 @@ class CutestParser(Parser):
         fp.start_x = None
         fp.end_x = None
         fp.format = "cutest"
+
+        # read in parameter ranges if bounds are
+        # specified
+        vr = self._get_parameter_ranges()
+        if vr:
+            fp.set_value_ranges(vr)
 
         # Create a list of x and f (function evaluation) and x and g (Jacobian
         # evaluation).
@@ -166,6 +174,19 @@ class CutestParser(Parser):
         ]
 
         return starting_values
+
+    def _get_parameter_ranges(self):
+
+        if all(x == -1.e+20 for x in self._p.bl) and\
+                all(x == 1.e+20 for x in self._p.bu):
+            parameter_values = False
+        else:
+            parameter_values = [{
+                'f{}'.format(i): (self._p.bl[i], self._p.bu[i])
+                for i in range(self._num_params)
+            }][0]
+
+        return parameter_values
 
     def _setup_data(self, x=None):
         """
