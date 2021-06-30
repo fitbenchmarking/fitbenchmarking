@@ -81,8 +81,6 @@ class CutestParser(Parser):
 
         self._p = _import_problem(fname)
 
-        print(self._p.__dict__)
-
         fp.name = self._p.name
 
         fp.function = self._function  # self._p.objcons
