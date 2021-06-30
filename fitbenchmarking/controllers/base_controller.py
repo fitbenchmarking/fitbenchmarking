@@ -21,10 +21,30 @@ class Controller:
 
     VALID_FLAGS = [0, 1, 2, 3, 4, 5]
 
-    # Algorithm check: this is used to check whether the selected
-    # minimizer/minimizers from the options is within the softwares
-    # algorithms. It also used to filter out algorithms based on the keys
-    # of the dictionary
+    #: Within the controller class, you must
+    #: initialize the a dictionary, ``algorithm_check``,
+    #: such that the **keys** are given by:
+    #:
+    #:     - ``all`` - all minimizers
+    #:     - ``ls`` - least-squares fitting algorithms
+    #:     - ``deriv_free`` - derivative free algorithms (these are algorithms
+    #:       that cannot use information about derivatives -- e.g., the
+    #:       ``Simplex`` method in ``Mantid``)
+    #:     - ``general`` - minimizers which solve a generic `min f(x)`
+    #:     - ``simplex`` - derivative free simplex based algorithms
+    #:       e.g. Nelder-Mead
+    #:     - ``trust_region`` - algorithms which emply a trust region approach
+    #:     - ``levenberg-marquardt`` - minimizers that use the
+    #:       Levenberg-Marquardt algorithm
+    #:     - ``gauss_newton`` - minimizers that use the Gauss Newton algorithm
+    #:     - ``bfgs`` - minimizers that use the BFGS algorithm
+    #:     - ``conjugate_gradient`` - Conjugate Gradient algorithms
+    #:     - ``steepest_descent`` - Steepest Descent algorithms
+    #:     - ``global_optimization`` - Global Optimization algorithms
+    #:
+    #: The **values** of the dictionary are given as a list of minimizers
+    #: for that specific controller that fit into each of the above
+    #: categories. See for example the ``GSL`` controller.
     algorithm_check = {'all': [],
                        'ls': [],
                        'deriv_free': [],
@@ -35,7 +55,8 @@ class Controller:
                        'gauss_newton': [],
                        'bfgs': [],
                        'conjugate_gradient': [],
-                       'steepest_descent': []}
+                       'steepest_descent': [],
+                       'global_optimization':[]}
 
     def __init__(self, cost_func):
         """
