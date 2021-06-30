@@ -430,12 +430,12 @@ class DefaultControllerTests(TestCase):
         self.shared_tests.check_jac_info(controller,
                                          True,
                                          ["Nelder-Mead", "Powell"])
-        controller._status = 0
+        controller.result.success = True
         self.shared_tests.check_converged(controller)
-        controller._status = 2
-        self.shared_tests.check_max_iterations(controller)
-        controller._status = 1
+        controller.result.success = False
         self.shared_tests.check_diverged(controller)
+        controller.result.message = 'iteration limit reached'
+        self.shared_tests.check_max_iterations(controller)
 
     def test_scipy_ls(self):
         """
