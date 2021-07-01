@@ -67,7 +67,7 @@ minimizer would receive the worst colour. This ensures that colour scale is not 
 poor relative results. Options are:
 
 * Any float between ``1`` and ``np.inf``
-* Reccomended value ``100``
+* Recommended value ``100``
 
 Default is ``100``
 
