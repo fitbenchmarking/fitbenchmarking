@@ -435,6 +435,6 @@ def _vals_to_colour(vals, cmap, cmap_range, log_ulim):
     norm_vals = cmap_range[0] + \
         norm_vals*(cmap_range[1] - cmap_range[0])
     rgba = cmap(norm_vals)
-    hex = [mpl.colors.rgb2hex(colour) for colour in rgba]
+    hex_list = [mpl.colors.rgb2hex(colour) for colour in rgba]
 
-    return hex
+    return hex_list
