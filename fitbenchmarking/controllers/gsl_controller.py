@@ -18,6 +18,24 @@ class GSLController(Controller):
     Controller for the GSL fitting software
     """
 
+    algorithm_check = {
+            'all': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
+                    'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
+                    'vector_bfgs2', 'steepest_descent'],
+            'ls': ['lmsder', 'lmder'],
+            'deriv_free': ['nmsimplex', 'nmsimplex2'],
+            'general': ['nmsimplex', 'nmsimplex2', 'conjugate_pr',
+                        'conjugate_fr', 'vector_bfgs', 'vector_bfgs2',
+                        'steepest_descent'],
+            'simplex': ['nmsimplex', 'nmsimplex2'],
+            'trust_region': ['lmder', 'lmsder'],
+            'levenberg-marquardt': ['lmder', 'lmsder'],
+            'gauss_newton': [],
+            'bfgs': ['vector_bfgs', 'vector_bfgs2'],
+            'conjugate_gradient': ['conjugate_fr', 'conjugate_pr'],
+            'steepest_descent': ['steepest_descent'],
+            'global_optimization': []}
+
     def __init__(self, cost_func):
         """
         Initializes variable used for temporary storage
@@ -36,22 +54,6 @@ class GSLController(Controller):
         self._abserror = None
         self._relerror = None
         self._maxits = None
-        self.algorithm_check = {
-            'all': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
-                    'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
-                    'vector_bfgs2', 'steepest_descent'],
-            'ls': ['lmsder', 'lmder'],
-            'deriv_free': ['nmsimplex', 'nmsimplex2'],
-            'general': ['nmsimplex', 'nmsimplex2', 'conjugate_pr',
-                        'conjugate_fr', 'vector_bfgs', 'vector_bfgs2',
-                        'steepest_descent'],
-            'simplex': ['nmsimplex', 'nmsimplex2'],
-            'trust_region': ['lmder', 'lmsder'],
-            'levenberg-marquardt': ['lmder', 'lmsder'],
-            'gauss_newton': [],
-            'bfgs': ['vector_bfgs', 'vector_bfgs2'],
-            'conjugate_gradient': ['conjugate_fr', 'conjugate_pr'],
-            'steepest_descent': ['steepest_descent']}
 
     def jacobian_information(self):
         """
