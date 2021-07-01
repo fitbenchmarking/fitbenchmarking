@@ -381,16 +381,16 @@ def read_range(s):
     """
 
     if s[0] != '[' or s[-1] != ']':
-        raise ValueError("cmap_range specified without [] parentheses.")
+        raise ValueError("range specified without [] parentheses.")
     rng = [float(item) for item in s[1:-1].split(",")]
     if len(rng) != 2:
-        raise ValueError("cmap_range not specified with 2 elements.")
+        raise ValueError("range not specified with 2 elements.")
     if rng[0] > rng[1]:
         raise ValueError("Incorrect element order;"
-                         "cmap_range[0] > cmap_range[1] detected."
+                         "range[0] > range[1] detected."
                          "The elements must satisfy "
-                         "cmap_range[0] < cmap_range[1].")
+                         "range[0] < range[1].")
     if rng[0] < 0 or rng[0] > 1 or rng[1] < 0 or rng[1] > 1:
-        raise ValueError("One or more elements in cmap_range are "
+        raise ValueError("One or more elements in range are "
                          "outside of the permitted range 0 <= a <= 1.")
     return rng
