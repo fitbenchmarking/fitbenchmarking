@@ -153,13 +153,13 @@ class Table:
         colour = {}
         for key, value in rel_value.items():
             if not all(isinstance(elem, list) for elem in value):
-                hex = _vals_to_colour(value, cmap, cmap_range, log_ulim)
-                colour[key] = hex
+                hex_strs = _vals_to_colour(value, cmap, cmap_range, log_ulim)
+                colour[key] = hex_strs
             else:
                 colour[key] = []
                 for v in value:
-                    hex = _vals_to_colour(v, cmap, cmap_range, log_ulim)
-                    colour[key].append(hex)
+                    hex_strs = _vals_to_colour(v, cmap, cmap_range, log_ulim)
+                    colour[key].append(hex_strs)
         return colour
 
     def get_links(self, results_dict):
@@ -435,6 +435,6 @@ def _vals_to_colour(vals, cmap, cmap_range, log_ulim):
     norm_vals = cmap_range[0] + \
         norm_vals*(cmap_range[1] - cmap_range[0])
     rgba = cmap(norm_vals)
-    hex_list = [mpl.colors.rgb2hex(colour) for colour in rgba]
+    hex_strs = [mpl.colors.rgb2hex(colour) for colour in rgba]
 
-    return hex_list
+    return hex_strs
