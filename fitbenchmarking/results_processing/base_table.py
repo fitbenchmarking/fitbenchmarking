@@ -153,12 +153,14 @@ class Table:
         colour = {}
         for key, value in rel_value.items():
             if not all(isinstance(elem, list) for elem in value):
-                hex_strs = _vals_to_colour(value, cmap, cmap_range, log_ulim)
+                hex_strs = self._vals_to_colour(value, cmap,
+                                                cmap_range, log_ulim)
                 colour[key] = hex_strs
             else:
                 colour[key] = []
                 for v in value:
-                    hex_strs = _vals_to_colour(v, cmap, cmap_range, log_ulim)
+                    hex_strs = self._vals_to_colour(v, cmap,
+                                                    cmap_range, log_ulim)
                     colour[key].append(hex_strs)
         return colour
 
@@ -407,34 +409,36 @@ class Table:
         """
         self._file_path = value
 
-def _vals_to_colour(vals, cmap, cmap_range, log_ulim):
-    """
-    Converts an array of values to a list of hexadecimal colour strings using
-    logarithmic sampling from a matplotlib colourmap according to relative value.
+    @staticmethod
+    def _vals_to_colour(vals, cmap, cmap_range, log_ulim):
+        """
+        Converts an array of values to a list of hexadecimal colour
+        strings using logarithmic sampling from a matplotlib colourmap
+        according to relative value.
 
-    :param vals: values in the range [0, 1] to convert to colour strings
-    :type vals: list[float]
+        :param vals: values in the range [0, 1] to convert to colour strings
+        :type vals: list[float]
 
-    :param cmap: matplotlib colourmap
-    :type cmap: matplotlib colourmap object
+        :param cmap: matplotlib colourmap
+        :type cmap: matplotlib colourmap object
 
-    :param cmap_range: values in range [0, 1] for colourmap cropping
-    :type cmap_range: list[float], 2 elements
+        :param cmap_range: values in range [0, 1] for colourmap cropping
+        :type cmap_range: list[float], 2 elements
 
-    :param log_ulim: log10 of worst shading cutoff value
-    :type log_ulim: float
+        :param log_ulim: log10 of worst shading cutoff value
+        :type log_ulim: float
 
-    :return: colours as hex strings for each input value
-    :rtype: list[str]
-    """
-    log_vals = np.log10(vals)
-    norm_vals = (log_vals - min(log_vals)) /\
-        (log_ulim - min(log_vals))
-    norm_vals[norm_vals > 1] = 1  # applying upper cutoff
-    # trimming colour map according to default/user input
-    norm_vals = cmap_range[0] + \
-        norm_vals*(cmap_range[1] - cmap_range[0])
-    rgba = cmap(norm_vals)
-    hex_strs = [mpl.colors.rgb2hex(colour) for colour in rgba]
+        :return: colours as hex strings for each input value
+        :rtype: list[str]
+        """
+        log_vals = np.log10(vals)
+        norm_vals = (log_vals - min(log_vals)) /\
+            (log_ulim - min(log_vals))
+        norm_vals[norm_vals > 1] = 1  # applying upper cutoff
+        # trimming colour map according to default/user input
+        norm_vals = cmap_range[0] + \
+            norm_vals*(cmap_range[1] - cmap_range[0])
+        rgba = cmap(norm_vals)
+        hex_strs = [mpl.colors.rgb2hex(colour) for colour in rgba]
 
-    return hex_strs
+        return hex_strs
