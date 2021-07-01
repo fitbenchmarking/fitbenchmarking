@@ -2,6 +2,7 @@ table {
   border-collapse: collapse;
   border-collapse: separate;
   border-spacing: 0;
+  border: white;
   margin: auto;
 }
 
@@ -19,7 +20,7 @@ tbody th {
   background-color: #fff;
 }
 
-table, th, td {
+th, td {
   border: 1px solid black;
 }
 
