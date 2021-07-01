@@ -112,13 +112,13 @@ def loop_over_benchmark_problems(problem_group, options):
             name_count[name] = name_count.get(name, 0) + 1
             problems.append((p, parsed_problem))
 
-    name_index = {key: 1 for key in name_count}
+    name_index = {key: 0 for key in name_count}
     LOGGER.info('Running problems')
     for i, (fname, problem) in enumerate(problems):
         # Make the name unique
         if name_count[problem.name] > 1:
-            problem.name += f' {name_index[problem.name]}'
             name_index[problem.name] += 1
+            problem.name += f' {name_index[problem.name]}'
 
         info_str = f" Running data from: {os.path.basename(fname)} " + \
                    f"{i + 1}/{len(problem_group)}"
