@@ -16,6 +16,20 @@ class MatlabOptController(MatlabMixin, Controller):
     Controller for MATLAB Optimization Toolbox, implementing lsqcurvefit
     """
 
+    algorithm_check = {
+            'all': ['levenberg-marquardt', 'trust-region-reflective'],
+            'ls': ['levenberg-marquardt', 'trust-region-reflective'],
+            'deriv_free': [],
+            'general': [],
+            'simplex': [],
+            'trust_region': ['levenberg-marquardt', 'trust-region-reflective'],
+            'levenberg-marquardt': ['levenberg-marquardt'],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -30,18 +44,6 @@ class MatlabOptController(MatlabMixin, Controller):
         self.y_data_mat = None
         self._status = None
         self.result = None
-        self.algorithm_check = {
-            'all': ['levenberg-marquardt', 'trust-region-reflective'],
-            'ls': ['levenberg-marquardt', 'trust-region-reflective'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['levenberg-marquardt', 'trust-region-reflective'],
-            'levenberg-marquardt': ['levenberg-marquardt'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
 
     def jacobian_information(self):
         """

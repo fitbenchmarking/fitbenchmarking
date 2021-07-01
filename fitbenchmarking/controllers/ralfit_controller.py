@@ -15,6 +15,20 @@ class RALFitController(Controller):
     Controller for the RALFit fitting software.
     """
 
+    algorithm_check = {
+            'all': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
+            'ls': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
+            'deriv_free': [],
+            'general': [],
+            'simplex': [],
+            'trust_region': ['gn', 'hybrid'],
+            'levenberg-marquardt': ['gn', 'gn_reg'],
+            'gauss_newton': ['gn', 'gn_reg'],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
     def __init__(self, cost_func):
         """
         Initialises variable used for temporary storage.
@@ -30,18 +44,6 @@ class RALFitController(Controller):
         self._status = None
         self._popt = None
         self._options = {}
-        self.algorithm_check = {
-            'all': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
-            'ls': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['gn', 'hybrid'],
-            'levenberg-marquardt': ['gn', 'gn_reg'],
-            'gauss_newton': ['gn', 'gn_reg'],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
 
     def jacobian_information(self):
         """
