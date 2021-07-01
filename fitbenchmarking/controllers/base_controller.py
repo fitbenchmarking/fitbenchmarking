@@ -22,7 +22,7 @@ class Controller:
     VALID_FLAGS = [0, 1, 2, 3, 4, 5]
 
     #: Within the controller class, you must
-    #: initialize the a dictionary, ``algorithm_check``,
+    #: initialize a dictionary, ``algorithm_check``,
     #: such that the **keys** are given by:
     #:
     #:     - ``all`` - all minimizers
