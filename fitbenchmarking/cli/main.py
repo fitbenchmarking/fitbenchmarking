@@ -43,8 +43,18 @@ def get_parser():
     $ fitbenchmarking
     $ fitbenchmarking -p examples/benchmark_problems/NIST/*
     $ fitbenchmarking -o examples/options_template.ini \
-    -p examples/benchmark_problems/simple_tests \
-    examples/benchmark_problems/Muon '''
+    -p examples/benchmark_problems/CUTEst \
+    examples/benchmark_problems/NIST/low_difficulty
+
+Runtimes for these usage examples are approximately \
+75, 200 and 90 seconds respectively (on an i7 core laptop \
+with 32GB RAM)
+
+Please note that the third listed example assumes that \
+Fitbenchmarking has been installed with a number of pip \
+installable fitting software packages. For more information \
+on installing these packages, please see the Installation pages \
+of the Fitbenchmarking docs. '''
 
     parser = argparse.ArgumentParser(
         prog='FitBenchmarking', add_help=True, epilog=epilog,
@@ -61,7 +71,7 @@ def get_parser():
                         default=glob.glob(os.path.join(root,
                                                        'benchmark_problems',
                                                        'NIST',
-                                                       '*')),
+                                                       'average_difficulty')),
                         help='Paths to directories containing problem sets.')
     parser.add_argument('-d', '--debug-mode',
                         default=False,
@@ -233,7 +243,8 @@ def main():
     parser = get_parser()
 
     if len(sys.argv) == 1:
-        print("Running with NIST problem set")
+        print("Running NIST average_difficulty problem set "
+              "with scipy minimizers \n")
 
     args = parser.parse_args(sys.argv[1:])
 
