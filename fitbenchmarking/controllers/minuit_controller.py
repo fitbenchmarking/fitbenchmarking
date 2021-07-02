@@ -17,6 +17,20 @@ class MinuitController(Controller):
     Controller for the Minuit fitting software
     """
 
+    algorithm_check = {
+            'all': ['minuit'],
+            'ls': [],
+            'deriv_free': [],
+            'general': ['minuit'],
+            'simplex': [],
+            'trust_region': [],
+            'levenberg-marquardt': [],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
     def __init__(self, cost_func):
         """
         Initializes variable used for temporary storage.
@@ -40,18 +54,6 @@ class MinuitController(Controller):
         self._popt = None
         self._initial_step = None
         self._minuit_problem = None
-        self.algorithm_check = {
-            'all': ['minuit'],
-            'ls': [],
-            'deriv_free': [],
-            'general': ['minuit'],
-            'simplex': [],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
 
     def jacobian_information(self):
         """

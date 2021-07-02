@@ -1,0 +1,14 @@
+SASView_Moderate_Shapes_1D
+
+8 problems synthesised from the SASView models on Mon Jun 14 17:03:15 2021. See table below for details.
+
+SASmodel Name            Dimension                Data Format              Synthesis Style          
+
+core shell cylinder      1D                       <Q> <I> <Idev>           neutron                  
+core shell cylinder      1D                       <Q> <I> <Idev>           x-ray                    
+core shell ellipsoid     1D                       <Q> <I> <Idev>           neutron                  
+core shell ellipsoid     1D                       <Q> <I> <Idev>           x-ray                    
+core shell sphere        1D                       <Q> <I> <Idev>           neutron                  
+core shell sphere        1D                       <Q> <I> <Idev>           x-ray                    
+stacked disks            1D                       <Q> <I> <Idev>           neutron                  
+stacked disks            1D                       <Q> <I> <Idev>           x-ray                    

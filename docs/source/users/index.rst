@@ -12,6 +12,7 @@ the FitBenchmarking software.
 
     install_instructions/index
     running
+    algorithms/index
     cost_func
     output/index
     BenchmarkProblems

@@ -4,7 +4,7 @@ This file will handle all interaction with the options configuration file.
 
 import configparser
 import os
-import numpy as np
+import matplotlib.pyplot as plt
 
 from fitbenchmarking.utils.exceptions import OptionsError
 
@@ -21,6 +21,18 @@ class Options:
     VALID_MINIMIZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
          'dfo': ['dfogn', 'dfols'],
+         'gradient_free': ['HillClimbingOptimizer',
+                           'RepulsingHillClimbingOptimizer',
+                           'SimulatedAnnealingOptimizer',
+                           'RandomSearchOptimizer',
+                           'RandomRestartHillClimbingOptimizer',
+                           'RandomAnnealingOptimizer',
+                           'ParallelTemperingOptimizer',
+                           'ParticleSwarmOptimizer',
+                           'EvolutionStrategyOptimizer',
+                           'BayesianOptimizer',
+                           'TreeStructuredParzenEstimators',
+                           'DecisionTreeOptimizer'],
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                  'vector_bfgs2', 'steepest_descent'],
@@ -46,9 +58,10 @@ class Options:
                             'trust_region', 'levenberg-marquardt',
                             'gauss_newton', 'bfgs', 'conjugate_gradient',
                             'steepest_descent', 'global_optimization'],
-         'software': ['bumps', 'dfo', 'gsl', 'levmar', 'mantid', 'matlab',
-                      'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
-                      'ralfit', 'scipy', 'scipy_ls', 'scipy_go'],
+         'software': ['bumps', 'dfo', 'gradient_free', 'gsl', 'levmar',
+                      'mantid', 'matlab', 'matlab_curve', 'matlab_opt',
+                      'matlab_stats', 'minuit', 'ralfit', 'scipy',
+                      'scipy_ls', 'scipy_go'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
@@ -62,7 +75,8 @@ class Options:
     VALID_PLOTTING = \
         {'make_plots': [True, False],
          'comparison_mode': ['abs', 'rel', 'both'],
-         'table_type': ['acc', 'runtime', 'compare', 'local_min']}
+         'table_type': ['acc', 'runtime', 'compare', 'local_min'],
+         'colour_map': plt.colormaps()}
     VALID_LOGGING = \
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
                    'CRITICAL'],
@@ -78,6 +92,15 @@ class Options:
     DEFAULT_MINIMZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'mp'],
          'dfo': ['dfogn', 'dfols'],
+         'gradient_free': ['HillClimbingOptimizer',
+                           'RepulsingHillClimbingOptimizer',
+                           'SimulatedAnnealingOptimizer',
+                           'RandomSearchOptimizer',
+                           'RandomRestartHillClimbingOptimizer',
+                           'RandomAnnealingOptimizer',
+                           'ParallelTemperingOptimizer',
+                           'ParticleSwarmOptimizer',
+                           'EvolutionStrategyOptimizer'],
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                  'vector_bfgs2', 'steepest_descent'],
@@ -111,11 +134,9 @@ class Options:
          'numdifftools': ['central']}
     DEFAULT_PLOTTING = \
         {'make_plots': True,
-         'colour_scale': [(1.1, "#fef0d9"),
-                          (1.33, "#fdcc8a"),
-                          (1.75, "#fc8d59"),
-                          (3, "#e34a33"),
-                          (np.inf, "#b30000")],
+         'colour_map': 'magma_r',
+         'colour_ulim': 100,
+         'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
          'results_dir': 'fitbenchmarking_results'}
@@ -145,7 +166,8 @@ class Options:
         self.error_message = []
         self._results_dir = ''
         config = configparser.ConfigParser(converters={'list': read_list,
-                                                       'str': str},
+                                                       'str': str,
+                                                       'rng': read_range},
                                            allow_no_value=True)
 
         for section in self.VALID_SECTIONS:
@@ -196,12 +218,10 @@ class Options:
 
         plotting = config['PLOTTING']
         self.make_plots = self.read_value(plotting.getboolean, 'make_plots')
-        self.colour_scale = self.read_value(plotting.getlist, 'colour_scale')
-        check = [isinstance(c, tuple) for c in self.colour_scale]
-        if check.count(False) == len(check):
-            self.colour_scale = [(float(cs.split(',', 1)[0].strip()),
-                                  cs.split(',', 1)[1].strip())
-                                 for cs in self.colour_scale]
+        self.colour_map = self.read_value(plotting.getstr, 'colour_map')
+        self.colour_ulim = self.read_value(plotting.getfloat, 'colour_ulim')
+        self.cmap_range = self.read_value(plotting.getrng, 'cmap_range')
+
         self.comparison_mode = self.read_value(plotting.getstr,
                                                'comparison_mode')
         self.table_type = self.read_value(plotting.getlist, 'table_type')
@@ -239,9 +259,9 @@ class Options:
         section = func.__str__().split("Section: ")[1].split('>')[0]
         try:
             value = func(option, fallback=self.DEFAULTS[section][option])
-        except ValueError:
+        except ValueError as e:
             self.error_message.append(
-                "Incorrect options type for {}".format(option))
+                "Incorrect options type for {}.\n{}".format(option, e))
             value = None
 
         if option in self.VALID[section]:
@@ -288,7 +308,8 @@ class Options:
         :return: ConfigParser
         """
         config = configparser.ConfigParser(converters={'list': read_list,
-                                                       'str': str})
+                                                       'str': str,
+                                                       'rng': read_range})
 
         def list_to_string(mylist):
             return '\n'.join(mylist)
@@ -300,12 +321,12 @@ class Options:
                                  self.algorithm_type),
                              'software': list_to_string(self.software),
                              'jac_method': list_to_string(self.jac_method)}
-        cs = list_to_string(['{0}, {1}'.format(*pair)
-                             for pair in self.colour_scale])
         config['JACOBIAN'] = {k: list_to_string(m)
                               for k, m in self.num_method.items()}
 
-        config['PLOTTING'] = {'colour_scale': cs,
+        config['PLOTTING'] = {'colour_map': self.colour_map,
+                              'cmap_range': self.cmap_range,
+                              'colour_ulim': self.colour_ulim,
                               'comparison_mode': self.comparison_mode,
                               'make_plots': self.make_plots,
                               'results_dir': self.results_dir,
@@ -349,3 +370,30 @@ def read_list(s):
     :rtype: list of str
     """
     return str(s).split('\n')
+
+
+def read_range(s):
+    """
+    Utility function to allow ranges to be read by the config parser
+
+    :param s: string to convert to a list
+    :type s: string
+
+    :return: two element list [lower_lim, upper lim]
+    :rtype: list
+    """
+
+    if s[0] != '[' or s[-1] != ']':
+        raise ValueError("range specified without [] parentheses.")
+    rng = [float(item) for item in s[1:-1].split(",")]
+    if len(rng) != 2:
+        raise ValueError("range not specified with 2 elements.")
+    if rng[0] > rng[1]:
+        raise ValueError("Incorrect element order;"
+                         "range[0] > range[1] detected."
+                         "The elements must satisfy "
+                         "range[0] < range[1].")
+    if rng[0] < 0 or rng[0] > 1 or rng[1] < 0 or rng[1] > 1:
+        raise ValueError("One or more elements in range are "
+                         "outside of the permitted range 0 <= a <= 1.")
+    return rng

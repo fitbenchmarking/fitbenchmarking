@@ -78,7 +78,64 @@ The DFO minimizers are set as follows:
 .. warning::
    Additional dependencies `DFO-GN` and `DFO-LS` must be installed for
    these to be available;
-   See :ref:`extra_dependencies`.	 
+   See :ref:`extra_dependencies`.
+
+
+Gradient-Free-Optimizers (``gradient_free``)
+---------------------------------------------
+
+`Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ are a collection of
+gradient-free methods capable of solving various optimization problems. Please note that Gradient-Free-Optimizers
+must be run with problems that have finite bounds on all parameters.
+
+*  Hill Climbing (:code:`HillClimbingOptimizer`)
+
+*  Repulsing Hill Climbing (:code:`RepulsingHillClimbingOptimizer`)
+                   
+*  Simulated Annealing (:code:`SimulatedAnnealingOptimizer`)
+
+*  Random Search (:code:`RandomSearchOptimizer`)
+                   
+*  Random Restart Hill Climbing (:code:`RandomRestartHillClimbingOptimizer`)
+               
+*  Random Annealing (:code:`RandomAnnealingOptimizer`)
+   
+*  Parallel Tempering (:code:`ParallelTemperingOptimizer`)
+   
+*  Particle Swarm (:code:`ParticleSwarmOptimizer`)
+                   
+*  Evolution Strategy (:code:`EvolutionStrategyOptimizer`)
+                   
+*  Bayesian (:code:`BayesianOptimizer`)
+
+*  Tree Structured Parzen Estimators (:code:`TreeStructuredParzenEstimators`)
+                   
+*  Decision Tree (:code:`DecisionTreeOptimizer`)
+
+The `gradient_free` minimizers are set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    gradient_free: HillClimbingOptimizer
+                   RepulsingHillClimbingOptimizer
+                   SimulatedAnnealingOptimizer
+                   RandomSearchOptimizer
+                   RandomRestartHillClimbingOptimizer
+                   RandomAnnealingOptimizer
+                   ParallelTemperingOptimizer
+                   ParticleSwarmOptimizer
+                   EvolutionStrategyOptimizer
+                   BayesianOptimizer
+                   TreeStructuredParzenEstimators
+                   DecisionTreeOptimizer
+
+.. warning::
+   The additional dependency Gradient-Free-Optimizers must be installed for this to be available;
+   See :ref:`extra_dependencies`.
+
+.. note::
+   BayesianOptimizer, TreeStructuredParzenEstimators and DecisionTreeOptimizer may be slow running	 
 
 	 
 GSL (``gsl``)

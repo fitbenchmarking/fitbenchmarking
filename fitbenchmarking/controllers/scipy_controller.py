@@ -14,6 +14,22 @@ class ScipyController(Controller):
     Controller for the Scipy fitting software.
     """
 
+    algorithm_check = {
+            'all': ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
+                    'L-BFGS-B', 'TNC', 'SLSQP'],
+            'ls': [None],
+            'deriv_free': ['Nelder-Mead', 'Powell'],
+            'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
+                        'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
+            'simplex': ['Nelder-Mead'],
+            'trust_region': [],
+            'levenberg-marquardt': [],
+            'gauss_newton': [],
+            'bfgs': ['BFGS', 'L-BFGS-B'],
+            'conjugate_gradient': ['CG', 'Newton-CG', 'Powell'],
+            'steepest_descent': [],
+            'global_optimization': []}
+
     def __init__(self, cost_func):
         """
         Initialises variable used for temporary storage.
@@ -29,22 +45,7 @@ class ScipyController(Controller):
         self.no_bounds_minimizers = ['Nelder-Mead', 'CG', 'BFGS', 'Newton-CG']
         self.options = None
         self.result = None
-        self._status = None
         self._popt = None
-        self.algorithm_check = {
-            'all': ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
-                    'L-BFGS-B', 'TNC', 'SLSQP'],
-            'ls': [None],
-            'deriv_free': ['Nelder-Mead', 'Powell'],
-            'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                        'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-            'simplex': ['Nelder-Mead'],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': ['BFGS', 'L-BFGS-B'],
-            'conjugate_gradient': ['CG', 'Newton-CG', 'Powell'],
-            'steepest_descent': []}
 
     def jacobian_information(self):
         """
@@ -77,16 +78,21 @@ class ScipyController(Controller):
             kwargs["bounds"] = self.value_ranges
         self.result = minimize(**kwargs)
         self._popt = self.result.x
-        self._status = self.result.status
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        if self._status == 0:
+
+        max_iters_messages = ['maximum number of iterations',
+                              'iteration limit reached',
+                              'iterations reached limit']
+
+        if self.result.success:
             self.flag = 0
-        elif self._status == 2:
+        elif any(message in self.result.message.lower()
+                 for message in max_iters_messages):
             self.flag = 1
         else:
             self.flag = 2

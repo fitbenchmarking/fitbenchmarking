@@ -16,6 +16,20 @@ class MatlabStatsController(MatlabMixin, Controller):
     Controller for MATLAB Statistics Toolbox fitting (nlinfit)
     """
 
+    algorithm_check = {
+            'all': ['Levenberg-Marquardt'],
+            'ls': ['Levenberg-Marquardt'],
+            'deriv_free': [],
+            'general': [],
+            'simplex': [],
+            'trust_region': ['Levenberg-Marquardt'],
+            'levenberg-marquardt': ['Levenberg-Marquardt'],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -29,18 +43,6 @@ class MatlabStatsController(MatlabMixin, Controller):
         self.y_data_mat = None
         self._status = None
         self.result = None
-        self.algorithm_check = {
-            'all': ['Levenberg-Marquardt'],
-            'ls': ['Levenberg-Marquardt'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['Levenberg-Marquardt'],
-            'levenberg-marquardt': ['Levenberg-Marquardt'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
 
     def jacobian_information(self):
         """
