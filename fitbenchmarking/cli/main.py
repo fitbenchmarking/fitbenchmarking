@@ -46,9 +46,15 @@ def get_parser():
     -p examples/benchmark_problems/CUTEst \
     examples/benchmark_problems/NIST/low_difficulty
 
-    Runtimes for these usage examples are approximately \
+Runtimes for these usage examples are approximately \
 75, 200 and 90 seconds respectively (on an i7 core laptop \
-with 32GB RAM) '''
+with 32GB RAM)
+
+Please note that the third listed example assumes that \
+Fitbenchmarking has been installed with a number of pip \
+installable fitting software packages. For more information \
+on installing these packages, please see the Installation pages \
+of the Fitbenchmarking docs. '''
 
     parser = argparse.ArgumentParser(
         prog='FitBenchmarking', add_help=True, epilog=epilog,
