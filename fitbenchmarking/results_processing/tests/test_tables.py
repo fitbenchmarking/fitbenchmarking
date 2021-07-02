@@ -8,6 +8,7 @@ from inspect import getfile
 import os
 import shutil
 import numpy as np
+from tempfile import TemporaryDirectory
 
 import fitbenchmarking
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
@@ -137,6 +138,17 @@ class GenerateTableTests(unittest.TestCase):
 
         self.expected_results_dir = os.path.join(root, 'results_processing',
                                                  'tests', 'expected_results')
+        
+        self.fig_dir = os.path.join(root, 'results_processing',
+                                      'tests', 'figures')
+        os.mkdir(self.fig_dir)
+    
+    def tearDown(self):
+        """
+        Deletes temporary folder and results produced
+        """
+        if os.path.exists(self.fig_dir):
+            shutil.rmtree(self.fig_dir)
 
     def test_tables_correct(self):
         """
@@ -144,8 +156,9 @@ class GenerateTableTests(unittest.TestCase):
         fitbenchmarking/results_processing/tests/expected_results
         """
         for suffix in SORTED_TABLE_NAMES:
-            _, html_table, txt_table = generate_table(
+            _, html_table, txt_table, _ = generate_table(
                 self.results, self.best, self.options, "group_dir",
+                self.fig_dir,
                 ["pp_1", "pp_2"], "table_name", suffix)
             html_table_name = os.path.join(self.expected_results_dir,
                                            "{}.html".format(suffix))
@@ -218,6 +231,11 @@ class CreateResultsTableTests(unittest.TestCase):
         self.group_dir = os.path.join(root, 'results_processing',
                                       'tests', 'results')
         os.mkdir(self.group_dir)
+
+        self.fig_dir = os.path.join(root, 'results_processing',
+                                      'tests', 'figures')
+        os.mkdir(self.fig_dir)
+
         self.group_name = 'test_name'
 
     def tearDown(self):
@@ -226,6 +244,9 @@ class CreateResultsTableTests(unittest.TestCase):
         """
         if os.path.exists(self.group_dir):
             shutil.rmtree(self.group_dir)
+        
+        if os.path.exists(self.fig_dir):
+            shutil.rmtree(self.fig_dir)
 
     def test_generate_table_page(self):
         """
@@ -233,6 +254,7 @@ class CreateResultsTableTests(unittest.TestCase):
         """
         create_results_tables(self.options, self.results, self.best,
                               self.group_name, self.group_dir,
+                              self.fig_dir,
                               ["pp_1", "pp_2"], [], {'min1': []})
         for suffix in SORTED_TABLE_NAMES:
 
