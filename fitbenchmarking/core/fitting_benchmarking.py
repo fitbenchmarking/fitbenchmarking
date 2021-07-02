@@ -95,36 +95,49 @@ def loop_over_benchmark_problems(problem_group, options):
     grabbed_output = output_grabber.OutputGrabber(options)
     results = []
     failed_problems = []
+
+    LOGGER.info('Parsing problems')
+    problems = []
+    name_count = {}  # Count the names so that we can give duplicates an id
     for i, p in enumerate(problem_group):
-        problem_passed = True
-        info_str = " Running data from: {} {}/{}".format(
-            os.path.basename(p), i + 1, len(problem_group))
-        LOGGER.info('\n%s', '#' * (len(info_str) + 1))
-        LOGGER.info(info_str)
-        LOGGER.info('#' * (len(info_str) + 1))
         try:
             with grabbed_output:
                 parsed_problem = parse_problem_file(p, options)
                 parsed_problem.correct_data()
         except FitBenchmarkException as e:
-            info_str = " Could not run data from: {} {}/{}".format(
-                p, i + 1, len(problem_group))
+            LOGGER.info("Could not parse problem from: %s", p)
             LOGGER.warning(e)
-            problem_passed = False
+        else:
+            name = parsed_problem.name
+            name_count[name] = name_count.get(name, 0) + 1
+            problems.append((p, parsed_problem))
 
-        if problem_passed:
-            ##############################
-            # Loops over starting values #
-            ##############################
-            cost_func_cls = create_cost_func(options.cost_func_type)
-            cost_func = cost_func_cls(parsed_problem)
-            cost_func_description = cost_func.__doc__
-            problem_results, problem_fails, \
-                unselected_minimzers, minimizer_dict = \
-                loop_over_starting_values(
-                    cost_func, options, grabbed_output)
-            results.extend(problem_results)
-            failed_problems.extend(problem_fails)
+    name_index = {key: 0 for key in name_count}
+    LOGGER.info('Running problems')
+    for i, (fname, problem) in enumerate(problems):
+        # Make the name unique
+        if name_count[problem.name] > 1:
+            name_index[problem.name] += 1
+            problem.name += f' {name_index[problem.name]}'
+
+        info_str = f" Running data from: {os.path.basename(fname)} " + \
+                   f"{i + 1}/{len(problem_group)}"
+        LOGGER.info('\n%s', '#' * (len(info_str) + 1))
+        LOGGER.info(info_str)
+        LOGGER.info('#' * (len(info_str) + 1))
+
+        ##############################
+        # Loops over starting values #
+        ##############################
+        cost_func_cls = create_cost_func(options.cost_func_type)
+        cost_func = cost_func_cls(problem)
+        cost_func_description = cost_func.__doc__
+        problem_results, problem_fails, \
+            unselected_minimzers, minimizer_dict = \
+            loop_over_starting_values(
+                cost_func, options, grabbed_output)
+        results.extend(problem_results)
+        failed_problems.extend(problem_fails)
 
     return results, failed_problems, unselected_minimzers, \
         minimizer_dict, cost_func_description
