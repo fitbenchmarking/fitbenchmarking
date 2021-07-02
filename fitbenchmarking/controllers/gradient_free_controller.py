@@ -14,22 +14,7 @@ class GradientFreeController(Controller):
     Controller for the Gradient Free Optimizers fitting software.
     """
 
-    def __init__(self, cost_func):
-        """
-        Initialises variables used for temporary storage.
-
-        :param cost_func: Cost function object selected from options.
-        :type cost_func: subclass of
-                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
-        """
-        super().__init__(cost_func)
-
-        self.support_for_bounds = True
-        self._status = None
-        self.search_space = None
-        self.initialize = None
-        self.results = None
-        self.algorithm_check = {
+    algorithm_check = {
             'all': ['HillClimbingOptimizer',
                     'RepulsingHillClimbingOptimizer',
                     'SimulatedAnnealingOptimizer',
@@ -62,7 +47,24 @@ class GradientFreeController(Controller):
             'gauss_newton': [],
             'bfgs': [],
             'conjugate_gradient': [],
-            'steepest_descent': []}
+            'steepest_descent': [],
+            'global_optimization': []}
+
+    def __init__(self, cost_func):
+        """
+        Initialises variables used for temporary storage.
+
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+        """
+        super().__init__(cost_func)
+
+        self.support_for_bounds = True
+        self._status = None
+        self.search_space = None
+        self.initialize = None
+        self.results = None
 
     def jacobian_information(self):
         """
