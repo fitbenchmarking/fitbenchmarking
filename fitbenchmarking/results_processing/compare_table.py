@@ -145,3 +145,30 @@ class CompareTable(Table):
         for acc, runtime in zip(acc_colour, runtime_colour):
             output_colour.append(color_template.format(acc, runtime))
         return output_colour
+
+    def get_cbar(self, fig_dir):
+        """
+        Plots colourbar figure to figure directory and returns the 
+        path to the figure.
+
+        :param fig_dir: figure directory
+        :type fig_dir: str
+
+        :return fig_path: path to colourbar figure
+        :rtype fig_path: str
+        """
+        cmap_name = self.options.colour_map
+        cmap_range = self.options.cmap_range
+        colour_ulim = self.options.colour_ulim
+        fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self._table_title))
+        title = "Problem-Specific Cell Shading:\n"\
+                "Top Colour - Relative Accuracy\n"\
+                "Bottom Colour - Relative Runtime\n"
+        left_label = "Best (1)"
+        right_label = "Worst (>{})".format(colour_ulim)
+
+
+        self._save_colourbar(fig_path, cmap_name, cmap_range, title, left_label,
+                        right_label)
+        
+        return fig_path
