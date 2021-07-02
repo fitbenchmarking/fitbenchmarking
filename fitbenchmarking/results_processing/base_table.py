@@ -164,6 +164,20 @@ class Table:
                     colour[key].append(hex_strs)
         return colour
 
+    @abstractmethod
+    def get_cbar(self, fig_dir):
+        """
+        Plots colourbar figure to figure directory and returns the
+        path to the figure.
+
+        :param fig_dir: figure directory
+        :type fig_dir: str
+
+        :return fig_path: path to colourbar figure
+        :rtype fig_path: str
+        """
+        raise NotImplementedError()
+
     def get_links(self, results_dict):
         """
         Pulls out links to the individual support pages from the results
@@ -473,9 +487,8 @@ class Table:
         :param sz_in: dimensions of png in inches [width, height]
         :param sz_in: list[float] - 2 elements
         """
-        nrows = 1  # if in future multiple rows are needed
-        figh = 0.4 + 0.15 + (nrows + (nrows - 1) * 0.1) * 0.22
-        fig, ax = plt.subplots(nrows=nrows, figsize=(6.4, figh))
+        figh = 0.77
+        fig, ax = plt.subplots(nrows=1, figsize=(6.4, figh))
         fig.subplots_adjust(top=1 - 0.35 / figh, bottom=0.15 / figh,
                             left=0.3, right=0.7, hspace=1)
         gradient = np.linspace(cmap_range[0], cmap_range[1], n_divs)
