@@ -163,7 +163,6 @@ class Table:
                                                     cmap_range, log_ulim)
                     colour[key].append(hex_strs)
         return colour
-    
 
     def get_links(self, results_dict):
         """
@@ -443,7 +442,7 @@ class Table:
         hex_strs = [mpl.colors.rgb2hex(colour) for colour in rgba]
 
         return hex_strs
-    
+
     @staticmethod
     def _save_colourbar(fig_path, cmap_name, cmap_range, title, left_label,
                         right_label, n_divs=100, sz_in=[3, 0.8]):
@@ -472,26 +471,25 @@ class Table:
         :type n_divs: int
 
         :param sz_in: dimensions of png in inches [width, height]
-        :param sz_in: list[float] - 2 elements 
+        :param sz_in: list[float] - 2 elements
         """
         nrows = 1  # if in future multiple rows are needed
         figh = 0.4 + 0.15 + (nrows + (nrows - 1) * 0.1) * 0.22
         fig, ax = plt.subplots(nrows=nrows, figsize=(6.4, figh))
         fig.subplots_adjust(top=1 - 0.35 / figh, bottom=0.15 / figh,
-                        left=0.3, right=0.7, hspace=1)
+                            left=0.3, right=0.7, hspace=1)
         gradient = np.linspace(cmap_range[0], cmap_range[1], n_divs)
         gradient = np.vstack((gradient, gradient))
         ax.imshow(gradient, aspect='auto',
-                 cmap=plt.get_cmap(cmap_name), vmin=0, vmax=1)
+                  cmap=plt.get_cmap(cmap_name), vmin=0, vmax=1)
         ax.text(-0.02, 0.5, left_label,
                 va='center', ha='right', fontsize=6,
                 transform=ax.transAxes)
         ax.text(1.02, 0.5, right_label,
                 va='center', ha='left', fontsize=6,
                 transform=ax.transAxes)
-        ax.set_title(title, fontsize=6)  
-        ax.set_axis_off()   
+        ax.set_title(title, fontsize=6)
+        ax.set_axis_off()
         fig.set_size_inches(sz_in[0], sz_in[1])
 
         plt.savefig(fig_path, dpi=150)
-

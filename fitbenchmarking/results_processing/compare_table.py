@@ -148,7 +148,7 @@ class CompareTable(Table):
 
     def get_cbar(self, fig_dir):
         """
-        Plots colourbar figure to figure directory and returns the 
+        Plots colourbar figure to figure directory and returns the
         path to the figure.
 
         :param fig_dir: figure directory
@@ -167,8 +167,8 @@ class CompareTable(Table):
         left_label = "Best (1)"
         right_label = "Worst (>{})".format(colour_ulim)
 
+        self._save_colourbar(fig_path, cmap_name, cmap_range,
+                             title, left_label, right_label,
+                             100, [3, 1])
 
-        self._save_colourbar(fig_path, cmap_name, cmap_range, title, left_label,
-                        right_label, 100, [3, 1])
-        
         return fig_path

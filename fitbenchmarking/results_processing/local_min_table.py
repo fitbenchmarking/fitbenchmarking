@@ -180,7 +180,7 @@ class LocalMinTable(Table):
 
     def get_cbar(self, fig_dir):
         """
-        Plots colourbar figure to figure directory and returns the 
+        Plots colourbar figure to figure directory and returns the
         path to the figure.
 
         :param fig_dir: figure directory
@@ -191,13 +191,12 @@ class LocalMinTable(Table):
         """
         cmap_name = self.options.colour_map
         cmap_range = self.options.cmap_range
-        colour_ulim = self.options.colour_ulim
         fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self.name))
         title = "Cell Shading: Minimum Found"
         left_label = "True"
         right_label = "False"
 
-        self._save_colourbar(fig_path, cmap_name, cmap_range, title, left_label,
-                        right_label, 2)
-        
+        self._save_colourbar(fig_path, cmap_name, cmap_range,
+                             title, left_label, right_label, 2)
+
         return fig_path
