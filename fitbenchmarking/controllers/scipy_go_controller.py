@@ -16,6 +16,22 @@ class ScipyGOController(Controller):
     Controller for the Scipy fitting software.
     """
 
+    algorithm_check = {
+            'all': ['differential_evolution', 'shgo', 'dual_annealing'],
+            'ls': [None],
+            'deriv_free': ['differential_evolution'],
+            'general': ['shgo', 'dual_annealing'],
+            'simplex': [],
+            'trust_region': [],
+            'levenberg-marquardt': [],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': ['differential_evolution', 'shgo',
+                                    'dual_annealing']
+        }
+
     def __init__(self, cost_func):
         """
         Initialises variable used for temporary storage.
@@ -31,21 +47,6 @@ class ScipyGOController(Controller):
         self._popt = None
         self._status = None
         self._maxiter = None
-        self.algorithm_check = {
-            'all': ['differential_evolution', 'shgo', 'dual_annealing'],
-            'ls': [None],
-            'deriv_free': ['differential_evolution'],
-            'general': ['shgo', 'dual_annealing'],
-            'simplex': [],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': ['differential_evolution', 'shgo',
-                                    'dual_annealing']
-        }
 
     def jacobian_information(self):
         """

@@ -6,6 +6,8 @@ import os
 import docutils.core
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 from fitbenchmarking.utils.misc import get_js
 
@@ -55,11 +57,6 @@ class Table:
         self.pp_locations = pp_locations
         self.table_name = table_name
         self.name = None
-
-        colour_scale = self.options.colour_scale
-
-        self.colour_bounds = [colour[0] for colour in colour_scale]
-        self.html_colours = [colour[1] for colour in colour_scale]
 
         self.output_string_type = {"abs": '{:.4g}',
                                    "rel": '{:.4g}',
@@ -138,28 +135,33 @@ class Table:
         """
         Converts the result from
         :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()`
-        into the HTML colours
-        used in the tables. The base class implementation, for example,
-        uses the relative results and ``colour_scale`` within
+        into the HTML colours used in the tables. The base class
+        implementation, for example, uses the relative results and
+        ``colour_map``, ``colour_ulim`` and ``cmap_range`` within
         :class:`~fitbenchmarking.utils.options.Options`.
         :param results: tuple containing absolute and relative values
         :type results: tuple
         :return: dictionary containing HTML colours for the table
         :rtype: dict
         """
+        cmap_name = self.options.colour_map
+        cmap = plt.get_cmap(cmap_name)
+        cmap_ulim = self.options.colour_ulim
+        cmap_range = self.options.cmap_range
+        log_ulim = np.log10(cmap_ulim)  # colour map used with log spacing
         _, rel_value = results
         colour = {}
         for key, value in rel_value.items():
             if not all(isinstance(elem, list) for elem in value):
-                colour_index = np.searchsorted(self.colour_bounds, value)
-                colour[key] = [self.html_colours[i]
-                               for i in colour_index]
+                hex_strs = self._vals_to_colour(value, cmap,
+                                                cmap_range, log_ulim)
+                colour[key] = hex_strs
             else:
                 colour[key] = []
                 for v in value:
-                    colour_index = np.searchsorted(self.colour_bounds, v)
-                    colour[key].append([self.html_colours[i]
-                                        for i in colour_index])
+                    hex_strs = self._vals_to_colour(v, cmap,
+                                                    cmap_range, log_ulim)
+                    colour[key].append(hex_strs)
         return colour
 
     def get_links(self, results_dict):
@@ -406,3 +408,37 @@ class Table:
         :type value: str
         """
         self._file_path = value
+
+    @staticmethod
+    def _vals_to_colour(vals, cmap, cmap_range, log_ulim):
+        """
+        Converts an array of values to a list of hexadecimal colour
+        strings using logarithmic sampling from a matplotlib colourmap
+        according to relative value.
+
+        :param vals: values in the range [0, 1] to convert to colour strings
+        :type vals: list[float]
+
+        :param cmap: matplotlib colourmap
+        :type cmap: matplotlib colourmap object
+
+        :param cmap_range: values in range [0, 1] for colourmap cropping
+        :type cmap_range: list[float], 2 elements
+
+        :param log_ulim: log10 of worst shading cutoff value
+        :type log_ulim: float
+
+        :return: colours as hex strings for each input value
+        :rtype: list[str]
+        """
+        log_vals = np.log10(vals)
+        norm_vals = (log_vals - min(log_vals)) /\
+            (log_ulim - min(log_vals))
+        norm_vals[norm_vals > 1] = 1  # applying upper cutoff
+        # trimming colour map according to default/user input
+        norm_vals = cmap_range[0] + \
+            norm_vals*(cmap_range[1] - cmap_range[0])
+        rgba = cmap(norm_vals)
+        hex_strs = [mpl.colors.rgb2hex(colour) for colour in rgba]
+
+        return hex_strs
