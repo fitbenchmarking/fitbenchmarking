@@ -6,7 +6,6 @@ import matlab.engine
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
-from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 
 eng = matlab.engine.start_matlab()
 
@@ -59,24 +58,19 @@ class MatlabCurveController(MatlabMixin, Controller):
         eng.workspace['x_data'] = matlab.double(self.data_x.tolist())
         eng.workspace['y_data'] = matlab.double(self.data_y.tolist())
 
-        # set weights if required for cost_func choice, otherwise set
-        # empty array which will be ignored when input to cost_func.eval_r
-        if isinstance(self.cost_func, create_cost_func('weighted_nlls')):
-            eng.workspace['e'] = matlab.double(self.data_e.tolist())
-        else:
-            eng.workspace['e'] = matlab.double([])
+        def wrapper(x, y, *p):
 
-        def wrapper(x, y, e, *p):
+            kwargs = {"x": np.array(x),
+                      "y": np.array(y)}
 
             # To avoid errors in fittype function evaluation, if e is
-            # not the same length as y, then replace e with y
-            if len(e) != len(y):
-                e = y
+            # not the same length as y, then replace e with an array
+            # of ones
+            if self.data_e is not None and len(self.data_e) != len(y):
+                kwargs["e"] = np.ones(len(y))
 
-            result = self.cost_func.eval_r(p,
-                                           x=np.array(x),
-                                           y=np.array(y),
-                                           e=np.array(e))
+            result = self.cost_func.eval_r(p, **kwargs)
+
             return result
 
         # serialize cost_func.eval_cost and open within matlab engine
@@ -99,12 +93,11 @@ class MatlabCurveController(MatlabMixin, Controller):
         eng.evalc("opts = fitoptions('StartPoint', init_params,"
                   "'Method', 'NonLinearLeastSquares',"
                   f"'Algorithm', '{self.minimizer}',"
-                  "'Weights', e,"
                   "'Lower', lower_bounds,"
                   "'Upper', upper_bounds)")
 
         eng.evalc(f"ft = fittype(@({', '.join(params)}, x, y)"
-                  f"double(eval_cost_mat(x, y, e', {', '.join(params)}))',"
+                  f"double(eval_cost_mat(x, y, {', '.join(params)}))',"
                   f"'options', opts, 'independent', {{'x', 'y'}},"
                   "'dependent', 'z')")
 
