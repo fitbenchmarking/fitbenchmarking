@@ -94,7 +94,7 @@ BOUNDS
  LO BND       B2        1.0
  UP BND       B2        20.0
  LO BND       B3        0.0
- UP BND       B3        0.1
+ UP BND       B3        3
  LO BND       B4        0.1
  UP BND       B4        6.0
  
