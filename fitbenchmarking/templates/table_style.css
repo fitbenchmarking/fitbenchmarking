@@ -1,5 +1,4 @@
 table {
-  border-collapse: collapse;
   border-collapse: separate;
   border-spacing: 0;
   border: white;
@@ -18,6 +17,20 @@ tbody th {
   position: sticky;
   z-index: 50;
   background-color: #fff;
+}
+
+thead tr th.blank.level0, thead tr th.blank.level1 {
+  top: 0;
+  left: 0;
+  position: sticky;
+  z-index: 150;
+  background-color: #fff;
+  border-left: 0px;
+  border-top: 0px;
+}
+
+thead tr th.blank.level0 {
+  border-bottom: 0px;
 }
 
 th, td {
