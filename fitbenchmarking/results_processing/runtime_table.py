@@ -88,7 +88,7 @@ class RuntimeTable(Table):
         cmap_name = self.options.colour_map
         cmap_range = self.options.cmap_range
         colour_ulim = self.options.colour_ulim
-        fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self._table_title))
+        fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self.name))
         title = "Problem-Specific Cell Shading: Relative Runtime"
         left_label = "Best (1)"
         right_label = "Worst (>{})".format(colour_ulim)

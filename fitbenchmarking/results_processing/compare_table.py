@@ -160,7 +160,7 @@ class CompareTable(Table):
         cmap_name = self.options.colour_map
         cmap_range = self.options.cmap_range
         colour_ulim = self.options.colour_ulim
-        fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self._table_title))
+        fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self.name))
         title = "Problem-Specific Cell Shading:\n"\
                 "Top Colour - Relative Accuracy\n"\
                 "Bottom Colour - Relative Runtime\n"
@@ -169,6 +169,6 @@ class CompareTable(Table):
 
 
         self._save_colourbar(fig_path, cmap_name, cmap_range, title, left_label,
-                        right_label)
+                        right_label, 100, [3, 1])
         
         return fig_path

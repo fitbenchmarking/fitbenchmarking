@@ -192,10 +192,10 @@ class LocalMinTable(Table):
         cmap_name = self.options.colour_map
         cmap_range = self.options.cmap_range
         colour_ulim = self.options.colour_ulim
-        fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self._table_title))
-        title = "Problem-Specific Cell Shading: Relative Runtime"
+        fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self.name))
+        title = "Cell Shading: Minimum Found"
         left_label = "True"
-        right_label = "False".format(colour_ulim)
+        right_label = "False"
 
         self._save_colourbar(fig_path, cmap_name, cmap_range, title, left_label,
                         right_label, 2)
