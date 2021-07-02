@@ -23,3 +23,17 @@ div.table{
   overflow:auto;
   padding:10px;
 }
+
+td a:link {
+  color:#fff
+ }
+td a:visited {
+  color:#fff
+ }
+td a:hover {
+  color:rgba(255, 255, 255, 0.5)
+ }
+td a:active {
+  transition:color .3s;
+  color:rgba(255, 255, 255, 0.5)
+ }

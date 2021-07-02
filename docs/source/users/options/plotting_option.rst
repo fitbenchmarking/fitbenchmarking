@@ -19,28 +19,64 @@ Default is ``True`` (``yes``/``no`` can also be used)
     [PLOTTING]
     make_plots: yes
 
-Colour scale (:code:`colour_scale`)
------------------------------------
+Colourmap (:code:`colour_map`)
+-----------------------------------------------------------------------
+Specifies the name of the colourmap the user wishes to use, e.g. ``magma``, ``viridis``, ``OrRd``. Options are:
 
-Lists thresholds for each colour in the html table.
-In the example below, this means that values less than 1.1 will
-have the top ranking (brightest) and values over 3 will show as
-the worst ranking (deep red). 
+* Any colourmap from the library in ``matplotlib``, see the complete library `here <https://matplotlib.org/stable/gallery/color/colormap_reference.html>`_.
+* Appending ``_r`` to the end of the name will reverse the colourmap.
+* The following sequential colourmaps are recommended:
 
-If `parameter_ranges` have been set for a problem, then solutions
-flagged as not respecting the specified bounds will be given the
-worst ranking colour.
+.. figure:: ../../../images/recommended_perceptual_cmaps.png
 
-Default thresholds are ``1.1, 1.33, 1.75, 3, and inf``
+.. figure:: ../../../images/recommended_sequential_cmaps.png
+
+Default colourmap is ``magma_r``
 
 .. code-block:: rst
 
     [PLOTTING]
-    colour_scale: 1.1, #fef0d9
-                  1.33, #fdcc8a
-                  1.75, #fc8d59
-                  3, #e34a33
-                  inf, #b30000
+    colour_map: magma_r
+
+
+
+Colourmap Range (:code:`cmap_range`)
+------------------------------------
+A two-element list used to specify the lower and upper limit of the chosen colourmap. Options are:
+
+* ``[lower_limit, upper_limit]`` where limits consider the full colourscale limits to be 0 and 1, so any pair of values must fall within this range.
+
+* Limits should be introduced to make the **white text** readable, see the following example.
+
+.. figure:: ../../../images/example_cmaps.png
+
+Default for ``magma`` is ``[0.2, 0.8]`` (suitability depends on colourmap)
+
+.. code-block:: rst
+
+    [PLOTTING]
+    colour_map: magma_r
+    cmap_range: [0.2, 0.8] 
+
+Colour Upper Limit :code:`colour_ulim`)
+---------------------------------------
+
+Controls how relatively poorly a minimizer has to perform in order to receive the `worst` colour. For example,
+a value of 100 would mean that any performance greater than or equal to 100 times worse than the best
+minimizer would receive the worst colour. This ensures that colour scale is not compromised by especially 
+poor relative results. Options are:
+
+* Any float between ``1`` and ``np.inf``
+* Recommended value ``100``
+
+Default is ``100``
+
+.. code-block:: rst
+
+    [PLOTTING]
+    colour_map: magma_r
+    cmap_range: [0.2, 0.8] 
+    colour_ulim: 100
 
 
 .. _ComparisonOption:
