@@ -19,7 +19,7 @@ from fitbenchmarking.utils.options import Options
 
 OPTIONS = Options()
 JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist']
-BOUNDS_ENABLED_PARSERS = ['cutest','fitbenchmark']
+BOUNDS_ENABLED_PARSERS = ['cutest', 'fitbenchmark']
 
 
 # pylint: disable=no-self-use
