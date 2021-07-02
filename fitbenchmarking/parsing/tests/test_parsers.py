@@ -19,6 +19,7 @@ from fitbenchmarking.utils.options import Options
 
 OPTIONS = Options()
 JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist']
+BOUNDS_ENABLED_PARSERS = ['cutest','fitbenchmark']
 
 
 # pylint: disable=no-self-use
@@ -184,8 +185,7 @@ class TestParsers:
         # generic across problem types.
         # similarly starting_values uses the param name so must be checked
         # separately
-        for attr in ['name', 'data_x', 'data_y', 'data_e', 'start_x', 'end_x',
-                     'value_ranges']:
+        for attr in ['name', 'data_x', 'data_y', 'data_e', 'start_x', 'end_x']:
             parsed_attr = getattr(fitting_problem, attr)
             expected_attr = getattr(expected, attr)
             equal = (parsed_attr == expected_attr)
@@ -201,6 +201,15 @@ class TestParsers:
             expected_as_set = set(e.values())
             assert (loaded_as_set == expected_as_set), \
                 'starting_values were parsed incorrectly.'
+
+        # check value ranges
+        if file_format in BOUNDS_ENABLED_PARSERS:
+            if fitting_problem.value_ranges is not None:
+                act_val = str(fitting_problem.value_ranges)
+            else:
+                act_val = fitting_problem.value_ranges
+            assert (act_val == expected.value_ranges), \
+                'value_ranges were parsed incorrectly.'
 
         # Check that the function is callable
         assert callable(fitting_problem.function)

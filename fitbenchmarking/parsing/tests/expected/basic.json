@@ -6,5 +6,5 @@
  "data_e": null,
  "function": "Single_function_2_params",
  "starting_values": [{"p1": 0.0, "p2": 1.0}],
- "value_ranges": null
+ "value_ranges": "[(0.0, 10.0), (0.0, 10.0)]"
 }
