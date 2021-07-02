@@ -36,8 +36,9 @@ class OptionsWriteTests(unittest.TestCase):
 
             [PLOTTING]
             make_plots: no
-            colour_scale: 17.1, b_string?
-                          inf, final_string
+            colour_map: viridis
+            cmap_range: [0, 0.5]
+            colour_ulim: 50
             comparison_mode: abs
             table_type: acc
                         runtime

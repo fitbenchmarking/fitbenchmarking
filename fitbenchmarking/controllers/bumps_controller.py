@@ -20,6 +20,20 @@ class BumpsController(Controller):
     Setup creates a model with the correct function.
     """
 
+    algorithm_check = {
+            'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
+            'ls': ['lm-bumps', 'mp'],
+            'deriv_free': ['amoeba', 'de'],
+            'general': ['amoeba', 'newton', 'de'],
+            'simplex': ['amoeba'],
+            'trust_region': ['lm-bumps'],
+            'levenberg-marquardt': ['lm-bumps'],
+            'gauss_newton': [],
+            'bfgs': ['newton'],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
     def __init__(self, cost_func):
         """
         Extract param names for function setup
@@ -38,18 +52,6 @@ class BumpsController(Controller):
         self.fit_order = None
         self._status = None
         self._bumps_result = None
-        self.algorithm_check = {
-            'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
-            'ls': ['lm-bumps', 'mp'],
-            'deriv_free': ['amoeba', 'de'],
-            'general': ['amoeba', 'newton', 'de'],
-            'simplex': ['amoeba'],
-            'trust_region': ['lm-bumps'],
-            'levenberg-marquardt': ['lm-bumps'],
-            'gauss_newton': [],
-            'bfgs': ['newton'],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
 
     def jacobian_information(self):
         """

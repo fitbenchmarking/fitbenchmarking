@@ -15,6 +15,20 @@ class DFOController(Controller):
     Controller for the DFO-{GN/LS} fitting software.
     """
 
+    algorithm_check = {
+            'all': ['dfogn', 'dfols'],
+            'ls': ['dfogn', 'dfols'],
+            'deriv_free': ['dfogn', 'dfols'],
+            'general': [],
+            'simplex': [],
+            'trust_region': ['dfols', 'dfogn'],
+            'levenberg-marquardt': [],
+            'gauss_newton': ['dfogn'],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -32,18 +46,6 @@ class DFOController(Controller):
         self._soln = None
         self._popt = None
         self._pinit = None
-        self.algorithm_check = {
-            'all': ['dfogn', 'dfols'],
-            'ls': ['dfogn', 'dfols'],
-            'deriv_free': ['dfogn', 'dfols'],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['dfols', 'dfogn'],
-            'levenberg-marquardt': [],
-            'gauss_newton': ['dfogn'],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
 
     def jacobian_information(self):
         """

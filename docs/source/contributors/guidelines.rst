@@ -28,7 +28,7 @@ Documentation
 Any new code will be accepted only if the documentation, written in
 `sphinx <https://www.sphinx-doc.org/en/master/>`_ and found in `docs/`,
 has been updated accordingly, and the docstrings in the code
-have been updated where neccessary.
+have been updated where necessary.
 
 =======
 Testing

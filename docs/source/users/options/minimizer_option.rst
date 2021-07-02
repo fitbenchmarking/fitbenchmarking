@@ -81,7 +81,7 @@ The DFO minimizers are set as follows:
    See :ref:`extra_dependencies`.
 
 
-Gradient-Free-Optimiziers (``gradient_free``)
+Gradient-Free-Optimizers (``gradient_free``)
 ---------------------------------------------
 
 `Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ are a collection of
