@@ -465,27 +465,20 @@ class Table:
 
         :param fig_path: path to figure save location
         :type fig_path: str
-
         :param cmap_name: matplotlib colourmap name
         :type cmap: str
-
         :param cmap_range: range used to crop colourmap
         :type cmap_range: list[float] - 2 elements
-
         :param title: table-specifc text above colourbar
         :type title: str
-
         :param left_label: table-specifc text to left of colourbar
         :type left_label: str
-
         :param right_label: table-specific text to right of colourbar
         :type right_label: str
-
         :param n_divs: number of divisions of shading in colourbar
         :type n_divs: int
-
         :param sz_in: dimensions of png in inches [width, height]
-        :param sz_in: list[float] - 2 elements
+        :type sz_in: list[float] - 2 elements
         """
         figh = 0.77
         fig, ax = plt.subplots(nrows=1, figsize=(6.4, figh))
