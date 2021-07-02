@@ -15,6 +15,20 @@ class MatlabController(MatlabMixin, Controller):
     Controller for MATLAB fitting (fminsearch)
     """
 
+    algorithm_check = {
+            'all': ['Nelder-Mead Simplex'],
+            'ls': [],
+            'deriv_free': ['Nelder-Mead Simplex'],
+            'general': ['Nelder-Mead Simplex'],
+            'simplex': ['Nelder-Mead Simplex'],
+            'trust_region': [],
+            'levenberg-marquardt': [],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -26,18 +40,6 @@ class MatlabController(MatlabMixin, Controller):
         super().__init__(cost_func)
         self._status = None
         self.result = None
-        self.algorithm_check = {
-            'all': ['Nelder-Mead Simplex'],
-            'ls': [],
-            'deriv_free': ['Nelder-Mead Simplex'],
-            'general': ['Nelder-Mead Simplex'],
-            'simplex': ['Nelder-Mead Simplex'],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
 
     def jacobian_information(self):
         """

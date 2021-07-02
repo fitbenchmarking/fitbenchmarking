@@ -16,6 +16,20 @@ class LevmarController(Controller):
     Controller for the levmar fitting software
     """
 
+    algorithm_check = {
+            'all': ['levmar'],
+            'ls': ['levmar'],
+            'deriv_free': [],
+            'general': [],
+            'simplex': [],
+            'trust_region': ['levmar'],
+            'levenberg-marquardt': ['levmar'],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
     def __init__(self, cost_func):
         """
         Initialise the class.
@@ -30,18 +44,6 @@ class LevmarController(Controller):
         self.param_ranges = None
         self.lm_y = None
         self._popt = None
-        self.algorithm_check = {
-            'all': ['levmar'],
-            'ls': ['levmar'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['levmar'],
-            'levenberg-marquardt': ['levmar'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
         self._info = None
 
     def jacobian_information(self):
