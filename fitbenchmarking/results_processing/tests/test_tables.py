@@ -8,7 +8,6 @@ from inspect import getfile
 import os
 import shutil
 import numpy as np
-from tempfile import TemporaryDirectory
 
 import fitbenchmarking
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
@@ -138,11 +137,11 @@ class GenerateTableTests(unittest.TestCase):
 
         self.expected_results_dir = os.path.join(root, 'results_processing',
                                                  'tests', 'expected_results')
-        
+
         self.fig_dir = os.path.join(root, 'results_processing',
-                                      'tests', 'figures')
+                                    'tests', 'figures')
         os.mkdir(self.fig_dir)
-    
+
     def tearDown(self):
         """
         Deletes temporary folder and results produced
@@ -233,7 +232,7 @@ class CreateResultsTableTests(unittest.TestCase):
         os.mkdir(self.group_dir)
 
         self.fig_dir = os.path.join(root, 'results_processing',
-                                      'tests', 'figures')
+                                    'tests', 'figures')
         os.mkdir(self.fig_dir)
 
         self.group_name = 'test_name'
@@ -244,7 +243,7 @@ class CreateResultsTableTests(unittest.TestCase):
         """
         if os.path.exists(self.group_dir):
             shutil.rmtree(self.group_dir)
-        
+
         if os.path.exists(self.fig_dir):
             shutil.rmtree(self.fig_dir)
 
