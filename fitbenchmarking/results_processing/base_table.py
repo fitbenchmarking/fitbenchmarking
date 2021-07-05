@@ -459,7 +459,7 @@ class Table:
 
     @staticmethod
     def _save_colourbar(fig_path, cmap_name, cmap_range, title, left_label,
-                        right_label, n_divs=100, sz_in=[3, 0.8]):
+                        right_label, n_divs=100, sz_in=(3, 0.8)):
         """
         Generates a png of a labelled colourbar using matplotlib.
 
