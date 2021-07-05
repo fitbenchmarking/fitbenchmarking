@@ -192,7 +192,8 @@ class FittingProblem:
         else:
             # Mantid multifit problem
             self.sorted_index = []
-            for i in range(len(self.data_x)):
+            num_data = len(self.data_x)
+            for i in range(num_data):
                 # pylint: disable=unsubscriptable-object
                 correct_vals = correct_data(x=self.data_x[i],
                                             y=self.data_y[i],
