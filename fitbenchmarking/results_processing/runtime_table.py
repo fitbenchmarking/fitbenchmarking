@@ -73,3 +73,27 @@ class RuntimeTable(Table):
                               else np.inf for v in value]
 
         return abs_value, rel_value
+
+    def get_cbar(self, fig_dir):
+        """
+        Plots colourbar figure to figure directory and returns the
+        path to the figure.
+
+        :param fig_dir: figure directory
+        :type fig_dir: str
+
+        :return fig_path: path to colourbar figure
+        :rtype fig_path: str
+        """
+        cmap_name = self.options.colour_map
+        cmap_range = self.options.cmap_range
+        colour_ulim = self.options.colour_ulim
+        fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self.name))
+        title = "Problem-Specific Cell Shading: Relative Runtime"
+        left_label = "Best (1)"
+        right_label = "Worst (>{})".format(colour_ulim)
+
+        self._save_colourbar(fig_path, cmap_name, cmap_range,
+                             title, left_label, right_label)
+
+        return fig_path

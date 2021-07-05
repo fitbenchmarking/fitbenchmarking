@@ -67,6 +67,7 @@ def save_results(options, results, group_name, failed_problems,
                                      best_results,
                                      group_name,
                                      group_dir,
+                                     fig_dir,
                                      pp_locations,
                                      failed_problems,
                                      unselected_minimzers)
