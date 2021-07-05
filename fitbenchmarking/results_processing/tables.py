@@ -29,7 +29,7 @@ SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
 def create_results_tables(options, results, best_results, group_name,
-                          group_dir, pp_locations, failed_problems,
+                          group_dir, fig_dir, pp_locations, failed_problems,
                           unselected_minimzers):
     """
     Saves the results of the fitting to html/txt tables.
@@ -47,6 +47,8 @@ def create_results_tables(options, results, best_results, group_name,
     :param group_dir: path to the directory where group results should be
                       stored
     :type group_dir: str
+    :param fig_dir: path to the directory where figures should be stored
+    :type fig_dir: str
     :param table_descriptions: dictionary containing descriptions of the
                                tables and the comparison mode
     :type table_descriptions: dict
@@ -77,11 +79,12 @@ def create_results_tables(options, results, best_results, group_name,
                                             options.cost_func_type)
 
             try:
-                table, html_table, txt_table = \
+                table, html_table, txt_table, cbar = \
                     generate_table(results,
                                    best_results,
                                    options,
                                    group_dir,
+                                   fig_dir,
                                    pp_locations,
                                    table_names[suffix],
                                    suffix)
@@ -128,6 +131,7 @@ def create_results_tables(options, results, best_results, group_name,
                                     has_pp=has_pp,
                                     pp_filenames=pp_filenames,
                                     table=html_table,
+                                    cbar=cbar,
                                     error_message=ERROR_OPTIONS,
                                     failed_problems=failed_problems,
                                     unselected_minimzers=unselected_minimzers,
@@ -164,7 +168,7 @@ def load_table(table):
 
 
 def generate_table(results, best_results, options, group_dir,
-                   pp_locations, table_name, suffix):
+                   fig_dir, pp_locations, table_name, suffix):
     """
     Generate html/txt tables.
 
@@ -179,6 +183,8 @@ def generate_table(results, best_results, options, group_dir,
     :param group_dir: path to the directory where group results should be
                       stored
     :type group_dir: str
+    :param fig_dir: path to the directory where figures should be stored
+    :type fig_dir: str
     :param pp_locations: tuple containing the locations of the
                          performance profiles (acc then runtime)
     :type pp_locations: tuple(str,str)
@@ -203,10 +209,11 @@ def generate_table(results, best_results, options, group_dir,
     links = table.get_links(results_dict)
     colour = table.get_colour(disp_results)
     str_results = table.display_str(disp_results)
+    cbar = table.get_cbar(fig_dir)
 
     pandas_html = table.create_pandas_data_frame(str_results)
     pandas_txt = copy.copy(pandas_html)
     html_table = table.to_html(pandas_html, colour, links, error)
     txt_table = table.to_txt(pandas_txt, error)
 
-    return table, html_table, txt_table
+    return table, html_table, txt_table, cbar
