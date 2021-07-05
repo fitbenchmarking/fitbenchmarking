@@ -2,40 +2,21 @@
 Implements a controller for MATLAB Statistics Toolbox
 """
 
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
-import os
-import numpy as np
-import dill
 import matlab.engine
+import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
 
 eng = matlab.engine.start_matlab()
 
 
-class MatlabStatsController(Controller):
+class MatlabStatsController(MatlabMixin, Controller):
     """
     Controller for MATLAB Statistics Toolbox fitting (nlinfit)
     """
 
-    def __init__(self, cost_func):
-        """
-        Initialises variables used for temporary storage.
-
-        :param cost_func: Cost function object selected from options.
-        :type cost_func: subclass of
-                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
-        """
-        super().__init__(cost_func)
-        self.initial_params_mat = None
-        self.x_data_mat = None
-        self.y_data_mat = None
-        self._status = None
-        self.result = None
-        self.algorithm_check = {
+    algorithm_check = {
             'all': ['Levenberg-Marquardt'],
             'ls': ['Levenberg-Marquardt'],
             'deriv_free': [],
@@ -46,7 +27,22 @@ class MatlabStatsController(Controller):
             'gauss_newton': [],
             'bfgs': [],
             'conjugate_gradient': [],
-            'steepest_descent': []}
+            'steepest_descent': [],
+            'global_optimization': []}
+
+    def __init__(self, cost_func):
+        """
+        Initialises variables used for temporary storage.
+
+        :param cost_func: Cost function object selected from options.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+        """
+        super().__init__(cost_func)
+        self.x_data_mat = None
+        self.y_data_mat = None
+        self._status = None
+        self.result = None
 
     def jacobian_information(self):
         """
@@ -65,23 +61,12 @@ class MatlabStatsController(Controller):
         self.initial_params_mat = matlab.double([self.initial_params])
         self.x_data_mat = matlab.double(self.data_x.tolist())
 
-        def _feval(p):
-            """
-            Function to call from matlab which evaluates the residuals
-            """
-            feval = -self.cost_func.eval_r(p)
-            return feval
+        # clear out cached values
+        self.clear_cached_values()
 
-        # serialize cost_func.eval_cost and open within matlab engine
+        # serialize cost_func.eval_r and open within matlab engine
         # so that matlab fitting function can be called
-        temp_dir = TemporaryDirectory()
-        temp_file = os.path.join(temp_dir.name, 'temp.pickle')
-        with open(temp_file, 'wb') as f:
-            dill.dump(_feval, f)
-        eng.workspace['temp_file'] = temp_file
-        eng.evalc('py_f = py.open(temp_file,"rb")')
-        eng.evalc('eval_f = py.dill.load(py_f)')
-        eng.evalc('py_f.close()')
+        eng.workspace['eval_f'] = self.py_to_mat(self.cost_func.eval_r, eng)
         eng.evalc('f_wrapper = @(p, x)double(eval_f(p))')
 
     def fit(self):

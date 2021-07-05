@@ -3,6 +3,8 @@ compare table
 """
 import os
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.colors as clrs
 from fitbenchmarking.results_processing.base_table import Table
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
@@ -143,8 +145,11 @@ class LocalMinTable(Table):
         :rtype: dict
         """
         local_min, _ = results
-        colour = {key: [self.html_colours[0]
-                        if v == "True" else self.html_colours[-1]
+        cmap_name = self.options.colour_map
+        cmap = plt.get_cmap(cmap_name)
+        cmap_range = self.options.cmap_range
+        colour = {key: [clrs.rgb2hex(cmap(cmap_range[0]))
+                        if v == "True" else clrs.rgb2hex(cmap(cmap_range[1]))
                         for v in value]
                   for key, value in local_min.items()}
         return colour
@@ -172,3 +177,26 @@ class LocalMinTable(Table):
                                  for a, r in zip(local_min[key],
                                                  norm_rel[key])]
         return table_output
+
+    def get_cbar(self, fig_dir):
+        """
+        Plots colourbar figure to figure directory and returns the
+        path to the figure.
+
+        :param fig_dir: figure directory
+        :type fig_dir: str
+
+        :return fig_path: path to colourbar figure
+        :rtype fig_path: str
+        """
+        cmap_name = self.options.colour_map
+        cmap_range = self.options.cmap_range
+        fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self.name))
+        title = "Cell Shading: Minimum Found"
+        left_label = "True"
+        right_label = "False"
+
+        self._save_colourbar(fig_path, cmap_name, cmap_range,
+                             title, left_label, right_label, 2)
+
+        return fig_path

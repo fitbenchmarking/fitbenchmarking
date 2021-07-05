@@ -222,6 +222,7 @@ class FittingProblem:
         :type params: dict
 
         """
+        # pylint: disable=unsubscriptable-object
         lower_param_names = [name.lower()
                              for name in self.starting_values[0].keys()]
         if not all(name in lower_param_names for name in value_ranges):

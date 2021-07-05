@@ -20,8 +20,20 @@ In order to add a new controller, you will need to:
 2. Create ``fitbenchmarking/controllers/<software_name>_controller.py``
    which contains a new subclass of
    :class:`~fitbenchmarking.controllers.base_controller.Controller`.
-   This should implement five functions:
 
+   .. note::
+      Please note that if the fitting package being added uses Matlab, then the
+      new controller should also inherit from the mixin class
+      :class:`~fitbenchmarking.controllers.matlab_mixin.MatlabMixin`.
+
+      .. autoclass:: fitbenchmarking.controllers.matlab_mixin.MatlabMixin
+          :members: py_to_mat, clear_cached_values
+          :noindex:
+
+   The new controller should implement five functions, as well as initializing the dictionary ``algorithm_check``:
+
+  - .. autoattribute:: fitbenchmarking.controllers.base_controller.Controller.algorithm_check
+               :noindex:  
 
   -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.__init__()
                      :noindex:
@@ -47,6 +59,10 @@ repository so that other can use this package.  To do this need to follow our
    Note: make sure that you use ``<software_name>`` in these places so that the
    software links in the HTML tables link correctly to the documentation.
    Add the software to ``examples/all_software.ini``.
+
+   You should also ensure that the available minimizers are catagorised correctly in ``self.algorithm_check``
+   using the :ref:`algorithm type <algorithm_type>` options. Please refer to the :ref:`algorithms`
+   page for more information about each algorithm type.
 
 5. Create tests for the software in
    ``fitbenchmarking/controllers/tests/test_controllers.py``. If the package

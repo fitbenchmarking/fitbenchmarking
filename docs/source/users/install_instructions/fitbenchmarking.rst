@@ -16,11 +16,11 @@ FitBenchmarking can be installed via the command line by entering:
 
 .. code-block:: bash
 
-      python -m pip install fitbenchmarking[bumps,DFO,minuit,SAS,numdifftools]
+      python -m pip install fitbenchmarking[bumps,DFO,gradient_free,minuit,SAS,numdifftools]
 
 
 This will install the latest stable version of FitBenchmarking.
-For all available versions please visit the FitBenchamarking
+For all available versions please visit the FitBenchmarking
 `PyPI project <https://pypi.org/project/fitbenchmarking/>`__.
 FitBenchmarking can also use additional software that cannot be installed
 using pip; please see :ref:`external-instructions` for details.
@@ -48,7 +48,7 @@ of the code that is still in development.
 
    .. code-block:: bash
 
-      python -m pip install .[bumps,DFO,minuit,SAS]
+      python -m pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools]
 
 4. Additional software that cannot be installed via pip can also be used
    with FitBenchmarking.  Follow the instructions at
@@ -77,6 +77,7 @@ where valid strings ``option-x`` are:
 
 * ``bumps``-- installs the `Bumps <https://bumps.readthedocs.io>`_ fitting package.
 * ``DFO`` -- installs the `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ and `DFO-GN <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`_ fitting packages.
+* ``gradient_free`` -- installs the `Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ fitting package 
 * ``levmar`` -- installs the `levmar <http://users.ics.forth.gr/~lourakis/levmar/>`_ fitting package.  Note that the interface we use also requires BLAS and LAPLACK to be installed on the system, and calls to this minimizer will fail if these libraries are not present.
 * ``minuit`` -- installs the `Minuit <http://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/>`_ fitting package.
 * ``SAS`` -- installs the `Sasmodels <https://github.com/SasView/sasmodels>`_ fitting package.

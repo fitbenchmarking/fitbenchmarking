@@ -15,7 +15,7 @@ Problem-Format/Software Combinations
 When comparing minimizer options from one software package
 (e.g., comparing all `scipy_ls` minimizers), we are not aware of any issues.
 However, the general problem of comparing minimizers from multiple software
-packages, and with different problem-formats, on truely equal terms is harder to
+packages, and with different problem-formats, on truly equal terms is harder to
 achieve.
 
 The following list details all cases where we are aware of a possible bias:
@@ -36,9 +36,9 @@ The following list details all cases where we are aware of a possible bias:
 - **Running Mantid problems with Matlab fitting software.**
 
   To run problems with Matlab fitting software through FitBenchmarking, within
-  the Matlab Controller the dynaically created `cost_func.eval_model` function
+  the Matlab Controller the dynamically created `cost_func.eval_model` function
   is serialized and then loaded in the Matlab Engine workspace. However for
-  Mantid problems, this function is not pickable resulting in the problem
+  Mantid problems, this function is not picklable resulting in the problem
   being skipped over.
 
 In all cases, the stopping criterion of each minimizer is set to the default
@@ -56,4 +56,4 @@ Specific Problem/Minimizer Combinations
   This causes python to exit without completing any remaining runs or
   generating output files.
   More information may be available via
-  `the issue on Mantids github page <https://github.com/mantidproject/mantid/issues/31176>`__.
+  `the issue on Mantid's github page <https://github.com/mantidproject/mantid/issues/31176>`__.
