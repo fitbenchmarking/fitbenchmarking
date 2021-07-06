@@ -12,6 +12,7 @@ import fitbenchmarking
 from fitbenchmarking.results_processing import (performance_profiler, plots,
                                                 support_page, tables)
 from fitbenchmarking.utils import create_dirs
+from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.misc import get_css, get_js
 
 
@@ -145,9 +146,14 @@ def create_plots(options, results, best_results, figures_dir):
     """
     for best, prob_result in zip(best_results, results):
 
-        plot = plots.Plot(best_result=best,
-                          options=options,
-                          figures_dir=figures_dir)
+        try:
+            plot = plots.Plot(best_result=best,
+                              options=options,
+                              figures_dir=figures_dir)
+        except PlottingError as e:
+            for result in prob_result:
+                result.figure_error = str(e)
+            continue
 
         # Create a plot showing the initial guess and get filename
         initial_guess_path = plot.plot_initial_guess()

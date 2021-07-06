@@ -189,3 +189,11 @@ class MissingBoundsError(FitBenchmarkException):
                     'are required to use this ' \
                     'software.'
     error_code = 20
+
+
+class PlottingError(FitBenchmarkException):
+    """
+    Indicates an error during plotting results
+    """
+    class_message = 'An error occurred during plotting.'
+    error_code = 21

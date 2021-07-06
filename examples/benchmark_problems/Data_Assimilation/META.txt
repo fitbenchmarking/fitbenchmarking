@@ -1,0 +1,5 @@
+Data_Assimilation
+
+These data files are synthetic and have been generated as an initial test of
+the minimizers. We plan to extend this with time series data which is more
+representative of the expectations for data assimilation in future updates.

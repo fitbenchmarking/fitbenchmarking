@@ -58,7 +58,7 @@ class Options:
                             'gauss_newton', 'bfgs', 'conjugate_gradient',
                             'steepest_descent', 'global_optimization'],
          'software': ['bumps', 'dfo', 'gradient_free', 'gsl', 'levmar',
-                      'mantid', 'matlab', 'matlab_opt', 'matlab_opt',
+                      'mantid', 'matlab', 'matlab_opt', 'matlab_stats',
                       'minuit', 'ralfit', 'scipy', 'scipy_ls', 'scipy_go'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
