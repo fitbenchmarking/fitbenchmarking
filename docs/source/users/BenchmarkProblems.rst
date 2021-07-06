@@ -187,6 +187,26 @@ instrument at ISIS) have 1,025 data points (with 8 unknown parameters).
    |CUTEstWarning|
 
 
+SIF_GO
+======
+
+This directory (also found in the folder `examples/benchmark_problems/SIF_GO`) contains
+`SIF files <https://github.com/ralna/SIFDecode>`_
+encoding least squares problems 
+from the `CUTEst <https://github.com/ralna/CUTEst>`_
+continuous optimization testing environment.
+
+All of these problems have been modified, with finite bounds added for all parameters,
+making the problems appropriate for testing global optimization solvers. The bounds that
+have been added to each problem are the same as those used in SciPy's
+`global optimization benchmark functions <https://github.com/scipy/scipy/tree/master/benchmarks/benchmarks/go_benchmark_functions>`_.
+
+These problems have between 3 and 7 unknown parameters, and fit between 9 and 37 data points.
+
+.. warning::
+   |CUTEstWarning|
+
+
 Simple tests
 ============
 
