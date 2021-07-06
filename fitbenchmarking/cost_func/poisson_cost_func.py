@@ -2,7 +2,7 @@
 Implements a Poisson deviance cost function based on Mantid's:
 https://docs.mantidproject.org/nightly/fitting/fitcostfunctions/Poisson.html
 """
-from numpy import log, finfo, float64
+from numpy import log, finfo, float64, ravel
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
@@ -59,7 +59,11 @@ class PoissonCostFunc(CostFunc):
         # Penalise nagative f(x, p)
         f_xp[f_xp <= 0.0] = finfo(float).max
 
-        result = sum(_safe_a_log_b(y, y) - _safe_a_log_b(y, f_xp) - (y - f_xp))
+        residuals = _safe_a_log_b(y, y) - _safe_a_log_b(y, f_xp) - (y - f_xp)
+
+        # Flatten in case of a vector function
+        result = sum(ravel(residuals))
+
         self.cache_cost_x['params'] = params
         self.cache_cost_x['value'] = result
         return result

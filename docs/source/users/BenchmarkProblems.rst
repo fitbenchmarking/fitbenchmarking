@@ -199,6 +199,23 @@ that are added, and also that any new parsers reimplement these
 data sets and models (if possible).
 
 
+Data Assimilation
+=================
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/data_assimilation.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/data_assimilation.tar.gz>`
+
+This folder (also found in `examples/benchmark_problems/data_assimilation`) contains
+two examples using the data assimilation problem definition in fitbenchmarking.
+These examples follow the method set out in 
+`this paper <https://www.researchgate.net/publication/324956488_Data_assimilation_approach_to_analysing_systems_of_ordinary_differential_equations>`_.
+
+These data files are synthetic and have been generated as an initial test of
+the minimizers. We plan to extend this with time series data which is more
+representative of the expectations for data assimilation in future updates.
+
+
+
 .. |CUTEstWarning| replace::
 		   The external packages CUTEst and pycutest must be installed to run
 		   this data set.   See :ref:`external-instructions` for details.
