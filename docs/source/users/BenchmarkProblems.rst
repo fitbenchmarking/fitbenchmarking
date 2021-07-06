@@ -187,6 +187,26 @@ instrument at ISIS) have 1,025 data points (with 8 unknown parameters).
    |CUTEstWarning|
 
 
+SIF_GO
+======
+
+This directory (also found in the folder `examples/benchmark_problems/SIF_GO`) contains
+`SIF files <https://github.com/ralna/SIFDecode>`_
+encoding least squares problems 
+from the `CUTEst <https://github.com/ralna/CUTEst>`_
+continuous optimization testing environment.
+
+All of these problems have been modified, with finite bounds added for all parameters,
+making the problems appropriate for testing global optimization solvers. The bounds that
+have been added to each problem are the same as those used in SciPy's
+`global optimization benchmark functions <https://github.com/scipy/scipy/tree/master/benchmarks/benchmarks/go_benchmark_functions>`_.
+
+These problems have between 3 and 7 unknown parameters, and fit between 9 and 37 data points.
+
+.. warning::
+   |CUTEstWarning|
+
+
 Simple tests
 ============
 
@@ -197,6 +217,23 @@ a number of simple tests with known, and easy to obtain,
 answers.  We recommend that this is used to test any new minimizers
 that are added, and also that any new parsers reimplement these
 data sets and models (if possible).
+
+
+Data Assimilation
+=================
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/data_assimilation.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/data_assimilation.tar.gz>`
+
+This folder (also found in `examples/benchmark_problems/data_assimilation`) contains
+two examples using the data assimilation problem definition in fitbenchmarking.
+These examples follow the method set out in 
+`this paper <https://www.researchgate.net/publication/324956488_Data_assimilation_approach_to_analysing_systems_of_ordinary_differential_equations>`_.
+
+These data files are synthetic and have been generated as an initial test of
+the minimizers. We plan to extend this with time series data which is more
+representative of the expectations for data assimilation in future updates.
+
 
 
 .. |CUTEstWarning| replace::

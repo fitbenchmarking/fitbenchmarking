@@ -4,8 +4,11 @@ guess plot.
 """
 import os
 import matplotlib
+
+from fitbenchmarking.utils.exceptions import PlottingError
+
 matplotlib.use('Agg')
-# pylint: disable=wrong-import-position
+# pylint: disable=ungrouped-imports,wrong-import-position,wrong-import-order
 import matplotlib.pyplot as plt  # noqa: E402
 
 
@@ -17,6 +20,9 @@ class Plot:
     def __init__(self, best_result, options, figures_dir):
         self.cost_func = best_result.cost_func
         self.problem = self.cost_func.problem
+        if self.problem.multivariate:
+            raise PlottingError(
+                'Plots cannot be generated for multivariate problems')
         self.options = options
 
         self.result = best_result
@@ -73,7 +79,8 @@ class Plot:
         """
         Close the matplotlib figure
         """
-        plt.close(self.fig)
+        if not self.problem.multivariate:
+            plt.close(self.fig)
 
     def format_plot(self):
         """

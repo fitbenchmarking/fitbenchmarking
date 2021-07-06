@@ -1,6 +1,8 @@
 """
 Implements the non-weighted non-linear least squares cost function
 """
+from numpy import ravel
+
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
 
@@ -50,9 +52,13 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         y = kwargs.get("y", self.problem.data_y)
         if len(x) != len(y):
             raise CostFuncError('The length of the x and y are not the same, '
-                                'len(x)={} and len(y)= {}.'.format(len(x),
-                                                                   len(y)))
+                                'len(x)={} and len(y)={}.'.format(len(x),
+                                                                  len(y)))
         result = y - self.problem.eval_model(params=params, x=x)
+
+        # Flatten in case of a vector function
+        result = ravel(result)
+
         self.cache_rx['params'] = params
         self.cache_rx['value'] = result
         return result
