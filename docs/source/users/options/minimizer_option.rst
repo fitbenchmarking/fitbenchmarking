@@ -278,7 +278,27 @@ The `matlab` minimizer is set as follows:
 
 .. warning::
    MATLAB must be installed for this to be available; See :ref:`external-instructions`.
-   
+
+Matlab Curve Fitting Toolbox (``matlab_curve``)
+-----------------------------------------------
+
+We call the `fit <https://uk.mathworks.com/help/curvefit/fit.html>`_
+function from the `MATLAB Curve Fitting Toolbox <https://uk.mathworks.com/help/curvefit/index.html>`_,
+using the MATLAB Engine API for Python.
+
+* Levenberg-Marquardt (:code:`Levenberg-Marquardt`)
+* Trust-Region (:code:`Trust-Region`)
+
+The `matlab_curve` minimizers are set as follows:
+
+.. code-block:: rst
+
+   [MINIMIZERS]
+   matlab_curve: Levenberg-Marquardt
+                 Trust-Region
+
+.. warning::
+   MATLAB Curve Fitting Toolbox must be installed for this to be available; See :ref:`external-instructions`.
 
 Matlab Optimization Toolbox (``matlab_opt``)
 --------------------------------------------

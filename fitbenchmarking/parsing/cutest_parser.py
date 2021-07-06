@@ -118,9 +118,10 @@ class CutestParser(Parser):
         os.environ["MASTSIF"] = self.mastsif_dir.name
 
         for cx, cf in self._cache_f:
-            if np.isclose(cx, x).all():
-                f = cf
-                break
+            if x.size == cx.size:
+                if np.isclose(cx, x).all():
+                    f = cf
+                    break
         else:
             fname, _, _, _ = self._setup_data(x)
             p = _import_problem(fname)
