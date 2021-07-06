@@ -138,12 +138,48 @@ class CompareTable(Table):
         :return: list of HTML colours
         :rtype: list
         """
-        color_template = 'background-image: linear-gradient({0},{0},{1},{1})'
+        ######## OPTION 1: Linear Gradient ##########
+        # color_template = 'background-image: linear-gradient({0},{0},{1},{1})'
+        # name = value.name.split('"')[2].replace("</a>", "")[1:]
+        # output_colour = []
+        # acc_colour, runtime_colour = colour[name]
+        # for acc, runtime in zip(acc_colour, runtime_colour):
+        #     output_colour.append(color_template.format(acc, runtime))
+
+        ######## OPTION 2: Rectangular Vertical Runtime Bars ##########
+        color_template = 'background-image: linear-gradient(270deg, {0} 0% 25%, {1} 25% 100%),'\
+            'linear-gradient(0deg, {2} 0% {3}%, {1} {3}% 100%);'
         name = value.name.split('"')[2].replace("</a>", "")[1:]
         output_colour = []
+        results_dict = self.create_results_dict()
+        disp_results = self.get_values(results_dict)
+        _, rels = disp_results
+        rel_runtime = rels[name][1]
         acc_colour, runtime_colour = colour[name]
-        for acc, runtime in zip(acc_colour, runtime_colour):
-            output_colour.append(color_template.format(acc, runtime))
+        for acc_hex, runtime_hex, runtime in zip(acc_colour, runtime_colour, rel_runtime):
+            runtime_bar_length = ((runtime-min(rel_runtime))/\
+                (max(rel_runtime)-min(rel_runtime)))*100
+            h = acc_hex.lstrip('#')
+            rgb = str(tuple(int(h[i:i+2], 16) for i in (0, 2, 4))).rstrip(')')
+            output_colour.append(color_template.format('rgba'+rgb+',0)',\
+                 'rgba'+rgb+',1)', runtime_hex, runtime_bar_length))
+        
+        ######## OPTION 3: Triangular Runtime Bars ##########
+        # color_template = 'background-image: linear-gradient(135deg, {0} 0% {1}%, {2} {1}% 100%)'
+        # name = value.name.split('"')[2].replace("</a>", "")[1:]
+        # output_colour = []
+        # results_dict = self.create_results_dict()
+        # disp_results = self.get_values(results_dict)
+        # _, rels = disp_results
+        # rel_runtime = rels[name][1]
+        # acc_colour, runtime_colour = colour[name]
+        # for acc_hex, runtime_hex, runtime in zip(acc_colour, runtime_colour, rel_runtime):
+        #     runtime_bar_length = 100 - ((runtime-min(rel_runtime))/\
+        #         (max(rel_runtime)-min(rel_runtime)))*50
+        #     h = acc_hex.lstrip('#')
+        #     rgb = str(tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))#.rstrip(')')
+        #     output_colour.append(color_template.format('rgb'+rgb,\
+        #          runtime_bar_length, runtime_hex))
         return output_colour
 
     def get_cbar(self, fig_dir):
