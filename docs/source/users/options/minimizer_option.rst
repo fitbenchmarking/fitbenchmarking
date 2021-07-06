@@ -458,9 +458,9 @@ software.  In particular, we use the `Global Optimization <https://docs.scipy.or
 solvers for global optimization problems from the optimization chapter
 of SciPy's library.
 
-* Differential Evolution (derivative-free) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html#scipy.optimize.differential_evolution>`_ (:code:`differential_evolution`)
-* Simplicial Homology Global Optimization (SHGO) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.shgo.html#scipy.optimize.shgo>`_ (:code:`shgo`)
-* Dual Annealing <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.dual_annealing.html#scipy.optimize.dual_annealing>`_ (:code:`dual_annealing`)
+* `Differential Evolution (derivative-free) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html#scipy.optimize.differential_evolution>`_ (:code:`differential_evolution`)
+* `Simplicial Homology Global Optimization (SHGO) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.shgo.html#scipy.optimize.shgo>`_ (:code:`shgo`)
+* `Dual Annealing <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.dual_annealing.html#scipy.optimize.dual_annealing>`_ (:code:`dual_annealing`)
 
 **Links** `Github - SciPy optimization <https://github.com/scipy/scipy/blob/master/scipy/optimize/>`_
 
