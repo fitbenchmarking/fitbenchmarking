@@ -207,7 +207,7 @@ or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/data_assimilati
 
 This folder (also found in `examples/benchmark_problems/data_assimilation`) contains
 two examples using the data assimilation problem definition in fitbenchmarking.
-These example follow the method set out in 
+These examples follow the method set out in 
 `this paper <https://www.researchgate.net/publication/324956488_Data_assimilation_approach_to_analysing_systems_of_ordinary_differential_equations>`_.
 
 These data files are synthetic and have been generated as an initial test of
