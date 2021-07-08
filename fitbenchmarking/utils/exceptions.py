@@ -197,3 +197,12 @@ class PlottingError(FitBenchmarkException):
     """
     class_message = 'An error occurred during plotting.'
     error_code = 21
+
+
+class NoHessianError(FitBenchmarkException):
+    """
+    Indicated a problem with Hessian import
+    """
+    class_message = 'Could not find Hessian class'
+    error_code = 22
+

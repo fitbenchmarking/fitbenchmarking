@@ -52,6 +52,14 @@ class MatlabStatsController(MatlabMixin, Controller):
         jacobian_free_solvers = ['Levenberg-Marquardt']
         return has_jacobian, jacobian_free_solvers
 
+    def hessian_information(self):
+        """
+        Matlab Statistics Toolbox cannot use Hessian information
+        """
+        has_hessian = False
+        hessian_free_solvers = []
+        return has_hessian, hessian_free_solvers
+
     def setup(self):
         """
         Setup for Matlab fitting

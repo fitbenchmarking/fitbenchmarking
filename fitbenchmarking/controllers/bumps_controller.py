@@ -61,6 +61,14 @@ class BumpsController(Controller):
         jacobian_free_solvers = []
         return has_jacobian, jacobian_free_solvers
 
+    def hessian_information(self):
+        """
+        Bumps cannot use Hessian information
+        """
+        has_hessian = False
+        hessian_free_solvers = []
+        return has_hessian, hessian_free_solvers
+
     def setup(self):
         # pylint: disable=exec-used,protected-access
         """

@@ -74,6 +74,14 @@ class GradientFreeController(Controller):
         jacobian_free_solvers = []
         return has_jacobian, jacobian_free_solvers
 
+    def hessian_information(self):
+        """
+        Gradient Free Optimizers cannot use Hessian information
+        """
+        has_hessian = False
+        hessian_free_solvers = []
+        return has_hessian, hessian_free_solvers
+
     def setup(self):
         """
         Setup for Gradient Free Optimizers

@@ -63,6 +63,14 @@ class GSLController(Controller):
         jacobian_free_solvers = ['nmsimplex', 'nmsimplex2']
         return has_jacobian, jacobian_free_solvers
 
+    def hessian_information(self):
+        """
+        GSL cannot use Hessian information
+        """
+        has_hessian = False
+        hessian_free_solvers = []
+        return has_hessian, hessian_free_solvers
+
     # pylint: disable=unused-argument
     def _prediction_error(self, p, data=None):
         """

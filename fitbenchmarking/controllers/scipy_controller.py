@@ -55,6 +55,15 @@ class ScipyController(Controller):
         jacobian_free_solvers = ["Nelder-Mead", "Powell"]
         return has_jacobian, jacobian_free_solvers
 
+    def hessian_information(self):
+        """
+        Scipy can use Hessian information
+        """
+        has_hessian = True
+        hessian_free_solvers = ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
+                    'L-BFGS-B', 'TNC', 'SLSQP']
+        return has_hessian, hessian_free_solvers
+
     def setup(self):
         """
         Setup problem ready to be run with SciPy
@@ -76,6 +85,8 @@ class ScipyController(Controller):
                 kwargs["jac"] = self.jacobian.eval_cost
         if self.minimizer not in self.no_bounds_minimizers:
             kwargs["bounds"] = self.value_ranges
+        if self.hessian and self.minimizer == "Newton-CG":
+            kwargs["hess"] = self.hessian.eval_cost
         self.result = minimize(**kwargs)
         self._popt = self.result.x
 
