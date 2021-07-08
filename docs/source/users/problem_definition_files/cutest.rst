@@ -16,6 +16,15 @@ The SIF file format is very powerful, and CUTEst will work with arbitrary
 variable names, however for FitBenchmarking, these must match a set of expected
 variable names.
 
+**Licence** This file format needs PyCUTEst and the pacakges ARCHDefs, CUTEst and
+SIFDECODE to be installed.
+PyCUTEst is available under the
+`GPL-3 <https://github.com/jfowkes/pycutest/blob/master/LICENSE>`__ licence.
+`ARCHDEFS <https://github.com/ralna/ARCHDefs/blob/master/LICENSE>`__,
+`CUTEst <https://github.com/ralna/CUTEst/blob/master/LICENSE>`__ and
+`SIFDECODE <https://github.com/ralna/SIFDecode/blob/master/LICENSE>`__
+are available under an LGPL (v2.1 or later) licence.
+
 Modifications to the SIF format for FitBenchmarking problems
 ============================================================
 
