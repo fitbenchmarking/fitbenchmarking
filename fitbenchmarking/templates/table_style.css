@@ -35,6 +35,7 @@ thead tr th.blank.level0 {
 
 th, td {
   border: 1px solid black;
+  overflow: hidden;
 }
 
 th a, td a {
