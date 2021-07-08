@@ -1,7 +1,7 @@
 """
 Implements the root non-linear least squares cost function
 """
-from numpy import sqrt
+from numpy import sqrt, ravel
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
@@ -58,6 +58,10 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
                                 'len(x)={} and len(y)= {}.'.format(len(x),
                                                                    len(y)))
         result = sqrt(y) - sqrt(self.problem.eval_model(params=params, x=x))
+
+        # Flatten in case of a vector function
+        result = ravel(result)
+
         self.cache_rx['params'] = params
         self.cache_rx['value'] = result
         return result

@@ -1,0 +1,4 @@
+sif_go
+
+This is a collection of problems from CUTEst with parameter bounds added so they are
+suitable to run with global optimization minimizers.

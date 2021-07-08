@@ -65,3 +65,14 @@ fit.
 In some cases variables will be vectors, and the number of degrees of freedom
 will be greater, most problems use ``NVEC`` as a convention to input the number
 of vectors.
+
+Support for Bounds
+==================
+
+Parameter ranges can be added to SIF files using the `BOUNDS <https://www.numerical.rl.ac.uk/lancelot/sif/node26.html>`_
+indicator card.
+
+Currently in Fitbenchmarking, problems with parameter ranges can be handled by SciPy, Bumps, Minuit, Mantid,
+Matlab Optimization Toolbox, DFO, Levmar and RALFit fitting software. Please note that the following Mantid
+minimizers currently throw an exception when parameter ranges are used: BFGS, Conjugate gradient
+(Fletcher-Reeves imp.), Conjugate gradient (Polak-Ribiere imp.) and SteepestDescent.

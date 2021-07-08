@@ -58,7 +58,8 @@ CONSTANTS
 
 BOUNDS
 
- FR basic     'DEFAULT'
+ LO BND       'DEFAULT' 0.0
+ UP BND       'DEFAULT' 10.0
 
 START POINT
 

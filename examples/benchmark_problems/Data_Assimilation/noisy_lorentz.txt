@@ -1,0 +1,6 @@
+# Fitbenchmark Problem
+software = 'ivp'
+name = 'Noisy Lorentz'
+description = 'A synthetic lorentz system with gaussian noise for testing the ivp parser. Exact results should be 10, 28, 8/3.'
+input_file = 'noisy_lorentz3d.txt'
+function = 'module=functions/lorentz,func=lorentz3d,step=0.1,sigma=11,r=30,b=3'

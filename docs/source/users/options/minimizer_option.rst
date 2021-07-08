@@ -294,7 +294,27 @@ The `matlab` minimizer is set as follows:
 
 .. warning::
    MATLAB must be installed for this to be available; See :ref:`external-instructions`.
-   
+
+Matlab Curve Fitting Toolbox (``matlab_curve``)
+-----------------------------------------------
+
+We call the `fit <https://uk.mathworks.com/help/curvefit/fit.html>`_
+function from the `MATLAB Curve Fitting Toolbox <https://uk.mathworks.com/help/curvefit/index.html>`_,
+using the MATLAB Engine API for Python.
+
+* Levenberg-Marquardt (:code:`Levenberg-Marquardt`)
+* Trust-Region (:code:`Trust-Region`)
+
+The `matlab_curve` minimizers are set as follows:
+
+.. code-block:: rst
+
+   [MINIMIZERS]
+   matlab_curve: Levenberg-Marquardt
+                 Trust-Region
+
+.. warning::
+   MATLAB Curve Fitting Toolbox must be installed for this to be available; See :ref:`external-instructions`.
 
 Matlab Optimization Toolbox (``matlab_opt``)
 ============================================
@@ -466,9 +486,9 @@ software.  In particular, we use the `Global Optimization <https://docs.scipy.or
 solvers for global optimization problems from the optimization chapter
 of SciPy's library.
 
-* Differential Evolution (derivative-free) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html#scipy.optimize.differential_evolution>`__ (:code:`differential_evolution`)
-* Simplicial Homology Global Optimization (SHGO) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.shgo.html#scipy.optimize.shgo>`__ (:code:`shgo`)
-* Dual Annealing <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.dual_annealing.html#scipy.optimize.dual_annealing>`__ (:code:`dual_annealing`)
+* `Differential Evolution (derivative-free) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html#scipy.optimize.differential_evolution>`__ (:code:`differential_evolution`)
+* `Simplicial Homology Global Optimization (SHGO) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.shgo.html#scipy.optimize.shgo>`__ (:code:`shgo`)
+* `Dual Annealing <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.dual_annealing.html#scipy.optimize.dual_annealing>`__ (:code:`dual_annealing`)
 
 **Links** `Github - SciPy optimization <https://github.com/scipy/scipy/blob/master/scipy/optimize/>`__
 
