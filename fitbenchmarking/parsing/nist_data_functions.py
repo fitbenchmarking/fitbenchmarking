@@ -175,6 +175,7 @@ def format_function_scipy(function):
     function = function.replace("sin", "np.sin")
     function = function.replace("tan", "np.tan")
     function = function.replace("pi", "np.pi")
+    function = function.replace("log", "np.log")
     function = function.replace("Log", "np.log")
 
     return function
