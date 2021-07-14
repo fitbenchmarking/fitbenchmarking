@@ -21,7 +21,8 @@ class Analytic(Hessian):
 
     def eval(self, params, **kwargs):
         """
-        Evaluates Hessian of problem.eval_model
+        Evaluates Hessian of problem.eval_model, returning the value
+        sum_{i=1}^m (r)_i \nabla^2r_i(x)
 
         :param params: The parameter values to find the Hessian at
         :type params: list
@@ -33,10 +34,15 @@ class Analytic(Hessian):
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)
         e = kwargs.get("e", self.problem.data_e)
-        hes = self.problem.hessian(x, params)
+        rx = self.cached_func_values(self.cost_func.cache_rx,
+                                     self.cost_func.eval_r,
+                                     params,
+                                     **kwargs)
+        grad2_r = self.problem.hessian(x, params)
         # if self.problem.options.cost_func_type == "weighted_nlls":
         #     # scales each column of the Jacobian by the weights
-        #     hes = hes[:,:,0] / e[0]
+        #     hes[:,:,0] = hes[:,:,0] / e[0]
+        hes = matmul(grad2_r, rx)
         return hes
 
     def eval_cost(self, params, **kwargs):
@@ -49,10 +55,7 @@ class Analytic(Hessian):
         :return: Computed derivative of the cost function
         :rtype: numpy array
         """
-        rx = self.cached_func_values(self.cost_func.cache_rx,
-                                     self.cost_func.eval_r,
-                                     params,
-                                     **kwargs)
         H = self.eval(params, **kwargs)
-        out = 2.0 * matmul(H, rx)
+        J = self.jacobian.eval(params, **kwargs)
+        out = H + matmul(np.transpose(J),J)
         return out

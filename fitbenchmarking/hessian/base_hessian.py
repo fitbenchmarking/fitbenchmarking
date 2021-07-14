@@ -21,6 +21,7 @@ class Hessian:
         """
         self.cost_func = cost_func
         self.problem = self.cost_func.problem
+        self.jacobian = None
 
     @abstractmethod
     def eval(self, params, **kwargs):

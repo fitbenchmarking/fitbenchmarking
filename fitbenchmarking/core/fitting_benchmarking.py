@@ -368,6 +368,7 @@ def loop_over_hessians(controller, options, grabbed_output):
     results = []
     chi_sq = []
     minimizer_list = []
+    hessian = False
     failed = False
     minimizer = controller.minimizer
     cost_func = controller.cost_func
@@ -396,6 +397,7 @@ def loop_over_hessians(controller, options, grabbed_output):
                     results, chi_sq, minimizer_list = \
                             loop_over_jacobians(controller,
                                                 options,
+                                                hessian,
                                                 grabbed_output)
             else:
                 failed = True
@@ -407,7 +409,7 @@ def loop_over_hessians(controller, options, grabbed_output):
 
     return results, chi_sq, minimizer_list, failed
     
-def loop_over_jacobians(controller, options, grabbed_output):
+def loop_over_jacobians(controller, options, hessian, grabbed_output):
     """
     Loops over Jacobians set from the options file
 
@@ -460,6 +462,8 @@ def loop_over_jacobians(controller, options, grabbed_output):
                 jacobian.method = num_method
 
                 controller.jacobian = jacobian
+                if hessian:
+                    hessian.jacobian = jacobian
                 try:
                     with grabbed_output:
                         # Calls timeit repeat with repeat = num_runs and
