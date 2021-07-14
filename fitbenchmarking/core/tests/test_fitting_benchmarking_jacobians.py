@@ -39,6 +39,8 @@ class DummyController(Controller):
         self.count = 0
         self.has_jacobian = []
         self.invalid_jacobians = []
+        self.has_hessian = []
+        self.invalid_hessians = []
 
     def setup(self):
         """
@@ -59,6 +61,14 @@ class DummyController(Controller):
         has_jacobian = self.has_jacobian[self.count]
         invalid_jacobians = self.invalid_jacobians[self.count]
         return has_jacobian, invalid_jacobians
+
+    def hessian_information(self):
+        """
+        Mock controller jacobian_information function
+        """
+        has_hessian = self.has_hessian[self.count]
+        invalid_hessians = self.invalid_hessians[self.count]
+        return has_hessian, invalid_hessians
 
     def cleanup(self):
         """
@@ -113,10 +123,13 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "general"
+        self.controller.has_hessian = [False]
+        hessian = False
         new_name = ['general: scipy 3-point']
         results, _, new_minimizer_list = \
             loop_over_jacobians(self.controller,
                                 self.options,
+                                hessian,
                                 self.grabbed_output)
         assert all(isinstance(x, dict) for x in results)
         assert all(x["minimizer"] == name for x,
@@ -132,10 +145,13 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "general"
+        self.controller.has_hessian = [False]
+        hessian = False
         new_name = ['general: scipy 3-point', 'general: scipy 2-point']
         results, _, new_minimizer_list = \
             loop_over_jacobians(self.controller,
                                 self.options,
+                                hessian,
                                 self.grabbed_output)
         assert all(isinstance(x, dict) for x in results)
         assert all(x["minimizer"] == name for x,
@@ -152,10 +168,13 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
+        self.controller.has_hessian = [False]
+        hessian = False
         new_name = ['deriv_free_algorithm']
         results, _, new_minimizer_list = \
             loop_over_jacobians(self.controller,
                                 self.options,
+                                hessian,
                                 self.grabbed_output)
         assert all(isinstance(x, dict) for x in results)
         assert all(x["minimizer"] == name for x,
@@ -175,6 +194,8 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
+        self.controller.has_hessian = [False]
+        hessian = False
 
         # Cleanup has been mocked out with a no-op, so set the outputs now.
         self.controller.flag = 0
@@ -182,6 +203,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
 
         _ = loop_over_jacobians(self.controller,
                                 self.options,
+                                hessian,
                                 self.grabbed_output)
         check_bounds_respected.assert_called()
 
@@ -197,6 +219,9 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.has_jacobian = [True]
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
+        self.controller.has_hessian = [False]
+
+        hessian = False
 
         # Cleanup has been mocked out with a no-op, so set the outputs now.
         self.controller.flag = 3
@@ -204,6 +229,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
 
         _ = loop_over_jacobians(self.controller,
                                 self.options,
+                                hessian,
                                 self.grabbed_output)
         check_bounds_respected.assert_not_called()
     # pylint: enable=unused-argument

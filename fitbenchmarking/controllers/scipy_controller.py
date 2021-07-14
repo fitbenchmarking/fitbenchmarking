@@ -61,7 +61,7 @@ class ScipyController(Controller):
         """
         has_hessian = True
         hessian_free_solvers = ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                    'L-BFGS-B', 'TNC', 'SLSQP']
+                                'L-BFGS-B', 'TNC', 'SLSQP']
         return has_hessian, hessian_free_solvers
 
     def setup(self):

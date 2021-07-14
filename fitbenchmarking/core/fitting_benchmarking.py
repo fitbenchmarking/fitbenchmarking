@@ -334,8 +334,8 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
             #######################
             results, chi_sq, minimizer_list, failed = \
                 loop_over_hessians(controller,
-                                    options,
-                                    grabbed_output)
+                                   options,
+                                   grabbed_output)
             if failed:
                 minimizer_failed.append(minimizer)
                 LOGGER.warning('Selected minimizer cannot use '
@@ -348,8 +348,8 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                         # (will raise TypeError if these are not iterable)
                         for i in range(len(chi_sq)):
                             result.update({'dataset_id': i,
-                                        'name': '{}, Dataset {}'.format(
-                                            problem.name, (i + 1))})
+                                           'name': '{}, Dataset {}'.format(
+                                               problem.name, (i + 1))})
                             individual_result = \
                                 fitbm_result.FittingResult(**result)
                             results_problem.append(individual_result)
@@ -394,11 +394,11 @@ def loop_over_hessians(controller, options, grabbed_output):
                     minimizer_ok = False
 
             if minimizer_ok:
-                    results, chi_sq, minimizer_list = \
-                            loop_over_jacobians(controller,
-                                                options,
-                                                hessian,
-                                                grabbed_output)
+                results, chi_sq, minimizer_list = \
+                    loop_over_jacobians(controller,
+                                        options,
+                                        hessian,
+                                        grabbed_output)
             else:
                 failed = True
 
@@ -408,7 +408,8 @@ def loop_over_hessians(controller, options, grabbed_output):
         pass
 
     return results, chi_sq, minimizer_list, failed
-    
+
+
 def loop_over_jacobians(controller, options, hessian, grabbed_output):
     """
     Loops over Jacobians set from the options file

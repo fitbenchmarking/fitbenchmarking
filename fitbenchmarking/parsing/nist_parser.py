@@ -69,7 +69,7 @@ class NISTParser(Parser):
             hessian = self._parse_hessian(name)
             fitting_problem.hessian = \
                 nist_hessian_definition(hessian=hessian,
-                                         param_names=starting_values[0].keys())
+                                        param_names=starting_values[0].keys())
         except NoHessianError:
             LOGGER.warning("Could not find Hessian "
                            "information for %s problem", name)
@@ -113,7 +113,7 @@ class NISTParser(Parser):
             hes_data = open(hes_file, "r")
         except FileNotFoundError as e:
             raise NoHessianError('Could not find data for NIST Hessian '
-                                  'file, {}'.format(hes_file)) from e
+                                 'file, {}'.format(hes_file)) from e
         hes_lines = hes_data.readlines()
         hes_str = ""
         for line in hes_lines:

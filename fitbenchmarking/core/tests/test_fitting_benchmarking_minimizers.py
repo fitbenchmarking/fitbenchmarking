@@ -59,6 +59,12 @@ class DummyController(Controller):
         """
         pass
 
+    def hessian_information(self):
+        """
+        Mock controller jacobian_information function
+        """
+        pass
+
     def cleanup(self):
         """
         Mock controller cleanup function

@@ -17,7 +17,7 @@ class Analytic(Hessian):
         super().__init__(cost_func)
         if not callable(self.problem.hessian):
             raise NoHessianError("Problem set selected does not currently "
-                                  "support analytic Hessians")
+                                 "support analytic Hessians")
 
     def eval(self, params, **kwargs):
         """
@@ -32,8 +32,8 @@ class Analytic(Hessian):
         """
 
         x = kwargs.get("x", self.problem.data_x)
-        y = kwargs.get("y", self.problem.data_y)
-        e = kwargs.get("e", self.problem.data_e)
+        # y = kwargs.get("y", self.problem.data_y)
+        # e = kwargs.get("e", self.problem.data_e)
         rx = self.cached_func_values(self.cost_func.cache_rx,
                                      self.cost_func.eval_r,
                                      params,
@@ -57,5 +57,5 @@ class Analytic(Hessian):
         """
         H = self.eval(params, **kwargs)
         J = self.jacobian.eval(params, **kwargs)
-        out = H + matmul(np.transpose(J),J)
+        out = H + matmul(np.transpose(J), J)
         return out

@@ -61,7 +61,7 @@ class LevmarController(Controller):
         has_hessian = False
         hessian_free_solvers = []
         return has_hessian, hessian_free_solvers
-    
+
     def setup(self):
         """
         Setup problem ready to be run with levmar

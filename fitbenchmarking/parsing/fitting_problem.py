@@ -100,7 +100,7 @@ class FittingProblem:
         #: Whether the function has been wrapped to reduce the dimension of x
         #: on function calls
         self.multivariate = False
-        
+
         #: Callable function for the Hessian
         self.hessian = None
 

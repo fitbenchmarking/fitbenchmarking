@@ -205,4 +205,3 @@ class NoHessianError(FitBenchmarkException):
     """
     class_message = 'Could not find Hessian class'
     error_code = 22
-

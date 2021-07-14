@@ -86,6 +86,7 @@ def nist_jacobian_definition(jacobian, param_names):
 
     return local_dict['jacobian_function']
 
+
 def nist_hessian_definition(hessian, param_names):
     """
     Processing a Hessian into a callable
@@ -105,7 +106,7 @@ def nist_hessian_definition(hessian, param_names):
         hessian_scipy_format = format_function_scipy(hessian_lines)
         # Create a function def for each starting set in startvals
         if not is_safe(hessian_scipy_format):
-            raise ParsingError('Error while sanitizing Jacobian input')
+            raise ParsingError('Error while sanitizing Hessian input')
 
         # Checks to see if the value is an integer and if so reformats the
         # value to be a constant vector.
@@ -120,11 +121,11 @@ def nist_hessian_definition(hessian, param_names):
 
     dim = len(param_names)
     # reshape into Hessian matrix
-    scipy_hessian = np.reshape(scipy_hessian,(dim,dim))
+    scipy_hessian = np.reshape(scipy_hessian, (dim, dim))
 
     hessian_matrix = ''
     for i in range(dim):
-        hess_row = ",".join(scipy_hessian[:,i])
+        hess_row = ",".join(scipy_hessian[:, i])
         hessian_matrix += '[' + hess_row + '],'
     hessian_format = "np.array([{}])".format(hessian_matrix)
 
