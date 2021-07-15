@@ -85,6 +85,9 @@ class RALFitController(Controller):
             raise UnknownMinimizerError(
                 "No {} minimizer for RALFit".format(self.minimizer))
 
+        # if self.hessian:
+        #     self._options[b"exact_second_derivatives"] = True
+
         # If parameter ranges have been set in problem, then set up bounds
         # option. For RALFit, this must be a 2 tuple array like object,
         # the first tuple containing the lower bounds for each parameter
