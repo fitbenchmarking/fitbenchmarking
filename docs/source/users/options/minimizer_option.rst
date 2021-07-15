@@ -81,8 +81,8 @@ The DFO minimizers are set as follows:
    See :ref:`extra_dependencies`.
 
 
-Gradient-Free-Optimizers (``gradient_free``)
----------------------------------------------
+Gradient-Free (``gradient_free``)
+---------------------------------
 
 `Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ are a collection of
 gradient-free methods capable of solving various optimization problems. Please note that Gradient-Free-Optimizers
@@ -279,8 +279,8 @@ The `matlab` minimizer is set as follows:
 .. warning::
    MATLAB must be installed for this to be available; See :ref:`external-instructions`.
 
-Matlab Curve Fitting Toolbox (``matlab_curve``)
------------------------------------------------
+Matlab Curve (``matlab_curve``)
+-------------------------------
 
 We call the `fit <https://uk.mathworks.com/help/curvefit/fit.html>`_
 function from the `MATLAB Curve Fitting Toolbox <https://uk.mathworks.com/help/curvefit/index.html>`_,
@@ -300,8 +300,8 @@ The `matlab_curve` minimizers are set as follows:
 .. warning::
    MATLAB Curve Fitting Toolbox must be installed for this to be available; See :ref:`external-instructions`.
 
-Matlab Optimization Toolbox (``matlab_opt``)
---------------------------------------------
+Matlab Opt (``matlab_opt``)
+---------------------------
 
 We call the `lsqcurvefit <https://uk.mathworks.com/help/optim/ug/lsqcurvefit.html>`_
 function from the `MATLAB Optimization Toolbox <https://uk.mathworks.com/products/optimization.html>`_,
@@ -322,8 +322,8 @@ The `matlab_opt` minimizers are set as follows:
    MATLAB Optimization Toolbox must be installed for this to be available; See :ref:`external-instructions`.
 
 
-Matlab Statistics Toolbox (``matlab_stats``)
---------------------------------------------
+Matlab Stats (``matlab_stats``)
+-------------------------------
 
 We call the `nlinfit <https://uk.mathworks.com/help/stats/nlinfit.html>`_
 function from the `MATLAB Statistics Toolbox <https://uk.mathworks.com/products/statistics.html>`_,
@@ -458,9 +458,9 @@ software.  In particular, we use the `Global Optimization <https://docs.scipy.or
 solvers for global optimization problems from the optimization chapter
 of SciPy's library.
 
-* Differential Evolution (derivative-free) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html#scipy.optimize.differential_evolution>`_ (:code:`differential_evolution`)
-* Simplicial Homology Global Optimization (SHGO) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.shgo.html#scipy.optimize.shgo>`_ (:code:`shgo`)
-* Dual Annealing <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.dual_annealing.html#scipy.optimize.dual_annealing>`_ (:code:`dual_annealing`)
+* `Differential Evolution (derivative-free) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html#scipy.optimize.differential_evolution>`_ (:code:`differential_evolution`)
+* `Simplicial Homology Global Optimization (SHGO) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.shgo.html#scipy.optimize.shgo>`_ (:code:`shgo`)
+* `Dual Annealing <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.dual_annealing.html#scipy.optimize.dual_annealing>`_ (:code:`dual_annealing`)
 
 **Links** `Github - SciPy optimization <https://github.com/scipy/scipy/blob/master/scipy/optimize/>`_
 
