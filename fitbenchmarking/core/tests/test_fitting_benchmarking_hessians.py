@@ -169,13 +169,12 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.minimizer = "deriv_free_algorithm"
         self.controller.has_hessian = [True]
         self.controller.invalid_hessians = ["deriv_free_algorithm"]
-        loop_over_jacobians.side_effect = self.mock_func_call
 
         _, _, _, failed = loop_over_hessians(self.controller,
-                           self.options,
-                           self.grabbed_output)
+                                             self.options,
+                                             self.grabbed_output)
         loop_over_jacobians.assert_not_called()
-        assert failed == True
+        assert failed is True
 
 
 if __name__ == "__main__":
