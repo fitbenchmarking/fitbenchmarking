@@ -102,7 +102,7 @@ class NISTParser(Parser):
 
     def _parse_hessian(self, name):
         """
-        Parses the Jacobian for the NIST file format
+        Parses the Hessian for the NIST file format
 
         :param name: name of the NIST file
         :type name: str

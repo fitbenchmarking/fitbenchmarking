@@ -43,10 +43,9 @@ class Analytic(Hessian):
         if self.problem.options.cost_func_type == "weighted_nlls":
             # scales the Hessian by the weights
             for i in range(len(e)):
-                grad2_r[:,:,i] = grad2_r[:,:,i]/ e[i]
+                grad2_r[:, :, i] = grad2_r[:, :, i] / e[i]
 
         hes = matmul(grad2_r, rx)
-        print('test2')
         return hes, J
 
     def eval_cost(self, params, **kwargs):

@@ -129,8 +129,8 @@ def nist_hessian_definition(hessian, param_names):
         hessian_matrix += '[' + hess_row + '],'
     hessian_format = "np.array([{}])".format(hessian_matrix)
 
-    # Sanitizing of jacobian_scipy_format is done so exec use is valid
-    # Param_names is sanitized in get_nist_param_names_and_values
+    # Sanitizing of hessian_scipy_format is done so exec use is valid
+    # param_names is sanitized in get_nist_param_names_and_values
     # pylint: disable=exec-used
     local_dict = {}
     global_dict = {'__builtins__': {}, 'np': np}
