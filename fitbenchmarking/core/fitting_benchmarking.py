@@ -364,6 +364,26 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
 
 
 def loop_over_hessians(controller, options, grabbed_output):
+    """
+    Loops over Hessians set from the options file
+
+    :param controller: The software controller for the fitting
+    :type controller: Object derived from BaseSoftwareController
+    :param options: FitBenchmarking options for current run
+    :type options: fitbenchmarking.utils.options.Options
+    :param grabbed_output: Object that removes third part output from console
+    :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
+
+    :return: list of all results, dictionary of unselected minimizers
+             based on algorithm_type and dictionary of minimizers together
+             with the Jacobian used. Also returned is 'failed' which is
+             either true or false, indicating if a minimizer has failed
+             because it is not compatible with using hessian information
+    :rtype: tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
+                  list of failed minimizers,
+                  list of minimizers and Jacobians,
+                  boolean)
+    """
 
     results = []
     chi_sq = []
@@ -379,8 +399,10 @@ def loop_over_hessians(controller, options, grabbed_output):
     hessian_list = options.hes_method
 
     try:
+        # loop over selected hessian methods
         for method in hessian_list:
-
+            # if user has selected to use hessian info
+            # then create hessian if minimizer accepts it
             if hessian_option:
                 if minimizer_check:
                     hessian_cls = create_hessian(method)
@@ -394,6 +416,9 @@ def loop_over_hessians(controller, options, grabbed_output):
                     minimizer_ok = False
 
             if minimizer_ok:
+                ########################
+                # Loops over Jacobians #
+                ########################
                 results, chi_sq, minimizer_list = \
                     loop_over_jacobians(controller,
                                         options,
@@ -402,6 +427,9 @@ def loop_over_hessians(controller, options, grabbed_output):
             else:
                 failed = True
 
+            # For minimizers that do not accept hessians we raise an
+            # StopIteration exception to exit the loop through the
+            # Hessians
             if not minimizer_check:
                 raise StopIteration
     except StopIteration:
