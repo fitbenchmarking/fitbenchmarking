@@ -7,7 +7,7 @@ from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 
 from fitbenchmarking.hessian.base_hessian import Hessian
-from fitbenchmarking.utils.exceptions import NoJacobianError
+from fitbenchmarking.utils.exceptions import NoHessianError
 
 
 def create_hessian(hes_method):
@@ -26,8 +26,8 @@ def create_hessian(hes_method):
     try:
         module = import_module('.' + module_name, __package__)
     except ImportError as e:
-        raise NoJacobianError('Could not find Hessian class with type as '
-                              '{}.'.format(hes_method)) from e
+        raise NoHessianError('Could not find Hessian class with type as '
+                             '{}.'.format(hes_method)) from e
 
     classes = getmembers(module, lambda m: (isclass(m)
                                             and not isabstract(m)
