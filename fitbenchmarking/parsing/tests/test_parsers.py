@@ -52,7 +52,7 @@ def generate_test_cases():
               'test_factory': [],
               'test_function_evaluation': [],
               'test_jacobian_evaluation': [],
-              'test_hessian_evaluation' : []}
+              'test_hessian_evaluation': []}
 
     # get all parsers
     test_dir = os.path.dirname(__file__)
