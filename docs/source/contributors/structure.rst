@@ -126,6 +126,14 @@ This directory holds all code central to FitBenchmarking.
 For example, this manages calling the correct parser and controller, as well as
 compiling the results into a data object.
 
+Hessian (:py:mod:`~fitbenchmarking.Hessian`)
+==============================================
+
+This directory holds the :class:`~fitbenchmarking.hessian.base_hessian.Hessian` class,
+and subclasses, which are used by the controllers to approximate second derivatives.
+Currently available options are described in :ref:`fitting_option`, and new
+Hessians can be added by following the instructions in :ref:`hessian_extend`.
+
 Jacobian (:py:mod:`~fitbenchmarking.jacobian`)
 ==============================================
 

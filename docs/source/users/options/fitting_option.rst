@@ -120,6 +120,39 @@ Default is ``default``
    Currently analytic Jacobians are available are only available for
    problems that use the cutest and NIST parsers.
 
+Use Hessians (:code:`use_hessian`)
+------------------------------------
+
+This allows the user to decide whether or not to use Hessian information.
+If ``True`` is selected, then only problems which accept Hessians will be run.
+
+Default is ``False``
+
+.. code-block:: rst
+
+    [FITTING]
+    use_hessian: False
+
+
+Hessian method (:code:`hes_method`)
+------------------------------------
+
+This sets the Hessian used. Current Hessian methods are:
+
+* ``analytic`` - uses the analytic Hessian extracted from the fitting problem.
+  
+Default is ``analytic``
+
+.. code-block:: rst
+
+    [FITTING]
+    hes_method: analytic
+
+.. warning::
+
+   Currently analytic Hessians are available are only available for
+   problems that use the NIST parser.
+
 Cost function (:code:`cost_func_type`)
 --------------------------------------
 

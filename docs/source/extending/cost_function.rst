@@ -28,6 +28,7 @@ you will need to:
 
 4. Update the analytic Jacobian for the new cost function, :class:`~fitbenchmarking.jacobian.analytic_jacobian.Analytic`.
 
+5. Update the analytic Hessian for the new cost function, :class:`~fitbenchmarking.hessian.analytic_hessian.Analytic`.
 
 The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
