@@ -1,4 +1,6 @@
-# Hessian 
+# Hessian for NIST problem ENSO
+# Computed using script in
+# examples/scripts/hessians/NIST_avg_difficulty_hessians.py
 
 H = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
      [0, 0, 0, 0, 0, 0, 0, 0, 0],

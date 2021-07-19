@@ -1,4 +1,6 @@
-# Hessian
+# Hessian for NIST problem Gauss2
+# Computed using script in
+# examples/scripts/hessians/NIST_low_difficulty_hessians.py
 
 H = [[0, -x*exp(-b2*x), 0, 0, 0, 0, 0, 0],
     [-x*exp(-b2*x), b1*x**2*exp(-b2*x), 0, 0, 0, 0, 0, 0],

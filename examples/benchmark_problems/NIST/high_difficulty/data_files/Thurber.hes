@@ -1,4 +1,6 @@
-# Hessian
+# Hessian for NIST problem Thurber
+# Computed using script in
+# examples/scripts/hessians/NIST_high_difficulty_hessians.py
 
 H = [[0, 0, 0, 0, -x/(b5*x + b6*x**2 + b7*x**3 + 1)**2, -x**2/(b5*x + b6*x**2 + b7*x**3 + 1)**2, -x**3/(b5*x + b6*x**2 + b7*x**3 + 1)**2],
     [0, 0, 0, 0, -x**2/(b5*x + b6*x**2 + b7*x**3 + 1)**2, -x**3/(b5*x + b6*x**2 + b7*x**3 + 1)**2, -x**4/(b5*x + b6*x**2 + b7*x**3 + 1)**2],
