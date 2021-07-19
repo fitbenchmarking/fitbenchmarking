@@ -213,7 +213,7 @@ class UserFittingOptionTests(unittest.TestCase):
             "[FITTING]\nhes_method: analytic"
         self.shared_valid('hes_method', set_option, config_str)
 
-    def test_minimizer_jac_method_invalid(self):
+    def test_minimizer_hes_method_invalid(self):
         """
         Checks user set hes_method is invalid
         """
