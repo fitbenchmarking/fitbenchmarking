@@ -338,7 +338,7 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                                    grabbed_output)
             if failed:
                 minimizer_failed.append(minimizer)
-                LOGGER.warning('Selected minimizer cannot use '
+                LOGGER.warning('Selected minimizer/cost_func cannot use '
                                'Hessian information so will '
                                'be skipped')
             else:
@@ -404,6 +404,15 @@ def loop_over_hessians(controller, options, grabbed_output):
             # if user has selected to use hessian info
             # then create hessian if minimizer accepts it
             if hessian_option:
+
+                # Temporary addition until hellinger_nlls and
+                # poisson cost functions are added to
+                # Analytic Hessian class
+                if options.cost_func_type == "hellinger_nlls"\
+                    or options.cost_func_type == "poisson":
+                    minimizer_check = False
+                    minimizer_ok = False
+
                 if minimizer_check:
                     hessian_cls = create_hessian(method)
                     try:
