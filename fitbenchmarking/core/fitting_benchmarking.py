@@ -409,7 +409,7 @@ def loop_over_hessians(controller, options, grabbed_output):
                 # poisson cost functions are added to
                 # Analytic Hessian class
                 if options.cost_func_type == "hellinger_nlls"\
-                    or options.cost_func_type == "poisson":
+                        or options.cost_func_type == "poisson":
                     minimizer_check = False
                     minimizer_ok = False
 
