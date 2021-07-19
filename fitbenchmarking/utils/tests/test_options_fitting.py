@@ -53,6 +53,22 @@ class FittingOptionTests(unittest.TestCase):
         actual = self.options.jac_method
         self.assertEqual(expected, actual)
 
+    def test_use_hessian_default(self):
+        """
+        Checks use_hessian default
+        """
+        expected = False
+        actual = self.options.use_hessian
+        self.assertEqual(expected, actual)
+
+    def test_hes_method_default(self):
+        """
+        Checks hes_method default
+        """
+        expected = ['analytic']
+        actual = self.options.hes_method
+        self.assertEqual(expected, actual)
+
     def test_cost_func_default(self):
         """
         Checks cost_func default
@@ -187,6 +203,40 @@ class UserFittingOptionTests(unittest.TestCase):
         config_str = \
             "[FITTING]\njac_method: NumPyFD"
         self.shared_invalid('jac_method', config_str)
+
+    def test_minimizer_hes_method_valid(self):
+        """
+        Checks user set hes_method is valid
+        """
+        set_option = ["analytic"]
+        config_str = \
+            "[FITTING]\nhes_method: analytic"
+        self.shared_valid('hes_method', set_option, config_str)
+
+    def test_minimizer_jac_method_invalid(self):
+        """
+        Checks user set hes_method is invalid
+        """
+        config_str = \
+            "[FITTING]\nhes_method: numpy"
+        self.shared_invalid('hes_method', config_str)
+
+    def test_minimizer_use_hessian_valid(self):
+        """
+        Checks user set use_hessian is valid
+        """
+        set_option = True
+        config_str = \
+            "[FITTING]\nuse_hessian: True"
+        self.shared_valid('use_hessian', set_option, config_str)
+
+    def test_minimizer_use_hessian_invalid(self):
+        """
+        Checks user set use_hessian is invalid
+        """
+        config_str = \
+            "[FITTING]\nuse_hessian: for some problems"
+        self.shared_invalid('use_hessian', config_str)
 
     def test_minimizer_cost_func_type_valid(self):
         """
