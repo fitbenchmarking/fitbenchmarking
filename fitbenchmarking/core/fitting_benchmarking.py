@@ -9,7 +9,9 @@ from __future__ import absolute_import, division, print_function
 import os
 import timeit
 import warnings
+import threading
 from collections import defaultdict
+import dill
 
 import numpy as np
 
@@ -25,7 +27,8 @@ from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               NoJacobianError,
                                               NoHessianError,
                                               UnknownMinimizerError,
-                                              UnsupportedMinimizerError)
+                                              UnsupportedMinimizerError,
+                                              MaxRuntimeError)
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
@@ -364,14 +367,12 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
 def loop_over_jacobians(controller, options, grabbed_output):
     """
     Loops over Jacobians set from the options file
-
     :param controller: The software controller for the fitting
     :type controller: Object derived from BaseSoftwareController
     :param options: FitBenchmarking options for current run
     :type options: fitbenchmarking.utils.options.Options
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
-
     :return: list of all results, dictionary of unselected minimizers
              based on algorithm_type and dictionary of minimizers together
              with the Jacobian used
@@ -441,7 +442,6 @@ def loop_over_hessians(controller, options, minimizer_name,
                        jacobian, grabbed_output):
     """
     Loops over Hessians set from the options file
-
     :param controller: The software controller for the fitting
     :type controller: Object derived from BaseSoftwareController
     :param options: FitBenchmarking options for current run
@@ -452,7 +452,6 @@ def loop_over_hessians(controller, options, minimizer_name,
     :type jacobian: fitbenchmarking.jacobian.<jac_method>_jacobian.<jac_method>
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
-
     :return: list of all results, dictionary of unselected minimizers
              based on algorithm_type and dictionary of minimizers together
              with the Jacobian used.

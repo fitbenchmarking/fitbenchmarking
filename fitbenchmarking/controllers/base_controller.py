@@ -19,7 +19,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    VALID_FLAGS = [0, 1, 2, 3, 4, 5]
+    VALID_FLAGS = [0, 1, 2, 3, 4, 5, 6]
 
     #: Within the controller class, you must
     #: initialize a dictionary, ``algorithm_check``,
@@ -149,6 +149,7 @@ class Controller:
         | 3: `Software raised an exception`
         | 4: `Solver doesn't support bounded problems`
         | 5: `Solution doesn't respect parameter bounds`
+        | 6: `Solver has exceeded maximum allowed runtime`
         """
 
         return self._flag
