@@ -69,6 +69,14 @@ class FittingOptionTests(unittest.TestCase):
         actual = self.options.cost_func_type
         self.assertEqual(expected, actual)
 
+    def test_max_runtime_default(self):
+        """
+        Checks max_rutime default
+        """
+        expected = 60
+        actual = self.options.max_runtime
+        self.assertEqual(expected, actual)
+
 
 class UserFittingOptionTests(unittest.TestCase):
     """
@@ -229,3 +237,20 @@ class UserFittingOptionTests(unittest.TestCase):
         config_str = \
             "[FITTING]\ncost_func_type: normal_dist"
         self.shared_invalid('cost_func_type', config_str)
+
+    def test_minimizer_max_runtime_type_valid(self):
+        """
+        Checks user set max_runtime is valid
+        """
+        set_option = 10
+        config_str = \
+            "[FITTING]\nmax_runtime: 10"
+        self.shared_valid('max_runtime', set_option, config_str)
+
+    def test_minimizer_max_runtime_invalid(self):
+        """
+        Checks user set max_runtime is invalid
+        """
+        config_str = \
+            "[FITTING]\nmax_runtime: 10 seconds"
+        self.shared_invalid('max_runtime', config_str)
