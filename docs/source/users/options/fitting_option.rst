@@ -162,3 +162,19 @@ Default is ``weighted_nlls``
 
     [FITTING]
     cost_func_type: weighted_nlls
+
+Maximum Runtime (:code:`max_runtime`)
+--------------------------------------
+
+This sets a maximum runtime for each minimizer selected.
+If the minimizer is still running after the maximum time
+has elapsed, then the minimizer will be skipped.
+
+`max_runtime` is set by specifying a number of seconds.
+
+Default is 60
+
+.. code-block:: rst
+
+    [FITTING]
+    max_runtime: 60
