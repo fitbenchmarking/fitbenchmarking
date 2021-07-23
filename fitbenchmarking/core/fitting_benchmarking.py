@@ -9,7 +9,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import timeit
 import warnings
-import threading
+import multiprocess
 from collections import defaultdict
 import dill
 
