@@ -67,7 +67,7 @@ FitBenchmarking currently supports the DFO minimizers:
 
 * `Derivative-Free Gauss-Newton Solver <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`__ (:code:`dfogn`)
 
-**Licence** Both `DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn/blob/master/LICENSE.txt>`__ and `DFO-LS <https://github.com/numericalalgorithmsgroup/dfols/blob/master/LICENSE.txt>`__ are available under the GPL-3 licence.  A proprietary licence is also available from `NAG <`https://www.nag.com/content/worldwide-contact-information>`__ . 
+**Licence** Both `DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn/blob/master/LICENSE.txt>`__ and `DFO-LS <https://github.com/numericalalgorithmsgroup/dfols/blob/master/LICENSE.txt>`__ are available under the GPL-3 licence.  A proprietary licence is also available from `NAG <https://www.nag.com/content/worldwide-contact-information>`__ . 
   
 **Links** `GitHub - DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn>`__ `GitHub - DFO-LS <https://github.com/numericalalgorithmsgroup/dfols>`__
 
