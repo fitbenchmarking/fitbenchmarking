@@ -150,8 +150,8 @@ class TestJacobianClass(TestCase):
         jac = Analytic(self.cost_func)
         eval_result = jac.eval(params=self.params)
         #  pylint: disable=unsubscriptable-object
-        scaled_actual = self.actual * \
-            f(self.fitting_problem.data_x, *self.params)[:, None] / 2
+        scaled_actual = self.actual / \
+            (2*np.sqrt(f(self.fitting_problem.data_x, *self.params)[:, None]))
 
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
 
