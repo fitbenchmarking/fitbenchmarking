@@ -368,14 +368,17 @@ The `matlab_stats` minimizer is set as follows:
 Minuit (``minuit``)
 ===================
 
-CERN developed the `Minuit <http://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/>`__ package to find the minimum value of a multi-parameter function, and also to compute the uncertainties.
-We interface via the python interface `iminuit <https://iminuit.readthedocs.io>`__ with support for the 2.x series. 
+CERN developed the `Minuit 2 <https://root.cern.ch/doc/master/Minuit2Page.html>`__ package
+to find the minimum value of a multi-parameter function, and also to compute the
+uncertainties.
+We interface via the python interface `iminuit <https://iminuit.readthedocs.io>`__ with
+support for the 2.x series. 
 
 * `Minuit's MIGRAD <https://root.cern.ch/root/htmldoc/guides/minuit2/Minuit2.pdf>`__ (:code:`minuit`)
 
 **Links** `Github - iminuit <https://github.com/scikit-hep/iminuit>`__
 
-**Licence** iminuit is released under the `MIT licence <https://github.com/scikit-hep/iminuit/blob/develop/LICENSE>`__, while Minuit is `LGPL v2 <http://seal.web.cern.ch/seal/main/license.html>`__ .
+**Licence** iminuit is released under the `MIT licence <https://github.com/scikit-hep/iminuit/blob/develop/LICENSE>`__, while Minuit 2 is `LGPL v2 <https://github.com/root-project/root/blob/master/LICENSE>`__ .
 
 The Minuit minimizers are set as follows:
 
