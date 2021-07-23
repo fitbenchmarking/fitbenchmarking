@@ -129,7 +129,7 @@ class Options:
          'jac_method': ['scipy'],
          'hes_method': ['default'],
          'cost_func_type': 'weighted_nlls',
-         'max_runtime': 60}
+         'max_runtime': 600}
     DEFAULT_JACOBIAN = \
         {'analytic': ['cutest'],
          'scipy': ['2-point'],

@@ -172,9 +172,9 @@ has elapsed, then the minimizer will be skipped.
 
 `max_runtime` is set by specifying a number of seconds.
 
-Default is 60
+Default is 600
 
 .. code-block:: rst
 
     [FITTING]
-    max_runtime: 60
+    max_runtime: 600
