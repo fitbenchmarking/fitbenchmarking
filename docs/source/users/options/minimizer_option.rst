@@ -306,6 +306,8 @@ using the MATLAB Engine API for Python.
 * Levenberg-Marquardt (:code:`Levenberg-Marquardt`)
 * Trust-Region (:code:`Trust-Region`)
 
+**Licence** Matlab and the Curve Fitting Toolbox are both `proprietary products <https://www.mathworks.com/pricing-licensing.html>`__ .
+  
 The `matlab_curve` minimizers are set as follows:
 
 .. code-block:: rst
@@ -327,7 +329,7 @@ using the MATLAB Engine API for Python.
 * Levenberg-Marquardt (:code:`levenberg-marquardt`)
 * Trust-Region-Reflective (:code:`trust-region-reflective`)
 
-**Licence** Matlab, and the Optimization Toolbox, are both `proprietary products <https://www.mathworks.com/pricing-licensing.html>`__ .
+**Licence** Matlab and the Optimization Toolbox are both `proprietary products <https://www.mathworks.com/pricing-licensing.html>`__ .
   
 The `matlab_opt` minimizers are set as follows:
 
@@ -350,7 +352,7 @@ using the MATLAB Engine API for Python.
 
 * Levenberg-Marquardt (:code:`Levenberg-Marquardt`)
 
-**Licence** Matlab, and the Statistics Toolbox, are both `proprietary products <https://www.mathworks.com/pricing-licensing.html>`__ .
+**Licence** Matlab and the Statistics Toolbox are both `proprietary products <https://www.mathworks.com/pricing-licensing.html>`__ .
   
 The `matlab_stats` minimizer is set as follows:
 
