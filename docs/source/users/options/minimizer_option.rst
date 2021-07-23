@@ -33,7 +33,8 @@ FitBenchmarking currently supports the Bumps minimizers:
 * `MINPACK <https://github.com/bumps/bumps/blob/96b5100fc3d5b9485bd4a444c83a33617b74aa9d/bumps/mpfit.py>`__ (:code:`mp`)  This is a translation of `MINPACK` to Python.
 
 **Licence** The main licence file for Bumps is `here <https://github.com/bumps/bumps/blob/master/LICENSE.txt>`__.  Individual files have their own copyright and licence
--- please check before use.
+-- if you plan to incorporate this in your own software you should first check that the
+licences used are compatible.
   
 **Links** `GitHub - bumps <https://github.com/bumps/bumps>`__
 
