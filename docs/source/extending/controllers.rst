@@ -55,7 +55,8 @@ it with the current software.  You are encouraged to contribute this to the
 repository so that other can use this package.  To do this need to follow our
 :ref:`guidelines` and our :ref:`workflow`, and you'll also need to
 
-4. Document the available minimizers (see :ref:`fitting_option`, :ref:`minimizer_option`).
+4. Document the available minimizers (see :ref:`fitting_option`, :ref:`minimizer_option`),
+   including licencing information, if appropriate.
    Note: make sure that you use ``<software_name>`` in these places so that the
    software links in the HTML tables link correctly to the documentation.
    Add the software to ``examples/all_software.ini``.

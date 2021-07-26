@@ -31,6 +31,11 @@ software
   requires the parameters listed here to be defined slightly differently.
   More information can be found in :ref:`multifit`.
 
+  **Licence** Mantid is available under a
+  `GPL-3 Licence <https://github.com/mantidproject/mantid/blob/master/LICENSE.txt>`_.
+  The component of SasView we use is SasModels, which is available under a
+  `BSD 3-clause <https://github.com/SasView/sasmodels/blob/master/LICENSE.txt>`_ licence.
+
 name
   The name of the problem.
 
