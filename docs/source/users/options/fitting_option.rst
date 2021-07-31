@@ -170,7 +170,7 @@ This sets a maximum runtime for each minimizer selected.
 If the minimizer is still running after the maximum time
 has elapsed, then the minimizer will be skipped.
 
-`max_runtime` is set by specifying a number of seconds.
+`max_runtime` is set by specifying a number in unit of seconds.
 
 Default is 600
 
