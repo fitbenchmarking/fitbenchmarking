@@ -166,9 +166,11 @@ Default is ``weighted_nlls``
 Maximum Runtime (:code:`max_runtime`)
 --------------------------------------
 
-This sets a maximum runtime for each minimizer selected.
-If the minimizer is still running after the maximum time
-has elapsed, then the minimizer will be skipped.
+This sets the maximum runtime a minimizer has to solve one benchmark
+problem `num_runs` number of times, where `num_runs` is another option a
+user can set. If the minimizer is still running after the maximum time
+has elapsed, then this result will be skipped and FitBenchmarking will move
+on to the next minimizer / benchmark dataset combination.
 
 `max_runtime` is set by specifying a number in unit of seconds.
 
