@@ -138,7 +138,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         assert minimizer_failed == self.minimizers
         assert new_minimizer_list == []
 
-    @patch('{}.loop_over_hessians'.format(FITTING_DIR))
+    @patch('{}.loop_over_jacobians'.format(FITTING_DIR))
     def test_run_minimzers_selected(self, loop_over_hessians):
         """
         Tests that some minimizers are selected
@@ -157,7 +157,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         assert minimizer_failed == ["deriv_free_algorithm"]
         assert new_minimizer_list == ["general"]
 
-    @patch('{}.loop_over_hessians'.format(FITTING_DIR))
+    @patch('{}.loop_over_jacobians'.format(FITTING_DIR))
     def test_run_minimzers_all(self, loop_over_hessians):
         """
         Tests that all minimizers are selected

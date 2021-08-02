@@ -4,6 +4,7 @@ Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians
 import inspect
 import os
 import unittest
+from unittest.mock import patch
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
@@ -15,6 +16,9 @@ from fitbenchmarking.utils.options import Options
 
 # Due to construction of the controllers two folder functions
 # pylint: disable=unnecessary-pass
+
+# Defines the module which we mock out certain function calls for
+FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 
 
 class DummyController(Controller):
@@ -112,11 +116,18 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller = DummyController(cost_func=self.cost_func)
         self.options = self.problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
-        self.controller.parameter_set = 0
 
-    def test_single_jacobian(self):
+    def mock_func_call(self, *args):
         """
-        Test to check that only on Jacobian option has been added
+        Mock function to be used instead of loop_over_hessians
+        """
+        minimizer_name = args[2]
+        return [], [], [minimizer_name]
+
+    @patch('{}.loop_over_hessians'.format(FITTING_DIR))
+    def test_single_jacobian(self, loop_over_hessians):
+        """
+        Test to check that only one Jacobian option has been added
         """
         self.options.jac_method = ["scipy"]
         self.options.num_method = {"scipy": ["3-point"]}
@@ -124,19 +135,16 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "general"
         self.controller.has_hessian = [False]
-        hessian = False
+        loop_over_hessians.side_effect = self.mock_func_call
         new_name = ['general: scipy 3-point']
-        results, _, new_minimizer_list = \
+        _, _, new_minimizer_list = \
             loop_over_jacobians(self.controller,
                                 self.options,
-                                hessian,
                                 self.grabbed_output)
-        assert all(isinstance(x, dict) for x in results)
-        assert all(x["minimizer"] == name for x,
-                   name in zip(results, new_name))
         assert new_minimizer_list == new_name
 
-    def test_multiple_jacobian(self):
+    @patch('{}.loop_over_hessians'.format(FITTING_DIR))
+    def test_multiple_jacobian(self, loop_over_hessians):
         """
         Test to check multiple Jacobian options are set correctly
         """
@@ -146,19 +154,16 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "general"
         self.controller.has_hessian = [False]
-        hessian = False
+        loop_over_hessians.side_effect = self.mock_func_call
         new_name = ['general: scipy 3-point', 'general: scipy 2-point']
-        results, _, new_minimizer_list = \
+        _, _, new_minimizer_list = \
             loop_over_jacobians(self.controller,
                                 self.options,
-                                hessian,
                                 self.grabbed_output)
-        assert all(isinstance(x, dict) for x in results)
-        assert all(x["minimizer"] == name for x,
-                   name in zip(results, new_name))
         assert new_minimizer_list == new_name
 
-    def test_single_no_jacobian(self):
+    @patch('{}.loop_over_hessians'.format(FITTING_DIR))
+    def test_single_no_jacobian(self, loop_over_hessians):
         """
         Test that checks that the minimizer doesn't need Jacobian information
         and the name does not have Jacobian information in it
@@ -169,70 +174,13 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
         self.controller.has_hessian = [False]
-        hessian = False
+        loop_over_hessians.side_effect = self.mock_func_call
         new_name = ['deriv_free_algorithm']
-        results, _, new_minimizer_list = \
+        _, _, new_minimizer_list = \
             loop_over_jacobians(self.controller,
                                 self.options,
-                                hessian,
                                 self.grabbed_output)
-        assert all(isinstance(x, dict) for x in results)
-        assert all(x["minimizer"] == name for x,
-                   name in zip(results, new_name))
         assert new_minimizer_list == new_name
-
-    # pylint: disable=unused-argument
-    @unittest.mock.patch.object(DummyController, "cleanup")
-    @unittest.mock.patch.object(DummyController, "check_bounds_respected")
-    def test_bounds_respected_func_called(
-            self, check_bounds_respected, cleanup):
-        """
-        Test that the check to verify that bounds are respected is called when
-        the controller runs succesfully.
-        """
-        self.controller.problem.value_ranges = {'test': (0, 1)}
-        self.controller.has_jacobian = [True]
-        self.controller.invalid_jacobians = ["deriv_free_algorithm"]
-        self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.has_hessian = [False]
-        hessian = False
-
-        # Cleanup has been mocked out with a no-op, so set the outputs now.
-        self.controller.flag = 0
-        self.controller.final_params = [1, 2, 3, 4]
-
-        _ = loop_over_jacobians(self.controller,
-                                self.options,
-                                hessian,
-                                self.grabbed_output)
-        check_bounds_respected.assert_called()
-
-    @unittest.mock.patch.object(DummyController, "cleanup")
-    @unittest.mock.patch.object(DummyController, "check_bounds_respected")
-    def test_bounds_respected_func_not_called(
-            self, check_bounds_respected, cleanup):
-        """
-        Test that the check to verify that bounds are respected is not called
-        when the controller fails.
-        """
-        self.controller.problem.value_ranges = {'test': (0, 1)}
-        self.controller.has_jacobian = [True]
-        self.controller.invalid_jacobians = ["deriv_free_algorithm"]
-        self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.has_hessian = [False]
-
-        hessian = False
-
-        # Cleanup has been mocked out with a no-op, so set the outputs now.
-        self.controller.flag = 3
-        self.controller.final_params = [1, 2, 3, 4]
-
-        _ = loop_over_jacobians(self.controller,
-                                self.options,
-                                hessian,
-                                self.grabbed_output)
-        check_bounds_respected.assert_not_called()
-    # pylint: enable=unused-argument
 
 
 if __name__ == "__main__":
