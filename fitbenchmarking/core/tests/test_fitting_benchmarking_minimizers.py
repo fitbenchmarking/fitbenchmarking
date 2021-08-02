@@ -124,8 +124,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         results = self.results[self.count]
         minimizer_list = self.minimizer_list[self.count]
         self.count += 1
-        failed = False
-        return results, self.chi_sq, minimizer_list, failed
+        return results, self.chi_sq, minimizer_list
 
     def test_run_minimzers_none_selected(self):
         """
