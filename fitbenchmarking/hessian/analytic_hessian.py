@@ -10,7 +10,7 @@ from fitbenchmarking.utils.exceptions import NoHessianError
 
 class Analytic(Hessian):
     """
-    Class to apply an analytical Jacobian
+    Class to apply an analytic Hessian
     """
 
     def __init__(self, cost_func):
