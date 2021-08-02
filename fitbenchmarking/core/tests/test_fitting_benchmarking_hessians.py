@@ -129,7 +129,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         Test that loop_over_jacobians is called when no hessian
         option is selected.
         """
-        self.options.use_hessian = False
+
         self.controller.minimizer = "general"
         self.controller.has_hessian = [True]
         self.controller.invalid_hessians = ["deriv_free_algorithm"]
@@ -147,7 +147,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         hessians is set to true and the minimizer selected
         can use hessian information
         """
-        self.options.use_hessian = True
+        self.options.hes_method = ["analytic"]
         self.controller.minimizer = "general"
         self.controller.has_hessian = [True]
         self.controller.invalid_hessians = ["deriv_free_algorithm"]
@@ -157,24 +157,6 @@ class LoopOverHessiansTests(unittest.TestCase):
                            self.options,
                            self.grabbed_output)
         loop_over_jacobians.assert_called()
-
-    @patch('{}.loop_over_jacobians'.format(FITTING_DIR))
-    def test_hessian_minimizer_not_ok(self, loop_over_jacobians):
-        """
-        Test that loop_over_jacobians is not called when use
-        hessians is set to true and the minimizer selected
-        cannot use hessian information
-        """
-        self.options.use_hessian = True
-        self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.has_hessian = [True]
-        self.controller.invalid_hessians = ["deriv_free_algorithm"]
-
-        _, _, _, failed = loop_over_hessians(self.controller,
-                                             self.options,
-                                             self.grabbed_output)
-        loop_over_jacobians.assert_not_called()
-        assert failed is True
 
 
 if __name__ == "__main__":

@@ -332,33 +332,28 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
             #######################
             # Loops over Hessians #
             #######################
-            results, chi_sq, minimizer_list, failed = \
+            results, chi_sq, minimizer_list = \
                 loop_over_hessians(controller,
                                    options,
                                    grabbed_output)
-            if failed:
-                minimizer_failed.append(minimizer)
-                LOGGER.warning('Selected minimizer/cost_func cannot use '
-                               'Hessian information so will '
-                               'be skipped')
-            else:
-                for result in results:
-                    if problem.multifit:
-                        # Multi fit
-                        # (will raise TypeError if these are not iterable)
-                        for i in range(len(chi_sq)):
-                            result.update({'dataset_id': i,
-                                           'name': '{}, Dataset {}'.format(
-                                               problem.name, (i + 1))})
-                            individual_result = \
-                                fitbm_result.FittingResult(**result)
-                            results_problem.append(individual_result)
-                    else:
-                        # Normal fitting
-                        individual_result = fitbm_result.FittingResult(
-                            **result)
+
+            for result in results:
+                if problem.multifit:
+                    # Multi fit
+                    # (will raise TypeError if these are not iterable)
+                    for i in range(len(chi_sq)):
+                        result.update({'dataset_id': i,
+                                       'name': '{}, Dataset {}'.format(
+                                            problem.name, (i + 1))})
+                        individual_result = \
+                            fitbm_result.FittingResult(**result)
                         results_problem.append(individual_result)
-                new_minimizer_list.extend(minimizer_list)
+                else:
+                    # Normal fitting
+                    individual_result = fitbm_result.FittingResult(
+                        **result)
+                    results_problem.append(individual_result)
+            new_minimizer_list.extend(minimizer_list)
 
     return results_problem, minimizer_failed, new_minimizer_list
 
@@ -389,13 +384,10 @@ def loop_over_hessians(controller, options, grabbed_output):
     chi_sq = []
     minimizer_list = []
     hessian = False
-    failed = False
     minimizer = controller.minimizer
     cost_func = controller.cost_func
     has_hessian, invalid_hessian = controller.hessian_information()
-    hessian_option = options.use_hessian
     minimizer_check = has_hessian and minimizer not in invalid_hessian
-    minimizer_ok = True
     hessian_list = options.hes_method
 
     try:
@@ -403,38 +395,30 @@ def loop_over_hessians(controller, options, grabbed_output):
         for method in hessian_list:
             # if user has selected to use hessian info
             # then create hessian if minimizer accepts it
-            if hessian_option:
 
-                # Temporary addition until hellinger_nlls and
-                # poisson cost functions are added to
-                # Analytic Hessian class
-                if options.cost_func_type == "hellinger_nlls"\
-                        or options.cost_func_type == "poisson":
-                    minimizer_check = False
-                    minimizer_ok = False
+            # Temporary addition until hellinger_nlls and
+            # poisson cost functions are added to
+            # Analytic Hessian class
+            if options.cost_func_type == "hellinger_nlls"\
+                    or options.cost_func_type == "poisson":
+                minimizer_check = False
 
-                if minimizer_check:
-                    hessian_cls = create_hessian(method)
-                    try:
-                        hessian = hessian_cls(cost_func)
-                        controller.hessian = hessian
-                    except NoHessianError as excp:
-                        minimizer_ok = False
-                        LOGGER.warning(str(excp))
-                else:
-                    minimizer_ok = False
+            if minimizer_check and method != 'default':
+                hessian_cls = create_hessian(method)
+                try:
+                    hessian = hessian_cls(cost_func)
+                    controller.hessian = hessian
+                except NoHessianError as excp:
+                    LOGGER.warning(str(excp))
 
-            if minimizer_ok:
-                ########################
-                # Loops over Jacobians #
-                ########################
-                results, chi_sq, minimizer_list = \
-                    loop_over_jacobians(controller,
-                                        options,
-                                        hessian,
-                                        grabbed_output)
-            else:
-                failed = True
+            ########################
+            # Loops over Jacobians #
+            ########################
+            results, chi_sq, minimizer_list = \
+                loop_over_jacobians(controller,
+                                    options,
+                                    hessian,
+                                    grabbed_output)
 
             # For minimizers that do not accept hessians we raise an
             # StopIteration exception to exit the loop through the
@@ -444,7 +428,7 @@ def loop_over_hessians(controller, options, grabbed_output):
     except StopIteration:
         pass
 
-    return results, chi_sq, minimizer_list, failed
+    return results, chi_sq, minimizer_list
 
 
 def loop_over_jacobians(controller, options, hessian, grabbed_output):

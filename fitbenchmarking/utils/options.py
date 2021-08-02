@@ -63,8 +63,7 @@ class Options:
                       'matlab_stats', 'minuit', 'ralfit', 'scipy',
                       'scipy_ls', 'scipy_go'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
-         'use_hessian': [True, False],
-         'hes_method': ['analytic'],
+         'hes_method': ['default', 'analytic'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
     VALID_JACOBIAN = \
@@ -128,8 +127,7 @@ class Options:
          'algorithm_type': ['all'],
          'software': ['scipy', 'scipy_ls'],
          'jac_method': ['scipy'],
-         'use_hessian': False,
-         'hes_method': ['analytic'],
+         'hes_method': ['default'],
          'cost_func_type': 'weighted_nlls'}
     DEFAULT_JACOBIAN = \
         {'analytic': ['cutest'],
@@ -212,7 +210,6 @@ class Options:
             fitting.getlist, 'algorithm_type')
         self.software = self.read_value(fitting.getlist, 'software')
         self.jac_method = self.read_value(fitting.getlist, 'jac_method')
-        self.use_hessian = self.read_value(fitting.getboolean, 'use_hessian')
         self.hes_method = self.read_value(fitting.getlist, 'hes_method')
         self.cost_func_type = self.read_value(fitting.getstr, 'cost_func_type')
 
