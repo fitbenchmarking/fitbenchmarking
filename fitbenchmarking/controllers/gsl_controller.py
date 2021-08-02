@@ -68,8 +68,8 @@ class GSLController(Controller):
         GSL cannot use Hessian information
         """
         has_hessian = False
-        hessian_free_solvers = []
-        return has_hessian, hessian_free_solvers
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
 
     # pylint: disable=unused-argument
     def _prediction_error(self, p, data=None):

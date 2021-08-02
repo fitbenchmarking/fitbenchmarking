@@ -300,11 +300,11 @@ class Controller:
 
         - ``has_hessian``: a True or False value whether the controller
           accepts Hessian information.
-        - ``hessian_free_solvers``: a list of minimizers in a specific
-          software that do not allow Hessian information to be passed
+        - ``hessian_enabled_solvers``: a list of minimizers in a specific
+          software that allow Hessian information to be passed
           into the fitting algorithm.
 
-        :return: (``has_hessian``, ``hessian_free_solvers``)
+        :return: (``has_hessian``, ``hessian_enabled_solvers``)
         :rtype: (`string`, `list`)
         """
         raise NotImplementedError

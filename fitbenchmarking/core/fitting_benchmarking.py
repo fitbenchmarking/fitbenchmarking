@@ -386,8 +386,8 @@ def loop_over_hessians(controller, options, grabbed_output):
     hessian = False
     minimizer = controller.minimizer
     cost_func = controller.cost_func
-    has_hessian, invalid_hessian = controller.hessian_information()
-    minimizer_check = has_hessian and minimizer not in invalid_hessian
+    has_hessian, valid_hessian = controller.hessian_information()
+    minimizer_check = has_hessian and minimizer in valid_hessian
     hessian_list = options.hes_method
 
     try:

@@ -60,8 +60,8 @@ class RALFitController(Controller):
         # Temporarily set to False until RALFit issue with
         # `exact_second_derivatives` option is sorted
         has_hessian = False
-        hessian_free_solvers = []
-        return has_hessian, hessian_free_solvers
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
 
     def setup(self):
         """

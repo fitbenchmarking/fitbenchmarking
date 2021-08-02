@@ -460,8 +460,7 @@ class DefaultControllerTests(TestCase):
                                          ["Nelder-Mead", "Powell"])
         self.shared_tests.check_hes_info(controller,
                                          True,
-                                         ['Nelder-Mead', 'Powell', 'CG',
-                                          'BFGS', 'L-BFGS-B', 'TNC', 'SLSQP'])
+                                         ['Newton-CG'])
         controller.result.success = True
         self.shared_tests.check_converged(controller)
         controller.result.success = False

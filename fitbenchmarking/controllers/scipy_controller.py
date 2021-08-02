@@ -60,9 +60,8 @@ class ScipyController(Controller):
         Scipy can use Hessian information
         """
         has_hessian = True
-        hessian_free_solvers = ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                                'L-BFGS-B', 'TNC', 'SLSQP']
-        return has_hessian, hessian_free_solvers
+        hessian_enabled_solvers = ['Newton-CG']
+        return has_hessian, hessian_enabled_solvers
 
     def setup(self):
         """

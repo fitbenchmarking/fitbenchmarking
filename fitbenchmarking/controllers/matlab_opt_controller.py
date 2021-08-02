@@ -59,8 +59,8 @@ class MatlabOptController(MatlabMixin, Controller):
         Matlab Optimization Toolbox cannot use Hessian information
         """
         has_hessian = False
-        hessian_free_solvers = []
-        return has_hessian, hessian_free_solvers
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
 
     def setup(self):
         """

@@ -44,7 +44,7 @@ class DummyController(Controller):
         self.has_jacobian = []
         self.invalid_jacobians = []
         self.has_hessian = []
-        self.invalid_hessians = []
+        self.valid_hessians = []
 
     def setup(self):
         """
@@ -71,8 +71,8 @@ class DummyController(Controller):
         Mock controller jacobian_information function
         """
         has_hessian = self.has_hessian[self.count]
-        invalid_hessians = self.invalid_hessians[self.count]
-        return has_hessian, invalid_hessians
+        valid_hessians = self.valid_hessians[self.count]
+        return has_hessian, valid_hessians
 
     def cleanup(self):
         """
@@ -132,7 +132,7 @@ class LoopOverHessiansTests(unittest.TestCase):
 
         self.controller.minimizer = "general"
         self.controller.has_hessian = [True]
-        self.controller.invalid_hessians = ["deriv_free_algorithm"]
+        self.controller.valid_hessians = ["general"]
         loop_over_jacobians.side_effect = self.mock_func_call
 
         loop_over_hessians(self.controller,
@@ -150,7 +150,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.options.hes_method = ["analytic"]
         self.controller.minimizer = "general"
         self.controller.has_hessian = [True]
-        self.controller.invalid_hessians = ["deriv_free_algorithm"]
+        self.controller.valid_hessians = ["general"]
         loop_over_jacobians.side_effect = self.mock_func_call
 
         loop_over_hessians(self.controller,
