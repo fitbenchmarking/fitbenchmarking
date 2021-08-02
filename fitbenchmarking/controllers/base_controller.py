@@ -94,6 +94,9 @@ class Controller:
         self.parameter_set = None
         # Minimizer: The current minimizer to use
         self.minimizer = None
+        # Software: Use a property to get the name of the software from the
+        # class
+        self._software = ''
 
         # Final Params: The final values for the params from the minimizer
         self.final_params = None
@@ -131,6 +134,17 @@ class Controller:
                 'controller.flag must be one of {}. Got: {}.'.format(
                     list(self.VALID_FLAGS), value))
         self._flag = int(value)
+
+    @property
+    def software(self):
+        """
+        Return the name of the software.
+
+        This assumes the class is named '<software>Controller'
+        """
+        if not self._software:
+            self._software = self.__class__.__name__[:-10].lower()
+        return self._software
 
     def prepare(self):
         """

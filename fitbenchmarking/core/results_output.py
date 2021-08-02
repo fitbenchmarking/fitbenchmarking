@@ -57,6 +57,7 @@ def save_results(options, results, group_name, failed_problems,
 
     if options.make_plots:
         create_plots(options, results, best_results, fig_dir)
+
     support_page.create(options=options,
                         results_per_test=results,
                         group_name=group_name,
@@ -65,7 +66,6 @@ def save_results(options, results, group_name, failed_problems,
     table_names, table_descriptions = \
         tables.create_results_tables(options,
                                      results,
-                                     best_results,
                                      group_name,
                                      group_dir,
                                      fig_dir,
@@ -105,8 +105,8 @@ def create_directories(options, group_name):
 
 def preproccess_data(results_per_test):
     """
-    Preprocess data into the right format for printing and find the best result
-    for each problem
+    Find the best result for each problem set and set attributes on results for
+    relative values.
 
     :param results_per_test: results nested array of objects
     :type results_per_test: list of list of
@@ -117,14 +117,19 @@ def preproccess_data(results_per_test):
     """
     output = []
     for results in results_per_test:
-        best_result = min(results, key=lambda x: x.chi_sq)
+        best_result = results[0]
+        fastest_result = results[0]
+        for r in results[1:]:
+            if best_result.chi_sq >= r.chi_sq:
+                best_result = r
+            if fastest_result.runtime >= r.runtime:
+                fastest_result = r
+
         best_result.is_best_fit = True
 
-        min_chi_sq = best_result.chi_sq
-        min_runtime = min([r.runtime for r in results])
         for r in results:
-            r.min_chi_sq = min_chi_sq
-            r.min_runtime = min_runtime
+            r.min_chi_sq = best_result.chi_sq
+            r.min_runtime = fastest_result.runtime
         output.append(best_result)
     return output
 
@@ -139,13 +144,13 @@ def create_plots(options, results, best_results, figures_dir):
     :type results: list of list of
                    fitbenchmarking.utils.fitbm_result.FittingResult
     :param best_results: best result for each problem
-    :type best_results: list of
-                        fitbenchmarking.utils.fitbm_result.FittingResult
+    :type best_results:
+        list[fitbenchmarking.utils.fitbm_result.FittingResult]
+
     :param figures_dir: Path to directory to store the figures in
     :type figures_dir: str
     """
     for best, prob_result in zip(best_results, results):
-
         try:
             plot = plots.Plot(best_result=best,
                               options=options,
