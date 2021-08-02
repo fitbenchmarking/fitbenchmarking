@@ -39,9 +39,9 @@ def create_results_tables(options, results, best_results, group_name,
     :param results: results nested array of objects
     :type results: list of list of
                    fitbenchmarking.utils.fitbm_result.FittingResult
-    :param best_results: best result for each problem
-    :type best_results: list of
-                        fitbenchmarking.utils.fitbm_result.FittingResult
+    :param best_results: best result for each problem split by cost function
+    :type best_results:
+        list[dict[str:fitbenchmarking.utils.fitbm_result.FittingResult]]
     :param group_name: name of the problem group
     :type group_name: str
     :param group_dir: path to the directory where group results should be
@@ -73,10 +73,7 @@ def create_results_tables(options, results, best_results, group_name,
     for suffix in SORTED_TABLE_NAMES:
         if suffix in options.table_type:
 
-            table_names[suffix] = \
-                '{0}_{1}_{2}_table.'.format(group_name,
-                                            suffix,
-                                            options.cost_func_type)
+            table_names[suffix] = f'{group_name}_{suffix}_table.'
 
             try:
                 table, html_table, txt_table, cbar = \
@@ -175,9 +172,9 @@ def generate_table(results, best_results, options, group_dir,
     :param results: results nested array of objects
     :type results: list of list of
                    fitbenchmarking.utils.fitbm_result.FittingResult
-    :param best_results: best result for each problem
-    :type best_results: list of
-                        fitbenchmarking.utils.fitbm_result.FittingResult
+    :param best_results: best result for each problem split by cost_function
+    :type best_results:
+        list[dict[str:fitbenchmarking.utils.fitbm_result.FittingResult]]
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
     :param group_dir: path to the directory where group results should be
@@ -202,18 +199,8 @@ def generate_table(results, best_results, options, group_dir,
                          options, group_dir,
                          pp_locations, table_name)
 
-    results_dict = table.create_results_dict()
-
-    disp_results = table.get_values(results_dict)
-    error = table.get_error(results_dict)
-    links = table.get_links(results_dict)
-    colour = table.get_colour(disp_results)
-    str_results = table.display_str(disp_results)
+    html_table = table.to_html()
+    txt_table = table.to_txt()
     cbar = table.get_cbar(fig_dir)
-
-    pandas_html = table.create_pandas_data_frame(str_results)
-    pandas_txt = copy.copy(pandas_html)
-    html_table = table.to_html(pandas_html, colour, links, error)
-    txt_table = table.to_txt(pandas_txt, error)
 
     return table, html_table, txt_table, cbar

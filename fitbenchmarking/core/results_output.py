@@ -63,9 +63,11 @@ def save_results(options, results, group_name, failed_problems,
                         group_name=group_name,
                         support_pages_dir=supp_dir)
     problem_summary_page.create(options=options,
+                                results_per_test=results,
                                 best_results=best_results,
                                 group_name=group_name,
-                                support_pages_dir=supp_dir)
+                                support_pages_dir=supp_dir,
+                                figures_dir=fig_dir)
 
     table_names, table_descriptions = \
         tables.create_results_tables(options,
@@ -111,7 +113,7 @@ def create_directories(options, group_name):
 def preproccess_data(results_per_test):
     """
     Preprocess data into the right format for printing and find the best result
-    for each problem
+    for each problem sorted by cost_function
 
     :param results_per_test: results nested array of objects
     :type results_per_test: list of list of
@@ -122,15 +124,23 @@ def preproccess_data(results_per_test):
     """
     output = []
     for results in results_per_test:
-        best_result = min(results, key=lambda x: x.chi_sq)
-        best_result.is_best_fit = True
-
-        min_chi_sq = best_result.chi_sq
-        min_runtime = min([r.runtime for r in results])
+        best_results = {}
+        fastest_results = {}
         for r in results:
-            r.min_chi_sq = min_chi_sq
-            r.min_runtime = min_runtime
-        output.append(best_result)
+            cf_name = r.cost_func.__class__.__name__
+            if best_results.get(cf_name, r.chi_sq) <= r.chi_sq:
+                best_results[cf_name] = r
+            if fastest_results.get(cf_name, r.runtime) <= r.runtime:
+                fastest_results[cf_name] = r
+
+        for r in best_results.values():
+            r.is_best_fit = True
+
+        for r in results:
+            cf_name = r.cost_func.__class__.__name__
+            r.min_chi_sq = best_results[cf_name]
+            r.min_runtime = fastest_results[cf_name]
+        output.append(best_results)
     return output
 
 
@@ -143,35 +153,41 @@ def create_plots(options, results, best_results, figures_dir):
     :param results: results nested array of objects
     :type results: list of list of
                    fitbenchmarking.utils.fitbm_result.FittingResult
-    :param best_results: best result for each problem
-    :type best_results: list of
-                        fitbenchmarking.utils.fitbm_result.FittingResult
+    :param best_results: best result for each problem seperated by cost
+                         function
+    :type best_results:
+        list[dict[str: fitbenchmarking.utils.fitbm_result.FittingResult]]
+
     :param figures_dir: Path to directory to store the figures in
     :type figures_dir: str
     """
-    for best, prob_result in zip(best_results, results):
+    for best_dict, prob_result in zip(best_results, results):
+        plot_dict = {}
+        for cf, best_in_cf in best_dict.items():
+            try:
+                plot = plots.Plot(best_result=best_in_cf,
+                                  options=options,
+                                  figures_dir=figures_dir)
+            except PlottingError as e:
+                for result in prob_result:
+                    result.figure_error = str(e)
+                continue
 
-        try:
-            plot = plots.Plot(best_result=best,
-                              options=options,
-                              figures_dir=figures_dir)
-        except PlottingError as e:
-            for result in prob_result:
-                result.figure_error = str(e)
-            continue
+            # Create a plot showing the initial guess and get filename
+            initial_guess_path = plot.plot_initial_guess()
 
-        # Create a plot showing the initial guess and get filename
-        initial_guess_path = plot.plot_initial_guess()
-
-        # Setup best plot first
-        # If none of the fits succeeded, params could be None
-        # Otherwise, add the best fit to the plot
-        if best.params is not None:
-            plot_path = plot.plot_best(best.sanitised_min_name, best.params)
-            best.figure_link = plot_path
-        else:
-            best.figure_error = 'Minimizer failed to produce any parameters'
-        best.start_figure_link = initial_guess_path
+            # Setup best plot first
+            # If none of the fits succeeded, params could be None
+            # Otherwise, add the best fit to the plot
+            if best_in_cf.params is not None:
+                plot_path = plot.plot_best(best_in_cf.sanitised_min_name,
+                                           best_in_cf.params)
+                best_in_cf.figure_link = plot_path
+            else:
+                best_in_cf.figure_error = 'Minimizer failed to produce any ' \
+                    'parameters'
+            best_in_cf.start_figure_link = initial_guess_path
+            plot_dict[cf] = plot
 
         # For each result, if it succeeded, create a plot and add plot links to
         # the resuts object
@@ -179,8 +195,9 @@ def create_plots(options, results, best_results, figures_dir):
             # Don't plot best again
             if not result.is_best_fit:
                 if result.params is not None:
-                    plot_path = plot.plot_fit(result.sanitised_min_name,
-                                              result.params)
+                    cf = result.cost_func.__class__.__name__
+                    plot_path = plot_dict[cf].plot_fit(
+                        result.sanitised_min_name, result.params)
                     result.figure_link = plot_path
                 else:
                     result.figure_error = 'Minimizer failed to produce any ' \

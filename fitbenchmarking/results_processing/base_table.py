@@ -36,9 +36,9 @@ class Table:
         :param results: results nested array of objects
         :type results: list of list of
                        fitbenchmarking.utils.fitbm_result.FittingResult
-        :param best_results: best result for each problem
-        :type best_results: list of
-                        fitbenchmarking.utils.fitbm_result.FittingResult
+        :param best_results: best result for each problem split by cost func
+        :type best_results:
+            list[dict[str:fitbenchmarking.utils.fitbm_result.FittingResult]]
         :param options: Options used in fitting
         :type options: utils.options.Options
         :param group_dir: path to the directory where group results should be
@@ -61,45 +61,106 @@ class Table:
         self.output_string_type = {"abs": '{:.4g}',
                                    "rel": '{:.4g}',
                                    "both": '{0:.4g} ({1:.4g})'}
+
         self.has_pp = False
         self.pp_location = ''
         self._table_title = None
         self._file_path = None
 
+        self.create_results_dict()
+
     def create_results_dict(self):
         """
         Generates a dictionary used to create HTML and txt tables.
-
-        :return: dictionary containing results where the keys
-                 are the problem sets and the values are lists
-                 of results objects
-        :rtype: dictionary
+        This is stored in self.sorted_results
         """
-        results_dict = {}
-        for prob_results in self.results:
-            name = prob_results[0].name
-            results_dict[name] = prob_results
-        return results_dict
+        sort_order = (['problem'],
+                      ['costfun', 'minimizer', 'jacobian'])
+
+        sets = {
+            'problem': set(),
+            'minimizer': set(),
+            'jacobian': set(),
+            'costfun': set(),
+        }
+
+        for r in self.results:
+            for k, s in sets.items():
+                s.add(getattr(r, k))
+
+        lookups = {k: {i: v
+                       for i, v in enumerate(sorted(s))}
+                   for k, s in sets.items()}
+
+        columns = ['']
+        for sort_pos in sort_order[1]:
+            columns = [f'{stub}_{suff}'
+                       for stub in columns
+                       for suff in lookups[sort_pos].values()]
+        cols_dict = {k.strip(':'): i
+                     for i, k in enumerate(columns)}
+
+        rows = ['']
+        for sort_pos in sort_order[0]:
+            rows = [f'{stub}:{suff}'
+                    for stub in rows
+                    for suff in lookups[sort_pos].values()
+                    ]
+
+        sorted_results = {r.strip(':'): [None for _ in columns]
+                          for r in rows}
+
+        for r in self.results:
+            row = ''
+            col = ''
+            for sort_pos in reversed(sort_order[0]):
+                row += f':{getattr(r, sort_pos)}'
+            row = row.strip(':')
+            for sort_pos in reversed(sort_order[1]):
+                col += f':{getattr(r, sort_pos)}'
+            col = cols_dict[col.strip(':')]
+
+            sorted_results[row][col] = r
+
+        self.sorted_results = sorted_results
+
+    def get_str_dict(self, html=False):
+        """
+        Create a dictionary of with the table values as strings for display.
+
+        :return: The dictionary of values for the table
+        :rtype: dict[list[str]]
+        """
+        return {k: [self.get_str_result(v, html) for v in values]
+                for k, values in self.sorted_results.items()}
+
+    def get_str_result(self, result, html=False):
+        if html:
+            val = self.get_value(result)
+            val_str = self.display_str(val)
+            val_str += self.get_error_str(result, error_template="<sup>{}</sup>")
+            val_str = f'<a href="{self.get_link_str(result)}" style="background-colour:{self.get_colour_str(val)}">{val_str}</a>'
+        else:
+            val_str = self.display_str(self.get_value(result))
+            val_str += self.get_error_str(result, error_template='[{}]')
+        return val_str
 
     @abstractmethod
-    def get_values(self, results_dict):
+    def get_value(self, result):
         """
-        Gets the main values to be reported in the tables
+        Gets the main value to be reported in the tables for a given result
 
-        :param results_dict: dictionary containing results where the keys
-                             are the problem sets and the values are lists
-                             of results objects
-        :type results_dict: dictionary
+        :param result: The result to generate the values for.
+        :type result: FittingResult
 
-        :return: tuple of dictionaries which contain the main values in the
-                 tables
-        :rtype: tuple
+        :return: The value to convert to a string for the tables
+        :rtype: tuple(float)
         """
         raise NotImplementedError
 
-    def display_str(self, results):
+    def display_str(self, value):
         """
-        Function which converts the results from
+        Converts the a results value generated by
         :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()`
         into a string respresentation to be used in the tables.
         Base class implementation takes
@@ -107,49 +168,42 @@ class Table:
         as a template for the string format. This can be overwritten to
         adequately display the results.
 
-        :param results: tuple containing absolute and relative values
-        :type results: tuple
+        :param value: tuple containing absolute and relative values
+        :type value: tuple
 
-        :return: dictionary containing the string representation of the values
-                 in the table.
-        :rtype: dict
+        :return: string representation of the value for display in the table.
+        :rtype: str
         """
-        abs_results, rel_results = results
+        abs_value, rel_value = value
         comp_mode = self.options.comparison_mode
         result_template = self.output_string_type[self.options.comparison_mode]
-        table_output = {}
-        for key in abs_results.keys():
-            if comp_mode == "abs":
-                table_output[key] = [result_template.format(v)
-                                     for v in abs_results[key]]
-            elif comp_mode == "rel":
-                table_output[key] = [result_template.format(v)
-                                     for v in rel_results[key]]
-            elif comp_mode == "both":
-                table_output[key] = [result_template.format(v1, v2)
-                                     for v1, v2 in zip(abs_results[key],
-                                                       rel_results[key])]
-        return table_output
+        if comp_mode == "abs":
+            return result_template.format(abs_value)
+        elif comp_mode == "rel":
+            return result_template.format(rel_value)
+        # comp_mode == "both"
+        return result_template.format(abs_value, rel_value)
 
-    def get_colour(self, results):
+    def get_colour_str(self, value):
         """
-        Converts the result from
-        :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()`
-        into the HTML colours used in the tables. The base class
-        implementation, for example, uses the relative results and
+        Get the colour as a string for the given value in the table.
+        The base class implementation, for example,
+        uses the relative results and
         ``colour_map``, ``colour_ulim`` and ``cmap_range`` within
         :class:`~fitbenchmarking.utils.options.Options`.
-        :param results: tuple containing absolute and relative values
-        :type results: tuple
-        :return: dictionary containing HTML colours for the table
-        :rtype: dict
+
+        :param result: tuple containing absolute and relative values
+        :type result: tuple[float]
+        :return: The colour to use for the cell
+        :rtype: str
         """
         cmap_name = self.options.colour_map
         cmap = plt.get_cmap(cmap_name)
         cmap_ulim = self.options.colour_ulim
         cmap_range = self.options.cmap_range
         log_ulim = np.log10(cmap_ulim)  # colour map used with log spacing
-        _, rel_value = results
+        log_llim = np.log10(???)
+        _, rel_value = value
         colour = {}
         for key, value in rel_value.items():
             if not all(isinstance(elem, list) for elem in value):
@@ -178,46 +232,14 @@ class Table:
         """
         raise NotImplementedError()
 
-    def get_links(self, results_dict):
+    def create_pandas_data_frame(self, html=False):
         """
-        Pulls out links to the individual support pages from the results
-        object
-
-        :param results: tuple containing absolute and relative values
-        :type results: tuple
-
-        :return: dictionary containing links to the support pages
-        :rtype: dict
-        """
-        links = {key: [v.support_page_link for v in value]
-                 for key, value in results_dict.items()}
-        return links
-
-    def get_error(self, results_dict):
-        """
-        Pulls out error code from the results object
-
-        :param results: tuple containing absolute and relative values
-        :type results: tuple
-
-        :return: dictionary containing error codes from the minimizers
-        :rtype: dict
-        """
-        error = {key: [v.error_flag for v in value]
-                 for key, value in results_dict.items()}
-        return error
-
-    def create_pandas_data_frame(self, str_results):
-        """
-        Converts dictionary of results into a pandas data frame
-
-        :param str_results: dictionary containing the string representation of
-                            the values in the table.
-        :type str_results: dict
+        Creates a pandas data frame of results
 
         :return: pandas data frame with from results
         :rtype: Pandas DataFrame
         """
+        str_results = self.get_str_dict(html)
         table = pd.DataFrame.from_dict(str_results, orient='index')
         minimizers_list = [(s, m) for s in self.options.software
                            for m in self.options.minimizers[s]]
@@ -225,7 +247,7 @@ class Table:
         table.columns = columns
         return table
 
-    def to_html(self, table, colour, links, error):
+    def to_html(self):
         """
         Takes Pandas data frame and converts it into the HTML table output
 
@@ -241,14 +263,11 @@ class Table:
         :return: HTLM table output
         :rtype: str
         """
+        table = self.create_pandas_data_frame(html=True)
         link_template = '<a href="https://fitbenchmarking.readthedocs.io/'\
                         'en/latest/users/options/minimizer_option.html#'\
                         '{0}-{0}" target="_blank">{0}</a>'
         minimizer_template = '<span title="{0}">{1}</span>'
-        table.apply(lambda x: self.enable_error(x, error, "<sup>{}</sup>"),
-                    axis=1, result_type='expand')
-        table.apply(lambda x: self.enable_link(x, links), axis=1,
-                    result_type='expand')
 
         minimizers_list = [(link_template.format(s.replace("_", "-")),
                            minimizer_template.format(
@@ -260,74 +279,47 @@ class Table:
 
         index = []
         for b, i in zip(self.best_results, table.index):
-            rel_path = os.path.relpath(path=b.problem_summary_page_link,
-                                       start=self.group_dir)
+            rel_path = os.path.relpath(
+                path=b.values()[0].problem_summary_page_link,
+                start=self.group_dir)
             index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
         table.index = index
         table_style = table.style.apply(
             lambda x: self.colour_highlight(x, colour), axis=1)
 
         return table_style.render()
-
-    def to_txt(self, table, error):
-        """
-        Takes Pandas data frame and converts it into the plain text table
-        output
-
-        :param table: pandas data frame with from results
-        :type table: Pandas DataFrame
-        :param error: dictionary containing error codes from the minimizers
-        :type error: dict
-
-        :return: plain text table output
-        :rtype: str
-        """
-        table.apply(lambda x: self.enable_error(x, error, "[{}]"),
-                    axis=1, result_type='expand')
+    
+    def to_txt(self):
+        table = self.create_pandas_data_frame(html=False)
         return table.to_string()
 
-    def enable_link(self, value, links):
+    def get_link_str(self, result):
         """
-        Enable HTML links in values
+        Get the link as a string for the result
 
-        :param value: Row data from the pandas array
-        :type value: pandas.core.series.Series
-        :param links: dictionary containing links to the support pages
-        :type links: dict
+        :param result: The result to get the link for
+        :type result: FittingResult
 
-        :return: Row data from the pandas array with links enabled
-        :rtype: pandas.core.series.Series
+        :return: The link to go to when the cell is selectedddd
+        :rtype: string
         """
-        name = value.name
-        support_page_link = links[name]
-        i = 0
-        for page_path, v in zip(support_page_link, value.array):
-            tmp_link = os.path.relpath(path=page_path,
-                                       start=self.group_dir)
-            value.array[i] = '<a href="{0}">{1}</a>'.format(tmp_link, v)
-            i += 1
-        return value
+        return result.support_page_link
 
-    def enable_error(self, value, error, template):
+    def get_error_str(self, result, error_template='[{}]'):
         """
-        Enable error codes in table
+        Get the error string for a result based on error_template
 
-        :param value: Row data from the pandas array
-        :type value: pandas.core.series.Series
-        :param error: dictionary containing error codes from the minimizers
-        :type error: dict
+        :param result: The result to get the error string for
+        :type result: FittingResult
 
-        :return: Row data from the pandas array with error codes enabled
-        :rtype: pandas.core.series.Series
+        :return: A string representation of the error for the html tables
+        :rtype: str
         """
-        name = value.name
-        error_code = [template.format(e) if e != 0 else ""
-                      for e in error[name]]
-        i = 0
-        for v, e in zip(value, error_code):
-            value.array[i] = v + e
-            i += 1
-        return value
+        error_code = result.error_flag
+        if error_code == 0:
+            return ''
+
+        return error_template.format(error_code)
 
     def colour_highlight(self, value, colour):
         """
