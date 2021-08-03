@@ -174,9 +174,9 @@ on to the next minimizer / benchmark dataset combination.
 
 `max_runtime` is set by specifying a number in unit of seconds.
 
-Default is 600
+Default is 60
 
 .. code-block:: rst
 
     [FITTING]
-    max_runtime: 600
+    max_runtime: 60
