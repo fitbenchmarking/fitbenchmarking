@@ -37,6 +37,8 @@ options are:
 
 Default is ``2-point``
 
+**Licence** SciPy is available under a `3-clause BSD Licence <https://github.com/scipy/scipy/blob/master/LICENSE.txt>`__.  Individual packages may have their own (compatible) licences, as listed `here <https://github.com/scipy/scipy/blob/master/LICENSES_bundled.txt>`__.
+
 .. code-block:: rst
 
     [JACOBIAN]
@@ -74,10 +76,12 @@ The supported options are:
 * ``central`` - central differencing.  Almost as accurate as complex, but with no restriction on the type of function.
 * ``forward`` - forward differencing.
 * ``backward`` - backward differencing.
-* ``complex`` - based on the complex-step derivative method of `Lyness and Moler <http://epubs.siam.org/doi/abs/10.1137/0704019>`_.  Usually the most accurate, provided the function is analytic.  
-* ``multicomplex`` - extends complex method using multicomplex numbers. (see, e.g., `Lantoine, Russell, Dargent (2012) <https://dl.acm.org/doi/10.1145/2168773.2168774>`_).
+* ``complex`` - based on the complex-step derivative method of `Lyness and Moler <http://epubs.siam.org/doi/abs/10.1137/0704019>`__.  Usually the most accurate, provided the function is analytic.  
+* ``multicomplex`` - extends complex method using multicomplex numbers. (see, e.g., `Lantoine, Russell, Dargent (2012) <https://dl.acm.org/doi/10.1145/2168773.2168774>`__).
 
 Default is ``central``.
+
+**Licence** :code:`numdifftools` is available under a `3-clause BSD Licence <https://github.com/pbrod/numdifftools/blob/master/LICENSE.txt>`__.
 
 .. code-block:: rst
 

@@ -32,7 +32,10 @@ To add a new fitting problem definition type, complete the following steps:
    :class:`~fitbenchmarking.parsing.parser_factory.ParserFactory`.
    This should be done in such a way that the type is inferred from the file.
 
-4. Create the files to test the new parser.
+4. Document the parser (see :ref:`problem_def`), being sure to include any licencing
+   information.
+
+5. Create the files to test the new parser.
    Automated tests are run against the parsers in FitBenchmarking,
    which work by using test files in 
    ``fitbenchmarking/parsing/tests/<format_name>``.
@@ -100,5 +103,5 @@ To add a new fitting problem definition type, complete the following steps:
      and then checking that the only difference between the results table and the
      expected value is the new problem, and updating the expected file with the result.
 
-5. Verify that your tests have been found and are successful by running
+6. Verify that your tests have been found and are successful by running
    `pytest -vv fitbenchmarking/parsing/tests/test_parsers.py`
