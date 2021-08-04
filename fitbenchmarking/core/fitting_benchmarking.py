@@ -572,7 +572,13 @@ def loop_over_hessians(controller, options, minimizer_name,
                            'name': problem.name}
             new_result.append(result_args)
             new_minimizer_list.append(minimizer_name)
-            new_chi_sq.append(chi_sq)
+            if problem.multifit:
+                # for multifit problems, multiple chi_sq values are stored
+                # in a list, which should extend the empty new_chi_sq list
+                # rather than be appended to it
+                new_chi_sq.extend(chi_sq)
+            else:
+                new_chi_sq.append(chi_sq)
 
             # For minimizers that do not accept hessians we raise an
             # StopIteration exception to exit the loop through the
