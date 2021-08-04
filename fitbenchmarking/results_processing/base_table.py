@@ -168,17 +168,17 @@ class Table:
                       ['software', 'minimizer', 'jacobian'])
 
         # Generate the columns and row tags and sort
-        rows = []
-        columns = []
+        rows = set()
+        columns = set()
         for r in self.results:
             row = ''
             col = ''
             for sort_pos in sort_order[0]:
                 row += f':{getattr(r, sort_pos + "_tag")}'
-            rows.append(row.strip(':'))
+            rows.add(row.strip(':'))
             for sort_pos in sort_order[1]:
                 col += f':{getattr(r, sort_pos + "_tag")}'
-            columns.append(col.strip(':'))
+            columns.add(col.strip(':'))
 
         rows = sorted(rows)
         columns = {col: i for i, col in enumerate(sorted(columns))}
@@ -224,7 +224,7 @@ class Table:
     def get_colour_df(self, like_df=None):
         """
         Generate a dataframe of colours to add to the html rendering.
-        
+
         If like_df is passed this will use the column and row indexes of that
         dataframe.
 
@@ -311,11 +311,11 @@ class Table:
         col_strs = ["background-colour: #ffffff" for _ in results]
 
         colours = self.vals_to_colour(values, cmap, cmap_range, log_ulim)
-        for c in colours:
+        for i, c in enumerate(colours):
             try:
-                col_strs = self.colour_template.format(c)
+                col_strs[i] = self.colour_template.format(c)
             except IndexError:
-                col_strs = self.colour_template.format(*c)
+                col_strs[i] = self.colour_template.format(*c)
 
         return col_strs
 
@@ -369,6 +369,8 @@ class Table:
                                        start=self.group_dir)
             index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
         table.index = index
+        print(table.columns)
+        print(table.index)
 
         # Set the cell colours
         table_style = table.style.apply(
