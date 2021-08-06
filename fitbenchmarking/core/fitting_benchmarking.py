@@ -420,14 +420,19 @@ def loop_over_jacobians(controller, options, grabbed_output):
                         runtime = sum(runtime_list) / num_runs
                         controller.cleanup()
                         controller.check_attributes()
-                    ratio = np.max(runtime_list) / np.min(runtime_list)
+                    min_time = np.min(runtime_list)
+                    ratio = np.max(runtime_list) / min_time
                     tol = 4
                     if ratio > tol:
                         warnings.warn(
-                            'The ratio of the max time to the min is {0}'
-                            ' which is  larger than the tolerance of {1},'
-                            ' which may indicate that caching has occurred'
-                            ' in the timing results'.format(ratio, tol))
+                            'The ratio of the max time to the min is {0},'
+                            ' which is larger than the tolerance of {1}.'
+                            ' The min time is {2}. This can indicate that'
+                            ' the fitting engine is caching results. If the'
+                            ' min time is small this may just indicate that'
+                            ' other non-FitBenchmarking CPU activities are'
+                            ' taking place that affects the timing'
+                            ' results'.format(ratio, tol, min_time))
                     chi_sq = controller.eval_chisq(
                         params=controller.final_params,
                         x=controller.data_x,
