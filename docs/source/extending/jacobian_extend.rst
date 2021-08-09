@@ -43,7 +43,8 @@ you will need to:
 
 3. Document the available Jacobians by:
 
-  * adding a list of available ``method`` options to the docs for :ref:`jacobian_option`.
+  * adding a list of available ``method`` options to the docs for :ref:`jacobian_option`,
+    and including licencing information, if appropriate.
   * updating any example files in the ``examples`` directory
 
 4. Create tests for the Jacobian evaluation in

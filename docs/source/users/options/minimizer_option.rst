@@ -1,8 +1,8 @@
 .. _minimizer_option:
 
-#################
-Minimizer Options
-#################
+===================
+ Minimizer Options
+===================
 
 This section is used to declare the minimizers to use for each fitting
 software. If a fitting software has been selected in :ref:`fitting_option`
@@ -17,26 +17,29 @@ the default list of minimizers unless otherwise stated.
    as a default option).
 
 Bumps (:code:`bumps`)
----------------------
+=====================
 
-`Bumps <https://bumps.readthedocs.io>`_ is a set of data fitting (and Bayesian uncertainty analysis) routines.
+`Bumps <https://bumps.readthedocs.io>`__ is a set of data fitting (and Bayesian uncertainty analysis) routines.
 It came out of the University of Maryland and NIST as part of the DANSE
 (*Distributed Data Analysis of Neutron Scattering Experiments*) project.
 
 FitBenchmarking currently supports the Bumps minimizers:
 
-* `Nelder-Mead Simplex <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#nelder-mead-simplex>`_ (:code:`amoeba`)
+* `Nelder-Mead Simplex <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#nelder-mead-simplex>`__ (:code:`amoeba`)
 
-* `Levenberg-Marquardt <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#fit-lm>`_  (:code:`lm`)
+* `Levenberg-Marquardt <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#fit-lm>`__  (:code:`lm`)
 
-* `Quasi-Newton BFGS <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#quasi-newton-bfgs>`_ (:code:`newton`)
+* `Quasi-Newton BFGS <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#quasi-newton-bfgs>`__ (:code:`newton`)
 
-* `Differential Evolution <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#differential-evolution>`_ (:code:`de`)
+* `Differential Evolution <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#differential-evolution>`__ (:code:`de`)
 
-* `MINPACK <https://github.com/bumps/bumps/blob/96b5100fc3d5b9485bd4a444c83a33617b74aa9d/bumps/mpfit.py>`_ (:code:`mp`)  This is a translation of `MINPACK` to Python.
+* `MINPACK <https://github.com/bumps/bumps/blob/96b5100fc3d5b9485bd4a444c83a33617b74aa9d/bumps/mpfit.py>`__ (:code:`mp`)  This is a translation of `MINPACK` to Python.
 
-
-**Links** `GitHub - bumps <https://github.com/bumps/bumps>`_
+**Licence** The main licence file for Bumps is `here <https://github.com/bumps/bumps/blob/master/LICENSE.txt>`__.  Individual files have their own copyright and licence
+-- if you plan to incorporate this in your own software you should first check that the
+licences used are compatible.
+  
+**Links** `GitHub - bumps <https://github.com/bumps/bumps>`__
 
 The Bumps minimizers are set as follows:
 
@@ -59,20 +62,22 @@ The Bumps minimizers are set as follows:
 	   
 
 DFO (``dfo``)
------------------------
+=============
 
-There are two Derivative-Free Optimization packages, `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ and
-`DFO-GN <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`_.
+There are two Derivative-Free Optimization packages, `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`__ and
+`DFO-GN <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`__.
 They are derivative free optimization solvers that were developed by Lindon Roberts at the University
 of Oxford, in conjunction with NAG.  They are particularly well suited for solving noisy problems.
 
 FitBenchmarking currently supports the DFO minimizers:
 
-* `Derivative-Free Optimizer for Least Squares <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ (:code:`dfols`)
+* `Derivative-Free Optimizer for Least Squares <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`__ (:code:`dfols`)
 
-* `Derivative-Free Gauss-Newton Solver <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`_ (:code:`dfogn`)
+* `Derivative-Free Gauss-Newton Solver <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`__ (:code:`dfogn`)
 
- **Links** `GitHub - DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn>`_ `GitHub - DFO-LS <https://github.com/numericalalgorithmsgroup/dfols>`_
+**Licence** Both `DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn/blob/master/LICENSE.txt>`__ and `DFO-LS <https://github.com/numericalalgorithmsgroup/dfols/blob/master/LICENSE.txt>`__ are available under the GPL-3 licence.  A proprietary licence is also available from `NAG <https://www.nag.com/content/worldwide-contact-information>`__ . 
+  
+**Links** `GitHub - DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn>`__ `GitHub - DFO-LS <https://github.com/numericalalgorithmsgroup/dfols>`__
 
 The DFO minimizers are set as follows:
 
@@ -88,10 +93,11 @@ The DFO minimizers are set as follows:
    See :ref:`extra_dependencies`.
 
 
-Gradient-Free (``gradient_free``)
----------------------------------
 
-`Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ are a collection of
+Gradient-Free (``gradient_free``)
+=================================
+
+`Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`__ are a collection of
 gradient-free methods capable of solving various optimization problems. Please note that Gradient-Free-Optimizers
 must be run with problems that have finite bounds on all parameters.
 
@@ -119,6 +125,9 @@ must be run with problems that have finite bounds on all parameters.
                    
 *  Decision Tree (:code:`DecisionTreeOptimizer`)
 
+**Licence** The Gradient-Free-Optimizers package is available under an `MIT Licence <https://github.com/SimonBlanke/Gradient-Free-Optimizers/blob/master/LICENSE>`__ .
+
+   
 The `gradient_free` minimizers are set as follows:
 
 .. code-block:: rst
@@ -148,38 +157,40 @@ The `gradient_free` minimizers are set as follows:
 
 	 
 GSL (``gsl``)
--------------
+=============
 
-The `GNU Scientific Library <https://www.gnu.org/software/gsl/>`_ is a numerical library that
+The `GNU Scientific Library <https://www.gnu.org/software/gsl/>`__ is a numerical library that
 provides a wide range of mathematical routines.  We call GSL using  the `pyGSL Python interface
-<https://sourceforge.net/projects/pygsl/>`_.
+<https://sourceforge.net/projects/pygsl/>`__.
 
 The GSL routines have a number of parameters that need to be chosen, often without default suggestions.
 We have taken the values as used by Mantid.
 
 We provide implementations for the following
-packages in the `multiminimize <https://www.gnu.org/software/gsl/doc/html/multimin.html>`_ and `multifit <https://www.gnu.org/software/gsl/doc/html/nls.html>`_ sections of the library:
+packages in the `multiminimize <https://www.gnu.org/software/gsl/doc/html/multimin.html>`__ and `multifit <https://www.gnu.org/software/gsl/doc/html/nls.html>`__ sections of the library:
 
 
-* `Levenberg-Marquardt (unscaled) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multifit_nlin.lmder>`_ (:code:`lmder`)
+* `Levenberg-Marquardt (unscaled) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multifit__nlin.lmder>`__ (:code:`lmder`)
 
-* `Levenberg-Marquardt (scaled) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multifit_nlin.lmsder>`_ (:code:`lmsder`)
+* `Levenberg-Marquardt (scaled) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multifit_nlin.lmsder>`__ (:code:`lmsder`)
 
-* `Nelder-Mead Simplex Algorithm <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.nmsimplex>`_ (:code:`nmsimplex`)
+* `Nelder-Mead Simplex Algorithm <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.nmsimplex>`__ (:code:`nmsimplex`)
 
-* `Nelder-Mead Simplex Algorithm (version 2) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.nmsimplex2>`_ (:code:`nmsimplex2`)
+* `Nelder-Mead Simplex Algorithm (version 2) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.nmsimplex2>`__ (:code:`nmsimplex2`)
 
-* `Polak-Ribiere Conjugate Gradient Algorithm <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.conjugate_pr>`_ (:code:`conjugate_pr`)
+* `Polak-Ribiere Conjugate Gradient Algorithm <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.conjugate_pr>`__ (:code:`conjugate_pr`)
 
-* `Fletcher-Reeves Conjugate-Gradient <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.conjugate_fr>`_ (:code:`conjugate_fr`)
+* `Fletcher-Reeves Conjugate-Gradient <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.conjugate_fr>`__ (:code:`conjugate_fr`)
 
-* `The vector quasi-Newton BFGS method <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.vector_bfgs>`_ (:code:`vector_bfgs`)
+* `The vector quasi-Newton BFGS method <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.vector_bfgs>`__ (:code:`vector_bfgs`)
 
-* `The vector quasi-Newton BFGS method (version 2) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.vector_bfgs2>`_ (:code:`vector_bfgs2`)
+* `The vector quasi-Newton BFGS method (version 2) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.vector_bfgs2>`__ (:code:`vector_bfgs2`)
 
-* `Steepest Descent <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.steepest_descent>`_ (:code:`steepest_descent`)
+* `Steepest Descent <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.steepest_descent>`__ (:code:`steepest_descent`)
 
-**Links** `SourceForge PyGSL <http://pygsl.sourceforge.net/>`_
+**Links** `SourceForge PyGSL <http://pygsl.sourceforge.net/>`__
+
+**Licence** The GNU Scientific Library is available under the `GPL-3 licence <https://www.gnu.org/licenses/gpl-3.0.html>`__ .
 
 The GSL minimizers are set as follows:
 
@@ -202,32 +213,35 @@ The GSL minimizers are set as follows:
 .. _MantidMinimizers:
    
 Mantid (``mantid``)
--------------------
+===================
 
-`Mantid <https://www.mantidproject.org>`_ is a framework created to
+`Mantid <https://www.mantidproject.org>`__ is a framework created to
 manipulate and analyze neutron scattering and muon spectroscopy data.
 It has support for a number of minimizers, most of which are from GSL.
 
-* `BFGS <https://docs.mantidproject.org/nightly/fitting/fitminimizers/BFGS.html>`_ (:code:`BFGS`)
+* `BFGS <https://docs.mantidproject.org/nightly/fitting/fitminimizers/BFGS.html>`__ (:code:`BFGS`)
 
-* `Conjugate gradient (Fletcher-Reeves) <https://docs.mantidproject.org/nightly/fitting/fitminimizers/FletcherReeves.html>`_ (:code:`Conjugate gradient (Fletcher-Reeves imp.)`)
+* `Conjugate gradient (Fletcher-Reeves) <https://docs.mantidproject.org/nightly/fitting/fitminimizers/FletcherReeves.html>`__ (:code:`Conjugate gradient (Fletcher-Reeves imp.)`)
 
-* `Conjugate gradient (Polak-Ribiere) <https://docs.mantidproject.org/nightly/fitting/fitminimizers/PolakRibiere.html>`_ (:code:`Conjugate gradient (Polak-Ribiere imp.)`)
+* `Conjugate gradient (Polak-Ribiere) <https://docs.mantidproject.org/nightly/fitting/fitminimizers/PolakRibiere.html>`__ (:code:`Conjugate gradient (Polak-Ribiere imp.)`)
 
-* `Damped GaussNewton <https://docs.mantidproject.org/nightly/fitting/fitminimizers/DampedGaussNewton.html>`_ (:code:`Damped GaussNewton`)
+* `Damped GaussNewton <https://docs.mantidproject.org/nightly/fitting/fitminimizers/DampedGaussNewton.html>`__ (:code:`Damped GaussNewton`)
 
-* `Levenberg-Marquardt algorithm <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardt.html>`_ (:code:`Levenberg-Marquardt`)
+* `Levenberg-Marquardt algorithm <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardt.html>`__ (:code:`Levenberg-Marquardt`)
 
-* `Levenberg-Marquardt MD <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardtMD.html>`_ (:code:`Levenberg-MarquardtMD`) - An implementation of Levenberg-Marquardt intended for MD workspaces, where work is divided into chunks to achieve a greater efficiency for a large number of data points.
+* `Levenberg-Marquardt MD <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardtMD.html>`__ (:code:`Levenberg-MarquardtMD`) - An implementation of Levenberg-Marquardt intended for MD workspaces, where work is divided into chunks to achieve a greater efficiency for a large number of data points.
 
-* `Simplex <https://docs.mantidproject.org/nightly/fitting/fitminimizers/Simplex.html>`_ (:code:`simplex`)
+* `Simplex <https://docs.mantidproject.org/nightly/fitting/fitminimizers/Simplex.html>`__ (:code:`simplex`)
 
-* `SteepestDescent <https://docs.mantidproject.org/nightly/fitting/fitminimizers/GradientDescent.html>`_ (:code:`SteepestDescent`)
+* `SteepestDescent <https://docs.mantidproject.org/nightly/fitting/fitminimizers/GradientDescent.html>`__ (:code:`SteepestDescent`)
 
-* `Trust Region <https://docs.mantidproject.org/nightly/fitting/fitminimizers/TrustRegion.html>`_ (:code:`Trust Region`) - An implementation of one of the algorithms available in RALFit.
+* `Trust Region <https://docs.mantidproject.org/nightly/fitting/fitminimizers/TrustRegion.html>`__ (:code:`Trust Region`) - An implementation of one of the algorithms available in RALFit.
 
- **Links** `GitHub - Mantid <https://github.com/mantidproject/mantid>`_ `Mantid's Fitting Docs <https://docs.mantidproject.org/nightly/algorithms/Fit-v1.html>`_
+ **Links** `GitHub - Mantid <https://github.com/mantidproject/mantid>`__ `Mantid's Fitting Docs <https://docs.mantidproject.org/nightly/algorithms/Fit-v1.html>`__
 
+**Licence** Mantid is available under the `GPL-3 licence <https://github.com/mantidproject/mantid/blob/master/LICENSE.txt>`__ .
+
+ 
 The Mantid minimizers are set as follows:
 
 .. code-block:: rst
@@ -247,14 +261,16 @@ The Mantid minimizers are set as follows:
    The external package Mantid must be installed to use these minimizers.
 
 Levmar (``levmar``)
--------------------
+===================
 
-The `levmar <http://users.ics.forth.gr/~lourakis/levmar/>`_ package
+The `levmar <http://users.ics.forth.gr/~lourakis/levmar/>`__ package
 which implements the Levenberg-Marquardt method for nonlinear least-squares.
-We interface via the python interface `available on PyPI <https://pypi.org/project/levmar/>`_.
+We interface via the python interface `available on PyPI <https://pypi.org/project/levmar/>`__.
 
 * Levenberg-Marquardt with supplied Jacobian (:code:`levmar`)  - the Levenberg-Marquardt method
 
+**Licence** Levmar is available under the `GPL-3 licence <http://www.gnu.org/copyleft/gpl.html>`__ .  A paid licence for proprietary commerical use is `available from the author <http://users.ics.forth.gr/~lourakis/levmar/faq.html#Q37>`__ .
+  
 The `levmar` minimizer is set as follows:
 
 .. code-block:: rst
@@ -270,14 +286,16 @@ The `levmar` minimizer is set as follows:
 
 
 Matlab (``matlab``)
--------------------
+===================
 
-We call the `fminsearch <https://uk.mathworks.com/help/matlab/ref/fminsearch.html>`_
-function from `MATLAB <https://uk.mathworks.com/products/matlab.html>`_, using the
+We call the `fminsearch <https://uk.mathworks.com/help/matlab/ref/fminsearch.html>`__
+function from `MATLAB <https://uk.mathworks.com/products/matlab.html>`__, using the
 MATLAB Engine API for Python.
 
 * Nelder-Mead Simplex (:code:`Nelder-Mead Simplex`)
 
+**Licence** Matlab is a `proprietary product <https://www.mathworks.com/pricing-licensing.html>`__ .
+  
 The `matlab` minimizer is set as follows:
 
 .. code-block:: rst
@@ -298,6 +316,8 @@ using the MATLAB Engine API for Python.
 * Levenberg-Marquardt (:code:`Levenberg-Marquardt`)
 * Trust-Region (:code:`Trust-Region`)
 
+**Licence** Matlab and the Curve Fitting Toolbox are both `proprietary products <https://www.mathworks.com/pricing-licensing.html>`__ .
+  
 The `matlab_curve` minimizers are set as follows:
 
 .. code-block:: rst
@@ -309,16 +329,19 @@ The `matlab_curve` minimizers are set as follows:
 .. warning::
    MATLAB Curve Fitting Toolbox must be installed for this to be available; See :ref:`external-instructions`.
 
-Matlab Opt (``matlab_opt``)
----------------------------
 
-We call the `lsqcurvefit <https://uk.mathworks.com/help/optim/ug/lsqcurvefit.html>`_
-function from the `MATLAB Optimization Toolbox <https://uk.mathworks.com/products/optimization.html>`_,
+Matlab Opt (``matlab_opt``)
+===========================
+
+We call the `lsqcurvefit <https://uk.mathworks.com/help/optim/ug/lsqcurvefit.html>`__
+function from the `MATLAB Optimization Toolbox <https://uk.mathworks.com/products/optimization.html>`__,
 using the MATLAB Engine API for Python.
 
 * Levenberg-Marquardt (:code:`levenberg-marquardt`)
 * Trust-Region-Reflective (:code:`trust-region-reflective`)
 
+**Licence** Matlab and the Optimization Toolbox are both `proprietary products <https://www.mathworks.com/pricing-licensing.html>`__ .
+  
 The `matlab_opt` minimizers are set as follows:
 
 .. code-block:: rst
@@ -332,14 +355,17 @@ The `matlab_opt` minimizers are set as follows:
 
 
 Matlab Stats (``matlab_stats``)
--------------------------------
+===============================
 
-We call the `nlinfit <https://uk.mathworks.com/help/stats/nlinfit.html>`_
-function from the `MATLAB Statistics Toolbox <https://uk.mathworks.com/products/statistics.html>`_,
+
+We call the `nlinfit <https://uk.mathworks.com/help/stats/nlinfit.html>`__
+function from the `MATLAB Statistics Toolbox <https://uk.mathworks.com/products/statistics.html>`__,
 using the MATLAB Engine API for Python.
 
 * Levenberg-Marquardt (:code:`Levenberg-Marquardt`)
 
+**Licence** Matlab and the Statistics Toolbox are both `proprietary products <https://www.mathworks.com/pricing-licensing.html>`__ .
+  
 The `matlab_stats` minimizer is set as follows:
 
 .. code-block:: rst
@@ -352,14 +378,19 @@ The `matlab_stats` minimizer is set as follows:
 
 	   
 Minuit (``minuit``)
--------------------
+===================
 
-CERN developed the `Minuit <http://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/>`_ package to find the minimum value of a multi-parameter function, and also to compute the uncertainties.
-We interface via the python interface `iminuit <https://iminuit.readthedocs.io>`_ with support for the 2.x series. 
+CERN developed the `Minuit 2 <https://root.cern.ch/doc/master/Minuit2Page.html>`__ package
+to find the minimum value of a multi-parameter function, and also to compute the
+uncertainties.
+We interface via the python interface `iminuit <https://iminuit.readthedocs.io>`__ with
+support for the 2.x series. 
 
-* `Minuit's MIGRAD <https://root.cern.ch/root/htmldoc/guides/minuit2/Minuit2.pdf>`_ (:code:`minuit`)
+* `Minuit's MIGRAD <https://root.cern.ch/root/htmldoc/guides/minuit2/Minuit2.pdf>`__ (:code:`minuit`)
 
-**Links** `Github - iminuit <https://github.com/scikit-hep/iminuit>`_
+**Links** `Github - iminuit <https://github.com/scikit-hep/iminuit>`__
+
+**Licence** iminuit is released under the `MIT licence <https://github.com/scikit-hep/iminuit/blob/develop/LICENSE>`__, while Minuit 2 is `LGPL v2 <https://github.com/root-project/root/blob/master/LICENSE>`__ .
 
 The Minuit minimizers are set as follows:
 
@@ -374,9 +405,9 @@ The Minuit minimizers are set as follows:
 
     
 RALFit (``ralfit``)
--------------------
+===================
 
-`RALFit <https://ralfit.readthedocs.io/projects/Fortran/en/latest/>`_
+`RALFit <https://ralfit.readthedocs.io/projects/Fortran/en/latest/>`__
 is a nonlinear least-squares solver, the development of which was funded
 by the EPSRC grant `Least-Squares: Fit for the Future`.  RALFit is designed to be able
 to take advantage of higher order derivatives, although only first
@@ -387,7 +418,9 @@ order derivatives are currently utilized in FitBenchmarking.
 * Gauss-Newton, regularization (:code:`gn_reg`)
 * Hybrid Newton/Gauss-Newton, regularization (:code:`hybrid_reg`)
 
-**Links** `Github - RALFit <https://github.com/ralna/ralfit/>`_. RALFit's Documentation on: `Gauss-Newton/Hybrid models <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-models>`_,  `the trust region method <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-trust-region-method>`_ and  `The regularization method <https://ralfit.readthedocs.io/projects/C/en/latest/method.html#regularization>`_
+**Links** `Github - RALFit <https://github.com/ralna/ralfit/>`__. RALFit's Documentation on: `Gauss-Newton/Hybrid models <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-models>`__,  `the trust region method <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-trust-region-method>`__ and  `The regularization method <https://ralfit.readthedocs.io/projects/C/en/latest/method.html#regularization>`__
+
+**Licence** RALFit is available under a `3-clause BSD Licence <https://github.com/ralna/RALFit/blob/master/LICENCE>`__
 
 The RALFit minimizers are set as follows:
 
@@ -403,24 +436,26 @@ The RALFit minimizers are set as follows:
    The external package RALFit must be installed to use these minimizers.
 
 SciPy (``scipy``)
------------------
+=================
 
-`SciPy <https://www.scipy.org>`_ is the standard python package for mathematical
-software.  In particular, we use the `minimize <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html>`_
+`SciPy <https://www.scipy.org>`__ is the standard python package for mathematical
+software.  In particular, we use the `minimize <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html>`__
 solver for general minimization problems from the optimization chapter of
 SciPy's library. Currently we only use the algorithms that do not require
 Hessian information as inputs.
 
-* `Nelder-Mead algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-neldermead.html>`_ (:code:`Nelder-Mead`)
-* `Powell algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-powell.html>`_ (:code:`Powell`)
-* `Conjugate gradient algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-cg.html>`_ (:code:`CG`)
-* `BFGS algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-bfgs.html>`_ (:code:`BFGS`)
-* `Newton-CG algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-newtoncg.html>`_  (:code:`Newton-CG`)
-* `L-BFGS-B algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-lbfgsb.html>`_ (:code:`L-BFGS-B`)
-* `Truncated Newton (TNC) algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-tnc.html>`_ (:code:`TNC`)
-* `Sequential Least SQuares Programming <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html>`_ (:code:`SLSQP`)
+* `Nelder-Mead algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-neldermead.html>`__ (:code:`Nelder-Mead`)
+* `Powell algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-powell.html>`__ (:code:`Powell`)
+* `Conjugate gradient algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-cg.html>`__ (:code:`CG`)
+* `BFGS algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-bfgs.html>`__ (:code:`BFGS`)
+* `Newton-CG algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-newtoncg.html>`__  (:code:`Newton-CG`)
+* `L-BFGS-B algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-lbfgsb.html>`__ (:code:`L-BFGS-B`)
+* `Truncated Newton (TNC) algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-tnc.html>`__ (:code:`TNC`)
+* `Sequential Least SQuares Programming <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html>`__ (:code:`SLSQP`)
 
-**Links** `Github - SciPy minimize <https://github.com/scipy/scipy/blob/master/scipy/optimize/_minimize.py>`_
+**Links** `Github - SciPy minimize <https://github.com/scipy/scipy/blob/master/scipy/optimize/_minimize.py>`__
+
+**Licence** Scipy is available under a `3-clause BSD Licence <https://github.com/scipy/scipy/blob/master/LICENSE.txt>`__.  Individual packages may have their own (compatible) licences, as listed `here <https://github.com/scipy/scipy/blob/master/LICENSES_bundled.txt>`__.
 
 The SciPy minimizers are set as follows:
 
@@ -437,10 +472,10 @@ The SciPy minimizers are set as follows:
            SLSQP
 
 SciPy LS (``scipy_ls``)
------------------------
+=======================
 
-`SciPy <https://www.scipy.org>`_ is the standard python package for mathematical
-software.  In particular, we use the `least_squares <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares>`_
+`SciPy <https://www.scipy.org>`__ is the standard python package for mathematical
+software.  In particular, we use the `least_squares <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares>`__
 solver for Least-Squares minimization problems from the optimization chapter
 of SciPy's library.
 
@@ -448,7 +483,9 @@ of SciPy's library.
 * The Trust Region Reflective algorithm (:code:`trf`)
 * A dogleg algorithm with rectangular trust regions (:code:`dogbox`)
 
-**Links** `Github - SciPy least_squares <https://github.com/scipy/scipy/blob/master/scipy/optimize/_lsq/least_squares.py>`_
+**Links** `Github - SciPy least_squares <https://github.com/scipy/scipy/blob/master/scipy/optimize/_lsq/least_squares.py>`__
+
+**Licence** Scipy is available under a `3-clause BSD Licence <https://github.com/scipy/scipy/blob/master/LICENSE.txt>`__.  Individual packages many have their own (compatible) licences, as listed `here <https://github.com/scipy/scipy/blob/master/LICENSES_bundled.txt>`__.
 
 The SciPy least squares minimizers are set as follows:
 
@@ -460,18 +497,20 @@ The SciPy least squares minimizers are set as follows:
               dogbox
 
 SciPy GO (``scipy_go``)
------------------------
+=======================
 
-`SciPy <https://www.scipy.org>`_ is the standard python package for mathematical
-software.  In particular, we use the `Global Optimization <https://docs.scipy.org/doc/scipy/reference/optimize.html#global-optimization>`_
+`SciPy <https://www.scipy.org>`__ is the standard python package for mathematical
+software.  In particular, we use the `Global Optimization <https://docs.scipy.org/doc/scipy/reference/optimize.html#global-optimization>`__
 solvers for global optimization problems from the optimization chapter
 of SciPy's library.
 
-* `Differential Evolution (derivative-free) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html#scipy.optimize.differential_evolution>`_ (:code:`differential_evolution`)
-* `Simplicial Homology Global Optimization (SHGO) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.shgo.html#scipy.optimize.shgo>`_ (:code:`shgo`)
-* `Dual Annealing <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.dual_annealing.html#scipy.optimize.dual_annealing>`_ (:code:`dual_annealing`)
+* `Differential Evolution (derivative-free) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html#scipy.optimize.differential_evolution>`__ (:code:`differential_evolution`)
+* `Simplicial Homology Global Optimization (SHGO) <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.shgo.html#scipy.optimize.shgo>`__ (:code:`shgo`)
+* `Dual Annealing <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.dual_annealing.html#scipy.optimize.dual_annealing>`__ (:code:`dual_annealing`)
 
-**Links** `Github - SciPy optimization <https://github.com/scipy/scipy/blob/master/scipy/optimize/>`_
+**Links** `Github - SciPy optimization <https://github.com/scipy/scipy/blob/master/scipy/optimize/>`__
+
+**Licence** Scipy is available under a `3-clause BSD Licence <https://github.com/scipy/scipy/blob/master/LICENSE.txt>`__.  Individual packages may have their own (compatible) licences, as listed `here <https://github.com/scipy/scipy/blob/master/LICENSES_bundled.txt>`__.
 
 The SciPy global optimization minimizers are set as follows:
 
