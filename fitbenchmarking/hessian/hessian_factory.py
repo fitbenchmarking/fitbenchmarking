@@ -14,8 +14,8 @@ def create_hessian(hes_method):
     """
     Create a Hessian class.
 
-    :param jac_method: Type of Hessian selected from options
-    :type jac_method: str
+    :param hes_method: Type of Hessian selected from options
+    :type hes_method: str
 
     :return: Controller class for the problem
     :rtype: fitbenchmarking.hessian.base_controller.Hessian subclass
