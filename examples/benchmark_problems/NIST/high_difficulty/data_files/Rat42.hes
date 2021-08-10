@@ -1,0 +1,7 @@
+# Hessian for NIST problem Rat42
+# Computed using script in
+# examples/scripts/hessians/NIST_high_difficulty_hessians.py
+
+H = [[0, -exp(b2 - b3*x)/(exp(b2 - b3*x) + 1)**2, x*exp(b2 - b3*x)/(exp(b2 - b3*x) + 1)**2],
+    [-exp(b2 - b3*x)/(exp(b2 - b3*x) + 1)**2, -b1*exp(b2 - b3*x)/(exp(b2 - b3*x) + 1)**2 + 2*b1*exp(2*b2 - 2*b3*x)/(exp(b2 - b3*x) + 1)**3, b1*x*exp(b2 - b3*x)/(exp(b2 - b3*x) + 1)**2 - 2*b1*x*exp(2*b2 - 2*b3*x)/(exp(b2 - b3*x) + 1)**3],
+    [x*exp(b2 - b3*x)/(exp(b2 - b3*x) + 1)**2, b1*x*exp(b2 - b3*x)/(exp(b2 - b3*x) + 1)**2 - 2*b1*x*exp(2*b2 - 2*b3*x)/(exp(b2 - b3*x) + 1)**3, -b1*x**2*exp(b2 - b3*x)/(exp(b2 - b3*x) + 1)**2 + 2*b1*x**2*exp(2*b2 - 2*b3*x)/(exp(b2 - b3*x) + 1)**3]]

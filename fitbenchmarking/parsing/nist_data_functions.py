@@ -87,6 +87,59 @@ def nist_jacobian_definition(jacobian, param_names):
     return local_dict['jacobian_function']
 
 
+def nist_hessian_definition(hessian, param_names):
+    """
+    Processing a Hessian into a callable
+
+    :param hessian: Hessian string as defined in the data files for the
+                     corresponding NIST problem definition file
+    :type hessian: str
+    :param param_names: names of the parameters in the function
+    :type param_names: list
+
+    :return: callable function
+    :rtype: callable
+    """
+
+    scipy_hessian = []
+    for hessian_lines in hessian:
+        hessian_scipy_format = format_function_scipy(hessian_lines)
+        # Create a function def for each starting set in startvals
+        if not is_safe(hessian_scipy_format):
+            raise ParsingError('Error while sanitizing Hessian input')
+
+        # Checks to see if the value is an integer and if so reformats the
+        # value to be a constant vector.
+        if is_int(hessian_scipy_format):
+            hessian_scipy_format += "*(np.ones(x.shape[0]))"
+
+        new_param_name = "params"
+        for i, name in enumerate(param_names):
+            hessian_scipy_format = hessian_scipy_format.replace(
+                name, "{0}[{1}]".format(new_param_name, i))
+        scipy_hessian.append(hessian_scipy_format)
+
+    dim = len(param_names)
+    # reshape into Hessian matrix
+    scipy_hessian = np.reshape(scipy_hessian, (dim, dim))
+
+    hessian_matrix = ''
+    for i in range(dim):
+        hess_row = ",".join(scipy_hessian[:, i])
+        hessian_matrix += '[' + hess_row + '],'
+    hessian_format = "np.array([{}])".format(hessian_matrix)
+
+    # Sanitizing of hessian_scipy_format is done so exec use is valid
+    # param_names is sanitized in get_nist_param_names_and_values
+    # pylint: disable=exec-used
+    local_dict = {}
+    global_dict = {'__builtins__': {}, 'np': np}
+    exec("def hessian_function(x, " + new_param_name + "): return "
+         + hessian_format, global_dict, local_dict)
+
+    return local_dict['hessian_function']
+
+
 def is_int(value):
     """
     Checks to see if a value is an integer or not
@@ -122,6 +175,7 @@ def format_function_scipy(function):
     function = function.replace("sin", "np.sin")
     function = function.replace("tan", "np.tan")
     function = function.replace("pi", "np.pi")
+    function = function.replace("log", "np.log")
     function = function.replace("Log", "np.log")
 
     return function
