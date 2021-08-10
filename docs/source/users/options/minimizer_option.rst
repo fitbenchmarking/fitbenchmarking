@@ -5,7 +5,10 @@
 ===================
 
 This section is used to declare the minimizers to use for each fitting
-software.
+software. If a fitting software has been selected in :ref:`fitting_option`
+then a default set of minimizers for that solver will be run unless alternative
+minimizer options have been set. All minimizers for a software are included on
+the default list of minimizers unless otherwise stated.
 
 .. warning::
 
@@ -52,6 +55,10 @@ The Bumps minimizers are set as follows:
 .. warning::
    The additional dependency Bumps must be installed for this to be available;
    See :ref:`extra_dependencies`.	 
+
+.. note::
+   `de` is not included in the default list of minimizers for bumps. To run this solver, you must
+   explicitly set the minimizer as seen above.
 	   
 
 DFO (``dfo``)
@@ -144,7 +151,9 @@ The `gradient_free` minimizers are set as follows:
    See :ref:`extra_dependencies`.
 
 .. note::
-   BayesianOptimizer, TreeStructuredParzenEstimators and DecisionTreeOptimizer may be slow running	 
+   BayesianOptimizer, TreeStructuredParzenEstimators and DecisionTreeOptimizer may be slow running and
+   so are not run by default when `gradient_free` software is selected. To run these minimizers you must
+   explicity set them as seen above.
 
 	 
 GSL (``gsl``)
@@ -513,4 +522,6 @@ The SciPy global optimization minimizers are set as follows:
               dual_annealing
 
 .. note::
-   The shgo solver is particularly slow running and should generally be avoided.
+   The shgo solver is particularly slow running and should generally be avoided. As a result, this solver is
+   not run by default when `scipy_go` software is selected. In order to run this minimizer, you must explicitly
+   set it as above.
