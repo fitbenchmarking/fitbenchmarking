@@ -1,8 +1,7 @@
 """
 Module which acts as a analytic Jacobian calculator
 """
-from numpy import matmul
-from numpy import sqrt
+import numpy as np
 
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.utils.exceptions import NoJacobianError
@@ -39,9 +38,11 @@ class Analytic(Jacobian):
             jac = jac / e[:, None]
         elif self.problem.options.cost_func_type == "hellinger_nlls":
             # calculates the Jacobian of the hellinger(root) NLLS cost function
-            jac = jac/(2*sqrt(self.problem.eval_model(params, x=x)[:, None]))
+            jac = jac/(2*np.sqrt(self.problem.eval_model(params, x=x)
+                       [:, None]))
         elif self.problem.options.cost_func_type == "poisson":
             jac = jac * (1 - y / self.problem.eval_model(params, x=x))[:, None]
+
         return jac
 
     def eval_cost(self, params, **kwargs):
@@ -54,10 +55,14 @@ class Analytic(Jacobian):
         :return: Computed derivative of the cost function
         :rtype: numpy array
         """
-        rx = self.cached_func_values(self.cost_func.cache_rx,
-                                     self.cost_func.eval_r,
-                                     params,
-                                     **kwargs)
         J = self.eval(params, **kwargs)
-        out = 2.0 * matmul(J.T, rx)
+        if self.problem.options.cost_func_type == "poisson":
+            out = np.sum(J.T, 1)
+        else:
+            rx = self.cached_func_values(self.cost_func.cache_rx,
+                                         self.cost_func.eval_r,
+                                         params,
+                                         **kwargs)
+            out = 2.0 * np.matmul(J.T, rx)
+
         return out
