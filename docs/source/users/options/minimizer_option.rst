@@ -151,7 +151,7 @@ The `gradient_free` minimizers are set as follows:
    See :ref:`extra_dependencies`.
 
 .. note::
-   BayesianOptimizer, TreeStructuredParzenEstimators and DecisionTreeOptimizer may be slow running	and
+   BayesianOptimizer, TreeStructuredParzenEstimators and DecisionTreeOptimizer may be slow running and
    so are not run by default when `gradient_free` software is selected. To run these minimizers you must
    explicity set them as seen above.
 
