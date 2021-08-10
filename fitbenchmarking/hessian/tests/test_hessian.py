@@ -83,6 +83,7 @@ class TestHessianClass(TestCase):
         self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.cost_func = NLLSCostFunc(self.fitting_problem)
+        self.jacobian = JacobianClass(self.cost_func)
         self.params = [6, 0.1]
         self.f_eval = self.fitting_problem.data_y\
             - f(x=self.fitting_problem.data_x,
@@ -96,9 +97,7 @@ class TestHessianClass(TestCase):
         """
         self.fitting_problem.options.cost_func_type = "nlls"
         self.fitting_problem.format = "cutest"
-        hes = Analytic(self.cost_func)
-        jac = JacobianClass(self.cost_func)
-        hes.jacobian = jac
+        hes = Analytic(self.cost_func, self.jacobian)
         eval_result, _ = hes.eval(params=self.params)
         self.actual = np.matmul(self.actual, self.f_eval)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -111,9 +110,7 @@ class TestHessianClass(TestCase):
         e = np.array([1, 2, 1, 3, 1])
         self.fitting_problem.data_e = e
         self.fitting_problem.format = "cutest"
-        hes = Analytic(self.cost_func)
-        jac = JacobianClass(self.cost_func)
-        hes.jacobian = jac
+        hes = Analytic(self.cost_func, self.jacobian)
         eval_result, _ = hes.eval(params=self.params)
         scaled_actual = self.actual
         for i in range(len(e)):
@@ -123,12 +120,12 @@ class TestHessianClass(TestCase):
 
     def test_analytic_raise_error(self):
         """
-        Test analytic Jacobian raises an exception when problem.jacobian is
+        Test analytic Hessian raises an exception when problem.hessian is
         not callable
         """
         self.fitting_problem.hessian = None
         with self.assertRaises(exceptions.NoHessianError):
-            Analytic(self.cost_func)
+            Analytic(self.cost_func, self.jacobian)
 
 
 class TestHesCostFunc(TestCase):
@@ -150,6 +147,7 @@ class TestHesCostFunc(TestCase):
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.params = [6, 0.1]
         self.cost_func = NLLSCostFunc(self.fitting_problem)
+        self.jacobian = JacobianClass(self.cost_func)
         J_eval = J(x=self.fitting_problem.data_x,
                    p=self.params)
         H_eval = H(x=self.fitting_problem.data_x,
@@ -164,9 +162,7 @@ class TestHesCostFunc(TestCase):
         Test analytic hessian
         """
         self.fitting_problem.format = "cutest"
-        hes = Analytic(self.cost_func)
-        jac = JacobianClass(self.cost_func)
-        hes.jacobian = jac
+        hes = Analytic(self.cost_func, self.jacobian)
         self.fitting_problem.hes = hes
         eval_result = hes.eval_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())

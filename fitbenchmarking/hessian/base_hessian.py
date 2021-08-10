@@ -11,7 +11,7 @@ class Hessian:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, cost_func):
+    def __init__(self, cost_func, jacobian):
         """
         Base class for the Hessians
 
@@ -21,7 +21,7 @@ class Hessian:
         """
         self.cost_func = cost_func
         self.problem = self.cost_func.problem
-        self.jacobian = None
+        self.jacobian = jacobian
 
     @abstractmethod
     def eval(self, params, **kwargs):

@@ -472,125 +472,123 @@ def loop_over_hessians(controller, options, minimizer_name,
     new_minimizer_list = []
     new_chi_sq = []
 
-    try:
-        # loop over selected hessian methods
-        for method in hessian_list:
-            # if user has selected to use hessian info
-            # then create hessian if minimizer accepts it
+    # loop over selected hessian methods
+    for method in hessian_list:
+        # if user has selected to use hessian info
+        # then create hessian if minimizer accepts it
 
-            # Temporary addition until hellinger_nlls and
-            # poisson cost functions are added to
-            # Analytic Hessian class
-            if options.cost_func_type == "hellinger_nlls"\
-                    or options.cost_func_type == "poisson":
-                minimizer_check = False
+        # Temporary addition until hellinger_nlls and
+        # poisson cost functions are added to
+        # Analytic Hessian class
+        if options.cost_func_type == "hellinger_nlls"\
+                or options.cost_func_type == "poisson":
+            minimizer_check = False
 
-            if minimizer_check and method != 'default':
-                hessian_cls = create_hessian(method)
-                try:
-                    hessian = hessian_cls(cost_func)
-                    controller.hessian = hessian
+        minimizer_name_hes = minimizer_name
+        controller.hessian = None
 
-                    LOGGER.info("                   Hessian: %s",
-                                method)
-                    minimizer_name = "{}, {} hessian".format(
-                        minimizer_name, method)
-
-                    hessian.jacobian = jacobian
-
-                except NoHessianError as excp:
-                    LOGGER.warning(str(excp))
-
+        if minimizer_check and method != 'default':
+            hessian_cls = create_hessian(method)
             try:
-                with grabbed_output:
-                    # Calls timeit repeat with repeat = num_runs and
-                    # number = 1
-                    runtime_list = timeit.Timer(
-                        setup=controller.prepare,
-                        stmt=controller.fit
-                    ).repeat(num_runs, 1)
+                hessian = hessian_cls(cost_func, jacobian)
+                controller.hessian = hessian
 
-                    runtime = sum(runtime_list) / num_runs
-                    controller.cleanup()
-                    controller.check_attributes()
-                min_time = np.min(runtime_list)
-                ratio = np.max(runtime_list) / min_time
-                tol = 4
-                if ratio > tol:
-                    warnings.warn(
-                        'The ratio of the max time to the min is {0},'
-                        ' which is larger than the tolerance of {1}.'
-                        ' The min time is {2}. This can indicate that'
-                        ' the fitting engine is caching results. If the'
-                        ' min time is small this may just indicate that'
-                        ' other non-FitBenchmarking CPU activities are'
-                        ' taking place that affects the timing'
-                        ' results'.format(ratio, tol, min_time))
-                chi_sq = controller.eval_chisq(
-                    params=controller.final_params,
-                    x=controller.data_x,
-                    y=controller.data_y,
-                    e=controller.data_e)
+                LOGGER.info("                   Hessian: %s",
+                            method)
+                minimizer_name_hes = "{}, {} hessian".format(
+                    minimizer_name, method)
 
-                chi_sq_check = any(np.isnan(n) for n in chi_sq) \
-                    if problem.multifit else np.isnan(chi_sq)
-                if np.isnan(runtime) or chi_sq_check:
-                    raise ControllerAttributeError(
-                        "Either the computed runtime or chi_sq values "
-                        "was a NaN.")
-            # Catching all exceptions as this means runtime cannot be
-            # calculated
-            # pylint: disable=broad-except
-            except Exception as excp:
+            except NoHessianError as excp:
                 LOGGER.warning(str(excp))
 
-                runtime = np.inf
-                controller.flag = 3
-                controller.final_params = \
-                    None if not problem.multifit \
-                    else [None] * len(controller.data_x)
+        try:
+            with grabbed_output:
+                # Calls timeit repeat with repeat = num_runs and
+                # number = 1
+                runtime_list = timeit.Timer(
+                    setup=controller.prepare,
+                    stmt=controller.fit
+                ).repeat(num_runs, 1)
 
-                chi_sq = np.inf if not problem.multifit \
-                    else [np.inf] * len(controller.data_x)
+                runtime = sum(runtime_list) / num_runs
+                controller.cleanup()
+                controller.check_attributes()
+            min_time = np.min(runtime_list)
+            ratio = np.max(runtime_list) / min_time
+            tol = 4
+            if ratio > tol:
+                warnings.warn(
+                    'The ratio of the max time to the min is {0},'
+                    ' which is larger than the tolerance of {1}.'
+                    ' The min time is {2}. This can indicate that'
+                    ' the fitting engine is caching results. If the'
+                    ' min time is small this may just indicate that'
+                    ' other non-FitBenchmarking CPU activities are'
+                    ' taking place that affects the timing'
+                    ' results'.format(ratio, tol, min_time))
+            chi_sq = controller.eval_chisq(
+                params=controller.final_params,
+                x=controller.data_x,
+                y=controller.data_y,
+                e=controller.data_e)
 
-            # If bounds have been set, check that they have
-            # been respected by the minimizer and set error
-            # flag if not
-            if controller.problem.value_ranges is not None \
-                    and controller.flag != 3:
-                controller.check_bounds_respected()
+            chi_sq_check = any(np.isnan(n) for n in chi_sq) \
+                if problem.multifit else np.isnan(chi_sq)
+            if np.isnan(runtime) or chi_sq_check:
+                raise ControllerAttributeError(
+                    "Either the computed runtime or chi_sq values "
+                    "was a NaN.")
+        # Catching all exceptions as this means runtime cannot be
+        # calculated
+        # pylint: disable=broad-except
+        except Exception as excp:
+            LOGGER.warning(str(excp))
 
-            # record algorithm type for specified minimizer
-            type_str = controller.record_alg_type(
-                minimizer, options.algorithm_type)
-            options.minimizer_alg_type[minimizer_name] = type_str
+            runtime = np.inf
+            controller.flag = 3
+            controller.final_params = \
+                None if not problem.multifit \
+                else [None] * len(controller.data_x)
 
-            result_args = {'options': options,
-                           'cost_func': cost_func,
-                           'jac': jacobian,
-                           'chi_sq': chi_sq,
-                           'runtime': runtime,
-                           'minimizer': minimizer_name,
-                           'initial_params': controller.initial_params,
-                           'params': controller.final_params,
-                           'error_flag': controller.flag,
-                           'name': problem.name}
-            new_result.append(result_args)
-            new_minimizer_list.append(minimizer_name)
-            if problem.multifit:
-                # for multifit problems, multiple chi_sq values are stored
-                # in a list, which should extend the empty new_chi_sq list
-                # rather than be appended to it
-                new_chi_sq.extend(chi_sq)
-            else:
-                new_chi_sq.append(chi_sq)
+            chi_sq = np.inf if not problem.multifit \
+                else [np.inf] * len(controller.data_x)
 
-            # For minimizers that do not accept hessians we raise an
-            # StopIteration exception to exit the loop through the
-            # Hessians
-            if not minimizer_check:
-                raise StopIteration
-    except StopIteration:
-        pass
+        # If bounds have been set, check that they have
+        # been respected by the minimizer and set error
+        # flag if not
+        if controller.problem.value_ranges is not None \
+                and controller.flag != 3:
+            controller.check_bounds_respected()
+
+        # record algorithm type for specified minimizer
+        type_str = controller.record_alg_type(
+            minimizer, options.algorithm_type)
+        options.minimizer_alg_type[minimizer_name_hes] = type_str
+
+        result_args = {'options': options,
+                       'cost_func': cost_func,
+                       'jac': jacobian,
+                       'chi_sq': chi_sq,
+                       'runtime': runtime,
+                       'minimizer': minimizer_name_hes,
+                       'initial_params': controller.initial_params,
+                       'params': controller.final_params,
+                       'error_flag': controller.flag,
+                       'name': problem.name}
+        new_result.append(result_args)
+        new_minimizer_list.append(minimizer_name_hes)
+        if problem.multifit:
+            # for multifit problems, multiple chi_sq values are stored
+            # in a list, which should extend the empty new_chi_sq list
+            # rather than be appended to it
+            new_chi_sq.extend(chi_sq)
+        else:
+            new_chi_sq.append(chi_sq)
+
+        # For minimizers that do not accept hessians we raise an
+        # StopIteration exception to exit the loop through the
+        # Hessians
+        if not minimizer_check:
+            break
 
     return new_result, new_chi_sq, new_minimizer_list

@@ -13,8 +13,8 @@ class Analytic(Hessian):
     Class to apply an analytic Hessian
     """
 
-    def __init__(self, cost_func):
-        super().__init__(cost_func)
+    def __init__(self, cost_func, jacobian):
+        super().__init__(cost_func, jacobian)
         if not callable(self.problem.hessian):
             raise NoHessianError("Problem set selected does not currently "
                                  "support analytic Hessians")
