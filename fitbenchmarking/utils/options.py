@@ -120,7 +120,7 @@ class Options:
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
-         'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing']}
+         'scipy_go': ['differential_evolution', 'dual_annealing']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': ['all'],
