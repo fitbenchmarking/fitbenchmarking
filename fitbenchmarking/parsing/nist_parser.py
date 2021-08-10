@@ -85,12 +85,12 @@ class NISTParser(Parser):
         """
         file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
         jac_file = os.path.join(file_dir, "data_files", "{}.jac".format(name))
-        try:
-            jac_data = open(jac_file, "r")
+        try:   
+            with open(jac_file, "r") as jac_data:
+                jac_lines = jac_data.readlines()
         except FileNotFoundError as e:
             raise NoJacobianError('Could not find data for NIST Jacobian '
                                   'file, {}'.format(jac_file)) from e
-        jac_lines = jac_data.readlines()
         jac_str = ""
         for line in jac_lines:
             if not line.lstrip().startswith("#"):
@@ -110,11 +110,11 @@ class NISTParser(Parser):
         file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
         hes_file = os.path.join(file_dir, "data_files", "{}.hes".format(name))
         try:
-            hes_data = open(hes_file, "r")
+            with open(hes_file, "r") as hes_data:
+                hes_lines = hes_data.readlines()
         except FileNotFoundError as e:
             raise NoHessianError('Could not find data for NIST Hessian '
                                  'file, {}'.format(hes_file)) from e
-        hes_lines = hes_data.readlines()
         hes_str = ""
         for line in hes_lines:
             if not line.lstrip().startswith("#"):
