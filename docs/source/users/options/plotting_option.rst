@@ -6,6 +6,8 @@ Plotting Options
 
 The plotting section contains options to control how results are presented.
 
+.. _MakePlots:
+
 Make plots (:code:`make_plots`)
 -------------------------------
 
