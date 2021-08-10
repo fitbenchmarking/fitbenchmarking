@@ -1,0 +1,4 @@
+# Hessian
+
+H = [[0, x*exp(-b2*x)],
+    [x*exp(-b2*x), -b1*x**2*exp(-b2*x)]]

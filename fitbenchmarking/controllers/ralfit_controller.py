@@ -53,6 +53,16 @@ class RALFitController(Controller):
         jacobian_free_solvers = []
         return has_jacobian, jacobian_free_solvers
 
+    def hessian_information(self):
+        """
+        RALFit can use Hessian information
+        """
+        # Temporarily set to False until RALFit issue with
+        # `exact_second_derivatives` option is sorted
+        has_hessian = False
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
+
     def setup(self):
         """
         Setup for RALFit
@@ -77,6 +87,9 @@ class RALFitController(Controller):
             raise UnknownMinimizerError(
                 "No {} minimizer for RALFit".format(self.minimizer))
 
+        # if self.hessian:
+        #     self._options[b"exact_second_derivatives"] = True
+
         # If parameter ranges have been set in problem, then set up bounds
         # option. For RALFit, this must be a 2 tuple array like object,
         # the first tuple containing the lower bounds for each parameter
@@ -93,12 +106,21 @@ class RALFitController(Controller):
         """
         Run problem with RALFit.
         """
-        self._popt = ral_nlls.solve(self.initial_params,
-                                    self.cost_func.eval_r,
-                                    self.jacobian.eval,
-                                    options=self._options,
-                                    lower_bounds=self.param_ranges[0],
-                                    upper_bounds=self.param_ranges[1])[0]
+        if self.hessian:
+            self._popt = ral_nlls.solve(self.initial_params,
+                                        self.cost_func.eval_r,
+                                        self.jacobian.eval,
+                                        self.hessian.eval,
+                                        options=self._options,
+                                        lower_bounds=self.param_ranges[0],
+                                        upper_bounds=self.param_ranges[1])[0]
+        else:
+            self._popt = ral_nlls.solve(self.initial_params,
+                                        self.cost_func.eval_r,
+                                        self.jacobian.eval,
+                                        options=self._options,
+                                        lower_bounds=self.param_ranges[0],
+                                        upper_bounds=self.param_ranges[1])[0]
         self._status = 0 if self._popt is not None else 1
 
     def cleanup(self):

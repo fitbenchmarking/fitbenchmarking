@@ -13,8 +13,10 @@ import numpy as np
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.nist_data_functions import nist_func_definition, \
-    nist_jacobian_definition
-from fitbenchmarking.utils.exceptions import ParsingError, NoJacobianError
+    nist_jacobian_definition, nist_hessian_definition
+from fitbenchmarking.utils.exceptions import ParsingError, NoJacobianError, \
+    NoHessianError
+
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
@@ -63,6 +65,15 @@ class NISTParser(Parser):
             LOGGER.warning("Could not find analytic Jacobian "
                            "information for %s problem", name)
 
+        try:
+            hessian = self._parse_hessian(name)
+            fitting_problem.hessian = \
+                nist_hessian_definition(hessian=hessian,
+                                        param_names=starting_values[0].keys())
+        except NoHessianError:
+            LOGGER.warning("Could not find Hessian "
+                           "information for %s problem", name)
+
         return fitting_problem
 
     def _parse_jacobian(self, name):
@@ -75,11 +86,11 @@ class NISTParser(Parser):
         file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
         jac_file = os.path.join(file_dir, "data_files", "{}.jac".format(name))
         try:
-            jac_data = open(jac_file, "r")
+            with open(jac_file, "r") as jac_data:
+                jac_lines = jac_data.readlines()
         except FileNotFoundError as e:
             raise NoJacobianError('Could not find data for NIST Jacobian '
                                   'file, {}'.format(jac_file)) from e
-        jac_lines = jac_data.readlines()
         jac_str = ""
         for line in jac_lines:
             if not line.lstrip().startswith("#"):
@@ -88,6 +99,30 @@ class NISTParser(Parser):
         jac = self._convert_nist_to_muparser(jac_str)
         jac = jac.split("=")[1].replace("{", "").replace("}", "")
         return jac.split(",")
+
+    def _parse_hessian(self, name):
+        """
+        Parses the Hessian for the NIST file format
+
+        :param name: name of the NIST file
+        :type name: str
+        """
+        file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
+        hes_file = os.path.join(file_dir, "data_files", "{}.hes".format(name))
+        try:
+            with open(hes_file, "r") as hes_data:
+                hes_lines = hes_data.readlines()
+        except FileNotFoundError as e:
+            raise NoHessianError('Could not find data for NIST Hessian '
+                                 'file, {}'.format(hes_file)) from e
+        hes_str = ""
+        for line in hes_lines:
+            if not line.lstrip().startswith("#"):
+                hes_str += line.rstrip("\n").strip(" ")
+
+        hes = hes_str.replace('**', '^')
+        hes = hes.split("=")[1].replace("[", "").replace("]", "")
+        return hes.split(",")
 
     def _parse_line_by_line(self):
         """

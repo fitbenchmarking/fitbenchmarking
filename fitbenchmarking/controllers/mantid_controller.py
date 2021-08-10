@@ -159,6 +159,14 @@ class MantidController(Controller):
         jacobian_free_solvers = ["Simplex"]
         return has_jacobian, jacobian_free_solvers
 
+    def hessian_information(self):
+        """
+        Mantid cannot use Hessian information
+        """
+        has_hessian = False
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
+
     def setup(self):
         """
         Setup problem ready to run with Mantid.

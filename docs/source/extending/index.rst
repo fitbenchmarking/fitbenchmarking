@@ -11,6 +11,7 @@ to the software.  Below we outline instructions for doing this.
 
     parsers
     cost_function
+    hessian_extend
     jacobian_extend
     controllers
     options_extend
