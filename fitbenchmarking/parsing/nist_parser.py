@@ -85,7 +85,7 @@ class NISTParser(Parser):
         """
         file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
         jac_file = os.path.join(file_dir, "data_files", "{}.jac".format(name))
-        try:   
+        try:
             with open(jac_file, "r") as jac_data:
                 jac_lines = jac_data.readlines()
         except FileNotFoundError as e:
