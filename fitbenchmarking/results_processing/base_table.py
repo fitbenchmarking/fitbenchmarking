@@ -28,7 +28,7 @@ class Table:
     functions as required:
 
     - get_value
-    - get_display_str
+    - display_str
     - get_error_str
     - get_link_str
     """
@@ -286,7 +286,7 @@ class Table:
         functions:
 
         - get_value
-        - get_display_str
+        - display_str
         - get_error_str
         - get_link_str
 
