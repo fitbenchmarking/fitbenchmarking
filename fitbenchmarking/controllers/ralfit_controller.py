@@ -57,10 +57,8 @@ class RALFitController(Controller):
         """
         RALFit can use Hessian information
         """
-        # Temporarily set to False until RALFit issue with
-        # `exact_second_derivatives` option is sorted
-        has_hessian = False
-        hessian_enabled_solvers = []
+        has_hessian = True
+        hessian_enabled_solvers = ['hybrid', 'hybrid_reg']
         return has_hessian, hessian_enabled_solvers
 
     def setup(self):
@@ -87,8 +85,8 @@ class RALFitController(Controller):
             raise UnknownMinimizerError(
                 "No {} minimizer for RALFit".format(self.minimizer))
 
-        # if self.hessian:
-        #     self._options[b"exact_second_derivatives"] = True
+        if self.hessian:
+            self._options[b"exact_second_derivatives"] = True
 
         # If parameter ranges have been set in problem, then set up bounds
         # option. For RALFit, this must be a 2 tuple array like object,
