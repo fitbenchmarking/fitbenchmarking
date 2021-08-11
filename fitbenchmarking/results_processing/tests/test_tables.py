@@ -2,23 +2,22 @@
 Table tests
 """
 
-from __future__ import (absolute_import, division, print_function)
-from typing_extensions import runtime
-import unittest
-from inspect import getfile
 import os
 import shutil
+import unittest
+from inspect import getfile
+
 import numpy as np
 
 import fitbenchmarking
+from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
-from fitbenchmarking.results_processing.tables import SORTED_TABLE_NAMES
-from fitbenchmarking.results_processing.tables import generate_table
-from fitbenchmarking.results_processing.tables import create_results_tables
 from fitbenchmarking.jacobian.default_jacobian import Default as DefaultJac
-from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.results_processing.tables import (SORTED_TABLE_NAMES,
+                                                       create_results_tables,
+                                                       generate_table)
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
