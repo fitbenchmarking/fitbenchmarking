@@ -107,7 +107,7 @@ class FittingResult:
 
         # Attributes for table creation
         self.costfun_tag = self.cost_func.__class__.__name__
-        self.problem_tag = self.problem.name
+        self.problem_tag = self.name
         self.software_tag = self.software
         self.minimizer_tag = self.minimizer
         self.jacobian_tag = self.jac.__class__.__name__

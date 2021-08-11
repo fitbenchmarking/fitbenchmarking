@@ -15,6 +15,7 @@ class ScipyGOController(Controller):
     """
     Controller for the Scipy fitting software.
     """
+    controller_name = 'scipy_go'
 
     algorithm_check = {
             'all': ['differential_evolution', 'shgo', 'dual_annealing'],

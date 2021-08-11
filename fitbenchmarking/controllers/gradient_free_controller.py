@@ -49,6 +49,8 @@ class GradientFreeController(Controller):
             'conjugate_gradient': [],
             'steepest_descent': [],
             'global_optimization': []}
+            
+    controller_name = 'gradient_free'
 
     def __init__(self, cost_func):
         """

@@ -12,6 +12,7 @@ class ScipyLSController(Controller):
     """
     Controller for the Scipy Least-Squares fitting software.
     """
+    controller_name = 'scipy_ls'
 
     algorithm_check = {
             'all': ['lm-scipy', 'trf', 'dogbox'],

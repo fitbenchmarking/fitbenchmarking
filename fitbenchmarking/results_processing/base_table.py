@@ -2,6 +2,7 @@
 Implements the base class for the tables.
 """
 import os
+import re
 from abc import ABCMeta, abstractmethod
 
 import docutils.core
@@ -172,6 +173,10 @@ class Table:
         rows = set()
         columns = set()
         for r in self.results:
+            # Error 4 means none of the jacobians ran so can't infer the
+            # jacobian names from this.
+            if r.error_flag == 4:
+                continue
             row = ''
             col = ''
             for sort_pos in sort_order[0]:
@@ -181,8 +186,9 @@ class Table:
                 col += f':{getattr(r, sort_pos + "_tag")}'
             columns.add(col.strip(':'))
 
-        rows = sorted(rows)
-        columns = {col: i for i, col in enumerate(sorted(columns))}
+        rows = sorted(rows, key=str.lower)
+        columns = {col: i for i, col in enumerate(
+            sorted(columns, key=str.lower))}
 
         # Build the sorted results dictionary
         sorted_results = {r.strip(':'): [None for _ in columns]
@@ -196,18 +202,43 @@ class Table:
             row = ''
             col = ''
             for sort_pos in sort_order[0]:
-                row += f':{getattr(r, sort_pos + "_tag")}'
+                tag = getattr(r, sort_pos + "_tag")
+                if (sort_pos == 'jacobian') and (r.error_flag == 4):
+                    tag = '.+'
+                row += f':{tag}'
             row = row.strip(':')
             for sort_pos in sort_order[1]:
-                col += f':{getattr(r, sort_pos + "_tag")}'
-            col = columns[col.strip(':')]
+                tag = getattr(r, sort_pos + "_tag")
+                if (sort_pos == 'jacobian') and (r.error_flag == 4):
+                    tag = '.+'
+                col += f':{tag}'
+            col = col.strip(':')
 
-            sorted_results[row][col] = r
-            if r.is_best_fit:
-                best_results[row] = r
+            # Fix up cells where error flag = 4
+            if r.error_flag == 4:
+                matching_rows = [match
+                                 for match in rows
+                                 if re.fullmatch(row, match)]
+                matching_cols = [match
+                                 for match in columns.keys()
+                                 if re.fullmatch(col, match)]
+                for row in matching_rows:
+                    for col in matching_cols:
+                        col = columns[col]
+                        sorted_results[row][col] = r
+            else:
+                col = columns[col]
+                sorted_results[row][col] = r
+                if r.is_best_fit:
+                    best_results[row] = r
 
         self.sorted_results = sorted_results
         self.best_results = list(best_results.values())
+
+        import pprint
+        pprint.pprint(rows)
+        pprint.pprint(columns)
+        pprint.pprint(self.sorted_results)
 
     def get_str_dict(self, html=False):
         """

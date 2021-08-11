@@ -40,6 +40,8 @@ class MatlabCurveController(MatlabMixin, Controller):
             'bfgs': [],
             'conjugate_gradient': [],
             'steepest_descent': []}
+            
+    controller_name = 'matlab_curve'
 
     def jacobian_information(self):
         """

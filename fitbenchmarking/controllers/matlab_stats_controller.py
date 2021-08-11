@@ -30,6 +30,8 @@ class MatlabStatsController(MatlabMixin, Controller):
             'steepest_descent': [],
             'global_optimization': []}
 
+    controller_name = 'matlab_stats'
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.

@@ -58,6 +58,10 @@ class Controller:
                        'steepest_descent': [],
                        'global_optimization': []}
 
+    #: A name to be used in tables. If this is set to None it will be inferred
+    #: from the class name.
+    controller_name = None
+
     def __init__(self, cost_func):
         """
         Initialise anything that is needed specifically for the
@@ -146,7 +150,10 @@ class Controller:
         This assumes the class is named '<software>Controller'
         """
         if not self._software:
-            self._software = self.__class__.__name__[:-10].lower()
+            if self.controller_name is not None:
+                self._software = self.controller_name
+            else:
+                self._software = self.__class__.__name__[:-10].lower()
         return self._software
 
     def prepare(self):

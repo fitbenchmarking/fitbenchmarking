@@ -29,6 +29,8 @@ class MatlabOptController(MatlabMixin, Controller):
             'conjugate_gradient': [],
             'steepest_descent': [],
             'global_optimization': []}
+            
+    controller_name = 'matlab_opt'
 
     def __init__(self, cost_func):
         """
