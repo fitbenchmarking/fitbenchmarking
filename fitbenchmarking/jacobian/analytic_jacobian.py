@@ -41,7 +41,8 @@ class Analytic(Jacobian):
             jac = jac/(2*np.sqrt(self.problem.eval_model(params, x=x)
                        [:, None]))
         elif self.problem.options.cost_func_type == "poisson":
-            jac = jac * (1 - y / self.problem.eval_model(params, x=x))[:, None]
+            jac = -np.matmul(jac.T,
+                             (1 - y / self.problem.eval_model(params, x=x)))
 
         return jac
 
@@ -57,7 +58,7 @@ class Analytic(Jacobian):
         """
         J = self.eval(params, **kwargs)
         if self.problem.options.cost_func_type == "poisson":
-            out = np.sum(J.T, 1)
+            out = J
         else:
             rx = self.cached_func_values(self.cost_func.cache_rx,
                                          self.cost_func.eval_r,
