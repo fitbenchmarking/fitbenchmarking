@@ -134,7 +134,8 @@ class Table:
         :return: The link to go to when the cell is selected
         :rtype: string
         """
-        return result.support_page_link
+        return os.path.relpath(path=result.support_page_link,
+                               start=self.group_dir)
 
     def get_error_str(self, result, error_template='[{}]'):
         """
@@ -241,8 +242,8 @@ class Table:
         table = pd.DataFrame.from_dict(col_dict, orient='index')
 
         if like_df is None:
-            minimizers_list = [(s, m) for s in self.options.software
-                               for m in self.options.minimizers[s]]
+            row = next(iter(self.sorted_results.values()))
+            minimizers_list = [(r.software, r.minimizer) for r in row]
             table.columns = pd.MultiIndex.from_tuples(minimizers_list)
         else:
             table.columns = like_df.columns
@@ -280,7 +281,7 @@ class Table:
             val_str = self.display_str(val)
             val_str += self.get_error_str(result,
                                           error_template="<sup>{}</sup>")
-            val_str = f'<a href="{self.get_link_str(result)}" >{val_str}</a>'
+            val_str = f'<a href="{self.get_link_str(result)}">{val_str}</a>'
         else:
             val_str = self.display_str(self.get_value(result))
             val_str += self.get_error_str(result, error_template='[{}]')
@@ -330,11 +331,12 @@ class Table:
         :rtype: pandas.DataFrame
         """
         str_results = self.get_str_dict(html)
-        table = pd.DataFrame.from_dict(str_results, orient='index')
-        minimizers_list = [(s, m) for s in self.options.software
-                           for m in self.options.minimizers[s]]
+        row = next(iter(self.sorted_results.values()))
+        minimizers_list = [(r.software, r.minimizer) for r in row]
         columns = pd.MultiIndex.from_tuples(minimizers_list)
-        table.columns = columns
+        table = pd.DataFrame.from_dict(str_results,
+                                       orient='index',
+                                       columns=columns)
         return table
 
     def to_html(self):
@@ -345,7 +347,7 @@ class Table:
         :rtype: str
         """
         table = self.create_pandas_data_frame(html=True)
-        
+
         # Format the table headers
         link_template = '<a href="https://fitbenchmarking.readthedocs.io/'\
                         'en/latest/users/options/minimizer_option.html#'\

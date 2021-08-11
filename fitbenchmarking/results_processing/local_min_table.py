@@ -134,7 +134,7 @@ class LocalMinTable(Table):
         Converts an array of values to a list of hexadecimal colour strings
         using sampling from a matplotlib colourmap according to whether a
         minimum was found.
-        
+
         Set to the bottom of the range if minimum was found, otherwise set to
         the top of the range.
 
@@ -166,7 +166,7 @@ class LocalMinTable(Table):
         :return: string representation of the value for display in the table.
         :rtype: str
         """
-        norm_rel, local_min = value
+        local_min, norm_rel = value
         template = self.output_string_type['abs']
         return f'{str(local_min)} ({template.format(norm_rel)})'
 

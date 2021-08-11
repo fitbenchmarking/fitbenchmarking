@@ -64,7 +64,8 @@ def create_results_tables(options, results, group_name, group_dir, fig_dir,
     for suffix in SORTED_TABLE_NAMES:
         if suffix in options.table_type:
 
-            table_names[suffix] = f'{group_name}_{suffix}_table.'
+            table_names[suffix] = \
+                f'{group_name}_{suffix}_{options.cost_func_type}_table.'
 
             try:
                 table, html_table, txt_table, cbar = \
