@@ -367,6 +367,26 @@ class BaseControllerTests(TestCase):
 
         assert controller.flag == 5
 
+    def test_software_property_default(self):
+        '''
+        Test that the software property works when no controller name is
+        present
+        '''
+        controller = DummyController(self.cost_func)
+        software = controller.software
+        assert software == 'dummy'
+    
+    def test_software_property_with_cont_name(self):
+        '''
+        Test that the software property works when controller name is
+        present
+        '''
+        controller = DummyController(self.cost_func)
+        controller.controller_name = 'my_dummy_software'
+        software = controller.software
+        assert software == 'my_dummy_software'
+        
+
 
 @run_for_test_types(TEST_TYPE, 'default', 'all')
 class DefaultControllerTests(TestCase):
