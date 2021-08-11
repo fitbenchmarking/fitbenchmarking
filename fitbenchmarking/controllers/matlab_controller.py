@@ -49,6 +49,14 @@ class MatlabController(MatlabMixin, Controller):
         jacobian_free_solvers = []
         return has_jacobian, jacobian_free_solvers
 
+    def hessian_information(self):
+        """
+        Matlab cannot use Hessian information
+        """
+        has_hessian = False
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
+
     def setup(self):
         """
         Setup for Matlab fitting

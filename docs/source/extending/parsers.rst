@@ -74,7 +74,15 @@ To add a new fitting problem definition type, complete the following steps:
      information*, then in ``test_parsers.py`` add 
      ``<format_name>`` to the ``JACOBIAN_ENABLED_PARSERS`` global variable.
      Then add a file ``jacobian_evaluations.json`` to
-     ``fitbenchmarking/parsing/tests/<format_name>/``, which tests that the Jacobian evaluation behaves is as expected.
+     ``fitbenchmarking/parsing/tests/<format_name>/``, which tests that the Jacobian evaluation behaves as expected.
+     This file should have the same file structure as `function_evaluations.json`,
+     and works in a similar way. 
+
+   - **Hessian tests**: *If the parser you add has analytic Hessian
+     information*, then in ``test_parsers.py`` add 
+     ``<format_name>`` to the ``HESSIAN_ENABLED_PARSERS`` global variable.
+     Then add a file ``hessian_evaluations.json`` to
+     ``fitbenchmarking/parsing/tests/<format_name>/``, which tests that the Hessian evaluation behaves as expected.
      This file should have the same file structure as `function_evaluations.json`,
      and works in a similar way. 
 

@@ -17,6 +17,15 @@ descriptions of these tables.
     runtime
     local_min
 
+Accessing plots of fit
+**********************
+
+In each of the tables, more information about the fit (including parameter values and plots of fit)
+for an individual result can be accessed by clicking on the associated table cell.
+
+Please note that in order to view the plots of fit, the :ref:`Make Plots <MakePlots>` option must be
+set to ``True``.
+
 Table formats
 *************
 

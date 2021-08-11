@@ -77,6 +77,9 @@ class Controller:
         # Jacobian: The Jacobian object
         self.jacobian = None
 
+        # Hessian: The Hessian object
+        self.hessian = None
+
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)
         self.data_x = self.problem.data_x
@@ -298,6 +301,24 @@ class Controller:
           controller this would return ``Nelder-Mead`` and ``Powell``.
 
         :return: (``has_jacobian``, ``jacobian_free_solvers``)
+        :rtype: (`string`, `list`)
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def hessian_information(self):
+        """
+        Sets up Hessian information for the controller.
+
+        This should return the following arguments:
+
+        - ``has_hessian``: a True or False value whether the controller
+          accepts Hessian information.
+        - ``hessian_enabled_solvers``: a list of minimizers in a specific
+          software that allow Hessian information to be passed
+          into the fitting algorithm.
+
+        :return: (``has_hessian``, ``hessian_enabled_solvers``)
         :rtype: (`string`, `list`)
         """
         raise NotImplementedError

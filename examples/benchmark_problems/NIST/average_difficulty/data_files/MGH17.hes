@@ -1,0 +1,9 @@
+# Hessian for NIST problem MGH17
+# Computed using script in
+# examples/scripts/hessians/NIST_avg_difficulty_hessians.py
+
+H = [[0, 0, 0, 0, 0],
+    [0, 0, 0, -x*exp(-b4*x), 0],
+    [0, 0, 0, 0, -x*exp(-b5*x)],
+    [0, -x*exp(-b4*x), 0, b2*x**2*exp(-b4*x), 0],
+    [0, 0, -x*exp(-b5*x), 0, b3*x**2*exp(-b5*x)]]

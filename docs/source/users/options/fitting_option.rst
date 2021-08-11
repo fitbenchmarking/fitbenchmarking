@@ -120,6 +120,28 @@ Default is ``default``
    Currently analytic Jacobians are available are only available for
    problems that use the cutest and NIST parsers.
 
+
+Hessian method (:code:`hes_method`)
+------------------------------------
+
+This sets the Hessian used. Current Hessian methods are:
+
+* ``default`` - Hessian information is not passed to minimizers
+* ``analytic`` - uses the analytic Hessian extracted from the fitting problem.
+  
+Default is ``default``
+
+.. code-block:: rst
+
+    [FITTING]
+    hes_method: default
+
+.. warning::
+
+   Currently analytic Hessians are available are only available for
+   problems that use the NIST parser and for the ``nlls`` and
+   ``weighted_nlls`` cost functions.
+
 Cost function (:code:`cost_func_type`)
 --------------------------------------
 
