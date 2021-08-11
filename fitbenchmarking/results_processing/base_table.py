@@ -235,11 +235,6 @@ class Table:
         self.sorted_results = sorted_results
         self.best_results = list(best_results.values())
 
-        import pprint
-        pprint.pprint(rows)
-        pprint.pprint(columns)
-        pprint.pprint(self.sorted_results)
-
     def get_str_dict(self, html=False):
         """
         Create a dictionary with the table values as strings for display.

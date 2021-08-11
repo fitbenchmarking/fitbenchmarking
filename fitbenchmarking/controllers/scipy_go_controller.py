@@ -18,20 +18,20 @@ class ScipyGOController(Controller):
     controller_name = 'scipy_go'
 
     algorithm_check = {
-            'all': ['differential_evolution', 'shgo', 'dual_annealing'],
-            'ls': [None],
-            'deriv_free': ['differential_evolution'],
-            'general': ['shgo', 'dual_annealing'],
-            'simplex': [],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': ['differential_evolution', 'shgo',
-                                    'dual_annealing']
-        }
+        'all': ['differential_evolution', 'shgo', 'dual_annealing'],
+        'ls': [None],
+        'deriv_free': ['differential_evolution'],
+        'general': ['shgo', 'dual_annealing'],
+        'simplex': [],
+        'trust_region': [],
+        'levenberg-marquardt': [],
+        'gauss_newton': [],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': ['differential_evolution', 'shgo',
+                                'dual_annealing']
+    }
 
     def __init__(self, cost_func):
         """
