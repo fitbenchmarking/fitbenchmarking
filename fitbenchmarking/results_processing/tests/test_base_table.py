@@ -1,0 +1,159 @@
+from unittest import TestCase
+
+import numpy as np
+
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
+from fitbenchmarking.jacobian.default_jacobian import Default
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.results_processing.base_table import Table
+from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.options import Options
+
+
+def generate_results():
+    options = Options()
+    results = []
+
+    data_x = np.array([[1, 4, 5], [2, 1, 5]])
+    data_y = np.array([[1, 2, 1], [2, 2, 2]])
+    data_e = np.array([[1, 1, 1], [1, 2, 1]])
+    func = [lambda d, x1, x2: x1 * np.sin(x2), lambda d, x1, x2: x1 * x2]
+    name = ['prob_0', 'prob_1']
+    problems = [FittingProblem(options), FittingProblem(options)]
+    starting_values = [{"a": .3, "b": .11}, {"a": 0, "b": 0}]
+    for p, x, y, e, f, n, s in zip(problems, data_x, data_y, data_e,
+                                   func, name, starting_values):
+        p.data_x = x
+        p.data_y = y
+        p.data_e = e
+        p.function = f
+        p.name = n
+        p.starting_values = [s]
+
+    cost_func = WeightedNLLSCostFunc(problems[0])
+    jac = [Default(cost_func), Scipy(cost_func)]
+    jac[1].method = '2-point'
+    results.append([
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[0],
+            initial_params=list(problems[0].starting_values[0].values()),
+            params=[1, 1], name=problems[0].name, chi_sq=0.2, runtime=15,
+            software='s1', minimizer='m10', error_flag=0),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[0],
+            initial_params=list(problems[0].starting_values[0].values()),
+            params=[1, 1], name=problems[0].name, chi_sq=0.3, runtime=14,
+            software='s1', minimizer='m11', error_flag=0),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[0],
+            initial_params=list(problems[0].starting_values[0].values()),
+            params=[1, 1], name=problems[0].name, chi_sq=0.4, runtime=13,
+            software='s0', minimizer='m01', error_flag=0),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=None,
+            initial_params=list(problems[0].starting_values[0].values()),
+            params=[1, 1], name=problems[0].name, chi_sq=np.inf,
+            runtime=np.inf, software='s0', minimizer='m00', error_flag=4),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[1],
+            initial_params=list(problems[0].starting_values[0].values()),
+            params=[1, 1], name=problems[0].name, chi_sq=0.6, runtime=11,
+            software='s1', minimizer='m10', error_flag=0),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[1],
+            initial_params=list(problems[0].starting_values[0].values()),
+            params=[1, 1], name=problems[0].name, chi_sq=0.7, runtime=10,
+            software='s1', minimizer='m11', error_flag=0),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[1],
+            initial_params=list(problems[0].starting_values[0].values()),
+            params=[1, 1], name=problems[0].name, chi_sq=0.8, runtime=9,
+            software='s0', minimizer='m01', error_flag=0),
+    ])
+    results.append([
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[0],
+            initial_params=list(problems[1].starting_values[0].values()),
+            params=[1, 1], name=problems[1].name, chi_sq=1, runtime=1,
+            software='s1', minimizer='m10', error_flag=0),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[0],
+            initial_params=list(problems[1].starting_values[0].values()),
+            params=[1, 1], name=problems[1].name, chi_sq=1, runtime=1,
+            software='s1', minimizer='m11', error_flag=0),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[0],
+            initial_params=list(problems[1].starting_values[0].values()),
+            params=[1, 1], name=problems[1].name, chi_sq=2, runtime=2,
+            software='s0', minimizer='m01', error_flag=0),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[0],
+            initial_params=list(problems[1].starting_values[0].values()),
+            params=[1, 1], name=problems[1].name, chi_sq=np.inf,
+            runtime=np.inf, software='s0', minimizer='m00', error_flag=0),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[1],
+            initial_params=list(problems[1].starting_values[0].values()),
+            params=[1, 1], name=problems[1].name, chi_sq=3, runtime=3,
+            software='s1', minimizer='m10', error_flag=0),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[1],
+            initial_params=list(problems[1].starting_values[0].values()),
+            params=[1, 1], name=problems[1].name, chi_sq=3, runtime=3,
+            software='s1', minimizer='m11', error_flag=0),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[1],
+            initial_params=list(problems[1].starting_values[0].values()),
+            params=[1, 1], name=problems[1].name, chi_sq=4, runtime=4,
+            software='s0', minimizer='m01', error_flag=0),
+        FittingResult(
+            options=options, cost_func=cost_func, jac=jac[1],
+            initial_params=list(problems[1].starting_values[0].values()),
+            params=[1, 1], name=problems[1].name, chi_sq=np.inf,
+            runtime=np.inf, software='s0', minimizer='m00', error_flag=0),
+    ])
+
+    return results
+
+
+class DummyTable(Table):
+    def get_value(self, result):
+        return [result.chi_sq]
+
+
+class CreateResultsDictTests(TestCase):
+    def test_creates_correct_dict(self):
+        results_list = generate_results()
+        table = DummyTable(results=results_list,
+                           options=Options(),
+                           group_dir='fake',
+                           pp_locations=('no', 'pp'),
+                           table_name='A table!')
+
+        table.create_results_dict()
+        results_dict = table.sorted_results
+
+        def check_result(r1, r2):
+            self.assertIs(r1, r2,
+                          f'Error: First result is {r1.problem_tag}-'
+                          f'{r1.software_tag}-{r1.minimizer_tag}-{r1.jacobian_tag}.'
+                          f' Second result is {r2.problem_tag}-'
+                          f'{r2.software_tag}-{r2.minimizer_tag}-{r2.jacobian_tag}')
+        check_result(results_dict['prob_0'][0], results_list[0][3])
+        check_result(results_dict['prob_0'][1], results_list[0][3])
+        check_result(results_dict['prob_0'][2], results_list[0][2])
+        check_result(results_dict['prob_0'][3], results_list[0][6])
+        check_result(results_dict['prob_0'][4], results_list[0][0])
+        check_result(results_dict['prob_0'][5], results_list[0][4])
+        check_result(results_dict['prob_0'][6], results_list[0][1])
+        check_result(results_dict['prob_0'][7], results_list[0][5])
+        check_result(results_dict['prob_1'][0], results_list[1][3])
+        check_result(results_dict['prob_1'][1], results_list[1][7])
+        check_result(results_dict['prob_1'][2], results_list[1][2])
+        check_result(results_dict['prob_1'][3], results_list[1][6])
+        check_result(results_dict['prob_1'][4], results_list[1][0])
+        check_result(results_dict['prob_1'][5], results_list[1][4])
+        check_result(results_dict['prob_1'][6], results_list[1][1])
+        check_result(results_dict['prob_1'][7], results_list[1][5])
