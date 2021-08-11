@@ -111,14 +111,18 @@ def generate_mock_results():
             cost_func = NLLSCostFunc(p)
             jac = Scipy(cost_func)
             jac.method = '2-point'
-            r = FittingResult(options=options, cost_func=cost_func, jac=jac,
+            r = FittingResult(options=options,
+                              cost_func=cost_func,
+                              jac=jac,
                               initial_params=starting_values,
-                              params=params_in[i][j])
-            r.chi_sq = acc_in[i][j]
-            r.runtime = runtime_in[i][j]
-            r.error_flag = error_in[i][j]
+                              params=params_in[i][j],
+                              name=p.name,
+                              chi_sq=acc_in[i][j],
+                              runtime=runtime_in[i][j],
+                              software=software,
+                              minimizer=options.minimizers[software][j],
+                              error_flag=error_in[i][j],)
             r.support_page_link = link_in[i][j]
-            r.minimizer = options.minimizers[software][j]
             results.append(r)
             options.minimizer_alg_type[options.minimizers[software]
                                        [j]] = 'all, ls'
