@@ -139,8 +139,8 @@ Default is ``default``
 .. warning::
 
    Currently analytic Hessians are available are only available for
-   problems that use the NIST parser and for the ``nlls`` and
-   ``weighted_nlls`` cost functions.
+   problems that use the NIST parser and for the ``nlls``,
+   ``weighted_nlls`` and ``hellinger_nlls`` cost functions
 
 Cost function (:code:`cost_func_type`)
 --------------------------------------

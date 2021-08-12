@@ -477,11 +477,10 @@ def loop_over_hessians(controller, options, minimizer_name,
         # if user has selected to use hessian info
         # then create hessian if minimizer accepts it
 
-        # Temporary addition until hellinger_nlls and
-        # poisson cost functions are added to
+        # Temporary addition until
+        # poisson cost function is added to
         # Analytic Hessian class
-        if options.cost_func_type == "hellinger_nlls"\
-                or options.cost_func_type == "poisson":
+        if options.cost_func_type == "poisson":
             minimizer_check = False
 
         minimizer_name_hes = minimizer_name

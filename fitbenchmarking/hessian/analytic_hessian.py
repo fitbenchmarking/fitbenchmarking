@@ -44,6 +44,13 @@ class Analytic(Hessian):
             # scales the Hessian by the weights
             for i in range(len(e)):
                 grad2_r[:, :, i] = grad2_r[:, :, i] / e[i]
+        if self.problem.options.cost_func_type == "hellinger_nlls":
+            for i in range(len(x)):
+                grad2_r[:, :, i] = 1/2*(
+                    self.problem.eval_model(params, x=x)**(-1/2))[i]\
+                    * grad2_r[:, :, i] - \
+                    1/2*(self.problem.eval_model(params, x=x)**(-3/2))[i]\
+                    * np.matmul(J.T, J)
 
         hes = matmul(grad2_r, rx)
         return hes, J

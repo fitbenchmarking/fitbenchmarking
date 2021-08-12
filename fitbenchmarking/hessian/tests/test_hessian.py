@@ -6,6 +6,10 @@ from unittest import TestCase
 import numpy as np
 
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import\
+    WeightedNLLSCostFunc
+from fitbenchmarking.cost_func.hellinger_nlls_cost_func import\
+    HellingerNLLSCostFunc
 from fitbenchmarking.hessian.analytic_hessian import Analytic
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic\
     as JacobianClass
@@ -85,11 +89,8 @@ class TestHessianClass(TestCase):
         self.cost_func = NLLSCostFunc(self.fitting_problem)
         self.jacobian = JacobianClass(self.cost_func)
         self.params = [6, 0.1]
-        self.f_eval = self.fitting_problem.data_y\
-            - f(x=self.fitting_problem.data_x,
-                p1=self.params[0],
-                p2=self.params[1])
         self.actual = H(x=self.fitting_problem.data_x, p=self.params)
+        self.jac_actual = J(x=self.fitting_problem.data_x, p=self.params)
 
     def test_analytic_cutest_no_errors(self):
         """
@@ -99,14 +100,19 @@ class TestHessianClass(TestCase):
         self.fitting_problem.format = "cutest"
         hes = Analytic(self.cost_func, self.jacobian)
         eval_result, _ = hes.eval(params=self.params)
-        self.actual = np.matmul(self.actual, self.f_eval)
+        self.actual = np.matmul(self.actual,
+                                self.fitting_problem.data_y -
+                                f(self.fitting_problem.data_x,
+                                  self.params[0], self.params[1]))
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_analytic_cutest_weighted(self):
         """
         Test analytic Hessian
         """
+        self.cost_func = WeightedNLLSCostFunc(self.fitting_problem)
         self.fitting_problem.options.cost_func_type = "weighted_nlls"
+        self.jacobian = JacobianClass(self.cost_func)
         e = np.array([1, 2, 1, 3, 1])
         self.fitting_problem.data_e = e
         self.fitting_problem.format = "cutest"
@@ -115,7 +121,35 @@ class TestHessianClass(TestCase):
         scaled_actual = self.actual
         for i in range(len(e)):
             scaled_actual[:, :, i] = self.actual[:, :, i] / e[i]
-        scaled_actual = np.matmul(scaled_actual, self.f_eval)
+        scaled_actual = np.matmul(scaled_actual,
+                                  (self.fitting_problem.data_y -
+                                   f(self.fitting_problem.data_x,
+                                     self.params[0], self.params[1]))/e)
+        self.assertTrue(np.isclose(scaled_actual, eval_result).all())
+
+    def test_analytic_cutest_hellinger(self):
+        """
+        Test analytic Hessian
+        """
+        self.cost_func = HellingerNLLSCostFunc(self.fitting_problem)
+        self.fitting_problem.options.cost_func_type = "hellinger_nlls"
+        self.jacobian = JacobianClass(self.cost_func)
+        self.fitting_problem.format = "cutest"
+        hes = Analytic(self.cost_func, self.jacobian)
+        eval_result, _ = hes.eval(params=self.params)
+        jac_actual_h = self.jac_actual / \
+            (2*np.sqrt(f(self.fitting_problem.data_x, *self.params)[:, None]))
+        scaled_actual = self.actual
+        for i in range(len(self.fitting_problem.data_x)):
+            scaled_actual[:, :, i] = 1/2*(
+                f(self.fitting_problem.data_x, *self.params)**(-1/2))[i]\
+                * self.actual[:, :, i] - \
+                1/2*(f(self.fitting_problem.data_x, *self.params)**(-3/2))[i]\
+                * np.matmul(jac_actual_h.T, jac_actual_h)
+        scaled_actual = np.matmul(scaled_actual, np.sqrt(
+            self.fitting_problem.data_y)-np.sqrt(f(self.fitting_problem.data_x,
+                                                   self.params[0],
+                                                   self.params[1])))
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
 
     def test_analytic_raise_error(self):
