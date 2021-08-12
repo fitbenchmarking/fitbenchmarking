@@ -1,3 +1,7 @@
+"""
+Tests for functions in the base tables file.
+"""
+
 from unittest import TestCase
 
 import numpy as np
@@ -13,6 +17,12 @@ from fitbenchmarking.utils.options import Options
 
 
 def generate_results():
+    """
+    Create a predictable set of results.
+
+    :return: Set of manuall generated results
+    :rtype: list[list[FittingResult]]
+    """
     options = Options()
     results = []
 
@@ -119,12 +129,31 @@ def generate_results():
 
 
 class DummyTable(Table):
+    """
+    Create an instantiatable subclass of the abstract Table
+    """
+
     def get_value(self, result):
+        """
+        Just use the chi_sq value
+
+        :param result: The result to get the value for
+        :type result: FittingResult
+        :return: The value for the table
+        :rtype: tuple[float]
+        """
         return [result.chi_sq]
 
 
 class CreateResultsDictTests(TestCase):
-    def test_creates_correct_dict(self):
+    """
+    Tests for the create_results_dict function.
+    """
+
+    def test_create_results_dict_correct_dict(self):
+        """
+        Test that create_results_dict produces the correct format
+        """
         results_list = generate_results()
         table = DummyTable(results=results_list,
                            options=Options(),
@@ -132,15 +161,19 @@ class CreateResultsDictTests(TestCase):
                            pp_locations=('no', 'pp'),
                            table_name='A table!')
 
-        table.create_results_dict()
         results_dict = table.sorted_results
 
         def check_result(r1, r2):
+            """
+            Utility function to give a useful error message if it fails.
+            """
             self.assertIs(r1, r2,
                           f'Error: First result is {r1.problem_tag}-'
-                          f'{r1.software_tag}-{r1.minimizer_tag}-{r1.jacobian_tag}.'
+                          f'{r1.software_tag}-{r1.minimizer_tag}-'
+                          f'{r1.jacobian_tag}.'
                           f' Second result is {r2.problem_tag}-'
-                          f'{r2.software_tag}-{r2.minimizer_tag}-{r2.jacobian_tag}')
+                          f'{r2.software_tag}-{r2.minimizer_tag}-'
+                          f'{r2.jacobian_tag}')
         check_result(results_dict['prob_0'][0], results_list[0][3])
         check_result(results_dict['prob_0'][1], results_list[0][3])
         check_result(results_dict['prob_0'][2], results_list[0][2])
@@ -157,3 +190,41 @@ class CreateResultsDictTests(TestCase):
         check_result(results_dict['prob_1'][5], results_list[1][4])
         check_result(results_dict['prob_1'][6], results_list[1][1])
         check_result(results_dict['prob_1'][7], results_list[1][5])
+
+
+class DisplayStrTests(TestCase):
+    """
+    Tests for the default display_str implementation.
+    """
+
+    def setUp(self):
+        results = generate_results()
+        self.table = DummyTable(results=results,
+                                options=Options(),
+                                group_dir='fake',
+                                pp_locations=('no', 'pp'),
+                                table_name='A table!')
+
+    def test_display_str_abs(self):
+        """
+        Test the abs string is as expected
+        """
+        self.table.options.comparison_mode = 'abs'
+        s = self.table.display_str([7, 9])
+        self.assertEqual(s, '9')
+
+    def test_display_str_rel(self):
+        """
+        Test the rel string is as expected
+        """
+        self.table.options.comparison_mode = 'rel'
+        s = self.table.display_str([7, 9])
+        self.assertEqual(s, '7')
+
+    def test_display_str_both(self):
+        """
+        Test the both string is as expected
+        """
+        self.table.options.comparison_mode = 'both'
+        s = self.table.display_str([7, 9])
+        self.assertEqual(s, '9 (7)')
