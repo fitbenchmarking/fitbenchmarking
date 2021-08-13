@@ -34,13 +34,13 @@ class Analytic(Hessian):
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)
         e = kwargs.get("e", self.problem.data_e)
-        J = self.jacobian.eval(params, **kwargs)
         grad2_r = self.problem.hessian(x, params)
         if self.problem.options.cost_func_type == "weighted_nlls":
             # scales the Hessian by the weights
             for i in range(len(e)):
                 grad2_r[:, :, i] = grad2_r[:, :, i] / e[i]
         if self.problem.options.cost_func_type == "hellinger_nlls":
+            J = self.jacobian.eval(params, **kwargs)
             for i in range(len(x)):
                 grad2_r[:, :, i] = 1/2*(
                     self.problem.eval_model(params, x=x)**(-1/2))[i]\
@@ -48,6 +48,7 @@ class Analytic(Hessian):
                     1/2*(self.problem.eval_model(params, x=x)**(-3/2))[i]\
                     * np.matmul(J.T, J)
         if self.problem.options.cost_func_type == "poisson":
+            J = self.jacobian.eval_cost(params, **kwargs)
             for i in range(len(x)):
                 grad2_r[:, :, i] = grad2_r[:, :, i]\
                     * (1-y/self.problem.eval_model(params, x=x))[i]\
