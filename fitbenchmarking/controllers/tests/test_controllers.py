@@ -797,8 +797,8 @@ class ExternalControllerTests(TestCase):
                                          True,
                                          [])
         self.shared_tests.check_hes_info(controller,
-                                         False,
-                                         [])
+                                         True,
+                                         ['hybrid', 'hybrid_reg'])
 
         minimizers = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg']
         for minimizer in minimizers:
