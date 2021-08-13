@@ -8,8 +8,11 @@ import numpy as np
 
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
-from fitbenchmarking.jacobian.default_jacobian import Default
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.hessian.analytic_hessian import \
+    Analytic as AnalyticHessian
+from fitbenchmarking.jacobian.default_jacobian import \
+    Default as DefaultJacobian
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy as ScipyJacobian
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing.base_table import Table
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -43,83 +46,84 @@ def generate_results():
         p.starting_values = [s]
 
     cost_func = WeightedNLLSCostFunc(problems[0])
-    jac = [Default(cost_func), Scipy(cost_func)]
+    jac = [DefaultJacobian(cost_func), ScipyJacobian(cost_func)]
     jac[1].method = '2-point'
+    hess = [AnalyticHessian(cost_func, j) for j in jac]
     results.append([
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[0],
+            options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[0].starting_values[0].values()),
             params=[1, 1], name=problems[0].name, chi_sq=0.2, runtime=15,
             software='s1', minimizer='m10', error_flag=0),
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[0],
+            options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[0].starting_values[0].values()),
             params=[1, 1], name=problems[0].name, chi_sq=0.3, runtime=14,
             software='s1', minimizer='m11', error_flag=0),
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[0],
+            options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[0].starting_values[0].values()),
             params=[1, 1], name=problems[0].name, chi_sq=0.4, runtime=13,
             software='s0', minimizer='m01', error_flag=0),
         FittingResult(
-            options=options, cost_func=cost_func, jac=None,
+            options=options, cost_func=cost_func, jac=None, hess=None,
             initial_params=list(problems[0].starting_values[0].values()),
             params=[1, 1], name=problems[0].name, chi_sq=np.inf,
             runtime=np.inf, software='s0', minimizer='m00', error_flag=4),
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[1],
+            options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[0].starting_values[0].values()),
             params=[1, 1], name=problems[0].name, chi_sq=0.6, runtime=11,
             software='s1', minimizer='m10', error_flag=0),
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[1],
+            options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[0].starting_values[0].values()),
             params=[1, 1], name=problems[0].name, chi_sq=0.7, runtime=10,
             software='s1', minimizer='m11', error_flag=0),
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[1],
+            options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[0].starting_values[0].values()),
             params=[1, 1], name=problems[0].name, chi_sq=0.8, runtime=9,
             software='s0', minimizer='m01', error_flag=0),
     ])
     results.append([
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[0],
+            options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[1].starting_values[0].values()),
             params=[1, 1], name=problems[1].name, chi_sq=1, runtime=1,
             software='s1', minimizer='m10', error_flag=0),
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[0],
+            options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[1].starting_values[0].values()),
             params=[1, 1], name=problems[1].name, chi_sq=1, runtime=1,
             software='s1', minimizer='m11', error_flag=0),
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[0],
+            options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[1].starting_values[0].values()),
             params=[1, 1], name=problems[1].name, chi_sq=2, runtime=2,
             software='s0', minimizer='m01', error_flag=0),
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[0],
+            options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[1].starting_values[0].values()),
             params=[1, 1], name=problems[1].name, chi_sq=np.inf,
             runtime=np.inf, software='s0', minimizer='m00', error_flag=0),
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[1],
+            options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[1].starting_values[0].values()),
             params=[1, 1], name=problems[1].name, chi_sq=3, runtime=3,
             software='s1', minimizer='m10', error_flag=0),
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[1],
+            options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[1].starting_values[0].values()),
             params=[1, 1], name=problems[1].name, chi_sq=3, runtime=3,
             software='s1', minimizer='m11', error_flag=0),
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[1],
+            options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[1].starting_values[0].values()),
             params=[1, 1], name=problems[1].name, chi_sq=4, runtime=4,
             software='s0', minimizer='m01', error_flag=0),
         FittingResult(
-            options=options, cost_func=cost_func, jac=jac[1],
+            options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[1].starting_values[0].values()),
             params=[1, 1], name=problems[1].name, chi_sq=np.inf,
             runtime=np.inf, software='s0', minimizer='m00', error_flag=0),
