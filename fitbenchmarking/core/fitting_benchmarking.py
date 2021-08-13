@@ -311,8 +311,10 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                         [{'options': options,
                           'cost_func': controller.cost_func,
                           'jac': None,
+                          'hess': None,
                           'chi_sq': np.inf,
                           'runtime': np.inf,
+                          'software': controller.software,
                           'minimizer': minimizer,
                           'initial_params': controller.initial_params,
                           'params': None,
@@ -345,7 +347,7 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                     for i in range(len(chi_sq)):
                         result.update({'dataset_id': i,
                                        'name': '{}, Dataset {}'.format(
-                                            problem.name, (i + 1))})
+                                           problem.name, (i + 1))})
                         individual_result = \
                             fitbm_result.FittingResult(**result)
                         results_problem.append(individual_result)
@@ -568,8 +570,10 @@ def loop_over_hessians(controller, options, minimizer_name,
         result_args = {'options': options,
                        'cost_func': cost_func,
                        'jac': jacobian,
+                       'hess': controller.hessian,
                        'chi_sq': chi_sq,
                        'runtime': runtime,
+                       'software': controller.software,
                        'minimizer': minimizer_name_hes,
                        'initial_params': controller.initial_params,
                        'params': controller.final_params,

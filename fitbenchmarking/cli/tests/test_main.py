@@ -67,6 +67,7 @@ class TestMain(TestCase):
         result_args = {'options': options,
                        'cost_func': cost_func,
                        'jac': 'jac',
+                       'hess': 'hess',
                        'initial_params': [],
                        'params': [],
                        'error_flag': 4}

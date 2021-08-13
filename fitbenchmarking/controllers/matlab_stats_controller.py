@@ -17,18 +17,20 @@ class MatlabStatsController(MatlabMixin, Controller):
     """
 
     algorithm_check = {
-            'all': ['Levenberg-Marquardt'],
-            'ls': ['Levenberg-Marquardt'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['Levenberg-Marquardt'],
-            'levenberg-marquardt': ['Levenberg-Marquardt'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': []}
+        'all': ['Levenberg-Marquardt'],
+        'ls': ['Levenberg-Marquardt'],
+        'deriv_free': [],
+        'general': [],
+        'simplex': [],
+        'trust_region': ['Levenberg-Marquardt'],
+        'levenberg-marquardt': ['Levenberg-Marquardt'],
+        'gauss_newton': [],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': []}
+
+    controller_name = 'matlab_stats'
 
     def __init__(self, cost_func):
         """

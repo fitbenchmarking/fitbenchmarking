@@ -1,20 +1,18 @@
 """
 Set up and build the results tables.
 """
-
-from __future__ import (absolute_import, division, print_function)
-import copy
+import os
 from importlib import import_module
 from inspect import getfile, getmembers, isabstract, isclass
-import os
+
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
 from fitbenchmarking.results_processing.base_table import Table
-from fitbenchmarking.utils.exceptions import UnknownTableError, \
-    IncompatibleTableError
-from fitbenchmarking.utils.misc import get_css, get_js
+from fitbenchmarking.utils.exceptions import (IncompatibleTableError,
+                                              UnknownTableError)
 from fitbenchmarking.utils.log import get_logger
+from fitbenchmarking.utils.misc import get_css, get_js
 
 LOGGER = get_logger()
 
@@ -28,9 +26,8 @@ ERROR_OPTIONS = {0: "Successfully converged",
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
-def create_results_tables(options, results, best_results, group_name,
-                          group_dir, fig_dir, pp_locations, failed_problems,
-                          unselected_minimzers):
+def create_results_tables(options, results, group_name, group_dir, fig_dir,
+                          pp_locations, failed_problems, unselected_minimzers):
     """
     Saves the results of the fitting to html/txt tables.
 
@@ -39,9 +36,6 @@ def create_results_tables(options, results, best_results, group_name,
     :param results: results nested array of objects
     :type results: list of list of
                    fitbenchmarking.utils.fitbm_result.FittingResult
-    :param best_results: best result for each problem
-    :type best_results: list of
-                        fitbenchmarking.utils.fitbm_result.FittingResult
     :param group_name: name of the problem group
     :type group_name: str
     :param group_dir: path to the directory where group results should be
@@ -49,9 +43,6 @@ def create_results_tables(options, results, best_results, group_name,
     :type group_dir: str
     :param fig_dir: path to the directory where figures should be stored
     :type fig_dir: str
-    :param table_descriptions: dictionary containing descriptions of the
-                               tables and the comparison mode
-    :type table_descriptions: dict
     :param pp_locations: tuple containing the locations of the
                          performance profiles (acc then runtime)
     :type pp_locations: tuple(str,str)
@@ -74,14 +65,11 @@ def create_results_tables(options, results, best_results, group_name,
         if suffix in options.table_type:
 
             table_names[suffix] = \
-                '{0}_{1}_{2}_table.'.format(group_name,
-                                            suffix,
-                                            options.cost_func_type)
+                f'{group_name}_{suffix}_{options.cost_func_type}_table.'
 
             try:
                 table, html_table, txt_table, cbar = \
                     generate_table(results,
-                                   best_results,
                                    options,
                                    group_dir,
                                    fig_dir,
@@ -167,17 +155,14 @@ def load_table(table):
     return classes[0][1]
 
 
-def generate_table(results, best_results, options, group_dir,
-                   fig_dir, pp_locations, table_name, suffix):
+def generate_table(results, options, group_dir, fig_dir, pp_locations,
+                   table_name, suffix):
     """
     Generate html/txt tables.
 
     :param results: results nested array of objects
     :type results: list of list of
                    fitbenchmarking.utils.fitbm_result.FittingResult
-    :param best_results: best result for each problem
-    :type best_results: list of
-                        fitbenchmarking.utils.fitbm_result.FittingResult
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
     :param group_dir: path to the directory where group results should be
@@ -198,22 +183,10 @@ def generate_table(results, best_results, options, group_dir,
     :rtype: tuple(Table object, str, str)
     """
     table_module = load_table(suffix)
-    table = table_module(results, best_results,
-                         options, group_dir,
-                         pp_locations, table_name)
+    table = table_module(results, options, group_dir, pp_locations, table_name)
 
-    results_dict = table.create_results_dict()
-
-    disp_results = table.get_values(results_dict)
-    error = table.get_error(results_dict)
-    links = table.get_links(results_dict)
-    colour = table.get_colour(disp_results)
-    str_results = table.display_str(disp_results)
-    cbar = table.get_cbar(fig_dir)
-
-    pandas_html = table.create_pandas_data_frame(str_results)
-    pandas_txt = copy.copy(pandas_html)
-    html_table = table.to_html(pandas_html, colour, links, error)
-    txt_table = table.to_txt(pandas_txt, error)
+    html_table = table.to_html()
+    txt_table = table.to_txt()
+    cbar = table.save_colourbar(fig_dir)
 
     return table, html_table, txt_table, cbar

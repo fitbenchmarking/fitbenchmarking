@@ -2,12 +2,13 @@
 compare table
 """
 import os
-import numpy as np
-import matplotlib.pyplot as plt
+
 import matplotlib.colors as clrs
-from fitbenchmarking.results_processing.base_table import Table
+import numpy as np
+
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
+from fitbenchmarking.results_processing.base_table import Table
 from fitbenchmarking.utils.exceptions import IncompatibleTableError
 
 GRAD_TOL = 1e-1
@@ -33,8 +34,7 @@ class LocalMinTable(Table):
 
     """
 
-    def __init__(self, results, best_results, options, group_dir,
-                 pp_locations, table_name):
+    def __init__(self, results, options, group_dir, pp_locations, table_name):
         """
         Initialise the local minimizer table which shows given the
         conditioners stated in the doc string whether the final parameters
@@ -43,9 +43,6 @@ class LocalMinTable(Table):
         :param results: results nested array of objects
         :type results: list of list of
                        fitbenchmarking.utils.fitbm_result.FittingResult
-        :param best_results: best result for each problem
-        :type best_results: list of
-                        fitbenchmarking.utils.fitbm_result.FittingResult
         :param options: Options used in fitting
         :type options: utils.options.Options
         :param group_dir: path to the directory where group results should be
@@ -57,8 +54,7 @@ class LocalMinTable(Table):
         :param table_name: Name of the table
         :type table_name: str
         """
-        super().__init__(results, best_results, options,
-                         group_dir, pp_locations, table_name)
+        super().__init__(results, options, group_dir, pp_locations, table_name)
         self.name = 'local_min'
 
         self.has_pp = True
@@ -75,128 +71,122 @@ class LocalMinTable(Table):
                                          "table will not be produced.".format(
                                              options.cost_func_type))
 
-    def get_values(self, results_dict):
+        self.cbar_title = "Cell Shading: Minimum Found"
+        self.cbar_left_label = "True"
+        self.cbar_right_label = "False"
+
+    def get_value(self, result):
         """
-        Gets the main values to be reported in the tables
+        Gets the main value to be reported in the tables for a given result
 
-        :param results_dict: dictionary containing results where the keys
-                             are the problem sets and the values are lists
-                             of results objects
-        :type results_dict: dictionary
+        Note that the first value (relative chi_sq) will be used in the default
+        colour handling.
 
-        :return: a dictionary containing true or false values whether the
-                 return parameters is a local minimizer and a dictionary
-                 containing :math:`\\frac{|| J^T r||}{||r||}` values
-        :rtype: tuple(dict, dict)
+        :param result: The result to generate the values for.
+        :type result: FittingResult
+
+        :return: Whether the minimizer found a local minimizer (under the tests
+                 specified above) and :math:`\\frac{|| J^T r||}{||r||}`
+        :rtype: bool, float
         """
-        local_min = {}
-        norm_rel = {}
-        for key, value in results_dict.items():
-            local_min[key] = []
-            norm_rel[key] = []
-            for i, v in enumerate(value):
-                if v.params is None:
-                    norm_rel[key].append(np.inf)
-                    local_min[key].append("False")
-                else:
-                    res = v.cost_func.eval_r(
-                        v.params, x=v.data_x, y=v.data_y, e=v.data_e)
-                    try:
-                        jac = v.jac.eval(v.params, x=v.data_x,
-                                         y=v.data_y, e=v.data_e)
-                    except NotImplementedError:
-                        # If using a solver dependent Jacobian, we want
-                        # to switch to a common jacobian here to generate
-                        # comparisons
-                        jacobian_cls = create_jacobian('scipy')
-                        jacobian_instance = jacobian_cls(v.cost_func)
-                        jacobian_instance.method = "2-point"
-                        jac = jacobian_instance.eval(v.params, x=v.data_x,
-                                                     y=v.data_y, e=v.data_e)
-                    min_test = np.matmul(res, jac)
+        if result.params is None:
+            return False, np.inf
 
-                    norm_r = np.linalg.norm(res)
-                    norm_min_test = np.linalg.norm(min_test)
+        res = result.cost_func.eval_r(result.params,
+                                      x=result.data_x,
+                                      y=result.data_y,
+                                      e=result.data_e)
+        try:
+            jac = result.jac.eval(result.params,
+                                  x=result.data_x,
+                                  y=result.data_y,
+                                  e=result.data_e)
+        except NotImplementedError:
+            # If using a solver dependent Jacobian, we want
+            # to switch to a common jacobian here to generate
+            # comparisons
+            jacobian_cls = create_jacobian('scipy')
+            jacobian_instance = jacobian_cls(result.cost_func)
+            jacobian_instance.method = "2-point"
+            jac = jacobian_instance.eval(result.params,
+                                         x=result.data_x,
+                                         y=result.data_y,
+                                         e=result.data_e)
 
-                    if v.error_flag != 5:
-                        norm_rel[key].append(norm_min_test / norm_r)
-                    else:
-                        norm_rel[key].append(np.inf)
+        min_test = np.matmul(res, jac)
+        norm_r = np.linalg.norm(res)
+        norm_min_test = np.linalg.norm(min_test)
 
-                    for r, m, n in zip([norm_r],
-                                       [norm_min_test],
-                                       [norm_rel[key][i]]):
-                        if r <= RES_TOL or m <= GRAD_TOL or n <= GRAD_TOL:
-                            local_min[key].append("True")
-                        else:
-                            local_min[key].append("False")
+        if result.error_flag != 5:
+            norm_rel = norm_min_test / norm_r
+        else:
+            norm_rel = np.inf
+
+        local_min = any([norm_r <= RES_TOL,
+                         norm_min_test <= GRAD_TOL,
+                         norm_rel <= GRAD_TOL])
 
         return local_min, norm_rel
 
-    def get_colour(self, results):
+    # pylint: disable=unused-argument
+    @staticmethod
+    def vals_to_colour(vals, cmap, cmap_range, log_ulim):
         """
-        Uses the local minimizer dictionary values to set the HTML colour
-        :param results: a dictionary containing true or false values whether
-                        the return parameters is a local minimizer and a
-                        dictionary containing
-                        :math:`\\frac{|| J^T r||}{||r||}` values
-        :type results: tuple
-        :return: dictionary containing error codes from the minimizers
-        :rtype: dict
-        """
-        local_min, _ = results
-        cmap_name = self.options.colour_map
-        cmap = plt.get_cmap(cmap_name)
-        cmap_range = self.options.cmap_range
-        colour = {key: [clrs.rgb2hex(cmap(cmap_range[0]))
-                        if v == "True" else clrs.rgb2hex(cmap(cmap_range[1]))
-                        for v in value]
-                  for key, value in local_min.items()}
-        return colour
+        Converts an array of values to a list of hexadecimal colour strings
+        using sampling from a matplotlib colourmap according to whether a
+        minimum was found.
 
-    def display_str(self, results):
-        """
-        Function that combines the True and False value from variable local_min
-        with the normalised residual
+        Set to the bottom of the range if minimum was found, otherwise set to
+        the top of the range.
 
-        :param results: a dictionary containing true or false values whether
-                        the return parameters is a local minimizer and a
-                        dictionary containing
-                        :math:`\\frac{|| J^T r||}{||r||}` values
-        :type results: tuple
+        :param vals: values in the range [0, 1] to convert to colour strings
+        :type vals: list[float]
+        :param cmap: matplotlib colourmap
+        :type cmap: matplotlib colourmap object
+        :param cmap_range: values in range [0, 1] for colourmap cropping
+        :type cmap_range: list[float], 2 elements
+        :param log_ulim: **Unused** log10 of worst shading cutoff value
+        :type log_ulim: float
 
-        :return: dictionary containing the string representation of the values
-                 in the table.
-        :rtype: dict
+        :return: colours as hex strings for each input value
+        :rtype: list[str]
         """
-        local_min, norm_rel = results
+        rgba = cmap([cmap_range[0] if local_min else cmap_range[1]
+                     for local_min in vals])
+        return [clrs.rgb2hex(colour) for colour in rgba]
+    # pylint: enable=unused-argument
+
+    def display_str(self, value):
+        """
+        Combine the boolean value from variable local_min with the
+        normalised residual
+
+        :param value: Whether the minimizer found a local minimizer and the
+                      :math:`\\frac{|| J^T r||}{||r||}` value
+        :type value: bool, float
+
+        :return: string representation of the value for display in the table.
+        :rtype: str
+        """
+        local_min, norm_rel = value
         template = self.output_string_type['abs']
-        table_output = {}
-        for key in local_min.keys():
-            table_output[key] = [a + " (" + template.format(r) + ")"
-                                 for a, r in zip(local_min[key],
-                                                 norm_rel[key])]
-        return table_output
+        return f'{str(local_min)} ({template.format(norm_rel)})'
 
-    def get_cbar(self, fig_dir):
+    # pylint: disable=unused-argument
+    def save_colourbar(self, fig_dir, n_divs=2, sz_in=None):
         """
-        Plots colourbar figure to figure directory and returns the
-        path to the figure.
+        Override default save_colourbar as there are only 2 possible divisions
+        of the colour map (true or false).
 
-        :param fig_dir: figure directory
+        :param fig_dir: path to figures directory
         :type fig_dir: str
-
-        :return fig_path: path to colourbar figure
-        :rtype fig_path: str
+        :param n_divs: **Unused** number of divisions of shading in colourbar
+        :type n_divs: int, Fixed to 2
+        :param sz_in: dimensions of png in inches [width, height]
+        :type sz_in: list[float] - 2 elements
         """
-        cmap_name = self.options.colour_map
-        cmap_range = self.options.cmap_range
-        fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self.name))
-        title = "Cell Shading: Minimum Found"
-        left_label = "True"
-        right_label = "False"
-
-        self._save_colourbar(fig_path, cmap_name, cmap_range,
-                             title, left_label, right_label, 2)
-
-        return fig_path
+        if sz_in is not None:
+            super().save_colourbar(fig_dir, n_divs=2, sz_in=sz_in)
+        else:
+            super().save_colourbar(fig_dir, n_divs=2)
+    # pylint: enable=unused-argument
