@@ -20,7 +20,7 @@ def generate_results():
     """
     Create a predictable set of results.
 
-    :return: Set of manuall generated results
+    :return: Set of manually generated results
     :rtype: list[list[FittingResult]]
     """
     options = Options()
