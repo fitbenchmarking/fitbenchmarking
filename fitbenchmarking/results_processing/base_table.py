@@ -167,7 +167,7 @@ class Table:
         # sort_order[0] is the order of sorting for rows
         # sort_order[1] is the order of sorting for columns
         sort_order = (['problem'],
-                      ['software', 'minimizer', 'jacobian'])
+                      ['software', 'minimizer', 'jacobian', 'hessian'])
 
         # Generate the columns and row tags and sort
         rows = set()
@@ -203,13 +203,13 @@ class Table:
             col = ''
             for sort_pos in sort_order[0]:
                 tag = getattr(r, sort_pos + "_tag")
-                if (sort_pos == 'jacobian') and (r.error_flag == 4):
+                if sort_pos in ['jacobian', 'hessian'] and r.error_flag == 4:
                     tag = '.+'
                 row += f':{tag}'
             row = row.strip(':')
             for sort_pos in sort_order[1]:
                 tag = getattr(r, sort_pos + "_tag")
-                if (sort_pos == 'jacobian') and (r.error_flag == 4):
+                if sort_pos in ['jacobian', 'hessian'] and r.error_flag == 4:
                     tag = '.+'
                 col += f':{tag}'
             col = col.strip(':')

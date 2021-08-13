@@ -15,7 +15,7 @@ class FittingResult:
     fitting problem test.
     """
 
-    def __init__(self, options, cost_func, jac, initial_params, params,
+    def __init__(self, options, cost_func, jac, hess, initial_params, params,
                  name=None, chi_sq=None, runtime=None, software=None,
                  minimizer=None, error_flag=None, dataset_id=None):
         """
@@ -27,7 +27,9 @@ class FittingResult:
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         :param jac: The Jacobian definition
-        :type jac: fitbenchmarking.jacobian.base_controller.Jacobian subclass
+        :type jac: fitbenchmarking.jacobian.base_jacobian.Jacobian subclass
+        :param hess: The Hessian definition
+        :type hess: fitbenchmarking.hessian.base_hessian.Hessian subclass
         :param initial_params: The starting parameters for the fit
         :type initial_params: list of float
         :param params: The parameters found by the fit
@@ -52,6 +54,7 @@ class FittingResult:
         self.cost_func = cost_func
         self.problem = self.cost_func.problem
         self.jac = jac
+        self.hess = hess
         self.name = name if name is not None else \
             self.problem.name
 
@@ -111,6 +114,7 @@ class FittingResult:
         self.software_tag = self.software
         self.minimizer_tag = self.minimizer
         self.jacobian_tag = self.jac.__class__.__name__
+        self.hessian_tag = self.hess.__class__.__name__
 
     @property
     def norm_acc(self):
