@@ -397,8 +397,6 @@ class Table:
                                        start=self.group_dir)
             index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
         table.index = index
-        print(table.columns)
-        print(table.index)
 
         # Set the cell colours
         table_style = table.style.apply(
