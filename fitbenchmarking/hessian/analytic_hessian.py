@@ -32,13 +32,9 @@ class Analytic(Hessian):
         """
 
         x = kwargs.get("x", self.problem.data_x)
-        # y = kwargs.get("y", self.problem.data_y)
+        y = kwargs.get("y", self.problem.data_y)
         e = kwargs.get("e", self.problem.data_e)
         J = self.jacobian.eval(params, **kwargs)
-        rx = self.cached_func_values(self.cost_func.cache_rx,
-                                     self.cost_func.eval_r,
-                                     params,
-                                     **kwargs)
         grad2_r = self.problem.hessian(x, params)
         if self.problem.options.cost_func_type == "weighted_nlls":
             # scales the Hessian by the weights
@@ -51,8 +47,21 @@ class Analytic(Hessian):
                     * grad2_r[:, :, i] - \
                     1/2*(self.problem.eval_model(params, x=x)**(-3/2))[i]\
                     * np.matmul(J.T, J)
+        if self.problem.options.cost_func_type == "poisson":
+            for i in range(len(x)):
+                grad2_r[:, :, i] = grad2_r[:, :, i]\
+                    * (1-y/self.problem.eval_model(params, x=x))[i]\
+                    + (y/(self.problem.eval_model(params, x=x)**2))[i]\
+                    * np.matmul(J.T, J)
+            hes = np.sum(grad2_r, 2)
 
-        hes = matmul(grad2_r, rx)
+        if self.problem.options.cost_func_type != "poisson":
+            rx = self.cached_func_values(self.cost_func.cache_rx,
+                                         self.cost_func.eval_r,
+                                         params,
+                                         **kwargs)
+            hes = matmul(grad2_r, rx)
+
         return hes, J
 
     def eval_cost(self, params, **kwargs):
@@ -66,5 +75,8 @@ class Analytic(Hessian):
         :rtype: numpy array
         """
         H, J = self.eval(params, **kwargs)
-        out = H + matmul(np.transpose(J), J)
+        if self.problem.options.cost_func_type != "poisson":
+            out = H + matmul(np.transpose(J), J)
+        else:
+            out = H
         return out

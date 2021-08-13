@@ -10,6 +10,8 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import\
     WeightedNLLSCostFunc
 from fitbenchmarking.cost_func.hellinger_nlls_cost_func import\
     HellingerNLLSCostFunc
+from fitbenchmarking.cost_func.poisson_cost_func import\
+    PoissonCostFunc
 from fitbenchmarking.hessian.analytic_hessian import Analytic
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic\
     as JacobianClass
@@ -108,7 +110,7 @@ class TestHessianClass(TestCase):
 
     def test_analytic_cutest_weighted(self):
         """
-        Test analytic Hessian
+        Test analytic Hessian for weighted_nlls
         """
         self.cost_func = WeightedNLLSCostFunc(self.fitting_problem)
         self.fitting_problem.options.cost_func_type = "weighted_nlls"
@@ -129,7 +131,7 @@ class TestHessianClass(TestCase):
 
     def test_analytic_cutest_hellinger(self):
         """
-        Test analytic Hessian
+        Test analytic Hessian for hellinger_nlls
         """
         self.cost_func = HellingerNLLSCostFunc(self.fitting_problem)
         self.fitting_problem.options.cost_func_type = "hellinger_nlls"
@@ -150,6 +152,31 @@ class TestHessianClass(TestCase):
             self.fitting_problem.data_y)-np.sqrt(f(self.fitting_problem.data_x,
                                                    self.params[0],
                                                    self.params[1])))
+        self.assertTrue(np.isclose(scaled_actual, eval_result).all())
+
+    def test_analytic_cutest_poisson(self):
+        """
+        Test analytic Hessian for poisson cost func
+        """
+        self.cost_func = PoissonCostFunc(self.fitting_problem)
+        self.fitting_problem.options.cost_func_type = "poisson"
+        self.jacobian = JacobianClass(self.cost_func)
+        self.fitting_problem.format = "cutest"
+        hes = Analytic(self.cost_func, self.jacobian)
+        eval_result, _ = hes.eval(params=self.params)
+        jac_actual_p = -np.matmul(self.jac_actual.T,
+                                  (1 - self.fitting_problem.data_y /
+                                   f(self.fitting_problem.data_x,
+                                     *self.params)))
+        scaled_actual = self.actual
+        for i in range(len(self.fitting_problem.data_x)):
+            scaled_actual[:, :, i] = scaled_actual[:, :, i]\
+                * (1-self.fitting_problem.data_y /
+                   f(self.fitting_problem.data_x, *self.params))[i]\
+                + (self.fitting_problem.data_y /
+                   f(self.fitting_problem.data_x, *self.params)**2)[i]\
+                * np.matmul(jac_actual_p.T, jac_actual_p)
+        scaled_actual = np.sum(scaled_actual, 2)
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
 
     def test_analytic_raise_error(self):
