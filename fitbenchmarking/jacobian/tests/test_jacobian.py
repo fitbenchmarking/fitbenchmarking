@@ -163,9 +163,10 @@ class TestJacobianClass(TestCase):
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.cost_func)
         eval_result = jac.eval(params=self.params)
-        scaled_actual = self.actual * \
-            (1 - self.fitting_problem.data_y /
-                f(self.fitting_problem.data_x, *self.params))[:, None]
+        scaled_actual = -np.matmul(self.actual.T,
+                                   (1 - self.fitting_problem.data_y /
+                                    f(self.fitting_problem.data_x,
+                                      *self.params)))
 
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
 
