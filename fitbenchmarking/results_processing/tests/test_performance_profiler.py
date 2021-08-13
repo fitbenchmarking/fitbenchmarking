@@ -11,8 +11,6 @@ import numpy as np
 
 from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.hessian.analytic_hessian import \
-    Analytic as AnalyticHessian
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing import performance_profiler
@@ -84,7 +82,7 @@ class PerformanceProfillerTests(unittest.TestCase):
             cost_func = NLLSCostFunc(problem)
             jac = Scipy(cost_func)
             jac.method = "2-point"
-            hess = AnalyticHessian(cost_func, jac)
+            hess = None
             for j in range(self.num_minimizers):
                 minimizer = 'min_{}'.format(j)
                 prob_results.append(FittingResult(options=options,

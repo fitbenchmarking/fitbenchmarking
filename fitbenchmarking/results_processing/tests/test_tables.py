@@ -13,8 +13,6 @@ import fitbenchmarking
 from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
-from fitbenchmarking.hessian.analytic_hessian import \
-    Analytic as AnalyticHessian
 from fitbenchmarking.jacobian.default_jacobian import Default as DefaultJac
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing.tables import (SORTED_TABLE_NAMES,
@@ -108,7 +106,7 @@ def generate_mock_results():
             p.starting_values = starting_values
             cost_func = WeightedNLLSCostFunc(p)
             jac = DefaultJac(cost_func)
-            hess = AnalyticHessian(cost_func, jac)
+            hess = None
             r = FittingResult(options=options,
                               cost_func=cost_func,
                               jac=jac,

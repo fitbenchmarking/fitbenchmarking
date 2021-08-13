@@ -8,8 +8,6 @@ import numpy as np
 
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
-from fitbenchmarking.hessian.analytic_hessian import \
-    Analytic as AnalyticHessian
 from fitbenchmarking.jacobian.default_jacobian import \
     Default as DefaultJacobian
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy as ScipyJacobian
@@ -48,7 +46,7 @@ def generate_results():
     cost_func = WeightedNLLSCostFunc(problems[0])
     jac = [DefaultJacobian(cost_func), ScipyJacobian(cost_func)]
     jac[1].method = '2-point'
-    hess = [AnalyticHessian(cost_func, j) for j in jac]
+    hess = [None for j in jac]
     results.append([
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],

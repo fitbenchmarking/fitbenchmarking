@@ -114,6 +114,7 @@ def generate_mock_results():
             r = FittingResult(options=options,
                               cost_func=cost_func,
                               jac=jac,
+                              hess=None,
                               initial_params=starting_values,
                               params=params_in[i][j],
                               name=p.name,
