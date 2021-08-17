@@ -53,6 +53,14 @@ class FittingOptionTests(unittest.TestCase):
         actual = self.options.jac_method
         self.assertEqual(expected, actual)
 
+    def test_hes_method_default(self):
+        """
+        Checks hes_method default
+        """
+        expected = ['default']
+        actual = self.options.hes_method
+        self.assertEqual(expected, actual)
+
     def test_cost_func_default(self):
         """
         Checks cost_func default
@@ -187,6 +195,23 @@ class UserFittingOptionTests(unittest.TestCase):
         config_str = \
             "[FITTING]\njac_method: NumPyFD"
         self.shared_invalid('jac_method', config_str)
+
+    def test_minimizer_hes_method_valid(self):
+        """
+        Checks user set hes_method is valid
+        """
+        set_option = ["analytic"]
+        config_str = \
+            "[FITTING]\nhes_method: analytic"
+        self.shared_valid('hes_method', set_option, config_str)
+
+    def test_minimizer_hes_method_invalid(self):
+        """
+        Checks user set hes_method is invalid
+        """
+        config_str = \
+            "[FITTING]\nhes_method: numpy"
+        self.shared_invalid('hes_method', config_str)
 
     def test_minimizer_cost_func_type_valid(self):
         """

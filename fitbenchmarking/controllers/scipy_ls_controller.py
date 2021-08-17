@@ -12,20 +12,21 @@ class ScipyLSController(Controller):
     """
     Controller for the Scipy Least-Squares fitting software.
     """
+    controller_name = 'scipy_ls'
 
     algorithm_check = {
-            'all': ['lm-scipy', 'trf', 'dogbox'],
-            'ls': ['lm-scipy', 'trf', 'dogbox'],
-            'deriv_free': [None],
-            'general': [None],
-            'simplex': [],
-            'trust_region': ['lm-scipy', 'trf', 'dogbox'],
-            'levenberg-marquardt': ['lm-scipy'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': []}
+        'all': ['lm-scipy', 'trf', 'dogbox'],
+        'ls': ['lm-scipy', 'trf', 'dogbox'],
+        'deriv_free': [None],
+        'general': [None],
+        'simplex': [],
+        'trust_region': ['lm-scipy', 'trf', 'dogbox'],
+        'levenberg-marquardt': ['lm-scipy'],
+        'gauss_newton': [],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': []}
 
     def __init__(self, cost_func):
         """
@@ -51,6 +52,14 @@ class ScipyLSController(Controller):
         has_jacobian = True
         jacobian_free_solvers = [None]
         return has_jacobian, jacobian_free_solvers
+
+    def hessian_information(self):
+        """
+        Scipy LS cannot use Hessian information
+        """
+        has_hessian = False
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
 
     def setup(self):
         """

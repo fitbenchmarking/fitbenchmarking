@@ -15,40 +15,42 @@ class GradientFreeController(Controller):
     """
 
     algorithm_check = {
-            'all': ['HillClimbingOptimizer',
-                    'RepulsingHillClimbingOptimizer',
-                    'SimulatedAnnealingOptimizer',
-                    'RandomSearchOptimizer',
-                    'RandomRestartHillClimbingOptimizer',
-                    'RandomAnnealingOptimizer',
-                    'ParallelTemperingOptimizer',
-                    'ParticleSwarmOptimizer',
-                    'EvolutionStrategyOptimizer',
-                    'BayesianOptimizer',
-                    'TreeStructuredParzenEstimators',
-                    'DecisionTreeOptimizer'],
-            'ls': [],
-            'deriv_free': ['HillClimbingOptimizer',
-                           'RepulsingHillClimbingOptimizer',
-                           'SimulatedAnnealingOptimizer',
-                           'RandomSearchOptimizer',
-                           'RandomRestartHillClimbingOptimizer',
-                           'RandomAnnealingOptimizer',
-                           'ParallelTemperingOptimizer',
-                           'ParticleSwarmOptimizer',
-                           'EvolutionStrategyOptimizer',
-                           'BayesianOptimizer',
-                           'TreeStructuredParzenEstimators',
-                           'DecisionTreeOptimizer'],
-            'general': [],
-            'simplex': [],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': []}
+        'all': ['HillClimbingOptimizer',
+                'RepulsingHillClimbingOptimizer',
+                'SimulatedAnnealingOptimizer',
+                'RandomSearchOptimizer',
+                'RandomRestartHillClimbingOptimizer',
+                'RandomAnnealingOptimizer',
+                'ParallelTemperingOptimizer',
+                'ParticleSwarmOptimizer',
+                'EvolutionStrategyOptimizer',
+                'BayesianOptimizer',
+                'TreeStructuredParzenEstimators',
+                'DecisionTreeOptimizer'],
+        'ls': [],
+        'deriv_free': ['HillClimbingOptimizer',
+                       'RepulsingHillClimbingOptimizer',
+                       'SimulatedAnnealingOptimizer',
+                       'RandomSearchOptimizer',
+                       'RandomRestartHillClimbingOptimizer',
+                       'RandomAnnealingOptimizer',
+                       'ParallelTemperingOptimizer',
+                       'ParticleSwarmOptimizer',
+                       'EvolutionStrategyOptimizer',
+                       'BayesianOptimizer',
+                       'TreeStructuredParzenEstimators',
+                       'DecisionTreeOptimizer'],
+        'general': [],
+        'simplex': [],
+        'trust_region': [],
+        'levenberg-marquardt': [],
+        'gauss_newton': [],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': []}
+
+    controller_name = 'gradient_free'
 
     def __init__(self, cost_func):
         """
@@ -73,6 +75,14 @@ class GradientFreeController(Controller):
         has_jacobian = False
         jacobian_free_solvers = []
         return has_jacobian, jacobian_free_solvers
+
+    def hessian_information(self):
+        """
+        Gradient Free Optimizers cannot use Hessian information
+        """
+        has_hessian = False
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
 
     def setup(self):
         """

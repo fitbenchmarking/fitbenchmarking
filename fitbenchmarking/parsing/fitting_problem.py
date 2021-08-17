@@ -101,6 +101,9 @@ class FittingProblem:
         #: on function calls
         self.multivariate = False
 
+        #: Callable function for the Hessian
+        self.hessian = None
+
     def eval_model(self, params, **kwargs):
         """
         Function evaluation method

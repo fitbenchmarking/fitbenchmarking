@@ -1,13 +1,15 @@
 """
 Implements the base class for the tables.
 """
-from abc import ABCMeta, abstractmethod
 import os
+import re
+from abc import ABCMeta, abstractmethod
+
 import docutils.core
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 from fitbenchmarking.utils.misc import get_js
 
@@ -17,18 +19,22 @@ FORMAT_DESCRIPTION = \
      'both': 'Absolute and relative values are displayed in '
              'the table in the format ``abs (rel)``'}
 
-# The use of Pandas maps means that certain functions do not require use
-# of self
-# pylint: disable=no-self-use
-
 
 class Table:
     """
     Base class for the FitBenchmarking HTML and text output tables.
+
+    When inheriting from this, it may be useful to override the following
+    functions as required:
+
+    - get_value
+    - display_str
+    - get_error_str
+    - get_link_str
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, results, best_results, options, group_dir,
+    def __init__(self, results, options, group_dir,
                  pp_locations, table_name):
         """
         Initialise the class.
@@ -36,9 +42,6 @@ class Table:
         :param results: results nested array of objects
         :type results: list of list of
                        fitbenchmarking.utils.fitbm_result.FittingResult
-        :param best_results: best result for each problem split by cost func
-        :type best_results:
-            list[dict[str:fitbenchmarking.utils.fitbm_result.FittingResult]]
         :param options: Options used in fitting
         :type options: utils.options.Options
         :param group_dir: path to the directory where group results should be
@@ -50,9 +53,11 @@ class Table:
         :param table_name: Name of the table
         :type table_name: str
         """
-        self.results = results
+        # Flatten to reduce the necessity on having problems as rows.
+        self.results = [result
+                        for results_per_test in results
+                        for result in results_per_test]
         self.options = options
-        self.best_results = best_results
         self.group_dir = group_dir
         self.pp_locations = pp_locations
         self.table_name = table_name
@@ -61,94 +66,29 @@ class Table:
         self.output_string_type = {"abs": '{:.4g}',
                                    "rel": '{:.4g}',
                                    "both": '{0:.4g} ({1:.4g})'}
+        self.colour_template = 'background-color: {0}'
 
         self.has_pp = False
         self.pp_location = ''
         self._table_title = None
         self._file_path = None
 
+        self.cbar_title = "No colour bar description given"
+        self.cbar_left_label = "Best (1)"
+        self.cbar_right_label = "Worst (>{})".format(self.options.colour_ulim)
+
+        # Set up results as needed
+        self.sorted_results = {}
+        self.best_results = []
         self.create_results_dict()
-
-    def create_results_dict(self):
-        """
-        Generates a dictionary used to create HTML and txt tables.
-        This is stored in self.sorted_results
-        """
-        sort_order = (['problem'],
-                      ['costfun', 'minimizer', 'jacobian'])
-
-        sets = {
-            'problem': set(),
-            'minimizer': set(),
-            'jacobian': set(),
-            'costfun': set(),
-        }
-
-        for r in self.results:
-            for k, s in sets.items():
-                s.add(getattr(r, k))
-
-        lookups = {k: {i: v
-                       for i, v in enumerate(sorted(s))}
-                   for k, s in sets.items()}
-
-        columns = ['']
-        for sort_pos in sort_order[1]:
-            columns = [f'{stub}_{suff}'
-                       for stub in columns
-                       for suff in lookups[sort_pos].values()]
-        cols_dict = {k.strip(':'): i
-                     for i, k in enumerate(columns)}
-
-        rows = ['']
-        for sort_pos in sort_order[0]:
-            rows = [f'{stub}:{suff}'
-                    for stub in rows
-                    for suff in lookups[sort_pos].values()
-                    ]
-
-        sorted_results = {r.strip(':'): [None for _ in columns]
-                          for r in rows}
-
-        for r in self.results:
-            row = ''
-            col = ''
-            for sort_pos in reversed(sort_order[0]):
-                row += f':{getattr(r, sort_pos)}'
-            row = row.strip(':')
-            for sort_pos in reversed(sort_order[1]):
-                col += f':{getattr(r, sort_pos)}'
-            col = cols_dict[col.strip(':')]
-
-            sorted_results[row][col] = r
-
-        self.sorted_results = sorted_results
-
-    def get_str_dict(self, html=False):
-        """
-        Create a dictionary of with the table values as strings for display.
-
-        :return: The dictionary of values for the table
-        :rtype: dict[list[str]]
-        """
-        return {k: [self.get_str_result(v, html) for v in values]
-                for k, values in self.sorted_results.items()}
-
-    def get_str_result(self, result, html=False):
-        if html:
-            val = self.get_value(result)
-            val_str = self.display_str(val)
-            val_str += self.get_error_str(result, error_template="<sup>{}</sup>")
-            val_str = f'<a href="{self.get_link_str(result)}" style="background-colour:{self.get_colour_str(val)}">{val_str}</a>'
-        else:
-            val_str = self.display_str(self.get_value(result))
-            val_str += self.get_error_str(result, error_template='[{}]')
-        return val_str
 
     @abstractmethod
     def get_value(self, result):
         """
         Gets the main value to be reported in the tables for a given result
+
+        If more than one value is returned please note that the first value
+        will be used in the default colour handling.
 
         :param result: The result to generate the values for.
         :type result: FittingResult
@@ -160,21 +100,21 @@ class Table:
 
     def display_str(self, value):
         """
-        Converts the a results value generated by
-        :meth:`~fitbenchmarking.results_processing.base_table.Table.get_values()`
+        Converts a value generated by
+        :meth:`~fitbenchmarking.results_processing.base_table.Table.get_value()`
         into a string respresentation to be used in the tables.
         Base class implementation takes
-        the absolute and relative values and uses ``self.output_string_type``
-        as a template for the string format. This can be overwritten to
+        the relative and absolute values and uses ``self.output_string_type``
+        as a template for the string format. This can be overridden to
         adequately display the results.
 
-        :param value: tuple containing absolute and relative values
+        :param value: Relative and absolute values
         :type value: tuple
 
         :return: string representation of the value for display in the table.
         :rtype: str
         """
-        abs_value, rel_value = value
+        rel_value, abs_value = value
         comp_mode = self.options.comparison_mode
         result_template = self.output_string_type[self.options.comparison_mode]
         if comp_mode == "abs":
@@ -184,135 +124,29 @@ class Table:
         # comp_mode == "both"
         return result_template.format(abs_value, rel_value)
 
-    def get_colour_str(self, value):
-        """
-        Get the colour as a string for the given value in the table.
-        The base class implementation, for example,
-        uses the relative results and
-        ``colour_map``, ``colour_ulim`` and ``cmap_range`` within
-        :class:`~fitbenchmarking.utils.options.Options`.
-
-        :param result: tuple containing absolute and relative values
-        :type result: tuple[float]
-        :return: The colour to use for the cell
-        :rtype: str
-        """
-        cmap_name = self.options.colour_map
-        cmap = plt.get_cmap(cmap_name)
-        cmap_ulim = self.options.colour_ulim
-        cmap_range = self.options.cmap_range
-        log_ulim = np.log10(cmap_ulim)  # colour map used with log spacing
-        log_llim = np.log10(???)
-        _, rel_value = value
-        colour = {}
-        for key, value in rel_value.items():
-            if not all(isinstance(elem, list) for elem in value):
-                hex_strs = self._vals_to_colour(value, cmap,
-                                                cmap_range, log_ulim)
-                colour[key] = hex_strs
-            else:
-                colour[key] = []
-                for v in value:
-                    hex_strs = self._vals_to_colour(v, cmap,
-                                                    cmap_range, log_ulim)
-                    colour[key].append(hex_strs)
-        return colour
-
-    @abstractmethod
-    def get_cbar(self, fig_dir):
-        """
-        Plots colourbar figure to figure directory and returns the
-        path to the figure.
-
-        :param fig_dir: figure directory
-        :type fig_dir: str
-
-        :return fig_path: path to colourbar figure
-        :rtype fig_path: str
-        """
-        raise NotImplementedError()
-
-    def create_pandas_data_frame(self, html=False):
-        """
-        Creates a pandas data frame of results
-
-        :return: pandas data frame with from results
-        :rtype: Pandas DataFrame
-        """
-        str_results = self.get_str_dict(html)
-        table = pd.DataFrame.from_dict(str_results, orient='index')
-        minimizers_list = [(s, m) for s in self.options.software
-                           for m in self.options.minimizers[s]]
-        columns = pd.MultiIndex.from_tuples(minimizers_list)
-        table.columns = columns
-        return table
-
-    def to_html(self):
-        """
-        Takes Pandas data frame and converts it into the HTML table output
-
-        :param table: pandas data frame with from results
-        :type table: Pandas DataFrame
-        :param colour: dictionary containing error codes from the minimizers
-        :type colour: dict
-        :param links: dictionary containing links to the support pages
-        :type links: dict
-        :param error: dictionary containing error codes from the minimizers
-        :type error: dict
-
-        :return: HTLM table output
-        :rtype: str
-        """
-        table = self.create_pandas_data_frame(html=True)
-        link_template = '<a href="https://fitbenchmarking.readthedocs.io/'\
-                        'en/latest/users/options/minimizer_option.html#'\
-                        '{0}-{0}" target="_blank">{0}</a>'
-        minimizer_template = '<span title="{0}">{1}</span>'
-
-        minimizers_list = [(link_template.format(s.replace("_", "-")),
-                           minimizer_template.format(
-                               self.options.minimizer_alg_type[m], m))
-                           for s in self.options.software
-                           for m in self.options.minimizers[s]]
-        columns = pd.MultiIndex.from_tuples(minimizers_list)
-        table.columns = columns
-
-        index = []
-        for b, i in zip(self.best_results, table.index):
-            rel_path = os.path.relpath(
-                path=b.values()[0].problem_summary_page_link,
-                start=self.group_dir)
-            index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
-        table.index = index
-        table_style = table.style.apply(
-            lambda x: self.colour_highlight(x, colour), axis=1)
-
-        return table_style.render()
-    
-    def to_txt(self):
-        table = self.create_pandas_data_frame(html=False)
-        return table.to_string()
-
     def get_link_str(self, result):
         """
-        Get the link as a string for the result
+        Get the link as a string for the result.
+        This can be overridden if tables require different links.
 
         :param result: The result to get the link for
         :type result: FittingResult
 
-        :return: The link to go to when the cell is selectedddd
+        :return: The link to go to when the cell is selected
         :rtype: string
         """
-        return result.support_page_link
+        return os.path.relpath(path=result.support_page_link,
+                               start=self.group_dir)
 
     def get_error_str(self, result, error_template='[{}]'):
         """
         Get the error string for a result based on error_template
+        This can be overridden if tables require different error formatting.
 
         :param result: The result to get the error string for
         :type result: FittingResult
 
-        :return: A string representation of the error for the html tables
+        :return: A string representation of the error
         :rtype: str
         """
         error_code = result.error_flag
@@ -321,27 +155,269 @@ class Table:
 
         return error_template.format(error_code)
 
-    def colour_highlight(self, value, colour):
+    def create_results_dict(self):
         """
-        Takes the HTML colour values from
-        :meth:`~fitbenchmarking.results_processing.base_table.Table.get_colour`
-        and maps it over the HTML table using the Pandas style mapper.
-
-        :param value: Row data from the pandas array
-        :type value: pandas.core.series.Series
-        :param colour: dictionary containing error codes from the minimizers
-        :type colour: dict
-
-        :return: list of HTML colours
-        :rtype: list
+        Generates a dictionary of results lists sorted into the correct order
+        with rows and columns as the key and list elements respectively.
+        This is used to create HTML and txt tables.
+        This is stored in self.sorted_results
         """
-        color_template = 'background-color: {0}'
-        name = value.name.split('"')[2].replace("</a>", "")[1:]
-        colour_style = colour[name]
-        output_colour = []
-        for c in colour_style:
-            output_colour.append(color_template.format(c))
-        return output_colour
+
+        # Might be worth breaking out into an option in future.
+        # sort_order[0] is the order of sorting for rows
+        # sort_order[1] is the order of sorting for columns
+        sort_order = (['problem'],
+                      ['software', 'minimizer', 'jacobian', 'hessian'])
+
+        # Generate the columns and row tags and sort
+        rows = set()
+        columns = set()
+        for r in self.results:
+            # Error 4 means none of the jacobians ran so can't infer the
+            # jacobian names from this.
+            if r.error_flag == 4:
+                continue
+            row = ''
+            col = ''
+            for sort_pos in sort_order[0]:
+                row += f':{getattr(r, sort_pos + "_tag")}'
+            rows.add(row.strip(':'))
+            for sort_pos in sort_order[1]:
+                col += f':{getattr(r, sort_pos + "_tag")}'
+            columns.add(col.strip(':'))
+
+        rows = sorted(rows, key=str.lower)
+        columns = {col: i for i, col in enumerate(
+            sorted(columns, key=str.lower))}
+
+        # Build the sorted results dictionary
+        sorted_results = {r.strip(':'): [None for _ in columns]
+                          for r in rows}
+
+        # Reorder best results
+        best_results = {r.strip(':'): None
+                        for r in rows}
+
+        for r in self.results:
+            row = ''
+            col = ''
+            for sort_pos in sort_order[0]:
+                tag = getattr(r, sort_pos + "_tag")
+                if sort_pos in ['jacobian', 'hessian'] and r.error_flag == 4:
+                    tag = '.+'
+                row += f':{tag}'
+            row = row.strip(':')
+            for sort_pos in sort_order[1]:
+                tag = getattr(r, sort_pos + "_tag")
+                if sort_pos in ['jacobian', 'hessian'] and r.error_flag == 4:
+                    tag = '.+'
+                col += f':{tag}'
+            col = col.strip(':')
+
+            # Fix up cells where error flag = 4
+            if r.error_flag == 4:
+                matching_rows = [match
+                                 for match in rows
+                                 if re.fullmatch(row, match)]
+                matching_cols = [match
+                                 for match in columns.keys()
+                                 if re.fullmatch(col, match)]
+                for row in matching_rows:
+                    for col in matching_cols:
+                        col = columns[col]
+                        sorted_results[row][col] = r
+            else:
+                col = columns[col]
+                sorted_results[row][col] = r
+                if r.is_best_fit:
+                    best_results[row] = r
+
+        self.sorted_results = sorted_results
+        self.best_results = list(best_results.values())
+
+    def get_str_dict(self, html=False):
+        """
+        Create a dictionary with the table values as strings for display.
+
+        :return: The dictionary of strings for the table
+        :rtype: dict[list[str]]
+        """
+        str_dict = {}
+        for k, results in self.sorted_results.items():
+            str_dict[k] = [self.get_str_result(r, html)
+                           for r in results]
+        return str_dict
+
+    def get_colour_df(self, like_df=None):
+        """
+        Generate a dataframe of colours to add to the html rendering.
+
+        If like_df is passed this will use the column and row indexes of that
+        dataframe.
+
+        :param like_df: The dataframe to copy headings from. Defaults to None.
+        :type like_df: pandas.DataFrame
+
+        :return: A dataframe with colourings as strings
+        :rtype: pandas.DataFrame
+        """
+        col_dict = {}
+        for k, results in self.sorted_results.items():
+            col_dict[k] = self.get_colours_for_row(results)
+
+        table = pd.DataFrame.from_dict(col_dict, orient='index')
+
+        if like_df is None:
+            row = next(iter(self.sorted_results.values()))
+            minimizers_list = [(r.software, r.minimizer) for r in row]
+            table.columns = pd.MultiIndex.from_tuples(minimizers_list)
+        else:
+            table.columns = like_df.columns
+            table.index = like_df.index
+        return table
+
+    def get_str_result(self, result, html=False):
+        """
+        Given a single result, generate the string to display in this table.
+        The html flag can be used to switch between a plain text and html
+        format.
+
+        This is intended to be easily extensible by overriding the following
+        functions:
+
+        - get_value
+        - display_str
+        - get_error_str
+        - get_link_str
+
+        If you find yourself overriding this, please consider if changes could
+        be made to allow future tables to benefit.
+
+        :param result: The result to generate a string for
+        :type result: fitbenchmarking.utils.ftibm_result.FittingResult
+        :param html: Flag to control whether to generate a html string or plain
+                     text. Defaults to False.
+        :type html: bool
+
+        :return: The string representation.
+        :rtype: str
+        """
+        if html:
+            val = self.get_value(result)
+            val_str = self.display_str(val)
+            val_str += self.get_error_str(result,
+                                          error_template="<sup>{}</sup>")
+            val_str = f'<a href="{self.get_link_str(result)}">{val_str}</a>'
+        else:
+            val_str = self.display_str(self.get_value(result))
+            val_str += self.get_error_str(result, error_template='[{}]')
+        return val_str
+
+    def get_colours_for_row(self, results):
+        """
+        Get the colours as strings for the given results in the table.
+        The base class implementation, for example,
+        uses the first value from self.get_value and
+        ``colour_map``, ``colour_ulim`` and ``cmap_range`` within
+        :class:`~fitbenchmarking.utils.options.Options`.
+
+        :param result: Results to get the colours for.
+        :type result: list[fitbenchmarking.utils.fitbm_result.FittingResult]
+
+        :return: The colour to use for each cell in the list
+        :rtype: list[str]
+        """
+        values = [self.get_value(r)[0] for r in results]
+
+        cmap_name = self.options.colour_map
+        cmap = plt.get_cmap(cmap_name)
+        cmap_ulim = self.options.colour_ulim
+        cmap_range = self.options.cmap_range
+        log_ulim = np.log10(cmap_ulim)  # colour map used with log spacing
+
+        col_strs = ["background-colour: #ffffff" for _ in results]
+
+        colours = self.vals_to_colour(values, cmap, cmap_range, log_ulim)
+        for i, c in enumerate(colours):
+            try:
+                col_strs[i] = self.colour_template.format(c)
+            except IndexError:
+                col_strs[i] = self.colour_template.format(*c)
+
+        return col_strs
+
+    def create_pandas_data_frame(self, html=False):
+        """
+        Creates a pandas data frame of results
+
+        :param html: Whether to make the dataframe for html or plain text
+        :type html: bool. defaults to False
+
+        :return: DataFrame with string representations of results
+        :rtype: pandas.DataFrame
+        """
+        str_results = self.get_str_dict(html)
+        row = next(iter(self.sorted_results.values()))
+        minimizers_list = [(r.software, r.minimizer) for r in row]
+        columns = pd.MultiIndex.from_tuples(minimizers_list)
+        table = pd.DataFrame.from_dict(str_results,
+                                       orient='index',
+                                       columns=columns)
+        return table
+
+    def to_html(self):
+        """
+        Generate a html version of the table.
+
+        :return: HTML table output
+        :rtype: str
+        """
+        table = self.create_pandas_data_frame(html=True)
+
+        # Format the table headers
+        link_template = '<a href="https://fitbenchmarking.readthedocs.io/'\
+                        'en/latest/users/options/minimizer_option.html#'\
+                        '{0}-{0}" target="_blank">{0}</a>'
+        minimizer_template = '<span title="{0}">{1}</span>'
+
+        row = next(iter(self.sorted_results.values()))
+        minimizers_list = [
+            (link_template.format(result.software.replace('_', '-')),
+             minimizer_template.format(
+                 self.options.minimizer_alg_type[result.minimizer],
+                 result.minimizer))
+            for result in row]
+        columns = pd.MultiIndex.from_tuples(minimizers_list)
+        table.columns = columns
+
+        # Format the row labels
+        index = []
+        for b, i in zip(self.best_results, table.index):
+            rel_path = os.path.relpath(
+                path=b.values()[0].problem_summary_page_link,
+                start=self.group_dir)
+            index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
+        table.index = index
+
+        # Set the cell colours
+        table_style = table.style.apply(
+            lambda df: self.get_colour_df(like_df=df), axis=None)
+
+        return table_style.render()
+    
+    def to_txt(self):
+        table = self.create_pandas_data_frame(html=False)
+        return table.to_string()
+
+    def to_txt(self):
+        """
+        Generate a plain text version of the table
+
+        :return: Plain text table output
+        :rtype: str
+        """
+        table = self.create_pandas_data_frame(html=False)
+        return table.to_string()
 
     def get_description(self, html_description):
         """
@@ -416,7 +492,7 @@ class Table:
         self._file_path = value
 
     @staticmethod
-    def _vals_to_colour(vals, cmap, cmap_range, log_ulim):
+    def vals_to_colour(vals, cmap, cmap_range, log_ulim):
         """
         Converts an array of values to a list of hexadecimal colour
         strings using logarithmic sampling from a matplotlib colourmap
@@ -424,13 +500,10 @@ class Table:
 
         :param vals: values in the range [0, 1] to convert to colour strings
         :type vals: list[float]
-
         :param cmap: matplotlib colourmap
         :type cmap: matplotlib colourmap object
-
         :param cmap_range: values in range [0, 1] for colourmap cropping
         :type cmap_range: list[float], 2 elements
-
         :param log_ulim: log10 of worst shading cutoff value
         :type log_ulim: float
 
@@ -438,8 +511,9 @@ class Table:
         :rtype: list[str]
         """
         log_vals = np.log10(vals)
-        norm_vals = (log_vals - min(log_vals)) /\
-            (log_ulim - min(log_vals))
+        log_llim = min(log_vals)
+        norm_vals = (log_vals - log_llim) /\
+            (log_ulim - log_llim)
         norm_vals[norm_vals > 1] = 1  # applying upper cutoff
         # trimming colour map according to default/user input
         norm_vals = cmap_range[0] + \
@@ -449,44 +523,38 @@ class Table:
 
         return hex_strs
 
-    @staticmethod
-    def _save_colourbar(fig_path, cmap_name, cmap_range, title, left_label,
-                        right_label, n_divs=100, sz_in=(3, 0.8)):
+    def save_colourbar(self, fig_dir, n_divs=100, sz_in=(3, 0.8)):
         """
         Generates a png of a labelled colourbar using matplotlib.
 
-        :param fig_path: path to figure save location
-        :type fig_path: str
-        :param cmap_name: matplotlib colourmap name
-        :type cmap: str
-        :param cmap_range: range used to crop colourmap
-        :type cmap_range: list[float] - 2 elements
-        :param title: table-specifc text above colourbar
-        :type title: str
-        :param left_label: table-specifc text to left of colourbar
-        :type left_label: str
-        :param right_label: table-specific text to right of colourbar
-        :type right_label: str
+        :param fig_dir: path to figures directory
+        :type fig_dir: str
         :param n_divs: number of divisions of shading in colourbar
         :type n_divs: int
         :param sz_in: dimensions of png in inches [width, height]
         :type sz_in: list[float] - 2 elements
         """
+        fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self.name))
+
         figh = 0.77
         fig, ax = plt.subplots(nrows=1, figsize=(6.4, figh))
         fig.subplots_adjust(top=1 - 0.35 / figh, bottom=0.15 / figh,
                             left=0.3, right=0.7, hspace=1)
+
+        cmap_range = self.options.cmap_range
         gradient = np.linspace(cmap_range[0], cmap_range[1], n_divs)
         gradient = np.vstack((gradient, gradient))
+
         ax.imshow(gradient, aspect='auto',
-                  cmap=plt.get_cmap(cmap_name), vmin=0, vmax=1)
-        ax.text(-0.02, 0.5, left_label,
+                  cmap=plt.get_cmap(self.options.colour_map), vmin=0, vmax=1)
+
+        ax.text(-0.02, 0.5, self.cbar_left_label,
                 va='center', ha='right', fontsize=6,
                 transform=ax.transAxes)
-        ax.text(1.02, 0.5, right_label,
+        ax.text(1.02, 0.5, self.cbar_right_label,
                 va='center', ha='left', fontsize=6,
                 transform=ax.transAxes)
-        ax.set_title(title, fontsize=6)
+        ax.set_title(self.cbar_title, fontsize=6)
         ax.set_axis_off()
         fig.set_size_inches(sz_in[0], sz_in[1])
 

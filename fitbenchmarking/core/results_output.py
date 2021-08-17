@@ -58,6 +58,7 @@ def save_results(options, results, group_name, failed_problems,
 
     if options.make_plots:
         create_plots(options, results, best_results, fig_dir)
+
     support_page.create(options=options,
                         results_per_test=results,
                         group_name=group_name,
@@ -72,7 +73,6 @@ def save_results(options, results, group_name, failed_problems,
     table_names, table_descriptions = \
         tables.create_results_tables(options,
                                      results,
-                                     best_results,
                                      group_name,
                                      group_dir,
                                      fig_dir,
@@ -112,8 +112,8 @@ def create_directories(options, group_name):
 
 def preproccess_data(results_per_test):
     """
-    Preprocess data into the right format for printing and find the best result
-    for each problem sorted by cost_function
+    Find the best result for each problem set and set attributes on results for
+    relative values.
 
     :param results_per_test: results nested array of objects
     :type results_per_test: list of list of
@@ -127,17 +127,17 @@ def preproccess_data(results_per_test):
         best_results = {}
         fastest_results = {}
         for r in results:
-            cf_name = r.cost_func.__class__.__name__
-            if best_results.get(cf_name, r.chi_sq) <= r.chi_sq:
+            cf_name = r.costfun_tag
+            if best_results.get(cf_name, r.chi_sq) >= r.chi_sq:
                 best_results[cf_name] = r
-            if fastest_results.get(cf_name, r.runtime) <= r.runtime:
+            if fastest_results.get(cf_name, r.runtime) >= r.runtime:
                 fastest_results[cf_name] = r
 
         for r in best_results.values():
             r.is_best_fit = True
 
         for r in results:
-            cf_name = r.cost_func.__class__.__name__
+            cf_name = r.costfun_tag
             r.min_chi_sq = best_results[cf_name]
             r.min_runtime = fastest_results[cf_name]
         output.append(best_results)

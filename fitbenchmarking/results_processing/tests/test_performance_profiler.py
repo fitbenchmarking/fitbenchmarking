@@ -3,14 +3,14 @@ Tests for the performance profiler file.
 """
 from __future__ import absolute_import, division, print_function
 
+import os
 import unittest
 from collections import OrderedDict
 
-import os
 import numpy as np
 
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.core.results_output import preproccess_data
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing import performance_profiler
@@ -82,11 +82,13 @@ class PerformanceProfillerTests(unittest.TestCase):
             cost_func = NLLSCostFunc(problem)
             jac = Scipy(cost_func)
             jac.method = "2-point"
+            hess = None
             for j in range(self.num_minimizers):
                 minimizer = 'min_{}'.format(j)
                 prob_results.append(FittingResult(options=options,
                                                   cost_func=cost_func,
                                                   jac=jac,
+                                                  hess=hess,
                                                   initial_params=[1, 2, 3],
                                                   params=[1, 2, 3],
                                                   chi_sq=acc_results[j],

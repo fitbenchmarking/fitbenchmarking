@@ -30,7 +30,7 @@ In order to add a new controller, you will need to:
           :members: py_to_mat, clear_cached_values
           :noindex:
 
-   The new controller should implement five functions, as well as initializing the dictionary ``algorithm_check``:
+   The new controller should implement six functions, as well as initializing the dictionary ``algorithm_check``:
 
   - .. autoattribute:: fitbenchmarking.controllers.base_controller.Controller.algorithm_check
                :noindex:  
@@ -39,6 +39,8 @@ In order to add a new controller, you will need to:
                      :noindex:
 
   -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.jacobian_information()
+              :noindex:
+  -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.hessian_information()
               :noindex:
   -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.setup()
               :noindex:

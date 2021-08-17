@@ -15,22 +15,23 @@ class ScipyGOController(Controller):
     """
     Controller for the Scipy fitting software.
     """
+    controller_name = 'scipy_go'
 
     algorithm_check = {
-            'all': ['differential_evolution', 'shgo', 'dual_annealing'],
-            'ls': [None],
-            'deriv_free': ['differential_evolution'],
-            'general': ['shgo', 'dual_annealing'],
-            'simplex': [],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': ['differential_evolution', 'shgo',
-                                    'dual_annealing']
-        }
+        'all': ['differential_evolution', 'shgo', 'dual_annealing'],
+        'ls': [None],
+        'deriv_free': ['differential_evolution'],
+        'general': ['shgo', 'dual_annealing'],
+        'simplex': [],
+        'trust_region': [],
+        'levenberg-marquardt': [],
+        'gauss_newton': [],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': ['differential_evolution', 'shgo',
+                                'dual_annealing']
+    }
 
     def __init__(self, cost_func):
         """
@@ -55,6 +56,14 @@ class ScipyGOController(Controller):
         has_jacobian = True
         jacobian_free_solvers = ['differential_evolution']
         return has_jacobian, jacobian_free_solvers
+
+    def hessian_information(self):
+        """
+        Scipy GO cannot use Hessian information
+        """
+        has_hessian = False
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
 
     def setup(self):
         """

@@ -37,6 +37,7 @@ class CreateTests(unittest.TestCase):
         self.results = [[FittingResult(options=self.options,
                                        cost_func=c,
                                        jac=Scipy(c),
+                                       hess=None,
                                        initial_params=[],
                                        params=[],
                                        minimizer=m)
@@ -84,6 +85,7 @@ class CreateProbGroupTests(unittest.TestCase):
         self.results = [FittingResult(options=self.options,
                                       cost_func=cost_func,
                                       jac=jac,
+                                      hess=None,
                                       initial_params=[],
                                       params=[],
                                       minimizer=m)
@@ -137,6 +139,7 @@ class GetFigurePathsTests(unittest.TestCase):
         self.result = FittingResult(options=self.options,
                                     cost_func=cost_func,
                                     jac=jac,
+                                    hess=None,
                                     initial_params=[],
                                     params=[],
                                     minimizer='test')

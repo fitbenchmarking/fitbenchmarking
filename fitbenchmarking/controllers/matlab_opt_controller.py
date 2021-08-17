@@ -17,18 +17,20 @@ class MatlabOptController(MatlabMixin, Controller):
     """
 
     algorithm_check = {
-            'all': ['levenberg-marquardt', 'trust-region-reflective'],
-            'ls': ['levenberg-marquardt', 'trust-region-reflective'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['levenberg-marquardt', 'trust-region-reflective'],
-            'levenberg-marquardt': ['levenberg-marquardt'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': []}
+        'all': ['levenberg-marquardt', 'trust-region-reflective'],
+        'ls': ['levenberg-marquardt', 'trust-region-reflective'],
+        'deriv_free': [],
+        'general': [],
+        'simplex': [],
+        'trust_region': ['levenberg-marquardt', 'trust-region-reflective'],
+        'levenberg-marquardt': ['levenberg-marquardt'],
+        'gauss_newton': [],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': []}
+
+    controller_name = 'matlab_opt'
 
     def __init__(self, cost_func):
         """
@@ -53,6 +55,14 @@ class MatlabOptController(MatlabMixin, Controller):
         has_jacobian = True
         jacobian_free_solvers = []
         return has_jacobian, jacobian_free_solvers
+
+    def hessian_information(self):
+        """
+        Matlab Optimization Toolbox cannot use Hessian information
+        """
+        has_hessian = False
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
 
     def setup(self):
         """

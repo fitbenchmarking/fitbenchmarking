@@ -17,18 +17,20 @@ class MatlabStatsController(MatlabMixin, Controller):
     """
 
     algorithm_check = {
-            'all': ['Levenberg-Marquardt'],
-            'ls': ['Levenberg-Marquardt'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['Levenberg-Marquardt'],
-            'levenberg-marquardt': ['Levenberg-Marquardt'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': []}
+        'all': ['Levenberg-Marquardt'],
+        'ls': ['Levenberg-Marquardt'],
+        'deriv_free': [],
+        'general': [],
+        'simplex': [],
+        'trust_region': ['Levenberg-Marquardt'],
+        'levenberg-marquardt': ['Levenberg-Marquardt'],
+        'gauss_newton': [],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': []}
+
+    controller_name = 'matlab_stats'
 
     def __init__(self, cost_func):
         """
@@ -51,6 +53,14 @@ class MatlabStatsController(MatlabMixin, Controller):
         has_jacobian = False
         jacobian_free_solvers = ['Levenberg-Marquardt']
         return has_jacobian, jacobian_free_solvers
+
+    def hessian_information(self):
+        """
+        Matlab Statistics Toolbox cannot use Hessian information
+        """
+        has_hessian = False
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
 
     def setup(self):
         """

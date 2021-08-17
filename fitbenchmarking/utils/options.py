@@ -63,6 +63,7 @@ class Options:
                       'matlab_stats', 'minuit', 'ralfit', 'scipy',
                       'scipy_ls', 'scipy_go'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
+         'hes_method': ['default', 'analytic'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
     VALID_JACOBIAN = \
@@ -120,12 +121,13 @@ class Options:
          'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
-         'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing']}
+         'scipy_go': ['differential_evolution', 'dual_annealing']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': ['all'],
          'software': ['scipy', 'scipy_ls'],
          'jac_method': ['scipy'],
+         'hes_method': ['default'],
          'cost_func_type': 'weighted_nlls'}
     DEFAULT_JACOBIAN = \
         {'analytic': ['cutest'],
@@ -208,6 +210,7 @@ class Options:
             fitting.getlist, 'algorithm_type')
         self.software = self.read_value(fitting.getlist, 'software')
         self.jac_method = self.read_value(fitting.getlist, 'jac_method')
+        self.hes_method = self.read_value(fitting.getlist, 'hes_method')
         self.cost_func_type = self.read_value(fitting.getstr, 'cost_func_type')
 
         jacobian = config['JACOBIAN']

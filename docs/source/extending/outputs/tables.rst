@@ -15,20 +15,21 @@ In order to add a new table, you will need to:
    :class:`~fitbenchmarking.results_processing.base_table.Table`.
    The main functions to change are:
 
-   - .. automethod:: fitbenchmarking.results_processing.base_table.Table.get_values
+   - .. automethod:: fitbenchmarking.results_processing.base_table.Table.get_value
         :noindex:
 
    - .. automethod:: fitbenchmarking.results_processing.base_table.Table.display_str
         :noindex:
 
-   Additional functions to be changed are:
-
-   - .. automethod:: fitbenchmarking.results_processing.base_table.Table.get_colour
+   Additional functions that may need to be overridden are:
+   
+   - .. automethod:: fitbenchmarking.results_processing.base_table.Table.get_error_str
         :noindex:
 
+   - .. automethod:: fitbenchmarking.results_processing.base_table.Table.get_link_str
+        :noindex:
 
-         
-   - .. automethod:: fitbenchmarking.results_processing.base_table.Table.colour_highlight
+   - .. automethod:: fitbenchmarking.results_processing.base_table.Table.vals_to_colour
         :noindex:
 
 3. Extend the ``table_type`` option in ``PLOTTING`` following the instructions in

@@ -41,6 +41,8 @@ class MatlabCurveController(MatlabMixin, Controller):
             'conjugate_gradient': [],
             'steepest_descent': []}
 
+    controller_name = 'matlab_curve'
+
     def jacobian_information(self):
         """
         MATLAB cannot use Jacobian information
@@ -48,6 +50,14 @@ class MatlabCurveController(MatlabMixin, Controller):
         has_jacobian = False
         jacobian_free_solvers = []
         return has_jacobian, jacobian_free_solvers
+
+    def hessian_information(self):
+        """
+        MATLAB cannot use Hessian information
+        """
+        has_hessian = False
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
 
     def setup(self):
         """

@@ -4,6 +4,7 @@ Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_minimizers
 import inspect
 import os
 import unittest
+from unittest.mock import patch
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
@@ -59,6 +60,12 @@ class DummyController(Controller):
         """
         pass
 
+    def hessian_information(self):
+        """
+        Mock controller jacobian_information function
+        """
+        pass
+
     def cleanup(self):
         """
         Mock controller cleanup function
@@ -106,6 +113,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.result_args = {'options': self.options,
                             'cost_func': self.cost_func,
                             'jac': "jac",
+                            'hess': 'hess',
                             'initial_params': self.problem.starting_values[0],
                             'params': [],
                             'chi_sq': 1}
@@ -131,8 +139,8 @@ class LoopOverMinimizersTests(unittest.TestCase):
         assert minimizer_failed == self.minimizers
         assert new_minimizer_list == []
 
-    @unittest.mock.patch('{}.loop_over_jacobians'.format(FITTING_DIR))
-    def test_run_minimzers_selected(self, loop_over_jacobians):
+    @patch('{}.loop_over_jacobians'.format(FITTING_DIR))
+    def test_run_minimzers_selected(self, loop_over_hessians):
         """
         Tests that some minimizers are selected
         """
@@ -140,7 +148,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.results = [[self.result_args]]
         self.chi_sq = 1
         self.minimizer_list = [["general"]]
-        loop_over_jacobians.side_effect = self.mock_func_call
+        loop_over_hessians.side_effect = self.mock_func_call
 
         results_problem, minimizer_failed, new_minimizer_list = \
             loop_over_minimizers(self.controller, self.minimizers,
@@ -150,15 +158,15 @@ class LoopOverMinimizersTests(unittest.TestCase):
         assert minimizer_failed == ["deriv_free_algorithm"]
         assert new_minimizer_list == ["general"]
 
-    @unittest.mock.patch('{}.loop_over_jacobians'.format(FITTING_DIR))
-    def test_run_minimzers_all(self, loop_over_jacobians):
+    @patch('{}.loop_over_jacobians'.format(FITTING_DIR))
+    def test_run_minimzers_all(self, loop_over_hessians):
         """
         Tests that all minimizers are selected
         """
         self.results = [[self.result_args], [self.result_args]]
         self.chi_sq = [1]
         self.minimizer_list = [["general"], ["deriv_free_algorithm"]]
-        loop_over_jacobians.side_effect = self.mock_func_call
+        loop_over_hessians.side_effect = self.mock_func_call
 
         results_problem, minimizer_failed, new_minimizer_list = \
             loop_over_minimizers(self.controller, self.minimizers,

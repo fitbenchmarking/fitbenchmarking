@@ -58,6 +58,10 @@ class Controller:
                        'steepest_descent': [],
                        'global_optimization': []}
 
+    #: A name to be used in tables. If this is set to None it will be inferred
+    #: from the class name.
+    controller_name = None
+
     def __init__(self, cost_func):
         """
         Initialise anything that is needed specifically for the
@@ -77,6 +81,9 @@ class Controller:
         # Jacobian: The Jacobian object
         self.jacobian = None
 
+        # Hessian: The Hessian object
+        self.hessian = None
+
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)
         self.data_x = self.problem.data_x
@@ -94,6 +101,9 @@ class Controller:
         self.parameter_set = None
         # Minimizer: The current minimizer to use
         self.minimizer = None
+        # Software: Use a property to get the name of the software from the
+        # class
+        self._software = ''
 
         # Final Params: The final values for the params from the minimizer
         self.final_params = None
@@ -131,6 +141,20 @@ class Controller:
                 'controller.flag must be one of {}. Got: {}.'.format(
                     list(self.VALID_FLAGS), value))
         self._flag = int(value)
+
+    @property
+    def software(self):
+        """
+        Return the name of the software.
+
+        This assumes the class is named '<software>Controller'
+        """
+        if not self._software:
+            if self.controller_name is not None:
+                self._software = self.controller_name
+            else:
+                self._software = self.__class__.__name__[:-10].lower()
+        return self._software
 
     def prepare(self):
         """
@@ -284,6 +308,24 @@ class Controller:
           controller this would return ``Nelder-Mead`` and ``Powell``.
 
         :return: (``has_jacobian``, ``jacobian_free_solvers``)
+        :rtype: (`string`, `list`)
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def hessian_information(self):
+        """
+        Sets up Hessian information for the controller.
+
+        This should return the following arguments:
+
+        - ``has_hessian``: a True or False value whether the controller
+          accepts Hessian information.
+        - ``hessian_enabled_solvers``: a list of minimizers in a specific
+          software that allow Hessian information to be passed
+          into the fitting algorithm.
+
+        :return: (``has_hessian``, ``hessian_enabled_solvers``)
         :rtype: (`string`, `list`)
         """
         raise NotImplementedError

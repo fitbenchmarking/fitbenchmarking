@@ -15,8 +15,8 @@ class FittingResult:
     fitting problem test.
     """
 
-    def __init__(self, options, cost_func, jac, initial_params, params,
-                 name=None, chi_sq=None, runtime=None,
+    def __init__(self, options, cost_func, jac, hess, initial_params, params,
+                 name=None, chi_sq=None, runtime=None, software=None,
                  minimizer=None, error_flag=None, dataset_id=None):
         """
         Initialise the Fitting Result
@@ -27,7 +27,9 @@ class FittingResult:
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         :param jac: The Jacobian definition
-        :type jac: fitbenchmarking.jacobian.base_controller.Jacobian subclass
+        :type jac: fitbenchmarking.jacobian.base_jacobian.Jacobian subclass
+        :param hess: The Hessian definition
+        :type hess: fitbenchmarking.hessian.base_hessian.Hessian subclass
         :param initial_params: The starting parameters for the fit
         :type initial_params: list of float
         :param params: The parameters found by the fit
@@ -38,6 +40,8 @@ class FittingResult:
         :type chi_sq: float or list of float, optional
         :param runtime: The average runtime of the fit, defaults to None
         :type runtime: float or list of float, optional
+        :param software: The name of the software used, defaults to None
+        :type software: str, optional
         :param minimizer: The name of the minimizer used, defaults to None
         :type minimizer: str, optional
         :param error_flag: [description], defaults to None
@@ -50,6 +54,7 @@ class FittingResult:
         self.cost_func = cost_func
         self.problem = self.cost_func.problem
         self.jac = jac
+        self.hess = hess
         self.name = name if name is not None else \
             self.problem.name
 
@@ -78,6 +83,7 @@ class FittingResult:
         self.min_runtime = None
 
         # Minimizer for a certain problem and its function definition
+        self.software = software
         self.minimizer = minimizer
 
         # String interpretations of the params
@@ -102,6 +108,14 @@ class FittingResult:
         self._norm_acc = None
         self._norm_runtime = None
         self.is_best_fit = False
+
+        # Attributes for table creation
+        self.costfun_tag = self.cost_func.__class__.__name__
+        self.problem_tag = self.name
+        self.software_tag = self.software
+        self.minimizer_tag = self.minimizer
+        self.jacobian_tag = self.jac.__class__.__name__
+        self.hessian_tag = self.hess.__class__.__name__
 
     @property
     def norm_acc(self):
