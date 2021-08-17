@@ -45,8 +45,8 @@ class Analytic(Hessian):
             for i in range(len(x)):
                 grad2_r[:, :, i] = 1/2*(
                     model_eval[i]**(-1/2))\
-                    * grad2_r[:, :, i] - \
-                    1/2*(model_eval[i]**(-3/2))\
+                    * grad2_r[:, :, i] + \
+                    model_eval[i]**(-1/2)\
                     * np.matmul(J.T, J)
         if self.problem.options.cost_func_type == "poisson":
             model_eval = self.problem.eval_model(params, x=x)

@@ -139,19 +139,26 @@ class TestHessianClass(TestCase):
         self.fitting_problem.format = "cutest"
         hes = Analytic(self.cost_func, self.jacobian)
         eval_result, _ = hes.eval(params=self.params)
-        jac_actual_h = self.jac_actual / \
-            (2*np.sqrt(f(self.fitting_problem.data_x, *self.params)[:, None]))
+        #jac_actual_h = self.jac_actual / \
+        #    (2*np.sqrt(f(self.fitting_problem.data_x, *self.params)[:, None]))
         scaled_actual = self.actual
+        # using jac_actual instad of jac scaled for hessian should return same
+        # result as hessian.eval (where the scaled jac has been subbed in for
+        # jac actual using formula J =  2*sqrt(f)*J_scaled)
         for i in range(len(self.fitting_problem.data_x)):
             scaled_actual[:, :, i] = 1/2*(
                 f(self.fitting_problem.data_x, *self.params)**(-1/2))[i]\
-                * self.actual[:, :, i] - \
-                1/2*(f(self.fitting_problem.data_x, *self.params)**(-3/2))[i]\
-                * np.matmul(jac_actual_h.T, jac_actual_h)
+                * self.actual[:, :, i] + \
+                1/4*(f(self.fitting_problem.data_x, *self.params)**(-3/2))[i]\
+                * np.matmul(self.jac_actual.T, self.jac_actual)
         scaled_actual = np.matmul(scaled_actual, np.sqrt(
             self.fitting_problem.data_y)-np.sqrt(f(self.fitting_problem.data_x,
                                                    self.params[0],
                                                    self.params[1])))
+        print('actual')
+        print(scaled_actual)
+        print('eval')
+        print(eval_result)
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
 
     def test_analytic_cutest_poisson(self):
