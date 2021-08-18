@@ -109,7 +109,7 @@ def grad2_r_poisson(x, y, p):
                       p[0]*x**2*np.exp((x*p[1]))], ])
 
 
-class Test2HessianClass(TestCase):
+class TestHessianClass(TestCase):
     """
     Tests for Hessian classes
     """
