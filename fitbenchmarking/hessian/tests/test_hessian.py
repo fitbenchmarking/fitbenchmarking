@@ -76,37 +76,37 @@ def f_poisson(x, p1, p2):
     Test function for numerical Hessians, to
     be used with poisson cost function
     """
-    return np.exp((x*(p1+p2)))
+    return p1*np.exp(p2*x)
 
 
 def J_poisson(x, p):
     """
     Analyic Jacobian evaluation of f_poisson
     """
-    return np.column_stack((x*np.exp(x*(p[0]+p[1])),
-                            x*np.exp(x*(p[0]+p[1]))))
+    return np.column_stack((np.exp(p[1]*x),
+                            p[0]*x*np.exp(p[1]*x)))
 
 
 def H_poisson(x, p):
     """
     Analyic Hessian evaluation of f_poisson
     """
-    return np.array([[x**2*np.exp((x*(p[0]+p[1]))),
-                      x**2*np.exp((x*(p[0]+p[1])))],
-                     [x**2*np.exp((x*(p[0]+p[1]))),
-                      x**2*np.exp((x*(p[0]+p[1])))], ])
+    return np.array([[0*(np.ones(x.shape[0])),
+                      x*np.exp((x*p[1]))],
+                     [x*np.exp((x*p[1])),
+                      p[0]*x**2*np.exp((x*p[1]))], ])
 
 
-def grad2_r_poisson(x, p):
+def grad2_r_poisson(x, y, p):
     """
     Calculate 2nd partial derivatives of residuals
     (y(log(y)-log(f_poisson))-(y-f_poisson))
     for poisson cost function
     """
-    return np.array([[x**2*np.exp((x*(p[0]+p[1]))),
-                      x**2*np.exp((x*(p[0]+p[1])))],
-                     [x**2*np.exp((x*(p[0]+p[1]))),
-                      x**2*np.exp((x*(p[0]+p[1])))], ])
+    return np.array([[y/p[0]**2,
+                      x*np.exp(p[1]*x)],
+                     [x*np.exp((x*p[1])),
+                      p[0]*x**2*np.exp((x*p[1]))], ])
 
 
 class Test2HessianClass(TestCase):
@@ -190,8 +190,9 @@ class Test2HessianClass(TestCase):
         self.jacobian = JacobianClass(self.cost_func)
         hes = Analytic(self.cost_func, self.jacobian)
         eval_result, _ = hes.eval(params=self.params)
-        actual_hessian = np.sum(grad2_r_poisson(
-            self.fitting_problem.data_x, self.params), 2)
+        actual_hessian = np.sum(grad2_r_poisson(self.fitting_problem.data_x,
+                                                self.fitting_problem.data_y,
+                                                self.params), 2)
         self.assertTrue(np.isclose(actual_hessian, eval_result).all())
 
     def test_analytic_raise_error(self):

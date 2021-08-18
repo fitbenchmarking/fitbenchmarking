@@ -50,8 +50,9 @@ class Analytic(Hessian):
             model_eval = self.problem.eval_model(params, x=x)
             for i, (f, j) in enumerate(zip(model_eval, J)):
                 j = np.array([j])
-                grad2_r[:, :, i] = -(grad2_r[:, :, i] * (1-y[i]/f)
-                                     + (y[i]/f**2)*np.matmul(j.T, j))
+                grad2_r[:, :, i] = (-grad2_r[:, :, i] * (1-y[i]/f)
+                                    + (y[i]/f**2)*(1/(1-y[i]/f)**2)
+                                    * np.matmul(j.T, j))
             hes = np.sum(grad2_r, 2)
 
         if self.problem.options.cost_func_type != "poisson":
