@@ -28,3 +28,14 @@ def lorentz3d(t, x, sigma, r, b):
         ])
 
     raise ValueError('x is the wrong shape in lorentz3d call.')
+
+def lorentz3d_jac(x, params):
+
+    if len(x.shape) == 1:
+        return np.array([[
+            -params[0], params[0], 0],
+            [params[1]-x[2], -1, -x[0]],
+            [x[1], x[0], -params[2]]
+        ])
+
+    raise ValueError('x is the wrong shape in lorentz3d_jac call.')

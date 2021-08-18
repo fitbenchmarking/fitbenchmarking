@@ -13,7 +13,7 @@ from collections import OrderedDict
 import numpy as np
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.utils.exceptions import MissingSoftwareError, ParsingError
+from fitbenchmarking.utils.exceptions import MissingSoftwareError, NoJacobianError, ParsingError
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
@@ -133,6 +133,14 @@ class FitbenchmarkParser(Parser):
             else:
                 fitting_problem.equation = '{} Functions'.format(
                     equation_count)
+
+        # JACOBIAN
+        if software == 'ivp':
+            try:
+                fitting_problem.jacobian = self._parse_ivp_jacobian()
+            except NoJacobianError:
+                LOGGER.warning("Could not find analytic Jacobian "
+                                "information for %s problem", fitting_problem.name)
 
         # STARTING VALUES
         if software == 'ivp':
@@ -486,6 +494,23 @@ class FitbenchmarkParser(Parser):
         except KeyError:
             ties = []
         return ties
+
+    def _parse_ivp_jacobian(self):
+
+        jacobian_info = {}
+        try:
+            for j in self._entries['jacobian'].split(','):
+                name, val = j.split('=',1)
+                jacobian_info[name] = val
+        except:
+            raise NoJacobianError
+        
+        path = os.path.join(os.path.dirname(self._filename), jacobian_info['module'])
+        sys.path.append(os.path.dirname(path))
+        module = importlib.import_module(os.path.basename(path))
+        fun = getattr(module, jacobian_info['func'])
+
+        return fun
 
 
 def _parse_range(range_str):
