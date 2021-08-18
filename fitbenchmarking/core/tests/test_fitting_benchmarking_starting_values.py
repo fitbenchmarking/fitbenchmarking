@@ -71,6 +71,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.result_args = {'options': self.options,
                             'cost_func': self.cost_func,
                             'jac': 'jac',
+                            'hess': 'hess',
                             'initial_params': self.problem.starting_values[0],
                             'params': [],
                             'chi_sq': 1}

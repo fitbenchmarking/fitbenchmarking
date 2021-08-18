@@ -2,22 +2,22 @@
 Table tests
 """
 
-from __future__ import (absolute_import, division, print_function)
-import unittest
-from inspect import getfile
 import os
 import shutil
+import unittest
+from inspect import getfile
+
 import numpy as np
 
 import fitbenchmarking
+from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
-from fitbenchmarking.results_processing.tables import SORTED_TABLE_NAMES
-from fitbenchmarking.results_processing.tables import generate_table
-from fitbenchmarking.results_processing.tables import create_results_tables
 from fitbenchmarking.jacobian.default_jacobian import Default as DefaultJac
-from fitbenchmarking.core.results_output import preproccess_data
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking.results_processing.tables import (SORTED_TABLE_NAMES,
+                                                       create_results_tables,
+                                                       generate_table)
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
@@ -106,14 +106,21 @@ def generate_mock_results():
             p.starting_values = starting_values
             cost_func = WeightedNLLSCostFunc(p)
             jac = DefaultJac(cost_func)
-            r = FittingResult(options=options, cost_func=cost_func, jac=jac,
+            hess = None
+            r = FittingResult(options=options,
+                              cost_func=cost_func,
+                              jac=jac,
+                              hess=hess,
                               initial_params=starting_values,
-                              params=params_in[i][j])
-            r.chi_sq = acc_in[i][j]
-            r.runtime = runtime_in[i][j]
-            r.error_flag = error_in[i][j]
+                              params=params_in[i][j],
+                              name=p.name,
+                              chi_sq=acc_in[i][j],
+                              runtime=runtime_in[i][j],
+                              software=software,
+                              minimizer=options.minimizers[software][j],
+                              error_flag=error_in[i][j],
+                              )
             r.support_page_link = link_in[i][j]
-            r.minimizer = options.minimizers[software][j]
             results.append(r)
             options.minimizer_alg_type[options.minimizers[software]
                                        [j]] = 'all, ls'
@@ -156,9 +163,13 @@ class GenerateTableTests(unittest.TestCase):
         """
         for suffix in SORTED_TABLE_NAMES:
             _, html_table, txt_table, _ = generate_table(
-                self.results, self.best, self.options, "group_dir",
-                self.fig_dir,
-                ["pp_1", "pp_2"], "table_name", suffix)
+                results=self.results,
+                options=self.options,
+                group_dir="group_dir",
+                fig_dir=self.fig_dir,
+                pp_locations=["pp_1", "pp_2"],
+                table_name="table_name",
+                suffix=suffix)
             html_table_name = os.path.join(self.expected_results_dir,
                                            "{}.html".format(suffix))
             txt_table_name = os.path.join(self.expected_results_dir,
@@ -251,10 +262,14 @@ class CreateResultsTableTests(unittest.TestCase):
         """
         Checks to see whether files with the correct name are produced.
         """
-        create_results_tables(self.options, self.results, self.best,
-                              self.group_name, self.group_dir,
-                              self.fig_dir,
-                              ["pp_1", "pp_2"], [], {'min1': []})
+        create_results_tables(options=self.options,
+                              results=self.results,
+                              group_name=self.group_name,
+                              group_dir=self.group_dir,
+                              fig_dir=self.fig_dir,
+                              pp_locations=["pp_1", "pp_2"],
+                              failed_problems=[],
+                              unselected_minimzers={'min1': []})
         for suffix in SORTED_TABLE_NAMES:
 
             for table_type in ['html', 'txt']:
@@ -264,7 +279,8 @@ class CreateResultsTableTests(unittest.TestCase):
                                                self.options.cost_func_type,
                                                table_type)
                 file_name = os.path.join(self.group_dir, table_name)
-                self.assertTrue(os.path.isfile(file_name))
+                self.assertTrue(os.path.isfile(file_name),
+                                f"Could not find {file_name}")
 
 
 if __name__ == "__main__":

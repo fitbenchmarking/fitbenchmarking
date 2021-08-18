@@ -1,16 +1,20 @@
 """
 Tests for FitBenchmarking object
 """
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
 import inspect
 import os
 import unittest
+
 import numpy as np
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.hessian.analytic_hessian import \
+    Analytic as AnalyticHessian
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
@@ -38,11 +42,12 @@ class FitbmResultTests(unittest.TestCase):
         self.cost_func = NLLSCostFunc(self.problem)
         self.jac = Scipy(self.cost_func)
         self.jac.method = "2-point"
+        self.hess = AnalyticHessian(self.cost_func, self.jac)
         self.result = FittingResult(
             options=self.options, cost_func=self.cost_func, jac=self.jac,
-            chi_sq=self.chi_sq, runtime=self.runtime, minimizer=self.minimizer,
-            initial_params=self.initial_params, params=self.params,
-            error_flag=0)
+            hess=self.hess, chi_sq=self.chi_sq, runtime=self.runtime,
+            minimizer=self.minimizer, initial_params=self.initial_params,
+            params=self.params, error_flag=0)
 
         self.min_chi_sq = 0.1
         self.result.min_chi_sq = self.min_chi_sq
@@ -76,10 +81,11 @@ class FitbmResultTests(unittest.TestCase):
         self.cost_func = NLLSCostFunc(self.problem)
         self.jac = Scipy(self.cost_func)
         self.jac.method = "2-point"
+        self.hess = AnalyticHessian(self.cost_func, self.jac)
         self.result = FittingResult(
             options=self.options, cost_func=self.cost_func, jac=self.jac,
-            chi_sq=chi_sq, runtime=runtime, minimizer=minimizer,
-            initial_params=initial_params, params=params,
+            hess=self.hess, chi_sq=chi_sq, runtime=runtime,
+            minimizer=minimizer, initial_params=initial_params, params=params,
             error_flag=0, dataset_id=1)
 
         self.assertTrue(
