@@ -32,20 +32,36 @@ class Analytic(Hessian):
         """
 
         x = kwargs.get("x", self.problem.data_x)
-        # y = kwargs.get("y", self.problem.data_y)
+        y = kwargs.get("y", self.problem.data_y)
         e = kwargs.get("e", self.problem.data_e)
+        grad2_r = -self.problem.hessian(x, params)
         J = self.jacobian.eval(params, **kwargs)
-        rx = self.cached_func_values(self.cost_func.cache_rx,
-                                     self.cost_func.eval_r,
-                                     params,
-                                     **kwargs)
-        grad2_r = self.problem.hessian(x, params)
         if self.problem.options.cost_func_type == "weighted_nlls":
             # scales the Hessian by the weights
             for i in range(len(e)):
                 grad2_r[:, :, i] = grad2_r[:, :, i] / e[i]
+        if self.problem.options.cost_func_type == "hellinger_nlls":
+            model_eval = self.problem.eval_model(params, x=x)
+            for i, (f, j) in enumerate(zip(model_eval, J)):
+                j = np.array([j])
+                grad2_r[:, :, i] = 1/2 * f**(-1/2) * grad2_r[:, :, i] \
+                    + f**(-1/2) * np.matmul(j.T, j)
+        if self.problem.options.cost_func_type == "poisson":
+            model_eval = self.problem.eval_model(params, x=x)
+            for i, (f, j) in enumerate(zip(model_eval, J)):
+                j = np.array([j])
+                grad2_r[:, :, i] = (-grad2_r[:, :, i] * (1-y[i]/f)
+                                    + (y[i]/(f-y[i])**2)
+                                    * np.matmul(j.T, j))
+            hes = np.sum(grad2_r, 2)
 
-        hes = matmul(grad2_r, rx)
+        if self.problem.options.cost_func_type != "poisson":
+            rx = self.cached_func_values(self.cost_func.cache_rx,
+                                         self.cost_func.eval_r,
+                                         params,
+                                         **kwargs)
+            hes = matmul(grad2_r, rx)
+
         return hes, J
 
     def eval_cost(self, params, **kwargs):
@@ -59,5 +75,8 @@ class Analytic(Hessian):
         :rtype: numpy array
         """
         H, J = self.eval(params, **kwargs)
-        out = H + matmul(np.transpose(J), J)
+        if self.problem.options.cost_func_type != "poisson":
+            out = H + matmul(np.transpose(J), J)
+        else:
+            out = H
         return out

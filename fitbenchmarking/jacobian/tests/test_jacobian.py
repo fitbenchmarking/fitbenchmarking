@@ -163,10 +163,10 @@ class TestJacobianClass(TestCase):
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.cost_func)
         eval_result = jac.eval(params=self.params)
-        scaled_actual = -np.matmul(self.actual.T,
-                                   (1 - self.fitting_problem.data_y /
-                                    f(self.fitting_problem.data_x,
-                                      *self.params)))
+        scaled_actual = -1*self.actual * \
+            (1 - self.fitting_problem.data_y /
+             f(self.fitting_problem.data_x,
+               *self.params))[:, None]
 
         self.assertTrue(np.isclose(scaled_actual, eval_result).all())
 
@@ -314,6 +314,7 @@ class TestFactory(TestCase):
     """
     Tests for the Jacobian factory
     """
+
     def setUp(self):
         self.options = Options()
 

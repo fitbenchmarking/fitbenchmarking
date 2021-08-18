@@ -6,6 +6,12 @@ from unittest import TestCase
 import numpy as np
 
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import\
+    WeightedNLLSCostFunc
+from fitbenchmarking.cost_func.hellinger_nlls_cost_func import\
+    HellingerNLLSCostFunc
+from fitbenchmarking.cost_func.poisson_cost_func import\
+    PoissonCostFunc
 from fitbenchmarking.hessian.analytic_hessian import Analytic
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic\
     as JacobianClass
@@ -15,54 +21,92 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 
-def f(x, p1, p2):
+def f_ls(x, p1, p2):
     """
-    Test function for numerical Hessians
-
-    :param x: x data points, defaults to self.data_x
-    :type x: numpy array, optional
-    :param p1: parameter 1
-    :type p1: float
-    :param p2: parameter 1
-    :type p2: float
-
-    :return: function evaluation
-    :rtype: numpy array
+    Test function for numerical Hessians, to
+    be used with nlls cost functions
     """
-    return p1 * np.exp(p2 * x)
+    return (x*(p1+p2)**2)**2
 
 
-def J(x, p):
+def J_ls(x, p):
     """
-    Analytic Jacobian evaluation
-
-    :param x: x data points, defaults to self.data_x
-    :type x: numpy array, optional
-    :param p: list of parameters to fit
-    :type p: list
-
-    :return: Jacobian evaluation
-    :rtype: numpy array
+    Analyic Jacobian evaluation of f_ls
     """
+    return np.column_stack((4*x**2*(p[0]+p[1])**3,
+                            4*x**2*(p[0]+p[1])**3))
 
-    return np.column_stack((-np.exp(p[1] * x),
-                            -x * p[0] * np.exp(p[1] * x)))
 
-
-def H(x, p):
+def H_ls(x, p):
     """
-    Analytic Hessian evaluation
-
-    :param x: x data points, defaults to self.data_x
-    :type x: numpy array, optional
-    :param p: list of parameters to fit
-    :type p: list
-
-    :return: Hessian evaluation
-    :rtype: numpy array
+    Analyic Hessian evaluation of f_ls
     """
-    return np.array([[0*(np.ones(x.shape[0])), x*np.exp(p[1]*x)],
-                    [x*np.exp(p[1]*x), p[0]*x**2*np.exp(p[1]*x)], ])
+    return np.array([[12*x**2*(p[0]+p[1])**2, 12*x**2*(p[0]+p[1])**2],
+                     [12*x**2*(p[0]+p[1])**2, 12*x**2*(p[0]+p[1])**2], ])
+
+
+def grad2_r_nlls(x, p):
+    """
+    Calculate 2nd partial derivatives of residuals (y-f_ls)
+    for nlls cost function
+    """
+    return np.array([[-12*x**2*(p[0]+p[1])**2, -12*x**2*(p[0]+p[1])**2],
+                     [-12*x**2*(p[0]+p[1])**2, -12*x**2*(p[0]+p[1])**2], ])
+
+
+def grad2_r_weighted_nlls(x, e, p):
+    """
+    Calculate 2nd partial derivatives of residuals (y-f_ls)/e
+    for weighted nlls cost function
+    """
+    return np.array([[-12*x**2*(p[0]+p[1])**2/e, -12*x**2*(p[0]+p[1])**2/e],
+                     [-12*x**2*(p[0]+p[1])**2/e, -12*x**2*(p[0]+p[1])**2/e], ])
+
+
+def grad2_r_hellinger(x):
+    """
+    Calculate 2nd partial derivatives of residuals (sqrt(y)-sqrt(f_ls))
+    for hellinger nlls cost function
+    """
+    return np.array([[-2*x, -2*x], [-2*x, -2*x], ])
+
+
+def f_poisson(x, p1, p2):
+    """
+    Test function for numerical Hessians, to
+    be used with poisson cost function
+    """
+    return p1*np.exp(p2*x)
+
+
+def J_poisson(x, p):
+    """
+    Analyic Jacobian evaluation of f_poisson
+    """
+    return np.column_stack((np.exp(p[1]*x),
+                            p[0]*x*np.exp(p[1]*x)))
+
+
+def H_poisson(x, p):
+    """
+    Analyic Hessian evaluation of f_poisson
+    """
+    return np.array([[np.zeros(x.shape[0]),
+                      x*np.exp((x*p[1]))],
+                     [x*np.exp((x*p[1])),
+                      p[0]*x**2*np.exp((x*p[1]))], ])
+
+
+def grad2_r_poisson(x, y, p):
+    """
+    Calculate 2nd partial derivatives of residuals
+    (y(log(y)-log(f_poisson))-(y-f_poisson))
+    for poisson cost function
+    """
+    return np.array([[y/p[0]**2,
+                      x*np.exp(p[1]*x)],
+                     [x*np.exp((x*p[1])),
+                      p[0]*x**2*np.exp((x*p[1]))], ])
 
 
 class TestHessianClass(TestCase):
@@ -75,48 +119,81 @@ class TestHessianClass(TestCase):
         Setting up tests
         """
         options = Options()
+        self.fitting_problem = FittingProblem(options)
         options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
-        self.fitting_problem.function = f
-        self.fitting_problem.jacobian = J
-        self.fitting_problem.hessian = H
+        self.fitting_problem.function = f_ls
+        self.fitting_problem.jacobian = J_ls
+        self.fitting_problem.hessian = H_ls
         self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
+        self.params = [6, 0.1]
+        self.fitting_problem.options.cost_func_type = "nlls"
         self.cost_func = NLLSCostFunc(self.fitting_problem)
         self.jacobian = JacobianClass(self.cost_func)
-        self.params = [6, 0.1]
-        self.f_eval = self.fitting_problem.data_y\
-            - f(x=self.fitting_problem.data_x,
-                p1=self.params[0],
-                p2=self.params[1])
-        self.actual = H(x=self.fitting_problem.data_x, p=self.params)
 
-    def test_analytic_cutest_no_errors(self):
+    def test_analytic_nlls(self):
         """
         Test analytic Hessian
         """
-        self.fitting_problem.options.cost_func_type = "nlls"
-        self.fitting_problem.format = "cutest"
         hes = Analytic(self.cost_func, self.jacobian)
         eval_result, _ = hes.eval(params=self.params)
-        self.actual = np.matmul(self.actual, self.f_eval)
-        self.assertTrue(np.isclose(self.actual, eval_result).all())
+        r_nlls = self.fitting_problem.data_y - \
+            f_ls(self.fitting_problem.data_x, self.params[0], self.params[1])
+        actual_hessian = np.sum(
+            r_nlls*grad2_r_nlls(self.fitting_problem.data_x, self.params), 2)
+        self.assertTrue(np.isclose(actual_hessian, eval_result).all())
 
-    def test_analytic_cutest_weighted(self):
+    def test_analytic_weighted_nlls(self):
         """
-        Test analytic Hessian
+        Test analytic Hessian for weighted_nlls
         """
         self.fitting_problem.options.cost_func_type = "weighted_nlls"
         e = np.array([1, 2, 1, 3, 1])
         self.fitting_problem.data_e = e
-        self.fitting_problem.format = "cutest"
+        self.cost_func = WeightedNLLSCostFunc(self.fitting_problem)
+        self.jacobian = JacobianClass(self.cost_func)
         hes = Analytic(self.cost_func, self.jacobian)
         eval_result, _ = hes.eval(params=self.params)
-        scaled_actual = self.actual
-        for i in range(len(e)):
-            scaled_actual[:, :, i] = self.actual[:, :, i] / e[i]
-        scaled_actual = np.matmul(scaled_actual, self.f_eval)
-        self.assertTrue(np.isclose(scaled_actual, eval_result).all())
+        r_weighted_nlls = (self.fitting_problem.data_y -
+                           f_ls(self.fitting_problem.data_x, self.params[0],
+                                self.params[1]))/e
+        actual_hessian = np.sum(
+            r_weighted_nlls*grad2_r_weighted_nlls(self.fitting_problem.data_x,
+                                                  e, self.params), 2)
+        self.assertTrue(np.isclose(actual_hessian, eval_result).all())
+
+    def test_analytic_hellinger_nlls(self):
+        """
+        Test analytic Hessian for hellinger_nlls
+        """
+        self.fitting_problem.options.cost_func_type = "hellinger_nlls"
+        self.cost_func = HellingerNLLSCostFunc(self.fitting_problem)
+        self.jacobian = JacobianClass(self.cost_func)
+        hes = Analytic(self.cost_func, self.jacobian)
+        eval_result, _ = hes.eval(params=self.params)
+        r_hellinger = np.sqrt(self.fitting_problem.data_y) - np.sqrt(
+            f_ls(self.fitting_problem.data_x, self.params[0], self.params[1]))
+        actual_hessian = np.sum(
+            r_hellinger*grad2_r_hellinger(self.fitting_problem.data_x), 2)
+        self.assertTrue(np.isclose(actual_hessian, eval_result).all())
+
+    def test_poisson(self):
+        """
+        Test analytic Hessian for poisson cost function
+        """
+        self.fitting_problem.options.cost_func_type = "poisson"
+        self.fitting_problem.function = f_poisson
+        self.fitting_problem.jacobian = J_poisson
+        self.fitting_problem.hessian = H_poisson
+        self.cost_func = PoissonCostFunc(self.fitting_problem)
+        self.jacobian = JacobianClass(self.cost_func)
+        hes = Analytic(self.cost_func, self.jacobian)
+        eval_result, _ = hes.eval(params=self.params)
+        actual_hessian = np.sum(grad2_r_poisson(self.fitting_problem.data_x,
+                                                self.fitting_problem.data_y,
+                                                self.params), 2)
+        self.assertTrue(np.isclose(actual_hessian, eval_result).all())
 
     def test_analytic_raise_error(self):
         """
@@ -140,22 +217,21 @@ class TestHesCostFunc(TestCase):
         options = Options()
         options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
-        self.fitting_problem.function = f
-        self.fitting_problem.jacobian = J
-        self.fitting_problem.hessian = H
+        self.fitting_problem.function = f_ls
+        self.fitting_problem.jacobian = J_ls
+        self.fitting_problem.hessian = H_ls
         self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.params = [6, 0.1]
         self.cost_func = NLLSCostFunc(self.fitting_problem)
         self.jacobian = JacobianClass(self.cost_func)
-        J_eval = J(x=self.fitting_problem.data_x,
-                   p=self.params)
-        H_eval = H(x=self.fitting_problem.data_x,
-                   p=self.params)
-        f_eval = self.fitting_problem.data_y - f(x=self.fitting_problem.data_x,
-                                                 p1=self.params[0],
-                                                 p2=self.params[1])
-        self.actual = np.matmul(H_eval, f_eval) + np.matmul(J_eval.T, J_eval)
+        J_eval = -1*J_ls(x=self.fitting_problem.data_x,
+                         p=self.params)
+        r_nlls = self.fitting_problem.data_y - \
+            f_ls(self.fitting_problem.data_x, self.params[0], self.params[1])
+        actual_hessian = np.sum(
+            r_nlls*grad2_r_nlls(self.fitting_problem.data_x, self.params), 2)
+        self.actual = actual_hessian + np.matmul(J_eval.T, J_eval)
 
     def test_analytic_cutest(self):
         """
