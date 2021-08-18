@@ -91,7 +91,7 @@ def H_poisson(x, p):
     """
     Analyic Hessian evaluation of f_poisson
     """
-    return np.array([[0*(np.ones(x.shape[0])),
+    return np.array([[np.zeros(x.shape[0]),
                       x*np.exp((x*p[1]))],
                      [x*np.exp((x*p[1])),
                       p[0]*x**2*np.exp((x*p[1]))], ])
