@@ -293,12 +293,10 @@ class Controller:
                             'list or numpy ndarray of floats, got '
                             '{}'.format(attr_name, attr))
 
-    @abstractmethod
     def jacobian_information(self):
         """
-        Sets up Jacobian information for the controller.
-
-        This should return the following arguments:
+        Sets up Jacobian information for the controller, defining the
+        following variables:
 
         - ``has_jacobian``: a True or False value whether the controller
           requires Jacobian information.
@@ -307,15 +305,21 @@ class Controller:
           into the fitting algorithm. For example in the ``Scipy``
           controller this would return ``Nelder-Mead`` and ``Powell``.
 
+        This function should be overriden within a controller only
+        if it accepts Jacobian information
+
         :return: (``has_jacobian``, ``jacobian_free_solvers``)
         :rtype: (`string`, `list`)
         """
-        raise NotImplementedError
+        has_jacobian = False
+        jacobian_free_solvers = []
+        return has_jacobian, jacobian_free_solvers
 
-    @abstractmethod
+
     def hessian_information(self):
         """
-        Sets up Hessian information for the controller.
+        Sets up Hessian information for the controller, defining the
+        following variables:
 
         This should return the following arguments:
 
@@ -325,10 +329,15 @@ class Controller:
           software that allow Hessian information to be passed
           into the fitting algorithm.
 
+        This function should be overriden within a controller only
+        if it accepts Hessian information
+
         :return: (``has_hessian``, ``hessian_enabled_solvers``)
         :rtype: (`string`, `list`)
         """
-        raise NotImplementedError
+        has_hessian = False
+        hessian_enabled_solvers = []
+        return has_hessian, hessian_enabled_solvers
 
     @abstractmethod
     def setup(self):

@@ -53,22 +53,6 @@ class BumpsController(Controller):
         self._status = None
         self._bumps_result = None
 
-    def jacobian_information(self):
-        """
-        Bumps cannot use Jacobian information
-        """
-        has_jacobian = False
-        jacobian_free_solvers = []
-        return has_jacobian, jacobian_free_solvers
-
-    def hessian_information(self):
-        """
-        Bumps cannot use Hessian information
-        """
-        has_hessian = False
-        hessian_enabled_solvers = []
-        return has_hessian, hessian_enabled_solvers
-
     def setup(self):
         # pylint: disable=exec-used,protected-access
         """
