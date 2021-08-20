@@ -162,8 +162,9 @@ class LoopOverHessiansTests(unittest.TestCase):
     def test_bounds_respected_func_called(
             self, check_bounds_respected):
         """
-        Test that the check to verify that check_bounds_respected is called when
-        the controller runs succesfully and parameter bounds have been set.
+        Test that the check to verify that check_bounds_respected is called
+        when the controller runs succesfully and parameter bounds
+        have been set.
         """
         self.controller.problem.value_ranges = {'test': (0, 1)}
         self.controller.has_jacobian = [True]
@@ -173,7 +174,6 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.valid_hessians = ["general"]
         jacobian = False
         minimizer_name = "deriv_free_algorithm"
-
 
         _ = loop_over_hessians(self.controller,
                                self.options,

@@ -315,7 +315,6 @@ class Controller:
         jacobian_free_solvers = []
         return has_jacobian, jacobian_free_solvers
 
-
     def hessian_information(self):
         """
         Sets up Hessian information for the controller, defining the
