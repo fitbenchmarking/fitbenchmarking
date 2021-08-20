@@ -50,6 +50,37 @@ def J(x, p):
                             -x * p[0] * np.exp(p[1] * x)))
 
 
+def J_weighted(x, e, p):
+    """
+    Analytic Jacobian evaluation for weighted_nlls
+    cost function
+    """
+
+    return np.column_stack((-(np.exp(p[1] * x)/e),
+                            -(x * p[0] * np.exp(p[1] * x))/e))
+
+
+def J_hellinger(x, p):
+    """
+    Analytic Jacobian evaluation for hellinger_nlls
+    cost function
+    """
+
+    return np.column_stack((-1/2*(p[0]*np.exp(p[1]*x))**(-1/2)*np.exp(p[1]*x),
+                            -1/2*(p[0]*np.exp(p[1]*x))**(-1/2)
+                            * p[0]*x*np.exp(p[1]*x)))
+
+
+def J_poisson(x, y, p):
+    """
+    Analytic Jacobian evaluation for poisson
+    cost function
+    """
+
+    return np.column_stack((-y/p[0]+np.exp(p[1]*x),
+                           -y*x+p[0]*x*np.exp(p[1]*x)))
+
+
 class TestJacobianClass(TestCase):
     """
     Tests for Jacobian classes
@@ -138,8 +169,9 @@ class TestJacobianClass(TestCase):
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.cost_func)
         eval_result = jac.eval(params=self.params)
-        scaled_actual = self.actual / e[:, None]
-        self.assertTrue(np.isclose(scaled_actual, eval_result).all())
+        actual = J_weighted(self.fitting_problem.data_x,
+                            self.fitting_problem.data_e, self.params)
+        self.assertTrue(np.isclose(actual, eval_result).all())
 
     def test_analytic_cutest_hellinger(self):
         """
@@ -149,11 +181,8 @@ class TestJacobianClass(TestCase):
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.cost_func)
         eval_result = jac.eval(params=self.params)
-        #  pylint: disable=unsubscriptable-object
-        scaled_actual = self.actual / \
-            (2*np.sqrt(f(self.fitting_problem.data_x, *self.params)[:, None]))
-
-        self.assertTrue(np.isclose(scaled_actual, eval_result).all())
+        actual = J_hellinger(self.fitting_problem.data_x, self.params)
+        self.assertTrue(np.isclose(actual, eval_result).all())
 
     def test_analytic_cutest_poisson(self):
         """
@@ -163,12 +192,9 @@ class TestJacobianClass(TestCase):
         self.fitting_problem.format = "cutest"
         jac = Analytic(self.cost_func)
         eval_result = jac.eval(params=self.params)
-        scaled_actual = -1*self.actual * \
-            (1 - self.fitting_problem.data_y /
-             f(self.fitting_problem.data_x,
-               *self.params))[:, None]
-
-        self.assertTrue(np.isclose(scaled_actual, eval_result).all())
+        actual = J_poisson(self.fitting_problem.data_x,
+                           self.fitting_problem.data_y, self.params)
+        self.assertTrue(np.isclose(actual, eval_result).all())
 
     def test_analytic_raise_error(self):
         """
