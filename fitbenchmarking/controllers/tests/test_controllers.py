@@ -779,8 +779,8 @@ class ExternalControllerTests(TestCase):
         controller = RALFitController(self.cost_func)
         controller.jacobian = self.jac
         self.shared_tests.check_jac_info(controller,
-                                         ['gn', 'gn_reg',
-                                          'hybrid', 'hybrid_reg'])
+                                         ['gn', 'hybrid',
+                                          'gn_reg', 'hybrid_reg'])
         self.shared_tests.check_hes_info(controller,
                                          ['hybrid', 'hybrid_reg'])
 
