@@ -15,6 +15,19 @@ class MatlabCurveController(MatlabMixin, Controller):
     Controller for MATLAB Curve Fitting Toolbox fitting (fit)
     """
 
+    algorithm_check = {
+            'all': ['Trust-Region', 'Levenberg-Marquardt'],
+            'ls': ['Trust-Region', 'Levenberg-Marquardt'],
+            'deriv_free': [],
+            'general': [],
+            'simplex': [],
+            'trust_region': ['Trust-Region', 'Levenberg-Marquardt'],
+            'levenberg-marquardt': ['Levenberg-Marquardt'],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': []}
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -28,18 +41,6 @@ class MatlabCurveController(MatlabMixin, Controller):
         self.options = None
         self._status = None
         self.result = None
-        self.algorithm_check = {
-            'all': ['Trust-Region', 'Levenberg-Marquardt'],
-            'ls': ['Trust-Region', 'Levenberg-Marquardt'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['Trust-Region', 'Levenberg-Marquardt'],
-            'levenberg-marquardt': ['Levenberg-Marquardt'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
 
     controller_name = 'matlab_curve'
 
