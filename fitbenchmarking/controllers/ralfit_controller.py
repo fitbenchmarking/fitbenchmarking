@@ -29,6 +29,10 @@ class RALFitController(Controller):
             'steepest_descent': [],
             'global_optimization': []}
 
+    jacobian_enabled_solvers = ['gn', 'hybrid', 'gn_reg', 'hybrid_reg']
+
+    hessian_enabled_solvers = ['hybrid', 'hybrid_reg']
+
     def __init__(self, cost_func):
         """
         Initialises variable used for temporary storage.
@@ -44,22 +48,6 @@ class RALFitController(Controller):
         self._status = None
         self._popt = None
         self._options = {}
-
-    def jacobian_information(self):
-        """
-        RALFit can use Jacobian information
-        """
-        has_jacobian = True
-        jacobian_free_solvers = []
-        return has_jacobian, jacobian_free_solvers
-
-    def hessian_information(self):
-        """
-        RALFit can use Hessian information
-        """
-        has_hessian = True
-        hessian_enabled_solvers = ['hybrid', 'hybrid_reg']
-        return has_hessian, hessian_enabled_solvers
 
     def setup(self):
         """

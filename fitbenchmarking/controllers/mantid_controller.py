@@ -51,6 +51,13 @@ class MantidController(Controller):
             'steepest_descent': ['SteepestDescent'],
             'global_optimization': []}
 
+    jacobian_enabled_solvers = ['BFGS',
+                                'Conjugate gradient (Fletcher-Reeves imp.)',
+                                'Conjugate gradient (Polak-Ribiere imp.)',
+                                'Damped GaussNewton', 'Levenberg-Marquardt',
+                                'Levenberg-MarquardtMD', 'SteepestDescent',
+                                'Trust Region']
+
     def __init__(self, cost_func):
         """
         Setup workspace, cost_function, ignore_invalid, and initialise vars
@@ -150,14 +157,6 @@ class MantidController(Controller):
         # Arguments will change if multi-data
         self._added_args = {'InputWorkspace_{}'.format(i + 1): v
                             for i, v in enumerate(other_inputs)}
-
-    def jacobian_information(self):
-        """
-        Mantid cannot use Jacobian information
-        """
-        has_jacobian = True
-        jacobian_free_solvers = ["Simplex"]
-        return has_jacobian, jacobian_free_solvers
 
     def setup(self):
         """

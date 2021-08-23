@@ -36,6 +36,10 @@ class GSLController(Controller):
             'steepest_descent': ['steepest_descent'],
             'global_optimization': []}
 
+    jacobian_enabled_solvers = ['lmsder', 'lmder', 'conjugate_pr',
+                                'conjugate_fr', 'vector_bfgs',
+                                'vector_bfgs2', 'steepest_descent']
+
     def __init__(self, cost_func):
         """
         Initializes variable used for temporary storage
@@ -54,14 +58,6 @@ class GSLController(Controller):
         self._abserror = None
         self._relerror = None
         self._maxits = None
-
-    def jacobian_information(self):
-        """
-        GSL can use Jacobian information
-        """
-        has_jacobian = True
-        jacobian_free_solvers = ['nmsimplex', 'nmsimplex2']
-        return has_jacobian, jacobian_free_solvers
 
     # pylint: disable=unused-argument
     def _prediction_error(self, p, data=None):
@@ -164,11 +160,7 @@ class GSLController(Controller):
                                   'lmder']
         self._function_methods_no_jac = ['nmsimplex',
                                          'nmsimplex2']
-        self._function_methods_with_jac = ['conjugate_pr',
-                                           'conjugate_fr',
-                                           'vector_bfgs',
-                                           'vector_bfgs2',
-                                           'steepest_descent']
+        self._function_methods_with_jac = self.jacobian_enabled_solvers
 
         # set up the system
         if self.minimizer in self._residual_methods:

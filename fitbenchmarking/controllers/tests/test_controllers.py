@@ -107,36 +107,30 @@ class ControllerSharedTesting:
 
         assert len(controller.final_params) == len(controller.initial_params)
 
-    def check_jac_info(self, controller, expected_has_jac, expected_jac_list):
+    def check_jac_info(self, controller, expected_jac_list):
         """
-        Utility function to check controller.jacobian_information() produces
-        a success flag
+        Utility function to check jacobian information for a controller is
+        set correctly
 
         :param controller: Controller to test, with setup already completed
         :type controller: Object derived from BaseSoftwareController
-        :param expected_has_jac: expected has_jacobian value
-        :type expected_has_jac: bool
         :param expected_jac_list: expected jacobian_list value
         :type expected_jac_list: list
         """
-        has_jacobian, jacobian_list = controller.jacobian_information()
-        assert has_jacobian == expected_has_jac
+        jacobian_list = controller.jacobian_enabled_solvers
         assert jacobian_list == expected_jac_list
 
-    def check_hes_info(self, controller, expected_has_hes, expected_hes_list):
+    def check_hes_info(self, controller, expected_hes_list):
         """
-        Utility function to check controller.jacobian_information() produces
-        a success flag
+        Utility function to check hessian information for a controller is
+        set correctly
 
         :param controller: Controller to test, with setup already completed
         :type controller: Object derived from BaseSoftwareController
-        :param expected_has_hes: expected has_hessian value
-        :type expected_has_hes: bool
         :param expected_hes_list: expected hessian_list value
         :type expected_hes_list: list
         """
-        has_hessian, hessian_list = controller.hessian_information()
-        assert has_hessian == expected_has_hes
+        hessian_list = controller.hessian_enabled_solvers
         assert hessian_list == expected_hes_list
 
     def check_converged(self, controller):
@@ -408,10 +402,8 @@ class DefaultControllerTests(TestCase):
         controller.minimizer = 'amoeba'
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
-                                         False,
                                          [])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
 
         controller._status = 0
@@ -430,10 +422,8 @@ class DefaultControllerTests(TestCase):
         minimizers = ['dfogn',
                       'dfols']
         self.shared_tests.check_jac_info(controller,
-                                         False,
                                          [])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
 
         for minimizer in minimizers:
@@ -455,10 +445,8 @@ class DefaultControllerTests(TestCase):
         controller.minimizer = 'minuit'
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
-                                         False,
                                          [])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
 
         controller._status = 0
@@ -475,10 +463,9 @@ class DefaultControllerTests(TestCase):
         controller.jacobian = self.jac
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
-                                         True,
-                                         ["Nelder-Mead", "Powell"])
+                                         ['CG', 'BFGS', 'Newton-CG',
+                                          'L-BFGS-B', 'TNC', 'SLSQP'])
         self.shared_tests.check_hes_info(controller,
-                                         True,
                                          ['Newton-CG'])
         controller.result.success = True
         self.shared_tests.check_converged(controller)
@@ -497,10 +484,8 @@ class DefaultControllerTests(TestCase):
 
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
-                                         True,
-                                         [None])
+                                         ['lm-scipy', 'trf', 'dogbox'])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
 
         controller._status = 1
@@ -650,10 +635,8 @@ class ExternalControllerTests(TestCase):
         controller.jacobian = self.jac
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
-                                         True,
-                                         [])
+                                         ['levmar'])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
 
         controller._info = (0, 1, 2, "Stop by small Dp", 4, 5, 6)
@@ -676,11 +659,13 @@ class ExternalControllerTests(TestCase):
         controller.jacobian = self.jac
         controller.minimizer = 'Levenberg-Marquardt'
         self.shared_tests.controller_run_test(controller)
-        self.shared_tests.check_jac_info(controller,
-                                         True,
-                                         ["Simplex"])
+        self.shared_tests.check_jac_info(
+            controller,
+            ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
+             'Conjugate gradient (Polak-Ribiere imp.)', 'Damped GaussNewton',
+             'Levenberg-Marquardt', 'Levenberg-MarquardtMD', 'SteepestDescent',
+             'Trust Region'])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
         controller._status = "success"
         self.shared_tests.check_converged(controller)
@@ -767,10 +752,10 @@ class ExternalControllerTests(TestCase):
         controller = GSLController(self.cost_func)
         controller.jacobian = self.jac
         self.shared_tests.check_jac_info(controller,
-                                         True,
-                                         ["nmsimplex", "nmsimplex2"])
+                                         ['lmsder', 'lmder', 'conjugate_pr',
+                                          'conjugate_fr', 'vector_bfgs',
+                                          'vector_bfgs2', 'steepest_descent'])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
         # test one from each class
         minimizers = ['lmsder',
@@ -794,10 +779,9 @@ class ExternalControllerTests(TestCase):
         controller = RALFitController(self.cost_func)
         controller.jacobian = self.jac
         self.shared_tests.check_jac_info(controller,
-                                         True,
-                                         [])
+                                         ['gn', 'gn_reg',
+                                          'hybrid', 'hybrid_reg'])
         self.shared_tests.check_hes_info(controller,
-                                         True,
                                          ['hybrid', 'hybrid_reg'])
 
         minimizers = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg']
@@ -852,10 +836,8 @@ class MatlabControllerTests(TestCase):
         controller = MatlabController(self.cost_func)
         controller.jacobian = self.jac
         self.shared_tests.check_jac_info(controller,
-                                         False,
                                          [])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
 
         minimizers = ['Nelder-Mead Simplex']
@@ -877,10 +859,9 @@ class MatlabControllerTests(TestCase):
         controller = MatlabOptController(self.cost_func)
         controller.jacobian = self.jac
         self.shared_tests.check_jac_info(controller,
-                                         True,
-                                         [])
+                                         ['levenberg-marquardt',
+                                          'trust-region-reflective'])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
 
         minimizers = ['levenberg-marquardt', 'trust-region-reflective']
@@ -902,10 +883,8 @@ class MatlabControllerTests(TestCase):
         controller = MatlabStatsController(self.cost_func)
         controller.jacobian = self.jac
         self.shared_tests.check_jac_info(controller,
-                                         False,
-                                         ['Levenberg-Marquardt'])
+                                         [])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
 
         minimizers = ['Levenberg-Marquardt']
@@ -925,10 +904,8 @@ class MatlabControllerTests(TestCase):
         controller = MatlabCurveController(self.cost_func)
         controller.jacobian = self.jac
         self.shared_tests.check_jac_info(controller,
-                                         False,
                                          [])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
 
         minimizers = ['Levenberg-Marquardt', 'Trust-Region']
@@ -967,10 +944,8 @@ class GlobalOptimizationControllerTests(TestCase):
 
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
-                                         True,
-                                         ['differential_evolution'])
+                                         ['shgo', 'dual_annealing'])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
 
         controller._status = 0
@@ -988,10 +963,8 @@ class GlobalOptimizationControllerTests(TestCase):
         controller.minimizer = 'HillClimbingOptimizer'
         self.shared_tests.controller_run_test(controller)
         self.shared_tests.check_jac_info(controller,
-                                         False,
                                          [])
         self.shared_tests.check_hes_info(controller,
-                                         False,
                                          [])
 
         controller._status = 0

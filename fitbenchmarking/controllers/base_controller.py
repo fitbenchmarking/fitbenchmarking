@@ -58,6 +58,26 @@ class Controller:
                        'steepest_descent': [],
                        'global_optimization': []}
 
+    #: Within the controller class, you must define the list
+    #: ``jacobian_enabled_solvers`` if any of the minimizers
+    #: for the specific software are able to use jacobian
+    #: information.
+
+    #: - ``jacobian_enabled_solvers``: a list of minimizers in a specific
+    #: software that allow Jacobian information to be passed
+    #: into the fitting algorithm
+    jacobian_enabled_solvers = []
+
+    #: Within the controller class, you must define the list
+    #: ``hessian_enabled_solvers`` if any of the minimizers
+    #: for the specific software are able to use hessian
+    #: information.
+
+    #: - ``hessian_enabled_solvers``: a list of minimizers in a specific
+    #: software that allow Hessian information to be passed
+    #: into the fitting algorithm
+    hessian_enabled_solvers = []
+
     #: A name to be used in tables. If this is set to None it will be inferred
     #: from the class name.
     controller_name = None
@@ -292,51 +312,6 @@ class Controller:
                             'expected numpy ndarray of floats. Expected a '
                             'list or numpy ndarray of floats, got '
                             '{}'.format(attr_name, attr))
-
-    def jacobian_information(self):
-        """
-        Sets up Jacobian information for the controller, defining the
-        following variables:
-
-        - ``has_jacobian``: a True or False value whether the controller
-          requires Jacobian information.
-        - ``jacobian_free_solvers``: a list of minimizers in a specific
-          software that do not allow Jacobian information to be passed
-          into the fitting algorithm. For example in the ``Scipy``
-          controller this would return ``Nelder-Mead`` and ``Powell``.
-
-        This function should be overriden within a controller only
-        if it accepts Jacobian information
-
-        :return: (``has_jacobian``, ``jacobian_free_solvers``)
-        :rtype: (`string`, `list`)
-        """
-        has_jacobian = False
-        jacobian_free_solvers = []
-        return has_jacobian, jacobian_free_solvers
-
-    def hessian_information(self):
-        """
-        Sets up Hessian information for the controller, defining the
-        following variables:
-
-        This should return the following arguments:
-
-        - ``has_hessian``: a True or False value whether the controller
-          accepts Hessian information.
-        - ``hessian_enabled_solvers``: a list of minimizers in a specific
-          software that allow Hessian information to be passed
-          into the fitting algorithm.
-
-        This function should be overriden within a controller only
-        if it accepts Hessian information
-
-        :return: (``has_hessian``, ``hessian_enabled_solvers``)
-        :rtype: (`string`, `list`)
-        """
-        has_hessian = False
-        hessian_enabled_solvers = []
-        return has_hessian, hessian_enabled_solvers
 
     @abstractmethod
     def setup(self):

@@ -381,14 +381,13 @@ def loop_over_jacobians(controller, options, grabbed_output):
     """
     cost_func = controller.cost_func
     minimizer = controller.minimizer
-    has_jacobian, invalid_jacobians = controller.jacobian_information()
     jacobian_list = options.jac_method
     minimizer_name = minimizer
     jacobian = False
     results = []
     chi_sq = []
     minimizer_list = []
-    minimizer_check = has_jacobian and minimizer not in invalid_jacobians
+    minimizer_check = minimizer in controller.jacobian_enabled_solvers
     try:
         for jac_method in jacobian_list:
 
@@ -467,8 +466,7 @@ def loop_over_hessians(controller, options, minimizer_name,
     cost_func = controller.cost_func
     problem = controller.problem
     num_runs = options.num_runs
-    has_hessian, valid_hessian = controller.hessian_information()
-    minimizer_check = has_hessian and minimizer in valid_hessian
+    minimizer_check = minimizer in controller.hessian_enabled_solvers
     hessian_list = options.hes_method
     new_result = []
     new_minimizer_list = []

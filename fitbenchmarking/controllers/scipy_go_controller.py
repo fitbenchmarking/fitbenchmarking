@@ -33,6 +33,8 @@ class ScipyGOController(Controller):
                                 'dual_annealing']
     }
 
+    jacobian_enabled_solvers = ['shgo', 'dual_annealing']
+
     def __init__(self, cost_func):
         """
         Initialises variable used for temporary storage.
@@ -48,14 +50,6 @@ class ScipyGOController(Controller):
         self._popt = None
         self._status = None
         self._maxiter = None
-
-    def jacobian_information(self):
-        """
-        Scipy GO can use Jacobian information
-        """
-        has_jacobian = True
-        jacobian_free_solvers = ['differential_evolution']
-        return has_jacobian, jacobian_free_solvers
 
     def setup(self):
         """

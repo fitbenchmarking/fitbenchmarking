@@ -28,6 +28,8 @@ class ScipyLSController(Controller):
         'steepest_descent': [],
         'global_optimization': []}
 
+    jacobian_enabled_solvers = ['lm-scipy', 'trf', 'dogbox']
+
     def __init__(self, cost_func):
         """
         Initialise the class.
@@ -44,14 +46,6 @@ class ScipyLSController(Controller):
         self.result = None
         self._status = None
         self._popt = None
-
-    def jacobian_information(self):
-        """
-        Scipy LS can use Jacobian information
-        """
-        has_jacobian = True
-        jacobian_free_solvers = [None]
-        return has_jacobian, jacobian_free_solvers
 
     def setup(self):
         """

@@ -30,6 +30,8 @@ class LevmarController(Controller):
             'steepest_descent': [],
             'global_optimization': []}
 
+    jacobian_enabled_solvers = ['levmar']
+
     def __init__(self, cost_func):
         """
         Initialise the class.
@@ -45,14 +47,6 @@ class LevmarController(Controller):
         self.lm_y = None
         self._popt = None
         self._info = None
-
-    def jacobian_information(self):
-        """
-        levmar can use Jacobian information
-        """
-        has_jacobian = True
-        jacobian_free_solvers = []
-        return has_jacobian, jacobian_free_solvers
 
     def setup(self):
         """
