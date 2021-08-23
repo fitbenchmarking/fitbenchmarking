@@ -26,7 +26,8 @@ class MatlabCurveController(MatlabMixin, Controller):
             'gauss_newton': [],
             'bfgs': [],
             'conjugate_gradient': [],
-            'steepest_descent': []}
+            'steepest_descent': [],
+            'global_optimization': []}
 
     def __init__(self, cost_func):
         """
