@@ -62,7 +62,7 @@ class Controller:
     #: ``jacobian_enabled_solvers`` if any of the minimizers
     #: for the specific software are able to use jacobian
     #: information.
-
+    #:
     #: - ``jacobian_enabled_solvers``: a list of minimizers in a specific
     #: software that allow Jacobian information to be passed
     #: into the fitting algorithm
@@ -72,7 +72,7 @@ class Controller:
     #: ``hessian_enabled_solvers`` if any of the minimizers
     #: for the specific software are able to use hessian
     #: information.
-
+    #:
     #: - ``hessian_enabled_solvers``: a list of minimizers in a specific
     #: software that allow Hessian information to be passed
     #: into the fitting algorithm
