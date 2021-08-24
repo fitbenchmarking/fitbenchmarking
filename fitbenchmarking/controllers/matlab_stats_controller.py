@@ -46,22 +46,6 @@ class MatlabStatsController(MatlabMixin, Controller):
         self._status = None
         self.result = None
 
-    def jacobian_information(self):
-        """
-        MATLAB Statistics Toolbox cannot use external Jacobian information
-        """
-        has_jacobian = False
-        jacobian_free_solvers = ['Levenberg-Marquardt']
-        return has_jacobian, jacobian_free_solvers
-
-    def hessian_information(self):
-        """
-        Matlab Statistics Toolbox cannot use Hessian information
-        """
-        has_hessian = False
-        hessian_enabled_solvers = []
-        return has_hessian, hessian_enabled_solvers
-
     def setup(self):
         """
         Setup for Matlab fitting

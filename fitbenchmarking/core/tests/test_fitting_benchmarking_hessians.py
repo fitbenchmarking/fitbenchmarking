@@ -38,10 +38,8 @@ class DummyController(Controller):
         self.final_params_expected = [[1, 2, 3, 4], [4, 3, 2, 1]]
         self.flag_expected = [0, 1]
         self.count = 0
-        self.has_jacobian = []
-        self.invalid_jacobians = []
-        self.has_hessian = []
-        self.valid_hessians = []
+        self.jacobian_enabled_solvers = ["general"]
+        self.hessian_enabled_solvers = ["general"]
 
     def setup(self):
         """
@@ -54,22 +52,6 @@ class DummyController(Controller):
         Mock controller fit function
         """
         pass
-
-    def jacobian_information(self):
-        """
-        Mock controller jacobian_information function
-        """
-        has_jacobian = self.has_jacobian[self.count]
-        invalid_jacobians = self.invalid_jacobians[self.count]
-        return has_jacobian, invalid_jacobians
-
-    def hessian_information(self):
-        """
-        Mock controller hessian_information function
-        """
-        has_hessian = self.has_hessian[self.count]
-        valid_hessians = self.valid_hessians[self.count]
-        return has_hessian, valid_hessians
 
     def cleanup(self):
         """
@@ -120,11 +102,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         Test to check that only one Hessian option has been added
         """
         self.options.hes_method = ["analytic"]
-        self.controller.has_jacobian = [True]
-        self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "general"
-        self.controller.has_hessian = [True]
-        self.controller.valid_hessians = ["general"]
         new_name = ['general, analytic hessian']
         jacobian = False
         minimizer_name = "general"
@@ -142,11 +120,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         and the name does not have Hessian information in it
         """
         self.options.hes_method = ["analytic"]
-        self.controller.has_jacobian = [True]
-        self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.has_hessian = [False]
-        self.controller.valid_hessians = ["general"]
         new_name = ['deriv_free_algorithm']
         jacobian = False
         minimizer_name = "deriv_free_algorithm"
@@ -158,27 +132,18 @@ class LoopOverHessiansTests(unittest.TestCase):
                                self.grabbed_output)
         assert new_minimizer_list == new_name
 
-    # pylint: disable=unused-argument
-    @patch.object(DummyController, "cleanup")
     @patch.object(DummyController, "check_bounds_respected")
     def test_bounds_respected_func_called(
-            self, check_bounds_respected, cleanup):
+            self, check_bounds_respected):
         """
-        Test that the check to verify that bounds are respected is called when
-        the controller runs succesfully.
+        Test that the check to verify that check_bounds_respected is called
+        when the controller runs succesfully and parameter bounds
+        have been set.
         """
         self.controller.problem.value_ranges = {'test': (0, 1)}
-        self.controller.has_jacobian = [True]
-        self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.has_hessian = [False]
-        self.controller.valid_hessians = ["general"]
         jacobian = False
         minimizer_name = "deriv_free_algorithm"
-
-        # Cleanup has been mocked out with a no-op, so set the outputs now.
-        self.controller.flag = 0
-        self.controller.final_params = [1, 2, 3, 4]
 
         _ = loop_over_hessians(self.controller,
                                self.options,
@@ -187,26 +152,18 @@ class LoopOverHessiansTests(unittest.TestCase):
                                self.grabbed_output)
         check_bounds_respected.assert_called()
 
-    @patch.object(DummyController, "cleanup")
     @patch.object(DummyController, "check_bounds_respected")
     def test_bounds_respected_func_not_called(
-            self, check_bounds_respected, cleanup):
+            self, check_bounds_respected):
         """
-        Test that the check to verify that bounds are respected is not called
-        when the controller fails.
+        Test that the check to verify that check_bounds_respected is not called
+        when bounds have been set but the controller fails.
         """
         self.controller.problem.value_ranges = {'test': (0, 1)}
-        self.controller.has_jacobian = [True]
-        self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.has_hessian = [False]
-        self.controller.valid_hessians = ["general"]
+        self.controller.flag_expected = [3]
         jacobian = False
         minimizer_name = "deriv_free_algorithm"
-
-        # Cleanup has been mocked out with a no-op, so set the outputs now.
-        self.controller.flag = 3
-        self.controller.final_params = [1, 2, 3, 4]
 
         _ = loop_over_hessians(self.controller,
                                self.options,
@@ -214,7 +171,6 @@ class LoopOverHessiansTests(unittest.TestCase):
                                jacobian,
                                self.grabbed_output)
         check_bounds_respected.assert_not_called()
-    # pylint: enable=unused-argument
 
 
 if __name__ == "__main__":
