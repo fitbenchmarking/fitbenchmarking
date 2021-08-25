@@ -35,7 +35,7 @@ class Analytic(Jacobian):
         
         # flatten in case of vector function
         e = np.ravel(e)
-        y = np.ravel(e)
+        y = np.ravel(y)
 
         print(params)
         jac = self.problem.jacobian(x, params)
