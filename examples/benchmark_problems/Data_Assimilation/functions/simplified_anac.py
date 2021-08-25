@@ -27,12 +27,8 @@ def simplified_anac(t, x, gamma, mu):
 
     raise ValueError('x is the wrong shape in simplified_anac call.')
 
-def simplified_anac_jac(x, params):
+def simplified_anac_jac_dgamma(t, x, gamma, mu):
+    return np.array([0, x[0]])
 
-    if len(x.shape) == 1:
-        return np.array([[
-            0, 1],
-            [params[0] + 6*params[1]*x[0]**2, 0]
-        ])
-
-    raise ValueError('x is the wrong shape in simplified_anac_jac call.')
+def simplified_anac_jac_dmu(t, x, gamma, mu):
+    return np.array([0, 2*x[0]**3])

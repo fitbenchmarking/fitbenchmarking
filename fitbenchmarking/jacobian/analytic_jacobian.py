@@ -32,9 +32,15 @@ class Analytic(Jacobian):
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)
         e = kwargs.get("e", self.problem.data_e)
+        
+        # flatten in case of vector function
+        e = np.ravel(e)
+        y = np.ravel(e)
+
         print(params)
         jac = self.problem.jacobian(x, params)
-        print(jac)
+        print(np.shape(jac))
+        print(jac[0:50,:])
         if self.problem.options.cost_func_type == "weighted_nlls":
             # scales each column of the Jacobian by the weights
             jac = jac / e[:, None]
@@ -67,5 +73,7 @@ class Analytic(Jacobian):
                                          params,
                                          **kwargs)
             out = 2.0 * np.matmul(J.T, rx)
+
+        print(out)
 
         return out

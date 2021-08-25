@@ -23,6 +23,7 @@ class Scipy(Jacobian):
         :return: Approximation of the Jacobian
         :rtype: numpy array
         """
+        print(params)
         func = self.cost_func.eval_r
         f0 = self.cached_func_values(self.cost_func.cache_rx,
                                      func,
@@ -32,6 +33,8 @@ class Scipy(Jacobian):
                                 rel_step=None, f0=f0,
                                 bounds=(-np.inf, np.inf),
                                 kwargs=kwargs)
+        print(np.shape(jac))
+        print(jac[0:50,:])
         return jac
 
     def eval_cost(self, params, **kwargs):
@@ -53,4 +56,6 @@ class Scipy(Jacobian):
                                 rel_step=None, f0=r0,
                                 bounds=(-np.inf, np.inf),
                                 kwargs=kwargs)
+
+        print(jac)
         return jac

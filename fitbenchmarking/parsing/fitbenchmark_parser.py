@@ -100,6 +100,14 @@ class FitbenchmarkParser(Parser):
             fitting_problem.function = self._create_ivp_function()
             fitting_problem.format = 'ivp'
 
+        # JACOBIAN
+        if software == 'ivp':
+            try:
+                fitting_problem.jacobian = self._parse_ivp_jacobian()
+            except NoJacobianError:
+                LOGGER.warning("Could not find analytic Jacobian "
+                                "information for %s problem", fitting_problem.name)
+
         # If using a multivariate function wrap the call to take a single
         # argument
         if len(data_points[0]['x'].shape) > 1:
@@ -115,6 +123,13 @@ class FitbenchmarkParser(Parser):
             def new_function(x, *p):
                 inp = all_data[x]
                 return old_function(inp, *p)
+
+            if fitting_problem.jacobian:
+                old_jacobian = fitting_problem.jacobian
+                def new_jacobian(x, p):
+                    inp = all_data[x]
+                    return old_jacobian(inp, p)
+                fitting_problem.jacobian = new_jacobian
 
             fitting_problem.function = new_function
             fitting_problem.multivariate = True
@@ -133,14 +148,6 @@ class FitbenchmarkParser(Parser):
             else:
                 fitting_problem.equation = '{} Functions'.format(
                     equation_count)
-
-        # JACOBIAN
-        if software == 'ivp':
-            try:
-                fitting_problem.jacobian = self._parse_ivp_jacobian()
-            except NoJacobianError:
-                LOGGER.warning("Could not find analytic Jacobian "
-                                "information for %s problem", fitting_problem.name)
 
         # STARTING VALUES
         if software == 'ivp':
@@ -508,9 +515,31 @@ class FitbenchmarkParser(Parser):
         path = os.path.join(os.path.dirname(self._filename), jacobian_info['module'])
         sys.path.append(os.path.dirname(path))
         module = importlib.import_module(os.path.basename(path))
-        fun = getattr(module, jacobian_info['func'])
 
-        return fun
+        jac_fun = jacobian_info['jac']
+        jac_dict = dict(j.split(":") for j in jac_fun.split(";"))
+        time_step = jacobian_info['step']
+
+        def fitFunction_jac(x, *p):
+            p = tuple(p[0])
+            if len(x.shape) == 1:
+                x = np.array([x])
+            jac = np.zeros((np.shape(x)[0],np.shape(x)[1],len(p)))
+            for i, inp in enumerate(x):
+                j = 0
+                for k,v in jac_dict.items():
+                    fun = getattr(module, v)
+                    soln = solve_ivp(fun=fun,
+                                     t_span=[0, time_step],
+                                     y0=inp,
+                                     args=p,
+                                     vectorized=False)
+                    jac[i,:,j] = soln.y[:, -1]
+                    j += 1
+            new_jac = np.reshape(jac,(np.shape(x)[0]*np.shape(x)[1],len(p)))
+            return new_jac
+
+        return fitFunction_jac
 
 
 def _parse_range(range_str):
