@@ -21,7 +21,7 @@ for new contributors:
    and :ref:`external-instructions` for instructions on how to do this.
 
    .. note::
-        Please note that if you are using WSL, then installing Matlab is likely
+        Please note that if you are using WSL, Matlab is likely
         to be difficult to install so it is recommended that you use an alternative
         operating system if you are working on Matlab related issues. 
 
