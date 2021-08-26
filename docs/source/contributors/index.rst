@@ -12,6 +12,7 @@ Here you will find all you need in order to get started.
     :maxdepth: 2
     :caption: Contents:
 
+    install_instructions
     guidelines
     workflow
     structure
