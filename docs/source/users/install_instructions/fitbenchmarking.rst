@@ -33,6 +33,8 @@ using pip; please see :ref:`external-instructions` for details.
     and that package will not be available for Benchmarking, or will use the
     version of the package already on your system, if appropriate.
 
+.. _installing_from_source:
+
 Installing from source
 ----------------------
 
