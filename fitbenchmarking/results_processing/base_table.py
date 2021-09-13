@@ -558,4 +558,4 @@ class Table:
 
         plt.savefig(fig_path, dpi=150)
 
-        return fig_path
+        return os.path.relpath(fig_path, self.group_dir)
