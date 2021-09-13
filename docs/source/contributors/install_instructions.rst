@@ -16,6 +16,11 @@ for new contributors:
    code, you should install Fitbenchmarking from source. For
    details on how to do this, please see :ref:`installing_from_source`.
 
+   .. note::
+        The `editable` flag should be used when installing from source, like 
+        ``pip install -e ...``, so that changes made to the cloned code 
+        are immediately reflected in the imported package.
+
 3. So that you are able to run all tests locally, all extra dependencies and
    external software should be installed. Please see :ref:`extra_dependencies`
    and :ref:`external-instructions` for instructions on how to do this.
