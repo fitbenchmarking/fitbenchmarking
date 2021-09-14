@@ -2,7 +2,7 @@
 Tests for functions in the base tables file.
 """
 
-from unittest import TestCase
+from unittest import mock, TestCase
 
 import os
 import numpy as np
@@ -202,7 +202,8 @@ class DisplayStrTests(TestCase):
 
     def setUp(self):
         results = generate_results()
-        self.root_directory = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+        self.root_directory = os.path.join(os.path.dirname(__file__),
+                                           os.pardir, os.pardir, os.pardir)
         self.table = DummyTable(results=results,
                                 options=Options(),
                                 group_dir=self.root_directory,
@@ -233,20 +234,20 @@ class DisplayStrTests(TestCase):
         s = self.table.display_str([7, 9])
         self.assertEqual(s, '9 (7)')
 
-    def test_save_colourbar_returns_the_relative_path_to_the_colourbar_figure(self):
+    @mock.patch("fitbenchmarking.results_processing.base_table.plt.savefig")
+    def test_save_colourbar_returns_a_relative_path(self, savefig_mock):
         """
-        Test the relative path to the colourbar figure is returned after saving.
+        Test the relative path to the colourbar figure is returned after saving
         """
         self.table.name = "fake_name"
         colourbar_file = f"{self.table.name}_cbar.png"
 
         figure_sub_directory = "fitbenchmarking_results"
-        figure_directory = os.path.join(self.root_directory, figure_sub_directory)
+        figure_directory = os.path.join(self.root_directory,
+                                        figure_sub_directory)
 
-        full_path = f"{figure_directory}/{colourbar_file}"
-        relative_path = f"{figure_sub_directory}\\{colourbar_file}"
+        relative_path = f"{figure_sub_directory}/{colourbar_file}"
+        save_path = self.table.save_colourbar(figure_directory)
+        self.assertEqual(save_path.replace("\\", "/"), relative_path)
 
-        self.assertEqual(self.table.save_colourbar(figure_directory), relative_path)
-
-        self.assertTrue(os.path.exists(full_path))
-        os.remove(full_path)
+        savefig_mock.assert_called_once()
