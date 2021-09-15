@@ -518,7 +518,7 @@ class Table:
 
         return hex_strs
 
-    def save_colourbar(self, fig_dir, n_divs=100, sz_in=(3, 0.8)):
+    def save_colourbar(self, fig_dir, n_divs=100, sz_in=(3, 0.8)) -> str:
         """
         Generates a png of a labelled colourbar using matplotlib.
 
@@ -528,6 +528,9 @@ class Table:
         :type n_divs: int
         :param sz_in: dimensions of png in inches [width, height]
         :type sz_in: list[float] - 2 elements
+
+        :return: The relative path to the colourbar image.
+        :rtype: str
         """
         fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self.name))
 
@@ -554,3 +557,5 @@ class Table:
         fig.set_size_inches(sz_in[0], sz_in[1])
 
         plt.savefig(fig_path, dpi=150)
+
+        return os.path.relpath(fig_path, self.group_dir)
