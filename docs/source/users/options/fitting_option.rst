@@ -180,12 +180,3 @@ Default is 60
 
     [FITTING]
     max_runtime: 60
-
-.. warning::
-
-   Please note that the timing of fitting function is a subset of
-   the `max_runtime` specified. This is because the fitting function
-   is timed within a separate process with the process being terminated
-   once the `max_runtime` is exceeded. The overheads associated with
-   running a separate process are larger when running on Windows, so
-   in this case `max_runtime` should not be set to be small (<1 second).
