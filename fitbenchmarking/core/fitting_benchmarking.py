@@ -24,6 +24,7 @@ from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               ControllerAttributeError,
                                               IncompatibleMinimizerError,
+                                              MaxRuntimeError,
                                               NoJacobianError,
                                               NoHessianError,
                                               UnknownMinimizerError,
