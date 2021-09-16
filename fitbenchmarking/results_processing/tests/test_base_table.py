@@ -2,8 +2,9 @@
 Tests for functions in the base tables file.
 """
 
-from unittest import TestCase
+from unittest import mock, TestCase
 
+import os
 import numpy as np
 
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
@@ -230,3 +231,37 @@ class DisplayStrTests(TestCase):
         self.table.options.comparison_mode = 'both'
         s = self.table.display_str([7, 9])
         self.assertEqual(s, '9 (7)')
+
+
+class SaveColourbarTests(TestCase):
+    """
+    Tests for the save_colourbar implementation.
+    """
+
+    def setUp(self):
+        results = generate_results()
+        self.root_directory = os.path.join(os.path.dirname(__file__),
+                                           os.pardir, os.pardir, os.pardir)
+        self.table = DummyTable(results=results,
+                                options=Options(),
+                                group_dir=self.root_directory,
+                                pp_locations=('no', 'pp'),
+                                table_name='A table!')
+
+    @mock.patch("fitbenchmarking.results_processing.base_table.plt.savefig")
+    def test_save_colourbar_returns_a_relative_path(self, savefig_mock):
+        """
+        Test the relative path to the colourbar figure is returned after saving
+        """
+        self.table.name = "fake_name"
+        colourbar_file = f"{self.table.name}_cbar.png"
+
+        figure_sub_directory = "fitbenchmarking_results"
+        figure_directory = os.path.join(self.root_directory,
+                                        figure_sub_directory)
+
+        relative_path = os.path.join(figure_sub_directory, colourbar_file)
+        self.assertEqual(self.table.save_colourbar(figure_directory),
+                         relative_path)
+
+        savefig_mock.assert_called_once()
