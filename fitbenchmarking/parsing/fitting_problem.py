@@ -104,6 +104,9 @@ class FittingProblem:
         #: Callable function for the Hessian
         self.hessian = None
 
+        # The timer used to check if the 'max_runtime' is exceeded.
+        self.timer = None
+
     def eval_model(self, params, **kwargs):
         """
         Function evaluation method
@@ -117,6 +120,9 @@ class FittingProblem:
         if self.function is None:
             raise FittingProblemError('Cannot call function before setting '
                                       'function.')
+
+        self.timer.check_elapsed_time()
+
         x = kwargs.get("x", self.data_x)
         return self.function(x, *params)
 

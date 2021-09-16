@@ -140,6 +140,9 @@ class Controller:
         # in the fitting software have support for bounds
         self.support_for_bounds = False
 
+        # The timer used to check if the 'max_runtime' is exceeded.
+        self.timer = None
+
     @property
     def flag(self):
         """
@@ -190,6 +193,15 @@ class Controller:
         else:
             raise ControllerAttributeError('Either minimizer or parameter_set '
                                            'is set to None.')
+
+    def execute(self):
+        """
+        Starts and stops the timer used to check if the fit reaches
+        the 'max_runtime'. In the middle, it calls self.fit().
+        """
+        self.timer.start()
+        self.fit()
+        self.timer.stop()
 
     def eval_chisq(self, params, x=None, y=None, e=None):
         """
