@@ -2,7 +2,6 @@
 Set up performance profiles for both accuracy and runtime tables
 """
 import os
-from collections import OrderedDict
 from textwrap import wrap
 import numpy as np
 
@@ -43,21 +42,18 @@ def prepare_profile_data(results):
     :return: dictionary containing number of occurrences
     :rtype: tuple(dict, dict)
     """
-    out_acc = []
-    out_runtime = []
-    for res in results:
-        out_acc.append([r.norm_acc for r in res])
-        out_runtime.append([r.norm_runtime for r in res])
-    minimizers = [r.minimizer for r in results[0]]
+    acc_dict = {}
+    runtime_dict = {}
+    for _, row in results.items():
+        for _, cat in row.items():
+            for result in cat:
+                minimizer = result.minimizer_tag
+                if minimizer not in acc_dict:
+                    acc_dict[minimizer] = []
+                    runtime_dict[minimizer] = []
+                acc_dict[minimizer].append(result.norm_acc)
+                runtime_dict[minimizer].append(result.norm_runtime)
 
-    acc_array = np.array(out_acc).T
-    runtime_array = np.array(out_runtime).T
-    acc_dict = OrderedDict()
-    runtime_dict = OrderedDict()
-
-    for i, m in enumerate(minimizers):
-        acc_dict[m] = acc_array[i][:]
-        runtime_dict[m] = runtime_array[i][:]
     return acc_dict, runtime_dict
 
 

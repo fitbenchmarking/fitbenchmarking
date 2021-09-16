@@ -2,7 +2,7 @@
 FitBenchmarking results object
 """
 
-from __future__ import (absolute_import, division, print_function)
+import numpy as np
 
 # To store the results in the object requires more than the default
 # max arguments and sanitised_name setter requires no use of self
@@ -126,7 +126,10 @@ class FittingResult:
         :rtype: float
         """
         if self._norm_acc is None:
-            self._norm_acc = self.chi_sq / self.min_chi_sq
+            if self.min_chi_sq in [np.nan, np.inf]:
+                self._norm_acc = 1
+            else:
+                self._norm_acc = self.chi_sq / self.min_chi_sq
         return self._norm_acc
 
     @norm_acc.setter
@@ -148,7 +151,10 @@ class FittingResult:
         :rtype: float
         """
         if self._norm_runtime is None:
-            self._norm_runtime = self.runtime / self.min_runtime
+            if self.min_runtime in [np.nan, np.inf]:
+                self._norm_runtime = 1
+            else:
+                self._norm_runtime = self.runtime / self.min_runtime
         return self._norm_runtime
 
     @norm_runtime.setter

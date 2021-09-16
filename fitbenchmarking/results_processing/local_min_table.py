@@ -7,13 +7,14 @@ import matplotlib.colors as clrs
 import numpy as np
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
+from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.results_processing.base_table import Table
 from fitbenchmarking.utils.exceptions import IncompatibleTableError
 
 GRAD_TOL = 1e-1
 RES_TOL = 1e-8
-
+from fitbenchmarking.utils.options import Options
 
 class LocalMinTable(Table):
     """
@@ -34,15 +35,18 @@ class LocalMinTable(Table):
 
     """
 
-    def __init__(self, results, options, group_dir, pp_locations, table_name):
+    def __init__(self, results, best, options, group_dir, pp_locations,
+                 table_name):
         """
         Initialise the local minimizer table which shows given the
         conditioners stated in the doc string whether the final parameters
         are a local minimum
 
-        :param results: results nested array of objects
-        :type results: list of list of
-                       fitbenchmarking.utils.fitbm_result.FittingResult
+        :param results: Results grouped by row and category (for colouring)
+        :type results:
+            dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
+        :param best: The best results from each row/category
+        :type best: dict[str, dict[str, utils.fitbm_result.FittingResult]],
         :param options: Options used in fitting
         :type options: utils.options.Options
         :param group_dir: path to the directory where group results should be
@@ -54,22 +58,23 @@ class LocalMinTable(Table):
         :param table_name: Name of the table
         :type table_name: str
         """
-        super().__init__(results, options, group_dir, pp_locations, table_name)
+        super().__init__(results, best, options, group_dir, pp_locations,
+                         table_name)
         self.name = 'local_min'
 
         self.has_pp = True
         self.pp_filenames = \
             [os.path.relpath(pp, group_dir) for pp in pp_locations]
 
-        # Check whether the selected cost function is a least squares
-        # problem - if not then local min table is not appropriate
-        # and option should be ignored
-        if not isinstance(results[0][0].cost_func, BaseNLLSCostFunc):
-            raise IncompatibleTableError("The local_min table cannot be "
-                                         "produced with the {} cost "
-                                         "function. As a result, this "
-                                         "table will not be produced.".format(
-                                             options.cost_func_type))
+        # Check whether any selected cost function is not a least squares
+        # problem - if non least squares are present then local min table is
+        # not appropriate and option should be ignored
+        for cf in options.cost_func_type:
+            if not isinstance(create_cost_func(cf), BaseNLLSCostFunc):
+                raise IncompatibleTableError(
+                    "The local_min table cannot be produced with the "
+                    f"{options.cost_func_type} cost function. As a result, "
+                    "this table will not be produced.")
 
         self.cbar_title = "Cell Shading: Minimum Found"
         self.cbar_left_label = "True"

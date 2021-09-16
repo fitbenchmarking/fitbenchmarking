@@ -14,14 +14,17 @@ class CompareTable(Table):
 
     """
 
-    def __init__(self, results, options, group_dir, pp_locations, table_name):
+    def __init__(self, results, best, options, group_dir, pp_locations,
+                 table_name):
         """
         Initialise the compare table which shows both accuracy and runtime
         results
 
-        :param results: results nested array of objects
-        :type results: list of list of
-                       fitbenchmarking.utils.fitbm_result.FittingResult
+        :param results: Results grouped by row and category (for colouring)
+        :type results:
+            dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
+        :param best: The best results from each row/category
+        :type best: dict[str, dict[str, utils.fitbm_result.FittingResult]],
         :param options: Options used in fitting
         :type options: utils.options.Options
         :param group_dir: path to the directory where group results should be
@@ -33,7 +36,8 @@ class CompareTable(Table):
         :param table_name: Name of the table
         :type table_name: str
         """
-        super().__init__(results, options, group_dir, pp_locations, table_name)
+        super().__init__(results, best, options, group_dir, pp_locations,
+                         table_name)
         self.name = 'compare'
         self.has_pp = True
         self.pp_filenames = \

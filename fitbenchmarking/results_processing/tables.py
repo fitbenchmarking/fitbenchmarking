@@ -26,16 +26,18 @@ ERROR_OPTIONS = {0: "Successfully converged",
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
-def create_results_tables(options, results, group_name, group_dir, fig_dir,
-                          pp_locations, failed_problems, unselected_minimzers):
+def create_results_tables(options, results, best, group_name, group_dir,
+                          fig_dir, pp_locations, failed_problems,
+                          unselected_minimzers):
     """
     Saves the results of the fitting to html/txt tables.
 
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
-    :param results: results nested array of objects
-    :type results: list of list of
-                   fitbenchmarking.utils.fitbm_result.FittingResult
+    :param results: Results grouped by row and category (for colouring)
+    :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
+    :param best: The best results from each row/category
+    :type best: dict[str, dict[str, utils.fitbm_result.FittingResult]]
     :param group_name: name of the problem group
     :type group_name: str
     :param group_dir: path to the directory where group results should be
@@ -64,12 +66,12 @@ def create_results_tables(options, results, group_name, group_dir, fig_dir,
     for suffix in SORTED_TABLE_NAMES:
         if suffix in options.table_type:
 
-            table_names[suffix] = \
-                f'{group_name}_{suffix}_{options.cost_func_type}_table.'
+            table_names[suffix] = f'{group_name}_{suffix}_table.'
 
             try:
                 table, html_table, txt_table, cbar = \
                     generate_table(results,
+                                   best,
                                    options,
                                    group_dir,
                                    fig_dir,
@@ -155,14 +157,15 @@ def load_table(table):
     return classes[0][1]
 
 
-def generate_table(results, options, group_dir, fig_dir, pp_locations,
+def generate_table(results, best, options, group_dir, fig_dir, pp_locations,
                    table_name, suffix):
     """
     Generate html/txt tables.
 
-    :param results: results nested array of objects
-    :type results: list of list of
-                   fitbenchmarking.utils.fitbm_result.FittingResult
+    :param results: Results grouped by row and category (for colouring)
+    :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
+    :param best: The best results from each row/category
+    :type best: dict[str, dict[str, utils.fitbm_result.FittingResult]]
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
     :param group_dir: path to the directory where group results should be
@@ -178,12 +181,12 @@ def generate_table(results, options, group_dir, fig_dir, pp_locations,
     :param suffix: table suffix
     :type suffix: str
 
-
     :return: Table object, HTML string of table and text string of table.
     :rtype: tuple(Table object, str, str)
     """
     table_module = load_table(suffix)
-    table = table_module(results, options, group_dir, pp_locations, table_name)
+    table = table_module(results, best, options, group_dir, pp_locations,
+                         table_name)
 
     html_table = table.to_html()
     txt_table = table.to_txt()

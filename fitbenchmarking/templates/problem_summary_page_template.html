@@ -51,7 +51,26 @@
                         </div>
                     </div>
                 </section>
-                {% if len(best_results) == 1 %}
+                <section class="accordion">
+                    <input type="checkbox" name="collapse" id="comparison-accordion" checked="unchecked">
+                    <h2 class="handle">
+                        <label for="comparison-accordion">Comparison</label>
+                    </h2>
+                    <div class="content">
+                        <p>This is a comparison of the cost functions.</p>
+                        
+                        <div align="center" class="figure align-center">
+                            {% if summary_plot_available %}
+                                <img alt="{{ summary_plot }}" src="{{ summary_plot }}" />
+                            {% else %}
+                                <h3>{{ summary_plot }}</h3>
+                            {% endif %}
+                            <button class="btn default" onclick="history.go(-1)">
+                            <i class="fa fa-arrow-left"></i>
+                            </button>
+                        </div>
+
+                {% if best_results|length == 1 %}
                     <section class="accordion">
                         <input type="checkbox" name="collapse" id="best-accordion" checked="checked">
                         <h2 class="handle">

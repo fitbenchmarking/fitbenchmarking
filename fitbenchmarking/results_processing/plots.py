@@ -200,8 +200,8 @@ class Plot:
                        plot_options=plot_options_dict,
                        y=y)
         self.format_plot()
-        file = "{}_fit_for_{}.png".format(minimizer,
-                                          self.result.sanitised_name)
+        file = f"{minimizer}_fit_for_{self.result.costfun_tag}_" \
+               f"{self.result.sanitised_name}.png"
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
 
@@ -239,25 +239,43 @@ class Plot:
                        x=self.x,
                        y=self.problem.eval_model(params, x=self.x))
         self.format_plot()
-        file = "{}_fit_for_{}.png".format(minimizer,
-                                          self.result.sanitised_name)
+        file = f"{minimizer}_fit_for_{self.result.costfun_tag}_"\
+               f"{self.result.sanitised_name}.png"
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
         return file
 
     @classmethod
-    def plot_summary(cls, categories, options, figures_dir):
+    def plot_summary(cls, categories, title, options, figures_dir):
+        """
+        Create a comparison plot showing all fits from the results with the best
+        for each category highlighted.
+
+        :param categories: The results to plot sorted into colour groups
+        :type categories: dict[str, list[FittingResults]]
+        :param title: A title for the graph
+        :type title: str
+        :param options: The options for the run
+        :type options: utils.options.Options
+        :param figures_dir: The directory to save the figures in
+        :type figures_dir: str
+
+        :return: The path to the new plot
+        :rtype: str
+        """
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
 
+        # Get a colour for each category
         cmap = plt.cm.get_cmap('rainbow')
         col_vals = np.linspace(0, 1, len(categories))
         colours = iter(cmap(col_vals))
 
-        first_result = next(categories.values())[0]
+        first_result = next(iter(categories.values()))[0]
+        problem = first_result.cost_func.problem
 
         # Plot data
-        if options.cost_func_type == "weighted_nlls":
+        if "weighted_nlls" in options.cost_func_type:
             ax.errorbar(first_result.data_x,
                         first_result.data_y,
                         yerr=first_result.data_e,
@@ -274,28 +292,40 @@ class Plot:
         for (key, results), colour in zip(categories.items(), colours):
             # Plot category
             for result in results:
-                params = result.params
-                y = result.problem.eval_model(params, x=x)
-                if result.is_best_fit:
-                    plot_options = {
-                        "label": key,
-                        "zorder": 2,
-                        "color": colour,
-                        "marker": "",
-                        "linestyle": '-',
-                        "linewidth": 2,
-                    }
-                else:
-                    plot_options = {
-                        "zorder": 1,
-                        "color": colour,
-                        "marker": "",
-                        "linestyle": '-',
-                        "linewidth": 1,
-                        "alpha": 0.8,
-                    }
-                ax.plot(x, y, **plot_options)
+                if result.params is not None:
+                    params = result.params
+                    y = result.problem.eval_model(params, x=x)
+                    if result.is_best_fit:
+                        plot_options = {
+                            "label": key,
+                            "zorder": 2,
+                            "color": colour,
+                            "marker": "",
+                            "linestyle": '-',
+                            "linewidth": 2,
+                        }
+                    else:
+                        plot_options = {
+                            "zorder": 1,
+                            "color": colour,
+                            "marker": "",
+                            "linestyle": '-',
+                            "linewidth": 1,
+                            "alpha": 0.8,
+                        }
+                    ax.plot(x, y, **plot_options)
+                    # log scale plot if problem is a SASView problem
+                    if problem.format == "sasview":
+                        ax.set_xscale("log", nonpositive='clip')
+                        ax.set_yscale("log", nonpositive='clip')
+                    ax.set_xlabel("X")
+                    ax.set_ylabel("Y")
+                    ax.set_title(title,
+                                 fontsize=10)
+                    ax.legend(loc="upper left")
+                    fig.set_tight_layout(True)
 
         fname = f'summary_plot_for_{first_result.sanitised_name}.png'
         fig.savefig(os.path.join(figures_dir, fname))
+        plt.close(fig)
         return fname
