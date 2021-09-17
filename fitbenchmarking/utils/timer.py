@@ -53,4 +53,5 @@ class TimerWithMaxTime:
         active_elapsed_time = time() - self._start_time if is_timing else 0.0
 
         if self._total_elapsed_time + active_elapsed_time > self._max_runtime:
+            self.reset()
             raise MaxRuntimeError
