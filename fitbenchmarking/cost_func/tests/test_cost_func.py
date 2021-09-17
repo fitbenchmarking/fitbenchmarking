@@ -16,7 +16,6 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.utils.timer import TimerWithMaxTime
 # pylint: disable=attribute-defined-outside-init
 
 
@@ -31,7 +30,6 @@ class TestNLLSCostFunc(TestCase):
         """
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
-        fitting_problem.timer = TimerWithMaxTime(self.options.max_runtime)
         self.cost_function = NLLSCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
         self.x_val = np.array([1, 8, 11])
@@ -102,7 +100,6 @@ class TestWeightedNLLSCostFunc(TestCase):
         """
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
-        fitting_problem.timer = TimerWithMaxTime(self.options.max_runtime)
         self.cost_function = WeightedNLLSCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
         self.x_val = np.array([1, 8, 11])
@@ -153,7 +150,6 @@ class TestHellingerNLLSCostFunc(TestCase):
         """
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
-        fitting_problem.timer = TimerWithMaxTime(self.options.max_runtime)
         self.cost_function = HellingerNLLSCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
         self.x_val = np.array([1, 8, 11])
@@ -202,7 +198,6 @@ class TestPoissonCostFunc(TestCase):
         """
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
-        fitting_problem.timer = TimerWithMaxTime(self.options.max_runtime)
         self.cost_function = PoissonCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
         self.x_val = np.array([1, 8, 11])  # 6, 13, 16

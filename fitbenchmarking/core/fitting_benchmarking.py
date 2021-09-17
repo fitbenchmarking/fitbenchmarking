@@ -28,7 +28,6 @@ from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               UnknownMinimizerError,
                                               UnsupportedMinimizerError)
 from fitbenchmarking.utils.log import get_logger
-from fitbenchmarking.utils.timer import TimerWithMaxTime
 
 LOGGER = get_logger()
 
