@@ -141,7 +141,7 @@ class Controller:
         self.support_for_bounds = False
 
         # The timer used to check if the 'max_runtime' is exceeded.
-        self.timer = None
+        self.timer = cost_func.problem.timer
 
     @property
     def flag(self):

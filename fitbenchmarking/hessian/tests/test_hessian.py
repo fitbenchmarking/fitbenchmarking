@@ -19,6 +19,7 @@ from fitbenchmarking.hessian.hessian_factory import create_hessian
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.timer import TimerWithMaxTime
 
 
 def f_ls(x, p1, p2):
@@ -119,9 +120,9 @@ class TestHessianClass(TestCase):
         Setting up tests
         """
         options = Options()
-        self.fitting_problem = FittingProblem(options)
         options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
+        self.fitting_problem.timer = TimerWithMaxTime(options.max_runtime)
         self.fitting_problem.function = f_ls
         self.fitting_problem.jacobian = J_ls
         self.fitting_problem.hessian = H_ls
@@ -217,6 +218,7 @@ class TestHesCostFunc(TestCase):
         options = Options()
         options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
+        self.fitting_problem.timer = TimerWithMaxTime(options.max_runtime)
         self.fitting_problem.function = f_ls
         self.fitting_problem.jacobian = J_ls
         self.fitting_problem.hessian = H_ls

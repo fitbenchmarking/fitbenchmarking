@@ -14,6 +14,7 @@ import numpy as np
 
 from fitbenchmarking.utils.exceptions import FittingProblemError, \
     IncorrectBoundsError
+from fitbenchmarking.utils.timer import TimerWithMaxTime
 
 
 # Using property getters and setters means that the setter does not always use
@@ -105,7 +106,7 @@ class FittingProblem:
         self.hessian = None
 
         # The timer used to check if the 'max_runtime' is exceeded.
-        self.timer = None
+        self.timer = TimerWithMaxTime(self.options.max_runtime)
 
     def eval_model(self, params, **kwargs):
         """

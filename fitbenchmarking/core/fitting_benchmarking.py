@@ -131,10 +131,6 @@ def loop_over_benchmark_problems(problem_group, options):
         LOGGER.info(info_str)
         LOGGER.info('#' * (len(info_str) + 1))
 
-        # Creates the timer used to check if 'max_runtime' is exceeded
-        timer = TimerWithMaxTime(options.max_runtime)
-        problem.timer = timer
-
         ##############################
         # Loops over starting values #
         ##############################
@@ -236,7 +232,6 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
             controller = controller_cls(cost_func=cost_func)
 
         controller.parameter_set = start_values_index
-        controller.timer = cost_func.problem.timer
 
         #########################
         # Loops over minimizers #
