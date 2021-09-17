@@ -1,7 +1,11 @@
-from fitbenchmarking.utils.exceptions import MaxRuntimeError
-from fitbenchmarking.utils.timer import TimerWithMaxTime
+"""
+Tests for fitbenchmarking.utils.timer.TimerWithMaxTime
+"""
 from unittest import TestCase
 from time import sleep
+
+from fitbenchmarking.utils.exceptions import MaxRuntimeError
+from fitbenchmarking.utils.timer import TimerWithMaxTime
 
 
 class TimerWithMaxTimeTests(TestCase):
@@ -23,19 +27,19 @@ class TimerWithMaxTimeTests(TestCase):
         sleep(sleep_time)
         self.timer.stop()
 
-        self.assertGreaterEqual(self.timer._total_elapsed_time, sleep_time)
+        self.assertGreaterEqual(self.timer.total_elapsed_time, sleep_time)
 
     def test_that_reset_will_reset_the_total_elapsed_time(self):
         """
         Test the timer data is reset as expected.
         """
-        self.timer._total_elapsed_time = 5.5
-        self.timer._start_time = 1.2
+        self.timer.total_elapsed_time = 5.5
+        self.timer.start_time = 1.2
 
         self.timer.reset()
 
-        self.assertEqual(self.timer._total_elapsed_time, 0.0)
-        self.assertEqual(self.timer._start_time, None)
+        self.assertEqual(self.timer.total_elapsed_time, 0.0)
+        self.assertEqual(self.timer.start_time, None)
 
     def test_that_stop_will_not_raise_even_if_the_timer_is_not_running(self):
         """
@@ -59,5 +63,5 @@ class TimerWithMaxTimeTests(TestCase):
         with self.assertRaises(MaxRuntimeError):
             self.timer.check_elapsed_time()
 
-        self.assertEqual(self.timer._total_elapsed_time, 0.0)
-        self.assertEqual(self.timer._start_time, None)
+        self.assertEqual(self.timer.total_elapsed_time, 0.0)
+        self.assertEqual(self.timer.start_time, None)

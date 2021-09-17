@@ -64,7 +64,8 @@ class DummyController(Controller):
         self.count = self.count % len(self.flag_expected)
 
 
-def make_cost_function(file_name='cubic.dat', minimizers=None, max_runtime=None):
+def make_cost_function(file_name='cubic.dat', minimizers=None,
+                       max_runtime=None):
     """
     Helper function that returns a simple fitting problem
     """
@@ -180,8 +181,9 @@ class LoopOverHessiansTests(unittest.TestCase):
         """
         Test that the correct flag is set when the max_runtime is exceeded.
         """
-        self.cost_func = make_cost_function(minimizers=self.minimizers, max_runtime=0.1)
-        self.cost_func.problem.timer._total_elapsed_time = 5
+        self.cost_func = make_cost_function(minimizers=self.minimizers,
+                                            max_runtime=0.1)
+        self.cost_func.problem.timer.total_elapsed_time = 5
         self.controller = DummyController(cost_func=self.cost_func)
         self.options = self.cost_func.problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)

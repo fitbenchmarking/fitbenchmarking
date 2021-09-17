@@ -1,5 +1,9 @@
-from fitbenchmarking.utils.exceptions import MaxRuntimeError
+"""
+Implements the TimerWithMaxTime class used for checking the
+'max_runtime' is not exceeded.
+"""
 from time import time
+from fitbenchmarking.utils.exceptions import MaxRuntimeError
 
 
 class TimerWithMaxTime:
@@ -16,32 +20,32 @@ class TimerWithMaxTime:
         :param max_runtime: The maximum allowed runtime in seconds.
         :type max_runtime: float`
         """
-        self._max_runtime: float = max_runtime
-        self._total_elapsed_time: float = 0.0
-        self._start_time: float = None
+        self.max_runtime: float = max_runtime
+        self.total_elapsed_time: float = 0.0
+        self.start_time: float = None
 
     def start(self) -> None:
         """
         Starts the timer by recording the current time.
         """
-        self._start_time = time()
+        self.start_time = time()
 
     def stop(self) -> None:
         """
         Stops the timer if it is timing something. The elapsed time
         since starting the timer is added onto the total elapsed time.
         """
-        if self._start_time is not None:
-            self._total_elapsed_time += time() - self._start_time
-            self._start_time = None
+        if self.start_time is not None:
+            self.total_elapsed_time += time() - self.start_time
+            self.start_time = None
 
     def reset(self) -> None:
         """
         Resets the timer so it can be used for timing a different fit
         combination.
         """
-        self._total_elapsed_time = 0.0
-        self._start_time = None
+        self.total_elapsed_time = 0.0
+        self.start_time = None
 
     def check_elapsed_time(self) -> None:
         """
@@ -49,9 +53,9 @@ class TimerWithMaxTime:
         MaxRuntimeError exception if it has been exceeded. Otherwise,
         it carries on.
         """
-        is_timing = self._start_time is not None
-        active_elapsed_time = time() - self._start_time if is_timing else 0.0
+        is_timing = self.start_time is not None
+        active_elapsed_time = time() - self.start_time if is_timing else 0.0
 
-        if self._total_elapsed_time + active_elapsed_time > self._max_runtime:
+        if self.total_elapsed_time + active_elapsed_time > self.max_runtime:
             self.reset()
             raise MaxRuntimeError
