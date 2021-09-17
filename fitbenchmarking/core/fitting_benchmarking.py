@@ -536,8 +536,7 @@ def loop_over_hessians(controller, options, minimizer_name,
         except MaxRuntimeError as ex:
             LOGGER.warning(str(ex))
             controller.flag = 6
-        # pylint: disable=broad-except
-        except Exception as ex:
+        except Exception as ex:  # pylint: disable=broad-except
             LOGGER.warning(str(ex))
             controller.flag = 3
 
