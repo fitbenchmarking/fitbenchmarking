@@ -73,7 +73,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks max_rutime default
         """
-        expected = 60
+        expected = 600
         actual = self.options.max_runtime
         self.assertEqual(expected, actual)
 
