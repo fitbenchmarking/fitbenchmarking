@@ -19,7 +19,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    VALID_FLAGS = [0, 1, 2, 3, 4, 5]
+    VALID_FLAGS = [0, 1, 2, 3, 4, 5, 6]
 
     #: Within the controller class, you must
     #: initialize a dictionary, ``algorithm_check``,
@@ -140,6 +140,9 @@ class Controller:
         # in the fitting software have support for bounds
         self.support_for_bounds = False
 
+        # The timer used to check if the 'max_runtime' is exceeded.
+        self.timer = cost_func.problem.timer
+
     @property
     def flag(self):
         """
@@ -149,6 +152,7 @@ class Controller:
         | 3: `Software raised an exception`
         | 4: `Solver doesn't support bounded problems`
         | 5: `Solution doesn't respect parameter bounds`
+        | 6: `Solver has exceeded maximum allowed runtime`
         """
 
         return self._flag
@@ -189,6 +193,15 @@ class Controller:
         else:
             raise ControllerAttributeError('Either minimizer or parameter_set '
                                            'is set to None.')
+
+    def execute(self):
+        """
+        Starts and stops the timer used to check if the fit reaches
+        the 'max_runtime'. In the middle, it calls self.fit().
+        """
+        self.timer.start()
+        self.fit()
+        self.timer.stop()
 
     def eval_chisq(self, params, x=None, y=None, e=None):
         """

@@ -128,7 +128,8 @@ class Options:
          'software': ['scipy', 'scipy_ls'],
          'jac_method': ['scipy'],
          'hes_method': ['default'],
-         'cost_func_type': 'weighted_nlls'}
+         'cost_func_type': 'weighted_nlls',
+         'max_runtime': 600}
     DEFAULT_JACOBIAN = \
         {'analytic': ['cutest'],
          'scipy': ['2-point'],
@@ -212,6 +213,7 @@ class Options:
         self.jac_method = self.read_value(fitting.getlist, 'jac_method')
         self.hes_method = self.read_value(fitting.getlist, 'hes_method')
         self.cost_func_type = self.read_value(fitting.getstr, 'cost_func_type')
+        self.max_runtime = self.read_value(fitting.getfloat, 'max_runtime')
 
         jacobian = config['JACOBIAN']
         self.num_method = {}
@@ -323,7 +325,8 @@ class Options:
                              'algorithm_type': list_to_string(
                                  self.algorithm_type),
                              'software': list_to_string(self.software),
-                             'jac_method': list_to_string(self.jac_method)}
+                             'jac_method': list_to_string(self.jac_method),
+                             'max_runtime': self.max_runtime}
         config['JACOBIAN'] = {k: list_to_string(m)
                               for k, m in self.num_method.items()}
 

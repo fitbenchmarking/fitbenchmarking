@@ -119,7 +119,6 @@ class TestHessianClass(TestCase):
         Setting up tests
         """
         options = Options()
-        self.fitting_problem = FittingProblem(options)
         options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
         self.fitting_problem.function = f_ls

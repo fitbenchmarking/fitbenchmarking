@@ -22,6 +22,7 @@ from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               ControllerAttributeError,
                                               IncompatibleMinimizerError,
+                                              MaxRuntimeError,
                                               NoJacobianError,
                                               NoHessianError,
                                               UnknownMinimizerError,
@@ -496,11 +497,12 @@ def loop_over_hessians(controller, options, minimizer_name,
 
         try:
             with grabbed_output:
+                controller.timer.reset()
                 # Calls timeit repeat with repeat = num_runs and
                 # number = 1
                 runtime_list = timeit.Timer(
                     setup=controller.prepare,
-                    stmt=controller.fit
+                    stmt=controller.execute
                 ).repeat(num_runs, 1)
 
                 runtime = sum(runtime_list) / num_runs
@@ -531,26 +533,27 @@ def loop_over_hessians(controller, options, minimizer_name,
                 raise ControllerAttributeError(
                     "Either the computed runtime or chi_sq values "
                     "was a NaN.")
-        # Catching all exceptions as this means runtime cannot be
-        # calculated
-        # pylint: disable=broad-except
-        except Exception as excp:
-            LOGGER.warning(str(excp))
-
-            runtime = np.inf
+        except MaxRuntimeError as ex:
+            LOGGER.warning(str(ex))
+            controller.flag = 6
+        except Exception as ex:  # pylint: disable=broad-except
+            LOGGER.warning(str(ex))
             controller.flag = 3
+
+        if controller.flag in [3, 6]:
+            # If there was an exception, set the runtime and
+            # cost function value to be infinite
+            runtime = np.inf
             controller.final_params = \
                 None if not problem.multifit \
                 else [None] * len(controller.data_x)
 
             chi_sq = np.inf if not problem.multifit \
                 else [np.inf] * len(controller.data_x)
-
-        # If bounds have been set, check that they have
-        # been respected by the minimizer and set error
-        # flag if not
-        if controller.problem.value_ranges is not None \
-                and controller.flag != 3:
+        elif controller.problem.value_ranges is not None:
+            # If bounds have been set, check that they have
+            # been respected by the minimizer and set error
+            # flag if not
             controller.check_bounds_respected()
 
         # record algorithm type for specified minimizer
