@@ -42,5 +42,14 @@ the template file can be run by issuing the command
 
 Details about how the options file must be formatted are given in :ref:`options`.
 
-Running ``fitbenchmarking -h`` will give more guidance about available commands,
-including examples of how to run multiple problem sets.
+Changing the results directory
+------------------------------
+
+The default directory where the results are saved can be changed using the ``-r``, 
+``--results-dir`` argument. For example, the 
+
+.. code-block:: bash
+
+   fitbenchmarking -r fitbenchmarking_results/new_results/
+
+The default results directory is ``fitbenchmarking_results``.
