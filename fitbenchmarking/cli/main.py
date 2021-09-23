@@ -75,8 +75,8 @@ of the Fitbenchmarking docs. '''
                         help='Paths to directories containing problem sets.')
     parser.add_argument('-r', '--results-dir',
                         metavar='RESULTS_DIR',
-                        default=os.path.abspath(os.path.join(
-                            root, os.pardir, 'fitbenchmarking_results')),
+                        default=os.path.join(root, os.pardir,
+                                             'fitbenchmarking_results'),
                         help='The directory to store the resulting files in.')
     parser.add_argument('-d', '--debug-mode',
                         default=False,
@@ -253,7 +253,7 @@ def main():
     args = parser.parse_args(sys.argv[1:])
 
     run(problem_sets=args.problem_sets,
-        results_directory=args.results_dir,
+        results_directory=os.path.abspath(args.results_dir),
         options_file=args.options_file,
         debug=args.debug_mode)
 

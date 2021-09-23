@@ -17,7 +17,7 @@ Running alternative problems
 
 Other problems written in a :ref:`supported file format <problem_def>`
 can be analyzed with FitBenchmarking by
-passing the path using the ``--problem-sets`` (or ``-p``) option.
+passing the path using the ``-p`` or ``--problem-sets`` argument.
 Example problems can be downloaded from
 :ref:`BenchmarkProblems`, and they can also be found in the
 ``fitbenchmarking/examples`` directory of the code.
@@ -32,8 +32,8 @@ of the source, type into the terminal:
 Changing the options
 --------------------
    
-An options file can also be passed with the ``-o`` argument.  For example,
-the template file can be run by issuing the command
+An options file can also be passed with the ``-o`` or ``--options-file`` argument. 
+For example, the template file can be run by issuing the command
 
 .. code-block:: bash
 
@@ -45,8 +45,8 @@ Details about how the options file must be formatted are given in :ref:`options`
 Changing the results directory
 ------------------------------
 
-The default directory where the results are saved can be changed using the ``-r``, 
-``--results-dir`` argument. For example, the 
+The default directory where the results are saved can be changed using the ``-r``
+or ``--results-dir`` argument.
 
 .. code-block:: bash
 
