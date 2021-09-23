@@ -141,8 +141,7 @@ class Options:
          'colour_ulim': 100,
          'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
-         'table_type': ['acc', 'runtime', 'compare', 'local_min'],
-         'results_dir': 'fitbenchmarking_results'}
+         'table_type': ['acc', 'runtime', 'compare', 'local_min']}
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
          'append': False,
@@ -154,12 +153,14 @@ class Options:
                 'PLOTTING': DEFAULT_PLOTTING,
                 'LOGGING': DEFAULT_LOGGING}
 
-    def __init__(self, file_name=None):
+    def __init__(self, results_directory: str, file_name=None):
         """
         Initialise the options from a file if file is given.
         Priority is values in the file, failing that, values are taken from
         DEFAULTS (stored in ./default_options.ini)
 
+        :param results_directory: The directory to store the results in.
+        :type results_directory: str
         :param file_name: The options file to load
         :type file_name: str
         """
@@ -167,7 +168,7 @@ class Options:
         # problem groups
         self.stored_file_name = file_name
         self.error_message = []
-        self._results_dir = ''
+        self._results_dir = results_directory
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str,
                                                        'rng': read_range},
@@ -230,7 +231,6 @@ class Options:
         self.comparison_mode = self.read_value(plotting.getstr,
                                                'comparison_mode')
         self.table_type = self.read_value(plotting.getlist, 'table_type')
-        self.results_dir = self.read_value(plotting.getstr, 'results_dir')
 
         logging = config['LOGGING']
         self.log_append = self.read_value(logging.getboolean, 'append')
@@ -247,7 +247,7 @@ class Options:
         """
         Resets options object when running multiple problem groups.
         """
-        self.__init__(self.stored_file_name)
+        self.__init__(self._results_dir, self.stored_file_name)
 
     def read_value(self, func, option):
         """
@@ -290,10 +290,6 @@ class Options:
         """
         return self._results_dir
 
-    @results_dir.setter
-    def results_dir(self, value):
-        self._results_dir = os.path.abspath(value)
-
     @property
     def minimizers(self):
         """
@@ -335,7 +331,6 @@ class Options:
                               'colour_ulim': self.colour_ulim,
                               'comparison_mode': self.comparison_mode,
                               'make_plots': self.make_plots,
-                              'results_dir': self.results_dir,
                               'table_type': list_to_string(self.table_type)}
         config['LOGGING'] = {'file_name': self.log_file,
                              'level': self.log_level,
