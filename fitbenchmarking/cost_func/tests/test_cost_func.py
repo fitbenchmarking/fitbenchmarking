@@ -4,6 +4,7 @@ Tests available cost function classes in FitBenchmarking.
 
 from unittest import TestCase
 
+import os
 import numpy as np
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.cost_func.hellinger_nlls_cost_func import \
@@ -28,7 +29,7 @@ class TestNLLSCostFunc(TestCase):
         """
         Setting up nonlinear least squares cost function tests
         """
-        self.options = Options()
+        self.options = Options(os.path.dirname(__file__))
         fitting_problem = FittingProblem(self.options)
         self.cost_function = NLLSCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
@@ -98,7 +99,7 @@ class TestWeightedNLLSCostFunc(TestCase):
         """
         Setting up weighted nonlinear least squares cost function tests
         """
-        self.options = Options()
+        self.options = Options(os.path.dirname(__file__))
         fitting_problem = FittingProblem(self.options)
         self.cost_function = WeightedNLLSCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
@@ -148,7 +149,7 @@ class TestHellingerNLLSCostFunc(TestCase):
         """
         Setting up root nonlinear least squares cost function tests
         """
-        self.options = Options()
+        self.options = Options(os.path.dirname(__file__))
         fitting_problem = FittingProblem(self.options)
         self.cost_function = HellingerNLLSCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
@@ -196,7 +197,7 @@ class TestPoissonCostFunc(TestCase):
         """
         Setting up poisson cost function tests
         """
-        self.options = Options()
+        self.options = Options(os.path.dirname(__file__))
         fitting_problem = FittingProblem(self.options)
         self.cost_function = PoissonCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
@@ -253,7 +254,7 @@ class FactoryTests(TestCase):
         """
         Test that the factory returns the correct class for inputs
         """
-        self.options = Options()
+        self.options = Options(os.path.dirname(__file__))
 
         valid = ['weighted_nlls', 'nlls', 'hellinger_nlls', 'poisson']
         invalid = ['normal']

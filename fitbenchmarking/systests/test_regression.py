@@ -29,6 +29,9 @@ class TestRegressionAll(TestCase):
         """
         Create an options file, run it, and get the results.
         """
+        results_dir = os.path.join(os.path.dirname(__file__),
+                                   'fitbenchmarking_results')
+
         opts = setup_options()
         opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
                                                mode='w',
@@ -39,7 +42,8 @@ class TestRegressionAll(TestCase):
                                                os.pardir,
                                                'mock_problems',
                                                'all_parsers_set'))
-        run([problem], options_file=opt_file.name, debug=True)
+        run([problem], results_dir, options_file=opt_file.name,
+            debug=True)
         os.remove(opt_file.name)
         opts = setup_options(multifit=True)
         opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
@@ -51,7 +55,8 @@ class TestRegressionAll(TestCase):
                                                os.pardir,
                                                'mock_problems',
                                                'multifit_set'))
-        run([problem], options_file=opt_file.name, debug=True)
+        run([problem], results_dir, options_file=opt_file.name,
+            debug=True)
         os.remove(opt_file.name)
 
     def test_results_consistent_all(self):
@@ -117,6 +122,9 @@ class TestRegressionMatlab(TestCase):
         """
         Create an options file, run it, and get the results.
         """
+        results_dir = os.path.join(os.path.dirname(__file__),
+                                   'fitbenchmarking_results')
+
         opts = setup_options()
         opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
                                                mode='w',
@@ -127,7 +135,8 @@ class TestRegressionMatlab(TestCase):
                                                os.pardir,
                                                'mock_problems',
                                                'all_parsers_set'))
-        run([problem], options_file=opt_file.name, debug=True)
+        run([problem], results_dir, options_file=opt_file.name,
+            debug=True)
         os.remove(opt_file.name)
 
     def test_results_consistent_all(self):
@@ -169,6 +178,8 @@ class TestRegressionDefault(TestCase):
         """
         Create an options file, run it, and get the results.
         """
+        results_dir = os.path.join(os.path.dirname(__file__),
+                                   'fitbenchmarking_results')
 
         # Get defaults which should have minimizers for every software
         opts = setup_options()
@@ -184,7 +195,8 @@ class TestRegressionDefault(TestCase):
                                                'mock_problems',
                                                'default_parsers'))
 
-        run([problem], options_file=opt_file.name, debug=True)
+        run([problem], results_dir, options_file=opt_file.name,
+            debug=True)
         os.remove(opt_file.name)
 
     def test_results_consistent(self):
@@ -256,9 +268,11 @@ def setup_options(multifit=False):
     :return: Fitbenchmarking options file for tests
     :rtype: fitbenchmarking.utils.options.Options
     """
+    results_dir = os.path.join(os.path.dirname(__file__),
+                               'fitbenchmarking_results')
 
     # Get defaults which should have minimizers for every software
-    opts = Options()
+    opts = Options(results_dir)
     opts.num_runs = 1
     opts.make_plots = False
     # Use only the first minimizer from the selected software packages
@@ -276,8 +290,5 @@ def setup_options(multifit=False):
     else:
         opts.software = ['bumps', 'scipy', 'scipy_ls']
         opts.minimizers = {s: [opts.minimizers[s][0]] for s in opts.software}
-
-    opts.results_dir = os.path.join(os.path.dirname(__file__),
-                                    'fitbenchmarking_results')
 
     return opts

@@ -19,7 +19,8 @@ class MininimizerOptionTests(unittest.TestCase):
         """
         Initializes options class with defaults
         """
-        self.options = Options()
+        self.results_dir = os.path.dirname(__file__)
+        self.options = Options(self.results_dir)
         software = ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
                     'ralfit', 'scipy', 'scipy_ls']
         self.options.software = software
@@ -106,6 +107,7 @@ class UserMininimizerOptionTests(unittest.TestCase):
         """
         Sets the directory to save the temporary ini files in
         """
+        self.results_dir = os.path.dirname(__file__)
         options_dir = os.path.dirname(inspect.getfile(Options))
         self.test_files_dir = os.path.join(options_dir, 'tests', 'files')
         os.mkdir(self.test_files_dir)
@@ -149,7 +151,7 @@ class UserMininimizerOptionTests(unittest.TestCase):
         :type software: str
         """
         opts_file = self.generate_user_ini_file(options_set, software)
-        options = Options(opts_file)
+        options = Options(self.results_dir, opts_file)
         if software not in options.software:
             options.software.append(software)
         actual = options.minimizers[software]
@@ -166,7 +168,7 @@ class UserMininimizerOptionTests(unittest.TestCase):
         """
         opts_file = self.generate_user_ini_file(options_set, software)
         with self.assertRaises(exceptions.OptionsError):
-            Options(opts_file)
+            Options(self.results_dir, opts_file)
 
     def test_invalid_option_key(self):
         """

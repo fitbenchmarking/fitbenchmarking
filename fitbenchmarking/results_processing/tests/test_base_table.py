@@ -25,7 +25,7 @@ def generate_results():
     :return: Set of manually generated results
     :rtype: list[list[FittingResult]]
     """
-    options = Options()
+    options = Options(os.path.dirname(__file__))
     results = []
 
     data_x = np.array([[1, 4, 5], [2, 1, 5]])
@@ -159,7 +159,7 @@ class CreateResultsDictTests(TestCase):
         """
         results_list = generate_results()
         table = DummyTable(results=results_list,
-                           options=Options(),
+                           options=Options(os.path.dirname(__file__)),
                            group_dir='fake',
                            pp_locations=('no', 'pp'),
                            table_name='A table!')
@@ -203,7 +203,7 @@ class DisplayStrTests(TestCase):
     def setUp(self):
         results = generate_results()
         self.table = DummyTable(results=results,
-                                options=Options(),
+                                options=Options(os.path.dirname(__file__)),
                                 group_dir='fake',
                                 pp_locations=('no', 'pp'),
                                 table_name='A table!')
@@ -243,7 +243,7 @@ class SaveColourbarTests(TestCase):
         self.root_directory = os.path.join(os.path.dirname(__file__),
                                            os.pardir, os.pardir, os.pardir)
         self.table = DummyTable(results=results,
-                                options=Options(),
+                                options=Options(os.path.dirname(__file__)),
                                 group_dir=self.root_directory,
                                 pp_locations=('no', 'pp'),
                                 table_name='A table!')

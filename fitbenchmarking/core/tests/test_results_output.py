@@ -63,7 +63,7 @@ def fitting_function_2(data, x1, x2):
 
 
 # pylint: enable=unused-argument
-def generate_mock_results():
+def generate_mock_results(results_directory: str):
     """
     Generates results to test against
 
@@ -74,7 +74,7 @@ def generate_mock_results():
                   Options object)
     """
     software = 'scipy_ls'
-    options = Options()
+    options = Options(results_directory)
     options.software = [software]
     num_min = len(options.minimizers[options.software[0]])
     data_x = np.array([[1, 4, 5], [2, 1, 5]])
@@ -140,18 +140,18 @@ class SaveResultsTests(unittest.TestCase):
         """
         Setting up paths and results folders
         """
+        self.results_dir = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'fitbenchmarking_results')
         self.results, self.options, self.min_chi_sq, self.min_runtime = \
-            generate_mock_results()
-        test_path = os.path.dirname(os.path.realpath(__file__))
-        self.dirname = os.path.join(test_path, 'fitbenchmarking_results')
-        self.options.results_dir = self.dirname
-        os.mkdir(self.dirname)
+            generate_mock_results(self.results_dir)
+        os.mkdir(self.results_dir)
 
     def tearDown(self):
         """
         Clean up created folders.
         """
-        shutil.rmtree(self.dirname)
+        shutil.rmtree(self.results_dir)
 
     def test_save_results_correct(self):
         """
@@ -164,7 +164,7 @@ class SaveResultsTests(unittest.TestCase):
         group_dir = save_results(self.options, self.results, group_name,
                                  failed_problems, unselected_minimzers,
                                  cost_func_description)
-        assert group_dir == os.path.join(self.dirname, group_name)
+        assert group_dir == os.path.join(self.results_dir, group_name)
 
 
 class CreateDirectoriesTests(unittest.TestCase):
@@ -176,24 +176,23 @@ class CreateDirectoriesTests(unittest.TestCase):
         """
         Setting up paths and results folders
         """
-        self.options = Options()
         test_path = os.path.dirname(os.path.realpath(__file__))
-        self.dirname = os.path.join(test_path, 'fitbenchmarking_results')
-        os.mkdir(self.dirname)
+        self.results_dir = os.path.join(test_path, 'fitbenchmarking_results')
+        self.options = Options(self.results_dir)
+        os.mkdir(self.results_dir)
 
     def tearDown(self):
         """
         Clean up created folders.
         """
-        shutil.rmtree(self.dirname)
+        shutil.rmtree(self.results_dir)
 
     def test_create_dirs_correct(self):
         """
         Test to check that the directories are correctly made.
         """
         group_name = 'test_group'
-        self.options.results_dir = self.dirname
-        expected_results_dir = self.dirname
+        expected_results_dir = self.results_dir
         expected_group_dir = os.path.join(expected_results_dir, group_name)
         expected_support_dir = os.path.join(expected_group_dir,
                                             'support_pages')
@@ -223,8 +222,11 @@ class PreproccessDataTests(unittest.TestCase):
         """
         Setting up paths and results folders
         """
+        self.results_dir = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'fitbenchmarking_results')
         self.results, self.options, self.min_chi_sq, self.min_runtime = \
-            generate_mock_results()
+            generate_mock_results(self.results_dir)
 
     def test_preproccess_data(self):
         """
@@ -254,9 +256,9 @@ class CreatePlotsTests(unittest.TestCase):
         Setting up paths and results folders
         """
         self.tempdir = TemporaryDirectory()
-        self.dirname = os.path.join(self.tempdir.name, 'figures_dir')
+        self.results_dir = os.path.join(self.tempdir.name, 'figures_dir')
         self.results, self.options, self.min_chi_sq, self.min_runtime = \
-            generate_mock_results()
+            generate_mock_results(self.results_dir)
         self.best_results = preproccess_data(self.results)
 
     @mock.patch('fitbenchmarking.results_processing.plots.Plot')
@@ -276,7 +278,7 @@ class CreatePlotsTests(unittest.TestCase):
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
         create_plots(self.options, self.results,
-                     self.best_results, self.dirname)
+                     self.best_results, self.results_dir)
         for result, best_result in zip(self.results, self.best_results):
             # Check initial guess is correctly set in results
             assert best_result.start_figure_link == expected_plot_initial_guess
@@ -305,7 +307,7 @@ class CreatePlotsTests(unittest.TestCase):
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
         create_plots(self.options, self.results,
-                     self.best_results, self.dirname)
+                     self.best_results, self.results_dir)
         for result, best_result in zip(self.results, self.best_results):
             # Check initial guess is correctly set in results
             assert best_result.start_figure_link == expected_plot_initial_guess
@@ -333,7 +335,7 @@ class CreatePlotsTests(unittest.TestCase):
                 side_effect=PlottingError('Faked plot')):
 
             create_plots(self.options, self.results,
-                         self.best_results, self.dirname)
+                         self.best_results, self.results_dir)
 
         expected = 'An error occurred during plotting.\nDetails: Faked plot'
         for result, best_result in zip(self.results, self.best_results):
@@ -351,7 +353,7 @@ class CreateProblemLevelIndex(unittest.TestCase):
         """
         Setting up paths and results folders
         """
-        self.options = Options()
+        self.options = Options(os.path.dirname(__file__))
         test_path = os.path.dirname(os.path.realpath(__file__))
         self.group_dir = os.path.join(test_path, 'fitbenchmarking_results')
         os.mkdir(self.group_dir)

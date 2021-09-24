@@ -3,6 +3,7 @@ Tests for the output grabber
 """
 from __future__ import absolute_import, division, print_function
 
+import os
 import platform
 import sys
 import unittest
@@ -16,7 +17,8 @@ class OutputGrabberTests(unittest.TestCase):
     Tests for the Output Grabber
     """
     def setUp(self):
-        self.options = Options()
+        self.results_dir = os.path.dirname(__file__)
+        self.options = Options(self.results_dir)
         self.plt = platform.system()
 
     def test_correct_stdout(self):

@@ -57,7 +57,7 @@ def make_cost_func(file_name='cubic.dat'):
     Helper function that returns a simple fitting problem
     """
 
-    options = Options()
+    options = Options(os.path.dirname(__file__))
 
     bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
     fname = os.path.join(bench_prob_dir, file_name)

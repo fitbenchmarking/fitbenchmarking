@@ -3,6 +3,7 @@ Unit testing for the jacobian directory.
 """
 from unittest import TestCase
 
+import os
 import numpy as np
 
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
@@ -90,7 +91,7 @@ class TestJacobianClass(TestCase):
         """
         Setting up tests
         """
-        options = Options()
+        options = Options(os.path.dirname(__file__))
         options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
         self.fitting_problem.function = f
@@ -215,7 +216,7 @@ class TestCachedFuncValues(TestCase):
         """
         Setting up tests
         """
-        options = Options()
+        options = Options(os.path.dirname(__file__))
         options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
         self.cost_func = NLLSCostFunc(self.fitting_problem)
@@ -268,7 +269,7 @@ class TestDerivCostFunc(TestCase):
         """
         Setting up tests
         """
-        options = Options()
+        options = Options(os.path.dirname(__file__))
         options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
         self.fitting_problem.function = f
@@ -342,7 +343,7 @@ class TestFactory(TestCase):
     """
 
     def setUp(self):
-        self.options = Options()
+        self.options = Options(os.path.dirname(__file__))
 
     def test_imports(self):
         """

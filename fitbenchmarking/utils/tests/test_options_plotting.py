@@ -19,7 +19,8 @@ class PlottingOptionTests(unittest.TestCase):
         """
         Initializes options class with defaults
         """
-        self.options = Options()
+        self.results_dir = os.path.dirname(__file__)
+        self.options = Options(self.results_dir)
 
     def test_make_plots_default(self):
         """
@@ -69,14 +70,6 @@ class PlottingOptionTests(unittest.TestCase):
         actual = self.options.table_type
         self.assertEqual(expected, actual)
 
-    def test_results_dir_default(self):
-        """
-        Checks results_dir default
-        """
-        expected = os.path.abspath('fitbenchmarking_results')
-        actual = self.options.results_dir
-        self.assertEqual(expected, actual)
-
 
 class UserPlottingOptionTests(unittest.TestCase):
     """
@@ -87,6 +80,7 @@ class UserPlottingOptionTests(unittest.TestCase):
         """
         Sets the directory to save the temporary ini files in
         """
+        self.results_dir = os.path.dirname(__file__)
         options_dir = os.path.dirname(inspect.getfile(Options))
         self.test_files_dir = os.path.join(options_dir, 'tests', 'files')
         os.mkdir(self.test_files_dir)
@@ -128,7 +122,7 @@ class UserPlottingOptionTests(unittest.TestCase):
         :type config_str: str
         """
         opts_file = self.generate_user_ini_file(opt_name, config_str)
-        options = Options(opts_file)
+        options = Options(self.results_dir, opts_file)
         actual = getattr(options, opt_name)
         self.assertEqual(options_set, actual)
 
@@ -143,7 +137,7 @@ class UserPlottingOptionTests(unittest.TestCase):
         """
         opts_file = self.generate_user_ini_file(opt_name, config_str)
         with self.assertRaises(exceptions.OptionsError):
-            Options(opts_file)
+            Options(self.results_dir, opts_file)
 
     def test_invalid_option_key(self):
         """
@@ -246,12 +240,3 @@ class UserPlottingOptionTests(unittest.TestCase):
         config_str = \
             "[PLOTTING]\ntable_type: chi_sq\n "
         self.shared_invalid('table_type', config_str)
-
-    def test_minimizer_results_dir_valid(self):
-        """
-        Checks user set results_dir is valid
-        """
-        set_option = os.path.abspath("results_dir")
-        config_str = \
-            "[PLOTTING]\nresults_dir: results_dir"
-        self.shared_valid('results_dir', set_option, config_str)

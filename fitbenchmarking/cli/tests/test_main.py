@@ -18,7 +18,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
-    options = Options()
+    options = Options(os.path.dirname(__file__))
     if minimizers:
         options.minimizers = minimizers
 
@@ -44,7 +44,8 @@ class TestMain(TestCase):
         benchmark.return_value = ([], [], {}, '')
 
         with self.assertRaises(exceptions.NoResultsError):
-            main.run(['examples/benchmark_problems/simple_tests'], debug=True)
+            main.run(['examples/benchmark_problems/simple_tests'],
+                     os.path.dirname(__file__), debug=True)
 
     @patch('fitbenchmarking.cli.main.benchmark')
     def test_all_dummy_results_produced(self, benchmark):
@@ -54,13 +55,14 @@ class TestMain(TestCase):
         benchmark.side_effect = self.mock_func_call
 
         with self.assertRaises(exceptions.NoResultsError):
-            main.run(['examples/benchmark_problems/simple_tests'], debug=True)
+            main.run(['examples/benchmark_problems/simple_tests'],
+                     os.path.dirname(__file__), debug=True)
 
     def mock_func_call(self, *args, **kwargs):
         """
         Mock function to be used instead of benchmark
         """
-        options = Options()
+        options = Options(os.path.dirname(__file__))
         cost_func = make_cost_function()
 
         results = []

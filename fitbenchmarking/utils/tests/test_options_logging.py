@@ -19,7 +19,8 @@ class LoggingOptionTests(unittest.TestCase):
         """
         Initializes options class with defaults
         """
-        self.options = Options()
+        self.results_dir = os.path.dirname(__file__)
+        self.options = Options(self.results_dir)
 
     def test_file_name_default(self):
         """
@@ -63,6 +64,7 @@ class UserLoggingOptionTests(unittest.TestCase):
         """
         Sets the directory to save the temporary ini files in
         """
+        self.results_dir = os.path.dirname(__file__)
         options_dir = os.path.dirname(inspect.getfile(Options))
         self.test_files_dir = os.path.join(options_dir, 'tests', 'files')
         os.mkdir(self.test_files_dir)
@@ -104,7 +106,7 @@ class UserLoggingOptionTests(unittest.TestCase):
         :type config_str: str
         """
         opts_file = self.generate_user_ini_file(opt_name, config_str)
-        options = Options(opts_file)
+        options = Options(self.results_dir, opts_file)
         actual = getattr(options, opt_name)
         self.assertEqual(options_set, actual)
 
@@ -119,7 +121,7 @@ class UserLoggingOptionTests(unittest.TestCase):
         """
         opts_file = self.generate_user_ini_file(opt_name, config_str)
         with self.assertRaises(exceptions.OptionsError):
-            Options(opts_file)
+            Options(self.results_dir, opts_file)
 
     def test_invalid_option_key(self):
         """

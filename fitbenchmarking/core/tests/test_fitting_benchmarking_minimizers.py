@@ -67,7 +67,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
-    options = Options()
+    options = Options(os.path.dirname(__file__))
     if minimizers:
         options.minimizers = minimizers
 

@@ -5,6 +5,7 @@ Test file to test the fitting_problem file.
 from collections import OrderedDict
 from unittest import TestCase
 
+import os
 import numpy as np
 
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -21,7 +22,7 @@ class TestFittingProblem(TestCase):
         """
         Setting up FittingProblem tests
         """
-        self.options = Options()
+        self.options = Options(os.path.dirname(__file__))
 
     def test_verify_problem(self):
         """

@@ -17,7 +17,7 @@ from fitbenchmarking.parsing.parser_factory import \
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
-OPTIONS = Options()
+OPTIONS = Options(os.path.dirname(__file__))
 JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist']
 HESSIAN_ENABLED_PARSERS = ['nist']
 BOUNDS_ENABLED_PARSERS = ['cutest', 'fitbenchmark']

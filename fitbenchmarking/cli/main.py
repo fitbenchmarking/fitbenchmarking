@@ -77,7 +77,7 @@ of the Fitbenchmarking docs. '''
                         metavar='RESULTS_DIR',
                         default=os.path.join(root, os.pardir,
                                              'fitbenchmarking_results'),
-                        help='The directory to store the resulting files in.')
+                        help='The directory to store resulting files in.')
     parser.add_argument('-d', '--debug-mode',
                         default=False,
                         action='store_true',
@@ -210,9 +210,10 @@ def run(problem_sets, results_directory, options_file='', debug=False):
                   "and/or problem set then re-run FitBenchmarking"
         raise NoResultsError(message)
 
-    LOGGER.info(f"\nINFO:\nThe FitBenchmarking results will be placed into the "
-                f"folder:\n\n   {options.results_dir}\n\nTo change this use "
-                f"the -r, --results-dir optional command line argument.\n")
+    LOGGER.info("\nINFO:\nThe FitBenchmarking results will be placed into "
+                "the folder:\n\n   %s\n\nTo change this use the -r or "
+                "--results-dir optional command line argument.\n",
+                options.results_dir)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
