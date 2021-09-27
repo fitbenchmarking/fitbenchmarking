@@ -231,7 +231,7 @@ It has support for a number of minimizers, most of which are from GSL.
 
 * `Levenberg-Marquardt MD <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardtMD.html>`__ (:code:`Levenberg-MarquardtMD`) - An implementation of Levenberg-Marquardt intended for MD workspaces, where work is divided into chunks to achieve a greater efficiency for a large number of data points.
 
-* `Simplex <https://docs.mantidproject.org/nightly/fitting/fitminimizers/Simplex.html>`__ (:code:`simplex`)
+* `Simplex <https://docs.mantidproject.org/nightly/fitting/fitminimizers/Simplex.html>`__ (:code:`Simplex`)
 
 * `SteepestDescent <https://docs.mantidproject.org/nightly/fitting/fitminimizers/GradientDescent.html>`__ (:code:`SteepestDescent`)
 
