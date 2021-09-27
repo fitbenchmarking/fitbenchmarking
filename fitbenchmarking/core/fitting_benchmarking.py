@@ -249,7 +249,6 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
     # exception and record the problem name if that is the case
     software_check = [np.isinf(v.chi_sq) for v in software_results]
     if all(software_check):
-        software_results = []
         problem_fails.append(cost_func.problem.name)
     results.extend(software_results)
 

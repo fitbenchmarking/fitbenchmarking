@@ -82,10 +82,10 @@ def plot(acc, runtime, fig_dir):
 
         step_values = []
         for value in profile_plot.values():
-            sorted_list = np.sort(value)
+            sorted_list = np.sort(value[~np.isnan(value)])
             step_values.append(np.insert(sorted_list, 0, 0.0))
 
-        max_value = np.max([np.max(v)
+        max_value = np.max([np.nanmax(v)
                             for v in profile_plot.values()])
         linear_upper_limit = 10
 
