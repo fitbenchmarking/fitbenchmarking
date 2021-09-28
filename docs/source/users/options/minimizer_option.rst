@@ -316,7 +316,7 @@ The `matlab` minimizer is set as follows:
 .. _matlab-curve:
 
 Matlab Curve Fitting Toolbox (``matlab_curve``)
------------------------------------------------
+===============================================
 
 We call the `fit <https://uk.mathworks.com/help/curvefit/fit.html>`_
 function from the `MATLAB Curve Fitting Toolbox <https://uk.mathworks.com/help/curvefit/index.html>`_,
