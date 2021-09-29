@@ -158,7 +158,7 @@ class Options:
                 'OUTPUT': DEFAULT_OUTPUT,
                 'LOGGING': DEFAULT_LOGGING}
 
-    def __init__(self, results_directory: str, file_name=None):
+    def __init__(self, file_name=None, results_directory: str = ""):
         """
         Initialise the options from a file if file is given.
         Priority is values in the file, failing that, values are taken from

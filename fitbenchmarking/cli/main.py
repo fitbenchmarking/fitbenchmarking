@@ -113,9 +113,10 @@ def run(problem_sets, results_directory, options_file='', debug=False):
         if not options_file.endswith(".ini"):
             raise OptionsError('Options file must be a ".ini" file')
 
-        options = Options(results_directory, glob_options_file)
+        options = Options(file_name=glob_options_file,
+                          results_directory=results_directory)
     else:
-        options = Options(results_directory)
+        options = Options(results_directory=results_directory)
 
     setup_logger(log_file=options.log_file,
                  append=options.log_append,
@@ -211,7 +212,8 @@ def run(problem_sets, results_directory, options_file='', debug=False):
 
     LOGGER.info("\nINFO:\nThe FitBenchmarking results will be placed into "
                 "the folder:\n\n   %s\n\nTo change this use the -r or "
-                "--results-dir optional command line argument.\n",
+                "--results-dir optional command line argument. You can\n"
+                "also set 'results_dir' in an options file.",
                 options.results_dir)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))

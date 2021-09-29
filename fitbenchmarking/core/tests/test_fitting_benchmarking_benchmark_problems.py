@@ -26,7 +26,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
-    options = Options(os.path.dirname(__file__))
+    options = Options()
     if minimizers:
         options.minimizers = minimizers
 
@@ -64,7 +64,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         """
         self.cost_func = make_cost_function()
         self.problem = self.cost_func.problem
-        self.options = Options(os.path.dirname(__file__))
+        self.options = Options()
         self.options.software = ["scipy"]
         self.scipy_len = len(self.options.minimizers["scipy"])
         bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
