@@ -168,7 +168,7 @@ class Options:
         # problem groups
         self.stored_file_name = file_name
         self.error_message = []
-        self._results_dir = results_directory
+        self.results_dir = results_directory
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str,
                                                        'rng': read_range},
@@ -247,7 +247,7 @@ class Options:
         """
         Resets options object when running multiple problem groups.
         """
-        self.__init__(self._results_dir, self.stored_file_name)
+        self.__init__(self.results_dir, self.stored_file_name)
 
     def read_value(self, func, option):
         """
@@ -282,13 +282,6 @@ class Options:
                     "must be on or more of {2}".format(
                         option, value, self.VALID[section][option]))
         return value
-
-    @property
-    def results_dir(self):
-        """
-        Returns the path to the results directory
-        """
-        return self._results_dir
 
     @property
     def minimizers(self):
