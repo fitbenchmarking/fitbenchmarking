@@ -42,14 +42,17 @@ For example, the template file can be run by issuing the command
 
 Details about how the options file must be formatted are given in :ref:`options`.
 
+.. _change_results_directory:
+
 Changing the results directory
 ------------------------------
 
 The default directory where the results are saved can be changed using the ``-r``
-or ``--results-dir`` argument.
+or ``--results-dir`` argument. The :ref:`results directory option <results_directory_option>`
+can also be changed in the options file.
 
 .. code-block:: bash
 
-   fitbenchmarking -r fitbenchmarking_results/new_results/
+   fitbenchmarking -r new_results/
 
 The default results directory is ``fitbenchmarking_results``.
