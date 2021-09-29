@@ -91,19 +91,19 @@ class FitbenchmarkParser(Parser):
 
         # FUNCTION
         if software == 'mantid':
-            fitting_problem.fit_function = self._create_mantid_function()
+            fitting_problem.function = self._create_mantid_function()
             fitting_problem.format = 'mantid'
         elif software == 'sasview':
-            fitting_problem.fit_function = self._create_sasview_function()
+            fitting_problem.function = self._create_sasview_function()
             fitting_problem.format = 'sasview'
         elif software == 'ivp':
-            fitting_problem.fit_function = self._create_ivp_function()
+            fitting_problem.function = self._create_ivp_function()
             fitting_problem.format = 'ivp'
 
         # If using a multivariate function wrap the call to take a single
         # argument
         if len(data_points[0]['x'].shape) > 1:
-            old_function = fitting_problem.fit_function
+            old_function = fitting_problem.function
             all_data = []
             count = 0
             for dp in data_points:
@@ -116,7 +116,7 @@ class FitbenchmarkParser(Parser):
                 inp = all_data[x]
                 return old_function(inp, *p)
 
-            fitting_problem.fit_function = new_function
+            fitting_problem.function = new_function
             fitting_problem.multivariate = True
 
         # Set this flag if the output is non-scalar either

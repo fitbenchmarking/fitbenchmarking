@@ -79,7 +79,7 @@ class FittingProblem:
         self.value_ranges = None
 
         #: Callable function
-        self.fit_function = None
+        self.function = None
 
         self._param_names = None
 
@@ -118,28 +118,14 @@ class FittingProblem:
         :return: data values evaluated from the function of the problem
         :rtype: numpy array
         """
-        if self.fit_function is None:
+        if self.function is None:
             raise FittingProblemError('Cannot call function before setting '
                                       'function.')
 
+        self.timer.check_elapsed_time()
+
         x = kwargs.get("x", self.data_x)
         return self.function(x, *params)
-
-    def function(self, x, *params):
-        """
-        Evaluates the fit function. Checks the maximum runtime has
-        not been reached beforehand.
-
-        :param x: x values
-        :type x: list
-        :param params: parameter value(s)
-        :type params: tuple
-
-        :return: data values evaluated from the function of the problem
-        :rtype: numpy array
-        """
-        self.timer.check_elapsed_time()
-        return self.fit_function(x, *params)
 
     @property
     def param_names(self):
@@ -197,7 +183,7 @@ class FittingProblem:
                 raise FittingProblemError(
                     'Attribute "{}" is not the expected type. Expected "{}", '
                     'got "{}".'.format(attr_name, attr_type, type(attr)))
-        if self.fit_function is None:
+        if self.function is None:
             raise FittingProblemError('Attribute "function" has not been set.')
 
     def correct_data(self):
