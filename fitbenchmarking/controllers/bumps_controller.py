@@ -63,9 +63,9 @@ class BumpsController(Controller):
         # Bumps fails with the *args notation
         param_name_str = ', '.join(self._param_names)
         wrapper = "def fitFunction(x, {}):\n".format(param_name_str)
-        wrapper += "    return func(x, {})".format(param_name_str)
+        wrapper += "    return func([{}], x=x)".format(param_name_str)
 
-        exec_dict = {'func': self.problem.function}
+        exec_dict = {'func': self.problem.eval_model}
         exec(wrapper, exec_dict)
 
         model = exec_dict['fitFunction']
