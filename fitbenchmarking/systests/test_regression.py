@@ -268,11 +268,9 @@ def setup_options(multifit=False):
     :return: Fitbenchmarking options file for tests
     :rtype: fitbenchmarking.utils.options.Options
     """
-    results_dir = os.path.join(os.path.dirname(__file__),
-                               'fitbenchmarking_results')
 
     # Get defaults which should have minimizers for every software
-    opts = Options(results_dir)
+    opts = Options()
     opts.num_runs = 1
     opts.make_plots = False
     # Use only the first minimizer from the selected software packages

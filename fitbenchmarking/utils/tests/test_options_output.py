@@ -18,19 +18,17 @@ class OutputOptionTests(unittest.TestCase):
         """
         Checks results_dir default
         """
-        self.options = Options("")
+        options = Options(results_directory="")
         expected = os.path.abspath('fitbenchmarking_results')
-        actual = self.options.results_dir
-        self.assertEqual(expected, actual)
+        self.assertEqual(expected, options.results_dir)
 
     def test_results_dir_not_default(self):
         """
         Checks results_dir default
         """
-        self.options = Options(os.path.dirname(__file__))
+        options = Options(results_directory=os.path.dirname(__file__))
         default = os.path.abspath('fitbenchmarking_results')
-        actual = self.options.results_dir
-        self.assertNotEqual(default, actual)
+        self.assertNotEqual(default, options.results_dir)
 
 
 class UserOutputOptionTests(unittest.TestCase):
@@ -83,7 +81,7 @@ class UserOutputOptionTests(unittest.TestCase):
         :type config_str: str
         """
         opts_file = self.generate_user_ini_file(opt_name, config_str)
-        options = Options("", opts_file)
+        options = Options(opts_file)
         actual = getattr(options, opt_name)
         self.assertEqual(options_set, actual)
 

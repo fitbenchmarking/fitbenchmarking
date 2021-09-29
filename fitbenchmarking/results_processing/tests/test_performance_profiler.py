@@ -27,7 +27,6 @@ class PerformanceProfillerTests(unittest.TestCase):
         """
         Sets up acc runtime profile names
         """
-        self.results_dir = os.path.dirname(__file__)
         self.results, self.acc_expected, self.runtime_expected = \
             self.generate_mock_results()
         _ = preproccess_data(self.results)
@@ -56,7 +55,7 @@ class PerformanceProfillerTests(unittest.TestCase):
         self.num_problems = 4
         self.num_minimizers = 2
         results = []
-        options = Options(self.results_dir)
+        options = Options()
         problem = FittingProblem(options)
         problem.starting_values = [{'a': 1, 'b': 2, 'c': 3}]
 

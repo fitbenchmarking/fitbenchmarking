@@ -18,7 +18,6 @@ class OptionsWriteTests(unittest.TestCase):
         '''
         Create an options file and store input
         '''
-        self.results_dir = os.path.dirname(__file__)
         config_str = """
             [MINIMIZERS]
             scipy: CG
@@ -44,6 +43,9 @@ class OptionsWriteTests(unittest.TestCase):
             table_type: acc
                         runtime
 
+            [OUTPUT]
+            results_dir: new_results/
+
             [LOGGING]
             file_name: THE_LOG.log
             append: yes
@@ -66,11 +68,11 @@ class OptionsWriteTests(unittest.TestCase):
         """
         Test that the options writer works.
         """
-        options = Options(self.results_dir, file_name=self.options_file)
+        options = Options(file_name=self.options_file)
         new_file_name = 'copy_of_{}'.format(self.options_file)
 
         options.write(new_file_name)
-        new_options = Options(self.results_dir, new_file_name)
+        new_options = Options(new_file_name)
 
         os.remove(new_file_name)
 
@@ -87,7 +89,7 @@ class OptionsWriteTests(unittest.TestCase):
         """
         Test that the stream options writer works.
         """
-        options = Options(self.results_dir, file_name=self.options_file)
+        options = Options(file_name=self.options_file)
         new_file_name = 'copy_of_{}'.format(self.options_file)
 
         # open stream, write to it and close it
@@ -95,7 +97,7 @@ class OptionsWriteTests(unittest.TestCase):
         options.write_to_stream(f)
         f.close()
 
-        new_options = Options(self.results_dir, new_file_name)
+        new_options = Options(new_file_name)
 
         assert options.stored_file_name == self.options_file
         assert new_options.stored_file_name == new_file_name
@@ -112,7 +114,7 @@ class OptionsWriteTests(unittest.TestCase):
         """
         Test that created config object contains all valid sections.
         """
-        options = Options(self.results_dir, file_name=self.options_file)
+        options = Options(file_name=self.options_file)
 
         config = options._create_config()
         for section in options.VALID_SECTIONS:
@@ -130,7 +132,7 @@ class OptionsWriteTests(unittest.TestCase):
         opts_file = 'test_options_tests_valid.ini'
         with open(opts_file, 'w') as f:
             f.write(config_str)
-        Options(self.results_dir, opts_file)
+        Options(opts_file)
         os.remove(opts_file)
 
     def test_user_section_invalid(self):
@@ -146,14 +148,14 @@ class OptionsWriteTests(unittest.TestCase):
         with open(opts_file, 'w') as f:
             f.write(config_str)
         with self.assertRaises(exceptions.OptionsError):
-            Options(self.results_dir, opts_file)
+            Options(opts_file)
         os.remove(opts_file)
 
     def test_options_reset(self):
         """
         Tests options reset
         """
-        options = Options(self.results_dir)
+        options = Options()
         options_save = copy.copy(options)
         options.minimizers = {}
         options.software = ['updated_software1', 'updated_software2']

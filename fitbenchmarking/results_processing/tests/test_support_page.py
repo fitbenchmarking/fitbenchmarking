@@ -25,8 +25,7 @@ class CreateTests(unittest.TestCase):
     Create tests for support page
     '''
     def setUp(self):
-        self.results_dir = os.path.dirname(__file__)
-        self.options = Options(self.results_dir)
+        self.options = Options()
         cost_func = []
         for i in range(5):
             problem = FittingProblem(self.options)
@@ -73,8 +72,7 @@ class CreateProbGroupTests(unittest.TestCase):
     """
 
     def setUp(self):
-        self.results_dir = os.path.dirname(__file__)
-        self.options = Options(self.results_dir)
+        self.options = Options()
         problem = FittingProblem(self.options)
         problem.name = 'prob a'
         problem.equation = 'equation!'
@@ -130,8 +128,7 @@ class GetFigurePathsTests(unittest.TestCase):
     """
 
     def setUp(self):
-        self.results_dir = os.path.dirname(__file__)
-        self.options = Options(self.results_dir)
+        self.options = Options()
         problem = FittingProblem(self.options)
         problem.name = 'prob a'
         problem.equation = 'equation!'

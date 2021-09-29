@@ -3,7 +3,6 @@ Unit testing for the hessian directory.
 """
 from unittest import TestCase
 
-import os
 import numpy as np
 
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
@@ -119,7 +118,7 @@ class TestHessianClass(TestCase):
         """
         Setting up tests
         """
-        options = Options(os.path.dirname(__file__))
+        options = Options()
         options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
         self.fitting_problem.function = f_ls
@@ -214,7 +213,7 @@ class TestHesCostFunc(TestCase):
         """
         Setting up tests
         """
-        options = Options(os.path.dirname(__file__))
+        options = Options()
         options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
         self.fitting_problem.function = f_ls
@@ -250,7 +249,7 @@ class TestFactory(TestCase):
     """
 
     def setUp(self):
-        self.options = Options(os.path.dirname(__file__))
+        self.options = Options()
 
     def test_imports(self):
         """

@@ -28,8 +28,7 @@ class FitbmResultTests(unittest.TestCase):
         """
         Setting up FitBenchmarking results object
         """
-        self.results_dir = os.path.dirname(__file__)
-        self.options = Options(self.results_dir)
+        self.options = Options()
         mock_problems_dir = os.path.dirname(inspect.getfile(mock_problems))
         problem_dir = os.path.join(mock_problems_dir, "cubic.dat")
         self.problem = parse_problem_file(problem_dir, self.options)

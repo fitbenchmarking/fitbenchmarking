@@ -258,7 +258,7 @@ class Options:
         """
         Resets options object when running multiple problem groups.
         """
-        self.__init__(self.results_dir, self.stored_file_name)
+        self.__init__(self.stored_file_name, self.results_dir)
 
     def read_value(self, func, option):
         """

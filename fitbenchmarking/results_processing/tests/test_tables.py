@@ -72,7 +72,7 @@ def generate_mock_results():
                   Options object)
     """
     software = 'scipy_ls'
-    options = Options(os.path.dirname(__file__))
+    options = Options()
     options.software = [software]
     num_min = len(options.minimizers[options.software[0]])
     data_x = np.array([[1, 4, 5], [2, 1, 5]])

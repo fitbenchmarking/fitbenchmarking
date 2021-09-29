@@ -31,7 +31,6 @@ class CreateDirsTests(unittest.TestCase):
         """
         Create some datafiles to look for.
         """
-        self.results_dir = os.path.dirname(__file__)
         self.dirname = os.path.join(self.base_path(),
                                     'mock_datasets_{}'.format(time.time()))
         os.mkdir(self.dirname)
@@ -68,7 +67,7 @@ class CreateDirsTests(unittest.TestCase):
         """
         Test that the right css files are returned
         """
-        options = Options(self.results_dir)
+        options = Options()
         print(options.results_dir)
         test_dir = os.path.join(options.results_dir, "foo")
 
@@ -87,7 +86,7 @@ class CreateDirsTests(unittest.TestCase):
         """
         Test that the right js files are returned
         """
-        options = Options(self.results_dir)
+        options = Options()
         print(options.results_dir)
         test_dir = os.path.join(options.results_dir, "foo")
 

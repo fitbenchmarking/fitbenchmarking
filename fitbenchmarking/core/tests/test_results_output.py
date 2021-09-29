@@ -74,7 +74,7 @@ def generate_mock_results(results_directory: str):
                   Options object)
     """
     software = 'scipy_ls'
-    options = Options(results_directory)
+    options = Options(results_directory=results_directory)
     options.software = [software]
     num_min = len(options.minimizers[options.software[0]])
     data_x = np.array([[1, 4, 5], [2, 1, 5]])
@@ -178,7 +178,7 @@ class CreateDirectoriesTests(unittest.TestCase):
         """
         test_path = os.path.dirname(os.path.realpath(__file__))
         self.results_dir = os.path.join(test_path, 'fitbenchmarking_results')
-        self.options = Options(self.results_dir)
+        self.options = Options(results_directory=self.results_dir)
         os.mkdir(self.results_dir)
 
     def tearDown(self):
@@ -353,7 +353,7 @@ class CreateProblemLevelIndex(unittest.TestCase):
         """
         Setting up paths and results folders
         """
-        self.options = Options(os.path.dirname(__file__))
+        self.options = Options()
         test_path = os.path.dirname(os.path.realpath(__file__))
         self.group_dir = os.path.join(test_path, 'fitbenchmarking_results')
         os.mkdir(self.group_dir)

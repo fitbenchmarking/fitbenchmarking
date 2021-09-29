@@ -26,8 +26,7 @@ class PlotTests(unittest.TestCase):
     """
 
     def setUp(self):
-        self.results_dir = os.path.dirname(__file__)
-        self.opts = Options(self.results_dir)
+        self.opts = Options()
         self.opts.use_errors = True
 
         self.prob = FittingProblem(self.opts)
@@ -52,7 +51,7 @@ class PlotTests(unittest.TestCase):
                                 minimizer='fit',
                                 error_flag=1)
 
-        self.opts = Options(self.results_dir)
+        self.opts = Options()
         self.opts.use_errors = True
 
         self.dir = TemporaryDirectory()

@@ -19,8 +19,7 @@ class PlottingOptionTests(unittest.TestCase):
         """
         Initializes options class with defaults
         """
-        self.results_dir = os.path.dirname(__file__)
-        self.options = Options(self.results_dir)
+        self.options = Options()
 
     def test_make_plots_default(self):
         """
@@ -80,7 +79,6 @@ class UserPlottingOptionTests(unittest.TestCase):
         """
         Sets the directory to save the temporary ini files in
         """
-        self.results_dir = os.path.dirname(__file__)
         options_dir = os.path.dirname(inspect.getfile(Options))
         self.test_files_dir = os.path.join(options_dir, 'tests', 'files')
         os.mkdir(self.test_files_dir)
@@ -122,7 +120,7 @@ class UserPlottingOptionTests(unittest.TestCase):
         :type config_str: str
         """
         opts_file = self.generate_user_ini_file(opt_name, config_str)
-        options = Options(self.results_dir, opts_file)
+        options = Options(opts_file)
         actual = getattr(options, opt_name)
         self.assertEqual(options_set, actual)
 
@@ -137,7 +135,7 @@ class UserPlottingOptionTests(unittest.TestCase):
         """
         opts_file = self.generate_user_ini_file(opt_name, config_str)
         with self.assertRaises(exceptions.OptionsError):
-            Options(self.results_dir, opts_file)
+            Options(opts_file)
 
     def test_invalid_option_key(self):
         """
