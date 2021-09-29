@@ -17,7 +17,7 @@ class Options:
     DEFAULTS = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                             'default_options.ini'))
     VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN',
-                      'PLOTTING', 'LOGGING']
+                      'PLOTTING', 'OUTPUT', 'LOGGING']
     VALID_MINIMIZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
          'dfo': ['dfogn', 'dfols'],
@@ -78,6 +78,7 @@ class Options:
          'comparison_mode': ['abs', 'rel', 'both'],
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
          'colour_map': plt.colormaps()}
+    VALID_OUTPUT = {}
     VALID_LOGGING = \
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
                    'CRITICAL'],
@@ -88,6 +89,7 @@ class Options:
              'FITTING': VALID_FITTING,
              'JACOBIAN': VALID_JACOBIAN,
              'PLOTTING': VALID_PLOTTING,
+             'OUTPUT': VALID_OUTPUT,
              'LOGGING': VALID_LOGGING}
 
     DEFAULT_MINIMZERS = \
@@ -142,6 +144,8 @@ class Options:
          'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
          'table_type': ['acc', 'runtime', 'compare', 'local_min']}
+    DEFAULT_OUTPUT = \
+        {'results_dir': 'fitbenchmarking_results'}
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
          'append': False,
@@ -151,6 +155,7 @@ class Options:
                 'FITTING': DEFAULT_FITTING,
                 'JACOBIAN': DEFAULT_JACOBIAN,
                 'PLOTTING': DEFAULT_PLOTTING,
+                'OUTPUT': DEFAULT_OUTPUT,
                 'LOGGING': DEFAULT_LOGGING}
 
     def __init__(self, results_directory: str, file_name=None):
@@ -168,7 +173,7 @@ class Options:
         # problem groups
         self.stored_file_name = file_name
         self.error_message = []
-        self.results_dir = results_directory
+        self._results_dir: str = ""
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str,
                                                        'rng': read_range},
@@ -232,6 +237,12 @@ class Options:
                                                'comparison_mode')
         self.table_type = self.read_value(plotting.getlist, 'table_type')
 
+        output = config['OUTPUT']
+        if results_directory == "":
+            self.results_dir = self.read_value(output.getstr, 'results_dir')
+        else:
+            self.results_dir = results_directory
+
         logging = config['LOGGING']
         self.log_append = self.read_value(logging.getboolean, 'append')
         self.log_file = self.read_value(logging.getstr, 'file_name')
@@ -284,6 +295,20 @@ class Options:
         return value
 
     @property
+    def results_dir(self) -> str:
+        """
+        Returns the directory to store the results in.
+        """
+        return self._results_dir
+
+    @results_dir.setter
+    def results_dir(self, directory: str) -> None:
+        """
+        Sets the directory to store the results.
+        """
+        self._results_dir = os.path.abspath(directory)
+
+    @property
     def minimizers(self):
         """
         Returns the minimizers in a software package
@@ -325,6 +350,7 @@ class Options:
                               'comparison_mode': self.comparison_mode,
                               'make_plots': self.make_plots,
                               'table_type': list_to_string(self.table_type)}
+        config['OUTPUT'] = {'results_dir': self.results_dir}
         config['LOGGING'] = {'file_name': self.log_file,
                              'level': self.log_level,
                              'append': self.log_append,
