@@ -45,6 +45,9 @@ class FittingProblem:
         #: *string* Equation (function or model) to fit against data
         self.equation = None
 
+        #: *string* Description of the fitting problem
+        self.description = ''
+
         #: *float* The start of the range to fit model data over
         #: (if different from entire range)
         self.start_x = None

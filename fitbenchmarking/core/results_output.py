@@ -5,8 +5,8 @@ import inspect
 import os
 import re
 from shutil import copy2
+from typing import Dict, List, Optional, Set, Union
 
-import docutils
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
@@ -15,6 +15,7 @@ from fitbenchmarking.results_processing import (performance_profiler, plots,
                                                 support_page, tables)
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.exceptions import PlottingError
+from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.misc import get_css, get_js
 
 
@@ -58,7 +59,7 @@ def save_results(options, results, group_name, failed_problems,
         create_plots(options, results_dict, best_results, fig_dir)
 
     support_page.create(options=options,
-                        results_per_test=results,
+                        results=results,
                         group_name=group_name,
                         support_pages_dir=supp_dir)
     problem_summary_page.create(options=options,
@@ -108,7 +109,7 @@ def create_directories(options, group_name):
     return group_dir, support_dir, figures_dir, local_css_dir
 
 
-def preprocess_data(results):
+def preprocess_data(results: "list[FittingResult]"):
     """
     Generate a dictionary of results lists sorted into the correct order
     with rows and columns as the key and list elements respectively.
@@ -135,7 +136,7 @@ def preprocess_data(results):
     col_sections = ['costfun']
 
     # Generate the columns and row tags and sort
-    rows = set()
+    rows: Union[List[str], Set[str]] = set()
     columns = {}
     for r in results:
         # Error 4 means none of the jacobians ran so can't infer the
@@ -167,9 +168,10 @@ def preprocess_data(results):
                for k in sorted(iter(columns.keys()), key=str.lower)}
 
     # Build the sorted results dictionary
-    sorted_results = {r.strip(':'): {k: [None for _ in category]
-                                     for k, category in columns.items()}
-                      for r in rows}
+    sorted_results: Dict[str, Dict[str, List[Optional[FittingResult]]]] = \
+        {r.strip(':'): {k: [None for _ in category]
+                        for k, category in columns.items()}
+         for r in rows}
 
     for r in results:
         result_tags = {
@@ -200,8 +202,8 @@ def preprocess_data(results):
                     match_cols = [match for match in columns[cat]
                                   if re.fullmatch(result_tags['col'], match)]
                     for col in match_cols:
-                        col = columns[col]
-                        sorted_results[row][col] = r
+                        col = columns[cat][col]
+                        sorted_results[row][cat][col] = r
         else:
             col = columns[result_tags['cat']][result_tags['col']]
             sorted_results[result_tags['row']][result_tags['cat']][col] = r

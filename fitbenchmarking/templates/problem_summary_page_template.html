@@ -52,7 +52,7 @@
                     </div>
                 </section>
                 <section class="accordion">
-                    <input type="checkbox" name="collapse" id="comparison-accordion" checked="unchecked">
+                    <input type="checkbox" name="collapse" id="comparison-accordion" checked="checked">
                     <h2 class="handle">
                         <label for="comparison-accordion">Comparison</label>
                     </h2>
@@ -65,14 +65,11 @@
                             {% else %}
                                 <h3>{{ summary_plot }}</h3>
                             {% endif %}
-                            <button class="btn default" onclick="history.go(-1)">
-                            <i class="fa fa-arrow-left"></i>
-                            </button>
                         </div>
 
                 {% if best_results|length == 1 %}
                     <section class="accordion">
-                        <input type="checkbox" name="collapse" id="best-accordion" checked="checked">
+                        <input type="checkbox" name="collapse" id="best-accordion">
                         <h2 class="handle">
                             <label for="best-accordion">{{ categories[0] }}: {{ best_results[0].minimizer }}</label>
                         </h2>
@@ -105,19 +102,55 @@
                                 {% else %}
                                     <h3>{{ best_plots[0] }}</h3>
                                 {% endif %}
-                                <button class="btn default" onclick="history.go(-1)">
-                                <i class="fa fa-arrow-left"></i>
-                                </button>
                             </div>
                         </div>
                     </section>
                 {% else %}
-                    <p>Under construction!</p>
-                    <!--
-                        {% for cf in cost_funcs %}
-                        {% endfor %}
-                    -->
+                    {% for cat in categories %}
+                        <section class="accordion">
+                            <input type="checkbox" name="collapse" id="cf{{ loop.index0 }}-accordion">
+                            <h2 class="handle">
+                                <label for="cf{{ loop.index0 }}-accordion">{{ categories[loop.index0] }}: {{ best_results[loop.index0].minimizer }}</label>
+                            </h2>
+                            <div class="content">
+                                <p>This is the best fit of the minimizers for: {{ cat }}.</p>
+
+                                <p><em>Minimizer</em>: {{ best_results[loop.index0].minimizer }}</p>
+                                <p><em>Functions</em>:</p>
+                                <table>
+                                    <colgroup>
+                                        <col width="36%" />
+                                        <col width="64%" />
+                                    </colgroup>
+                                    <thead valign="bottom">
+                                        <tr>
+                                            <th class="head">Form</th>
+                                            <th class="head">Parameters</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody valign="top">
+                                        <tr>
+                                            <td>{{ equation }}</td>
+                                            <td>{{ best_results[loop.index0].fin_function_params }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div align="center" class="figure align-center">
+                                    {% if best_plots_available[loop.index0] %}
+                                        <img alt="{{ best_plots[loop.index0] }}" src="{{ best_plots[loop.index0] }}" />
+                                    {% else %}
+                                        <h3>{{ best_plots[loop.index0] }}</h3>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </section>
+                    {% endfor %}
                 {% endif %}
+                <div align="center" class="figure align-center">
+                    <button class="btn default" onclick="history.go(-1)">
+                        <i class="fa fa-arrow-left"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </body>
