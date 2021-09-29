@@ -377,7 +377,7 @@ class Table:
         # Format the table headers
         link_template = '<a href="https://fitbenchmarking.readthedocs.io/'\
                         'en/latest/users/options/minimizer_option.html#'\
-                        '{0}-{0}" target="_blank">{0}</a>'
+                        '{0}" target="_blank">{0}</a>'
         minimizer_template = '<span title="{0}">{1}</span>'
 
         row = next(iter(self.sorted_results.values()))
