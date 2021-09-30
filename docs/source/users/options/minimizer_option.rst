@@ -16,6 +16,8 @@ the default list of minimizers unless otherwise stated.
    software is also set in :ref:`fitting_option` (either explicitly, or
    as a default option).
 
+.. _bumps:
+
 Bumps (:code:`bumps`)
 =====================
 
@@ -60,6 +62,7 @@ The Bumps minimizers are set as follows:
    `de` is not included in the default list of minimizers for bumps. To run this solver, you must
    explicitly set the minimizer as seen above.
 	   
+.. _dfo:
 
 DFO (``dfo``)
 =============
@@ -92,10 +95,10 @@ The DFO minimizers are set as follows:
    these to be available;
    See :ref:`extra_dependencies`.
 
+.. _gradient-free:
 
-
-Gradient-Free (``gradient_free``)
-=================================
+Gradient-Free-Optimizers (``gradient_free``)
+============================================
 
 `Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`__ are a collection of
 gradient-free methods capable of solving various optimization problems. Please note that Gradient-Free-Optimizers
@@ -155,6 +158,7 @@ The `gradient_free` minimizers are set as follows:
    so are not run by default when `gradient_free` software is selected. To run these minimizers you must
    explicity set them as seen above.
 
+.. _gsl:
 	 
 GSL (``gsl``)
 =============
@@ -210,8 +214,8 @@ The GSL minimizers are set as follows:
 .. warning::
    The external packages GSL and pygsl must be installed to use these minimizers.
 
-.. _MantidMinimizers:
-   
+.. _mantid:
+
 Mantid (``mantid``)
 ===================
 
@@ -260,6 +264,8 @@ The Mantid minimizers are set as follows:
 .. warning::
    The external package Mantid must be installed to use these minimizers.
 
+.. _levmar:
+
 Levmar (``levmar``)
 ===================
 
@@ -284,6 +290,7 @@ The `levmar` minimizer is set as follows:
    See :ref:`extra_dependencies`. This package also requires the BLAS and LAPACK
    libraries to be present on the system.
 
+.. _matlab:
 
 Matlab (``matlab``)
 ===================
@@ -306,8 +313,10 @@ The `matlab` minimizer is set as follows:
 .. warning::
    MATLAB must be installed for this to be available; See :ref:`external-instructions`.
 
-Matlab Curve (``matlab_curve``)
--------------------------------
+.. _matlab-curve:
+
+Matlab Curve Fitting Toolbox (``matlab_curve``)
+===============================================
 
 We call the `fit <https://uk.mathworks.com/help/curvefit/fit.html>`_
 function from the `MATLAB Curve Fitting Toolbox <https://uk.mathworks.com/help/curvefit/index.html>`_,
@@ -329,9 +338,10 @@ The `matlab_curve` minimizers are set as follows:
 .. warning::
    MATLAB Curve Fitting Toolbox must be installed for this to be available; See :ref:`external-instructions`.
 
+.. _matlab-opt:
 
-Matlab Opt (``matlab_opt``)
-===========================
+Matlab Optimization Toolbox (``matlab_opt``)
+============================================
 
 We call the `lsqcurvefit <https://uk.mathworks.com/help/optim/ug/lsqcurvefit.html>`__
 function from the `MATLAB Optimization Toolbox <https://uk.mathworks.com/products/optimization.html>`__,
@@ -353,9 +363,10 @@ The `matlab_opt` minimizers are set as follows:
 .. warning::
    MATLAB Optimization Toolbox must be installed for this to be available; See :ref:`external-instructions`.
 
+.. _matlab-stats:
 
-Matlab Stats (``matlab_stats``)
-===============================
+Matlab Statistics Toolbox (``matlab_stats``)
+============================================
 
 
 We call the `nlinfit <https://uk.mathworks.com/help/stats/nlinfit.html>`__
@@ -376,6 +387,7 @@ The `matlab_stats` minimizer is set as follows:
 .. warning::
    MATLAB Statistics Toolbox must be installed for this to be available; See :ref:`external-instructions`.
 
+.. _minuit:
 	   
 Minuit (``minuit``)
 ===================
@@ -403,6 +415,7 @@ The Minuit minimizers are set as follows:
    The additional dependency Minuit must be installed for this to be available;
    See :ref:`extra_dependencies`.	 
 
+.. _ralfit:
     
 RALFit (``ralfit``)
 ===================
@@ -434,6 +447,8 @@ The RALFit minimizers are set as follows:
 
 .. warning::
    The external package RALFit must be installed to use these minimizers.
+
+.. _scipy:
 
 SciPy (``scipy``)
 =================
@@ -471,6 +486,8 @@ The SciPy minimizers are set as follows:
            TNC
            SLSQP
 
+.. _scipy-ls:
+
 SciPy LS (``scipy_ls``)
 =======================
 
@@ -495,6 +512,8 @@ The SciPy least squares minimizers are set as follows:
     scipy_ls: lm-scipy
               trf
               dogbox
+
+.. _scipy-go:
 
 SciPy GO (``scipy_go``)
 =======================
