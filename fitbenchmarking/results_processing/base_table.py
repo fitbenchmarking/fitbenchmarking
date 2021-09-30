@@ -510,6 +510,7 @@ class Table:
         norm_vals = (log_vals - log_llim) /\
             (log_ulim - log_llim)
         norm_vals[norm_vals > 1] = 1  # applying upper cutoff
+        norm_vals[np.isnan(norm_vals)] = 1  # deal with nans
         # trimming colour map according to default/user input
         norm_vals = cmap_range[0] + \
             norm_vals*(cmap_range[1] - cmap_range[0])

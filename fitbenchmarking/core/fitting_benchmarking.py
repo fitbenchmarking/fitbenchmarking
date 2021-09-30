@@ -249,7 +249,6 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
     # exception and record the problem name if that is the case
     software_check = [np.isinf(v.chi_sq) for v in software_results]
     if all(software_check):
-        software_results = []
         problem_fails.append(cost_func.problem.name)
     results.extend(software_results)
 
@@ -533,12 +532,13 @@ def loop_over_hessians(controller, options, minimizer_name,
                 raise ControllerAttributeError(
                     "Either the computed runtime or chi_sq values "
                     "was a NaN.")
-        except MaxRuntimeError as ex:
-            LOGGER.warning(str(ex))
-            controller.flag = 6
         except Exception as ex:  # pylint: disable=broad-except
             LOGGER.warning(str(ex))
-            controller.flag = 3
+            # The MaxRuntimeError can sometimes be caught by the fitting
+            # software and re-raised as an ordinary Exception. So a separate
+            # except clause to set the flag will not work.
+            controller.flag = 6 if MaxRuntimeError.class_message in str(ex) \
+                else 3
 
         if controller.flag in [3, 6]:
             # If there was an exception, set the runtime and
