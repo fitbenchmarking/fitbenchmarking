@@ -81,11 +81,13 @@ def plot(acc, runtime, fig_dir):
         figure_path.append(this_filename)
 
         step_values = []
+        max_value = 0.0
         for value in profile_plot.values():
             sorted_list = np.sort(_remove_nans(value))
+            max_in_list = np.max(sorted_list) if len(sorted_list) > 0 else 0.0
+            if max_in_list > max_value:
+                max_value = max_in_list
             step_values.append(np.insert(sorted_list, 0, 0.0))
-
-        max_value = _find_maximum_value_for_profile_plot(profile_plot)
 
         linear_upper_limit = 10
 
@@ -154,29 +156,9 @@ def plot(acc, runtime, fig_dir):
     return figure_path
 
 
-def _find_maximum_value_for_profile_plot(profile_plot: dict) -> float:
+def _remove_nans(values: np.ndarray) -> np.ndarray:
     """
-    Finds the maximum x value to use for a profile plot of multiple profiles.
-    Returns 0.0 if only Nan values exist.
-    """
-    profile_maxes = [_find_maximum_profile_value(values)
-                     for values in profile_plot.values()]
-    return max([value for value in profile_maxes if value is not None],
-               default=0.0)
-
-
-def _find_maximum_profile_value(profile_values: list) -> float:
-    """
-    Finds the maximum value in a list of profile x values. Nan values
-    are filtered out and None returned if no values are found.
-    """
-    non_nan_values = _remove_nans(profile_values)
-    return np.max(non_nan_values) if len(non_nan_values) > 0 else None
-
-
-def _remove_nans(values: list) -> list:
-    """
-    Removes all the nan values from the provided list.
+    Removes all the nan values from the provided numpy array.
     """
     return values[~np.isnan(values)]
 
