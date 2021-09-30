@@ -17,7 +17,7 @@ class Options:
     DEFAULTS = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                             'default_options.ini'))
     VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN',
-                      'PLOTTING', 'LOGGING']
+                      'PLOTTING', 'OUTPUT', 'LOGGING']
     VALID_MINIMIZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
          'dfo': ['dfogn', 'dfols'],
@@ -78,6 +78,7 @@ class Options:
          'comparison_mode': ['abs', 'rel', 'both'],
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
          'colour_map': plt.colormaps()}
+    VALID_OUTPUT = {}
     VALID_LOGGING = \
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
                    'CRITICAL'],
@@ -88,6 +89,7 @@ class Options:
              'FITTING': VALID_FITTING,
              'JACOBIAN': VALID_JACOBIAN,
              'PLOTTING': VALID_PLOTTING,
+             'OUTPUT': VALID_OUTPUT,
              'LOGGING': VALID_LOGGING}
 
     DEFAULT_MINIMZERS = \
@@ -141,8 +143,9 @@ class Options:
          'colour_ulim': 100,
          'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
-         'table_type': ['acc', 'runtime', 'compare', 'local_min'],
-         'results_dir': 'fitbenchmarking_results'}
+         'table_type': ['acc', 'runtime', 'compare', 'local_min']}
+    DEFAULT_OUTPUT = \
+        {'results_dir': 'fitbenchmarking_results'}
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
          'append': False,
@@ -152,14 +155,17 @@ class Options:
                 'FITTING': DEFAULT_FITTING,
                 'JACOBIAN': DEFAULT_JACOBIAN,
                 'PLOTTING': DEFAULT_PLOTTING,
+                'OUTPUT': DEFAULT_OUTPUT,
                 'LOGGING': DEFAULT_LOGGING}
 
-    def __init__(self, file_name=None):
+    def __init__(self, file_name=None, results_directory: str = ""):
         """
         Initialise the options from a file if file is given.
         Priority is values in the file, failing that, values are taken from
         DEFAULTS (stored in ./default_options.ini)
 
+        :param results_directory: The directory to store the results in.
+        :type results_directory: str
         :param file_name: The options file to load
         :type file_name: str
         """
@@ -167,7 +173,7 @@ class Options:
         # problem groups
         self.stored_file_name = file_name
         self.error_message = []
-        self._results_dir = ''
+        self._results_dir: str = ""
         config = configparser.ConfigParser(converters={'list': read_list,
                                                        'str': str,
                                                        'rng': read_range},
@@ -230,7 +236,12 @@ class Options:
         self.comparison_mode = self.read_value(plotting.getstr,
                                                'comparison_mode')
         self.table_type = self.read_value(plotting.getlist, 'table_type')
-        self.results_dir = self.read_value(plotting.getstr, 'results_dir')
+
+        output = config['OUTPUT']
+        if results_directory == "":
+            self.results_dir = self.read_value(output.getstr, 'results_dir')
+        else:
+            self.results_dir = results_directory
 
         logging = config['LOGGING']
         self.log_append = self.read_value(logging.getboolean, 'append')
@@ -247,7 +258,7 @@ class Options:
         """
         Resets options object when running multiple problem groups.
         """
-        self.__init__(self.stored_file_name)
+        self.__init__(self.stored_file_name, self.results_dir)
 
     def read_value(self, func, option):
         """
@@ -284,15 +295,18 @@ class Options:
         return value
 
     @property
-    def results_dir(self):
+    def results_dir(self) -> str:
         """
-        Returns the path to the results directory
+        Returns the directory to store the results in.
         """
         return self._results_dir
 
     @results_dir.setter
-    def results_dir(self, value):
-        self._results_dir = os.path.abspath(value)
+    def results_dir(self, directory: str) -> None:
+        """
+        Sets the directory to store the results.
+        """
+        self._results_dir = os.path.abspath(directory)
 
     @property
     def minimizers(self):
@@ -335,8 +349,8 @@ class Options:
                               'colour_ulim': self.colour_ulim,
                               'comparison_mode': self.comparison_mode,
                               'make_plots': self.make_plots,
-                              'results_dir': self.results_dir,
                               'table_type': list_to_string(self.table_type)}
+        config['OUTPUT'] = {'results_dir': self.results_dir}
         config['LOGGING'] = {'file_name': self.log_file,
                              'level': self.log_level,
                              'append': self.log_append,
