@@ -81,12 +81,14 @@ def plot(acc, runtime, fig_dir):
         figure_path.append(this_filename)
 
         step_values = []
+        max_value = 0.0
         for value in profile_plot.values():
-            sorted_list = np.sort(value)
+            sorted_list = np.sort(_remove_nans(value))
+            max_in_list = np.max(sorted_list) if len(sorted_list) > 0 else 0.0
+            if max_in_list > max_value:
+                max_value = max_in_list
             step_values.append(np.insert(sorted_list, 0, 0.0))
 
-        max_value = np.max([np.max(v)
-                            for v in profile_plot.values()])
         linear_upper_limit = 10
 
         use_log_plot = True
@@ -152,6 +154,13 @@ def plot(acc, runtime, fig_dir):
         plt.savefig(this_filename, dpi=150)
 
     return figure_path
+
+
+def _remove_nans(values: np.ndarray) -> np.ndarray:
+    """
+    Removes all the nan values from the provided numpy array.
+    """
+    return values[~np.isnan(values)]
 
 
 def create_plot(ax, step_values, solvers):
