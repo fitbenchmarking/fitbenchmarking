@@ -44,7 +44,8 @@ class TestMain(TestCase):
         benchmark.return_value = ([], [], {}, '')
 
         with self.assertRaises(exceptions.NoResultsError):
-            main.run(['examples/benchmark_problems/simple_tests'], debug=True)
+            main.run(['examples/benchmark_problems/simple_tests'],
+                     os.path.dirname(__file__), debug=True)
 
     @patch('fitbenchmarking.cli.main.benchmark')
     def test_all_dummy_results_produced(self, benchmark):
@@ -54,7 +55,8 @@ class TestMain(TestCase):
         benchmark.side_effect = self.mock_func_call
 
         with self.assertRaises(exceptions.NoResultsError):
-            main.run(['examples/benchmark_problems/simple_tests'], debug=True)
+            main.run(['examples/benchmark_problems/simple_tests'],
+                     os.path.dirname(__file__), debug=True)
 
     def mock_func_call(self, *args, **kwargs):
         """

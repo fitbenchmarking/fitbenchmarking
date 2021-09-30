@@ -73,6 +73,10 @@ of the Fitbenchmarking docs. '''
                                                        'NIST',
                                                        'average_difficulty')),
                         help='Paths to directories containing problem sets.')
+    parser.add_argument('-r', '--results-dir',
+                        metavar='RESULTS_DIR',
+                        default='',
+                        help='The directory to store resulting files in.')
     parser.add_argument('-d', '--debug-mode',
                         default=False,
                         action='store_true',
@@ -82,7 +86,7 @@ of the Fitbenchmarking docs. '''
 
 
 @exception_handler
-def run(problem_sets, options_file='', debug=False):
+def run(problem_sets, results_directory, options_file='', debug=False):
     # pylint: disable=unused-argument
     """
     Run benchmarking for the problems sets and options file given.
@@ -90,6 +94,8 @@ def run(problem_sets, options_file='', debug=False):
 
     :param problem_sets: The paths to directories containing problem_sets
     :type problem_sets: list of str
+    :param results_directory: The directory to store the resulting files in
+    :type results_directory: str
     :param options_file: The path to an options file, defaults to ''
     :type options_file: str, optional
     :param debug: Enable debugging output
@@ -107,9 +113,10 @@ def run(problem_sets, options_file='', debug=False):
         if not options_file.endswith(".ini"):
             raise OptionsError('Options file must be a ".ini" file')
 
-        options = Options(glob_options_file)
+        options = Options(file_name=glob_options_file,
+                          results_directory=results_directory)
     else:
-        options = Options()
+        options = Options(results_directory=results_directory)
 
     setup_logger(log_file=options.log_file,
                  append=options.log_append,
@@ -203,12 +210,11 @@ def run(problem_sets, options_file='', debug=False):
                   "and/or problem set then re-run FitBenchmarking"
         raise NoResultsError(message)
 
-    if os.path.basename(options.results_dir) == \
-            options.DEFAULT_PLOTTING['results_dir']:
-        LOGGER.info("\nINFO: \nThe FitBenchmarking results will be "
-                    "placed into the folder: \n\n   %s\n\nTo change this "
-                    "alter the input options "
-                    "file.\n", options.results_dir)
+    LOGGER.info("\nINFO:\nThe FitBenchmarking results will be placed into "
+                "the folder:\n\n   %s\n\nTo change this use the -r or "
+                "--results-dir optional command line argument. You can\n"
+                "also set 'results_dir' in an options file.",
+                options.results_dir)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
@@ -249,7 +255,9 @@ def main():
     args = parser.parse_args(sys.argv[1:])
 
     run(problem_sets=args.problem_sets,
-        options_file=args.options_file, debug=args.debug_mode)
+        results_directory=args.results_dir,
+        options_file=args.options_file,
+        debug=args.debug_mode)
 
 
 if __name__ == '__main__':
