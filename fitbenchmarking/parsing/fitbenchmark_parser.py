@@ -4,10 +4,7 @@ This file implements a parser for the Fitbenchmark data format.
 
 from __future__ import absolute_import, division, print_function
 
-import importlib
-import inspect
 import os
-import sys
 from collections import OrderedDict
 
 import numpy as np
@@ -18,31 +15,7 @@ from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
 
-import_success = {}
-try:
-    from scipy.integrate import solve_ivp
-    import_success['ivp'] = (True, None)
-except ImportError as ex:
-    import_success['ivp'] = (False, ex)
 
-
-try:
-    import mantid.simpleapi as msapi
-    import_success['mantid'] = (True, None)
-except ImportError as ex:
-    import_success['mantid'] = (False, ex)
-
-
-try:
-    from sasmodels.bumps_model import Experiment, Model
-    from sasmodels.core import load_model
-    from sasmodels.data import empty_data1D
-    import_success['sasview'] = (True, None)
-except ImportError as ex:
-    import_success['sasview'] = (False, ex)
-
-
-# By design the parsers may require many the private methods
 # pylint: disable=too-many-branches
 class FitbenchmarkParser(Parser):
     """
@@ -50,11 +23,14 @@ class FitbenchmarkParser(Parser):
     file.
     """
 
-    def __init__(self, filename, options):
+    def __init__(self, filename, options, import_success={}):
         super().__init__(filename, options)
 
-        self._entries = None
-        self._parsed_func = None
+        self._import_success: dict = import_success
+        self._parsed_func: list = None
+
+        self._entries: dict = None
+        self._software: str = ""
 
     def parse(self):
         """
@@ -63,47 +39,32 @@ class FitbenchmarkParser(Parser):
         :return: The fully parsed fitting problem
         :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
         """
-        # pylint: disable=attribute-defined-outside-init
-        fitting_problem = FittingProblem(self.options)
+        self._check_software_imported()
 
         self._entries = self._get_data_problem_entries()
-        software = self._entries['software'].lower()
-        if software not in import_success:
-            raise MissingSoftwareError(
-                f'Did not recognise software: {software}'
-            )
-        if not import_success[software][0]:
-            error = import_success[software][1]
-            raise MissingSoftwareError(
-                f'Requirements are missing for {software} parser: {error}'
-            )
+        self._software = self._entries['software'].lower()
+
+        # pylint: disable=attribute-defined-outside-init
+        self.fitting_problem = FittingProblem(self.options)
 
         self._parsed_func = self._parse_function()
 
-        if software == 'mantid' and self._entries['input_file'][0] == '[':
-            fitting_problem.multifit = True
+        self.fitting_problem.multifit = self._is_multifit()
 
         # NAME
-        fitting_problem.name = self._entries['name']
+        self.fitting_problem.name = self._entries['name']
 
         # DATA
         data_points = [_get_data_points(p) for p in self._get_data_file()]
 
         # FUNCTION
-        if software == 'mantid':
-            fitting_problem.function = self._create_mantid_function()
-            fitting_problem.format = 'mantid'
-        elif software == 'sasview':
-            fitting_problem.function = self._create_sasview_function()
-            fitting_problem.format = 'sasview'
-        elif software == 'ivp':
-            fitting_problem.function = self._create_ivp_function()
-            fitting_problem.format = 'ivp'
+        self.fitting_problem.function = self._create_function()
+        self.fitting_problem.format = self._software
 
         # If using a multivariate function wrap the call to take a single
         # argument
         if len(data_points[0]['x'].shape) > 1:
-            old_function = fitting_problem.function
+            old_function = self.fitting_problem.function
             all_data = []
             count = 0
             for dp in data_points:
@@ -116,38 +77,25 @@ class FitbenchmarkParser(Parser):
                 inp = all_data[x]
                 return old_function(inp, *p)
 
-            fitting_problem.function = new_function
-            fitting_problem.multivariate = True
+            self.fitting_problem.function = new_function
+            self.fitting_problem.multivariate = True
 
         # Set this flag if the output is non-scalar either
         if len(data_points[0]['y'].shape) > 2:
-            fitting_problem.multivariate = True
+            self.fitting_problem.multivariate = True
 
         # EQUATION
-        if software == 'ivp':
-            fitting_problem.equation = self._ivp_equation_name
-        else:
-            equation_count = len(self._parsed_func)
-            if equation_count == 1:
-                fitting_problem.equation = self._parsed_func[0]['name']
-            else:
-                fitting_problem.equation = '{} Functions'.format(
-                    equation_count)
+        self.fitting_problem.equation = self._get_equation()
 
         # STARTING VALUES
-        if software == 'ivp':
-            fitting_problem.starting_values = self._ivp_starting_values
-        elif software == 'mantid':
-            fitting_problem.starting_values = self._mantid_starting_values
-        else:
-            fitting_problem.starting_values = self._get_starting_values()
+        self.fitting_problem.starting_values = self._get_starting_values()
 
         # PARAMETER RANGES
         # Creates list containing tuples of lower and upper bounds
         # (lb,ub) for each parameter
         vr = _parse_range(self._entries.get('parameter_ranges', ''))
         if vr:
-            fitting_problem.set_value_ranges(vr)
+            self.fitting_problem.set_value_ranges(vr)
 
         # FIT RANGES
         fit_ranges_str = self._entries.get('fit_ranges', '')
@@ -155,42 +103,82 @@ class FitbenchmarkParser(Parser):
         fit_ranges = [_parse_range('{' + r.split('}')[0] + '}')
                       for r in fit_ranges_str.split('{')[1:]]
 
-        if fitting_problem.multifit:
-            num_files = len(data_points)
-            fitting_problem.data_x = [d['x'] for d in data_points]
-            fitting_problem.data_y = [d['y'] for d in data_points]
-            fitting_problem.data_e = [d['e'] if 'e' in d else None
-                                      for d in data_points]
+        self._set_data_points(data_points, fit_ranges)
 
-            if not fit_ranges:
-                fit_ranges = [{} for _ in range(num_files)]
+        self._set_additional_info()
 
-            fitting_problem.start_x = [f['x'][0] if 'x' in f else None
-                                       for f in fit_ranges]
-            fitting_problem.end_x = [f['x'][1] if 'x' in f else None
-                                     for f in fit_ranges]
+        return self.fitting_problem
 
+    def _check_software_imported(self) -> None:
+        """
+        Checks that the software can be imported successfully.
+        """
+        if self._software not in self._import_success:
+            raise MissingSoftwareError(
+                f"Did not recognise software: {self._software}"
+            )
+        if not self._import_success[self._software][0]:
+            error = self._import_success[self._software][1]
+            raise MissingSoftwareError(
+                f"Requirements are missing for {self._software} parser: "
+                f"{error}"
+            )
+
+    @staticmethod
+    def _is_multifit() -> bool:
+        """
+        Returns true if the problem is a multi fit problem.
+        """
+        return False
+
+    def _create_function(self) -> None:
+        """
+        Creates a python callable which is a wrapper around the fit function.
+        """
+        raise NotImplementedError
+
+    def _get_equation(self) -> str:
+        """
+        Returns the equation in the problem definition file.
+        """
+        equation_count = len(self._parsed_func)
+        if equation_count == 1:
+            return self._parsed_func[0]['name']
         else:
-            fitting_problem.data_x = data_points[0]['x']
-            fitting_problem.data_y = data_points[0]['y']
-            if 'e' in data_points[0]:
-                fitting_problem.data_e = data_points[0]['e']
+            return f"{equation_count} Functions"
 
-            if fit_ranges and 'x' in fit_ranges[0]:
-                fitting_problem.start_x = fit_ranges[0]['x'][0]
-                fitting_problem.end_x = fit_ranges[0]['x'][1]
+    def _get_starting_values(self) -> list:
+        """
+        Returns the starting values for the problem.
+        """
+        # SasView functions can have reserved keywords so ignore these
+        ignore = ['name']
 
-        if software == 'mantid':
-            # String containing the function name(s) and the starting parameter
-            # values for each function.
-            fitting_problem.additional_info['mantid_equation'] \
-                = self._entries['function']
+        starting_values = [
+            OrderedDict([(name, val)
+                         for name, val in self._parsed_func[0].items()
+                         if name not in ignore])]
 
-            if fitting_problem.multifit:
-                fitting_problem.additional_info['mantid_ties'] \
-                    = self._parse_ties()
+        return starting_values
 
-        return fitting_problem
+    def _set_data_points(self, data_points: list, fit_ranges: list) -> None:
+        """
+        Sets the data points and fit range data in the fitting problem.
+        """
+        self.fitting_problem.data_x = data_points[0]['x']
+        self.fitting_problem.data_y = data_points[0]['y']
+        if 'e' in data_points[0]:
+            self.fitting_problem.data_e = data_points[0]['e']
+
+        if fit_ranges and 'x' in fit_ranges[0]:
+            self.fitting_problem.start_x = fit_ranges[0]['x'][0]
+            self.fitting_problem.end_x = fit_ranges[0]['x'][1]
+
+    def _set_additional_info(self) -> None:
+        """
+        Sets any additional info for a fitting problem.
+        """
+        pass
 
     def _get_data_file(self):
         """
@@ -340,152 +328,6 @@ class FitbenchmarkParser(Parser):
             function_def.append(params_dict)
 
         return function_def
-
-    def _get_starting_values(self):
-        """
-        Get the starting values for the problem
-
-        :return: Starting values for the function
-        :rtype: list of OrderedDict
-        """
-        # SasView functions can have reserved keywords so ignore these
-        ignore = ['name']
-
-        starting_values = [
-            OrderedDict([(name, val)
-                         for name, val in self._parsed_func[0].items()
-                         if name not in ignore])]
-
-        return starting_values
-
-    def _create_mantid_function(self):
-        """
-        Processing the function in the FitBenchmark problem definition into a
-        python callable.
-
-        :return: A callable function
-        :rtype: callable
-        """
-        # Get mantid to build the function
-        ifun = msapi.FunctionFactory.createInitialized(
-            self._entries['function'])
-
-        # Extract the parameter info
-        all_params = [(ifun.getParamName(i),
-                       ifun.getParamValue(i),
-                       ifun.isFixed(i))
-                      for i in range(ifun.nParams())]
-
-        # This list will be used to input fixed values alongside unfixed ones
-        all_params_dict = {name: value
-                           for name, value, _ in all_params}
-
-        # Extract starting parameters
-        params = {name: value
-                  for name, value, fixed in all_params
-                  if not fixed}
-        # pylint: disable=attribute-defined-outside-init
-        self._mantid_starting_values = [OrderedDict(params)]
-
-        # Convert to callable
-        fit_function = msapi.FunctionWrapper(ifun)
-
-        # Use a wrapper to inject fixed parameters into the function
-        def wrapped(x, *p):
-            # Use the full param dict from above, but update the non-fixed
-            # values
-            update_dict = dict(zip(params.keys(), p))
-            all_params_dict.update(update_dict)
-
-            return fit_function(x, *all_params_dict.values())
-
-        return wrapped
-
-    def _create_sasview_function(self):
-        """
-        Creates callable function
-
-        :return: the model
-        :rtype: callable
-        """
-        equation = self._parsed_func[0]['name']
-        starting_values = self._get_starting_values()
-        param_names = list(starting_values[0].keys())
-
-        def fitFunction(x, *tmp_params):
-
-            model = load_model(equation)
-
-            data = empty_data1D(x)
-            param_dict = dict(zip(param_names, tmp_params))
-
-            model_wrapper = Model(model, **param_dict)
-            func_wrapper = Experiment(data=data, model=model_wrapper)
-
-            return func_wrapper.theory()
-
-        return fitFunction
-
-    def _create_ivp_function(self):
-        """
-        Process the IVP formatted function into a callable.
-
-        Expected function format:
-        function='module=my_python_file,func=my_function_name,
-                  step=0.5,p0=0.1,p1...'
-
-        :return: the model
-        :rtype: callable
-        """
-        if len(self._parsed_func) > 1:
-            raise ParsingError('Could not parse IVP problem. Please ensure '
-                               'only 1 function definition is present')
-
-        pf = self._parsed_func[0]
-        path = os.path.join(os.path.dirname(self._filename), pf['module'])
-        sys.path.append(os.path.dirname(path))
-        module = importlib.import_module(os.path.basename(path))
-        fun = getattr(module, pf['func'])
-        time_step = pf['step']
-        sig = inspect.signature(fun)
-        # params[0] should be t
-        # parmas[1] should be x so start after.
-        p_names = list(sig.parameters.keys())[2:]
-
-        # pylint: disable=attribute-defined-outside-init
-        self._ivp_equation_name = fun.__name__
-        self._ivp_starting_values = [
-            OrderedDict([(n, pf[n])
-                         for n in p_names])
-        ]
-
-        def fitFunction(x, *p):
-            if len(x.shape) == 1:
-                x = np.array([x])
-            y = np.zeros_like(x)
-            for i, inp in enumerate(x):
-                soln = solve_ivp(fun=fun,
-                                 t_span=[0, time_step],
-                                 y0=inp,
-                                 args=p,
-                                 vectorized=False)
-                y[i, :] = soln.y[:, -1]
-            return y
-
-        return fitFunction
-
-    def _parse_ties(self):
-        try:
-            ties = []
-            for t in self._entries['ties'].split(','):
-                # Strip out these chars
-                for s in '[] "\'':
-                    t = t.replace(s, '')
-                ties.append(t)
-
-        except KeyError:
-            ties = []
-        return ties
 
 
 def _parse_range(range_str):

@@ -1,0 +1,85 @@
+"""
+This file implements a parser for the Scipy IVP data format.
+"""
+import importlib
+import inspect
+import os
+import sys
+import numpy as np
+from collections import OrderedDict
+
+from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
+from fitbenchmarking.utils.exceptions import ParsingError
+
+import_success = {}
+try:
+    from scipy.integrate import solve_ivp
+    import_success['ivp'] = (True, None)
+except ImportError as ex:
+    import_success['ivp'] = (False, ex)
+
+
+class ScipyIVPParser(FitbenchmarkParser):
+    """
+    Parser for a Scipy IVP problem definition file.
+    """
+
+    def __init__(self, filename, options):
+        super().__init__(filename, options, import_success)
+
+    def _create_function(self):
+        """
+        Process the IVP formatted function into a callable.
+
+        Expected function format:
+        function='module=my_python_file,func=my_function_name,
+                  step=0.5,p0=0.1,p1...'
+
+        :return: the model
+        :rtype: callable
+        """
+        if len(self._parsed_func) > 1:
+            raise ParsingError('Could not parse IVP problem. Please ensure '
+                               'only 1 function definition is present')
+
+        pf = self._parsed_func[0]
+        path = os.path.join(os.path.dirname(self._filename), pf['module'])
+        sys.path.append(os.path.dirname(path))
+        module = importlib.import_module(os.path.basename(path))
+        fun = getattr(module, pf['func'])
+        time_step = pf['step']
+        sig = inspect.signature(fun)
+        # params[0] should be t
+        # parmas[1] should be x so start after.
+        p_names = list(sig.parameters.keys())[2:]
+
+        # pylint: disable=attribute-defined-outside-init
+        self._equation = fun.__name__
+        self._starting_values = [OrderedDict([(n, pf[n]) for n in p_names])]
+
+        def fitFunction(x, *p):
+            if len(x.shape) == 1:
+                x = np.array([x])
+            y = np.zeros_like(x)
+            for i, inp in enumerate(x):
+                soln = solve_ivp(fun=fun,
+                                 t_span=[0, time_step],
+                                 y0=inp,
+                                 args=p,
+                                 vectorized=False)
+                y[i, :] = soln.y[:, -1]
+            return y
+
+        return fitFunction
+
+    def _get_equation(self) -> str:
+        """
+        Returns the equation in the problem definition file.
+        """
+        return self._equation
+
+    def _get_starting_values(self) -> list:
+        """
+        Returns the starting values for the problem.
+        """
+        return self._starting_values
