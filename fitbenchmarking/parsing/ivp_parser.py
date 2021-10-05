@@ -1,12 +1,13 @@
 """
-This file implements a parser for the Scipy IVP data format.
+This file implements a parser for the IVP data format.
 """
+from collections import OrderedDict
+
 import importlib
 import inspect
 import os
 import sys
 import numpy as np
-from collections import OrderedDict
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 from fitbenchmarking.utils.exceptions import ParsingError
@@ -19,9 +20,9 @@ except ImportError as ex:
     import_success['ivp'] = (False, ex)
 
 
-class ScipyIVPParser(FitbenchmarkParser):
+class IVPParser(FitbenchmarkParser):
     """
-    Parser for a Scipy IVP problem definition file.
+    Parser for a IVP problem definition file.
     """
 
     def __init__(self, filename, options):

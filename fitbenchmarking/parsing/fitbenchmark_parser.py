@@ -23,7 +23,7 @@ class FitbenchmarkParser(Parser):
     file.
     """
 
-    def __init__(self, filename, options, import_success={}):
+    def __init__(self, filename, options, import_success=None):
         super().__init__(filename, options)
 
         self._import_success: dict = import_success
@@ -39,10 +39,10 @@ class FitbenchmarkParser(Parser):
         :return: The fully parsed fitting problem
         :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
         """
-        self._check_software_imported()
-
         self._entries = self._get_data_problem_entries()
         self._software = self._entries['software'].lower()
+
+        self._check_software_imported()
 
         # pylint: disable=attribute-defined-outside-init
         self.fitting_problem = FittingProblem(self.options)
@@ -113,7 +113,8 @@ class FitbenchmarkParser(Parser):
         """
         Checks that the software can be imported successfully.
         """
-        if self._software not in self._import_success:
+        if self._import_success is None or \
+                self._software not in self._import_success:
             raise MissingSoftwareError(
                 f"Did not recognise software: {self._software}"
             )
@@ -144,8 +145,7 @@ class FitbenchmarkParser(Parser):
         equation_count = len(self._parsed_func)
         if equation_count == 1:
             return self._parsed_func[0]['name']
-        else:
-            return f"{equation_count} Functions"
+        return f"{equation_count} Functions"
 
     def _get_starting_values(self) -> list:
         """
@@ -174,10 +174,12 @@ class FitbenchmarkParser(Parser):
             self.fitting_problem.start_x = fit_ranges[0]['x'][0]
             self.fitting_problem.end_x = fit_ranges[0]['x'][1]
 
-    def _set_additional_info(self) -> None:
+    @staticmethod
+    def _set_additional_info() -> None:
         """
         Sets any additional info for a fitting problem.
         """
+        # pylint: disable=unnecessary-pass
         pass
 
     def _get_data_file(self):

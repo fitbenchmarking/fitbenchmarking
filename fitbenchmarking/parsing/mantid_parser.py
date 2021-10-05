@@ -97,7 +97,7 @@ class MantidParser(FitbenchmarkParser):
                                           for f in fit_ranges]
 
         else:
-            super().set_data(data_points, fit_ranges)
+            super()._set_data_points(data_points, fit_ranges)
 
     def _set_additional_info(self) -> None:
         """
