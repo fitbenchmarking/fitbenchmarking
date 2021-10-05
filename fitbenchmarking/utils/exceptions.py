@@ -205,3 +205,11 @@ class NoHessianError(FitBenchmarkException):
     """
     class_message = 'Could not find Hessian class'
     error_code = 22
+
+
+class MaxRuntimeError(FitBenchmarkException):
+    """
+    Indicates a minimizer has taken too long to run
+    """
+    class_message = 'Minimizer runtime exceeded maximum runtime'
+    error_code = 23

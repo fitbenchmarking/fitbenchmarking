@@ -99,7 +99,8 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.options = self.problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
 
-    def mock_func_call(self, *args):
+    @staticmethod
+    def mock_func_call(*args):
         """
         Mock function to be used instead of loop_over_hessians
         """

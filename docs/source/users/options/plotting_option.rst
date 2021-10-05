@@ -124,16 +124,3 @@ Default is ``acc``, ``runtime``, ``compare``, and ``local_min``.
                 runtime
                 compare
                 local_min
-
-
-Results directory (:code:`results_dir`)
----------------------------------------
-
-This is used to select where the output should be saved
-
-Default is ``fitbenchmarking_results``
-
-.. code-block:: rst
-
-    [PLOTTING]
-    results_dir: fitbenchmarking_results

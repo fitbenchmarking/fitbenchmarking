@@ -13,6 +13,7 @@ from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import output_grabber
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.timer import TimerWithMaxTime
 
 # Due to construction of the controllers two folder functions
 # pylint: disable=unnecessary-pass
@@ -63,13 +64,16 @@ class DummyController(Controller):
         self.count = self.count % len(self.flag_expected)
 
 
-def make_cost_function(file_name='cubic.dat', minimizers=None):
+def make_cost_function(file_name='cubic.dat', minimizers=None,
+                       max_runtime=None):
     """
     Helper function that returns a simple fitting problem
     """
     options = Options()
     if minimizers:
         options.minimizers = minimizers
+    if max_runtime:
+        options.max_runtime = max_runtime
 
     bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
     fname = os.path.join(bench_prob_dir, file_name)
@@ -171,6 +175,26 @@ class LoopOverHessiansTests(unittest.TestCase):
                                jacobian,
                                self.grabbed_output)
         check_bounds_respected.assert_not_called()
+
+    @patch.object(TimerWithMaxTime, 'reset', lambda *args: None)
+    def test_max_runtime_exceeded(self):
+        """
+        Test that the correct flag is set when the max_runtime is exceeded.
+        """
+        self.cost_func = make_cost_function(minimizers=self.minimizers,
+                                            max_runtime=0.1)
+        self.cost_func.problem.timer.total_elapsed_time = 5
+        self.controller = DummyController(cost_func=self.cost_func)
+        self.options = self.cost_func.problem.options
+        self.grabbed_output = output_grabber.OutputGrabber(self.options)
+        self.controller.parameter_set = 0
+
+        jacobian = False
+        self.controller.minimizer = "deriv_free_algorithm"
+        results, _, _ = loop_over_hessians(self.controller, self.options,
+                                           self.controller.minimizer,
+                                           jacobian, self.grabbed_output)
+        self.assertEqual(results[0]["error_flag"], 6)
 
 
 if __name__ == "__main__":

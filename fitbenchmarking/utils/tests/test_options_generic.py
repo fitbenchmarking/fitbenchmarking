@@ -42,7 +42,9 @@ class OptionsWriteTests(unittest.TestCase):
             comparison_mode: abs
             table_type: acc
                         runtime
-            results_dir: new_results
+
+            [OUTPUT]
+            results_dir: new_results/
 
             [LOGGING]
             file_name: THE_LOG.log
