@@ -210,11 +210,12 @@ def run(problem_sets, results_directory, options_file='', debug=False):
                   "and/or problem set then re-run FitBenchmarking"
         raise NoResultsError(message)
 
-    LOGGER.info("\nINFO:\nThe FitBenchmarking results will be placed into "
-                "the folder:\n\n   %s\n\nTo change this use the -r or "
-                "--results-dir optional command line argument. You can\n"
-                "also set 'results_dir' in an options file.",
-                options.results_dir)
+    if results_directory == "":
+        LOGGER.info("\nINFO:\nThe FitBenchmarking results will be placed "
+                    "into the folder:\n\n   %s\n\nTo change this use the "
+                    "-r or --results-dir optional command line argument. "
+                    "You can also set 'results_dir' in an options file.",
+                    options.results_dir)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
@@ -239,7 +240,14 @@ def run(problem_sets, results_directory, options_file='', debug=False):
             groups=groups,
             group_link=group_links,
             zip=zip))
-    webbrowser.open_new(output_file)
+
+    if webbrowser.open_new(output_file):
+        LOGGER.info("\nINFO:\nThe FitBenchmarking results have been opened "
+                    "in your browser from this url:\n\n   %s", output_file)
+    else:
+        LOGGER.warning("\nWARNING:\nThe browser failed to open "
+                       "automatically. Copy and paste the following url "
+                       "into your browser:\n\n   %s", output_file)
 
 
 def main():
