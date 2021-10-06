@@ -24,9 +24,10 @@ class MinuitController(Controller):
         :param problem: Problem to fit
         :type problem: FittingProblem
         """
-        if int(iminuit.__version__[:1]) < 2:
-            raise Exception("iminuit version " + iminuit.__version__ + 
-                            " is not supported, please upgrade to at least version 2.0.0")
+        if int(iminuit_version[:1]) < 2:
+            raise Exception("iminuit version {} is not supported, " 
+                            "please upgrade to at least version "
+                            "2.0.0".format(iminuit_version))
 
         super(MinuitController, self).__init__(problem)
         self._popt = None
