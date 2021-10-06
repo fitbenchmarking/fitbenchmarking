@@ -25,7 +25,7 @@ class MinuitController(Controller):
         :type problem: FittingProblem
         """
         if int(iminuit_version[:1]) < 2:
-            raise Exception("iminuit version {} is not supported, " 
+            raise Exception("iminuit version {} is not supported, "
                             "please upgrade to at least version "
                             "2.0.0".format(iminuit_version))
 
