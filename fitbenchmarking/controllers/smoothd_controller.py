@@ -6,9 +6,10 @@ import sys
 sys.path.append("/home/upg88743/global-optimization/")
 from SmoothD.smoothd import smoothd
 from SmoothD.smoothd_improved import smoothd_improved
+from SmoothD.rembed import rembed
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import MissingBoundsError
+from fitbenchmarking.utils.exceptions import MissingBoundsError, UnknownMinimizerError
 
 class SmoothdController(Controller):
     """
@@ -28,15 +29,16 @@ class SmoothdController(Controller):
 
         self.support_for_bounds = True
         self._popt = None
+        self._demb = None
         self.algorithm_check = {
-            'all': ['SmoothD', 'SmoothD-Improved'],
+            'all': ['SmoothD', 'SmoothD-Improved', 'Rembed'],
             'ls': [None],
             'deriv_free': [None],
-            'general': ['SmoothD', 'SmoothD-Improved'],
-            'global_optimization': ['SmoothD', 'SmoothD-Improved']
+            'general': ['SmoothD', 'SmoothD-Improved', 'Rembed'],
+            'global_optimization': ['SmoothD', 'SmoothD-Improved', 'Rembed']
         }
 
-    jacobian_enabled_solvers = ['SmoothD', 'SmoothD-Improved']
+    jacobian_enabled_solvers = ['SmoothD', 'SmoothD-Improved', 'Rembed']
 
     def setup(self):
         """
@@ -46,6 +48,9 @@ class SmoothdController(Controller):
         if self.minimizer == "SmoothD-Improved":
             self._options['prune'] = True
             self._options['lsearch'] = True
+        if self.minimizer == "Rembed":
+            self._options['maxemb'] = 100
+            self._demb = 2
         #self._options['plot'] = True
 
         # Set bounds on parameters
@@ -63,10 +68,15 @@ class SmoothdController(Controller):
         g = self.jacobian.eval_cost
         xl = self._xl
         xu = self._xu
+        d = self._demb
         if self.minimizer == "SmoothD-Improved":
             status, _, xopt = smoothd_improved(f, g, xl, xu, **self._options)
-        else:
+        elif self.minimizer == "SmoothD":
             status, _, xopt = smoothd(f, g, xl, xu, **self._options)
+        elif self.minimizer == "Rembed":
+            status, _, xopt = rembed(f, g, xl, xu, d, **self._options)
+        else:
+            raise UnknownMinimizerError(self.minimizer+" minimizer does not exist")
         self._popt = xopt
         self._status = status
 

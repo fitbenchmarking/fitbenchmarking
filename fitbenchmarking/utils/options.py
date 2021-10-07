@@ -53,7 +53,7 @@ class Options:
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing'],
-         'smoothd': ['SmoothD','SmoothD-Improved']}
+         'smoothd': ['SmoothD','SmoothD-Improved', 'Rembed']}
     VALID_FITTING = \
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general', 'simplex',
                             'trust_region', 'levenberg-marquardt',
@@ -123,7 +123,7 @@ class Options:
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'dual_annealing'],
-         'smoothd': ['SmoothD','SmoothD-Improved']}
+         'smoothd': ['SmoothD','SmoothD-Improved','Rembed']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': ['all'],
