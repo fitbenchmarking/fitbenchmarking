@@ -497,6 +497,7 @@ def loop_over_hessians(controller, options, minimizer_name,
         try:
             with grabbed_output:
                 controller.timer.reset()
+                controller.validate()
                 # Calls timeit repeat with repeat = num_runs and
                 # number = 1
                 runtime_list = timeit.Timer(

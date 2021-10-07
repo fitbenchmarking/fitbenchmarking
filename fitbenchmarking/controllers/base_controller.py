@@ -6,7 +6,8 @@ from abc import ABCMeta, abstractmethod
 import numpy
 
 from fitbenchmarking.utils.exceptions import ControllerAttributeError, \
-    UnknownMinimizerError, IncompatibleMinimizerError
+    UnknownMinimizerError, IncompatibleMinimizerError, \
+    IncompatibleJacobianError
 
 
 class Controller:
@@ -20,6 +21,9 @@ class Controller:
     __metaclass__ = ABCMeta
 
     VALID_FLAGS = [0, 1, 2, 3, 4, 5, 6]
+
+    # Invalid problem formats for specific jacobian methods
+    INVALID_JACOBIAN_FORMATS = {"cs": ["mantid"]}
 
     #: Within the controller class, you must
     #: initialize a dictionary, ``algorithm_check``,
@@ -180,6 +184,13 @@ class Controller:
                 self._software = self.__class__.__name__[:-10].lower()
         return self._software
 
+    def validate(self) -> None:
+        """
+        Validates that the provided options are compatible with each other.
+        If there are some invalid options, the relevant exception is raised.
+        """
+        self._validate_jacobian()
+
     def prepare(self):
         """
         Check that function and minimizer have been set.
@@ -222,6 +233,20 @@ class Controller:
         """
         out = self.cost_func.eval_cost(params=params, x=x, y=y, e=e)
         return out
+
+    def _validate_jacobian(self) -> None:
+        """
+        Validates that the provided jacobian method is compatible with the
+        other options and problem sets. An exception is raised if this is
+        not true.
+        """
+        for jacobian_method, formats in self.INVALID_JACOBIAN_FORMATS.items():
+            if self.jacobian.method == jacobian_method \
+                    and self.problem.format in formats:
+                message = f"The jacobian method '{jacobian_method}' is " \
+                          f"incompatible with the problem format " \
+                          f"'{self.problem.format}'."
+                raise IncompatibleJacobianError(message)
 
     def validate_minimizer(self, minimizer, algorithm_type):
         """
