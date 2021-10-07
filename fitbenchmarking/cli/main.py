@@ -241,13 +241,17 @@ def run(problem_sets, results_directory, options_file='', debug=False):
             group_link=group_links,
             zip=zip))
 
-    if webbrowser.open_new(output_file):
+    # Finds the file prefix required for Mac
+    prefix = "file:///" if output_file[0] != "/" else "file://"
+    url = prefix + output_file
+
+    if webbrowser.open_new(url):
         LOGGER.info("\nINFO:\nThe FitBenchmarking results have been opened "
-                    "in your browser from this url:\n\n   %s", output_file)
+                    "in your browser from this url:\n\n   %s", url)
     else:
         LOGGER.warning("\nWARNING:\nThe browser failed to open "
                        "automatically. Copy and paste the following url "
-                       "into your browser:\n\n   %s", output_file)
+                       "into your browser:\n\n   %s", url)
 
 
 def main():
