@@ -7,17 +7,13 @@ import importlib
 import inspect
 import os
 import sys
+import typing
 import numpy as np
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 from fitbenchmarking.utils.exceptions import ParsingError
 
-import_success = {}
-try:
-    from scipy.integrate import solve_ivp
-    import_success['ivp'] = (True, None)
-except ImportError as ex:
-    import_success['ivp'] = (False, ex)
+from scipy.integrate import solve_ivp
 
 
 class IVPParser(FitbenchmarkParser):
@@ -25,10 +21,7 @@ class IVPParser(FitbenchmarkParser):
     Parser for a IVP problem definition file.
     """
 
-    def __init__(self, filename, options):
-        super().__init__(filename, options, import_success)
-
-    def _create_function(self):
+    def _create_function(self) -> typing.Callable:
         """
         Process the IVP formatted function into a callable.
 
@@ -36,7 +29,7 @@ class IVPParser(FitbenchmarkParser):
         function='module=my_python_file,func=my_function_name,
                   step=0.5,p0=0.1,p1...'
 
-        :return: the model
+        :return: A callable function
         :rtype: callable
         """
         if len(self._parsed_func) > 1:
@@ -76,11 +69,17 @@ class IVPParser(FitbenchmarkParser):
     def _get_equation(self) -> str:
         """
         Returns the equation in the problem definition file.
+
+        :return: The equation in the problem definition file.
+        :rtype: str
         """
         return self._equation
 
     def _get_starting_values(self) -> list:
         """
         Returns the starting values for the problem.
+
+        :return: The starting values for the problem.
+        :rtype: list
         """
         return self._starting_values

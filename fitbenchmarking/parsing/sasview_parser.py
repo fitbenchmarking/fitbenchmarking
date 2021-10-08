@@ -1,16 +1,13 @@
 """
 This file implements a parser for the SASView data format.
 """
+import typing
+
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 
-import_success = {}
-try:
-    from sasmodels.bumps_model import Experiment, Model
-    from sasmodels.core import load_model
-    from sasmodels.data import empty_data1D
-    import_success['sasview'] = (True, None)
-except ImportError as ex:
-    import_success['sasview'] = (False, ex)
+from sasmodels.bumps_model import Experiment, Model
+from sasmodels.core import load_model
+from sasmodels.data import empty_data1D
 
 
 class SASViewParser(FitbenchmarkParser):
@@ -18,14 +15,11 @@ class SASViewParser(FitbenchmarkParser):
     Parser for a SASView problem definition file.
     """
 
-    def __init__(self, filename, options):
-        super().__init__(filename, options, import_success)
-
-    def _create_function(self):
+    def _create_function(self) -> typing.Callable:
         """
         Creates callable function for a SASView problem.
 
-        :return: the model
+        :return: A callable function
         :rtype: callable
         """
         equation = self._parsed_func[0]['name']

@@ -1,16 +1,15 @@
 """
 This file implements a parser for the Fitbenchmark data format.
 """
-
-from __future__ import absolute_import, division, print_function
-
-import os
 from collections import OrderedDict
 
+import os
+import typing
 import numpy as np
+
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.utils.exceptions import MissingSoftwareError, ParsingError
+from fitbenchmarking.utils.exceptions import ParsingError
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
@@ -23,16 +22,13 @@ class FitbenchmarkParser(Parser):
     file.
     """
 
-    def __init__(self, filename, options, import_success=None):
+    def __init__(self, filename, options):
         super().__init__(filename, options)
 
-        self._import_success: dict = import_success
         self._parsed_func: list = None
-
         self._entries: dict = None
-        self._software: str = ""
 
-    def parse(self):
+    def parse(self) -> FittingProblem:
         """
         Parse the Fitbenchmark problem file into a Fitting Problem.
 
@@ -40,9 +36,6 @@ class FitbenchmarkParser(Parser):
         :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
         """
         self._entries = self._get_data_problem_entries()
-        self._software = self._entries['software'].lower()
-
-        self._check_software_imported()
 
         # pylint: disable=attribute-defined-outside-init
         self.fitting_problem = FittingProblem(self.options)
@@ -59,7 +52,7 @@ class FitbenchmarkParser(Parser):
 
         # FUNCTION
         self.fitting_problem.function = self._create_function()
-        self.fitting_problem.format = self._software
+        self.fitting_problem.format = self._entries['software'].lower()
 
         # If using a multivariate function wrap the call to take a single
         # argument
@@ -109,30 +102,17 @@ class FitbenchmarkParser(Parser):
 
         return self.fitting_problem
 
-    def _check_software_imported(self) -> None:
-        """
-        Checks that the software can be imported successfully.
-        """
-        if self._import_success is None or \
-                self._software not in self._import_success:
-            raise MissingSoftwareError(
-                f"Did not recognise software: {self._software}"
-            )
-        if not self._import_success[self._software][0]:
-            error = self._import_success[self._software][1]
-            raise MissingSoftwareError(
-                f"Requirements are missing for {self._software} parser: "
-                f"{error}"
-            )
-
     @staticmethod
     def _is_multifit() -> bool:
         """
         Returns true if the problem is a multi fit problem.
+
+        :return: True if the problem is a multi fit problem.
+        :rtype: bool
         """
         return False
 
-    def _create_function(self) -> None:
+    def _create_function(self) -> typing.Callable:
         """
         Creates a python callable which is a wrapper around the fit function.
         """
@@ -141,6 +121,9 @@ class FitbenchmarkParser(Parser):
     def _get_equation(self) -> str:
         """
         Returns the equation in the problem definition file.
+
+        :return: The equation in the problem definition file.
+        :rtype: str
         """
         equation_count = len(self._parsed_func)
         if equation_count == 1:
@@ -150,6 +133,9 @@ class FitbenchmarkParser(Parser):
     def _get_starting_values(self) -> list:
         """
         Returns the starting values for the problem.
+
+        :return: The starting values for the problem.
+        :rtype: list
         """
         # SasView functions can have reserved keywords so ignore these
         ignore = ['name']
@@ -164,6 +150,11 @@ class FitbenchmarkParser(Parser):
     def _set_data_points(self, data_points: list, fit_ranges: list) -> None:
         """
         Sets the data points and fit range data in the fitting problem.
+
+        :param data_points: A list of data points.
+        :type data_points: list
+        :param fit_ranges: A list of fit ranges.
+        :type fit_ranges: list
         """
         self.fitting_problem.data_x = data_points[0]['x']
         self.fitting_problem.data_y = data_points[0]['y']

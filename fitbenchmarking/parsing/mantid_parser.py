@@ -3,14 +3,11 @@ This file implements a parser for the Mantid data format.
 """
 from collections import OrderedDict
 
+import typing
+
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 
-import_success = {}
-try:
-    import mantid.simpleapi as msapi
-    import_success['mantid'] = (True, None)
-except ImportError as ex:
-    import_success['mantid'] = (False, ex)
+import mantid.simpleapi as msapi
 
 
 # pylint: disable=too-many-branches
@@ -19,10 +16,7 @@ class MantidParser(FitbenchmarkParser):
     Parser for a Mantid problem definition file.
     """
 
-    def __init__(self, filename, options):
-        super().__init__(filename, options, import_success)
-
-    def _create_function(self):
+    def _create_function(self) -> typing.Callable:
         """
         Processing the function in the Mantid problem definition into a
         python callable.
@@ -68,18 +62,29 @@ class MantidParser(FitbenchmarkParser):
     def _is_multifit(self) -> bool:
         """
         Returns true if the problem is a multi fit problem.
+
+        :return: True if the problem is a multi fit problem.
+        :rtype: bool
         """
         return self._entries['input_file'][0] == '['
 
     def _get_starting_values(self) -> list:
         """
         Returns the starting values for the problem.
+
+        :return: The starting values for the problem.
+        :rtype: list
         """
         return self._starting_values
 
     def _set_data_points(self, data_points: list, fit_ranges: list) -> None:
         """
         Sets the data points and fit range data in the fitting problem.
+
+        :param data_points: A list of data points.
+        :type data_points: list
+        :param fit_ranges: A list of fit ranges.
+        :type fit_ranges: list
         """
         if self.fitting_problem.multifit:
             num_files = len(data_points)
@@ -113,6 +118,9 @@ class MantidParser(FitbenchmarkParser):
     def _parse_ties(self) -> list:
         """
         Returns the ties used for a mantid fit function.
+
+        :return: A list of ties used for a mantid fit function.
+        :rtype: list
         """
         try:
             ties = []
