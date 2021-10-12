@@ -30,6 +30,9 @@ class MatlabOptController(MatlabMixin, Controller):
         'steepest_descent': [],
         'global_optimization': []}
 
+    jacobian_enabled_solvers = ['levenberg-marquardt',
+                                'trust-region-reflective']
+
     controller_name = 'matlab_opt'
 
     def __init__(self, cost_func):
@@ -46,23 +49,6 @@ class MatlabOptController(MatlabMixin, Controller):
         self.y_data_mat = None
         self._status = None
         self.result = None
-
-    def jacobian_information(self):
-        """
-        Matlab Optimization Toolbox can use
-        Jacobian information
-        """
-        has_jacobian = True
-        jacobian_free_solvers = []
-        return has_jacobian, jacobian_free_solvers
-
-    def hessian_information(self):
-        """
-        Matlab Optimization Toolbox cannot use Hessian information
-        """
-        has_hessian = False
-        hessian_enabled_solvers = []
-        return has_hessian, hessian_enabled_solvers
 
     def setup(self):
         """

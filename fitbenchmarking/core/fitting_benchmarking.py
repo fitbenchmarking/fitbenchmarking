@@ -21,6 +21,7 @@ from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               ControllerAttributeError,
                                               IncompatibleMinimizerError,
+                                              MaxRuntimeError,
                                               NoJacobianError,
                                               NoHessianError,
                                               UnknownMinimizerError,
@@ -183,7 +184,6 @@ def loop_over_starting_values(problem, options, grabbed_output):
         # exception and record the problem name if that is the case
         software_check = [np.isinf(v.chi_sq) for v in individual_problem_results]
         if all(software_check):
-            individual_problem_results = []
             problem_fails.append(problem.name)
         problem_results.extend(individual_problem_results)
 
@@ -417,14 +417,13 @@ def loop_over_jacobians(controller, options, grabbed_output):
     """
     cost_func = controller.cost_func
     minimizer = controller.minimizer
-    has_jacobian, invalid_jacobians = controller.jacobian_information()
     jacobian_list = options.jac_method
     minimizer_name = minimizer
     jacobian = False
     results = []
     chi_sq = []
     minimizer_list = []
-    minimizer_check = has_jacobian and minimizer not in invalid_jacobians
+    minimizer_check = minimizer in controller.jacobian_enabled_solvers
     try:
         for jac_method in jacobian_list:
 
@@ -503,8 +502,7 @@ def loop_over_hessians(controller, options, minimizer_name,
     cost_func = controller.cost_func
     problem = controller.problem
     num_runs = options.num_runs
-    has_hessian, valid_hessian = controller.hessian_information()
-    minimizer_check = has_hessian and minimizer in valid_hessian
+    minimizer_check = minimizer in controller.hessian_enabled_solvers
     hessian_list = options.hes_method
     new_result = []
     new_minimizer_list = []
@@ -514,13 +512,6 @@ def loop_over_hessians(controller, options, minimizer_name,
     for method in hessian_list:
         # if user has selected to use hessian info
         # then create hessian if minimizer accepts it
-
-        # Temporary addition until hellinger_nlls and
-        # poisson cost functions are added to
-        # Analytic Hessian class
-        if options.cost_func_type == "hellinger_nlls"\
-                or options.cost_func_type == "poisson":
-            minimizer_check = False
 
         minimizer_name_hes = minimizer_name
         controller.hessian = None
@@ -541,11 +532,12 @@ def loop_over_hessians(controller, options, minimizer_name,
 
         try:
             with grabbed_output:
+                controller.timer.reset()
                 # Calls timeit repeat with repeat = num_runs and
                 # number = 1
                 runtime_list = timeit.Timer(
                     setup=controller.prepare,
-                    stmt=controller.fit
+                    stmt=controller.execute
                 ).repeat(num_runs, 1)
 
                 runtime = sum(runtime_list) / num_runs
@@ -576,26 +568,28 @@ def loop_over_hessians(controller, options, minimizer_name,
                 raise ControllerAttributeError(
                     "Either the computed runtime or chi_sq values "
                     "was a NaN.")
-        # Catching all exceptions as this means runtime cannot be
-        # calculated
-        # pylint: disable=broad-except
-        except Exception as excp:
-            LOGGER.warning(str(excp))
+        except Exception as ex:  # pylint: disable=broad-except
+            LOGGER.warning(str(ex))
+            # The MaxRuntimeError can sometimes be caught by the fitting
+            # software and re-raised as an ordinary Exception. So a separate
+            # except clause to set the flag will not work.
+            controller.flag = 6 if MaxRuntimeError.class_message in str(ex) \
+                else 3
 
+        if controller.flag in [3, 6]:
+            # If there was an exception, set the runtime and
+            # cost function value to be infinite
             runtime = np.inf
-            controller.flag = 3
             controller.final_params = \
                 None if not problem.multifit \
                 else [None] * len(controller.data_x)
 
             chi_sq = np.inf if not problem.multifit \
                 else [np.inf] * len(controller.data_x)
-
-        # If bounds have been set, check that they have
-        # been respected by the minimizer and set error
-        # flag if not
-        if controller.problem.value_ranges is not None \
-                and controller.flag != 3:
+        elif controller.problem.value_ranges is not None:
+            # If bounds have been set, check that they have
+            # been respected by the minimizer and set error
+            # flag if not
             controller.check_bounds_respected()
 
         # record algorithm type for specified minimizer

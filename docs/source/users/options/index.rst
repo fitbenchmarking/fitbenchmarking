@@ -17,6 +17,7 @@ and how to override them, are given in the pages below.
     minimizer_option
     jacobian_option
     plotting_option
+    output_option
     logging_option
 
 

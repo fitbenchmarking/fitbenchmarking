@@ -68,22 +68,6 @@ class GradientFreeController(Controller):
         self.initialize = None
         self.results = None
 
-    def jacobian_information(self):
-        """
-        Gradient Free Optimizers cannot use Jacobian information
-        """
-        has_jacobian = False
-        jacobian_free_solvers = []
-        return has_jacobian, jacobian_free_solvers
-
-    def hessian_information(self):
-        """
-        Gradient Free Optimizers cannot use Hessian information
-        """
-        has_hessian = False
-        hessian_enabled_solvers = []
-        return has_hessian, hessian_enabled_solvers
-
     def setup(self):
         """
         Setup for Gradient Free Optimizers

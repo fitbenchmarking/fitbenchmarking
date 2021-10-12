@@ -15,6 +15,20 @@ class MatlabCurveController(MatlabMixin, Controller):
     Controller for MATLAB Curve Fitting Toolbox fitting (fit)
     """
 
+    algorithm_check = {
+            'all': ['Trust-Region', 'Levenberg-Marquardt'],
+            'ls': ['Trust-Region', 'Levenberg-Marquardt'],
+            'deriv_free': [],
+            'general': [],
+            'simplex': [],
+            'trust_region': ['Trust-Region', 'Levenberg-Marquardt'],
+            'levenberg-marquardt': ['Levenberg-Marquardt'],
+            'gauss_newton': [],
+            'bfgs': [],
+            'conjugate_gradient': [],
+            'steepest_descent': [],
+            'global_optimization': []}
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -28,36 +42,8 @@ class MatlabCurveController(MatlabMixin, Controller):
         self.options = None
         self._status = None
         self.result = None
-        self.algorithm_check = {
-            'all': ['Trust-Region', 'Levenberg-Marquardt'],
-            'ls': ['Trust-Region', 'Levenberg-Marquardt'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['Trust-Region', 'Levenberg-Marquardt'],
-            'levenberg-marquardt': ['Levenberg-Marquardt'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': []}
 
     controller_name = 'matlab_curve'
-
-    def jacobian_information(self):
-        """
-        MATLAB cannot use Jacobian information
-        """
-        has_jacobian = False
-        jacobian_free_solvers = []
-        return has_jacobian, jacobian_free_solvers
-
-    def hessian_information(self):
-        """
-        MATLAB cannot use Hessian information
-        """
-        has_hessian = False
-        hessian_enabled_solvers = []
-        return has_hessian, hessian_enabled_solvers
 
     def setup(self):
         """

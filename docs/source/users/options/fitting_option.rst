@@ -139,8 +139,7 @@ Default is ``default``
 .. warning::
 
    Currently analytic Hessians are available are only available for
-   problems that use the NIST parser and for the ``nlls`` and
-   ``weighted_nlls`` cost functions.
+   problems that use the NIST parser.
 
 Cost function (:code:`cost_func_type`)
 --------------------------------------
@@ -163,3 +162,25 @@ Default is ``weighted_nlls``
 
     [FITTING]
     cost_func_type: weighted_nlls
+
+Maximum Runtime (:code:`max_runtime`)
+--------------------------------------
+
+This sets the maximum runtime a minimizer has to solve one benchmark
+problem `num_runs` number of times, where `num_runs` is another option a
+user can set. If the minimizer is still running after the maximum time
+has elapsed, then this result will be skipped and FitBenchmarking will move
+on to the next minimizer / benchmark dataset combination. The main purpose
+of this option is to get to result tables quicker by limit the runtime.
+
+`max_runtime` is set by specifying a number in unit of seconds. Please note
+that depending on platform the time specified with `max_runtime` may not
+match entirely with the absolute run-times specified in tables. Hence you
+may have to experiment a bit with this option to get the cutoff you want.
+
+Default is 600 seconds
+
+.. code-block:: rst
+
+    [FITTING]
+    max_runtime: 600

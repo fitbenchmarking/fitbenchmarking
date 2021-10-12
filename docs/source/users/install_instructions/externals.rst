@@ -40,7 +40,7 @@ Mantid
 
 Mantid is used both as fitting software, and to parse data files.
 
-Instructions on how to install Mantid for range of systems are available
+Instructions on how to install Mantid for a range of systems are available
 at `<https://download.mantidproject.org/>`_.
 
 MATLAB

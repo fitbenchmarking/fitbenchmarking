@@ -41,10 +41,8 @@ class DummyController(Controller):
         self.final_params_expected = [[1, 2, 3, 4], [4, 3, 2, 1]]
         self.flag_expected = [0, 1]
         self.count = 0
-        self.has_jacobian = []
-        self.invalid_jacobians = []
-        self.has_hessian = []
-        self.valid_hessians = []
+        self.jacobian_enabled_solvers = ["general"]
+        self.hessian_enabled_solvers = []
 
     def setup(self):
         """
@@ -57,22 +55,6 @@ class DummyController(Controller):
         Mock controller fit function
         """
         pass
-
-    def jacobian_information(self):
-        """
-        Mock controller jacobian_information function
-        """
-        has_jacobian = self.has_jacobian[self.count]
-        invalid_jacobians = self.invalid_jacobians[self.count]
-        return has_jacobian, invalid_jacobians
-
-    def hessian_information(self):
-        """
-        Mock controller jacobian_information function
-        """
-        has_hessian = self.has_hessian[self.count]
-        valid_hessians = self.valid_hessians[self.count]
-        return has_hessian, valid_hessians
 
     def cleanup(self):
         """
@@ -117,7 +99,8 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.options = self.problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
 
-    def mock_func_call(self, *args):
+    @staticmethod
+    def mock_func_call(*args):
         """
         Mock function to be used instead of loop_over_hessians
         """
@@ -131,10 +114,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         """
         self.options.jac_method = ["scipy"]
         self.options.num_method = {"scipy": ["3-point"]}
-        self.controller.has_jacobian = [True]
-        self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "general"
-        self.controller.has_hessian = [False]
         loop_over_hessians.side_effect = self.mock_func_call
         new_name = ['general: scipy 3-point']
         _, _, new_minimizer_list = \
@@ -150,10 +130,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         """
         self.options.jac_method = ["scipy"]
         self.options.num_method = {"scipy": ["3-point", "2-point"]}
-        self.controller.has_jacobian = [True]
-        self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "general"
-        self.controller.has_hessian = [False]
         loop_over_hessians.side_effect = self.mock_func_call
         new_name = ['general: scipy 3-point', 'general: scipy 2-point']
         _, _, new_minimizer_list = \
@@ -170,10 +147,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         """
         self.options.jac_method = ["scipy"]
         self.options.num_method = {"scipy": ["3-point", "2-point"]}
-        self.controller.has_jacobian = [True]
-        self.controller.invalid_jacobians = ["deriv_free_algorithm"]
         self.controller.minimizer = "deriv_free_algorithm"
-        self.controller.has_hessian = [False]
         loop_over_hessians.side_effect = self.mock_func_call
         new_name = ['deriv_free_algorithm']
         _, _, new_minimizer_list = \

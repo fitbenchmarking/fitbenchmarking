@@ -30,24 +30,28 @@ In order to add a new controller, you will need to:
           :members: py_to_mat, clear_cached_values
           :noindex:
 
-   The new controller should implement six functions, as well as initializing the dictionary ``algorithm_check``:
+   The new controller should implement four functions, as well as initializing the dictionary ``algorithm_check``:
 
   - .. autoattribute:: fitbenchmarking.controllers.base_controller.Controller.algorithm_check
                :noindex:  
 
   -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.__init__()
                      :noindex:
-
-  -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.jacobian_information()
-              :noindex:
-  -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.hessian_information()
-              :noindex:
   -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.setup()
               :noindex:
   -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.fit()
               :noindex:
   -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.cleanup()
               :noindex:
+
+   By default, a controller does not accept Jacobian or Hessian information. If the controller
+   being added can use hessians and/or jacobians, then the following controller attributes should
+   be set:
+
+   - .. autoattribute:: fitbenchmarking.controllers.base_controller.Controller.jacobian_enabled_solvers()
+               :noindex:  
+   - .. autoattribute:: fitbenchmarking.controllers.base_controller.Controller.hessian_enabled_solvers()
+               :noindex: 
 
 3. Add the new software to the default options, following the instructions in
    :ref:`options_extend`.

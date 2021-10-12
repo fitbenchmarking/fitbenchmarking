@@ -30,6 +30,11 @@ class ScipyController(Controller):
             'steepest_descent': [],
             'global_optimization': []}
 
+    jacobian_enabled_solvers = ['CG', 'BFGS', 'Newton-CG',
+                                'L-BFGS-B', 'TNC', 'SLSQP']
+
+    hessian_enabled_solvers = ['Newton-CG']
+
     def __init__(self, cost_func):
         """
         Initialises variable used for temporary storage.
@@ -47,22 +52,6 @@ class ScipyController(Controller):
         self.result = None
         self._popt = None
 
-    def jacobian_information(self):
-        """
-        Scipy can use Jacobian information
-        """
-        has_jacobian = True
-        jacobian_free_solvers = ["Nelder-Mead", "Powell"]
-        return has_jacobian, jacobian_free_solvers
-
-    def hessian_information(self):
-        """
-        Scipy can use Hessian information
-        """
-        has_hessian = True
-        hessian_enabled_solvers = ['Newton-CG']
-        return has_hessian, hessian_enabled_solvers
-
     def setup(self):
         """
         Setup problem ready to be run with SciPy
@@ -77,14 +66,12 @@ class ScipyController(Controller):
                   "x0": self.initial_params,
                   "method": self.minimizer,
                   "options": self.options}
-        if self.minimizer not in ["Nelder-Mead", "Powell"]:
-            # Neither the Nelder-Mead or Powell minimizers require a Jacobian
-            # so are run without that argument.
+        if self.minimizer in self.jacobian_enabled_solvers:
             if not self.jacobian.use_default_jac:
                 kwargs["jac"] = self.jacobian.eval_cost
         if self.minimizer not in self.no_bounds_minimizers:
             kwargs["bounds"] = self.value_ranges
-        if self.hessian and self.minimizer == "Newton-CG":
+        if self.hessian and self.minimizer in self.hessian_enabled_solvers:
             kwargs["hess"] = self.hessian.eval_cost
         self.result = minimize(**kwargs)
         self._popt = self.result.x

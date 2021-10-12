@@ -9,9 +9,9 @@ from fitbenchmarking.results_processing.base_table import Table
 class RuntimeTable(Table):
     """
 
-    The timing results are calculated from an average using the
+    The timing results are calculated from an average (over num_runs) using the
     `timeit <https://docs.python.org/2/library/timeit.html>`_  module
-    in python. The number of runtimes can be set in :ref:`options`.
+    in python. num_runs is set in :ref:`options`.
 
     """
 

@@ -178,7 +178,7 @@ class LocalMinTable(Table):
         return f'{str(local_min)} ({template.format(norm_rel)})'
 
     # pylint: disable=unused-argument
-    def save_colourbar(self, fig_dir, n_divs=2, sz_in=None):
+    def save_colourbar(self, fig_dir, n_divs=2, sz_in=None) -> str:
         """
         Override default save_colourbar as there are only 2 possible divisions
         of the colour map (true or false).
@@ -189,9 +189,12 @@ class LocalMinTable(Table):
         :type n_divs: int, Fixed to 2
         :param sz_in: dimensions of png in inches [width, height]
         :type sz_in: list[float] - 2 elements
+
+        :return: The relative path to the colourbar image.
+        :rtype: str
         """
         if sz_in is not None:
-            super().save_colourbar(fig_dir, n_divs=2, sz_in=sz_in)
+            return super().save_colourbar(fig_dir, n_divs=2, sz_in=sz_in)
         else:
-            super().save_colourbar(fig_dir, n_divs=2)
+            return super().save_colourbar(fig_dir, n_divs=2)
     # pylint: enable=unused-argument

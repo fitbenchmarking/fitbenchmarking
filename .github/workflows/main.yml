@@ -26,8 +26,8 @@ jobs:
       uses: actions/checkout@v2
     - name: Installing
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,minuit,SAS,numdifftools]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
     - name: 'Running Tests'
       run: |
         ci/system_tests_default.sh
@@ -42,8 +42,8 @@ jobs:
       uses: actions/checkout@v2
     - name: Installing
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,levmar,minuit,SAS,numdifftools]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
     - name: 'Running Tests'
@@ -60,8 +60,8 @@ jobs:
       uses: actions/checkout@v2
     - name: Installing
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
     - name: 'Running Tests'
       run: |
         ci/unit_tests_default.sh
@@ -76,8 +76,8 @@ jobs:
       uses: actions/checkout@v2
     - name: Installing
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gradient_free,levmar,minuit,SAS,numdifftools]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
     - name: 'Running Tests'
@@ -102,8 +102,8 @@ jobs:
     - name: 'Installing'
       run: |
         python -m pip install --upgrade pip==20.0.2
-        pip install -r requirements.txt
         pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools]
+        pip install -r requirements.txt
         sudo apt-get install libgsl-dev
         pip install pygsl
         pip install pycutest
@@ -125,8 +125,8 @@ jobs:
     - name: Installing
       run: |
         python -m pip install --upgrade pip
-        python -m pip install -r requirements.txt
         python -m pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools]
+        python -m pip install -r requirements.txt
     - name: 'Running Tests'
       run: |
         bash ci/unit_tests_default.sh

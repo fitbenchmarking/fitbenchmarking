@@ -19,7 +19,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    VALID_FLAGS = [0, 1, 2, 3, 4, 5]
+    VALID_FLAGS = [0, 1, 2, 3, 4, 5, 6]
 
     #: Within the controller class, you must
     #: initialize a dictionary, ``algorithm_check``,
@@ -57,6 +57,26 @@ class Controller:
                        'conjugate_gradient': [],
                        'steepest_descent': [],
                        'global_optimization': []}
+
+    #: Within the controller class, you must define the list
+    #: ``jacobian_enabled_solvers`` if any of the minimizers
+    #: for the specific software are able to use jacobian
+    #: information.
+    #:
+    #: - ``jacobian_enabled_solvers``: a list of minimizers in a specific
+    #: software that allow Jacobian information to be passed
+    #: into the fitting algorithm
+    jacobian_enabled_solvers = []
+
+    #: Within the controller class, you must define the list
+    #: ``hessian_enabled_solvers`` if any of the minimizers
+    #: for the specific software are able to use hessian
+    #: information.
+    #:
+    #: - ``hessian_enabled_solvers``: a list of minimizers in a specific
+    #: software that allow Hessian information to be passed
+    #: into the fitting algorithm
+    hessian_enabled_solvers = []
 
     #: A name to be used in tables. If this is set to None it will be inferred
     #: from the class name.
@@ -120,6 +140,9 @@ class Controller:
         # in the fitting software have support for bounds
         self.support_for_bounds = False
 
+        # The timer used to check if the 'max_runtime' is exceeded.
+        self.timer = cost_func.problem.timer
+
     @property
     def flag(self):
         """
@@ -129,6 +152,7 @@ class Controller:
         | 3: `Software raised an exception`
         | 4: `Solver doesn't support bounded problems`
         | 5: `Solution doesn't respect parameter bounds`
+        | 6: `Solver has exceeded maximum allowed runtime`
         """
 
         return self._flag
@@ -169,6 +193,15 @@ class Controller:
         else:
             raise ControllerAttributeError('Either minimizer or parameter_set '
                                            'is set to None.')
+
+    def execute(self):
+        """
+        Starts and stops the timer used to check if the fit reaches
+        the 'max_runtime'. In the middle, it calls self.fit().
+        """
+        self.timer.start()
+        self.fit()
+        self.timer.stop()
 
     def eval_chisq(self, params, x=None, y=None, e=None):
         """
@@ -292,43 +325,6 @@ class Controller:
                             'expected numpy ndarray of floats. Expected a '
                             'list or numpy ndarray of floats, got '
                             '{}'.format(attr_name, attr))
-
-    @abstractmethod
-    def jacobian_information(self):
-        """
-        Sets up Jacobian information for the controller.
-
-        This should return the following arguments:
-
-        - ``has_jacobian``: a True or False value whether the controller
-          requires Jacobian information.
-        - ``jacobian_free_solvers``: a list of minimizers in a specific
-          software that do not allow Jacobian information to be passed
-          into the fitting algorithm. For example in the ``Scipy``
-          controller this would return ``Nelder-Mead`` and ``Powell``.
-
-        :return: (``has_jacobian``, ``jacobian_free_solvers``)
-        :rtype: (`string`, `list`)
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def hessian_information(self):
-        """
-        Sets up Hessian information for the controller.
-
-        This should return the following arguments:
-
-        - ``has_hessian``: a True or False value whether the controller
-          accepts Hessian information.
-        - ``hessian_enabled_solvers``: a list of minimizers in a specific
-          software that allow Hessian information to be passed
-          into the fitting algorithm.
-
-        :return: (``has_hessian``, ``hessian_enabled_solvers``)
-        :rtype: (`string`, `list`)
-        """
-        raise NotImplementedError
 
     @abstractmethod
     def setup(self):

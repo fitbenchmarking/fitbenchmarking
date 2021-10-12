@@ -55,22 +55,6 @@ class MinuitController(Controller):
         self._initial_step = None
         self._minuit_problem = None
 
-    def jacobian_information(self):
-        """
-        Minuit cannot use Jacobian information
-        """
-        has_jacobian = False
-        jacobian_free_solvers = []
-        return has_jacobian, jacobian_free_solvers
-
-    def hessian_information(self):
-        """
-        Minuit cannot use Hessian information
-        """
-        has_hessian = False
-        hessian_enabled_solvers = []
-        return has_hessian, hessian_enabled_solvers
-
     def setup(self):
         """
         Setup for Minuit

@@ -167,8 +167,8 @@ class LoopOverSoftwareTests(unittest.TestCase):
     @unittest.mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software_all_failed_minimizers(self, loop_over_minimizers):
         """
-        Tests that when all minimizers raise and exception for a problem
-        that this is reported correctly
+        Tests that when all minimizers raise an exception for a problem, it
+        is reported correctly and no results are excluded.
         """
         self.count = 0
         self.minimizer_failed = {s: self.options.minimizers[s]
@@ -182,7 +182,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
                                 [fitbm_result.FittingResult(**self.result_args)
                                  for i in range(self.dfo_len)]]
         loop_over_minimizers.side_effect = self.mock_func_call
-        expected_list_len = 0
+        expected_list_len = 10
         expected_problem_fails = self.problem_fails
         expected_minimizer_failed = self.minimizer_failed
         expected_minimizer_success = self.minimizer_success
