@@ -48,8 +48,7 @@ class ParserFactory:
                 if 'software =' in line:
                     parser_name = line.split('=')[1].strip().strip("'")
                     break
-
-            if parser_name == '':
+            else:
                 for char in lines[0].strip('#').strip():
                     if not char.isalpha():
                         break
