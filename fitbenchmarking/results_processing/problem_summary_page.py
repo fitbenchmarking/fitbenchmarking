@@ -120,6 +120,7 @@ def _create_summary_page(categorised_best_results, group_name,
             categories=categories,
             best_results=results,
             best_plots_available=best_plot_available,
+            plot_descriptions=descriptions,
             best_plots=best_fits))
 
     for r in results:

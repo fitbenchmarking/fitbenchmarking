@@ -330,9 +330,20 @@ class Table:
             index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
         table.index = index
 
-        # Set the cell colours
-        table_style = table.style.apply(
-            lambda df: self.get_colour_df(like_df=df), axis=None)
+        # Get columns where cost function changes
+        column_dividers = [table.columns[0]]
+        for column in table.columns[1:]:
+            if column[0] != column_dividers[-1][0]:
+                column_dividers.append(column)
+        column_dividers = column_dividers[1:]
+
+        # Set the cell colours and increase bars between cost functions
+        table_style = table.style\
+            .apply(lambda df: self.get_colour_df(like_df=df), axis=None)\
+            .set_table_styles(table_styles={
+                k: [{'selector': 'td', 'props': [('border-left-width', '3px')]},
+                    {'selector': 'th', 'props': [('border-left-width', '3px')]}]
+                for k in column_dividers})
 
         return table_style.render()
 

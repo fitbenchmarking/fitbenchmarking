@@ -113,7 +113,7 @@
                                 <label for="cf{{ loop.index0 }}-accordion">{{ categories[loop.index0] }}: {{ best_results[loop.index0].minimizer }}</label>
                             </h2>
                             <div class="content">
-                                <p>This is the best fit of the minimizers for: {{ cat }}.</p>
+                                <p>{{ plot_descriptions[loop.index0] }}</p>
 
                                 <p><em>Minimizer</em>: {{ best_results[loop.index0].minimizer }}</p>
                                 <p><em>Functions</em>:</p>
