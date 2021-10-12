@@ -127,7 +127,7 @@ class FittingResult:
         """
         if self._norm_acc is None:
             if self.min_chi_sq in [np.nan, np.inf]:
-                self._norm_acc = 1
+                self._norm_acc = np.inf
             else:
                 self._norm_acc = self.chi_sq / self.min_chi_sq
         return self._norm_acc
@@ -152,7 +152,7 @@ class FittingResult:
         """
         if self._norm_runtime is None:
             if self.min_runtime in [np.nan, np.inf]:
-                self._norm_runtime = 1
+                self._norm_runtime = np.inf
             else:
                 self._norm_runtime = self.runtime / self.min_runtime
         return self._norm_runtime

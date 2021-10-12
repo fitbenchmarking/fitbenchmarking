@@ -79,7 +79,7 @@ def plot(acc, runtime, fig_dir):
         step_values = []
         max_value = 0.0
         for value in profile_plot.values():
-            sorted_list = np.sort(_remove_nans(value))
+            sorted_list = np.sort(_remove_nans(np.array(value)))
             max_in_list = np.max(sorted_list) if len(sorted_list) > 0 else 0.0
             if max_in_list > max_value:
                 max_value = max_in_list
