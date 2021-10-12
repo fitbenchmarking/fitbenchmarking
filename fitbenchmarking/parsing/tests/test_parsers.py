@@ -57,7 +57,7 @@ def generate_test_cases():
     # get all parsers
     test_dir = os.path.dirname(__file__)
     if TEST_TYPE == "all":
-        formats = ['cutest', 'nist', 'fitbenchmark']
+        formats = ['cutest', 'nist', 'mantid', 'ivp', 'sasview']
     elif TEST_TYPE == "default":
         formats = ['nist']
 
@@ -177,7 +177,10 @@ class TestParsers:
         parser = getmembers(module, lambda m: (isclass(m)
                                                and not isabstract(m)
                                                and issubclass(m, Parser)
-                                               and m is not Parser))[0][1]
+                                               and m is not Parser
+                                               and file_format.lower()
+                                               in str(m.__name__.lower())
+                                               ))[0][1]
 
         # Test parse
         with parser(test_file, OPTIONS) as p:
@@ -362,6 +365,10 @@ class TestParsers:
         :param test_file: The path to the test file
         :type test_file: string
         """
+        with open(test_file) as f:
+            if f.readline() == 'NA':
+                # Skip the test files with no data
+                return
 
         parser = ParserFactory.create_parser(test_file)
         assert (parser.__name__.lower().startswith(file_format.lower())), \
