@@ -93,12 +93,12 @@ class CompareTable(Table):
         if comp_mode == "abs":
             return result_template.format(acc_abs) + '<br>' + \
                 result_template.format(runtime_abs)
-        elif comp_mode == "rel":
+        if comp_mode == "rel":
             return result_template.format(acc_rel) + '<br>' + \
                 result_template.format(runtime_rel)
-        else:  # comp_mode == "both":
-            return result_template.format(acc_abs, acc_rel) + '<br>' + \
-                result_template.format(runtime_abs, runtime_rel)
+        # comp_mode == "both":
+        return result_template.format(acc_abs, acc_rel) + '<br>' + \
+            result_template.format(runtime_abs, runtime_rel)
 
     def vals_to_colour(self, vals, *args):
         """

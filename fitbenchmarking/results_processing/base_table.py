@@ -118,7 +118,7 @@ class Table:
         result_template = self.output_string_type[self.options.comparison_mode]
         if comp_mode == "abs":
             return result_template.format(abs_value)
-        elif comp_mode == "rel":
+        if comp_mode == "rel":
             return result_template.format(rel_value)
         # comp_mode == "both"
         return result_template.format(abs_value, rel_value)
@@ -138,6 +138,7 @@ class Table:
                                start=self.group_dir)
 
     def get_error_str(self, result, error_template='[{}]'):
+        # pylint: disable=no-self-use
         """
         Get the error string for a result based on error_template
         This can be overridden if tables require different error formatting.

@@ -6,15 +6,15 @@ import os
 import matplotlib.colors as clrs
 import numpy as np
 
-from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
+from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.results_processing.base_table import Table
 from fitbenchmarking.utils.exceptions import IncompatibleTableError
 
 GRAD_TOL = 1e-1
 RES_TOL = 1e-8
-from fitbenchmarking.utils.options import Options
+
 
 class LocalMinTable(Table):
     """
@@ -177,8 +177,8 @@ class LocalMinTable(Table):
         template = self.output_string_type['abs']
         return f'{str(local_min)} ({template.format(norm_rel)})'
 
-    # pylint: disable=unused-argument
     def save_colourbar(self, fig_dir, n_divs=2, sz_in=None) -> str:
+        # pylint: disable=unused-argument
         """
         Override default save_colourbar as there are only 2 possible divisions
         of the colour map (true or false).
@@ -195,6 +195,4 @@ class LocalMinTable(Table):
         """
         if sz_in is not None:
             return super().save_colourbar(fig_dir, n_divs=2, sz_in=sz_in)
-        else:
-            return super().save_colourbar(fig_dir, n_divs=2)
-    # pylint: enable=unused-argument
+        return super().save_colourbar(fig_dir, n_divs=2)
