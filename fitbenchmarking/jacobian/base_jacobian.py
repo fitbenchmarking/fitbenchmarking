@@ -2,23 +2,7 @@
 Implements the base class for the Jacobian.
 """
 from abc import ABCMeta, abstractmethod
-from numpy import array_equal, ascontiguousarray
-
-
-def make_contiguous(eval_func):
-    """
-    Returns a wrapper function which ensures the numpy array returned
-    from an eval function is contiguous in memory.
-
-    :param eval_func: The eval or eval_cost function of a Jacobian.
-    :type eval_func: A callable function.
-
-    :return: A wrapper function around the eval method.
-    :rtype: A callable function.
-    """
-    def eval_wrapper(params, **kwargs):
-        return ascontiguousarray(eval_func(params, **kwargs))
-    return eval_wrapper
+from numpy import array_equal
 
 
 class Jacobian:
@@ -40,13 +24,6 @@ class Jacobian:
 
         self.use_default_jac = False
         self._method = None
-
-        # Make sure the returned jacobian array is contiguous in memory.
-        # Some fitting packages use C or FORTRAN to manipulate memory,
-        # such as Levmar, which can return a bad fit if the jacobian is
-        # stored in non-contiguous memory.
-        self.eval = make_contiguous(self.eval)
-        self.eval_cost = make_contiguous(self.eval_cost)
 
     @abstractmethod
     def eval(self, params, **kwargs):

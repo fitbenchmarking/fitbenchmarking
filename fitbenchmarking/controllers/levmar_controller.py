@@ -75,7 +75,7 @@ class LevmarController(Controller):
             args.append(self.param_ranges)
         kwargs = {}
         if not self.jacobian.use_default_jac:
-            kwargs["jacf"] = self.jacobian.eval
+            kwargs["jacf"] = self.eval_wrapper
         (self.final_params, _, self._info) = solve_levmar(*args, **kwargs)
         # self._info isn't documented (other than in the levmar source),
         # but returns:
@@ -89,6 +89,22 @@ class LevmarController(Controller):
         # self._info[4] = number of `func` evaluations
         # self._info[5] = number of `jacf` evaluations
         # self._info[6] = number of linear system solved
+
+    def eval_wrapper(self, params, **kwargs):
+        """
+        Evaluates the Jacobian and makes sure the returned np array is
+        contiguous in memory. Levmar is written in C/C++ and so will
+        likely perform memory operations which can cause a bad fit if
+        the Jacobian array is stored in non-contiguous memory. Note that
+        non-contiguous memory can result from a transpose operation.
+
+        :param params: The parameter values to find the Jacobian at
+        :type params: list
+
+        :return: The computed Jacobian array in contiguous memory.
+        :rtype: numpy array
+        """
+        return np.ascontiguousarray(self.jacobian.eval(params, **kwargs))
 
     def cleanup(self):
         """
