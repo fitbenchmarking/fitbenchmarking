@@ -96,10 +96,10 @@ def _open_browser(output_file: str) -> None:
     # Uses the relative path so that the browser can open on Mac and WSL
     relative_path = os.path.relpath(output_file)
     # Constructs a url that can be pasted into a browser
-    prefix = "file://" if platform.system() == "Darwin" else ""
-    url = prefix + output_file
+    is_mac = platform.system() == "Darwin"
+    url = "file://" + output_file if is_mac else output_file
 
-    if webbrowser.open_new(relative_path):
+    if webbrowser.open_new(url if is_mac else relative_path):
         LOGGER.info("\nINFO:\nThe FitBenchmarking results have been opened "
                     "in your browser from this url:\n\n   %s", url)
     else:
