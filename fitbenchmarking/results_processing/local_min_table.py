@@ -70,10 +70,10 @@ class LocalMinTable(Table):
         # problem - if non least squares are present then local min table is
         # not appropriate and option should be ignored
         for cf in options.cost_func_type:
-            if not isinstance(create_cost_func(cf), BaseNLLSCostFunc):
+            if not issubclass(create_cost_func(cf), BaseNLLSCostFunc):
                 raise IncompatibleTableError(
                     "The local_min table cannot be produced with the "
-                    f"{options.cost_func_type} cost function. As a result, "
+                    f"{cf} cost function. As a result, "
                     "this table will not be produced.")
 
         self.cbar_title = "Cell Shading: Minimum Found"

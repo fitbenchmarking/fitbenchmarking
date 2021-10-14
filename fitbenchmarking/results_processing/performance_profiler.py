@@ -15,9 +15,8 @@ def profile(results, fig_dir):
     """
     Function that generates profiler plots
 
-    :param results: results nested array of objects
-    :type results: list of list of
-                    fitbenchmarking.utils.fitbm_result.FittingResult
+    :param results: The sorted results grouped by row and category
+    :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
     :param fig_dir: path to directory containing the figures
     :type fig_dir: str
 
@@ -32,12 +31,10 @@ def profile(results, fig_dir):
 def prepare_profile_data(results):
     """
     Helper function which generates acc and runtime dictionaries which
-    contain number of occurrences that the minimizer produces a normalised
-    result which is less than the bounds in PROFILER_BOUNDS
+    contain the values for each minimizer.
 
-    :param results: results nested array of objects
-    :type results: list of list of
-                   fitbenchmarking.utils.fitbm_result.FittingResult
+    :param results: The sorted results grouped by row and category
+    :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
 
     :return: dictionary containing number of occurrences
     :rtype: tuple(dict, dict)
@@ -55,7 +52,6 @@ def prepare_profile_data(results):
                 runtime_dict[minimizer].append(result.norm_runtime)
 
     return acc_dict, runtime_dict
-
 
 def plot(acc, runtime, fig_dir):
     """

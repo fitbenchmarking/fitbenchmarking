@@ -23,10 +23,12 @@ def generate_results():
     Create a predictable set of results.
 
     :return: Set of manually generated results
-    :rtype: list[list[FittingResult]]
+             The best results
+    :rtype: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
+            dict[str, dict[str, utils.fitbm_result.FittingResult]]
     """
     options = Options()
-    results = []
+    results = {}
 
     data_x = np.array([[1, 4, 5], [2, 1, 5]])
     data_y = np.array([[1, 2, 1], [2, 2, 2]])
@@ -48,7 +50,7 @@ def generate_results():
     jac = [DefaultJacobian(cost_func), ScipyJacobian(cost_func)]
     jac[1].method = '2-point'
     hess = [None for j in jac]
-    results.append([
+    results['prob_0'] = {'cf1': [
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[0].starting_values[0].values()),
@@ -84,8 +86,8 @@ def generate_results():
             initial_params=list(problems[0].starting_values[0].values()),
             params=[1, 1], name=problems[0].name, chi_sq=0.8, runtime=9,
             software='s0', minimizer='m01', error_flag=0),
-    ])
-    results.append([
+    ]}
+    results['prob_1'] = {'cf1': [
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[1].starting_values[0].values()),
@@ -126,9 +128,12 @@ def generate_results():
             initial_params=list(problems[1].starting_values[0].values()),
             params=[1, 1], name=problems[1].name, chi_sq=np.inf,
             runtime=np.inf, software='s0', minimizer='m00', error_flag=0),
-    ])
+    ]}
 
-    return results
+    best = {'prob_0': {'cf1': results['prob_0']['cf1'][0]},
+            'prob_1': {'cf1': results['prob_1']['cf1'][0]}}
+
+    return results, best
 
 
 class DummyTable(Table):
@@ -157,8 +162,9 @@ class CreateResultsDictTests(TestCase):
         """
         Test that create_results_dict produces the correct format
         """
-        results_list = generate_results()
+        results_list, best = generate_results()
         table = DummyTable(results=results_list,
+                           best=best,
                            options=Options(),
                            group_dir='fake',
                            pp_locations=('no', 'pp'),
@@ -177,23 +183,11 @@ class CreateResultsDictTests(TestCase):
                           f' Second result is {r2.problem_tag}-'
                           f'{r2.software_tag}-{r2.minimizer_tag}-'
                           f'{r2.jacobian_tag}')
-        check_result(results_dict['prob_0'][0], results_list[0][3])
-        check_result(results_dict['prob_0'][1], results_list[0][3])
-        check_result(results_dict['prob_0'][2], results_list[0][2])
-        check_result(results_dict['prob_0'][3], results_list[0][6])
-        check_result(results_dict['prob_0'][4], results_list[0][0])
-        check_result(results_dict['prob_0'][5], results_list[0][4])
-        check_result(results_dict['prob_0'][6], results_list[0][1])
-        check_result(results_dict['prob_0'][7], results_list[0][5])
-        check_result(results_dict['prob_1'][0], results_list[1][3])
-        check_result(results_dict['prob_1'][1], results_list[1][7])
-        check_result(results_dict['prob_1'][2], results_list[1][2])
-        check_result(results_dict['prob_1'][3], results_list[1][6])
-        check_result(results_dict['prob_1'][4], results_list[1][0])
-        check_result(results_dict['prob_1'][5], results_list[1][4])
-        check_result(results_dict['prob_1'][6], results_list[1][1])
-        check_result(results_dict['prob_1'][7], results_list[1][5])
-
+        for i in range(7):
+            check_result(results_dict['prob_0'][i],
+                         results_list['prob_0']['cf1'][i])
+            check_result(results_dict['prob_1'][i],
+                         results_list['prob_1']['cf1'][i])
 
 class DisplayStrTests(TestCase):
     """
@@ -201,8 +195,9 @@ class DisplayStrTests(TestCase):
     """
 
     def setUp(self):
-        results = generate_results()
+        results, best = generate_results()
         self.table = DummyTable(results=results,
+                                best=best,
                                 options=Options(),
                                 group_dir='fake',
                                 pp_locations=('no', 'pp'),
@@ -239,10 +234,11 @@ class SaveColourbarTests(TestCase):
     """
 
     def setUp(self):
-        results = generate_results()
+        results, best = generate_results()
         self.root_directory = os.path.join(os.path.dirname(__file__),
                                            os.pardir, os.pardir, os.pardir)
         self.table = DummyTable(results=results,
+                                best=best,
                                 options=Options(),
                                 group_dir=self.root_directory,
                                 pp_locations=('no', 'pp'),

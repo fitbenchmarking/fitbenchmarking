@@ -107,7 +107,7 @@ class PlotTests(unittest.TestCase):
         """
         file_name = self.plot.plot_best('fit', [0.1, 3])
 
-        self.assertEqual(file_name, 'fit_fit_for_full_name.png')
+        self.assertEqual(file_name, 'fit_fit_for_NLLSCostFunc_full_name.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 
@@ -117,7 +117,7 @@ class PlotTests(unittest.TestCase):
         """
         file_name = self.plot.plot_fit('fit', [8, 6.2])
 
-        self.assertEqual(file_name, 'fit_fit_for_full_name.png')
+        self.assertEqual(file_name, 'fit_fit_for_NLLSCostFunc_full_name.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 

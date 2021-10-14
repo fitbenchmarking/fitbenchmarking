@@ -157,8 +157,8 @@ class Table:
 
     def create_results_dict(self):
         """
-        Generate a dictionary of results lists sorted into the correct order
-        with rows and columns as the key and list elements respectively.
+        Generate a dictionary of results lists with rows and columns as the key
+        and list elements respectively.
         This is used to create HTML and txt tables.
         This is stored in self.sorted_results
         """

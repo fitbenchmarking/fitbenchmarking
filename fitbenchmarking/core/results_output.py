@@ -117,7 +117,7 @@ def preprocess_data(results: "list[FittingResult]"):
     This is used to create HTML and txt tables.
     This is stored in self.sorted_results
 
-    :param results: Theresults to process
+    :param results: The results to process
     :type results: list[fitbenchmarking.utils.fitbm_result.FittingResult]
 
     :return: The best result grouped by row and category (cost function),

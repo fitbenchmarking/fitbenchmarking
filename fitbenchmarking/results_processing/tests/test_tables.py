@@ -121,11 +121,12 @@ def generate_mock_results():
                               error_flag=error_in[i][j],
                               )
             r.support_page_link = link_in[i][j]
+            r.problem_summary_page_link = 'link0'
             results.append(r)
             options.minimizer_alg_type[options.minimizers[software]
                                        [j]] = 'all, ls'
-        results_out.append(results)
-    best = preprocess_data(results_out)
+        results_out.extend(results)
+    best, results_out = preprocess_data(results_out)
     return best, results_out, options
 
 
@@ -276,9 +277,8 @@ class CreateResultsTableTests(unittest.TestCase):
 
             for table_type in ['html', 'txt']:
                 table_name = \
-                    '{}_{}_{}_table.{}'.format(self.group_name,
+                    '{}_{}_table.{}'.format(self.group_name,
                                                suffix,
-                                               self.options.cost_func_type,
                                                table_type)
                 file_name = os.path.join(self.group_dir, table_name)
                 self.assertTrue(os.path.isfile(file_name),

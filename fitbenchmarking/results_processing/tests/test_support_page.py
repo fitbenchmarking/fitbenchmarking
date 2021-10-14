@@ -24,6 +24,7 @@ class CreateTests(unittest.TestCase):
     '''
     Create tests for support page
     '''
+
     def setUp(self):
         self.options = Options()
         cost_func = []
@@ -34,14 +35,14 @@ class CreateTests(unittest.TestCase):
             cost_func.append(NLLSCostFunc(problem))
 
         minimizers = ['min_a', 'min_b', 'min_c']
-        self.results = [[FittingResult(options=self.options,
-                                       cost_func=c,
-                                       jac=Scipy(c),
-                                       hess=None,
-                                       initial_params=[],
-                                       params=[],
-                                       minimizer=m)
-                         for m in minimizers]
+        self.results = [FittingResult(options=self.options,
+                                      cost_func=c,
+                                      jac=Scipy(c),
+                                      hess=None,
+                                      initial_params=[],
+                                      params=[],
+                                      minimizer=m)
+                        for m in minimizers
                         for c in cost_func]
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
@@ -51,14 +52,13 @@ class CreateTests(unittest.TestCase):
         """
         Tests that the create function creates a set of unique files.
         """
-        support_page.create(results_per_test=self.results,
+        support_page.create(results=self.results,
                             group_name='test_group',
                             support_pages_dir=self.dir.name,
                             options=self.options)
 
         file_names = sorted([r.support_page_link
-                             for pr in self.results
-                             for r in pr])
+                             for r in self.results])
 
         unique_names = sorted(list(set(file_names)))
 
@@ -78,18 +78,17 @@ class CreateProbGroupTests(unittest.TestCase):
         problem.equation = 'equation!'
         problem.starting_values = [{'x': 1}]
 
-        minimizers = ['min_a', 'min_b', 'min_c']
+        minimizer = 'min_a'
         cost_func = NLLSCostFunc(problem)
         jac = Scipy(cost_func)
         jac.method = "2-point"
-        self.results = [FittingResult(options=self.options,
-                                      cost_func=cost_func,
-                                      jac=jac,
-                                      hess=None,
-                                      initial_params=[],
-                                      params=[],
-                                      minimizer=m)
-                        for m in minimizers]
+        self.result = FittingResult(options=self.options,
+                                    cost_func=cost_func,
+                                    jac=jac,
+                                    hess=None,
+                                    initial_params=[],
+                                    params=[],
+                                    minimizer=minimizer)
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         self.dir = TemporaryDirectory(dir=root)
@@ -98,28 +97,25 @@ class CreateProbGroupTests(unittest.TestCase):
         """
         Tests that files are created for each result.
         """
-        support_page.create_prob_group(prob_results=self.results,
+        support_page.create_prob_group(result=self.result,
                                        group_name='test_group',
                                        support_pages_dir=self.dir.name,
                                        options=self.options)
-        self.assertTrue(all(
-            os.path.exists(r.support_page_link) for r in self.results))
+        self.assertTrue(os.path.exists(self.result.support_page_link))
 
     def test_file_name(self):
         """
         Tests that the filenames are in the expected form.
         """
-        support_page.create_prob_group(prob_results=self.results,
+        support_page.create_prob_group(result=self.result,
                                        group_name='test_group',
                                        support_pages_dir=self.dir.name,
                                        options=self.options)
-        file_names = [r.support_page_link for r in self.results]
-        expected = [os.path.join(os.path.relpath(self.dir.name), f)
-                    for f in ['test_group_prob_a_min_a.html',
-                              'test_group_prob_a_min_b.html',
-                              'test_group_prob_a_min_c.html']]
+        file_name = self.result.support_page_link
+        expected = os.path.join(os.path.relpath(self.dir.name),
+                                'test_group_prob_a_nllscostfunc_min_a.html')
 
-        self.assertListEqual(file_names, expected)
+        self.assertEqual(file_name, expected)
 
 
 class GetFigurePathsTests(unittest.TestCase):
