@@ -16,6 +16,9 @@ class MantidParser(FitbenchmarkParser):
     Parser for a Mantid problem definition file.
     """
 
+    # Jacobian methods that are incompatible with this type of problem
+    INCOMPATIBLE_JACOBIANS = ["cs"]
+
     def _create_function(self) -> typing.Callable:
         """
         Processing the function in the Mantid problem definition into a
@@ -108,6 +111,9 @@ class MantidParser(FitbenchmarkParser):
         """
         Sets any additional info for a fitting problem.
         """
+        self.fitting_problem.incompatible_jacobians = \
+            self.INCOMPATIBLE_JACOBIANS
+
         self.fitting_problem.additional_info['mantid_equation'] \
             = self._entries['function']
 

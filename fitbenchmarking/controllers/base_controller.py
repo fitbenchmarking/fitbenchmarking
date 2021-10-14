@@ -22,9 +22,6 @@ class Controller:
 
     VALID_FLAGS = [0, 1, 2, 3, 4, 5, 6]
 
-    # Invalid problem formats for specific jacobian methods
-    INVALID_JACOBIAN_FORMATS = {"cs": ["mantid"]}
-
     #: Within the controller class, you must
     #: initialize a dictionary, ``algorithm_check``,
     #: such that the **keys** are given by:
@@ -236,17 +233,15 @@ class Controller:
 
     def _validate_jacobian(self) -> None:
         """
-        Validates that the provided jacobian method is compatible with the
-        other options and problem sets. An exception is raised if this is
-        not true.
+        Validates that the provided Jacobian method is compatible with the
+        other options and problem definition. An exception is raised if this
+        is not true.
         """
-        for jacobian_method, formats in self.INVALID_JACOBIAN_FORMATS.items():
-            if self.jacobian.method == jacobian_method \
-                    and self.problem.format in formats:
-                message = f"The jacobian method '{jacobian_method}' is " \
-                          f"incompatible with the problem format " \
-                          f"'{self.problem.format}'."
-                raise IncompatibleJacobianError(message)
+        if self.jacobian.method in self.problem.incompatible_jacobians:
+            message = f"The Jacobian method '{self.jacobian.method}' is " \
+                      f"incompatible with the problem format " \
+                      f"'{self.problem.format}'."
+            raise IncompatibleJacobianError(message)
 
     def validate_minimizer(self, minimizer, algorithm_type):
         """

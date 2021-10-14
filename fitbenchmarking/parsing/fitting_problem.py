@@ -108,6 +108,10 @@ class FittingProblem:
         # The timer used to check if the 'max_runtime' is exceeded.
         self.timer = TimerWithMaxTime(self.options.max_runtime)
 
+        # A list of Jacobian methods that are incompatible with this type of
+        # fitting problem.
+        self.incompatible_jacobians = []
+
     def eval_model(self, params, **kwargs):
         """
         Function evaluation method
