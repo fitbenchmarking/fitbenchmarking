@@ -9,7 +9,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-from fitbenchmarking.core.results_output import preproccess_data
+from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -29,7 +29,7 @@ class PerformanceProfillerTests(unittest.TestCase):
         """
         self.results, self.acc_expected, self.runtime_expected = \
             self.generate_mock_results()
-        _ = preproccess_data(self.results)
+        _ = preprocess_data(self.results)
         self.fig_dir = ''
         self.acc_name = "acc_profile.png"
         self.runtime_name = "runtime_profile.png"

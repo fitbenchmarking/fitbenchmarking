@@ -15,7 +15,7 @@ import numpy as np
 from fitbenchmarking.core.results_output import (create_directories,
                                                  create_plots,
                                                  create_problem_level_index,
-                                                 preproccess_data,
+                                                 preprocess_data,
                                                  save_results)
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy

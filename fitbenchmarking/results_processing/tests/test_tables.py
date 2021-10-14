@@ -10,7 +10,7 @@ from inspect import getfile
 import numpy as np
 
 import fitbenchmarking
-from fitbenchmarking.core.results_output import preproccess_data
+from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
 from fitbenchmarking.jacobian.default_jacobian import Default as DefaultJac
@@ -125,7 +125,7 @@ def generate_mock_results():
             options.minimizer_alg_type[options.minimizers[software]
                                        [j]] = 'all, ls'
         results_out.append(results)
-    best = preproccess_data(results_out)
+    best = preprocess_data(results_out)
     return best, results_out, options
 
 
@@ -164,6 +164,7 @@ class GenerateTableTests(unittest.TestCase):
         for suffix in SORTED_TABLE_NAMES:
             _, html_table, txt_table, _ = generate_table(
                 results=self.results,
+                best=self.best,
                 options=self.options,
                 group_dir="group_dir",
                 fig_dir=self.fig_dir,
@@ -264,6 +265,7 @@ class CreateResultsTableTests(unittest.TestCase):
         """
         create_results_tables(options=self.options,
                               results=self.results,
+                              best=self.best,
                               group_name=self.group_name,
                               group_dir=self.group_dir,
                               fig_dir=self.fig_dir,
