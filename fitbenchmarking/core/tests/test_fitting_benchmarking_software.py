@@ -90,27 +90,24 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.count += 1
         return results_problem, minimizer_failed, minimizer_success
 
-    def shared_test(self, expected_list_len, expected_problem_fails,
-                    expected_minimizer_failed, expected_minimizer_dict):
+    def shared_test(self, expected_list_len, expected_minimizer_failed,
+                    expected_minimizer_dict):
         """
         Shared tests for the `loop_over_fitting_software` function
 
         :param expected_list_len: number of expect fitting results
         :type expected_list_len: int
-        :param expected_problem_fails: expected list of failed problems
-        :type expected_problem_fails: list
         :param expected_minimizer_failed: expected dict of failed minimizers
         :type expected_minimizer_failed: dict
         :param expected_minimizer_dict: expected dict of successful minimizers
         :type expected_minimizer_dict: dict
         """
-        results, problem_fails, unselected_minimzers, minimizer_dict = \
+        results, unselected_minimzers, minimizer_dict = \
             loop_over_fitting_software(self.cost_func,
                                        self.options,
                                        self.start_values_index,
                                        self.grabbed_output)
         assert len(results) == expected_list_len
-        assert problem_fails == expected_problem_fails
 
         dict_test(unselected_minimzers, expected_minimizer_failed)
         dict_test(minimizer_dict, expected_minimizer_dict)
@@ -124,7 +121,6 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.count = 0
         self.minimizer_failed = {'scipy': [], 'dfo': []}
         self.minimizer_success = {'scipy': ['TNC'], 'dfo': ['dfogn']}
-        self.problem_fails = []
         self.results_problem = \
             [[fitbm_result.FittingResult(**self.result_args)
               for i in range(self.scipy_len)],
@@ -132,11 +128,10 @@ class LoopOverSoftwareTests(unittest.TestCase):
               for i in range(self.dfo_len)]]
         loop_over_minimizers.side_effect = self.mock_func_call
         expected_list_len = self.scipy_len + self.dfo_len
-        expected_problem_fails = self.problem_fails
         expected_minimizer_failed = self.minimizer_failed
         expected_minimizer_success = self.minimizer_success
-        self.shared_test(expected_list_len, expected_problem_fails,
-                         expected_minimizer_failed, expected_minimizer_success)
+        self.shared_test(expected_list_len, expected_minimizer_failed,
+                         expected_minimizer_success)
 
     @unittest.mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software_failed_minimizers(self, loop_over_minimizers):
@@ -149,7 +144,6 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.minimizer_success = {'scipy': ['TNC', 'CG'], 'dfo': ['dfogn']}
         failed_scipy = 1
         failed_dfo = 2
-        self.problem_fails = []
         self.results_problem = \
             [[fitbm_result.FittingResult(**self.result_args)
               for i in range(self.scipy_len - failed_scipy)],
@@ -158,11 +152,10 @@ class LoopOverSoftwareTests(unittest.TestCase):
         loop_over_minimizers.side_effect = self.mock_func_call
         expected_list_len = self.scipy_len + self.dfo_len - \
             failed_scipy - failed_dfo
-        expected_problem_fails = self.problem_fails
         expected_minimizer_failed = self.minimizer_failed
         expected_minimizer_success = self.minimizer_success
-        self.shared_test(expected_list_len, expected_problem_fails,
-                         expected_minimizer_failed, expected_minimizer_success)
+        self.shared_test(expected_list_len, expected_minimizer_failed,
+                         expected_minimizer_success)
 
     @unittest.mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software_all_failed_minimizers(self, loop_over_minimizers):
@@ -176,18 +169,16 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.minimizer_success = {'scipy': ['TNC', 'CG'], 'dfo': ['dfogn']}
 
         self.result_args['chi_sq'] = np.inf
-        self.problem_fails = ['cubic']
         self.results_problem = [[fitbm_result.FittingResult(**self.result_args)
                                  for i in range(self.scipy_len)],
                                 [fitbm_result.FittingResult(**self.result_args)
                                  for i in range(self.dfo_len)]]
         loop_over_minimizers.side_effect = self.mock_func_call
         expected_list_len = 10
-        expected_problem_fails = self.problem_fails
         expected_minimizer_failed = self.minimizer_failed
         expected_minimizer_success = self.minimizer_success
-        self.shared_test(expected_list_len, expected_problem_fails,
-                         expected_minimizer_failed, expected_minimizer_success)
+        self.shared_test(expected_list_len, expected_minimizer_failed,
+                         expected_minimizer_success)
 
     def test_incorrect_software(self):
         """
