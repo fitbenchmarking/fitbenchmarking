@@ -15,8 +15,7 @@ import numpy as np
 from fitbenchmarking.core.results_output import (create_directories,
                                                  create_plots,
                                                  create_problem_level_index,
-                                                 preprocess_data,
-                                                 save_results)
+                                                 preprocess_data, save_results)
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -25,9 +24,6 @@ from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
 
-# By design both fitting_function_1 and fitting_function_2 need data as an
-# argument
-# pylint: disable=unused-argument
 def fitting_function_1(data, x1, x2):
     """
     Fitting function evaluator
@@ -42,7 +38,7 @@ def fitting_function_1(data, x1, x2):
     :return: y data values evaluated from the function of the problem
     :rtype: numpy array
     """
-    return x1 * np.sin(x2)
+    return x1 * np.sin(x2) * np.ones_like(data)
 
 
 def fitting_function_2(data, x1, x2):
@@ -59,10 +55,9 @@ def fitting_function_2(data, x1, x2):
     :return: y data values evaluated from the function of the problem
     :rtype: numpy array
     """
-    return x1 * x2
+    return x1 * x2 * np.ones_like(data)
 
 
-# pylint: enable=unused-argument
 def generate_mock_results(results_directory: str):
     """
     Generates results to test against
@@ -127,7 +122,7 @@ def generate_mock_results(results_directory: str):
             results.append(r)
             options.minimizer_alg_type[options.minimizers[software]
                                        [j]] = 'all, ls'
-        results_out.append(results)
+        results_out.extend(results)
     return results_out, options, min_chi_sq, min_runtime
 
 
@@ -158,12 +153,10 @@ class SaveResultsTests(unittest.TestCase):
         Tests to check the group_dir is correct
         """
         failed_problems = []
-        unselected_minimzers = {}
+        unselected_minimizers = {}
         group_name = "group_name"
-        cost_func_description = "rst_desciption"
         group_dir = save_results(self.options, self.results, group_name,
-                                 failed_problems, unselected_minimzers,
-                                 cost_func_description)
+                                 failed_problems, unselected_minimizers)
         assert group_dir == os.path.join(self.results_dir, group_name)
 
 
@@ -213,7 +206,7 @@ class CreateDirectoriesTests(unittest.TestCase):
         assert os.path.isdir(css_dir)
 
 
-class PreproccessDataTests(unittest.TestCase):
+class PreprocessDataTests(unittest.TestCase):
     """
     Unit tests for preproccess_data function
     """
@@ -228,22 +221,25 @@ class PreproccessDataTests(unittest.TestCase):
         self.results, self.options, self.min_chi_sq, self.min_runtime = \
             generate_mock_results(self.results_dir)
 
-    def test_preproccess_data(self):
+    def test_preprocess_data(self):
         """
-        Test for preproccess_data function
+        Test for preprocess_data function
         """
-        best_result = preproccess_data(self.results)
+        best_result, results = preprocess_data(self.results)
 
-        for result in best_result:
-            assert result.is_best_fit
-        for result, chi_sq, runtime in zip(self.results,
-                                           self.min_chi_sq,
-                                           self.min_runtime):
-            for r in result:
-                print("chi_sq  = {} | {}".format(r.min_chi_sq, chi_sq))
-                print("runtime = {} | {}".format(r.runtime, runtime))
-            assert all(r.min_chi_sq == chi_sq for r in result)
-            assert all(r.min_runtime == runtime for r in result)
+        for category in best_result.values():
+            for result in category.values():
+                assert result.is_best_fit
+
+        for problem, chi_sq, runtime in zip(results.values(),
+                                            self.min_chi_sq,
+                                            self.min_runtime):
+            for category in problem.values():
+                for r in category:
+                    print("chi_sq  = {} | {}".format(r.min_chi_sq, chi_sq))
+                    print("runtime = {} | {}".format(r.runtime, runtime))
+                    assert r.min_chi_sq == chi_sq
+                    assert r.min_runtime == runtime
 
 
 class CreatePlotsTests(unittest.TestCase):
@@ -257,9 +253,9 @@ class CreatePlotsTests(unittest.TestCase):
         """
         self.tempdir = TemporaryDirectory()
         self.results_dir = os.path.join(self.tempdir.name, 'figures_dir')
-        self.results, self.options, self.min_chi_sq, self.min_runtime = \
+        results, self.options, self.min_chi_sq, self.min_runtime = \
             generate_mock_results(self.results_dir)
-        self.best_results = preproccess_data(self.results)
+        self.best_results, self.results = preprocess_data(results)
 
     @mock.patch('fitbenchmarking.results_processing.plots.Plot')
     def test_create_plots_with_params(self, plot_mock):
@@ -279,52 +275,76 @@ class CreatePlotsTests(unittest.TestCase):
         plot_mock.return_value = plot_instance
         create_plots(self.options, self.results,
                      self.best_results, self.results_dir)
-        for result, best_result in zip(self.results, self.best_results):
-            # Check initial guess is correctly set in results
-            assert best_result.start_figure_link == expected_plot_initial_guess
-            assert all(r.start_figure_link == expected_plot_initial_guess
-                       for r in result)
+        for problem_key in self.results.keys():
+            best_in_prob = self.best_results[problem_key]
+            results_in_prob = self.results[problem_key]
+            for category_key in results_in_prob.keys():
+                best_in_cat = best_in_prob[category_key]
+                results = results_in_prob[category_key]
 
-            # Check plot is correctly set in results
-            assert best_result.figure_link == expected_plot_best
-            assert all(r.figure_link == expected_plot_fit
-                       if not r.is_best_fit else True for r in result)
+                # Check initial guess is correctly set in results
+                self.assertEqual(best_in_cat.start_figure_link,
+                                 expected_plot_initial_guess)
+                self.assertTrue(all(
+                    r.start_figure_link == expected_plot_initial_guess
+                    for r in results))
+
+                # Check plot is correctly set in results
+                self.assertEqual(best_in_cat.figure_link,
+                                 expected_plot_best)
+                self.assertTrue(all(
+                    r.figure_link == expected_plot_fit
+                    for r in results if not r.is_best_fit))
 
     @mock.patch('fitbenchmarking.results_processing.plots.Plot')
     def test_create_plots_without_params(self, plot_mock):
         """
         Tests for create_plots where the results object params are None
         """
-        for result, best in zip(self.results, self.best_results):
-            best.params = None
-            for r in result:
-                r.params = None
+        for problem_key in self.results.keys():
+            best_in_prob = self.best_results[problem_key]
+            results_in_prob = self.results[problem_key]
+            for category_key in results_in_prob.keys():
+                best_in_cat = best_in_prob[category_key]
+                results = results_in_prob[category_key]
+                best_in_cat.params = None
+                for r in results:
+                    r.params = None
+
         expected_plot_initial_guess = "initial_guess"
         plot_instance = mock.MagicMock()
         plot_instance.plot_initial_guess.return_value = \
             expected_plot_initial_guess
-
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
         create_plots(self.options, self.results,
                      self.best_results, self.results_dir)
-        for result, best_result in zip(self.results, self.best_results):
-            # Check initial guess is correctly set in results
-            assert best_result.start_figure_link == expected_plot_initial_guess
-            assert all(r.start_figure_link == expected_plot_initial_guess
-                       for r in result)
 
-            # Check plot is correctly set in results
-            assert best_result.figure_link == ''
-            assert all(r.figure_link == ''
-                       if not r.is_best_fit else True for r in result)
+        for problem_key in self.results.keys():
+            best_in_prob = self.best_results[problem_key]
+            results_in_prob = self.results[problem_key]
+            for category_key in results_in_prob.keys():
+                best_in_cat = best_in_prob[category_key]
+                results = results_in_prob[category_key]
 
-            # Checks that when no params are given the correct error message
-            # is produced
-            expected_message = "Minimizer failed to produce any parameters"
-            assert best_result.figure_error == expected_message
-            assert all(r.figure_error == expected_message
-                       if not r.is_best_fit else True for r in result)
+                # Check initial guess is correctly set in results
+                self.assertEqual(best_in_cat.start_figure_link,
+                                 expected_plot_initial_guess)
+                self.assertTrue(all(
+                    r.start_figure_link == expected_plot_initial_guess
+                    for r in results))
+
+                # Check plot is correctly set in results
+                self.assertEqual(best_in_cat.figure_link, '')
+                self.assertTrue(all(r.figure_link == ''
+                                    for r in results if not r.is_best_fit))
+
+                # Checks that when no params are given the correct error message
+                # is produced
+                expected_message = "Minimizer failed to produce any parameters"
+                self.assertEqual(best_in_cat.figure_error, expected_message)
+                self.assertTrue(all(r.figure_error == expected_message
+                                    for r in results if not r.is_best_fit))
 
     def test_plot_error(self):
         """
@@ -338,10 +358,16 @@ class CreatePlotsTests(unittest.TestCase):
                          self.best_results, self.results_dir)
 
         expected = 'An error occurred during plotting.\nDetails: Faked plot'
-        for result, best_result in zip(self.results, self.best_results):
-            self.assertEqual(best_result.figure_error, expected)
-            for r in result:
-                self.assertEqual(r.figure_error, expected)
+
+        for problem_key in self.results.keys():
+            best_in_prob = self.best_results[problem_key]
+            results_in_prob = self.results[problem_key]
+            for category_key in results_in_prob.keys():
+                best_in_cat = best_in_prob[category_key]
+                results = results_in_prob[category_key]
+                self.assertEqual(best_in_cat.figure_error, expected)
+                for r in results:
+                    self.assertEqual(r.figure_error, expected)
 
 
 class CreateProblemLevelIndex(unittest.TestCase):
@@ -363,7 +389,6 @@ class CreateProblemLevelIndex(unittest.TestCase):
                                    "runtime": "runtime table descriptions",
                                    "both": "both table descriptions"}
         self.group_name = "random_name"
-        self.cost_func_description = "rst_desciption"
 
     def tearDown(self):
         """
@@ -377,8 +402,7 @@ class CreateProblemLevelIndex(unittest.TestCase):
         """
         create_problem_level_index(self.options, self.table_names,
                                    self.group_name, self.group_dir,
-                                   self.table_descriptions,
-                                   self.cost_func_description)
+                                   self.table_descriptions)
         expected_file = os.path.join(self.group_dir,
                                      '{}_index.html'.format(self.group_name))
         assert os.path.isfile(expected_file)

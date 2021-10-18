@@ -257,7 +257,7 @@ def create_plots(options, results, best_results, figures_dir):
                                   options=options,
                                   figures_dir=figures_dir)
             except PlottingError as e:
-                for result in prob_result:
+                for result in prob_result[cf]:
                     result.figure_error = str(e)
                 continue
 
@@ -280,6 +280,9 @@ def create_plots(options, results, best_results, figures_dir):
         # For each result, if it succeeded, create a plot and add plot links to
         # the resuts object
         for cf, cat_results in prob_result.items():
+            # Check if plot was successful
+            if cf not in plot_dict:
+                continue
             for result in cat_results:
                 # Don't plot best again
                 if not result.is_best_fit:
