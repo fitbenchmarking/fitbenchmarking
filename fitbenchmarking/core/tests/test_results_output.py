@@ -339,8 +339,8 @@ class CreatePlotsTests(unittest.TestCase):
                 self.assertTrue(all(r.figure_link == ''
                                     for r in results if not r.is_best_fit))
 
-                # Checks that when no params are given the correct error message
-                # is produced
+                # Checks that when no params are given the correct error
+                # message is produced
                 expected_message = "Minimizer failed to produce any parameters"
                 self.assertEqual(best_in_cat.figure_error, expected_message)
                 self.assertTrue(all(r.figure_error == expected_message

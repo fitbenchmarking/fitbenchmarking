@@ -248,8 +248,8 @@ class Plot:
     @classmethod
     def plot_summary(cls, categories, title, options, figures_dir):
         """
-        Create a comparison plot showing all fits from the results with the best
-        for each category highlighted.
+        Create a comparison plot showing all fits from the results with the
+        best for each category highlighted.
 
         :param categories: The results to plot sorted into colour groups
         :type categories: dict[str, list[FittingResults]]

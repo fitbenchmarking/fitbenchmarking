@@ -342,8 +342,10 @@ class Table:
         table_style = table.style\
             .apply(lambda df: self.get_colour_df(like_df=df), axis=None)\
             .set_table_styles(table_styles={
-                k: [{'selector': 'td', 'props': [('border-left-width', '3px')]},
-                    {'selector': 'th', 'props': [('border-left-width', '3px')]}]
+                k: [{'selector': 'td',
+                     'props': [('border-left-width', '3px')]},
+                    {'selector': 'th',
+                     'props': [('border-left-width', '3px')]}]
                 for k in column_dividers})
 
         return table_style.render()

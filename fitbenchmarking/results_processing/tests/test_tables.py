@@ -278,8 +278,8 @@ class CreateResultsTableTests(unittest.TestCase):
             for table_type in ['html', 'txt']:
                 table_name = \
                     '{}_{}_table.{}'.format(self.group_name,
-                                               suffix,
-                                               table_type)
+                                            suffix,
+                                            table_type)
                 file_name = os.path.join(self.group_dir, table_name)
                 self.assertTrue(os.path.isfile(file_name),
                                 f"Could not find {file_name}")

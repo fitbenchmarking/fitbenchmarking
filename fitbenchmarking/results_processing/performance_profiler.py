@@ -3,9 +3,10 @@ Set up performance profiles for both accuracy and runtime tables
 """
 import os
 from textwrap import wrap
-import numpy as np
 
 import matplotlib
+import numpy as np
+
 matplotlib.use('Agg')
 # pylint: disable=wrong-import-position
 import matplotlib.pyplot as plt  # noqa: E402
@@ -52,6 +53,7 @@ def prepare_profile_data(results):
                 runtime_dict[minimizer].append(result.norm_runtime)
 
     return acc_dict, runtime_dict
+
 
 def plot(acc, runtime, fig_dir):
     """

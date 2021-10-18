@@ -189,6 +189,7 @@ class CreateResultsDictTests(TestCase):
             check_result(results_dict['prob_1'][i],
                          results_list['prob_1']['cf1'][i])
 
+
 class DisplayStrTests(TestCase):
     """
     Tests for the default display_str implementation.
