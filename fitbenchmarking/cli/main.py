@@ -214,6 +214,8 @@ def run(problem_sets, results_directory, options_file='', debug=False):
                              failed_problems=failed_problems,
                              unselected_minimzers=unselected_minimzers,
                              cost_func_description=cost_func_description)
+            if group_results_dir is None:
+                return
 
             LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
             group_results_dir = os.path.relpath(path=group_results_dir,
