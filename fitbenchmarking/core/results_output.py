@@ -60,13 +60,11 @@ def save_results(options, results, group_name, failed_problems,
 
     support_page.create(options=options,
                         results_per_test=results,
-                        group_name=group_name,
                         support_pages_dir=supp_dir)
 
     table_names, table_descriptions = \
         tables.create_results_tables(options,
                                      results,
-                                     group_name,
                                      group_dir,
                                      fig_dir,
                                      pp_locations,
