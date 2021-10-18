@@ -52,7 +52,6 @@ class CreateTests(unittest.TestCase):
         Tests that the create function creates a set of unique files.
         """
         support_page.create(results_per_test=self.results,
-                            group_name='test_group',
                             support_pages_dir=self.dir.name,
                             options=self.options)
 
@@ -99,7 +98,6 @@ class CreateProbGroupTests(unittest.TestCase):
         Tests that files are created for each result.
         """
         support_page.create_prob_group(prob_results=self.results,
-                                       group_name='test_group',
                                        support_pages_dir=self.dir.name,
                                        options=self.options)
         self.assertTrue(all(
@@ -110,14 +108,13 @@ class CreateProbGroupTests(unittest.TestCase):
         Tests that the filenames are in the expected form.
         """
         support_page.create_prob_group(prob_results=self.results,
-                                       group_name='test_group',
                                        support_pages_dir=self.dir.name,
                                        options=self.options)
         file_names = [r.support_page_link for r in self.results]
         expected = [os.path.join(os.path.relpath(self.dir.name), f)
-                    for f in ['test_group_prob_a_min_a.html',
-                              'test_group_prob_a_min_b.html',
-                              'test_group_prob_a_min_c.html']]
+                    for f in ['prob_a_min_a.html',
+                              'prob_a_min_b.html',
+                              'prob_a_min_c.html']]
 
         self.assertListEqual(file_names, expected)
 

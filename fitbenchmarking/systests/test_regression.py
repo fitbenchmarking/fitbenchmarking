@@ -74,7 +74,7 @@ class TestRegressionAll(TestCase):
             os.path.join(os.path.dirname(__file__),
                          'fitbenchmarking_results',
                          'all_parsers_set',
-                         'all_parsers_set_acc_weighted_nlls_table.txt')
+                         'acc_weighted_nlls_table.txt')
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()
@@ -98,7 +98,7 @@ class TestRegressionAll(TestCase):
         actual_file = os.path.join(os.path.dirname(__file__),
                                    'fitbenchmarking_results',
                                    'multifit_set',
-                                   'multifit_set_acc_weighted_nlls_table.txt')
+                                   'acc_weighted_nlls_table.txt')
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()
@@ -154,7 +154,7 @@ class TestRegressionMatlab(TestCase):
             os.path.join(os.path.dirname(__file__),
                          'fitbenchmarking_results',
                          'all_parsers_set',
-                         'all_parsers_set_acc_weighted_nlls_table.txt')
+                         'acc_weighted_nlls_table.txt')
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()
@@ -213,7 +213,7 @@ class TestRegressionDefault(TestCase):
             os.path.join(os.path.dirname(__file__),
                          'fitbenchmarking_results',
                          'default_parsers',
-                         'default_parsers_acc_weighted_nlls_table.txt')
+                         'acc_weighted_nlls_table.txt')
 
         with open(expected_file, 'r') as f:
             expected = f.readlines()

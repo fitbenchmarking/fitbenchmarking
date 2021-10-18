@@ -16,6 +16,13 @@ UNKNOWN_MESSAGE = "\nERROR: \n   An unexpected error occurred while " \
                   "writing the output files. Please report this message " \
                   "to the FitBenchmarking team."
 
+# Tries to find a windows-specific builtin type. If on a different operating
+# system, it sets the type to None
+try:
+    WindowsError
+except NameError:
+    WindowsError = None
+
 
 def write_file(function):
     """
