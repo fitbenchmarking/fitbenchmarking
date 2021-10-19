@@ -17,7 +17,9 @@ from fitbenchmarking.core.results_output import (create_directories,
                                                  create_problem_level_index,
                                                  preprocess_data, save_results)
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import WeightedNLLSCostFunc
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.jacobian.numdifftools_jacobian import Numdifftools
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -62,68 +64,89 @@ def generate_mock_results(results_directory: str):
     """
     Generates results to test against
 
-    :return: best results calculated using the chi_sq value, list of results
+    :return: list of results
              and the options
     :rtype: tuple(list of best results,
                   list of list fitting results,
                   Options object)
     """
-    software = 'scipy_ls'
     options = Options(results_directory=results_directory)
-    options.software = [software]
-    num_min = len(options.minimizers[options.software[0]])
+    options.table_type = ['acc']
+    problems = [FittingProblem(options), FittingProblem(options)]
+    starting_values = [{"a": .3, "b": .11}, {"a": 0, "b": 0}]
     data_x = np.array([[1, 4, 5], [2, 1, 5]])
     data_y = np.array([[1, 2, 1], [2, 2, 2]])
     data_e = np.array([[1, 1, 1], [1, 2, 1]])
     func = [fitting_function_1, fitting_function_2]
-    problems = [FittingProblem(options), FittingProblem(options)]
-
-    params_in = [[[.3, .11], [.04, 2], [3, 1], [5, 0]],
-                 [[4, 2], [3, .006], [.3, 10], [9, 0]]]
-
-    starting_values = [{"a": .3, "b": .11}, {"a": 0, "b": 0}]
-    error_in = [[1, 0, 2, 0],
-                [0, 1, 3, 1]]
-    link_in = [['link1', 'link2', 'link3', 'link4'],
-               ['link5', 'link6', 'link7', 'link8']]
-    min_chi_sq = [1, 3]
-    acc_in = [[1, 5, 2, 1.54],
-              [7, 3, 5, 1]]
-    min_runtime = [4.2e-5, 5.0e-14]
-    runtime_in = [[1e-2, 2.2e-3, 4.2e-5, 9.8e-1],
-                  [3.0e-10, 5.0e-14, 1e-7, 4.3e-12]]
-
-    results_out = []
     for i, p in enumerate(problems):
         p.data_x = data_x[i]
         p.data_y = data_y[i]
         p.data_e = data_e[i]
         p.function = func[i]
         p.name = "prob_{}".format(i)
-        results = []
-        for j in range(num_min):
-            p.starting_values = starting_values
-            cost_func = NLLSCostFunc(p)
-            jac = Scipy(cost_func)
-            jac.method = '2-point'
-            r = FittingResult(options=options,
-                              cost_func=cost_func,
-                              jac=jac,
-                              hess=None,
-                              initial_params=starting_values,
-                              params=params_in[i][j],
-                              name=p.name,
-                              chi_sq=acc_in[i][j],
-                              runtime=runtime_in[i][j],
-                              software=software,
-                              minimizer=options.minimizers[software][j],
-                              error_flag=error_in[i][j],)
-            r.support_page_link = link_in[i][j]
-            results.append(r)
-            options.minimizer_alg_type[options.minimizers[software]
-                                       [j]] = 'all, ls'
-        results_out.extend(results)
-    return results_out, options, min_chi_sq, min_runtime
+        p.starting_values = [starting_values[i]]
+    cost_funcs = [[NLLSCostFunc(problems[0]),
+                   WeightedNLLSCostFunc(problems[0])],
+                  [NLLSCostFunc(problems[1]),
+                   WeightedNLLSCostFunc(problems[1])]]
+
+    softwares = ['s1', 's2']
+    minimizers = [['s1m1', 's1m2'], ['s2m1', 's2m2']]
+    jacobians = [[[Scipy(cf), Numdifftools(cf)]
+                  for cf in cost_funcs[i]]
+                 for i, _ in enumerate(problems)]
+
+    # problem, cost fun, software, minimizer, jacobian
+    acc = [[[[[0.5, 0.3], [10]], [[0.6, 0.2], [0.7, 0.1]]],  # p1, cf1
+            [[[0.1, 0.9], [10]], [[0.2, 0.6], [0.8, 0.4]]]],  # p1, cf2
+           [[[[0.9, 0.5], [10]], [[0.1, 0.3], [0.2, 0.6]]],  # p2, cf1
+            [[[0.2, 0.1], [10]], [[0.5, 0.9], [0.4, 0.8]]]]]  # p2, cf2
+    runtime = [[[[[0.7, 0.1], [10]], [[0.7, 0.2], [0.3, 0.8]]],  # p1, cf1
+                [[[0.6, 0.9], [10]], [[0.2, 0.1], [0.8, 0.4]]]],  # p1, cf2
+               [[[[0.9, 0.5], [10]], [[0.1, 0.3], [0.2, 0.6]]],  # p2, cf1
+                [[[0.1, 0.8], [10]], [[0.5, 0.9], [0.4, 0.8]]]]]  # p2, cf2
+    params = [[[[[[0.1, 0.5], [0.1, 0.3]],  # p1, cf1, s1, m1
+                 [[10, 10]]],  # p1, cf1, s1, m2
+                [[[0.1, 0.6], [0.1, 0.2]],  # p1, cf1, s2, m1
+                 [[0.1, 0.7], [0.1, 0.1]]]],  # p1, cf1, s2, m2
+               [[[[0.1, 0.1], [0.1, 0.9]],  # p1, cf2, s1, m1
+                 [[10, 10]]],  # p1, cf2, s1, m2
+                [[[0.1, 0.2], [0.1, 0.6]],  # p1, cf2, s2, m1
+                 [[0.1, 0.8], [0.1, 0.4]]]]],  # p1, cf2, s2, m2
+              [[[[[0.1, 0.9], [0.1, 0.5]],  # p2, cf1, s1, m1
+                 [[10, 10]]],  # p2, cf1, s1, m2
+                [[[0.1, 0.1], [0.1, 0.3]],  # p2, cf1, s2, m1
+                 [[0.1, 0.2], [0.1, 0.6]]]],  # p2, cf1, s2, m2
+               [[[[0.1, 0.2], [0.1, 0.1]],  # p2, cf2, s1, m1
+                 [[10, 10]]],  # p2, cf2, s1, m2
+                [[[0.1, 0.5], [0.1, 0.9]],  # p2, cf2, s2, m1
+                 [[0.1, 0.4], [0.1, 0.8]]]]]]  # p2, cf2, s2, m2
+
+    results = []
+    for i, _ in enumerate(problems):
+        for j, cf in enumerate(cost_funcs[i]):
+            for k, software in enumerate(softwares):
+                for l, minim in enumerate(minimizers[k]):
+                    jacs = jacobians[i][j] if minim != 's1m2' else [None]
+                    for m, jac in enumerate(jacs):
+                        minim_name = f'{minim}, Jac: {m}'
+                        options.minimizer_alg_type[minim_name] = 'test'
+                        results.append(FittingResult(
+                            options=options,
+                            cost_func=cf,
+                            jac=jac,
+                            hess=None,
+                            initial_params=list(
+                                cf.problem.starting_values[0].values()),
+                            params=params[i][j][k][l][m],
+                            chi_sq=acc[i][j][k][l][m],
+                            runtime=runtime[i][j][k][l][m],
+                            software=software,
+                            minimizer=minim_name,
+                            error_flag=None if jac is not None else 4
+                        ))
+
+    return results, options
 
 
 class SaveResultsTests(unittest.TestCase):
@@ -138,8 +161,7 @@ class SaveResultsTests(unittest.TestCase):
         self.results_dir = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
             'fitbenchmarking_results')
-        self.results, self.options, self.min_chi_sq, self.min_runtime = \
-            generate_mock_results(self.results_dir)
+        self.results, self.options = generate_mock_results(self.results_dir)
         os.mkdir(self.results_dir)
 
     def tearDown(self):
@@ -218,8 +240,9 @@ class PreprocessDataTests(unittest.TestCase):
         self.results_dir = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
             'fitbenchmarking_results')
-        self.results, self.options, self.min_chi_sq, self.min_runtime = \
-            generate_mock_results(self.results_dir)
+        self.results, self.options = generate_mock_results(self.results_dir)
+        self.min_chi_sq = 0.1
+        self.min_runtime = 0.1
 
     def test_preprocess_data(self):
         """
@@ -231,15 +254,13 @@ class PreprocessDataTests(unittest.TestCase):
             for result in category.values():
                 assert result.is_best_fit
 
-        for problem, chi_sq, runtime in zip(results.values(),
-                                            self.min_chi_sq,
-                                            self.min_runtime):
+        for problem in results.values():
             for category in problem.values():
                 for r in category:
-                    print("chi_sq  = {} | {}".format(r.min_chi_sq, chi_sq))
-                    print("runtime = {} | {}".format(r.runtime, runtime))
-                    assert r.min_chi_sq == chi_sq
-                    assert r.min_runtime == runtime
+                    print(f"chi_sq  = {r.min_chi_sq} | {self.min_chi_sq}")
+                    print(f"runtime = {r.min_runtime} | {self.min_runtime}")
+                    assert r.min_chi_sq == self.min_chi_sq
+                    assert r.min_runtime == self.min_runtime
 
 
 class CreatePlotsTests(unittest.TestCase):
@@ -253,8 +274,7 @@ class CreatePlotsTests(unittest.TestCase):
         """
         self.tempdir = TemporaryDirectory()
         self.results_dir = os.path.join(self.tempdir.name, 'figures_dir')
-        results, self.options, self.min_chi_sq, self.min_runtime = \
-            generate_mock_results(self.results_dir)
+        results, self.options = generate_mock_results(self.results_dir)
         self.best_results, self.results = preprocess_data(results)
 
     @mock.patch('fitbenchmarking.results_processing.plots.Plot')
