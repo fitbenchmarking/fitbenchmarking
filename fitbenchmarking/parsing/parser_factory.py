@@ -35,19 +35,24 @@ class ParserFactory:
         """
 
         with open(filename, 'r') as f:
-            lines = f.readline()
+            lines = f.readlines()
 
         # if there's a SIF file ending, use cutest
         extension = os.path.splitext(filename)[1]
         if "SIF" in extension.upper():
             parser_name = 'cutest'
 
-        else:  # Otherwise, take the first section of text
+        else:
             parser_name = ''
-            for line in lines.strip('#').strip():
-                if not line.isalpha():
+            for line in lines:
+                if 'software =' in line:
+                    parser_name = line.split('=')[1].strip().strip("'")
                     break
-                parser_name += line
+            else:
+                for char in lines[0].strip('#').strip():
+                    if not char.isalpha():
+                        break
+                    parser_name += char
 
         module_name = '{}_parser'.format(parser_name.lower())
 
@@ -68,7 +73,9 @@ class ParserFactory:
         classes = getmembers(module, lambda m: (isclass(m)
                                                 and not isabstract(m)
                                                 and issubclass(m, Parser)
-                                                and m is not Parser))
+                                                and m is not Parser
+                                                and parser_name.lower()
+                                                in str(m.__name__.lower())))
 
         return classes[0][1]
 
