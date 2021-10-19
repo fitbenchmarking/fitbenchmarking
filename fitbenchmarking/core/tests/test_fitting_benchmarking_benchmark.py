@@ -63,13 +63,10 @@ class BenchmarkTests(unittest.TestCase):
         self.options = Options()
         self.options.software = ["scipy"]
         self.scipy_len = len(self.options.minimizers["scipy"])
-        print(self.options.minimizers)
-        print(self.scipy_len)
         bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
         self.default_parsers_dir = os.path.join(bench_prob_dir,
                                                 "default_parsers")
         self.all_minimizers = copy.copy(self.options.minimizers)
-        print(self.all_minimizers)
 
     def shared_tests(self, expected_names, expected_unselected_minimizers,
                      expected_minimizers):
