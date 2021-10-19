@@ -42,15 +42,22 @@ def prepare_profile_data(results):
     """
     acc_dict = {}
     runtime_dict = {}
-    for _, row in results.items():
-        for _, cat in row.items():
-            for result in cat:
-                minimizer = result.minimizer_tag
-                if minimizer not in acc_dict:
-                    acc_dict[minimizer] = []
-                    runtime_dict[minimizer] = []
-                acc_dict[minimizer].append(result.norm_acc)
-                runtime_dict[minimizer].append(result.norm_runtime)
+    minimizers = []
+    for row in results.values():
+        for cat in row.values():
+            for i, result in enumerate(cat):
+                if len(minimizers) <= i:
+                    minimizers.append(result.minimizer_tag)
+                    acc_dict[result.minimizer_tag] = []
+                    runtime_dict[result.minimizer_tag] = []
+                elif len(result.minimizer_tag) > len(minimizers[i]):
+                    acc_dict[result.minimizer_tag] = \
+                        acc_dict.pop(minimizers[i])
+                    runtime_dict[result.minimizer_tag] = \
+                        runtime_dict.pop(minimizers[i])
+                    minimizers[i] = result.minimizer_tag
+                acc_dict[minimizers[i]].append(result.norm_acc)
+                runtime_dict[minimizers[i]].append(result.norm_runtime)
 
     return acc_dict, runtime_dict
 
@@ -76,8 +83,10 @@ def plot(acc, runtime, fig_dir):
 
         step_values = []
         max_value = 0.0
+        print(profile_plot)
         for value in profile_plot.values():
-            sorted_list = np.sort(_remove_nans(np.array(value)))
+            value = np.array(value)
+            sorted_list = np.sort(_remove_nans(value))
             max_in_list = np.max(sorted_list) if len(sorted_list) > 0 else 0.0
             if max_in_list > max_value:
                 max_value = max_in_list
@@ -157,7 +166,7 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
     return values[~np.isnan(values)]
 
 
-def create_plot(ax, step_values, solvers):
+def create_plot(ax, step_values: 'list[np.ndarray]', solvers: 'list[str]'):
     """
     Function to draw the profile on a matplotlib axis
 
@@ -166,11 +175,10 @@ def create_plot(ax, step_values, solvers):
               (or a subclass of `~.axes.Axes`)
     :param step_values: a sorted list of the values of the metric
                         being profiled
-    :type step_values: list of float
+    :type step_values: list of np.array[float]
     :param solvers: A list of the labels for the different solvers
     :type solvers: list of strings
     """
-
     lines = ["-", "-.", "--", ":"]
     # use only 9 of matplotlib's colours, as this will give us
     # 9 * 4 = 36 line/colour combinations, as opposed to
