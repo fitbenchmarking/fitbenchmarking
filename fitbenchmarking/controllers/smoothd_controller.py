@@ -2,6 +2,7 @@
 Implements a controller for the SmoothD global optimization algorithm.
 """
 import numpy as np
+from scipy.optimize._numdiff import approx_derivative
 import sys
 sys.path.append("/home/upg88743/global-optimization/")
 from SmoothD.smoothd import smoothd
@@ -64,20 +65,22 @@ class SmoothdController(Controller):
         """
         Run problem with SmoothD.
         """
-        f = self.cost_func.eval_cost
-        g = self.jacobian.eval_cost
         xl = self._xl
         xu = self._xu
+        def f(y): return self.cost_func.eval_cost(xl + (xu-xl)*y)
+        def g(y): return approx_derivative(f, y, method=self.jacobian.method)
+        yl = np.zeros_like(xl)
+        yu = np.ones_like(xu)
         d = self._demb
         if self.minimizer == "SmoothD-Improved":
-            status, _, xopt = smoothd_improved(f, g, xl, xu, **self._options)
+            status, _, yopt = smoothd_improved(f, g, yl, yu, **self._options)
         elif self.minimizer == "SmoothD":
-            status, _, xopt = smoothd(f, g, xl, xu, **self._options)
+            status, _, yopt = smoothd(f, g, yl, yu, **self._options)
         elif self.minimizer == "Rembed":
-            status, _, xopt = rembed(f, g, xl, xu, d, **self._options)
+            status, _, yopt = rembed(f, g, yl, yu, d, **self._options)
         else:
             raise UnknownMinimizerError(self.minimizer+" minimizer does not exist")
-        self._popt = xopt
+        self._popt = xl + (xu-xl)*yopt
         self._status = status
 
     def cleanup(self):
