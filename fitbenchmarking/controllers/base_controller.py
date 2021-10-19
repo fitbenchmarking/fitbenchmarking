@@ -237,10 +237,13 @@ class Controller:
         other options and problem definition. An exception is raised if this
         is not true.
         """
-        if self.jacobian.method in self.problem.incompatible_jacobians:
-            message = f"The Jacobian method '{self.jacobian.method}' is " \
-                      f"incompatible with the problem format " \
-                      f"'{self.problem.format}'."
+        incompatible_problems = self.jacobian.INCOMPATIBLE_PROBLEMS.get(
+            self.jacobian.method, [])
+
+        if self.problem.format in incompatible_problems:
+            message = f"The {self.jacobian.__class__.__name__} Jacobian " \
+                      f"'{self.jacobian.method}' method is incompatible " \
+                      f"with the problem format '{self.problem.format}'."
             raise IncompatibleJacobianError(message)
 
     def validate_minimizer(self, minimizer, algorithm_type):
