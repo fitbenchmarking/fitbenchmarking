@@ -292,8 +292,8 @@ def create_plots(options, results, best_results, figures_dir):
                             result.sanitised_min_name, result.params)
                         result.figure_link = plot_path
                     else:
-                        result.figure_error = 'Minimizer failed to produce any ' \
-                            'parameters'
+                        result.figure_error = 'Minimizer failed to produce ' \
+                            'any parameters'
                     result.start_figure_link = initial_guess_path[cf]
 
 

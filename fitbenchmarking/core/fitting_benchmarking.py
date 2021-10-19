@@ -182,7 +182,8 @@ def loop_over_starting_values(problem, options, grabbed_output):
 
         # Checks to see if all of the minimizers from every software raised an
         # exception and record the problem name if that is the case
-        software_check = [np.isinf(v.chi_sq) for v in individual_problem_results]
+        software_check = [np.isinf(v.chi_sq)
+                          for v in individual_problem_results]
         if all(software_check):
             problem_fails.append(problem.name)
         problem_results.extend(individual_problem_results)
@@ -190,11 +191,12 @@ def loop_over_starting_values(problem, options, grabbed_output):
         # Reset name for next loop
         problem.name = name
 
-    return problem_results, problem_fails, unselected_minimizers, minimizer_dict
+    return (problem_results, problem_fails,
+            unselected_minimizers, minimizer_dict)
 
 
 def loop_over_cost_function(problem, options, start_values_index,
-        grabbed_output):
+                            grabbed_output):
     """
     Run benchmarking for each cost function given in options.
 
