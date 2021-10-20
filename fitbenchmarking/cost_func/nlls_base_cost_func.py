@@ -59,9 +59,11 @@ class BaseNLLSCostFunc(CostFunc):
 
     def eval_cost(self, params, **kwargs):
         """
-        Evaluate the square of the L2 norm of the residuals
+        Evaluate the square of the L2 norm of the residuals, 
+        :math:`\\sum_i r(x_i,y_i,p)^2`
+        at the given parameters
 
-        :param params: The parameters to calculate residuals for
+        :param params: The parameters, :math:`p`, to calculate residuals for
         :type params: list
 
         :return: The sum of squares of residuals for the datapoints at the

@@ -43,9 +43,9 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
 
     def eval_r(self, params, **kwargs):
         """
-        Calculate residuals
+        Calculate the residuals, :math:`\\sqrt{y_i} - \\sqrt{f(x_i, p}`
 
-        :param params: The parameters to calculate residuals for
+        :param params: The parameters, :math:`p`, to calculate residuals for
         :type params: list
 
         :return: The residuals for the datapoints at the given parameters

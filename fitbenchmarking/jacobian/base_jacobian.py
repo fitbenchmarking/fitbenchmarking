@@ -31,9 +31,10 @@ class Jacobian:
     @abstractmethod
     def eval(self, params, **kwargs):
         """
-        Evaluates Jacobian of the model
+        Evaluates Jacobian of the model, :math:`\\nabla_p f(x,p)`, 
+        at the point given by the parameters.
 
-        :param params: The parameter values to find the Jacobian at
+        :param params: The parameter values at which to evaluate the Jacobian
         :type params: list
 
         :return: Computed Jacobian

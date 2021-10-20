@@ -32,7 +32,7 @@ class PoissonCostFunc(CostFunc):
 
     def eval_cost(self, params, **kwargs):
         """
-        Evaluate the cost function
+        Evaluate the Poisson deviance cost function
 
         :param params: The parameters to calculate residuals for
         :type params: list
