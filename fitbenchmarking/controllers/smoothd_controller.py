@@ -67,8 +67,10 @@ class SmoothdController(Controller):
         """
         xl = self._xl
         xu = self._xu
-        def f(y): return self.cost_func.eval_cost(xl + (xu-xl)*y)
+        def f(y): return 0.5*self.cost_func.eval_cost(xl + (xu-xl)*y)
         def g(y): return approx_derivative(f, y, method=self.jacobian.method)
+        def r(y): return self.cost_func.eval_r(xl + (xu-xl)*y)
+        def J(y): return approx_derivative(r, y, method=self.jacobian.method)
         yl = np.zeros_like(xl)
         yu = np.ones_like(xu)
         d = self._demb
