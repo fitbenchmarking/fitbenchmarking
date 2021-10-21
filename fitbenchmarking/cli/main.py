@@ -12,6 +12,7 @@ from distutils.dir_util import copy_tree
 import glob
 import inspect
 import os
+import platform
 import tempfile
 import sys
 import webbrowser
@@ -83,6 +84,28 @@ of the Fitbenchmarking docs. '''
                         help='Enable debug mode (prints traceback)',)
 
     return parser
+
+
+def _open_browser(output_file: str) -> None:
+    """
+    Opens a browser window to show the results of a fit benchmark.
+
+    :param output_file: The absolute path to the results index file.
+    :type output_file: str
+    """
+    # Uses the relative path so that the browser can open on Mac and WSL
+    relative_path = os.path.relpath(output_file)
+    # Constructs a url that can be pasted into a browser
+    is_mac = platform.system() == "Darwin"
+    url = "file://" + output_file if is_mac else output_file
+
+    if webbrowser.open_new(url if is_mac else relative_path):
+        LOGGER.info("\nINFO:\nThe FitBenchmarking results have been opened "
+                    "in your browser from this url:\n\n   %s", url)
+    else:
+        LOGGER.warning("\nWARNING:\nThe browser failed to open "
+                       "automatically. Copy and paste the following url "
+                       "into your browser:\n\n   %s", url)
 
 
 @exception_handler
@@ -210,11 +233,12 @@ def run(problem_sets, results_directory, options_file='', debug=False):
                   "and/or problem set then re-run FitBenchmarking"
         raise NoResultsError(message)
 
-    LOGGER.info("\nINFO:\nThe FitBenchmarking results will be placed into "
-                "the folder:\n\n   %s\n\nTo change this use the -r or "
-                "--results-dir optional command line argument. You can\n"
-                "also set 'results_dir' in an options file.",
-                options.results_dir)
+    if results_directory == "":
+        LOGGER.info("\nINFO:\nThe FitBenchmarking results will be placed "
+                    "into the folder:\n\n   %s\n\nTo change this use the "
+                    "-r or --results-dir optional command line argument. "
+                    "You can also set 'results_dir' in an options file.",
+                    options.results_dir)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, 'templates')
@@ -239,7 +263,8 @@ def run(problem_sets, results_directory, options_file='', debug=False):
             groups=groups,
             group_link=group_links,
             zip=zip))
-    webbrowser.open_new(output_file)
+
+    _open_browser(output_file)
 
 
 def main():
