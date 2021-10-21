@@ -62,7 +62,6 @@ class CostFunc:
         """
         raise NotImplementedError
 
-
     @abstractmethod
     def jac_cost(self, params, **kwargs):
         """
@@ -78,7 +77,6 @@ class CostFunc:
         """
         raise NotImplementedError
 
-    
     def validate_algorithm_type(self, algorithm_check, minimizer):
         """
         Helper function which checks that the algorithm type of the

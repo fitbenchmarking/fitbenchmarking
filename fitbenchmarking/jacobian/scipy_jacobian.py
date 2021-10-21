@@ -18,7 +18,7 @@ class Scipy(Jacobian):
 
     def eval(self, params, **kwargs):
         """
-        Evaluates Jacobian
+        Evaluates Jacobian of problem.eval_model
 
         :param params: The parameter values to find the Jacobian at
         :type params: list
@@ -26,13 +26,9 @@ class Scipy(Jacobian):
         :return: Approximation of the Jacobian
         :rtype: numpy array
         """
-        func = self.cost_func.eval_r
-        f0 = self.cached_func_values(self.cost_func.cache_rx,
-                                     func,
-                                     params,
-                                     **kwargs)
+        func = self.problem.eval_model
         jac = approx_derivative(func, params, method=self.method,
-                                rel_step=None, f0=f0,
+                                rel_step=None,
                                 bounds=(-np.inf, np.inf),
                                 kwargs=kwargs)
         return jac

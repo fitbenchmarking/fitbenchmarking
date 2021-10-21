@@ -31,10 +31,9 @@ class Numdifftools(Jacobian):
         # __init__ to see if this was a large overhead, but it
         # seemed not to make a difference.
         # Details of the experiment are in the GitHub issue.
-        jac_func = nd.Jacobian(self.cost_func.eval_r,
+        jac_func = nd.Jacobian(self.problem.eval_model,
                                method=self.method)
-        jac = jac_func(params)
-        return jac
+        return jac_func(params)
 
     def eval_cost(self, params, **kwargs):
         """

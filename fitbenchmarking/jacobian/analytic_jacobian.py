@@ -30,19 +30,33 @@ class Analytic(Jacobian):
         :rtype: numpy array
         """
         x = kwargs.get("x", self.problem.data_x)
-        y = kwargs.get("y", self.problem.data_y)
-        e = kwargs.get("e", self.problem.data_e)
-        jac = self.problem.jacobian(x, params)
-        if self.problem.options.cost_func_type == "weighted_nlls":
-            # scales each column of the Jacobian by the weights
-            jac = jac / e[:, None]
-        elif self.problem.options.cost_func_type == "hellinger_nlls":
-            # calculates the Jacobian of the hellinger(root) NLLS cost function
-            jac = jac/(2*np.sqrt(self.problem.eval_model(params, x=x)
-                       [:, None]))
-        elif self.problem.options.cost_func_type == "poisson":
-            jac = -jac*(1 - y / self.problem.eval_model(params, x=x))[:, None]
-        return jac
+        # Temporary minus sign. The Jacobians in the example data files need to be changed so they are not negative
+        return - self.problem.jacobian(x, params)
+
+    # def eval(self, params, **kwargs):
+    #     """
+    #     Evaluates Jacobian of problem.eval_model
+    #
+    #     :param params: The parameter values to find the Jacobian at
+    #     :type params: list
+    #
+    #     :return: Approximation of the Jacobian
+    #     :rtype: numpy array
+    #     """
+    #     x = kwargs.get("x", self.problem.data_x)
+    #     y = kwargs.get("y", self.problem.data_y)
+    #     e = kwargs.get("e", self.problem.data_e)
+    #     jac = self.problem.jacobian(x, params)
+    #     if self.problem.options.cost_func_type == "weighted_nlls":
+    #         # scales each column of the Jacobian by the weights
+    #         jac = jac / e[:, None]
+    #     elif self.problem.options.cost_func_type == "hellinger_nlls":
+    #         # calculates the Jacobian of the hellinger(root) NLLS cost function
+    #         jac = jac/(2*np.sqrt(self.problem.eval_model(params, x=x)
+    #                    [:, None]))
+    #     elif self.problem.options.cost_func_type == "poisson":
+    #         jac = -jac*(1 - y / self.problem.eval_model(params, x=x))[:, None]
+    #     return jac
 
     def eval_cost(self, params, **kwargs):
         """

@@ -61,3 +61,20 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         self.cache_rx['params'] = params
         self.cache_rx['value'] = result
         return result
+
+    def jac_res(self, params, **kwargs):
+        """
+        Uses the Jacobian of the model to evaluate the Jacobian of the
+        cost function residual, :math:`\\nabla_p r(x,y,p)`, at the
+        given parameters.
+
+        :param params: The parameters at which to calculate Jacobians
+        :type params: list
+
+        :return: evaluated Jacobian of the residual
+        :rtype: float
+        """
+        e = kwargs.get("e", self.problem.data_e)
+
+        jac = self.jacobian.eval(params, **kwargs)
+        return jac / e[:, None]

@@ -68,6 +68,24 @@ class PoissonCostFunc(CostFunc):
         self.cache_cost_x['value'] = result
         return result
 
+    def jac_res(self, params, **kwargs):
+        """
+        Uses the Jacobian of the model to evaluate the Jacobian of the
+        cost function residual, :math:`\\nabla_p r(x,y,p)`, at the
+        given parameters.
+
+        :param params: The parameters at which to calculate Jacobians
+        :type params: list
+
+        :return: evaluated Jacobian of the residual
+        :rtype: float
+        """
+        x = kwargs.get("x", self.problem.data_x)
+        y = kwargs.get("y", self.problem.data_y)
+
+        jac = self.jacobian.eval(params, **kwargs)
+        return -jac * (1 - y / self.problem.eval_model(params, x=x))[:, None]
+
 
 def _safe_a_log_b(a, b):
     """
