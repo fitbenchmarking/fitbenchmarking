@@ -2,7 +2,7 @@
 Implements the base non-linear least squares cost function
 """
 from abc import abstractmethod
-from numpy import dot
+from numpy import dot, matmul
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
 
@@ -75,3 +75,18 @@ class BaseNLLSCostFunc(CostFunc):
         self.cache_cost_x['params'] = params
         self.cache_cost_x['value'] = dot(r, r)
         return self.cache_cost_x['value']
+
+    def jac_cost(self, params, **kwargs):
+        """
+        Uses the Jacobian of the model to evaluate the Jacobian of the
+        cost function, :math:`\\nabla_p F(r(x,y,p))`, at the given
+        parameters.
+        :param params: The parameters at which to calculate Jacobians
+        :type params: list
+        :return: evaluated Jacobian of the cost function
+        :rtype: float
+        """
+        jac_res = self.jac_res(params, **kwargs)
+        rx = self.eval_r(params, **kwargs)
+
+        return 2.0 * matmul(jac_res.T, rx)

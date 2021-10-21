@@ -42,39 +42,6 @@ class Jacobian:
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def eval_cost(self, params, **kwargs):
-        """
-        Evaluates Jacobian of the cost function
-
-        :param params: The parameter values to find the Jacobian at
-        :type params: list
-
-        :return: Computed derivative of the cost function
-        :rtype: numpy array
-        """
-        raise NotImplementedError
-
-    def cached_func_values(self, cached_dict, eval_model, params, **kwargs):
-        """
-        Computes function values using cached or function evaluation
-
-        :param cached_dict: Cached function values
-        :type cached_dict: dict
-        :param eval_modelunc: Function to find the Jacobian for
-        :type eval_modelunc: Callable
-        :param params: The parameter values to find the Jacobian at
-        :type params: list
-
-        :return: Function evaluation
-        :rtype: numpy array
-        """
-        if array_equal(params, cached_dict['params']):
-            value = cached_dict['value']
-        else:
-            value = eval_model(params, **kwargs)
-        return value
-
     @property
     def method(self):
         """

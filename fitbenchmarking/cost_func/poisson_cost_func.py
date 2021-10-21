@@ -2,7 +2,7 @@
 Implements a Poisson deviance cost function based on Mantid's:
 https://docs.mantidproject.org/nightly/fitting/fitcostfunctions/Poisson.html
 """
-from numpy import log, finfo, float64, ravel
+import numpy as np
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
@@ -57,12 +57,12 @@ class PoissonCostFunc(CostFunc):
         f_xp = self.problem.eval_model(x=x, params=params)
 
         # Penalise nagative f(x, p)
-        f_xp[f_xp <= 0.0] = finfo(float).max
+        f_xp[f_xp <= 0.0] = np.finfo(float).max
 
         residuals = _safe_a_log_b(y, y) - _safe_a_log_b(y, f_xp) - (y - f_xp)
 
         # Flatten in case of a vector function
-        result = sum(ravel(residuals))
+        result = sum(np.ravel(residuals))
 
         self.cache_cost_x['params'] = params
         self.cache_cost_x['value'] = result
@@ -86,6 +86,19 @@ class PoissonCostFunc(CostFunc):
         jac = self.jacobian.eval(params, **kwargs)
         return -jac * (1 - y / self.problem.eval_model(params, x=x))[:, None]
 
+    def jac_cost(self, params, **kwargs):
+        """
+        Uses the Jacobian of the model to evaluate the Jacobian of the
+        cost function, :math:`\\nabla_p F(r(x,y,p))`, at the given
+        parameters.
+        :param params: The parameters at which to calculate Jacobians
+        :type params: list
+        :return: evaluated Jacobian of the cost function
+        :rtype: float
+        """
+        jac_res = self.jac_res(params, **kwargs)
+        return np.sum(jac_res, 0)
+
 
 def _safe_a_log_b(a, b):
     """
@@ -93,6 +106,6 @@ def _safe_a_log_b(a, b):
     """
     mask = a != 0
 
-    result = a.copy().astype(float64)
-    result[mask] *= log(b[mask])
+    result = a.copy().astype(np.float64)
+    result[mask] *= np.log(b[mask])
     return result

@@ -19,9 +19,3 @@ class Default(Jacobian):
         This should not be called?
         """
         raise NotImplementedError
-
-    def eval_cost(self, params, **kwargs):
-        """
-        This should not be called?
-        """
-        raise NotImplementedError
