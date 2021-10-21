@@ -13,8 +13,8 @@ class Analytic(Jacobian):
     Class to apply an analytical Jacobian
     """
 
-    def __init__(self, cost_func):
-        super().__init__(cost_func)
+    def __init__(self, problem):
+        super().__init__(problem)
         if not callable(self.problem.jacobian):
             raise NoJacobianError("Problem set selected does not currently "
                                   "support analytic Jacobians")

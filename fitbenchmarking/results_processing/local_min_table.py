@@ -106,7 +106,7 @@ class LocalMinTable(Table):
             # to switch to a common jacobian here to generate
             # comparisons
             jacobian_cls = create_jacobian("scipy")
-            jacobian_instance = jacobian_cls()
+            jacobian_instance = jacobian_cls(result.cost_func.problem)
             jacobian_instance.method = "2-point"
             result.cost_func.jacobian = jacobian_instance
             jac = result.cost_func.jac_res(result.params,

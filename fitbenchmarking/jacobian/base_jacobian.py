@@ -14,16 +14,15 @@ class Jacobian:
     # Problem formats that are incompatible with certain Jacobians
     INCOMPATIBLE_PROBLEMS = {}
 
-    def __init__(self, cost_func):
+    def __init__(self, problem):
         """
         Base class for the Jacobians
 
-        :param cost_func: Cost function object selected from options.
-        :type cost_func: subclass of
-                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+        :param problem: The parsed problem.
+        :type problem:
+        :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
         """
-        self.cost_func = cost_func
-        self.problem = self.cost_func.problem
+        self.problem = problem
 
         self.use_default_jac = False
         self._method = None

@@ -395,7 +395,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
             # Creates Jacobian class
             jacobian_cls = create_jacobian(jac_method)
             try:
-                jacobian = jacobian_cls(cost_func)
+                jacobian = jacobian_cls(cost_func.problem)
             except NoJacobianError as excp:
                 LOGGER.warning(str(excp))
                 continue
