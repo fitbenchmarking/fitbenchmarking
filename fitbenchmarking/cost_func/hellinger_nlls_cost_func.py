@@ -26,21 +26,6 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
 
     """
 
-    def __init__(self, problem):
-        """
-        Initialise the root non-linear least squares cost function class
-
-        :param problem: The parsed problem
-        :type problem:
-                :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-
-        """
-        # Problem: The problem object from parsing
-        super().__init__(problem)
-        #: *dict*
-        #: Container cached residual evaluation
-        self.cache_rx = {'params': None, 'value': None}
-
     def eval_r(self, params, **kwargs):
         """
         Calculate the residuals, :math:`\\sqrt{y_i} - \\sqrt{f(x_i, p}`
@@ -60,11 +45,7 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         result = sqrt(y) - sqrt(self.problem.eval_model(params=params, x=x))
 
         # Flatten in case of a vector function
-        result = ravel(result)
-
-        self.cache_rx['params'] = params
-        self.cache_rx['value'] = result
-        return result
+        return ravel(result)
 
     def jac_res(self, params, **kwargs):
         """

@@ -58,4 +58,3 @@ class MatlabMixin:
         matlab array as this causes a Python error
         """
         self.cost_func.cache_cost_x = {'params': None, 'value': None}
-        self.cost_func.cache_rx = {'params': None, 'value': None}

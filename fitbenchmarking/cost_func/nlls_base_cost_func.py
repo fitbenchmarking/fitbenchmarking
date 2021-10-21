@@ -38,9 +38,6 @@ class BaseNLLSCostFunc(CostFunc):
         """
         # Problem: The problem object from parsing
         super().__init__(problem)
-        #: *dict*
-        #: Container cached residual evaluation
-        self.cache_rx = {'params': None, 'value': None}
 
         self.invalid_algorithm_types = []
 
