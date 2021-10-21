@@ -400,6 +400,8 @@ def loop_over_jacobians(controller, options, grabbed_output):
                 LOGGER.warning(str(excp))
                 continue
 
+            cost_func.jacobian = jacobian
+
             for num_method in options.num_method[jac_method]:
                 if minimizer_check:
                     num_method_str = ''

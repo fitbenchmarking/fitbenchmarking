@@ -68,7 +68,7 @@ class ScipyController(Controller):
                   "options": self.options}
         if self.minimizer in self.jacobian_enabled_solvers:
             if not self.jacobian.use_default_jac:
-                kwargs["jac"] = self.jacobian.eval_cost
+                kwargs["jac"] = self.cost_func.jac_cost
         if self.minimizer not in self.no_bounds_minimizers:
             kwargs["bounds"] = self.value_ranges
         if self.hessian and self.minimizer in self.hessian_enabled_solvers:

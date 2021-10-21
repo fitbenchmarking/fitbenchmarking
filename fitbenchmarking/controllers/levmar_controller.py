@@ -104,7 +104,7 @@ class LevmarController(Controller):
         :return: The computed Jacobian array in contiguous memory.
         :rtype: numpy array
         """
-        return np.ascontiguousarray(self.jacobian.eval(params, **kwargs))
+        return np.ascontiguousarray(self.cost_func.jac_res(params, **kwargs))
 
     def cleanup(self):
         """

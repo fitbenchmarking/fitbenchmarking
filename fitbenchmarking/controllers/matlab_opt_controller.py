@@ -88,7 +88,7 @@ class MatlabOptController(MatlabMixin, Controller):
         # if default jacobian is not selected then pass _jeval
         # function to matlab
         if not self.jacobian.use_default_jac:
-            eng.workspace['eval_j'] = self.py_to_mat(self.jacobian.eval, eng)
+            eng.workspace['eval_j'] = self.py_to_mat(self.cost_func.jac_res, eng)
             eng.evalc('j_wrapper = @(p, x)double(eval_j(p))')
 
             eng.workspace['eval_func'] = [eng.workspace['f_wrapper'],

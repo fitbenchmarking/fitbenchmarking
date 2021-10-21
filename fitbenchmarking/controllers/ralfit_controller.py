@@ -115,7 +115,7 @@ class RALFitController(Controller):
         if self.hessian:
             self._popt = ral_nlls.solve(self.initial_params,
                                         self.cost_func.eval_r,
-                                        self.jacobian.eval,
+                                        self.cost_func.jac_res,
                                         self.hes_eval,
                                         options=self._options,
                                         lower_bounds=self.param_ranges[0],
@@ -123,7 +123,7 @@ class RALFitController(Controller):
         else:
             self._popt = ral_nlls.solve(self.initial_params,
                                         self.cost_func.eval_r,
-                                        self.jacobian.eval,
+                                        self.cost_func.jac_res,
                                         options=self._options,
                                         lower_bounds=self.param_ranges[0],
                                         upper_bounds=self.param_ranges[1])[0]

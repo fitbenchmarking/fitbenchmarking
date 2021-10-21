@@ -77,7 +77,7 @@ class ScipyLSController(Controller):
                   'method': self.minimizer,
                   'max_nfev': 500}
         if not self.jacobian.use_default_jac:
-            kwargs['jac'] = self.jacobian.eval
+            kwargs['jac'] = self.cost_func.jac_res
         if self.minimizer != "lm":
             kwargs['bounds'] = self.param_ranges
         self.result = least_squares(**kwargs)

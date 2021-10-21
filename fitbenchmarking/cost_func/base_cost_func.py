@@ -21,10 +21,12 @@ class CostFunc:
         :param problem: The parsed problem
         :type problem:
                 :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-
         """
         # Problem: The problem object from parsing
         self.problem = problem
+
+        # The Jacobian object to evaluate
+        self.jacobian = None
 
         #: *dict*
         #: Container cached residual squared evaluation (cost function)
