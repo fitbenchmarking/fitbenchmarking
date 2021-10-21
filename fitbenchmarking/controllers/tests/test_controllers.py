@@ -624,7 +624,7 @@ class ControllerValidateTests(TestCase):
     def test_controller_will_not_raise_for_compatible_jacobian(self):
         """
         ScipyController: Test that the Scipy controller validation
-        will raise for an incompatible Jacobians
+        will not raise for a compatible Jacobians
         """
         self.jac = Default(self.cost_func)
         self.jac.method = "default"
