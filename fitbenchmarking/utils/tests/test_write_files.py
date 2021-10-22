@@ -6,11 +6,20 @@ import shutil
 import unittest
 
 from fitbenchmarking.utils.create_dirs import results
-from fitbenchmarking.utils.write_files import write_file
+from fitbenchmarking.utils.exceptions import FilepathTooLongError
+from fitbenchmarking.utils.write_files import CHARACTER_LIMIT, write_file
 
 
 @write_file
 def write_to_a_file(file_path: str, content: str):
+    """
+    Writes to a file using the provided file path and contents.
+
+    :param file_path: path to a file.
+    :type file_path: str
+    :param content: the content of the file.
+    :type content: str
+    """
     with open(file_path, "w") as file:
         file.write(content)
 
@@ -19,8 +28,6 @@ class WriteFilesTests(unittest.TestCase):
     """
     Tests for the write files decorator.
     """
-
-    CHARACTER_LIMIT = 260
 
     def setUp(self):
         """
@@ -37,15 +44,16 @@ class WriteFilesTests(unittest.TestCase):
         if os.path.exists(self.results_dir):
             shutil.rmtree(self.results_dir)
 
-    def test_no_exception_when_the_file_path_is_too_large(self):
+    def test_exception_when_the_file_path_is_too_large(self):
         """
         Check that no error occurs when the file path is too large.
         """
         file_path = os.path.join(self.results_dir,
                                  "very_" * 50, "long_filename.txt")
-        self.assertGreater(len(file_path), self.CHARACTER_LIMIT)
+        self.assertGreater(len(file_path), CHARACTER_LIMIT)
 
-        write_to_a_file(file_path, "Hello")
+        with self.assertRaises(FilepathTooLongError):
+            write_to_a_file(file_path, "Hello")
 
         self.assertTrue(not os.path.exists(file_path))
 
@@ -54,7 +62,7 @@ class WriteFilesTests(unittest.TestCase):
         Check that a file is created when the file path is short.
         """
         file_path = os.path.join(self.results_dir, "short_filename.txt")
-        self.assertLess(len(file_path), self.CHARACTER_LIMIT)
+        self.assertLess(len(file_path), CHARACTER_LIMIT)
 
         write_to_a_file(file_path, "Hello")
 
