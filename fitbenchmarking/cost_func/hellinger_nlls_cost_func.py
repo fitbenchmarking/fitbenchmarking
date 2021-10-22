@@ -62,4 +62,4 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         x = kwargs.get("x", self.problem.data_x)
 
         jac = self.jacobian.eval(params, **kwargs)
-        return jac/(2 * sqrt(self.problem.eval_model(params, x=x)[:, None]))
+        return - jac / (2 * sqrt(self.problem.eval_model(params, x=x)[:, None]))

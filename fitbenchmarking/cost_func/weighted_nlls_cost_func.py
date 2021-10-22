@@ -60,4 +60,4 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         e = kwargs.get("e", self.problem.data_e)
 
         jac = self.jacobian.eval(params, **kwargs)
-        return jac / e[:, None]
+        return - jac / e[:, None]

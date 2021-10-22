@@ -109,7 +109,7 @@ class FittingProblem:
         # The timer used to check if the 'max_runtime' is exceeded.
         self.timer = TimerWithMaxTime(self.options.max_runtime)
 
-    @lru_cache(maxsize=1)
+    #@lru_cache(maxsize=1)
     def eval_model(self, params, **kwargs):
         """
         Function evaluation method

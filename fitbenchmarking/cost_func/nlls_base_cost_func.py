@@ -68,10 +68,7 @@ class BaseNLLSCostFunc(CostFunc):
         :rtype: numpy array
         """
         r = self.eval_r(params=params, **kwargs)
-
-        self.cache_cost_x['params'] = params
-        self.cache_cost_x['value'] = dot(r, r)
-        return self.cache_cost_x['value']
+        return dot(r, r)
 
     def jac_cost(self, params, **kwargs):
         """

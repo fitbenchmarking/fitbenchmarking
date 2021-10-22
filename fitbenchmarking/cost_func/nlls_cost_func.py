@@ -56,4 +56,4 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         :return: evaluated Jacobian of the residual
         :rtype: float
         """
-        return self.jacobian.eval(params, **kwargs)
+        return - self.jacobian.eval(params, **kwargs)

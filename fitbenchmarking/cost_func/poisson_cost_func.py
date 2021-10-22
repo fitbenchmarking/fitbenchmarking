@@ -62,11 +62,7 @@ class PoissonCostFunc(CostFunc):
         residuals = _safe_a_log_b(y, y) - _safe_a_log_b(y, f_xp) - (y - f_xp)
 
         # Flatten in case of a vector function
-        result = sum(np.ravel(residuals))
-
-        self.cache_cost_x['params'] = params
-        self.cache_cost_x['value'] = result
-        return result
+        return sum(np.ravel(residuals))
 
     def jac_res(self, params, **kwargs):
         """
@@ -84,7 +80,7 @@ class PoissonCostFunc(CostFunc):
         y = kwargs.get("y", self.problem.data_y)
 
         jac = self.jacobian.eval(params, **kwargs)
-        return -jac * (1 - y / self.problem.eval_model(params, x=x))[:, None]
+        return jac * (1 - y / self.problem.eval_model(params, x=x))[:, None]
 
     def jac_cost(self, params, **kwargs):
         """

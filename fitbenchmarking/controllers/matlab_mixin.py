@@ -57,4 +57,4 @@ class MatlabMixin:
         Clear cached values incase stored values are of type
         matlab array as this causes a Python error
         """
-        self.cost_func.cache_cost_x = {'params': None, 'value': None}
+        pass
