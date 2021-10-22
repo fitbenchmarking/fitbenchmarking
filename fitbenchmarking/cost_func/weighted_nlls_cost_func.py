@@ -18,7 +18,7 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
               \\left(\\frac{y_i - f(x_i, p)}{e_i}\\right)^2
 
     where :math:`p` is a vector of length :math:`m`, and we start from a
-    given initial guess for the optimal parameters.  More information on
+    given initial guess for the optimal parameters. More information on
     non-linear least squares cost functions can be found
     `here <https://en.wikipedia.org/wiki/Non-linear_least_squares>`__.
     """

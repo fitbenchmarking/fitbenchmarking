@@ -36,7 +36,7 @@ you will need to:
 5. Update the analytic Hessian for the new cost function, :class:`~fitbenchmarking.hessian.analytic_hessian.Analytic`.
 
 The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc` classes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When adding new cost functions, you will find it helpful to make use of the
 following member of the :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
@@ -49,7 +49,7 @@ class
 
 .. currentmodule:: fitbenchmarking.cost_func.base_cost_func
 .. autoclass:: fitbenchmarking.cost_func.base_cost_func.CostFunc
-          :members: cache_cost_x
+          :members: eval_cost, jac_res, jac_cost
           :noindex:
 	     
 .. currentmodule:: fitbenchmarking.jacobian.base_jacobian

@@ -62,8 +62,3 @@ class:
           :members: eval_model, cache_model_x, data_x, data_y, data_e
           :noindex:
 
-.. note::
-   If using cached values, use the
-   :meth:`~fitbenchmarking.jacobian.base_jacobian.Jacobian.cached_func_values` method,
-   which first checks if a cached function evaluation is available to use
-   for the given parameters.

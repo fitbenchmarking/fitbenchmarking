@@ -11,7 +11,7 @@ except ImportError:
     # python3
     from itertools import zip_longest as izip_longest
 import numpy as np
-from functools import lru_cache
+#from functools import lru_cache
 
 from fitbenchmarking.utils.exceptions import FittingProblemError, \
     IncorrectBoundsError

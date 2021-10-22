@@ -1,8 +1,8 @@
 .. _cost_func:
 
-================
- Cost functions
-================
+==============
+Cost functions
+==============
 
 Fitbenchmarking supports multiple cost functions. These can be set via the ``cost_func_type`` option in :ref:`fitting_option`.
 
