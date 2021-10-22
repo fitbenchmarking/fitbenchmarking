@@ -60,9 +60,6 @@ class MatlabOptController(MatlabMixin, Controller):
         self.initial_params_mat = matlab.double([self.initial_params])
         self.x_data_mat = matlab.double(self.data_x.tolist())
 
-        # clear out cached values
-        self.clear_cached_values()
-
         # set matlab workspace variable for selected minimizer
         eng.workspace['minimizer'] = self.minimizer
 

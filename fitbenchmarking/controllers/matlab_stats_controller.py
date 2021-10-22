@@ -55,9 +55,6 @@ class MatlabStatsController(MatlabMixin, Controller):
         self.initial_params_mat = matlab.double([self.initial_params])
         self.x_data_mat = matlab.double(self.data_x.tolist())
 
-        # clear out cached values
-        self.clear_cached_values()
-
         # serialize cost_func.eval_r and open within matlab engine
         # so that matlab fitting function can be called
         eng.workspace['eval_f'] = self.py_to_mat(self.cost_func.eval_r, eng)

@@ -51,10 +51,3 @@ class MatlabMixin:
         eng.evalc('fp.close()')
 
         return eng.workspace['fm']
-
-    def clear_cached_values(self):
-        """
-        Clear cached values incase stored values are of type
-        matlab array as this causes a Python error
-        """
-        pass
