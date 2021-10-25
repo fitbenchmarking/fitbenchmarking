@@ -486,7 +486,7 @@ def loop_over_hessians(controller, options, minimizer_name,
         if minimizer_check and method != 'default':
             hessian_cls = create_hessian(method)
             try:
-                hessian = hessian_cls(cost_func, jacobian)
+                hessian = hessian_cls(cost_func.problem, jacobian)
                 controller.hessian = hessian
 
                 LOGGER.info("                   Hessian: %s",

@@ -61,3 +61,23 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
 
         jac = self.jacobian.eval(params, **kwargs)
         return - jac / e[:, None]
+
+    def hes_res(self, params, **kwargs):
+        """
+        Uses the Hessian of the model to evaluate the Hessian of the
+        cost function residual, :math:`\\nabla_p r(x,y,p)`, at the
+        given parameters.
+
+        :param params: The parameters at which to calculate Hessians
+        :type params: list
+
+        :return: evaluated Hessian of the residual
+        :rtype: float
+        """
+        e = kwargs.get("e", self.problem.data_e)
+
+        hes = self.hessian.eval(params, **kwargs)
+        for i in range(len(e)):
+            hes[:, :, i] = - hes[:, :, i] / e[i]
+
+        return hes, self.jac_res(params, **kwargs)

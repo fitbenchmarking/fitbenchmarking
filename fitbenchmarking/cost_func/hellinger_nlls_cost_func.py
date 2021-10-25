@@ -1,7 +1,7 @@
 """
 Implements the root non-linear least squares cost function
 """
-from numpy import sqrt, ravel
+from numpy import array, matmul, sqrt, ravel
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
@@ -63,3 +63,27 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
 
         jac = self.jacobian.eval(params, **kwargs)
         return - jac / (2 * sqrt(self.problem.eval_model(params, x=x)[:, None]))
+
+    def hes_res(self, params, **kwargs):
+        """
+        Uses the Hessian of the model to evaluate the Hessian of the
+        cost function residual, :math:`\\nabla_p r(x,y,p)`, at the
+        given parameters.
+
+        :param params: The parameters at which to calculate Hessians
+        :type params: list
+
+        :return: evaluated Hessian of the residual
+        :rtype: float
+        """
+        x = kwargs.get("x", self.problem.data_x)
+
+        f = self.problem.eval_model(params, x=x)
+        jac = self.jacobian.eval(params, **kwargs)
+        hes = self.hessian.eval(params, **kwargs)
+
+        for i in range(len(x)):
+            jac_i = array([jac[i]])
+            hes[:, :, i] = matmul(jac_i.T, jac_i) / (4 * f[i] ** (3/2)) \
+                           - hes[:, :, i] / (2 * f[i] ** (1/2))
+        return hes, self.jac_res(params, **kwargs)

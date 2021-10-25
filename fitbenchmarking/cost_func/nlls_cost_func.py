@@ -57,3 +57,17 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         :rtype: float
         """
         return - self.jacobian.eval(params, **kwargs)
+
+    def hes_res(self, params, **kwargs):
+        """
+        Uses the Hessian of the model to evaluate the Hessian of the
+        cost function residual, :math:`\\nabla_p r(x,y,p)`, at the
+        given parameters.
+
+        :param params: The parameters at which to calculate Hessians
+        :type params: list
+
+        :return: evaluated Hessian of the residual
+        :rtype: float
+        """
+        return - self.hessian.eval(params, **kwargs)

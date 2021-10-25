@@ -11,16 +11,18 @@ class Hessian:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, cost_func, jacobian):
+    def __init__(self, problem, jacobian):
         """
         Base class for the Hessians
 
-        :param cost_func: Cost function object selected from options.
-        :type cost_func: subclass of
-                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+        :param problem: The parsed problem.
+        :type problem:
+        :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
+        :param jacobian: Jaocbian object
+        :type jacobian:
+        fitbenchmarking.jacobian.<jac_method>_jacobian.<jac_method>
         """
-        self.cost_func = cost_func
-        self.problem = self.cost_func.problem
+        self.problem = problem
         self.jacobian = jacobian
 
     @abstractmethod
@@ -35,36 +37,3 @@ class Hessian:
         :rtype: numpy array
         """
         raise NotImplementedError
-
-    @abstractmethod
-    def eval_cost(self, params, **kwargs):
-        """
-        Evaluates Hessian of the cost function
-
-        :param params: The parameter values to find the Hessian at
-        :type params: list
-
-        :return: Computed derivative of the cost function
-        :rtype: numpy array
-        """
-        raise NotImplementedError
-
-    def cached_func_values(self, cached_dict, eval_model, params, **kwargs):
-        """
-        Computes function values using cached or function evaluation
-
-        :param cached_dict: Cached function values
-        :type cached_dict: dict
-        :param eval_modelunc: Function to find the Hessian for
-        :type eval_modelunc: Callable
-        :param params: The parameter values to find the Hessian at
-        :type params: list
-
-        :return: Function evaluation
-        :rtype: numpy array
-        """
-        if array_equal(params, cached_dict['params']):
-            value = cached_dict['value']
-        else:
-            value = eval_model(params, **kwargs)
-        return value

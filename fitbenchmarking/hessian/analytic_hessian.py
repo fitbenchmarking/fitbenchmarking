@@ -30,6 +30,20 @@ class Analytic(Hessian):
         :return: Approximation of the Hessian
         :rtype: numpy array
         """
+        x = kwargs.get("x", self.problem.data_x)
+        return self.problem.hessian(x, params)
+
+    def eval(self, params, **kwargs):
+        """
+        Evaluates Hessian of problem.eval_model, returning the value
+        sum_{i=1}^m (r)_i \nabla^2r_i(x)
+
+        :param params: The parameter values to find the Hessian at
+        :type params: list
+
+        :return: Approximation of the Hessian
+        :rtype: numpy array
+        """
 
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)

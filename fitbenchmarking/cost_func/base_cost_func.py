@@ -75,6 +75,36 @@ class CostFunc:
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def hes_res(self, params, **kwargs):
+        """
+        Uses the Hessian of the model to evaluate the Hessian of the
+        cost function residual, :math:`\\nabla_p r(x,y,p)`, at the
+        given parameters.
+
+        :param params: The parameters at which to calculate Hessians
+        :type params: list
+
+        :return: evaluated Hessian of the residual
+        :rtype: float
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def hes_cost(self, params, **kwargs):
+        """
+        Uses the Hessian of the model to evaluate the Hessian of the
+        cost function, :math:`\\nabla_p F(r(x,y,p))`, at the given
+        parameters.
+
+        :param params: The parameters at which to calculate Hessians
+        :type params: list
+
+        :return: evaluated Hessian of the cost function
+        :rtype: float
+        """
+        raise NotImplementedError
+
     def validate_algorithm_type(self, algorithm_check, minimizer):
         """
         Helper function which checks that the algorithm type of the
