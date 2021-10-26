@@ -13,16 +13,13 @@ import fitbenchmarking
 from fitbenchmarking.utils.misc import get_css
 
 
-def create(results_per_test, group_name, support_pages_dir,
-           options):
+def create(results_per_test, support_pages_dir, options):
     """
     Iterate through problem results and create a support html page for
     each.
 
     :param results_per_test: results object
     :type results_per_test: list[list[list]]
-    :param group_name: name of the problem group
-    :type group_name: str
     :param support_pages_dir: directory in which the results are saved
     :type support_pages_dir: str
     :param options: The options used in the fitting problem and plotting
@@ -32,13 +29,11 @@ def create(results_per_test, group_name, support_pages_dir,
     for prob_result in results_per_test:
 
         create_prob_group(prob_result,
-                          group_name,
                           support_pages_dir,
                           options)
 
 
-def create_prob_group(prob_results, group_name, support_pages_dir,
-                      options):
+def create_prob_group(prob_results, support_pages_dir, options):
     """
     Creates a support page containing figures and other
     details about the fit for a problem.
@@ -47,8 +42,6 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
     :param prob_results: problem results objects containing results for
                          each minimizer and a certain fitting function
     :type prob_results: list[fitbenchmarking.utils.fitbm_result.FittingResult]
-    :param group_name: name of the problem group
-    :type group_name: str
     :param support_pages_dir: directory to store the support pages in
     :type support_pages_dir: str
     :param options: The options used in the fitting problem and plotting
@@ -58,8 +51,7 @@ def create_prob_group(prob_results, group_name, support_pages_dir,
     for result in prob_results:
         prob_name = result.sanitised_name
 
-        file_name = '{}_{}_{}.html'.format(
-            group_name, prob_name, result.sanitised_min_name)
+        file_name = f"{prob_name}_{result.sanitised_min_name}.html"
         file_name = file_name.lower()
         file_path = os.path.join(support_pages_dir, file_name)
 

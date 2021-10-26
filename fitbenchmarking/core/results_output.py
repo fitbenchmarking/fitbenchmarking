@@ -14,8 +14,10 @@ from fitbenchmarking.results_processing import (performance_profiler, plots,
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.misc import get_css, get_js
+from fitbenchmarking.utils.write_files import write_file
 
 
+@write_file
 def save_results(options, results, group_name, failed_problems,
                  unselected_minimzers, cost_func_description):
     """
@@ -60,13 +62,11 @@ def save_results(options, results, group_name, failed_problems,
 
     support_page.create(options=options,
                         results_per_test=results,
-                        group_name=group_name,
                         support_pages_dir=supp_dir)
 
     table_names, table_descriptions = \
         tables.create_results_tables(options,
                                      results,
-                                     group_name,
                                      group_dir,
                                      fig_dir,
                                      pp_locations,

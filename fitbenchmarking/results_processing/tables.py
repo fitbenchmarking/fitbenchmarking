@@ -27,8 +27,8 @@ ERROR_OPTIONS = {0: "Successfully converged",
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
-def create_results_tables(options, results, group_name, group_dir, fig_dir,
-                          pp_locations, failed_problems, unselected_minimzers):
+def create_results_tables(options, results, group_dir, fig_dir, pp_locations,
+                          failed_problems, unselected_minimzers):
     """
     Saves the results of the fitting to html/txt tables.
 
@@ -37,8 +37,6 @@ def create_results_tables(options, results, group_name, group_dir, fig_dir,
     :param results: results nested array of objects
     :type results: list of list of
                    fitbenchmarking.utils.fitbm_result.FittingResult
-    :param group_name: name of the problem group
-    :type group_name: str
     :param group_dir: path to the directory where group results should be
                       stored
     :type group_dir: str
@@ -66,7 +64,7 @@ def create_results_tables(options, results, group_name, group_dir, fig_dir,
         if suffix in options.table_type:
 
             table_names[suffix] = \
-                f'{group_name}_{suffix}_{options.cost_func_type}_table.'
+                f"{suffix}_{options.cost_func_type}_table."
 
             try:
                 table, html_table, txt_table, cbar = \
