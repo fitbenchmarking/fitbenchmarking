@@ -17,8 +17,6 @@ you will need to:
 
     -  .. automethod:: fitbenchmarking.hessian.base_hessian.Hessian.eval()
               :noindex:
-    -  .. automethod:: fitbenchmarking.hessian.base_hessian.Hessian.eval_cost()
-              :noindex:
 
    The method is set sequentially within
    :meth:`~fitbenchmarking.core.fitting_benchmarking.loop_over_hessians()` by

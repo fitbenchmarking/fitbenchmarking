@@ -72,7 +72,7 @@ class ScipyController(Controller):
         if self.minimizer not in self.no_bounds_minimizers:
             kwargs["bounds"] = self.value_ranges
         if self.hessian and self.minimizer in self.hessian_enabled_solvers:
-            kwargs["hess"] = self.hessian.eval_cost
+            kwargs["hess"] = self.cost_func.hes_cost
         self.result = minimize(**kwargs)
         self._popt = self.result.x
 

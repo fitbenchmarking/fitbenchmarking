@@ -104,7 +104,7 @@ class RALFitController(Controller):
         :return: hessian evaluation from hessian.eval
         :rtype: numpy array
         """
-        hes, _ = self.hessian.eval(params)
+        hes, _ = self.cost_func.hes_res(params)
         return hes
     # pylint: enable=unused-argument
 

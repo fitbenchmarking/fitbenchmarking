@@ -33,8 +33,6 @@ you will need to:
 3. Create tests for the cost function in
    ``fitbenchmarking/cost_func/tests/test_cost_func.py``.
 
-5. Update the analytic Hessian for the new cost function, :class:`~fitbenchmarking.hessian.analytic_hessian.Analytic`.
-
 The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc` classes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
