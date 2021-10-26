@@ -1,6 +1,7 @@
 """
 Module which acts as an analytic Hessian calculator
 """
+
 from fitbenchmarking.hessian.base_hessian import Hessian
 from fitbenchmarking.utils.exceptions import NoHessianError
 

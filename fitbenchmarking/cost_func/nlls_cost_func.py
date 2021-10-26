@@ -70,4 +70,5 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         :return: evaluated Hessian of the residual
         :rtype: a list of 2D numpy arrays
         """
-        return - self.hessian.eval(params, **kwargs)
+        J = self.jac_res(params, **kwargs)
+        return - self.hessian.eval(params, **kwargs), J

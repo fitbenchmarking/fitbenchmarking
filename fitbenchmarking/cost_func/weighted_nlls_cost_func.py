@@ -55,7 +55,7 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         :type params: list
 
         :return: evaluated Jacobian of the residual
-        :rtype: float
+        :rtype: a list of 1D numpy arrays
         """
         e = kwargs.get("e", self.problem.data_e)
 
@@ -72,12 +72,12 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         :type params: list
 
         :return: evaluated Hessian of the residual
-        :rtype: float
+        :rtype: a list of 2D numpy arrays
         """
         e = kwargs.get("e", self.problem.data_e)
 
         hes = self.hessian.eval(params, **kwargs)
-        for i in range(len(e)):
-            hes[:, :, i] = - hes[:, :, i] / e[i]
+        for i, e_i in enumerate(e):
+            hes[:, :, i] = - hes[:, :, i] / e_i
 
         return hes, self.jac_res(params, **kwargs)

@@ -56,7 +56,7 @@ class BaseNLLSCostFunc(CostFunc):
 
     def eval_cost(self, params, **kwargs):
         """
-        Evaluate the square of the L2 norm of the residuals, 
+        Evaluate the square of the L2 norm of the residuals,
         :math:`\\sum_i r(x_i,y_i,p)^2`
         at the given parameters
 
@@ -100,4 +100,4 @@ class BaseNLLSCostFunc(CostFunc):
         r = self.eval_r(params, **kwargs)
         H, J = self.hes_res(params, **kwargs)
 
-        return 2.0 * (matmul(J.T, J) + matmul(H.T, r))
+        return 2.0 * (matmul(J.T, J) + matmul(H, r))

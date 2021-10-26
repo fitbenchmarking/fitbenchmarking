@@ -57,12 +57,12 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         :type params: list
 
         :return: evaluated Jacobian of the residual
-        :rtype: float
+        :rtype: a list of 1D numpy arrays
         """
         x = kwargs.get("x", self.problem.data_x)
 
-        jac = self.jacobian.eval(params, **kwargs)
-        return - jac / (2 * sqrt(self.problem.eval_model(params, x=x)[:, None]))
+        j = self.jacobian.eval(params, **kwargs)
+        return - j / (2 * sqrt(self.problem.eval_model(params, x=x)[:, None]))
 
     def hes_res(self, params, **kwargs):
         """
@@ -74,7 +74,7 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         :type params: list
 
         :return: evaluated Hessian of the residual
-        :rtype: float
+        :rtype: a list of 2D numpy arrays
         """
         x = kwargs.get("x", self.problem.data_x)
 
@@ -85,5 +85,5 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         for i in range(len(x)):
             jac_i = array([jac[i]])
             hes[:, :, i] = matmul(jac_i.T, jac_i) / (4 * f[i] ** (3/2)) \
-                           - hes[:, :, i] / (2 * f[i] ** (1/2))
+                - hes[:, :, i] / (2 * f[i] ** (1/2))
         return hes, self.jac_res(params, **kwargs)

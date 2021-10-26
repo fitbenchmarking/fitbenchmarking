@@ -47,12 +47,12 @@ class CostFunc:
         :rtype: float
         """
         raise NotImplementedError
-    
+
     @abstractmethod
     def jac_res(self, params, **kwargs):
         """
-        Uses the Jacobian of the model to evaluate the Jacobian of the 
-        cost function residual, :math:`\\nabla_p r(x,y,p)`, at the 
+        Uses the Jacobian of the model to evaluate the Jacobian of the
+        cost function residual, :math:`\\nabla_p r(x,y,p)`, at the
         given parameters.
 
         :param params: The parameters at which to calculate Jacobians
@@ -66,8 +66,8 @@ class CostFunc:
     @abstractmethod
     def jac_cost(self, params, **kwargs):
         """
-        Uses the Jacobian of the model to evaluate the Jacobian of the 
-        cost function, :math:`\\nabla_p F(r(x,y,p))`, at the given 
+        Uses the Jacobian of the model to evaluate the Jacobian of the
+        cost function, :math:`\\nabla_p F(r(x,y,p))`, at the given
         parameters.
 
         :param params: The parameters at which to calculate Jacobians

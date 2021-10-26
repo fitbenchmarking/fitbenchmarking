@@ -2,7 +2,6 @@
 Implements the base class for the Jacobian.
 """
 from abc import ABCMeta, abstractmethod
-from numpy import array_equal
 
 
 class Jacobian:
@@ -30,7 +29,7 @@ class Jacobian:
     @abstractmethod
     def eval(self, params, **kwargs):
         """
-        Evaluates Jacobian of the model, :math:`\\nabla_p f(x,p)`, 
+        Evaluates Jacobian of the model, :math:`\\nabla_p f(x,p)`,
         at the point given by the parameters.
 
         :param params: The parameter values at which to evaluate the Jacobian

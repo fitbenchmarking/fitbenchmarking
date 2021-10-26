@@ -1,5 +1,5 @@
                                 bumps                     scipy                scipy_ls
                                amoeba               Nelder-Mead lm-scipy: scipy 2-point
 cubic, Start 1  1.119e-14 (2.899e+07)  6.267e-05 (1.623e+17)[1]           3.861e-22 (1)
-cubic, Start 2  1.146e-14 (2.969e+07)     7.176e-11 (1.858e+11)           3.861e-22 (1)
+cubic, Start 2  1.146e-14 (2.969e+07)     7.176e-11 (1.859e+11)           3.861e-22 (1)
 Problem Def 1             0.03175 (1)              inf (inf)[4]            inf (inf)[4]

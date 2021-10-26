@@ -114,13 +114,11 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.options.hes_method = ["analytic"]
         self.controller.minimizer = "general"
         new_name = ['general, analytic hessian']
-        jacobian = False
         minimizer_name = "general"
         _, _, new_minimizer_list = \
             loop_over_hessians(self.controller,
                                self.options,
                                minimizer_name,
-                               jacobian,
                                self.grabbed_output)
         assert new_minimizer_list == new_name
 
@@ -132,13 +130,11 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.options.hes_method = ["analytic"]
         self.controller.minimizer = "deriv_free_algorithm"
         new_name = ['deriv_free_algorithm']
-        jacobian = False
         minimizer_name = "deriv_free_algorithm"
         _, _, new_minimizer_list = \
             loop_over_hessians(self.controller,
                                self.options,
                                minimizer_name,
-                               jacobian,
                                self.grabbed_output)
         assert new_minimizer_list == new_name
 
@@ -152,13 +148,11 @@ class LoopOverHessiansTests(unittest.TestCase):
         """
         self.controller.problem.value_ranges = {'test': (0, 1)}
         self.controller.minimizer = "deriv_free_algorithm"
-        jacobian = False
         minimizer_name = "deriv_free_algorithm"
 
         _ = loop_over_hessians(self.controller,
                                self.options,
                                minimizer_name,
-                               jacobian,
                                self.grabbed_output)
         check_bounds_respected.assert_called()
 
@@ -172,13 +166,11 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.problem.value_ranges = {'test': (0, 1)}
         self.controller.minimizer = "deriv_free_algorithm"
         self.controller.flag_expected = [3]
-        jacobian = False
         minimizer_name = "deriv_free_algorithm"
 
         _ = loop_over_hessians(self.controller,
                                self.options,
                                minimizer_name,
-                               jacobian,
                                self.grabbed_output)
         check_bounds_respected.assert_not_called()
 
@@ -195,11 +187,10 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
 
-        jacobian = False
         self.controller.minimizer = "deriv_free_algorithm"
         results, _, _ = loop_over_hessians(self.controller, self.options,
                                            self.controller.minimizer,
-                                           jacobian, self.grabbed_output)
+                                           self.grabbed_output)
         self.assertEqual(results[0]["error_flag"], 6)
 
 

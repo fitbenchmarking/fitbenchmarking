@@ -42,7 +42,7 @@ def fitting_function_1(data, x1, x2):
     :return: y data values evaluated from the function of the problem
     :rtype: numpy array
     """
-    return x1 * np.sin(x2)
+    return x1 * np.sin(x2) * data
 
 
 def fitting_function_2(data, x1, x2):
@@ -59,7 +59,7 @@ def fitting_function_2(data, x1, x2):
     :return: y data values evaluated from the function of the problem
     :rtype: numpy array
     """
-    return x1 * x2
+    return x1 * x2 * data
 
 
 # pylint: enable=unused-argument
@@ -109,8 +109,9 @@ def generate_mock_results(results_directory: str):
         for j in range(num_min):
             p.starting_values = starting_values
             cost_func = NLLSCostFunc(p)
-            jac = Scipy(cost_func)
+            jac = Scipy(cost_func.problem)
             jac.method = '2-point'
+            cost_func.jacobian = jac
             r = FittingResult(options=options,
                               cost_func=cost_func,
                               jac=jac,

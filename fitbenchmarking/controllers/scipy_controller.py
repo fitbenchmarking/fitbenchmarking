@@ -71,7 +71,8 @@ class ScipyController(Controller):
                 kwargs["jac"] = self.cost_func.jac_cost
         if self.minimizer not in self.no_bounds_minimizers:
             kwargs["bounds"] = self.value_ranges
-        if self.cost_func.hessian and self.minimizer in self.hessian_enabled_solvers:
+        if self.cost_func.hessian and \
+                self.minimizer in self.hessian_enabled_solvers:
             kwargs["hess"] = self.cost_func.hes_cost
         self.result = minimize(**kwargs)
         self._popt = self.result.x
