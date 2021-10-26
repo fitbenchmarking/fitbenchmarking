@@ -73,7 +73,7 @@ class RALFitController(Controller):
             raise UnknownMinimizerError(
                 "No {} minimizer for RALFit".format(self.minimizer))
 
-        if self.hessian:
+        if self.cost_func.hessian:
             self._options[b"exact_second_derivatives"] = True
         else:
             self._options[b"exact_second_derivatives"] = False
@@ -112,7 +112,7 @@ class RALFitController(Controller):
         """
         Run problem with RALFit.
         """
-        if self.hessian:
+        if self.cost_func.hessian:
             self._popt = ral_nlls.solve(self.initial_params,
                                         self.cost_func.eval_r,
                                         self.cost_func.jac_res,

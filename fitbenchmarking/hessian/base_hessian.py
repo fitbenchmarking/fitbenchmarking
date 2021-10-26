@@ -2,7 +2,6 @@
 Implements the base class for the Hessian.
 """
 from abc import ABCMeta, abstractmethod
-from numpy import array_equal
 
 
 class Hessian:
@@ -11,7 +10,7 @@ class Hessian:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, problem, jacobian):
+    def __init__(self, problem):
         """
         Base class for the Hessians
 
@@ -23,7 +22,6 @@ class Hessian:
         fitbenchmarking.jacobian.<jac_method>_jacobian.<jac_method>
         """
         self.problem = problem
-        self.jacobian = jacobian
 
     @abstractmethod
     def eval(self, params, **kwargs):

@@ -28,6 +28,9 @@ class CostFunc:
         # The Jacobian object to evaluate
         self.jacobian = None
 
+        # The Hessian object to evaluate
+        self.hessian = None
+
         # Used to check whether the algorithm type of the
         # selected minimizer is incompatible with the cost function
         self.invalid_algorithm_types = ['ls']

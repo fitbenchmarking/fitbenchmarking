@@ -1,9 +1,6 @@
 """
 Module which acts as an analytic Hessian calculator
 """
-from numpy import matmul
-import numpy as np
-
 from fitbenchmarking.hessian.base_hessian import Hessian
 from fitbenchmarking.utils.exceptions import NoHessianError
 
@@ -13,8 +10,8 @@ class Analytic(Hessian):
     Class to apply an analytic Hessian
     """
 
-    def __init__(self, problem, jacobian):
-        super().__init__(problem, jacobian)
+    def __init__(self, problem):
+        super().__init__(problem)
         if not callable(self.problem.hessian):
             raise NoHessianError("Problem set selected does not currently "
                                  "support analytic Hessians")
