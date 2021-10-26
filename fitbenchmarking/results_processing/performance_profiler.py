@@ -83,7 +83,6 @@ def plot(acc, runtime, fig_dir):
 
         step_values = []
         max_value = 0.0
-        print(profile_plot)
         for value in profile_plot.values():
             value = np.array(value)
             sorted_list = np.sort(_remove_nans(value))

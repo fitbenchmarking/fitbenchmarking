@@ -41,6 +41,15 @@ class Plot:
                         "marker": "",
                         "linestyle": '-',
                         "linewidth": 3}
+    summary_best_plot_options = {"zorder": 2,
+                                 "marker": "",
+                                 "linestyle": '-',
+                                 "linewidth": 2}
+    summary_plot_options = {"zorder": 1,
+                            "marker": "",
+                            "linestyle": '-',
+                            "linewidth": 1,
+                            "alpha": 0.8,}
 
     def __init__(self, best_result, options, figures_dir):
         self.cost_func = best_result.cost_func
@@ -295,24 +304,11 @@ class Plot:
                 if result.params is not None:
                     params = result.params
                     y = result.problem.eval_model(params, x=x)
-                    if result.is_best_fit:
-                        plot_options = {
-                            "label": key,
-                            "zorder": 2,
-                            "color": colour,
-                            "marker": "",
-                            "linestyle": '-',
-                            "linewidth": 2,
-                        }
-                    else:
-                        plot_options = {
-                            "zorder": 1,
-                            "color": colour,
-                            "marker": "",
-                            "linestyle": '-',
-                            "linewidth": 1,
-                            "alpha": 0.8,
-                        }
+                    plot_options = cls.summary_best_plot_options \
+                        if result.is_best_fit else cls.summary_plot_options
+                    plot_options['colour'] = colour
+                    plot_options['key'] = key if result.is_best_fit else ''
+
                     ax.plot(x, y, **plot_options)
                     # log scale plot if problem is a SASView problem
                     if problem.format == "sasview":

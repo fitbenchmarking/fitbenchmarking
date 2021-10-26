@@ -11,14 +11,14 @@ from fitbenchmarking.results_processing.plots import Plot
 from fitbenchmarking.utils.misc import get_css
 
 
-def create(results, best, group_name, support_pages_dir, figures_dir, options):
+def create(results, best_results, group_name, support_pages_dir, figures_dir, options):
     """
     Create the problem summary pages.
 
     :param results: The results to create summary pages for
     :type results: dict[str, dict[str, list[FittingResult]]]
-    :param best: The best result from each row and category
-    :type best: dict[str, dict[str, FittingResult]]
+    :param best_results: The best result from each row and category
+    :type best_results: dict[str, dict[str, FittingResult]]
     :param group_name: name of the problem group
     :type group_name: str
     :param support_pages_dir: directory in which the results are to be saved
@@ -31,7 +31,7 @@ def create(results, best, group_name, support_pages_dir, figures_dir, options):
     for problem_key in results:
         categorised = []
         problem_results = results[problem_key]
-        problem_best = best[problem_key]
+        problem_best = best_results[problem_key]
         for cf, result in problem_best.items():
             categorised.append((cf, result,
                                 'This is the best fit of the minimizers used '
@@ -83,20 +83,19 @@ def _create_summary_page(categorised_best_results, group_name,
     if options.make_plots:
         for result in results:
             fig_fit, fig_start = _get_figure_paths(result)
-            if fig_fit == '':
+            best_plot_available.append(fig_fit != '')
+            if not best_plot_available[-1]:
                 fig_fit = result.figure_error
-                best_plot_available.append(False)
-            else:
-                best_plot_available.append(True)
+
             if init_success and fig_start == '':
                 fig_start = result.figure_error
                 init_success = False
             best_fits.append(fig_fit)
     else:
-        best_plot_available = [False for _ in results]
+        best_plot_available = [False] * len(results)
         fig_start = 'Re-run with make_plots set to yes in the ' \
                     'ini file to generate plots.'
-        best_fits = [fig_start for _ in results]
+        best_fits = [fig_start] * len(results)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, "templates")

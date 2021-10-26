@@ -126,8 +126,8 @@ def generate_mock_results():
             options.minimizer_alg_type[options.minimizers[software]
                                        [j]] = 'all, ls'
         results_out.extend(results)
-    best, results_out = preprocess_data(results_out)
-    return best, results_out, options
+    best_results, results_out = preprocess_data(results_out)
+    return best_results, results_out, options
 
 
 class GenerateTableTests(unittest.TestCase):
@@ -140,7 +140,7 @@ class GenerateTableTests(unittest.TestCase):
         """
         Setup up method for test
         """
-        self.best, self.results, self.options = generate_mock_results()
+        self.best_results, self.results, self.options = generate_mock_results()
         root = os.path.dirname(getfile(fitbenchmarking))
 
         self.expected_results_dir = os.path.join(root, 'results_processing',
@@ -165,7 +165,7 @@ class GenerateTableTests(unittest.TestCase):
         for suffix in SORTED_TABLE_NAMES:
             _, html_table, txt_table, _ = generate_table(
                 results=self.results,
-                best=self.best,
+                best_results=self.best_results,
                 options=self.options,
                 group_dir="group_dir",
                 fig_dir=self.fig_dir,
@@ -173,9 +173,9 @@ class GenerateTableTests(unittest.TestCase):
                 table_name="table_name",
                 suffix=suffix)
             html_table_name = os.path.join(self.expected_results_dir,
-                                           "{}.html".format(suffix))
+                                           f"{suffix}.html")
             txt_table_name = os.path.join(self.expected_results_dir,
-                                          "{}.txt".format(suffix))
+                                          f"{suffix}.txt")
 
             for f, t in zip([html_table_name, txt_table_name],
                             [html_table, txt_table]):
@@ -214,10 +214,10 @@ class GenerateTableTests(unittest.TestCase):
             if act_line != exp_line:
                 diff.append([i, exp_line, act_line])
         if diff != []:
-            print("Comparing against {}".format(expected_table)
-                  + "\n".join(['== Line {} ==\n'
-                               'Expected :{}\n'
-                               'Actual   :{}'.format(*change)
+            print(f"Comparing against {expected_table}\n"
+                  + "\n".join([f'== Line {change[0]} ==\n'
+                               f'Expected :{change[1]}\n'
+                               f'Actual   :{change[2]}'
                                for change in diff]))
             print("\n==\n")
             print("Output generated (also saved as actual.out):")
@@ -237,7 +237,7 @@ class CreateResultsTableTests(unittest.TestCase):
         """
         Setup up method for test
         """
-        self.best, self.results, self.options = generate_mock_results()
+        self.best_results, self.results, self.options = generate_mock_results()
         root = os.path.dirname(getfile(fitbenchmarking))
 
         self.group_dir = os.path.join(root, 'results_processing',
@@ -266,7 +266,7 @@ class CreateResultsTableTests(unittest.TestCase):
         """
         create_results_tables(options=self.options,
                               results=self.results,
-                              best=self.best,
+                              best_results=self.best_results,
                               group_name=self.group_name,
                               group_dir=self.group_dir,
                               fig_dir=self.fig_dir,
@@ -276,10 +276,7 @@ class CreateResultsTableTests(unittest.TestCase):
         for suffix in SORTED_TABLE_NAMES:
 
             for table_type in ['html', 'txt']:
-                table_name = \
-                    '{}_{}_table.{}'.format(self.group_name,
-                                            suffix,
-                                            table_type)
+                table_name = f'{self.group_name}_{suffix}_table.{table_type}'
                 file_name = os.path.join(self.group_dir, table_name)
                 self.assertTrue(os.path.isfile(file_name),
                                 f"Could not find {file_name}")

@@ -110,10 +110,6 @@ class PerformanceProfillerTests(unittest.TestCase):
         for j in range(self.num_minimizers):
             acc_dict['min_{}'.format(j)] = acc_expected[j]
             runtime_dict['min_{}'.format(j)] = runtime_expected[j]
-        print(f'{self.results=}')
-        print(f'{acc=}')
-        print(f'{acc_dict=}')
-        print(f'{acc_expected=}')
         for k, v in acc_dict.items():
             assert np.allclose(v, acc[k])
         for k, v in runtime_dict.items():

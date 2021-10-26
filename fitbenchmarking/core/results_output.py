@@ -64,7 +64,7 @@ def save_results(options, results, group_name, failed_problems,
                         support_pages_dir=supp_dir)
     problem_summary_page.create(options=options,
                                 results=results_dict,
-                                best=best_results,
+                                best_results=best_results,
                                 group_name=group_name,
                                 support_pages_dir=supp_dir,
                                 figures_dir=fig_dir)
@@ -135,7 +135,7 @@ def preprocess_data(results: "list[FittingResult]"):
     # Additional separation for categories within columns
     col_sections = ['costfun']
 
-    # Generate the columns and row tags and sort
+    # Generate the columns, category, and row tags and sort
     rows: Union[List[str], Set[str]] = set()
     columns = {}
     for r in results:
@@ -143,17 +143,10 @@ def preprocess_data(results: "list[FittingResult]"):
         # jacobian names from this.
         if r.error_flag == 4:
             continue
-        result_tags = {
-            'row': '',
-            'col': '',
-            'cat': ''
-        }
-        for tag, order in [('row', sort_order[0]),
-                           ('col', sort_order[1]),
-                           ('cat', col_sections)]:
-            for sort_pos in order:
-                result_tags[tag] += f':{getattr(r, sort_pos + "_tag")}'
-            result_tags[tag] = result_tags[tag].strip(':')
+        result_tags = _extract_tags(r,
+                                    row_sorting=sort_order[0],
+                                    col_sorting=sort_order[1],
+                                    cat_sorting=col_sections)
 
         rows.add(result_tags['row'])
         cat = result_tags['cat']
@@ -174,20 +167,10 @@ def preprocess_data(results: "list[FittingResult]"):
          for r in rows}
 
     for r in results:
-        result_tags = {
-            'row': '',
-            'col': '',
-            'cat': ''
-        }
-        for tag, order in [('row', sort_order[0]),
-                           ('col', sort_order[1]),
-                           ('cat', col_sections)]:
-            for sort_pos in order:
-                if sort_pos in ['jacobian', 'hessian'] and r.error_flag == 4:
-                    result_tags[tag] += ':.+'
-                else:
-                    result_tags[tag] += f':{getattr(r, sort_pos + "_tag")}'
-            result_tags[tag] = result_tags[tag].strip(':')
+        result_tags = _extract_tags(r,
+                                    row_sorting=sort_order[0],
+                                    col_sorting=sort_order[1],
+                                    cat_sorting=col_sections)
 
         # Fix up cells where error flag = 4
         if r.error_flag == 4:
@@ -213,23 +196,80 @@ def preprocess_data(results: "list[FittingResult]"):
     for r, row in sorted_results.items():
         best_results[r] = {}
         for c, cat in row.items():
-            best = cat[0]
-            fastest = cat[0]
-            for result in cat[1:]:
-                if best.chi_sq > result.chi_sq:
-                    best = result
-                if fastest.runtime > result.runtime:
-                    fastest = result
-
-            best.is_best_fit = True
-            best_results[r][c] = best
-
-            for result in cat:
-                result.min_chi_sq = best.chi_sq
-                result.min_runtime = fastest.runtime
+            best_results[r][c] = _process_best_results(cat)
 
     return best_results, sorted_results
 
+
+def _extract_tags(result: 'FittingResult', row_sorting: 'List[str]',
+                  col_sorting: 'List[str]', cat_sorting: 'List[str]')\
+        -> 'Dict[str, str]':
+    """
+    Extract the row, column, and category tags from a result based on a given
+    sorting order.
+
+    :param result: The result to find the tags for
+    :type result: FittingResult
+    :param row_sorting: The components in order of importance that will be
+                        used to generate the row tag.
+    :type row_sorting: list[str]
+    :param col_sorting: The components in order of importance that will be
+                        used to generate the col tag.
+    :type col_sorting: list[str]
+    :param cat_sorting: The components in order of importance that will be
+                        used to generate the cat tag.
+    :type cat_sorting: list[str]
+
+    :return: A set of tags that can be used to sort this result amongst a list
+             of results
+    :rtype: dict[str, str]
+    """
+    result_tags = {
+        'row': '',
+        'col': '',
+        'cat': ''
+    }
+    for tag, order in [('row', row_sorting),
+                       ('col', col_sorting),
+                       ('cat', cat_sorting)]:
+        for sort_pos in order:
+            if sort_pos in ['jacobian', 'hessian'] and result.error_flag == 4:
+                result_tags[tag] += ':.+'
+            else:
+                result_tags[tag] += f':{getattr(result, sort_pos + "_tag")}'
+        result_tags[tag] = result_tags[tag].strip(':')
+
+    return result_tags
+
+
+def _process_best_results(results: 'List[FittingResult]') -> 'FittingResult':
+    """
+    Process the best result from a list of FittingResults.
+    This includes:
+     - Setting the `is_best_fit` flag,
+     - Setting the `min_chi_sq` value, and
+     - Setting the `min_runtime` value.
+
+    :param results: The results to compare and update
+    :type results: List[FittingResult]
+    :return: The result with the lowest chi_sq
+    :rtype: FittingResult
+    """
+    best = results[0]
+    fastest = results[0]
+    for result in results[1:]:
+        if best.chi_sq > result.chi_sq:
+            best = result
+        if fastest.runtime > result.runtime:
+            fastest = result
+
+    best.is_best_fit = True
+
+    for result in results:
+        result.min_chi_sq = best.chi_sq
+        result.min_runtime = fastest.runtime
+    
+    return best
 
 def create_plots(options, results, best_results, figures_dir):
     """

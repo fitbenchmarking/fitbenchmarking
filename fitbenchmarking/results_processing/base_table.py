@@ -33,7 +33,7 @@ class Table:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, results, best, options, group_dir,
+    def __init__(self, results, best_results, options, group_dir,
                  pp_locations, table_name):
         """
         Initialise the class.
@@ -41,8 +41,8 @@ class Table:
         :param results: Results grouped by row and category (for colouring)
         :type results:
             dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
-        :param best: The best results from each row/category
-        :type best: dict[str, dict[str, utils.fitbm_result.FittingResult]]
+        :param best_results: The best results from each row/category
+        :type best_results: dict[str, dict[str, utils.fitbm_result.FittingResult]]
         :param options: Options used in fitting
         :type options: utils.options.Options
         :param group_dir: path to the directory where group results should be
@@ -56,7 +56,7 @@ class Table:
         """
         # Flatten to reduce the necessity on having problems as rows.
         self.results = results
-        self.best_results = best
+        self.best_results = best_results
         self.options = options
         self.group_dir = group_dir
         self.pp_locations = pp_locations

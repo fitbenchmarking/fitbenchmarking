@@ -17,9 +17,10 @@ from fitbenchmarking.core.results_output import (create_directories,
                                                  create_problem_level_index,
                                                  preprocess_data, save_results)
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.cost_func.weighted_nlls_cost_func import WeightedNLLSCostFunc
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
 from fitbenchmarking.jacobian.numdifftools_jacobian import Numdifftools
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -179,7 +180,7 @@ class SaveResultsTests(unittest.TestCase):
         group_name = "group_name"
         group_dir = save_results(self.options, self.results, group_name,
                                  failed_problems, unselected_minimizers)
-        assert group_dir == os.path.join(self.results_dir, group_name)
+        self.assertEqual(group_dir, os.path.join(self.results_dir, group_name))
 
 
 class CreateDirectoriesTests(unittest.TestCase):
@@ -217,15 +218,15 @@ class CreateDirectoriesTests(unittest.TestCase):
         group_dir, support_dir, figures_dir, css_dir = \
             create_directories(self.options, group_name)
 
-        assert group_dir == expected_group_dir
-        assert support_dir == expected_support_dir
-        assert figures_dir == expected_figures_dir
-        assert css_dir == expected_css_dir
+        self.assertEqual(group_dir, expected_group_dir)
+        self.assertEqual(support_dir, expected_support_dir)
+        self.assertEqual(figures_dir, expected_figures_dir)
+        self.assertEqual(css_dir, expected_css_dir)
 
-        assert os.path.isdir(group_dir)
-        assert os.path.isdir(support_dir)
-        assert os.path.isdir(figures_dir)
-        assert os.path.isdir(css_dir)
+        self.assertTrue(os.path.isdir(group_dir))
+        self.assertTrue(os.path.isdir(support_dir))
+        self.assertTrue(os.path.isdir(figures_dir))
+        self.assertTrue(os.path.isdir(css_dir))
 
 
 class PreprocessDataTests(unittest.TestCase):
@@ -252,15 +253,13 @@ class PreprocessDataTests(unittest.TestCase):
 
         for category in best_result.values():
             for result in category.values():
-                assert result.is_best_fit
+                self.assertTrue(result.is_best_fit)
 
         for problem in results.values():
             for category in problem.values():
                 for r in category:
-                    print(f"chi_sq  = {r.min_chi_sq} | {self.min_chi_sq}")
-                    print(f"runtime = {r.min_runtime} | {self.min_runtime}")
-                    assert r.min_chi_sq == self.min_chi_sq
-                    assert r.min_runtime == self.min_runtime
+                    self.assertEqual(r.min_chi_sq, self.min_chi_sq)
+                    self.assertEqual(r.min_runtime, self.min_runtime)
 
 
 class CreatePlotsTests(unittest.TestCase):
@@ -425,7 +424,7 @@ class CreateProblemLevelIndex(unittest.TestCase):
                                    self.table_descriptions)
         expected_file = os.path.join(self.group_dir,
                                      '{}_index.html'.format(self.group_name))
-        assert os.path.isfile(expected_file)
+        self.assertTrue(os.path.isfile(expected_file))
 
 
 if __name__ == "__main__":

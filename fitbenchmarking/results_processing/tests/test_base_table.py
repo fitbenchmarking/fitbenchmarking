@@ -130,10 +130,10 @@ def generate_results():
             runtime=np.inf, software='s0', minimizer='m00', error_flag=0),
     ]}
 
-    best = {'prob_0': {'cf1': results['prob_0']['cf1'][0]},
+    best_results = {'prob_0': {'cf1': results['prob_0']['cf1'][0]},
             'prob_1': {'cf1': results['prob_1']['cf1'][0]}}
 
-    return results, best
+    return results, best_results
 
 
 class DummyTable(Table):
@@ -162,9 +162,9 @@ class CreateResultsDictTests(TestCase):
         """
         Test that create_results_dict produces the correct format
         """
-        results_list, best = generate_results()
+        results_list, best_results = generate_results()
         table = DummyTable(results=results_list,
-                           best=best,
+                           best_results=best_results,
                            options=Options(),
                            group_dir='fake',
                            pp_locations=('no', 'pp'),
@@ -196,9 +196,9 @@ class DisplayStrTests(TestCase):
     """
 
     def setUp(self):
-        results, best = generate_results()
+        results, best_results = generate_results()
         self.table = DummyTable(results=results,
-                                best=best,
+                                best_results=best_results,
                                 options=Options(),
                                 group_dir='fake',
                                 pp_locations=('no', 'pp'),
@@ -235,11 +235,11 @@ class SaveColourbarTests(TestCase):
     """
 
     def setUp(self):
-        results, best = generate_results()
+        results, best_results = generate_results()
         self.root_directory = os.path.join(os.path.dirname(__file__),
                                            os.pardir, os.pardir, os.pardir)
         self.table = DummyTable(results=results,
-                                best=best,
+                                best_results=best_results,
                                 options=Options(),
                                 group_dir=self.root_directory,
                                 pp_locations=('no', 'pp'),

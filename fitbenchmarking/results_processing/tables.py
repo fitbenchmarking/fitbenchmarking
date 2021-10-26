@@ -27,7 +27,7 @@ ERROR_OPTIONS = {0: "Successfully converged",
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
-def create_results_tables(options, results, best, group_name, group_dir,
+def create_results_tables(options, results, best_results, group_name, group_dir,
                           fig_dir, pp_locations, failed_problems,
                           unselected_minimzers):
     """
@@ -37,8 +37,8 @@ def create_results_tables(options, results, best, group_name, group_dir,
     :type options: fitbenchmarking.utils.options.Options
     :param results: Results grouped by row and category (for colouring)
     :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
-    :param best: The best results from each row/category
-    :type best: dict[str, dict[str, utils.fitbm_result.FittingResult]]
+    :param best_results: The best results from each row/category
+    :type best_results: dict[str, dict[str, utils.fitbm_result.FittingResult]]
     :param group_name: name of the problem group
     :type group_name: str
     :param group_dir: path to the directory where group results should be
@@ -71,14 +71,14 @@ def create_results_tables(options, results, best, group_name, group_dir,
 
             try:
                 table, html_table, txt_table, cbar = \
-                    generate_table(results,
-                                   best,
-                                   options,
-                                   group_dir,
-                                   fig_dir,
-                                   pp_locations,
-                                   table_names[suffix],
-                                   suffix)
+                    generate_table(results=results,
+                                   best_results=best_results,
+                                   options=options,
+                                   group_dir=group_dir,
+                                   fig_dir=fig_dir,
+                                   pp_locations=pp_locations,
+                                   table_name=table_names[suffix],
+                                   suffix=suffix)
             except IncompatibleTableError as excp:
                 LOGGER.warning(str(excp))
                 del table_names[suffix]
@@ -158,15 +158,15 @@ def load_table(table):
     return classes[0][1]
 
 
-def generate_table(results, best, options, group_dir, fig_dir, pp_locations,
+def generate_table(results, best_results, options, group_dir, fig_dir, pp_locations,
                    table_name, suffix):
     """
     Generate html/txt tables.
 
     :param results: Results grouped by row and category (for colouring)
     :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
-    :param best: The best results from each row/category
-    :type best: dict[str, dict[str, utils.fitbm_result.FittingResult]]
+    :param best_results: The best results from each row/category
+    :type best_results: dict[str, dict[str, utils.fitbm_result.FittingResult]]
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
     :param group_dir: path to the directory where group results should be
@@ -186,7 +186,7 @@ def generate_table(results, best, options, group_dir, fig_dir, pp_locations,
     :rtype: tuple(Table object, str, str)
     """
     table_module = load_table(suffix)
-    table = table_module(results, best, options, group_dir, pp_locations,
+    table = table_module(results, best_results, options, group_dir, pp_locations,
                          table_name)
 
     html_table = table.to_html()
