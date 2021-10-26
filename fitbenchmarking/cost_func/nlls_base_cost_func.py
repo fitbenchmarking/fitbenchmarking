@@ -78,9 +78,26 @@ class BaseNLLSCostFunc(CostFunc):
         :param params: The parameters at which to calculate Jacobians
         :type params: list
         :return: evaluated Jacobian of the cost function
-        :rtype: float
+        :rtype: 1D numpy array
         """
-        jac_res = self.jac_res(params, **kwargs)
-        rx = self.eval_r(params, **kwargs)
+        r = self.eval_r(params, **kwargs)
+        J = self.jac_res(params, **kwargs)
 
-        return 2.0 * matmul(jac_res.T, rx)
+        return 2.0 * matmul(J.T, r)
+
+    def hes_cost(self, params, **kwargs):
+        """
+        Uses the Hessian of the model to evaluate the Hessian of the
+        cost function, :math:`\\nabla_p F(r(x,y,p))`, at the given
+        parameters.
+
+        :param params: The parameters at which to calculate Hessians
+        :type params: list
+
+        :return: evaluated Hessian of the cost function
+        :rtype: 2D numpy array
+        """
+        r = self.eval_r(params, **kwargs)
+        H, J = self.hes_res(params, **kwargs)
+
+        return 2.0 * (matmul(J.T, J) + matmul(H.T, r))

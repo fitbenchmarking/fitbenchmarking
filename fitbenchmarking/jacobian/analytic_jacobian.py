@@ -1,8 +1,6 @@
 """
 Module which acts as a analytic Jacobian calculator
 """
-import numpy as np
-
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.utils.exceptions import NoJacobianError
 

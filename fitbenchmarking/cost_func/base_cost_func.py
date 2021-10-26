@@ -56,7 +56,7 @@ class CostFunc:
         :type params: list
 
         :return: evaluated Jacobian of the residual
-        :rtype: float
+        :rtype: a list of 1D numpy arrays
         """
         raise NotImplementedError
 
@@ -71,7 +71,7 @@ class CostFunc:
         :type params: list
 
         :return: evaluated Jacobian of the cost function
-        :rtype: float
+        :rtype: 1D numpy array
         """
         raise NotImplementedError
 
@@ -86,7 +86,7 @@ class CostFunc:
         :type params: list
 
         :return: evaluated Hessian of the residual
-        :rtype: float
+        :rtype: a list of 2D numpy arrays
         """
         raise NotImplementedError
 
@@ -101,7 +101,7 @@ class CostFunc:
         :type params: list
 
         :return: evaluated Hessian of the cost function
-        :rtype: float
+        :rtype: 2D numpy array
         """
         raise NotImplementedError
 

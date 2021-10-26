@@ -54,7 +54,7 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         :type params: list
 
         :return: evaluated Jacobian of the residual
-        :rtype: float
+        :rtype: a list of 1D numpy arrays
         """
         return - self.jacobian.eval(params, **kwargs)
 
@@ -68,6 +68,6 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         :type params: list
 
         :return: evaluated Hessian of the residual
-        :rtype: float
+        :rtype: a list of 2D numpy arrays
         """
         return - self.hessian.eval(params, **kwargs)

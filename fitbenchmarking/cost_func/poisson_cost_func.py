@@ -74,7 +74,7 @@ class PoissonCostFunc(CostFunc):
         :type params: list
 
         :return: evaluated Jacobian of the residual
-        :rtype: float
+        :rtype: a list of 1D numpy arrays
         """
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)
@@ -90,10 +90,10 @@ class PoissonCostFunc(CostFunc):
         :param params: The parameters at which to calculate Jacobians
         :type params: list
         :return: evaluated Jacobian of the cost function
-        :rtype: float
+        :rtype: 1D numpy array
         """
-        jac_res = self.jac_res(params, **kwargs)
-        return np.sum(jac_res, 0)
+        J = self.jac_res(params, **kwargs)
+        return np.sum(J, 0)
 
     def hes_res(self, params, **kwargs):
         """
@@ -105,7 +105,7 @@ class PoissonCostFunc(CostFunc):
         :type params: list
 
         :return: evaluated Hessian of the residual
-        :rtype: float
+        :rtype: a list of 2D numpy arrays
         """
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)
@@ -119,6 +119,21 @@ class PoissonCostFunc(CostFunc):
             hes[:, :, i] = hes[:, :, i] - y[i] / f[i] * \
                            (hes[:, :, i] - np.matmul(jac_i.T, jac_i) / f[i])
         return hes, self.jac_res(params, **kwargs)
+
+    def hes_cost(self, params, **kwargs):
+        """
+        Uses the Hessian of the model to evaluate the Hessian of the
+        cost function, :math:`\\nabla_p F(r(x,y,p))`, at the given
+        parameters.
+
+        :param params: The parameters at which to calculate Hessians
+        :type params: list
+
+        :return: evaluated Hessian of the cost function
+        :rtype: 2D numpy array
+        """
+        H, _ = self.hes_res(params, **kwargs)
+        return np.sum(H, 2)
 
 
 def _safe_a_log_b(a, b):
