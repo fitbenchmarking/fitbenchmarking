@@ -1,12 +1,9 @@
 #!/bin/bash
 # Test default installation
-pytest fitbenchmarking/cli --cov=fitbenchmarking/cli --cov-report term-missing
+cd fitbenchmarking
+pytest controllers core cost_func hessian jacobian parsing results_processing utils --cov=./ --cov-report term-missing --test-type default
 status=$?
-for dir in controllers core cost_func hessian jacobian parsing results_processing utils
-do
-    pytest fitbenchmarking/$dir --test-type default
-    status=$(($status + $?))
-done
+
 if [[ $status != 0 ]]
 then
    exit 1
