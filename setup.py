@@ -18,7 +18,7 @@ setup(name='FitBenchmarking',
           ]
       },
       packages=find_packages(exclude=('*mock*', '*test*')),
-      install_requires=['docutils',
+      install_requires=['docutils<0.18',
                         'numpy',
                         'matplotlib>=2.0',
                         'scipy>=0.18',
