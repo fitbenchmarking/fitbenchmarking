@@ -21,6 +21,7 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               ControllerAttributeError,
+                                              IncompatibleJacobianError,
                                               IncompatibleMinimizerError,
                                               MaxRuntimeError,
                                               NoJacobianError,
@@ -534,15 +535,19 @@ def loop_over_hessians(controller, options, minimizer_name,
                     "was a NaN.")
         except Exception as ex:  # pylint: disable=broad-except
             LOGGER.warning(str(ex))
-            # The MaxRuntimeError can sometimes be caught by the fitting
-            # software and re-raised as an ordinary Exception. So a separate
-            # except clause to set the flag will not work.
-            controller.flag = 6 if MaxRuntimeError.class_message in str(ex) \
-                else 3
+
+            error_flags = {MaxRuntimeError: 6,
+                           IncompatibleJacobianError: 7}
+
+            controller.flag = 3
+            for error, flag in error_flags.items():
+                if error.class_message in str(ex):
+                    controller.flag = flag
+                    break
 
         controller.timer.reset()
 
-        if controller.flag in [3, 6]:
+        if controller.flag in [3, 6, 7]:
             # If there was an exception, set the runtime and
             # cost function value to be infinite
             runtime = np.inf
