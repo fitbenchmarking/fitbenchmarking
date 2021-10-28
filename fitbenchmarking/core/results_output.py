@@ -174,16 +174,13 @@ def preprocess_data(results: "list[FittingResult]"):
 
         # Fix up cells where error flag = 4
         if r.error_flag == 4:
-            match_rows = [match
-                          for match in rows
-                          if re.fullmatch(result_tags['row'], match)]
-            match_cats = [match
-                          for match in columns.keys()
-                          if re.fullmatch(result_tags['cat'], match)]
+            match_rows = _find_matching_tags(result_tags['row'], rows)
+            match_cats = _find_matching_tags(result_tags['cat'],
+                                             columns.keys())
             for row in match_rows:
                 for cat in match_cats:
-                    match_cols = [match for match in columns[cat]
-                                  if re.fullmatch(result_tags['col'], match)]
+                    match_cols = _find_matching_tags(result_tags['col'],
+                                                     columns[cat])
                     for col in match_cols:
                         col = columns[cat][col]
                         sorted_results[row][cat][col] = r
@@ -252,6 +249,7 @@ def _process_best_results(results: 'List[FittingResult]') -> 'FittingResult':
 
     :param results: The results to compare and update
     :type results: List[FittingResult]
+
     :return: The result with the lowest chi_sq
     :rtype: FittingResult
     """
@@ -268,8 +266,26 @@ def _process_best_results(results: 'List[FittingResult]') -> 'FittingResult':
     for result in results:
         result.min_chi_sq = best.chi_sq
         result.min_runtime = fastest.runtime
-    
+
     return best
+
+
+def _find_matching_tags(tag: 'str', lst: 'List[str]'):
+    """
+    Extract the full list of matches to the regex stored in tag.
+
+    :param tag: A regex to search for
+    :type tag: str
+    :param lst: A set of tags to search
+    :type lst: List[str]
+
+    :return: The matching tags from lst
+    :rtype: list[str]
+    """
+    return [match
+            for match in lst
+            if re.fullmatch(tag, match)]
+
 
 def create_plots(options, results, best_results, figures_dir):
     """
