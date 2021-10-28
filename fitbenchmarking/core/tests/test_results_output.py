@@ -12,7 +12,10 @@ from unittest import mock
 
 import numpy as np
 
-from fitbenchmarking.core.results_output import (create_directories,
+from fitbenchmarking.core.results_output import (_extract_tags,
+                                                 _find_matching_tags,
+                                                 _process_best_results,
+                                                 create_directories,
                                                  create_plots,
                                                  create_problem_level_index,
                                                  preprocess_data, save_results)
@@ -426,6 +429,151 @@ class CreateProblemLevelIndex(unittest.TestCase):
                                      '{}_index.html'.format(self.group_name))
         self.assertTrue(os.path.isfile(expected_file))
 
+
+class ExtractTagsTests(unittest.TestCase):
+    """
+    Tests for the _extract_tags function
+    """
+
+    def setUp(self):
+        """
+        Setup function for extract tags tests.
+        """
+        self.tempdir = TemporaryDirectory()
+        self.results_dir = os.path.join(self.tempdir.name, 'figures_dir')
+        results, self.options = generate_mock_results(self.results_dir)
+        self.result = results[0]
+        self.result.costfun_tag = 'cf0'
+        self.result.problem_tag = 'p0'
+        self.result.software_tag = 's0'
+        self.result.minimizer_tag = 'm0'
+        self.result.jacobian_tag = 'j0'
+        self.result.hessian_tag = 'h0'
+        self.result.error_flag = 0
+
+    def test_correct_tags(self):
+        """
+        Test that for a general result, the tags are correctly populated.
+        """
+        tags = _extract_tags(self.result,
+                             row_sorting=['costfun', 'problem'],
+                             col_sorting=['jacobian', 'hessian'],
+                             cat_sorting=['software', 'minimizer'])
+
+        self.assertDictEqual(tags, {'row': 'cf0:p0',
+                                    'col': 'j0:h0',
+                                    'cat': 's0:m0'})
+
+    def test_correct_tags_error_flag_4(self):
+        """
+        Test that the tags are correct for a fitting function which
+        is missing jacobian and hessian information.
+        """
+        self.result.error_flag = 4
+        tags = _extract_tags(self.result,
+                             row_sorting=['jacobian', 'problem'],
+                             col_sorting=['hessian'],
+                             cat_sorting=['costfun', 'software', 'minimizer'])
+
+        self.assertDictEqual(tags, {'row': '.+:p0',
+                                    'col': '.+',
+                                    'cat': 'cf0:s0:m0'})
+
+
+class FindMatchingTagsTests(unittest.TestCase):
+    """
+    Tests for the _find_matching_tags function.
+    """
+
+    def test_matching_tags_included(self):
+        """
+        Test that the matching tags include all correct tags.
+        """
+        matching = _find_matching_tags('cf0:.+:p0', ['cf0:j0:p0',
+                                                     'cf0:j0:p1',
+                                                     'cf0:j1:p0',
+                                                     'cf0:j1:p1',
+                                                     'cf1:j0:p0',
+                                                     'cf1:j0:p1',
+                                                     'cf1:j1:p0',
+                                                     'cf1:j1:p1'])
+        self.assertIn('cf0:j0:p0', matching)
+        self.assertIn('cf0:j1:p0', matching)
+
+    def test_non_matching_tags_excluded(self):
+        """
+        Test that all tags that don't match are excluded.
+        """
+        matching = _find_matching_tags('cf0:.+:p0', ['cf0:j0:p0',
+                                                     'cf0:j1:p0',
+                                                     'cf1:j0:p0',
+                                                     'cf1:j1:p0'])
+        self.assertNotIn('cf1:j0:p0', matching)
+        self.assertNotIn('cf1:j1:p0', matching)
+
+
+class ProcessBestResultsTests(unittest.TestCase):
+    """
+    Tests for the _process_best_results function.
+    """
+
+    def setUp(self):
+        """
+        Setup function for _process_best_results tests.
+        """
+        self.tempdir = TemporaryDirectory()
+        self.results_dir = os.path.join(self.tempdir.name, 'figures_dir')
+        results, self.options = generate_mock_results(self.results_dir)
+        self.results = results[:5]
+        for r, chisq, runtime in zip(self.results,
+                                     [2, 1, 5, 3, 4],
+                                     [5, 4, 1, 2, 3]):
+            r.chi_sq = chisq
+            r.runtime = runtime
+        self.best = _process_best_results(self.results)
+
+    def test_returns_best_result(self):
+        """
+        Test that the best result is returned.
+        """
+        self.assetIs(self.best, self.results[1])
+    
+    def test_is_best_fit_True(self):
+        """
+        Test that the is_best_fit flag is set on the correct result.
+        """
+        self.assertTrue(self.best.is_best_fit)
+    
+    def test_is_best_fit_False(self):
+        """
+        Test that is_best_fit is not set on other results.
+        """
+        self.assertFalse(self.results[0].is_best_fit)
+        self.assertFalse(self.results[2].is_best_fit)
+        self.assertFalse(self.results[3].is_best_fit)
+        self.assertFalse(self.results[4].is_best_fit)
+
+    def test_minimum_chi_sq_set(self):
+        """
+        Test that min_chi_sq is set correctly.
+        """
+        self.assertEqual(self.results[0].min_chi_sq, self.best.chi_sq)
+        self.assertEqual(self.results[1].min_chi_sq, self.best.chi_sq)
+        self.assertEqual(self.results[2].min_chi_sq, self.best.chi_sq)
+        self.assertEqual(self.results[3].min_chi_sq, self.best.chi_sq)
+        self.assertEqual(self.results[4].min_chi_sq, self.best.chi_sq)
+    
+    def test_minimum_runtime_set(self):
+        """
+        Test that min_runtime is set correctly.
+        """
+        fastest = self.results[2]
+        self.assertEqual(self.results[0].min_runtime, fastest.runtime)
+        self.assertEqual(self.results[1].min_runtime, fastest.runtime)
+        self.assertEqual(self.results[2].min_runtime, fastest.runtime)
+        self.assertEqual(self.results[3].min_runtime, fastest.runtime)
+        self.assertEqual(self.results[4].min_runtime, fastest.runtime)
+        
 
 if __name__ == "__main__":
     unittest.main()
