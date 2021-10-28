@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test default installation
 cd fitbenchmarking
-pytest controllers core cost_func hessian jacobian parsing results_processing utils --cov=./ --cov-report term-missing --test-type default
+pytest cli controllers core cost_func hessian jacobian parsing results_processing utils --cov=./ --cov-report term-missing --test-type default
 status=$?
 
 if [[ $status != 0 ]]
