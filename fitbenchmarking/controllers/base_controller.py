@@ -6,7 +6,8 @@ from abc import ABCMeta, abstractmethod
 import numpy
 
 from fitbenchmarking.utils.exceptions import ControllerAttributeError, \
-    UnknownMinimizerError, IncompatibleMinimizerError
+    UnknownMinimizerError, IncompatibleMinimizerError, \
+    IncompatibleJacobianError
 
 
 class Controller:
@@ -180,6 +181,13 @@ class Controller:
                 self._software = self.__class__.__name__[:-10].lower()
         return self._software
 
+    def validate(self) -> None:
+        """
+        Validates that the provided options are compatible with each other.
+        If there are some invalid options, the relevant exception is raised.
+        """
+        self._validate_jacobian()
+
     def prepare(self):
         """
         Check that function and minimizer have been set.
@@ -222,6 +230,21 @@ class Controller:
         """
         out = self.cost_func.eval_cost(params=params, x=x, y=y, e=e)
         return out
+
+    def _validate_jacobian(self) -> None:
+        """
+        Validates that the provided Jacobian method is compatible with the
+        other options and problem definition. An exception is raised if this
+        is not true.
+        """
+        incompatible_problems = self.jacobian.INCOMPATIBLE_PROBLEMS.get(
+            self.jacobian.method, [])
+
+        if self.problem.format in incompatible_problems:
+            message = f"The {self.jacobian.__class__.__name__} Jacobian " \
+                      f"'{self.jacobian.method}' method is incompatible " \
+                      f"with the problem format '{self.problem.format}'."
+            raise IncompatibleJacobianError(message)
 
     def validate_minimizer(self, minimizer, algorithm_type):
         """

@@ -13,6 +13,7 @@ from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
+from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
@@ -565,6 +566,74 @@ class ControllerBoundsTests(TestCase):
         controller.jacobian = self.jac
 
         self.check_bounds(controller)
+
+
+@run_for_test_types(TEST_TYPE, 'all')
+class ControllerValidateTests(TestCase):
+
+    def setUp(self):
+        """
+        Setup for bounded problem
+        """
+        self.cost_func = make_cost_func("cubic-fba-test-go.txt")
+
+    def test_mantid_controller_does_not_raise(self):
+        """
+        MantidController: Test that the Mantid controller validation
+        does not raise for a valid Jacobian
+        """
+        self.jac = Scipy(self.cost_func)
+        self.jac.method = "2-point"
+
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'Levenberg-Marquardt'
+        controller.jacobian = self.jac
+
+        controller.validate()
+
+    def test_mantid_controller_will_raise(self):
+        """
+        MantidController: Test that the Mantid controller validation
+        will raise for an incompatible Jacobian
+        """
+        self.jac = Scipy(self.cost_func)
+        self.jac.method = "cs"
+
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'Levenberg-Marquardt'
+        controller.jacobian = self.jac
+
+        with self.assertRaises(exceptions.IncompatibleJacobianError):
+            controller.validate()
+
+    def test_scipy_controller_will_raise(self):
+        """
+        ScipyController: Test that the Scipy controller validation
+        will raise for an incompatible Jacobians
+        """
+        self.jac = Scipy(self.cost_func)
+        self.jac.method = "cs"
+
+        controller = ScipyController(self.cost_func)
+        controller.minimizer = "L-BFGS-B"
+        controller.jacobian = self.jac
+
+        with self.assertRaises(exceptions.IncompatibleJacobianError):
+            controller.validate()
+
+    def test_controller_will_not_raise_for_compatible_jacobian(self):
+        """
+        ScipyController: Test that the Scipy controller validation
+        will not raise for a compatible Jacobians
+        """
+        self.jac = Default(self.cost_func)
+        self.jac.method = "default"
+
+        controller = ScipyController(self.cost_func)
+        controller.minimizer = "L-BFGS-B"
+        controller.jacobian = self.jac
+
+        controller.validate()
 
 
 @run_for_test_types(TEST_TYPE, 'all')

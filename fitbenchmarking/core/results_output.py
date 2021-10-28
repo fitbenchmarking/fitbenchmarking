@@ -17,8 +17,10 @@ from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.misc import get_css, get_js
+from fitbenchmarking.utils.write_files import write_file
 
 
+@write_file
 def save_results(options, results, group_name, failed_problems,
                  unselected_minimzers):
     """
@@ -60,7 +62,6 @@ def save_results(options, results, group_name, failed_problems,
 
     support_page.create(options=options,
                         results=results,
-                        group_name=group_name,
                         support_pages_dir=supp_dir)
     problem_summary_page.create(options=options,
                                 results=results_dict,
@@ -73,7 +74,6 @@ def save_results(options, results, group_name, failed_problems,
         tables.create_results_tables(options,
                                      results_dict,
                                      best_results,
-                                     group_name,
                                      group_dir,
                                      fig_dir,
                                      pp_locations,

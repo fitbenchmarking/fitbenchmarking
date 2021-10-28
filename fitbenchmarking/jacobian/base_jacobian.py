@@ -11,6 +11,9 @@ class Jacobian:
     """
     __metaclass__ = ABCMeta
 
+    # Problem formats that are incompatible with certain Jacobians
+    INCOMPATIBLE_PROBLEMS = {}
+
     def __init__(self, cost_func):
         """
         Base class for the Jacobians

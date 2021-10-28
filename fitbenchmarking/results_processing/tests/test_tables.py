@@ -267,7 +267,6 @@ class CreateResultsTableTests(unittest.TestCase):
         create_results_tables(options=self.options,
                               results=self.results,
                               best_results=self.best_results,
-                              group_name=self.group_name,
                               group_dir=self.group_dir,
                               fig_dir=self.fig_dir,
                               pp_locations=["pp_1", "pp_2"],
@@ -276,7 +275,7 @@ class CreateResultsTableTests(unittest.TestCase):
         for suffix in SORTED_TABLE_NAMES:
 
             for table_type in ['html', 'txt']:
-                table_name = f'{self.group_name}_{suffix}_table.{table_type}'
+                table_name = f'{suffix}_table.{table_type}'
                 file_name = os.path.join(self.group_dir, table_name)
                 self.assertTrue(os.path.isfile(file_name),
                                 f"Could not find {file_name}")

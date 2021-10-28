@@ -13,16 +13,13 @@ import fitbenchmarking
 from fitbenchmarking.utils.misc import get_css
 
 
-def create(results, group_name, support_pages_dir,
-           options):
+def create(results, support_pages_dir, options):
     """
     Iterate through problem results and create a support html page for
     each.
 
     :param results: results object
     :type results: list[FittingResult]
-    :param group_name: name of the problem group
-    :type group_name: str
     :param support_pages_dir: directory in which the results are saved
     :type support_pages_dir: str
     :param options: The options used in the fitting problem and plotting
@@ -31,13 +28,11 @@ def create(results, group_name, support_pages_dir,
 
     for prob_result in results:
         create_prob_group(prob_result,
-                          group_name,
                           support_pages_dir,
                           options)
 
 
-def create_prob_group(result, group_name, support_pages_dir,
-                      options):
+def create_prob_group(result, support_pages_dir, options):
     """
     Creates a support page containing figures and other
     details about the fit for a problem.
@@ -46,8 +41,6 @@ def create_prob_group(result, group_name, support_pages_dir,
     :param result: The result for a specific benchmark problem-minimizer-etc
                    combination
     :type result: fitbenchmarking.utils.fitbm_result.FittingResult
-    :param group_name: name of the problem group
-    :type group_name: str
     :param support_pages_dir: directory to store the support pages in
     :type support_pages_dir: str
     :param options: The options used in the fitting problem and plotting
@@ -55,7 +48,7 @@ def create_prob_group(result, group_name, support_pages_dir,
     """
     prob_name = result.sanitised_name
 
-    file_name = f'{group_name}_{prob_name}_{result.costfun_tag}_' \
+    file_name = f'{prob_name}_{result.costfun_tag}_' \
                 f'{result.sanitised_min_name}.html'
     file_name = file_name.lower()
     file_path = os.path.join(support_pages_dir, file_name)

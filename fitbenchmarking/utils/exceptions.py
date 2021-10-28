@@ -213,3 +213,21 @@ class MaxRuntimeError(FitBenchmarkException):
     """
     class_message = 'Minimizer runtime exceeded maximum runtime'
     error_code = 23
+
+
+class IncompatibleJacobianError(FitBenchmarkException):
+    """
+    Indicates that the selected jacobian method is not compatible
+    with selected options/problem set
+    """
+    class_message = 'The provided Jacobian method cannot be used with ' \
+                    'the selected options or problem set.'
+    error_code = 24
+
+
+class FilepathTooLongError(FitBenchmarkException):
+    """
+    Indicates the filepath to save a file to is too long.
+    """
+    class_message = 'The filepath for saving a file is too long.'
+    error_code = 25

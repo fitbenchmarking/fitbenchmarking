@@ -53,7 +53,6 @@ class CreateTests(unittest.TestCase):
         Tests that the create function creates a set of unique files.
         """
         support_page.create(results=self.results,
-                            group_name='test_group',
                             support_pages_dir=self.dir.name,
                             options=self.options)
 
@@ -98,7 +97,6 @@ class CreateProbGroupTests(unittest.TestCase):
         Tests that files are created for each result.
         """
         support_page.create_prob_group(result=self.result,
-                                       group_name='test_group',
                                        support_pages_dir=self.dir.name,
                                        options=self.options)
         self.assertTrue(os.path.exists(self.result.support_page_link))
@@ -108,12 +106,11 @@ class CreateProbGroupTests(unittest.TestCase):
         Tests that the filenames are in the expected form.
         """
         support_page.create_prob_group(result=self.result,
-                                       group_name='test_group',
                                        support_pages_dir=self.dir.name,
                                        options=self.options)
         file_name = self.result.support_page_link
         expected = os.path.join(os.path.relpath(self.dir.name),
-                                'test_group_prob_a_nllscostfunc_min_a.html')
+                                'prob_a_nllscostfunc_min_a.html')
 
         self.assertEqual(file_name, expected)
 

@@ -42,6 +42,12 @@ class DummyController(Controller):
         self.jacobian_enabled_solvers = ["general"]
         self.hessian_enabled_solvers = ["general"]
 
+    def validate(self):
+        """
+        Mock controller validate function.
+        """
+        pass
+
     def setup(self):
         """
         Mock controller setup function

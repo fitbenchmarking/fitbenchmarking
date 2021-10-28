@@ -13,6 +13,9 @@ class Scipy(Jacobian):
     Implements SciPy finite difference approximations to the derivative
     """
 
+    # Problem formats that are incompatible with certain Scipy Jacobians
+    INCOMPATIBLE_PROBLEMS = {"cs": ["mantid"]}
+
     def eval(self, params, **kwargs):
         """
         Evaluates Jacobian
