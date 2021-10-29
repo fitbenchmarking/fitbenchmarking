@@ -179,7 +179,7 @@ def run(problem_sets, results_directory, options_file='', debug=False):
 
         LOGGER.info('Running the benchmarking on the %s problem set',
                     label)
-        results, failed_problems, unselected_minimzers = \
+        results, failed_problems, unselected_minimizers = \
             benchmark(options=options,
                       data_dir=data_dir)
 
@@ -211,7 +211,7 @@ def run(problem_sets, results_directory, options_file='', debug=False):
                              results=results,
                              options=options,
                              failed_problems=failed_problems,
-                             unselected_minimzers=unselected_minimzers)
+                             unselected_minimizers=unselected_minimizers)
 
             LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
             group_results_dir = os.path.relpath(path=group_results_dir,
