@@ -170,7 +170,7 @@ class CreateTests(TestCase):
                                     support_pages_dir='support_pages',
                                     figures_dir='figures',
                                     options=self.options)
-        for k in self.results.keys():
+        for k in self.results:
             expected_path = os.path.join(self.results_dir.name,
                                          'support_pages',
                                          'figures',

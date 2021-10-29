@@ -537,13 +537,13 @@ class ProcessBestResultsTests(unittest.TestCase):
         Test that the best result is returned.
         """
         self.assertIs(self.best, self.results[1])
-    
+
     def test_is_best_fit_True(self):
         """
         Test that the is_best_fit flag is set on the correct result.
         """
         self.assertTrue(self.best.is_best_fit)
-    
+
     def test_is_best_fit_False(self):
         """
         Test that is_best_fit is not set on other results.
@@ -562,7 +562,7 @@ class ProcessBestResultsTests(unittest.TestCase):
         self.assertEqual(self.results[2].min_chi_sq, self.best.chi_sq)
         self.assertEqual(self.results[3].min_chi_sq, self.best.chi_sq)
         self.assertEqual(self.results[4].min_chi_sq, self.best.chi_sq)
-    
+
     def test_minimum_runtime_set(self):
         """
         Test that min_runtime is set correctly.
@@ -573,7 +573,7 @@ class ProcessBestResultsTests(unittest.TestCase):
         self.assertEqual(self.results[2].min_runtime, fastest.runtime)
         self.assertEqual(self.results[3].min_runtime, fastest.runtime)
         self.assertEqual(self.results[4].min_runtime, fastest.runtime)
-        
+
 
 if __name__ == "__main__":
     unittest.main()
