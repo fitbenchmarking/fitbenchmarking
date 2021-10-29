@@ -4,7 +4,7 @@
 echo "first run of mantid is expected to segfault"
 
 DIRS="fitbenchmarking/cli fitbenchmarking/controllers fitbenchmarking/core fitbenchmarking/cost_func fitbenchmarking/hessian fitbenchmarking/jacobian fitbenchmarking/parsing fitbenchmarking/results_processing fitbenchmarking/utils"
-pytest $DIRS --cov=$DIRS --cov-report term-missing
+pytest $DIRS --cov=$DIRS --cov-report term-missing --cov-append
 status=$?
 
 if [[ $status != 0 ]]
