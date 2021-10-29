@@ -1,6 +1,7 @@
 #!/bin/bash
 # Test default installation
-pytest cli controllers core cost_func hessian jacobian parsing results_processing utils --cov=./ --cov-report term-missing --test-type default
+DIRS="fitbenchmarking/cli fitbenchmarking/controllers fitbenchmarking/core fitbenchmarking/cost_func fitbenchmarking/hessian fitbenchmarking/jacobian fitbenchmarking/parsing fitbenchmarking/results_processing fitbenchmarking/utils"
+pytest $DIRS --cov=$DIRS --cov-report term-missing --test-type default
 status=$?
 
 if [[ $status != 0 ]]

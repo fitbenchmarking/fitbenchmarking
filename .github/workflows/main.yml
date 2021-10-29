@@ -64,8 +64,7 @@ jobs:
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
     - name: 'Running Tests'
       run: |
-        cd fitbenchmarking
-        ../ci/unit_tests_default.sh
+        ci/unit_tests_default.sh
         
   full_unit_linux:
     name: 'Full Unit Tests (Linux)'
@@ -83,8 +82,7 @@ jobs:
         mkdir -p $PYCUTEST_CACHE
     - name: 'Running Tests'
       run: |
-        cd fitbenchmarking
-        ../ci/unit_tests.sh
+        ci/unit_tests.sh
     - name: 'Submit Coverage'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -131,5 +129,4 @@ jobs:
         python -m pip install -r requirements.txt
     - name: 'Running Tests'
       run: |
-        cd fitbenchmarking
-        bash ../ci/unit_tests_default.sh
+        bash ci/unit_tests_default.sh

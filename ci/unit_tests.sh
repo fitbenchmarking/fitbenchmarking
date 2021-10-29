@@ -3,7 +3,8 @@
 /opt/Mantid/bin/mantidpython -m mantid.simpleapi >file 2>/dev/null | cat
 echo "first run of mantid is expected to segfault"
 
-pytest cli controllers core cost_func hessian jacobian parsing results_processing utils --cov=./ --cov-report term-missing
+DIRS="fitbenchmarking/cli fitbenchmarking/controllers fitbenchmarking/core fitbenchmarking/cost_func fitbenchmarking/hessian fitbenchmarking/jacobian fitbenchmarking/parsing fitbenchmarking/results_processing fitbenchmarking/utils"
+pytest $DIRS --cov=$DIRS --cov-report term-missing
 status=$?
 
 if [[ $status != 0 ]]
