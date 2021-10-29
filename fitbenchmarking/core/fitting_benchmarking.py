@@ -536,6 +536,8 @@ def loop_over_hessians(controller, options, minimizer_name,
         except Exception as ex:  # pylint: disable=broad-except
             LOGGER.warning(str(ex))
 
+            # Note: Handle all exceptions as general exception to cover case
+            #       where software re-raises our exception as a new type.
             error_flags = {MaxRuntimeError: 6,
                            IncompatibleJacobianError: 7}
 
