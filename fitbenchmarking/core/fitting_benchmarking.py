@@ -534,7 +534,6 @@ def loop_over_hessians(controller, options, minimizer_name,
 
         try:
             with grabbed_output:
-                controller.timer.reset()
                 controller.validate()
                 # Calls timeit repeat with repeat = num_runs and
                 # number = 1
@@ -578,6 +577,8 @@ def loop_over_hessians(controller, options, minimizer_name,
             # except clause to set the flag will not work.
             controller.flag = 6 if MaxRuntimeError.class_message in str(ex) \
                 else 3
+
+        controller.timer.reset()
 
         if controller.flag in [3, 6]:
             # If there was an exception, set the runtime and

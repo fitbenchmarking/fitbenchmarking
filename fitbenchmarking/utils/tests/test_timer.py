@@ -63,5 +63,21 @@ class TimerWithMaxTimeTests(TestCase):
         with self.assertRaises(MaxRuntimeError):
             self.timer.check_elapsed_time()
 
-        self.assertEqual(self.timer.total_elapsed_time, 0.0)
+    def test_check_elapsed_time_will_not_reset_the_timer(self):
+        """
+        Check the timer is not reset if the max runtime is exceeded. The
+        timer should be reset after the exception is caught to ensure
+        the MaxRuntime flag is shown for Bumps.
+        """
+        sleep_time = 2.0
+        self.max_runtime = 1.0
+        self.timer = TimerWithMaxTime(self.max_runtime)
+
+        self.timer.start()
+        sleep(sleep_time)
+
+        with self.assertRaises(MaxRuntimeError):
+            self.timer.check_elapsed_time()
+
+        self.assertGreater(self.timer.total_elapsed_time, 0.0)
         self.assertEqual(self.timer.start_time, None)
