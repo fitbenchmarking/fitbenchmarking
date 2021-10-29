@@ -307,7 +307,7 @@ class Plot:
                     plot_options = cls.summary_best_plot_options \
                         if result.is_best_fit else cls.summary_plot_options
                     plot_options['color'] = colour
-                    plot_options['key'] = key if result.is_best_fit else ''
+                    plot_options['label'] = key if result.is_best_fit else ''
 
                     ax.plot(x, y, **plot_options)
                     # log scale plot if problem is a SASView problem
