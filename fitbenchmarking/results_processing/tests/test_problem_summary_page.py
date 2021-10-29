@@ -158,7 +158,7 @@ class CreateTests(TestCase):
         results, self.options = generate_mock_results(
             self.results_dir.name
         )
-        self.results, self.best_results = preprocess_data(results)
+        self.best_results, self.results = preprocess_data(results)
 
     def test_create_all_plots(self):
         """
@@ -223,7 +223,7 @@ class CreateSummaryPageTests(TestCase):
         results, self.options = generate_mock_results(
             self.results_dir.name
         )
-        results, best_results = preprocess_data(results)
+        best_results, results = preprocess_data(results)
         self.prob_name = list(results.keys())[0]
         self.results = results[self.prob_name]
         self.best_results = best_results[self.prob_name]
