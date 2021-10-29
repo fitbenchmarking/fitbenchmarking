@@ -155,6 +155,8 @@ class CreateTests(TestCase):
         Setup for create function tests
         """
         self.results_dir = TemporaryDirectory()
+        os.makedirs(os.path.join(
+            self.results_dir.name, 'support_pages', 'figures'))
         results, self.options = generate_mock_results(
             self.results_dir.name
         )
@@ -164,14 +166,14 @@ class CreateTests(TestCase):
         """
         Check that a plot is created for each result set.
         """
-        self.options.make_plots = True
+        self.options.make_plots=True
         problem_summary_page.create(results=self.results,
                                     best_results=self.best_results,
                                     support_pages_dir='support_pages',
                                     figures_dir='figures',
                                     options=self.options)
         for k in self.results:
-            expected_path = os.path.join(self.results_dir.name,
+            expected_path=os.path.join(self.results_dir.name,
                                          'support_pages',
                                          'figures',
                                          f'summary_plot_for_{k}.png')
@@ -181,14 +183,14 @@ class CreateTests(TestCase):
         """
         Check that no plots are created if the option is off.
         """
-        self.options.make_plots = False
+        self.options.make_plots=False
         problem_summary_page.create(results=self.results,
                                     best_results=self.best_results,
                                     support_pages_dir='support_pages',
                                     figures_dir='figures',
                                     options=self.options)
         for k in self.results.keys():
-            expected_path = os.path.join(self.results_dir.name,
+            expected_path=os.path.join(self.results_dir.name,
                                          'support_pages',
                                          'figures',
                                          f'summary_plot_for_{k}.png')
@@ -198,14 +200,14 @@ class CreateTests(TestCase):
         """
         Check that a summary page is created for each result set.
         """
-        self.options.make_plots = False
+        self.options.make_plots=False
         problem_summary_page.create(results=self.results,
                                     best_results=self.best_results,
                                     support_pages_dir='support_pages',
                                     figures_dir='figures',
                                     options=self.options)
         for v in self.results.values():
-            example_result = list(v.values())[0][0]
+            example_result=list(v.values())[0][0]
             self.assertTrue(os.path.exists(
                 example_result.problem_summary_page_link))
 
@@ -219,15 +221,17 @@ class CreateSummaryPageTests(TestCase):
         """
         Setup tests for _create_summary_page
         """
-        self.results_dir = TemporaryDirectory()
-        results, self.options = generate_mock_results(
+        self.results_dir=TemporaryDirectory()
+        os.makedirs(os.path.join(
+            self.results_dir.name, 'support_pages', 'figures'))
+        results, self.options=generate_mock_results(
             self.results_dir.name
         )
-        best_results, results = preprocess_data(results)
-        self.prob_name = list(results.keys())[0]
-        self.results = results[self.prob_name]
-        self.best_results = best_results[self.prob_name]
-        cat_results = [(cf, r, 'Some text')
+        best_results, results=preprocess_data(results)
+        self.prob_name=list(results.keys())[0]
+        self.results=results[self.prob_name]
+        self.best_results=best_results[self.prob_name]
+        cat_results=[(cf, r, 'Some text')
                        for cf, r in self.best_results.items()]
         problem_summary_page._create_summary_page(
             categorised_best_results=cat_results,
@@ -239,7 +243,7 @@ class CreateSummaryPageTests(TestCase):
         """
         Check that a summary page is created for a problem set.
         """
-        expected_path = os.path.join(self.results_dir.name,
+        expected_path=os.path.join(self.results_dir.name,
                                      'support_pages',
                                      f'{self.prob_name}_summary.html')
         self.assertTrue(os.path.exists(expected_path))
@@ -260,15 +264,15 @@ class GetFigurePathsTests(TestCase):
     """
 
     def setUp(self):
-        self.options = Options()
-        problem = FittingProblem(self.options)
-        problem.name = 'prob a'
-        problem.equation = 'equation!'
-        problem.starting_values = [{'x': 1}]
-        cost_func = NLLSCostFunc(problem)
-        jac = Scipy(cost_func)
-        jac.method = "2-point"
-        self.result = FittingResult(options=self.options,
+        self.options=Options()
+        problem=FittingProblem(self.options)
+        problem.name='prob a'
+        problem.equation='equation!'
+        problem.starting_values=[{'x': 1}]
+        cost_func=NLLSCostFunc(problem)
+        jac=Scipy(cost_func)
+        jac.method="2-point"
+        self.result=FittingResult(options=self.options,
                                     cost_func=cost_func,
                                     jac=jac,
                                     hess=None,
@@ -280,10 +284,10 @@ class GetFigurePathsTests(TestCase):
         """
         Tests that the returned links are correct when links are passed in.
         """
-        self.result.figure_link = 'some_link'
-        self.result.start_figure_link = 'other_link'
+        self.result.figure_link='some_link'
+        self.result.start_figure_link='other_link'
         # pylint: disable=protected-access
-        figure_link, start_link = problem_summary_page._get_figure_paths(
+        figure_link, start_link=problem_summary_page._get_figure_paths(
             self.result)
         self.assertEqual(figure_link, os.path.join('figures', 'some_link'))
         self.assertEqual(start_link, os.path.join('figures', 'other_link'))
@@ -292,10 +296,10 @@ class GetFigurePathsTests(TestCase):
         """
         Tests that links are not changed if an empty string is given.
         """
-        self.result.figure_link = ''
-        self.result.start_figure_link = ''
+        self.result.figure_link=''
+        self.result.start_figure_link=''
         # pylint: disable=protected-access
-        figure_link, start_link = problem_summary_page._get_figure_paths(
+        figure_link, start_link=problem_summary_page._get_figure_paths(
             self.result)
         self.assertEqual(figure_link, '')
         self.assertEqual(start_link, '')
