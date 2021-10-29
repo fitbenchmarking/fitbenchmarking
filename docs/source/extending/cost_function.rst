@@ -23,6 +23,11 @@ you will need to:
     -  .. automethod:: fitbenchmarking.cost_func.base_cost_func.CostFunc.jac_cost()
               :noindex:
 
+    -  .. automethod:: fitbenchmarking.cost_func.base_cost_func.CostFunc.hes_res()
+              :noindex:
+
+    -  .. automethod:: fitbenchmarking.cost_func.base_cost_func.CostFunc.hes_cost()
+              :noindex:
 
 2. Document the available cost functions by:
 
@@ -37,21 +42,30 @@ The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and :class:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When adding new cost functions, you will find it helpful to make use of the
-following member of the :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-class
+following members of the :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
+class.
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
-          :members: eval_model, cache_model_x, data_x, data_y, data_e
+          :members: eval_model, data_x, data_y, data_e
           :noindex:
+
+You will also find it useful to implement the subclass members of
+:class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`,
+:class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian` and
+:class:`~fitbenchmarking.hessian.base_hessian.Hessian`.
 
 .. currentmodule:: fitbenchmarking.cost_func.base_cost_func
 .. autoclass:: fitbenchmarking.cost_func.base_cost_func.CostFunc
-          :members: eval_cost, jac_res, jac_cost
+          :members: eval_cost, jac_res, jac_cost, hes_res, hes_cost
           :noindex:
-	     
+
 .. currentmodule:: fitbenchmarking.jacobian.base_jacobian
 .. autoclass:: fitbenchmarking.jacobian.base_jacobian.Jacobian
           :members: eval
           :noindex:
-		   
+
+.. currentmodule:: fitbenchmarking.hessian.base_hessian
+.. autoclass:: fitbenchmarking.hessian.base_hessian.Hessian
+          :members: eval
+          :noindex:

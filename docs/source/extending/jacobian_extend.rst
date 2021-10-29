@@ -59,6 +59,5 @@ class:
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
-          :members: eval_model, cache_model_x, data_x, data_y, data_e
+          :members: eval_model, data_x, data_y, data_e
           :noindex:
-

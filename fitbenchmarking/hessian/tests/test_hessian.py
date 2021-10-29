@@ -128,14 +128,15 @@ class TestHessianClass(TestCase):
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.params = [6, 0.1]
         self.cost_func = NLLSCostFunc(self.fitting_problem)
-        self.jacobian = JacobianClass(self.cost_func.problem)
+        self.jacobian = JacobianClass(self.fitting_problem)
+        self.hessian = Analytic(self.fitting_problem)
 
     def test_analytic_nlls(self):
         """
         Test analytic Hessian
         """
         self.cost_func.jacobian = self.jacobian
-        self.cost_func.hessian = Analytic(self.cost_func.problem)
+        self.cost_func.hessian = self.hessian
         eval_result, _ = self.cost_func.hes_res(params=self.params)
         actual_hessian = grad2_r_nlls(self.fitting_problem.data_x,
                                       self.params)
@@ -149,9 +150,8 @@ class TestHessianClass(TestCase):
         e = np.array([1, 2, 1, 3, 1])
         self.fitting_problem.data_e = e
         self.cost_func = WeightedNLLSCostFunc(self.fitting_problem)
-        self.jacobian = JacobianClass(self.cost_func.problem)
         self.cost_func.jacobian = self.jacobian
-        self.cost_func.hessian = Analytic(self.cost_func.problem)
+        self.cost_func.hessian = self.hessian
         eval_result, _ = self.cost_func.hes_res(params=self.params)
         actual_hessian = grad2_r_weighted_nlls(
             self.fitting_problem.data_x, e, self.params)
@@ -163,9 +163,8 @@ class TestHessianClass(TestCase):
         Test analytic Hessian for hellinger_nlls
         """
         self.cost_func = HellingerNLLSCostFunc(self.fitting_problem)
-        self.jacobian = JacobianClass(self.cost_func.problem)
         self.cost_func.jacobian = self.jacobian
-        self.cost_func.hessian = Analytic(self.cost_func.problem)
+        self.cost_func.hessian = self.hessian
         eval_result, _ = self.cost_func.hes_res(params=self.params)
         actual_hessian = grad2_r_hellinger(self.fitting_problem.data_x)
 
@@ -179,9 +178,8 @@ class TestHessianClass(TestCase):
         self.fitting_problem.jacobian = J_poisson
         self.fitting_problem.hessian = H_poisson
         self.cost_func = PoissonCostFunc(self.fitting_problem)
-        self.jacobian = JacobianClass(self.cost_func.problem)
         self.cost_func.jacobian = self.jacobian
-        self.cost_func.hessian = Analytic(self.cost_func.problem)
+        self.cost_func.hessian = self.hessian
         eval_result, _ = self.cost_func.hes_res(params=self.params)
         actual_hessian = grad2_r_poisson(self.fitting_problem.data_x,
                                          self.fitting_problem.data_y,

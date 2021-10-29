@@ -16,6 +16,8 @@ except ImportError:
 from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
+# If we re-implement caching, make sure the cache is cleared by the
+# matlab controllers to avoid unwanted errors.
 class MatlabMixin:
     """
     Mixin class for matlab fitting software controllers

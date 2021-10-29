@@ -75,8 +75,8 @@ def J_weighted(x, e, p):
     Analytic Jacobian evaluation for weighted_nlls
     cost function
     """
-    # pylint: disable=invalid-unary-operand-type
-    return - j(x, p) / e[:, None]
+    return np.column_stack(((np.exp(p[1] * x) / e),
+                            (x * p[0] * np.exp(p[1] * x)) / e))
 
 
 def J_hellinger(x, p):
@@ -84,9 +84,8 @@ def J_hellinger(x, p):
     Analytic Jacobian evaluation for hellinger_nlls
     cost function
     """
-    # pylint: disable=invalid-unary-operand-type
-    return -np.column_stack((-1/2*(p[0]*np.exp(p[1]*x))**(-1/2)*np.exp(p[1]*x),
-                            -1/2*(p[0]*np.exp(p[1]*x))**(-1/2)
+    return np.column_stack((1/2*(p[0]*np.exp(p[1]*x))**(-1/2)*np.exp(p[1]*x),
+                            1/2*(p[0]*np.exp(p[1]*x))**(-1/2)
                             * p[0]*x*np.exp(p[1]*x)))
 
 
@@ -95,7 +94,8 @@ def J_poisson(x, y, p):
     Analytic Jacobian evaluation for poisson
     cost function
     """
-    return j(x, p) * (1 - y / f(x, p[0], p[1]))[:, None]
+    return np.column_stack((y/p[0]-np.exp(p[1]*x),
+                            y*x-p[0]*x*np.exp(p[1]*x)))
 
 
 class TestJacobianClass(TestCase):
@@ -185,8 +185,8 @@ class TestJacobianClass(TestCase):
         self.cost_func = WeightedNLLSCostFunc(self.fitting_problem)
         self.cost_func.jacobian = Analytic(self.cost_func.problem)
         eval_result = self.cost_func.jac_res(params=self.params)
-        actual = - J_weighted(self.fitting_problem.data_x,
-                              self.fitting_problem.data_e, self.params)
+        actual = J_weighted(self.fitting_problem.data_x,
+                            self.fitting_problem.data_e, self.params)
         self.assertTrue(np.isclose(actual, eval_result).all())
 
     def test_analytic_cutest_hellinger(self):
@@ -208,8 +208,10 @@ class TestJacobianClass(TestCase):
         self.cost_func = PoissonCostFunc(self.fitting_problem)
         self.cost_func.jacobian = Analytic(self.cost_func.problem)
         eval_result = self.cost_func.jac_res(params=self.params)
-        actual = - J_poisson(self.fitting_problem.data_x,
-                             self.fitting_problem.data_y, self.params)
+        actual = J_poisson(self.fitting_problem.data_x,
+                           self.fitting_problem.data_y, self.params)
+        print(str(actual))
+        print(str(eval_result))
         self.assertTrue(np.isclose(actual, eval_result).all())
 
     def test_analytic_raise_error(self):

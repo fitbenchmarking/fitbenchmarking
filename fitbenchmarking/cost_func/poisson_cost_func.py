@@ -73,7 +73,7 @@ class PoissonCostFunc(CostFunc):
         :param params: The parameters at which to calculate Jacobians
         :type params: list
 
-        :return: evaluated Jacobian of the residual
+        :return: evaluated Jacobian of the residual at each x, y pair
         :rtype: a list of 1D numpy arrays
         """
         x = kwargs.get("x", self.problem.data_x)
@@ -104,8 +104,9 @@ class PoissonCostFunc(CostFunc):
         :param params: The parameters at which to calculate Hessians
         :type params: list
 
-        :return: evaluated Hessian of the residual
-        :rtype: a list of 2D numpy arrays
+        :return: evaluated Hessian and Jacobian of the residual at
+        each x, y pair
+        :rtype: tuple(list of 2D numpy arrays, list of 1D numpy arrays)
         """
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)

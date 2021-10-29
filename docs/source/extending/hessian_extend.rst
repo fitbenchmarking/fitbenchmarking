@@ -13,7 +13,7 @@ you will need to:
 1. Create ``fitbenchmarking/hessian/<hes_method>_hessian.py``,
    which contains a new subclass of
    :class:`~fitbenchmarking.hessian.base_hessian.hessian`.
-   Then implement the methods:
+   Then implement the method:
 
     -  .. automethod:: fitbenchmarking.hessian.base_hessian.Hessian.eval()
               :noindex:
@@ -37,19 +37,19 @@ you will need to:
    ``fitbenchmarking/hessian/tests/test_hessians.py``.
 
 
-The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem` and :class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When adding new Hessian, you will find it helpful to make use of the
 following members of the :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-and subclasses of :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`:
+and subclasses of :class:`~fitbenchmarking.jacobian.base_jacobian.Jacobian`:
 
 .. currentmodule:: fitbenchmarking.parsing.fitting_problem
 .. autoclass:: fitbenchmarking.parsing.fitting_problem.FittingProblem
-          :members: eval_model, cache_model_x, data_x, data_y, data_e
+          :members: eval_model, data_x, data_y, data_e
           :noindex:
 
-.. currentmodule:: fitbenchmarking.cost_func.base_cost_func
-.. autoclass:: fitbenchmarking.cost_func.base_cost_func.CostFunc
-          :members: eval_cost, jac_res, jac_cost
+.. currentmodule:: fitbenchmarking.jacobian.base_jacobian
+.. autoclass:: fitbenchmarking.jacobian.base_jacobian.Jacobian
+          :members: eval
           :noindex:

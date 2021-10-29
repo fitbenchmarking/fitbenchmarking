@@ -17,9 +17,6 @@ class Hessian:
         :param problem: The parsed problem.
         :type problem:
         :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-        :param jacobian: Jaocbian object
-        :type jacobian:
-        fitbenchmarking.jacobian.<jac_method>_jacobian.<jac_method>
         """
         self.problem = problem
 

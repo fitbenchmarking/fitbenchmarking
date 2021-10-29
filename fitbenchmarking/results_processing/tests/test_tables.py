@@ -105,7 +105,7 @@ def generate_mock_results():
         for j in range(num_min):
             p.starting_values = starting_values
             cost_func = WeightedNLLSCostFunc(p)
-            jac = DefaultJac(cost_func.problem)
+            jac = DefaultJac(p)
             cost_func.jacobian = jac
             hess = None
             r = FittingResult(options=options,
