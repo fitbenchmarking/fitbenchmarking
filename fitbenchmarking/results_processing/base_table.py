@@ -42,7 +42,8 @@ class Table:
         :type results:
             dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
         :param best_results: The best results from each row/category
-        :type best_results: dict[str, dict[str, utils.fitbm_result.FittingResult]]
+        :type best_results:
+            dict[str, dict[str, utils.fitbm_result.FittingResult]]
         :param options: Options used in fitting
         :type options: utils.options.Options
         :param group_dir: path to the directory where group results should be

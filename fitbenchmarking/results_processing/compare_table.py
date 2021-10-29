@@ -24,7 +24,8 @@ class CompareTable(Table):
         :type results:
             dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
         :param best_results: The best results from each row/category
-        :type best_results: dict[str, dict[str, utils.fitbm_result.FittingResult]],
+        :type best_results:
+            dict[str, dict[str, utils.fitbm_result.FittingResult]],
         :param options: Options used in fitting
         :type options: utils.options.Options
         :param group_dir: path to the directory where group results should be
@@ -36,8 +37,8 @@ class CompareTable(Table):
         :param table_name: Name of the table
         :type table_name: str
         """
-        super().__init__(results, best_results, options, group_dir, pp_locations,
-                         table_name)
+        super().__init__(results, best_results, options, group_dir,
+                         pp_locations, table_name)
         self.name = 'compare'
         self.has_pp = True
         self.pp_filenames = \

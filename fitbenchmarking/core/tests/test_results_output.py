@@ -130,10 +130,10 @@ def generate_mock_results(results_directory: str):
     for i, _ in enumerate(problems):
         for j, cf in enumerate(cost_funcs[i]):
             for k, software in enumerate(softwares):
-                for l, minim in enumerate(minimizers[k]):
+                for m, minim in enumerate(minimizers[k]):
                     jacs = jacobians[i][j] if minim != 's1m2' else [None]
-                    for m, jac in enumerate(jacs):
-                        minim_name = f'{minim}, Jac: {m}'
+                    for n, jac in enumerate(jacs):
+                        minim_name = f'{minim}, Jac: {n}'
                         options.minimizer_alg_type[minim_name] = 'test'
                         results.append(FittingResult(
                             options=options,
@@ -142,9 +142,9 @@ def generate_mock_results(results_directory: str):
                             hess=None,
                             initial_params=list(
                                 cf.problem.starting_values[0].values()),
-                            params=params[i][j][k][l][m],
-                            chi_sq=acc[i][j][k][l][m],
-                            runtime=runtime[i][j][k][l][m],
+                            params=params[i][j][k][m][n],
+                            chi_sq=acc[i][j][k][m][n],
+                            runtime=runtime[i][j][k][m][n],
                             software=software,
                             minimizer=minim_name,
                             error_flag=None if jac is not None else 4

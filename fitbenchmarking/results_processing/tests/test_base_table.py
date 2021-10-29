@@ -2,9 +2,9 @@
 Tests for functions in the base tables file.
 """
 
-from unittest import mock, TestCase
-
 import os
+from unittest import TestCase, mock
+
 import numpy as np
 
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
@@ -131,7 +131,7 @@ def generate_results():
     ]}
 
     best_results = {'prob_0': {'cf1': results['prob_0']['cf1'][0]},
-            'prob_1': {'cf1': results['prob_1']['cf1'][0]}}
+                    'prob_1': {'cf1': results['prob_1']['cf1'][0]}}
 
     return results, best_results
 

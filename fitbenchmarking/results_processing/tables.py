@@ -155,8 +155,8 @@ def load_table(table):
     return classes[0][1]
 
 
-def generate_table(results, best_results, options, group_dir, fig_dir, pp_locations,
-                   table_name, suffix):
+def generate_table(results, best_results, options, group_dir, fig_dir,
+                   pp_locations, table_name, suffix):
     """
     Generate html/txt tables.
 
@@ -183,8 +183,8 @@ def generate_table(results, best_results, options, group_dir, fig_dir, pp_locati
     :rtype: tuple(Table object, str, str)
     """
     table_module = load_table(suffix)
-    table = table_module(results, best_results, options, group_dir, pp_locations,
-                         table_name)
+    table = table_module(results, best_results, options, group_dir,
+                         pp_locations, table_name)
 
     html_table = table.to_html()
     txt_table = table.to_txt()
