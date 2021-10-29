@@ -536,7 +536,7 @@ class ProcessBestResultsTests(unittest.TestCase):
         """
         Test that the best result is returned.
         """
-        self.assetIs(self.best, self.results[1])
+        self.assertIs(self.best, self.results[1])
     
     def test_is_best_fit_True(self):
         """
