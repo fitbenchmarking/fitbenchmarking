@@ -11,7 +11,7 @@ from fitbenchmarking.results_processing.plots import Plot
 from fitbenchmarking.utils.misc import get_css
 
 
-def create(results, best_results, group_name, support_pages_dir, figures_dir, options):
+def create(results, best_results, support_pages_dir, figures_dir, options):
     """
     Create the problem summary pages.
 
@@ -19,8 +19,6 @@ def create(results, best_results, group_name, support_pages_dir, figures_dir, op
     :type results: dict[str, dict[str, list[FittingResult]]]
     :param best_results: The best result from each row and category
     :type best_results: dict[str, dict[str, FittingResult]]
-    :param group_name: name of the problem group
-    :type group_name: str
     :param support_pages_dir: directory in which the results are to be saved
     :type support_pages_dir: str
     :param figures_dir: The directory where figures are stored.
@@ -44,20 +42,20 @@ def create(results, best_results, group_name, support_pages_dir, figures_dir, op
                                                   options=options,
                                                   figures_dir=figures_dir)
 
-        _create_summary_page(categorised, group_name, summary_plot_path,
-                             support_pages_dir, options)
+        _create_summary_page(categorised_best_results=categorised,
+                             summary_plot_path=summary_plot_path,
+                             support_pages_dir=support_pages_dir,
+                             options=options)
 
 
-def _create_summary_page(categorised_best_results, group_name,
-                         summary_plot_path, support_pages_dir, options):
+def _create_summary_page(categorised_best_results, summary_plot_path,
+                         support_pages_dir, options):
     """
     Create a summary page for a problem from given categories.
 
     :param categorised_best_results: A tag, best result, and description for
                                      each category
     :type categorised_best_results: list[tuple[str, FittingResult, str]]
-    :param group_name: The name of the problem group
-    :type group_name: str
     :param summary_plot_path: Path to the summary plot
     :type summary_plot_path: str
     :param support_pages_dir: Directory to save suport page to
@@ -69,7 +67,7 @@ def _create_summary_page(categorised_best_results, group_name,
 
     prob_name = results[0].sanitised_name
 
-    file_name = f'{group_name}_{prob_name}_summary.html'.lower()
+    file_name = f'{prob_name}_summary.html'.lower()
     file_path = os.path.join(support_pages_dir, file_name)
 
     # Bool for print message/insert image

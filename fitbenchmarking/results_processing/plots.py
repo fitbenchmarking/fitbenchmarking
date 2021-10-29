@@ -306,7 +306,7 @@ class Plot:
                     y = result.problem.eval_model(params, x=x)
                     plot_options = cls.summary_best_plot_options \
                         if result.is_best_fit else cls.summary_plot_options
-                    plot_options['colour'] = colour
+                    plot_options['color'] = colour
                     plot_options['key'] = key if result.is_best_fit else ''
 
                     ax.plot(x, y, **plot_options)

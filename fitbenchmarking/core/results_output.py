@@ -22,7 +22,7 @@ from fitbenchmarking.utils.write_files import write_file
 
 @write_file
 def save_results(options, results, group_name, failed_problems,
-                 unselected_minimzers):
+                 unselected_minimizers):
     """
     Create all results files and store them.
     Result files are plots, support pages, tables, and index pages.
@@ -36,9 +36,9 @@ def save_results(options, results, group_name, failed_problems,
     :param failed_problems: list of failed problems to be reported in the
                             html output
     :type failed_problems: list
-    :params unselected_minimzers: Dictionary containing unselected minimizers
+    :params unselected_minimizers: Dictionary containing unselected minimizers
                                   based on the algorithm_type option
-    :type unselected_minimzers: dict
+    :type unselected_minimizers: dict
 
     :return: Path to directory of group results
     :rtype: str
@@ -66,25 +66,25 @@ def save_results(options, results, group_name, failed_problems,
     problem_summary_page.create(options=options,
                                 results=results_dict,
                                 best_results=best_results,
-                                group_name=group_name,
                                 support_pages_dir=supp_dir,
                                 figures_dir=fig_dir)
 
     table_names, table_descriptions = \
-        tables.create_results_tables(options,
-                                     results_dict,
-                                     best_results,
-                                     group_dir,
-                                     fig_dir,
-                                     pp_locations,
-                                     failed_problems,
-                                     unselected_minimzers)
+        tables.create_results_tables(
+            options=options,
+            results=results_dict,
+            best_results=best_results,
+            group_dir=group_dir,
+            fig_dir=fig_dir,
+            pp_locations=pp_locations,
+            failed_problems=failed_problems,
+            unselected_minimzers=unselected_minimizers)
 
-    create_problem_level_index(options,
-                               table_names,
-                               group_name,
-                               group_dir,
-                               table_descriptions)
+    create_problem_level_index(options=options,
+                               table_names=table_names,
+                               group_name=group_name,
+                               group_dir=group_dir,
+                               table_descriptions=table_descriptions)
 
     return group_dir
 
