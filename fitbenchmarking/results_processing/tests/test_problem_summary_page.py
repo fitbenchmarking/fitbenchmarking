@@ -203,8 +203,8 @@ class CreateTests(TestCase):
                                     support_pages_dir=self.supp_dir,
                                     figures_dir=self.fig_dir,
                                     options=self.options)
-        for v in self.results.values():
-            example_result = list(v.values())[0][0]
+        for v in self.best_results.values():
+            example_result = list(v.values())[0]
             self.assertTrue(os.path.exists(
                 example_result.problem_summary_page_link))
 
@@ -249,9 +249,8 @@ class CreateSummaryPageTests(TestCase):
         Check that all results have a summary page added to the
         'problem_summary_page_link' attribute.
         """
-        for result_list in self.results.values():
-            for result in result_list:
-                self.assertNotEqual(result.problem_summary_page_link, '')
+        for result in self.best_results.values():
+            self.assertNotEqual(result.problem_summary_page_link, '')
 
 
 class GetFigurePathsTests(TestCase):
