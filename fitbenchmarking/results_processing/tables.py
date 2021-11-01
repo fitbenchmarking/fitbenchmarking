@@ -22,7 +22,8 @@ ERROR_OPTIONS = {0: "Successfully converged",
                  3: "Software raised an exception",
                  4: "Solver doesn't support bounded problems",
                  5: "Solution doesn't respect parameter bounds",
-                 6: "Solver has exceeded maximum allowed runtime"}
+                 6: "Solver has exceeded maximum allowed runtime",
+                 7: "Validation of the provided options failed"}
 
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
