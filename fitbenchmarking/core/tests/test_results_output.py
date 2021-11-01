@@ -44,7 +44,7 @@ def fitting_function_1(data, x1, x2):
     :return: y data values evaluated from the function of the problem
     :rtype: numpy array
     """
-    return x1 * np.sin(x2) * np.ones_like(data)
+    return x1 * np.sin(x2) * data
 
 
 def fitting_function_2(data, x1, x2):
@@ -61,7 +61,7 @@ def fitting_function_2(data, x1, x2):
     :return: y data values evaluated from the function of the problem
     :rtype: numpy array
     """
-    return x1 * x2 * np.ones_like(data)
+    return x1 * x2 * data
 
 
 def generate_mock_results(results_directory: str):

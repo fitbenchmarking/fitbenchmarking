@@ -139,10 +139,6 @@ def _get_figure_paths(result):
 
     output = []
     for link in [result.figure_link, result.start_figure_link]:
-        if link == '':
-            output.append('')
-        else:
-            path = os.path.join(figures_dir, link)
-            output.append(path)
+        output.append(os.path.join(figures_dir, link) if link else '')
 
     return output[0], output[1]

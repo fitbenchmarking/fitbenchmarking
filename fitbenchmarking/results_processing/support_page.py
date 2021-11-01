@@ -58,12 +58,12 @@ def create_prob_group(result, support_pages_dir, options):
 
     if options.make_plots:
         fig_fit, fig_start = get_figure_paths(result)
-        if fig_fit == '':
+        fit_success = fig_fit != ''
+        init_success = fig_start != ''
+        if not fit_success:
             fig_fit = result.figure_error
-            fit_success = False
-        if fig_start == '':
+        if not init_success:
             fig_start = result.figure_error
-            init_success = False
     else:
         fig_fit = fig_start = 'Re-run with make_plots set to yes in the ' \
                                 'ini file to generate plots.'
@@ -108,10 +108,6 @@ def get_figure_paths(result):
 
     output = []
     for link in [result.figure_link, result.start_figure_link]:
-        if link == '':
-            output.append('')
-        else:
-            path = os.path.join(figures_dir, link)
-            output.append(path)
+        output.append(os.path.join(figures_dir, link) if link else '')
 
     return output[0], output[1]
