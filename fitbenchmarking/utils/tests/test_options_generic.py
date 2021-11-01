@@ -76,8 +76,8 @@ class OptionsWriteTests(unittest.TestCase):
 
         os.remove(new_file_name)
 
-        assert options.stored_file_name == self.options_file
-        assert new_options.stored_file_name == new_file_name
+        self.assertEqual(options.stored_file_name, self.options_file)
+        self.assertEqual(new_options.stored_file_name, new_file_name)
 
         # Overwrite file names
         options.stored_file_name = ""
@@ -92,15 +92,13 @@ class OptionsWriteTests(unittest.TestCase):
         options = Options(file_name=self.options_file)
         new_file_name = 'copy_of_{}'.format(self.options_file)
 
-        # open stream, write to it and close it
-        f = open(new_file_name, 'w')
-        options.write_to_stream(f)
-        f.close()
+        with open(new_file_name, 'w') as f:
+            options.write_to_stream(f)
 
         new_options = Options(new_file_name)
 
-        assert options.stored_file_name == self.options_file
-        assert new_options.stored_file_name == new_file_name
+        self.assertEqual(options.stored_file_name, self.options_file)
+        self.assertEqual(new_options.stored_file_name, new_file_name)
 
         # Overwrite file names
         options.stored_file_name = ""
