@@ -132,7 +132,8 @@ class OptionsWriteTests(unittest.TestCase):
         opts_file = 'test_options_tests_valid.ini'
         with open(opts_file, 'w') as f:
             f.write(config_str)
-        Options(opts_file)
+        options = Options(opts_file)
+        self.assertEqual(options.stored_file_name, opts_file)
         os.remove(opts_file)
 
     def test_user_section_invalid(self):

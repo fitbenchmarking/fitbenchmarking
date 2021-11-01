@@ -5,9 +5,9 @@ from collections import OrderedDict
 
 import typing
 
-from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
-
 import mantid.simpleapi as msapi
+
+from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 
 
 # pylint: disable=too-many-branches
