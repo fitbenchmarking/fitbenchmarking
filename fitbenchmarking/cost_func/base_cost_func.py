@@ -82,7 +82,7 @@ class CostFunc:
     def hes_res(self, params, **kwargs):
         """
         Uses the Hessian of the model to evaluate the Hessian of the
-        cost function residual, :math:`\\nabla_p r(x,y,p)`, at the
+        cost function residual, :math:`\\nabla_p^2 r(x,y,p)`, at the
         given parameters.
 
         :param params: The parameters at which to calculate Hessians
@@ -98,7 +98,7 @@ class CostFunc:
     def hes_cost(self, params, **kwargs):
         """
         Uses the Hessian of the model to evaluate the Hessian of the
-        cost function, :math:`\\nabla_p F(r(x,y,p))`, at the given
+        cost function, :math:`\\nabla_p^2 F(r(x,y,p))`, at the given
         parameters.
 
         :param params: The parameters at which to calculate Hessians
