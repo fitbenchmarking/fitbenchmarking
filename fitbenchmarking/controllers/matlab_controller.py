@@ -48,9 +48,6 @@ class MatlabController(MatlabMixin, Controller):
         # Convert initial params into matlab array
         self.initial_params_mat = matlab.double([self.initial_params])
 
-        # clear out cached values
-        self.clear_cached_values()
-
         # serialize cost_func.eval_cost and open within matlab engine
         # so that matlab fitting function can be called
         eng.workspace['eval_cost_mat'] =\

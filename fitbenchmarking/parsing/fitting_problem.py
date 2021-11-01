@@ -230,8 +230,7 @@ class FittingProblem:
         :param value_ranges: dictionary of bounded parameter names with
                              lower and upper bound values e.g.
                             :code:`{p1_name: [p1_min, p1_max], ...}`
-        :type params: dict
-
+        :type value_ranges: dict
         """
         # pylint: disable=unsubscriptable-object
         lower_param_names = [name.lower()

@@ -99,12 +99,6 @@ class Controller:
         # Problem: The problem object from parsing
         self.problem = self.cost_func.problem
 
-        # Jacobian: The Jacobian object
-        self.jacobian = None
-
-        # Hessian: The Hessian object
-        self.hessian = None
-
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)
         self.data_x = self.problem.data_x
@@ -237,13 +231,15 @@ class Controller:
         other options and problem definition. An exception is raised if this
         is not true.
         """
-        incompatible_problems = self.jacobian.INCOMPATIBLE_PROBLEMS.get(
-            self.jacobian.method, [])
+        incompatible_problems = \
+            self.cost_func.jacobian.INCOMPATIBLE_PROBLEMS.get(
+                self.cost_func.jacobian.method, [])
 
         if self.problem.format in incompatible_problems:
-            message = f"The {self.jacobian.__class__.__name__} Jacobian " \
-                      f"'{self.jacobian.method}' method is incompatible " \
-                      f"with the problem format '{self.problem.format}'."
+            message = f"The {self.cost_func.jacobian.__class__.__name__} " \
+                      f"Jacobian '{self.cost_func.jacobian.method}' " \
+                      f"method is incompatible with the problem format " \
+                      f"'{self.problem.format}'."
             raise IncompatibleJacobianError(message)
 
     def validate_minimizer(self, minimizer, algorithm_type):

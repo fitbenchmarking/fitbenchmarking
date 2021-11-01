@@ -5,9 +5,13 @@ from unittest import TestCase
 
 import numpy as np
 
+from fitbenchmarking.cost_func.hellinger_nlls_cost_func import \
+    HellingerNLLSCostFunc
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cost_func.poisson_cost_func import PoissonCostFunc
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
-from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.jacobian.numdifftools_jacobian import Numdifftools
@@ -34,7 +38,7 @@ def f(x, p1, p2):
     return p1 * np.exp(p2 * x)
 
 
-def J(x, p):
+def j(x, p):
     """
     Analytic Jacobian evaluation
 
@@ -44,10 +48,26 @@ def J(x, p):
     :type p: list
 
     :return: Jacobian evaluation
-    :rtype: numpy array
+    :rtype: 1D numpy array
     """
-    return np.column_stack((-np.exp(p[1] * x),
-                            -x * p[0] * np.exp(p[1] * x)))
+    return np.column_stack((np.exp(p[1] * x),
+                           x * p[0] * np.exp(p[1] * x)))
+
+
+def J(x, p):
+    """
+    Analytic Jacobian residuals evaluation
+
+    :param x: x data points, defaults to self.data_x
+    :type x: numpy array, optional
+    :param p: list of parameters to fit
+    :type p: list
+
+    :return: Jacobian residuals evaluation
+    :rtype: 1D numpy array
+    """
+    # pylint: disable=invalid-unary-operand-type
+    return - j(x, p)
 
 
 def J_weighted(x, e, p):
@@ -55,9 +75,8 @@ def J_weighted(x, e, p):
     Analytic Jacobian evaluation for weighted_nlls
     cost function
     """
-
-    return np.column_stack((-(np.exp(p[1] * x)/e),
-                            -(x * p[0] * np.exp(p[1] * x))/e))
+    return np.column_stack(((np.exp(p[1] * x) / e),
+                            (x * p[0] * np.exp(p[1] * x)) / e))
 
 
 def J_hellinger(x, p):
@@ -65,9 +84,8 @@ def J_hellinger(x, p):
     Analytic Jacobian evaluation for hellinger_nlls
     cost function
     """
-
-    return np.column_stack((-1/2*(p[0]*np.exp(p[1]*x))**(-1/2)*np.exp(p[1]*x),
-                            -1/2*(p[0]*np.exp(p[1]*x))**(-1/2)
+    return np.column_stack((1/2*(p[0]*np.exp(p[1]*x))**(-1/2)*np.exp(p[1]*x),
+                            1/2*(p[0]*np.exp(p[1]*x))**(-1/2)
                             * p[0]*x*np.exp(p[1]*x)))
 
 
@@ -76,9 +94,8 @@ def J_poisson(x, y, p):
     Analytic Jacobian evaluation for poisson
     cost function
     """
-
-    return np.column_stack((-y/p[0]+np.exp(p[1]*x),
-                           -y*x+p[0]*x*np.exp(p[1]*x)))
+    return np.column_stack((y/p[0]-np.exp(p[1]*x),
+                            y*x-p[0]*x*np.exp(p[1]*x)))
 
 
 class TestJacobianClass(TestCase):
@@ -94,18 +111,18 @@ class TestJacobianClass(TestCase):
         options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
         self.fitting_problem.function = f
-        self.fitting_problem.jacobian = J
+        self.fitting_problem.jacobian = j
         self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.cost_func = NLLSCostFunc(self.fitting_problem)
         self.params = [6, 0.1]
-        self.actual = J(x=self.fitting_problem.data_x, p=self.params)
+        self.actual = j(x=self.fitting_problem.data_x, p=self.params)
 
     def test_scipy_two_point_eval(self):
         """
         Test for ScipyTwoPoint evaluation is correct
         """
-        jac = Scipy(self.cost_func)
+        jac = Scipy(self.cost_func.problem)
         jac.method = '2-point'
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -114,7 +131,7 @@ class TestJacobianClass(TestCase):
         """
         Test for ScipyThreePoint evaluation is correct
         """
-        jac = Scipy(self.cost_func)
+        jac = Scipy(self.cost_func.problem)
         jac.method = '3-point'
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -123,7 +140,7 @@ class TestJacobianClass(TestCase):
         """
         Test for ScipyCS evaluation is correct
         """
-        jac = Scipy(self.cost_func)
+        jac = Scipy(self.cost_func.problem)
         jac.method = 'cs'
         eval_result = jac.eval(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -132,7 +149,7 @@ class TestJacobianClass(TestCase):
         """
         Test that minimizer default jacobian does what it should
         """
-        jac = Default(self.cost_func)
+        jac = Default(self.cost_func.problem)
         self.assertTrue(jac.use_default_jac)
 
     def test_numdifftools_eval(self):
@@ -144,7 +161,7 @@ class TestJacobianClass(TestCase):
                        'backward',
                        'complex',
                        'multicomplex']:
-            jac = Numdifftools(self.cost_func)
+            jac = Numdifftools(self.cost_func.problem)
             jac.method = method
             eval_result = jac.eval(params=self.params)
             self.assertTrue(np.isclose(self.actual, eval_result).all())
@@ -153,22 +170,21 @@ class TestJacobianClass(TestCase):
         """
         Test analytic Jacobian
         """
-        self.fitting_problem.options.cost_func_type = "nlls"
         self.fitting_problem.format = "cutest"
-        jac = Analytic(self.cost_func)
-        eval_result = jac.eval(params=self.params)
+        jac = Analytic(self.cost_func.problem)
+        self.cost_func.jacobian = jac
+        eval_result = self.cost_func.jac_res(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_analytic_cutest_weighted(self):
         """
         Test analytic Jacobian
         """
-        self.fitting_problem.options.cost_func_type = "weighted_nlls"
-        e = np.array([1, 2, 1, 3, 1])
-        self.fitting_problem.data_e = e
+        self.fitting_problem.data_e = np.array([1, 2, 1, 3, 1])
         self.fitting_problem.format = "cutest"
-        jac = Analytic(self.cost_func)
-        eval_result = jac.eval(params=self.params)
+        self.cost_func = WeightedNLLSCostFunc(self.fitting_problem)
+        self.cost_func.jacobian = Analytic(self.cost_func.problem)
+        eval_result = self.cost_func.jac_res(params=self.params)
         actual = J_weighted(self.fitting_problem.data_x,
                             self.fitting_problem.data_e, self.params)
         self.assertTrue(np.isclose(actual, eval_result).all())
@@ -177,10 +193,10 @@ class TestJacobianClass(TestCase):
         """
         Test analytic Jacobian
         """
-        self.fitting_problem.options.cost_func_type = "hellinger_nlls"
         self.fitting_problem.format = "cutest"
-        jac = Analytic(self.cost_func)
-        eval_result = jac.eval(params=self.params)
+        self.cost_func = HellingerNLLSCostFunc(self.fitting_problem)
+        self.cost_func.jacobian = Analytic(self.cost_func.problem)
+        eval_result = self.cost_func.jac_res(params=self.params)
         actual = J_hellinger(self.fitting_problem.data_x, self.params)
         self.assertTrue(np.isclose(actual, eval_result).all())
 
@@ -188,12 +204,14 @@ class TestJacobianClass(TestCase):
         """
         Test analytic jacobian for the poisson cost function.
         """
-        self.fitting_problem.options.cost_func_type = "poisson"
         self.fitting_problem.format = "cutest"
-        jac = Analytic(self.cost_func)
-        eval_result = jac.eval(params=self.params)
+        self.cost_func = PoissonCostFunc(self.fitting_problem)
+        self.cost_func.jacobian = Analytic(self.cost_func.problem)
+        eval_result = self.cost_func.jac_res(params=self.params)
         actual = J_poisson(self.fitting_problem.data_x,
                            self.fitting_problem.data_y, self.params)
+        print(str(actual))
+        print(str(eval_result))
         self.assertTrue(np.isclose(actual, eval_result).all())
 
     def test_analytic_raise_error(self):
@@ -203,60 +221,7 @@ class TestJacobianClass(TestCase):
         """
         self.fitting_problem.jacobian = None
         with self.assertRaises(exceptions.NoJacobianError):
-            Analytic(self.cost_func)
-
-
-class TestCachedFuncValues(TestCase):
-    """
-    Tests for Jacobian classes
-    """
-
-    def setUp(self):
-        """
-        Setting up tests
-        """
-        options = Options()
-        options.cost_func_type = "nlls"
-        self.fitting_problem = FittingProblem(options)
-        self.cost_func = NLLSCostFunc(self.fitting_problem)
-        self.jacobian = Jacobian(self.cost_func)
-
-    @staticmethod
-    def func(x):
-        """
-        Test function for cached value tests.
-
-        :param x: parameters to evaluate function at
-        :type x: numpy array
-
-        :return: function evaluation
-        :rtype: float
-        """
-        return x[0] * x[1] + x[2]**2
-
-    def test_check_cached_eval(self):
-        """
-        Checks cached function values
-        """
-        params = [1, 2, 4]
-        expected_value = self.func(params)
-        cached_dict = {"params": params, "value": expected_value}
-        computed_value = self.jacobian.cached_func_values(cached_dict,
-                                                          self.func,
-                                                          params)
-        assert expected_value == computed_value
-
-    def test_check_none_cached_eval(self):
-        """
-        Checks function values
-        """
-        params = [1, 2, 3]
-        expected_value = self.func(params)
-        cached_dict = {"params": [1, 2, 4], "value": 18}
-        computed_value = self.jacobian.cached_func_values(cached_dict,
-                                                          self.func,
-                                                          params)
-        assert expected_value == computed_value
+            Analytic(self.cost_func.problem)
 
 
 class TestDerivCostFunc(TestCase):
@@ -288,27 +253,30 @@ class TestDerivCostFunc(TestCase):
         """
         Test for ScipyTwoPoint evaluation is correct
         """
-        jac = Scipy(self.cost_func)
+        jac = Scipy(self.cost_func.problem)
         jac.method = '2-point'
-        eval_result = jac.eval_cost(params=self.params)
+        self.cost_func.jacobian = jac
+        eval_result = self.cost_func.jac_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_scipy_three_point_eval(self):
         """
         Test for ScipyThreePoint evaluation is correct
         """
-        jac = Scipy(self.cost_func)
+        jac = Scipy(self.cost_func.problem)
         jac.method = '3-point'
-        eval_result = jac.eval_cost(params=self.params)
+        self.cost_func.jacobian = jac
+        eval_result = self.cost_func.jac_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_scipy_cs_point_eval(self):
         """
         Test for ScipyCS evaluation is correct
         """
-        jac = Scipy(self.cost_func)
+        jac = Scipy(self.cost_func.problem)
         jac.method = 'cs'
-        eval_result = jac.eval_cost(params=self.params)
+        self.cost_func.jacobian = jac
+        eval_result = self.cost_func.jac_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_numdifftools_eval(self):
@@ -320,9 +288,10 @@ class TestDerivCostFunc(TestCase):
                        'backward',
                        'complex',
                        'multicomplex']:
-            jac = Numdifftools(self.cost_func)
+            jac = Numdifftools(self.cost_func.problem)
             jac.method = method
-            eval_result = jac.eval_cost(params=self.params)
+            self.cost_func.jacobian = jac
+            eval_result = self.cost_func.jac_cost(params=self.params)
             self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_analytic_cutest(self):
@@ -330,9 +299,10 @@ class TestDerivCostFunc(TestCase):
         Test analytic jacobian
         """
         self.fitting_problem.format = "cutest"
-        jac = Analytic(self.cost_func)
+        jac = Analytic(self.cost_func.problem)
         self.fitting_problem.jac = jac
-        eval_result = jac.eval_cost(params=self.params)
+        self.cost_func.jacobian = jac
+        eval_result = self.cost_func.jac_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
 
