@@ -28,13 +28,14 @@ class Scipy(Hessian):
         :rtype: numpy array
         """
         x = kwargs.get("x", self.problem.data_x)
-        hes = np.zeros((len(params),len(params),len(x)))
-        for i in range(len(x)): # NOTE: subsetting Jacobian is inefficient
+        hes = np.zeros((len(params), len(params), len(x)))
+        for i in range(len(x)):  # NOTE: subsetting Jacobian is inefficient
             def grad_i(params): return self.problem.jacobian(x, params)[i, :]
-            hes[:,:,i] = approx_derivative(grad_i, params, method=self.method,
-                                           rel_step=None,
-                                           bounds=(-np.inf, np.inf),
-                                           kwargs=kwargs)
+            hes[:, :, i] = approx_derivative(grad_i, params,
+                                             method=self.method,
+                                             rel_step=None,
+                                             bounds=(-np.inf, np.inf),
+                                             kwargs=kwargs)
 
         # ensure Hessian is symmetric
-        return 0.5*(hes+hes.transpose(1,0,2))
+        return 0.5*(hes+hes.transpose(1, 0, 2))

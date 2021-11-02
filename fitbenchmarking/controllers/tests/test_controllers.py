@@ -701,6 +701,7 @@ class ControllerValidateTests(TestCase):
 
         controller.validate()
 
+
 @run_for_test_types(TEST_TYPE, 'all')
 class ExternalControllerTests(TestCase):
     """
