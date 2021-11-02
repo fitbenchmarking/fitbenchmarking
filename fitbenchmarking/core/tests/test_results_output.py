@@ -273,7 +273,7 @@ class CreatePlotsTests(unittest.TestCase):
         Setting up paths and results folders
         """
         with TemporaryDirectory() as file:
-            self.results_dir = os.path.join(file.name, 'figures_dir')
+            self.results_dir = os.path.join(file, 'figures_dir')
 
         results, self.options = generate_mock_results(self.results_dir)
         self.best_results, self.results = preprocess_data(results)
