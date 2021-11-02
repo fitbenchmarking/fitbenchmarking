@@ -281,14 +281,14 @@ def setup_options(multi_fit=False) -> Options:
         software = ["bumps", "gsl", "levmar", "mantid", "ralfit", "scipy",
                     "scipy_ls"]
         minimizers = ["lm-bumps", "lmsder", "levmar", "Levenberg-Marquardt",
-                      "gn", "Nelder-Mead", "lm-scipy"]
+                      "hybrid", "TNC", "lm-scipy"]
     elif TEST_TYPE == "matlab":
         software = ["matlab", "matlab_curve", "matlab_opt", "matlab_stats"]
         minimizers = ["Nelder-Mead Simplex", "Levenberg-Marquardt",
                       "levenberg-marquardt", "Levenberg-Marquardt"]
     else:
         software = ["bumps", "scipy", "scipy_ls"]
-        minimizers = ["lm-bumps", "Nelder-Mead", "lm-scipy"]
+        minimizers = ["lm-bumps", "TNC", "lm-scipy"]
 
     opts.software = software
     opts.minimizers = {s: [minimizer]
