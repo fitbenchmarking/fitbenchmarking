@@ -198,3 +198,4 @@ class LocalMinTable(Table):
         if sz_in is not None:
             return super().save_colourbar(fig_dir, n_divs=2, sz_in=sz_in)
         return super().save_colourbar(fig_dir, n_divs=2)
+    # pylint: enable=unused-argument

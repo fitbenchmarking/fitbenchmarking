@@ -15,7 +15,6 @@ from fitbenchmarking.utils.log import get_logger
 LOGGER = get_logger()
 
 
-# pylint: disable=too-many-branches
 class FitbenchmarkParser(Parser):
     """
     Parser for the native FitBenchmarking problem definition (FitBenchmark)

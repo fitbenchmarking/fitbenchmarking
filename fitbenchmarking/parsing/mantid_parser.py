@@ -10,7 +10,6 @@ import mantid.simpleapi as msapi
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 
 
-# pylint: disable=too-many-branches
 class MantidParser(FitbenchmarkParser):
     """
     Parser for a Mantid problem definition file.
