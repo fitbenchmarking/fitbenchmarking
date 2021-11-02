@@ -98,11 +98,9 @@ RUN apt-get install -y git g++ qt5-default clang-format-6.0 cmake dvipng doxygen
 # Details from mantid website
 ARG MANTID_VERSION=6.2
 ARG MANTID_SOURCE="mantid-$MANTID_VERSION.0-Source"
-ARG MANTID_TAR="$MANTID_SOURCE.tar.xz"
-ARG MANTID_DOWNLOAD="https://downloads.sourceforge.net/project/mantid/$MANTID_VERSION/$MANTID_TAR"
 
-RUN wget $MANTID_DOWNLOAD
-RUN tar -xvf $MANTID_TAR
+RUN wget https://downloads.sourceforge.net/project/mantid/$MANTID_VERSION/$MANTID_SOURCE.tar.xz
+RUN tar -xvf $MANTID_SOURCE.tar.xz
 RUN rm mantid*.xz
 
 RUN apt-get install -y ccache
