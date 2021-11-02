@@ -45,7 +45,7 @@ class TestRegressionAll(TestCase):
         run([problem], results_dir, options_file=opt_file.name,
             debug=True)
         os.remove(opt_file.name)
-        opts = setup_options(multifit=True)
+        opts = setup_options(multi_fit=True)
         opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
                                                mode='w',
                                                delete=False)
@@ -181,7 +181,6 @@ class TestRegressionDefault(TestCase):
         results_dir = os.path.join(os.path.dirname(__file__),
                                    'fitbenchmarking_results')
 
-        # Get defaults which should have minimizers for every software
         opts = setup_options()
         opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
                                                mode='w',
@@ -261,32 +260,37 @@ def diff_result(actual, expected):
     return diff, msg
 
 
-def setup_options(multifit=False):
+def setup_options(multi_fit=False) -> Options:
     """
     Setups up options class for system tests
+
+    :param multi_fit: Whether or not you are testing multi fitting.
+    :type multi_fit: bool
 
     :return: Fitbenchmarking options file for tests
     :rtype: fitbenchmarking.utils.options.Options
     """
-
-    # Get defaults which should have minimizers for every software
     opts = Options()
     opts.num_runs = 1
     opts.make_plots = False
-    # Use only the first minimizer from the selected software packages
-    if multifit:
-        opts.software = ['mantid']
-        opts.minimizers = {'mantid': [opts.minimizers['mantid'][0]]}
-    elif TEST_TYPE not in ['default', 'matlab']:
-        opts.software = ['bumps', 'gsl', 'levmar', 'mantid', 'ralfit', 'scipy',
-                         'scipy_ls']
-        opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
-    elif TEST_TYPE == "matlab":
-        opts.software = ['matlab', 'matlab_curve', 'matlab_opt',
-                         'matlab_stats']
-        opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
-    else:
-        opts.software = ['bumps', 'scipy', 'scipy_ls']
-        opts.minimizers = {s: [opts.minimizers[s][0]] for s in opts.software}
 
+    if multi_fit:
+        software = ["mantid"]
+        minimizers = ["Levenberg-Marquardt"]
+    elif TEST_TYPE not in ['default', 'matlab']:
+        software = ["bumps", "gsl", "levmar", "mantid", "ralfit", "scipy",
+                    "scipy_ls"]
+        minimizers = ["lm-bumps", "lmsder", "levmar", "Levenberg-Marquardt",
+                      "gn", "Nelder-Mead", "lm-scipy"]
+    elif TEST_TYPE == "matlab":
+        software = ["matlab", "matlab_curve", "matlab_opt", "matlab_stats"]
+        minimizers = ["Nelder-Mead Simplex", "Levenberg-Marquardt",
+                      "levenberg-marquardt", "Levenberg-Marquardt"]
+    else:
+        software = ["bumps", "scipy", "scipy_ls"]
+        minimizers = ["lm-bumps", "Nelder-Mead", "lm-scipy"]
+
+    opts.software = software
+    opts.minimizers = {s: [minimizer]
+                       for s, minimizer in zip(software, minimizers)}
     return opts
