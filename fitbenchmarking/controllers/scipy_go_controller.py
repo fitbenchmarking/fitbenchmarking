@@ -71,10 +71,10 @@ class ScipyGOController(Controller):
             kwargs = {"maxiter": self._maxiter}
         elif self.minimizer == "shgo":
             kwargs = {"options": {"maxiter": self._maxiter,
-                                  "jac": self.jacobian.eval_cost}}
+                                  "jac": self.cost_func.jac_cost}}
         elif self.minimizer == "dual_annealing":
             kwargs = {"maxiter": self._maxiter, "local_search_options": {
-                "jac": self.jacobian.eval_cost}}
+                      "jac": self.cost_func.jac_cost}}
         fun = self.cost_func.eval_cost
         bounds = self.value_ranges
         algorithm = getattr(optimize, self.minimizer)

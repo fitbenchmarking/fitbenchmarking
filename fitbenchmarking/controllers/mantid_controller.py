@@ -213,7 +213,7 @@ class MantidController(Controller):
                     """
                     fit_param = get_params(ff_self)
 
-                    jac = -self.jacobian.eval(fit_param)
+                    jac = self.cost_func.jacobian.eval(fit_param)
                     for i, _ in enumerate(xvals):
                         for j in range(len(fit_param)):
                             jacobian.set(i, j, jac[i, j])

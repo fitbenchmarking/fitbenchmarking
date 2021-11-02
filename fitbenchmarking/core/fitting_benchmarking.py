@@ -433,7 +433,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
             # Creates Jacobian class
             jacobian_cls = create_jacobian(jac_method)
             try:
-                jacobian = jacobian_cls(cost_func)
+                jacobian = jacobian_cls(cost_func.problem)
             except NoJacobianError as excp:
                 LOGGER.warning(str(excp))
                 continue
@@ -449,8 +449,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                         minimizer, jac_method, num_method_str)
 
                 jacobian.method = num_method
-
-                controller.jacobian = jacobian
+                cost_func.jacobian = jacobian
 
                 #######################
                 # Loops over Hessians #
@@ -459,7 +458,6 @@ def loop_over_jacobians(controller, options, grabbed_output):
                     loop_over_hessians(controller,
                                        options,
                                        minimizer_name,
-                                       jacobian,
                                        grabbed_output)
 
                 minimizer_list.extend(new_minimizer_list)
@@ -476,8 +474,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
     return results, chi_sq, minimizer_list
 
 
-def loop_over_hessians(controller, options, minimizer_name,
-                       jacobian, grabbed_output):
+def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
     """
     Loops over Hessians set from the options file
 
@@ -487,8 +484,6 @@ def loop_over_hessians(controller, options, minimizer_name,
     :type options: fitbenchmarking.utils.options.Options
     :param minimizer_name: minimizer name following loop_over_jacobians
     :type minimizer_name: str
-    :param jacobian: Jaocbian object
-    :type jacobian: fitbenchmarking.jacobian.<jac_method>_jacobian.<jac_method>
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
@@ -517,13 +512,12 @@ def loop_over_hessians(controller, options, minimizer_name,
         # then create hessian if minimizer accepts it
 
         minimizer_name_hes = minimizer_name
-        controller.hessian = None
 
         if minimizer_check and method != 'default':
             hessian_cls = create_hessian(method)
             try:
-                hessian = hessian_cls(cost_func, jacobian)
-                controller.hessian = hessian
+                hessian = hessian_cls(cost_func.problem)
+                cost_func.hessian = hessian
 
                 LOGGER.info("                   Hessian: %s",
                             method)
@@ -610,8 +604,8 @@ def loop_over_hessians(controller, options, minimizer_name,
 
         result_args = {'options': options,
                        'cost_func': cost_func,
-                       'jac': jacobian,
-                       'hess': controller.hessian,
+                       'jac': cost_func.jacobian,
+                       'hess': cost_func.hessian,
                        'chi_sq': chi_sq,
                        'runtime': runtime,
                        'software': controller.software,

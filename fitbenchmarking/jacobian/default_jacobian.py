@@ -10,17 +10,11 @@ class Default(Jacobian):
     Use the minimizer's jacobian/derivative approximation
     """
 
-    def __init__(self, cost_func):
-        super().__init__(cost_func)
+    def __init__(self, problem):
+        super().__init__(problem)
         self.use_default_jac = True
 
     def eval(self, params, **kwargs):
-        """
-        This should not be called?
-        """
-        raise NotImplementedError
-
-    def eval_cost(self, params, **kwargs):
         """
         This should not be called?
         """

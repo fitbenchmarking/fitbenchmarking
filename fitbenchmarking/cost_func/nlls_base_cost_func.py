@@ -2,7 +2,7 @@
 Implements the base non-linear least squares cost function
 """
 from abc import abstractmethod
-from numpy import dot
+from numpy import dot, matmul
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
 
@@ -38,9 +38,6 @@ class BaseNLLSCostFunc(CostFunc):
         """
         # Problem: The problem object from parsing
         super().__init__(problem)
-        #: *dict*
-        #: Container cached residual evaluation
-        self.cache_rx = {'params': None, 'value': None}
 
         self.invalid_algorithm_types = []
 
@@ -59,9 +56,11 @@ class BaseNLLSCostFunc(CostFunc):
 
     def eval_cost(self, params, **kwargs):
         """
-        Evaluate the square of the L2 norm of the residuals
+        Evaluate the square of the L2 norm of the residuals,
+        :math:`\\sum_i r(x_i,y_i,p)^2`
+        at the given parameters
 
-        :param params: The parameters to calculate residuals for
+        :param params: The parameters, :math:`p`, to calculate residuals for
         :type params: list
 
         :return: The sum of squares of residuals for the datapoints at the
@@ -69,7 +68,36 @@ class BaseNLLSCostFunc(CostFunc):
         :rtype: numpy array
         """
         r = self.eval_r(params=params, **kwargs)
+        return dot(r, r)
 
-        self.cache_cost_x['params'] = params
-        self.cache_cost_x['value'] = dot(r, r)
-        return self.cache_cost_x['value']
+    def jac_cost(self, params, **kwargs):
+        """
+        Uses the Jacobian of the model to evaluate the Jacobian of the
+        cost function, :math:`\\nabla_p F(r(x,y,p))`, at the given
+        parameters.
+        :param params: The parameters at which to calculate Jacobians
+        :type params: list
+        :return: evaluated Jacobian of the cost function
+        :rtype: 1D numpy array
+        """
+        r = self.eval_r(params, **kwargs)
+        J = self.jac_res(params, **kwargs)
+
+        return 2.0 * matmul(J.T, r)
+
+    def hes_cost(self, params, **kwargs):
+        """
+        Uses the Hessian of the model to evaluate the Hessian of the
+        cost function, :math:`\\nabla_p^2 F(r(x,y,p))`, at the given
+        parameters.
+
+        :param params: The parameters at which to calculate Hessians
+        :type params: list
+
+        :return: evaluated Hessian of the cost function
+        :rtype: 2D numpy array
+        """
+        r = self.eval_r(params, **kwargs)
+        H, J = self.hes_res(params, **kwargs)
+
+        return 2.0 * (matmul(J.T, J) + matmul(H, r))

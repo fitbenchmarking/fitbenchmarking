@@ -73,7 +73,7 @@ class RALFitController(Controller):
             raise UnknownMinimizerError(
                 "No {} minimizer for RALFit".format(self.minimizer))
 
-        if self.hessian:
+        if self.cost_func.hessian:
             self._options[b"exact_second_derivatives"] = True
         else:
             self._options[b"exact_second_derivatives"] = False
@@ -104,7 +104,7 @@ class RALFitController(Controller):
         :return: hessian evaluation from hessian.eval
         :rtype: numpy array
         """
-        hes, _ = self.hessian.eval(params)
+        hes, _ = self.cost_func.hes_res(params)
         return hes
     # pylint: enable=unused-argument
 
@@ -112,10 +112,10 @@ class RALFitController(Controller):
         """
         Run problem with RALFit.
         """
-        if self.hessian:
+        if self.cost_func.hessian:
             self._popt = ral_nlls.solve(self.initial_params,
                                         self.cost_func.eval_r,
-                                        self.jacobian.eval,
+                                        self.cost_func.jac_res,
                                         self.hes_eval,
                                         options=self._options,
                                         lower_bounds=self.param_ranges[0],
@@ -123,7 +123,7 @@ class RALFitController(Controller):
         else:
             self._popt = ral_nlls.solve(self.initial_params,
                                         self.cost_func.eval_r,
-                                        self.jacobian.eval,
+                                        self.cost_func.jac_res,
                                         options=self._options,
                                         lower_bounds=self.param_ranges[0],
                                         upper_bounds=self.param_ranges[1])[0]

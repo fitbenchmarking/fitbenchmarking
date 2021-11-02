@@ -103,21 +103,22 @@ class LocalMinTable(Table):
                                       y=result.data_y,
                                       e=result.data_e)
         try:
-            jac = result.jac.eval(result.params,
-                                  x=result.data_x,
-                                  y=result.data_y,
-                                  e=result.data_e)
+            jac = result.cost_func.jac_res(result.params,
+                                           x=result.data_x,
+                                           y=result.data_y,
+                                           e=result.data_e)
         except NotImplementedError:
             # If using a solver dependent Jacobian, we want
             # to switch to a common jacobian here to generate
             # comparisons
-            jacobian_cls = create_jacobian('scipy')
-            jacobian_instance = jacobian_cls(result.cost_func)
+            jacobian_cls = create_jacobian("scipy")
+            jacobian_instance = jacobian_cls(result.cost_func.problem)
             jacobian_instance.method = "2-point"
-            jac = jacobian_instance.eval(result.params,
-                                         x=result.data_x,
-                                         y=result.data_y,
-                                         e=result.data_e)
+            result.cost_func.jacobian = jacobian_instance
+            jac = result.cost_func.jac_res(result.params,
+                                           x=result.data_x,
+                                           y=result.data_y,
+                                           e=result.data_e)
 
         min_test = np.matmul(res, jac)
         norm_r = np.linalg.norm(res)

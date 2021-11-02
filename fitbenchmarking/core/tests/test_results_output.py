@@ -89,16 +89,13 @@ def generate_mock_results(results_directory: str):
         p.function = func[i]
         p.name = "prob_{}".format(i)
         p.starting_values = [starting_values[i]]
-    cost_funcs = [[NLLSCostFunc(problems[0]),
-                   WeightedNLLSCostFunc(problems[0])],
-                  [NLLSCostFunc(problems[1]),
-                   WeightedNLLSCostFunc(problems[1])]]
 
     softwares = ['s1', 's2']
     minimizers = [['s1m1', 's1m2'], ['s2m1', 's2m2']]
-    jacobians = [[[Scipy(cf), Numdifftools(cf)]
-                  for cf in cost_funcs[i]]
-                 for i, _ in enumerate(problems)]
+    jacobians = [[Scipy(p), Numdifftools(p)]
+                 for p in problems]
+    cost_funcs = [[NLLSCostFunc(p), WeightedNLLSCostFunc(p)]
+                  for p in problems]
 
     # problem, cost fun, software, minimizer, jacobian
     acc = [[[[[0.5, 0.3], [10]], [[0.6, 0.2], [0.7, 0.1]]],  # p1, cf1
@@ -131,8 +128,9 @@ def generate_mock_results(results_directory: str):
         for j, cf in enumerate(cost_funcs[i]):
             for k, software in enumerate(softwares):
                 for m, minim in enumerate(minimizers[k]):
-                    jacs = jacobians[i][j] if minim != 's1m2' else [None]
+                    jacs = jacobians[i] if minim != 's1m2' else [None]
                     for n, jac in enumerate(jacs):
+                        cf.jacobian = jac
                         minim_name = f'{minim}, Jac: {n}'
                         options.minimizer_alg_type[minim_name] = 'test'
                         results.append(FittingResult(
