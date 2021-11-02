@@ -96,8 +96,13 @@ RUN apt-get install -y git g++ qt5-default clang-format-6.0 cmake dvipng doxygen
   python3-mock python3-psutil python3-requests python3-toml python3-yaml wget
 
 # Details from mantid website
-RUN wget https://downloads.sourceforge.net/project/mantid/6.0/mantid-6.0.0-Source.tar.xz
-RUN tar -xvf mantid-6.0.0-Source.tar.xz
+ARG MANTID_VERSION=6.2
+ARG MANTID_SOURCE="mantid-$MANTID_VERSION.0-Source"
+ARG MANTID_TAR="$MANTID_SOURCE.tar.xz"
+ARG MANTID_DOWNLOAD="https://downloads.sourceforge.net/project/mantid/$MANTID_VERSION/$MANTID_TAR"
+
+RUN wget $MANTID_DOWNLOAD
+RUN tar -xvf $MANTID_TAR
 RUN rm mantid*.xz
 
 RUN apt-get install -y ccache
@@ -106,7 +111,7 @@ RUN ccache --max-size=20G
 RUN mkdir -p /opt/Mantid
 
 WORKDIR /opt/Mantid
-RUN cmake /mantid-6.0.0-Source -DENABLE_MANTIDPLOT=OFF
+RUN cmake /$MANTID_SOURCE -DENABLE_MANTIDPLOT=OFF
 RUN make
 
 ENV VIRTUAL_ENV=/opt/venv
