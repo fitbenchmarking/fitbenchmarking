@@ -274,23 +274,26 @@ def setup_options(multi_fit=False) -> Options:
     opts.num_runs = 1
     opts.make_plots = False
 
-    if multi_fit:
-        software = ["mantid"]
-        minimizers = ["Levenberg-Marquardt"]
-    elif TEST_TYPE not in ['default', 'matlab']:
-        software = ["bumps", "gsl", "levmar", "mantid", "ralfit", "scipy",
-                    "scipy_ls"]
-        minimizers = ["lm-bumps", "lmsder", "levmar", "Levenberg-Marquardt",
-                      "hybrid", "TNC", "lm-scipy"]
-    elif TEST_TYPE == "matlab":
-        software = ["matlab", "matlab_curve", "matlab_opt", "matlab_stats"]
-        minimizers = ["Nelder-Mead Simplex", "Levenberg-Marquardt",
-                      "levenberg-marquardt", "Levenberg-Marquardt"]
-    else:
-        software = ["bumps", "scipy", "scipy_ls"]
-        minimizers = ["lm-bumps", "TNC", "lm-scipy"]
+    # The software to test for the different test types
+    software = {"all": ["bumps", "gsl", "levmar", "mantid",
+                        "ralfit", "scipy", "scipy_ls"],
+                "default": ["bumps", "scipy", "scipy_ls"],
+                "matlab": ["matlab", "matlab_curve",
+                           "matlab_opt", "matlab_stats"]}
 
-    opts.software = software
-    opts.minimizers = {s: [minimizer]
-                       for s, minimizer in zip(software, minimizers)}
+    # The minimizers to test for each software
+    minimizers = {"bumps": "lm-bumps",
+                  "gsl": "lmsder",
+                  "levmar": "levmar",
+                  "mantid": "Levenberg-Marquardt",
+                  "matlab": "Nelder-Mead Simplex",
+                  "matlab_curve": "Levenberg-Marquardt",
+                  "matlab_opt": "levenberg-marquardt",
+                  "matlab_stats": "Levenberg-Marquardt",
+                  "ralfit": "hybrid",
+                  "scipy": "Nelder-Mead",
+                  "scipy_ls": "lm-scipy"}
+
+    opts.software = software.get(TEST_TYPE) if not multi_fit else ["mantid"]
+    opts.minimizers = {s: [minimizers[s]] for s in opts.software}
     return opts
