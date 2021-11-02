@@ -392,56 +392,9 @@ def _get_data_points(data_file_path):
     with open(data_file_path, 'r') as f:
         data_text = f.readlines()
 
-    # Find the line where data starts
-    # i.e. the first line with a float on it
-    first_row = 0
-    for i, line in enumerate(data_text):
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            float(line.split()[0])
-        except ValueError:
-            continue
-        first_row = i
-        break
-    else:
-        raise ParsingError('Could not find data points')
-
+    first_row = _find_first_line(data_text)
     dim = len(data_text[first_row].split())
-    cols = {'x': [],
-            'y': [],
-            'e': []}
-    num_cols = 0
-    if first_row != 0:
-        header = data_text[0].split()
-        for heading in header:
-            if heading == '#':
-                continue
-            if heading[0] == '<' and heading[-1] == '>':
-                heading = heading[1:-1]
-            col_type = heading[0].lower()
-            if col_type in ['x', 'y', 'e']:
-                cols[col_type].append(num_cols)
-                num_cols += 1
-            else:
-                raise ParsingError(
-                    'Unrecognised header line, header names must start with '
-                    '"x", "y", or "e".'
-                    'Examples are: '
-                    '"# X Y E", "#   x0 x1 y e", "# X0 X1 Y0 Y1 E0 E1", '
-                    '"<X> <Y> <E>", "<X0> <X1> <Y> <E>"...')
-        if dim != num_cols:
-            raise ParsingError('Could not match header to columns.')
-    else:
-        cols['x'] = [0]
-        cols['y'] = [1]
-        if dim == 3:
-            cols['e'] = [2]
-        elif dim != 2:
-            raise ParsingError(
-                'Cannot infer size of inputs and outputs in datafile. '
-                'Headers are required when not using 1D inputs and outputs.')
+    cols = _get_column_data(data_text, first_row, dim)
 
     if not cols['x'] or not cols['y']:
         raise ParsingError('Input files need both X and Y values.')
@@ -474,3 +427,77 @@ def _get_data_points(data_file_path):
             data[key] = data[key].flatten()
 
     return data
+
+
+def _find_first_line(file_lines: "list[str]") -> int:
+    """
+    Finds the first line where the data starts i.e. the
+    first line with a float on it.
+
+    :param file_lines: A list of lines from a file.
+    :type file_lines: A list of strings.
+
+    :return: index of the first file line with data.
+    :rtype: int
+    """
+    for i, line in enumerate(file_lines):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            float(line.split()[0])
+        except ValueError:
+            continue
+        return i
+
+    raise ParsingError('Could not find data points')
+
+
+def _get_column_data(file_lines: "list[str]", first_row: int,
+                     dim: int) -> list:
+    """
+    Gets the data in the file as a dictionary of x, y and e data.
+
+    :param file_lines: A list of lines from a file.
+    :type file_lines: A list of strings.
+    :param first_row: Index of the first line in the file containing data.
+    :type first_row: int
+    :param dim: The number of columns in the file.
+    :type dim: int
+
+    :return: index of the first file line with data.
+    :rtype: int
+    """
+    cols = {'x': [],
+            'y': [],
+            'e': []}
+    num_cols = 0
+    if first_row != 0:
+        header = file_lines[0].split()
+        for heading in header:
+            if heading == '#':
+                continue
+            if heading[0] == '<' and heading[-1] == '>':
+                heading = heading[1:-1]
+            col_type = heading[0].lower()
+            if col_type in ['x', 'y', 'e']:
+                cols[col_type].append(num_cols)
+                num_cols += 1
+            else:
+                raise ParsingError(
+                    'Unrecognised header line, header names must start with '
+                    '"x", "y", or "e".'
+                    'Examples are: '
+                    '"# X Y E", "#   x0 x1 y e", "# X0 X1 Y0 Y1 E0 E1", '
+                    '"<X> <Y> <E>", "<X0> <X1> <Y> <E>"...')
+        if dim != num_cols:
+            raise ParsingError('Could not match header to columns.')
+    else:
+        cols['x'], cols['y'] = [0], [1]
+        if dim == 3:
+            cols['e'] = [2]
+        elif dim != 2:
+            raise ParsingError(
+                'Cannot infer size of inputs and outputs in datafile. '
+                'Headers are required when not using 1D inputs and outputs.')
+    return cols
