@@ -13,6 +13,8 @@ from fitbenchmarking.cost_func.hellinger_nlls_cost_func import\
 from fitbenchmarking.cost_func.poisson_cost_func import\
     PoissonCostFunc
 from fitbenchmarking.hessian.analytic_hessian import Analytic
+from fitbenchmarking.hessian.numdifftools_hessian import Numdifftools
+from fitbenchmarking.hessian.scipy_hessian import Scipy
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic\
     as JacobianClass
 from fitbenchmarking.hessian.hessian_factory import create_hessian
@@ -127,6 +129,8 @@ class TestHessianClass(TestCase):
         self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.params = [6, 0.1]
+        self.actual_hessian = H_ls(x=self.fitting_problem.data_x,
+                                   p=self.params)
         self.cost_func = NLLSCostFunc(self.fitting_problem)
         self.jacobian = JacobianClass(self.fitting_problem)
         self.hessian = Analytic(self.fitting_problem)
@@ -187,6 +191,47 @@ class TestHessianClass(TestCase):
 
         self.assertTrue(np.isclose(actual_hessian, eval_result).all())
 
+    def test_scipy_two_point(self):
+        """
+        Test for ScipyTwoPoint evaluation is correct
+        """
+        hes = Scipy(self.cost_func.problem)
+        hes.method = '2-point'
+        eval_result = hes.eval(params=self.params)
+        self.assertTrue(np.isclose(self.actual_hessian, eval_result).all())
+
+    def test_scipy_three_point(self):
+        """
+        Test for ScipyThreePoint evaluation is correct
+        """
+        hes = Scipy(self.cost_func.problem)
+        hes.method = '3-point'
+        eval_result = hes.eval(params=self.params)
+        self.assertTrue(np.isclose(self.actual_hessian, eval_result).all())
+
+    def test_scipy_cs(self):
+        """
+        Test for ScipyCS evaluation is correct
+        """
+        hes = Scipy(self.cost_func.problem)
+        hes.method = 'cs'
+        eval_result = hes.eval(params=self.params)
+        self.assertTrue(np.isclose(self.actual_hessian, eval_result).all())
+
+    def test_numdifftools(self):
+        """
+        Test whether numdifftools evaluation is correct
+        """
+        for method in ['central',
+                       'forward',
+                       'backward',
+                       'complex',
+                       'multicomplex']:
+            hes = Numdifftools(self.cost_func.problem)
+            hes.method = method
+            eval_result = hes.eval(params=self.params)
+            self.assertTrue(np.isclose(self.actual_hessian, eval_result).all())
+
     def test_analytic_raise_error(self):
         """
         Test analytic Hessian raises an exception when problem.hessian is
@@ -225,6 +270,51 @@ class TestHesCostFunc(TestCase):
         actual_hessian = grad2_r_nlls(self.fitting_problem.data_x, self.params)
         self.actual = 2.0 * (np.matmul(J_eval.T, J_eval)
                              + np.matmul(actual_hessian, r_nlls))
+
+    def test_scipy_two_point(self):
+        """
+        Test for ScipyTwoPoint evaluation is correct
+        """
+        hes = Scipy(self.cost_func.problem)
+        hes.method = '2-point'
+        self.cost_func.hessian = hes
+        eval_result = self.cost_func.hes_cost(params=self.params)
+        self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+    def test_scipy_three_point(self):
+        """
+        Test for ScipyThreePoint evaluation is correct
+        """
+        hes = Scipy(self.cost_func.problem)
+        hes.method = '3-point'
+        self.cost_func.hessian = hes
+        eval_result = self.cost_func.hes_cost(params=self.params)
+        self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+    def test_scipy_cs_point(self):
+        """
+        Test for ScipyCS evaluation is correct
+        """
+        hes = Scipy(self.cost_func.problem)
+        hes.method = 'cs'
+        self.cost_func.hessian = hes
+        eval_result = self.cost_func.hes_cost(params=self.params)
+        self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+    def test_numdifftools(self):
+        """
+        Test whether numdifftools evaluation is correct
+        """
+        for method in ['central',
+                       'forward',
+                       'backward',
+                       'complex',
+                       'multicomplex']:
+            hes = Numdifftools(self.cost_func.problem)
+            hes.method = method
+            self.cost_func.hessian = hes
+            eval_result = self.cost_func.hes_cost(params=self.params)
+            self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_analytic_cutest(self):
         """

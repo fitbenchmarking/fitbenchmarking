@@ -7,7 +7,7 @@ import numpy
 
 from fitbenchmarking.utils.exceptions import ControllerAttributeError, \
     UnknownMinimizerError, IncompatibleMinimizerError, \
-    IncompatibleJacobianError
+    IncompatibleJacobianError, IncompatibleHessianError
 
 
 class Controller:
@@ -241,6 +241,21 @@ class Controller:
                       f"method is incompatible with the problem format " \
                       f"'{self.problem.format}'."
             raise IncompatibleJacobianError(message)
+
+    def _validate_hessian(self) -> None:
+        """
+        Validates that the provided Hessian method is compatible with the
+        other options and problem definition. An exception is raised if this
+        is not true.
+        """
+        incompatible_problems = self.hessian.INCOMPATIBLE_PROBLEMS.get(
+            self.hessian.method, [])
+
+        if self.problem.format in incompatible_problems:
+            message = f"The {self.hessian.__class__.__name__} Jacobian " \
+                      f"'{self.hessian.method}' method is incompatible " \
+                      f"with the problem format '{self.problem.format}'."
+            raise IncompatibleHessianError(message)
 
     def validate_minimizer(self, minimizer, algorithm_type):
         """

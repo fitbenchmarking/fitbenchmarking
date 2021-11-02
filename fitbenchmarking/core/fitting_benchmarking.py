@@ -22,6 +22,7 @@ from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               ControllerAttributeError,
                                               IncompatibleJacobianError,
+                                              IncompatibleHessianError,
                                               IncompatibleMinimizerError,
                                               MaxRuntimeError,
                                               NoJacobianError,
@@ -469,25 +470,32 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
     new_chi_sq = []
 
     # loop over selected hessian methods
-    for method in hessian_list:
+    for hes_method in hessian_list:
         # if user has selected to use hessian info
         # then create hessian if minimizer accepts it
 
         minimizer_name_hes = minimizer_name
 
-        if minimizer_check and method != 'default':
-            hessian_cls = create_hessian(method)
-            try:
-                hessian = hessian_cls(cost_func.problem)
-                cost_func.hessian = hessian
+        for num_method in options.hes_num_method[hes_method]:
+            if minimizer_check and hes_method != 'default':
+                hessian_cls = create_hessian(hes_method)
+                try:
+                    hessian = hessian_cls(cost_func.problem)
+                    cost_func.hessian = hessian
 
-                LOGGER.info("                   Hessian: %s",
-                            method)
-                minimizer_name_hes = "{}, {} hessian".format(
-                    minimizer_name, method)
+                    num_method_str = ''
+                    if hes_method != "analytic":
+                        num_method_str = ' ' + num_method
 
-            except NoHessianError as excp:
-                LOGGER.warning(str(excp))
+                    LOGGER.info("                   Hessian: %s%s",
+                                hes_method, num_method_str)
+                    minimizer_name_hes = "{}, {}{} hessian".format(
+                        minimizer_name, hes_method, num_method_str)
+
+                    hessian.method = num_method
+
+                except NoHessianError as excp:
+                    LOGGER.warning(str(excp))
 
         try:
             with grabbed_output:
@@ -533,7 +541,8 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
             # Note: Handle all exceptions as general exception to cover case
             #       where software re-raises our exception as a new type.
             error_flags = {MaxRuntimeError: 6,
-                           IncompatibleJacobianError: 7}
+                           IncompatibleJacobianError: 7,
+                           IncompatibleHessianError: 7}
 
             controller.flag = 3
             for error, flag in error_flags.items():

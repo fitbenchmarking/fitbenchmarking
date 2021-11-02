@@ -16,7 +16,7 @@ class Options:
 
     DEFAULTS = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                             'default_options.ini'))
-    VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN',
+    VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN', 'HESSIAN',
                       'PLOTTING', 'OUTPUT', 'LOGGING']
     VALID_MINIMIZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
@@ -63,10 +63,17 @@ class Options:
                       'matlab_stats', 'minuit', 'ralfit', 'scipy',
                       'scipy_ls', 'scipy_go'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
-         'hes_method': ['default', 'analytic'],
+         'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'poisson']}
     VALID_JACOBIAN = \
+        {'scipy': ['2-point', '3-point', 'cs'],
+         'analytic': ['cutest'],
+         'default': ['default'],
+         'numdifftools': ['central',
+                          'complex', 'multicomplex',
+                          'forward', 'backward']}
+    VALID_HESSIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
          'analytic': ['cutest'],
          'default': ['default'],
@@ -88,6 +95,7 @@ class Options:
     VALID = {'MINIMIZERS': VALID_MINIMIZERS,
              'FITTING': VALID_FITTING,
              'JACOBIAN': VALID_JACOBIAN,
+             'HESSIAN': VALID_HESSIAN,
              'PLOTTING': VALID_PLOTTING,
              'OUTPUT': VALID_OUTPUT,
              'LOGGING': VALID_LOGGING}
@@ -137,6 +145,11 @@ class Options:
          'scipy': ['2-point'],
          'default': ['default'],
          'numdifftools': ['central']}
+    DEFAULT_HESSIAN = \
+        {'analytic': ['cutest'],
+         'scipy': ['2-point'],
+         'default': ['default'],
+         'numdifftools': ['central']}
     DEFAULT_PLOTTING = \
         {'make_plots': True,
          'colour_map': 'magma_r',
@@ -154,6 +167,7 @@ class Options:
     DEFAULTS = {'MINIMIZERS': DEFAULT_MINIMZERS,
                 'FITTING': DEFAULT_FITTING,
                 'JACOBIAN': DEFAULT_JACOBIAN,
+                'HESSIAN': DEFAULT_HESSIAN,
                 'PLOTTING': DEFAULT_PLOTTING,
                 'OUTPUT': DEFAULT_OUTPUT,
                 'LOGGING': DEFAULT_LOGGING}
@@ -226,6 +240,12 @@ class Options:
         for key in self.VALID_FITTING["jac_method"]:
             self.num_method[key] = self.read_value(jacobian.getlist,
                                                    key)
+
+        hessian = config['HESSIAN']
+        self.hes_num_method = {}
+        for key in self.VALID_FITTING["hes_method"]:
+            self.hes_num_method[key] = self.read_value(hessian.getlist,
+                                                       key)
 
         plotting = config['PLOTTING']
         self.make_plots = self.read_value(plotting.getboolean, 'make_plots')
@@ -340,9 +360,12 @@ class Options:
                                  self.algorithm_type),
                              'software': list_to_string(self.software),
                              'jac_method': list_to_string(self.jac_method),
+                             'hes_method': list_to_string(self.hes_method),
                              'max_runtime': self.max_runtime}
         config['JACOBIAN'] = {k: list_to_string(m)
                               for k, m in self.num_method.items()}
+        config['HESSIAN'] = {k: list_to_string(m)
+                             for k, m in self.hes_num_method.items()}
 
         config['PLOTTING'] = {'colour_map': self.colour_map,
                               'cmap_range': self.cmap_range,

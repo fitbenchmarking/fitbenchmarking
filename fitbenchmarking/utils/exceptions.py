@@ -231,3 +231,12 @@ class FilepathTooLongError(FitBenchmarkException):
     """
     class_message = 'The filepath for saving a file is too long.'
     error_code = 25
+
+class IncompatibleHessianError(FitBenchmarkException):
+    """
+    Indicates that the selected Hessian method is not compatible
+    with selected options/problem set
+    """
+    class_message = 'The provided Hessian method cannot be used with ' \
+                    'the selected options or problem set.'
+    error_code = 26
