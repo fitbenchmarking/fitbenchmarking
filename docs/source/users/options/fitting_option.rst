@@ -67,7 +67,7 @@ Algorithm type (:code:`algorithm_type`)
 ---------------------------------------
 
 This is used to select what type of algorithm is used within a specific software.
-For a full list of available minimizers for each algorithm type, see :ref:`minimizer_types`. 
+For a full list of available minimizers for each algorithm type, see :ref:`minimizer_types`.
 The options are:
 
 * ``all`` - all minimizers
@@ -107,7 +107,7 @@ This sets the Jacobian used. Current Jacobian methods are:
 * ``scipy`` -  uses :ref:`SciPy's finite difference Jacobian approximations <scipy-jac>`.
 * ``default`` - uses the default derivative approximation implemented in the minimizer.
 * ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-jac>`.
-  
+
 Default is ``default``
 
 .. code-block:: rst
@@ -117,8 +117,8 @@ Default is ``default``
 
 .. warning::
 
-   Currently analytic Jacobians are available are only available for
-   problems that use the cutest and NIST parsers.
+   Currently analytic Jacobians are only available for
+   problems that use the cutest parser.
 
 
 Hessian method (:code:`hes_method`)
@@ -128,7 +128,9 @@ This sets the Hessian used. Current Hessian methods are:
 
 * ``default`` - Hessian information is not passed to minimizers
 * ``analytic`` - uses the analytic Hessian extracted from the fitting problem.
-  
+* ``scipy`` -  uses :ref:`SciPy's finite difference approximations <scipy-hes>`.
+* ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-hes>`.
+
 Default is ``default``
 
 .. code-block:: rst
@@ -138,8 +140,8 @@ Default is ``default``
 
 .. warning::
 
-   Currently analytic Hessians are available are only available for
-   problems that use the NIST parser.
+   Currently analytic Hessians are only available for
+   problems that use the cutest parser.
 
 Cost function (:code:`cost_func_type`)
 --------------------------------------
