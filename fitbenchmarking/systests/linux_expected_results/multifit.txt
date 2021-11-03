@@ -1,4 +1,4 @@
-                                       mantid
-                          BFGS: scipy 2-point
-Basic MultiFit, Dataset 1        10.73 (1)[2]
-Basic MultiFit, Dataset 2        16.08 (1)[2]
+                                                      mantid
+                          Levenberg-Marquardt: scipy 2-point
+Basic MultiFit, Dataset 1                           8.16 (1)
+Basic MultiFit, Dataset 2                          15.28 (1)
