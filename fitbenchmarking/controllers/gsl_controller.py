@@ -211,7 +211,6 @@ class GSLController(Controller):
         """
         Run problem with GSL
         """
-        # pylint: disable=c-extension-no-member
         for _ in range(self._maxits):
             status = self._solver.iterate()
             # check if the method has converged
@@ -236,7 +235,6 @@ class GSLController(Controller):
                 self.flag = 2
         else:
             self.flag = 1
-        # pylint: enable=c-extension-no-member
 
     def cleanup(self):
         """
