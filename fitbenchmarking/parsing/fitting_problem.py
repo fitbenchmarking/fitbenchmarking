@@ -72,7 +72,7 @@ class FittingProblem:
         #: e.g.
         #: :code:`[{p1_name: p1_val1, p2_name: p2_val1, ...},
         #: {p1_name: p1_val2, ...}, ...]`
-        self.starting_values = None
+        self.starting_values: list = None
 
         #: *list*
         #: Smallest and largest values of interest in the data
