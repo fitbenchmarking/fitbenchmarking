@@ -263,8 +263,8 @@ def setup_options(multi_fit=False) -> Options:
 
     # The minimizers to test for each software
     minimizers = {"bumps": "lm-bumps",
-                  "dfo": "dfols",
-                  "gradient_free": "HillClimbingOptimizer",
+                  "dfo": "dfogn",
+                  "gradient_free": "BayesianOptimizer",
                   "gsl": "lmsder",
                   "levmar": "levmar",
                   "mantid": "Levenberg-Marquardt",
