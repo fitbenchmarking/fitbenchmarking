@@ -181,6 +181,7 @@ class Controller:
         If there are some invalid options, the relevant exception is raised.
         """
         self._validate_jacobian()
+        self._validate_hessian()
 
     def prepare(self):
         """
