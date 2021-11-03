@@ -57,8 +57,23 @@
                         <label for="comparison-accordion">Comparison</label>
                     </h2>
                     <div class="content">
-                        <p>This is a comparison of the cost functions.</p>
-                        
+                        <p>
+                        {% if best_results|length == 1 %}
+                        This plot shows a comparison of the runs. The minimizer
+                        which produced closest fit is in bold, with the other
+                        minimizers shown as thinner lines for context.
+                        {% else %}
+                        This plot shows a comparison of the runs across cost
+                        functions. Colours are used to distinguish between fits
+                        obtained using each cost function. Within a cost function,
+                        the minimizer which produced closest fit is in bold and
+                        the other minimizers are shown as thinner lines for context.
+                        {% endif %}
+                        <br>Please note that this plot is intended for use as an
+                        indication of the variety of the fits that were obtained
+                        for specific details, please consult the individual support
+                        pages.
+                        </p>
                         <div align="center" class="figure align-center">
                             {% if summary_plot_available %}
                                 <img alt="{{ summary_plot }}" src="{{ summary_plot }}" />

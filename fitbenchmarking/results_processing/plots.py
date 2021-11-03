@@ -49,7 +49,7 @@ class Plot:
                             "marker": "",
                             "linestyle": '-',
                             "linewidth": 1,
-                            "alpha": 0.8, }
+                            "alpha": 0.5, }
 
     def __init__(self, best_result, options, figures_dir):
         self.cost_func = best_result.cost_func
