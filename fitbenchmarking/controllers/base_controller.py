@@ -249,16 +249,17 @@ class Controller:
         other options and problem definition. An exception is raised if this
         is not true.
         """
-        incompatible_problems = \
-            self.cost_func.hessian.INCOMPATIBLE_PROBLEMS.get(
-                self.cost_func.hessian.method, [])
+        if self.cost_func.hessian is not None:
+            incompatible_problems = \
+                self.cost_func.hessian.INCOMPATIBLE_PROBLEMS.get(
+                    self.cost_func.hessian.method, [])
 
-        if self.problem.format in incompatible_problems:
-            message = f"The {self.cost_func.hessian.__class__.__name__} " \
-                      f"Jacobian '{self.cost_func.hessian.method}' " \
-                      f"method is incompatible with the problem format " \
-                      f"'{self.problem.format}'."
-            raise IncompatibleHessianError(message)
+            if self.problem.format in incompatible_problems:
+                message = f"The {self.cost_func.hessian.__class__.__name__} " \
+                          f"Hessian '{self.cost_func.hessian.method}' " \
+                          f"method is incompatible with the problem format " \
+                          f"'{self.problem.format}'."
+                raise IncompatibleHessianError(message)
 
     def validate_minimizer(self, minimizer, algorithm_type):
         """
