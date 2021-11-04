@@ -25,7 +25,7 @@ class Scipy(Hessian):
         :type params: list
 
         :return: Approximation of the Hessian
-        :rtype: numpy array
+        :rtype: 3D numpy array
         """
         x = kwargs.get("x", self.problem.data_x)
         hes = np.zeros((len(params), len(params), len(x)))

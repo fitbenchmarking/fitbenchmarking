@@ -66,7 +66,7 @@ Numdifftools (:code:`numdifftools`)
 
 Calculates the Hessian from the Jacobian using the python package :code:`numdifftools`.
 We allow the user to change the method used, but other options
-(e.g, the step size generator and the order of the approximation) are set the defaults.
+(e.g, the step size generator and the order of the approximation) are set to the defaults.
 The supported options are:
 
 * ``central`` - central differencing.  Almost as accurate as complex, but with no restriction on the type of function.
