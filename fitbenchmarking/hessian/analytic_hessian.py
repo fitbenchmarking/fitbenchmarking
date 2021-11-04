@@ -20,13 +20,13 @@ class Analytic(Hessian):
     def eval(self, params, **kwargs):
         """
         Evaluates Hessian of problem.eval_model, returning the value
-        sum_{i=1}^m (r)_i \nabla^2r_i(x)
+        \nabla^2_p f(x, p)
 
         :param params: The parameter values to find the Hessian at
         :type params: list
 
         :return: Approximation of the Hessian
-        :rtype: numpy array
+        :rtype: 3D numpy array
         """
         x = kwargs.get("x", self.problem.data_x)
         return self.problem.hessian(x, params)

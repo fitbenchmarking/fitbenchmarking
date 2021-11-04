@@ -34,7 +34,7 @@ class Hessian:
         :type params: list
 
         :return: Computed Hessian
-        :rtype: numpy array
+        :rtype: 3D numpy array
         """
         raise NotImplementedError
 

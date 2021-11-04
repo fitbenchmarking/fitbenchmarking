@@ -19,7 +19,7 @@ class Scipy(Hessian):
     def eval(self, params, **kwargs):
         """
         Evaluates Hessian of problem.eval_model, returning the value
-        sum_{i=1}^m (r)_i \nabla^2r_i(x)
+        \nabla^2_p f(x, p)
 
         :param params: The parameter values to find the Hessian at
         :type params: list
