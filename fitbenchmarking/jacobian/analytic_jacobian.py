@@ -28,6 +28,4 @@ class Analytic(Jacobian):
         :rtype: numpy array
         """
         x = kwargs.get("x", self.problem.data_x)
-        # Temporary minus sign. The Jacobians in the example data
-        # files need to be changed so they are not negative
-        return - self.problem.jacobian(x, params)
+        return self.problem.jacobian(x, params)

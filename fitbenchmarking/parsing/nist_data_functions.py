@@ -69,7 +69,7 @@ def nist_jacobian_definition(jacobian, param_names):
         if is_int(jacobian_scipy_format):
             jacobian_scipy_format += "*(np.ones(x.shape[0]))"
         scipy_jacobian.append(jacobian_scipy_format)
-    jacobian_format = "-np.array([{}]).T".format(",".join(scipy_jacobian))
+    jacobian_format = "np.array([{}]).T".format(",".join(scipy_jacobian))
 
     new_param_name = "params"
     for i, name in enumerate(param_names):

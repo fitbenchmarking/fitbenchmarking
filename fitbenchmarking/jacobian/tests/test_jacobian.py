@@ -75,8 +75,8 @@ def J_weighted(x, e, p):
     Analytic Jacobian evaluation for weighted_nlls
     cost function
     """
-    return np.column_stack(((np.exp(p[1] * x) / e),
-                            (x * p[0] * np.exp(p[1] * x)) / e))
+    return np.column_stack((-(np.exp(p[1] * x) / e),
+                            -(x * p[0] * np.exp(p[1] * x)) / e))
 
 
 def J_hellinger(x, p):
@@ -84,8 +84,8 @@ def J_hellinger(x, p):
     Analytic Jacobian evaluation for hellinger_nlls
     cost function
     """
-    return np.column_stack((1/2*(p[0]*np.exp(p[1]*x))**(-1/2)*np.exp(p[1]*x),
-                            1/2*(p[0]*np.exp(p[1]*x))**(-1/2)
+    return np.column_stack((-1/2*(p[0]*np.exp(p[1]*x))**(-1/2)*np.exp(p[1]*x),
+                            -1/2*(p[0]*np.exp(p[1]*x))**(-1/2)
                             * p[0]*x*np.exp(p[1]*x)))
 
 
@@ -94,8 +94,8 @@ def J_poisson(x, y, p):
     Analytic Jacobian evaluation for poisson
     cost function
     """
-    return np.column_stack((y/p[0]-np.exp(p[1]*x),
-                            y*x-p[0]*x*np.exp(p[1]*x)))
+    return np.column_stack((-y/p[0]+np.exp(p[1]*x),
+                            -y*x+p[0]*x*np.exp(p[1]*x)))
 
 
 class TestJacobianClass(TestCase):
@@ -174,7 +174,8 @@ class TestJacobianClass(TestCase):
         jac = Analytic(self.cost_func.problem)
         self.cost_func.jacobian = jac
         eval_result = self.cost_func.jac_res(params=self.params)
-        self.assertTrue(np.isclose(self.actual, eval_result).all())
+        actual = J(self.fitting_problem.data_x, self.params)
+        self.assertTrue(np.isclose(actual, eval_result).all())
 
     def test_analytic_cutest_weighted(self):
         """
@@ -237,7 +238,7 @@ class TestDerivCostFunc(TestCase):
         options.cost_func_type = "nlls"
         self.fitting_problem = FittingProblem(options)
         self.fitting_problem.function = f
-        self.fitting_problem.jacobian = J
+        self.fitting_problem.jacobian = j
         self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.params = [6, 0.1]
