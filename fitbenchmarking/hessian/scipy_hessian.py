@@ -30,7 +30,8 @@ class Scipy(Hessian):
         x = kwargs.get("x", self.problem.data_x)
         hes = np.zeros((len(params), len(params), len(x)))
         for i, x_i in enumerate(x):
-            def grad_i(params): return self.problem.jacobian(x_i, params)
+            def grad_i(params):
+                return self.problem.jacobian(x_i, params).squeeze()
             hes[:, :, i] = approx_derivative(grad_i, params,
                                              method=self.method,
                                              rel_step=None,
