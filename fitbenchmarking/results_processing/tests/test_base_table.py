@@ -18,6 +18,7 @@ from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
 
+# pylint: disable=unsubscriptable-object
 def generate_results():
     """
     Create a predictable set of results.
