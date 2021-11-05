@@ -272,8 +272,8 @@ class CreatePlotsTests(unittest.TestCase):
         """
         Setting up paths and results folders
         """
-        with TemporaryDirectory() as file:
-            self.results_dir = os.path.join(file, 'figures_dir')
+        with TemporaryDirectory() as directory:
+            self.results_dir = os.path.join(directory, 'figures_dir')
 
         results, self.options = generate_mock_results(self.results_dir)
         self.best_results, self.results = preprocess_data(results)
@@ -438,8 +438,8 @@ class ExtractTagsTests(unittest.TestCase):
         """
         Setup function for extract tags tests.
         """
-        self.tempdir = TemporaryDirectory()
-        self.results_dir = os.path.join(self.tempdir.name, 'figures_dir')
+        with TemporaryDirectory() as directory:
+            self.results_dir = os.path.join(directory, 'figures_dir')
         results, self.options = generate_mock_results(self.results_dir)
         self.result = results[0]
         self.result.costfun_tag = 'cf0'
@@ -520,8 +520,8 @@ class ProcessBestResultsTests(unittest.TestCase):
         """
         Setup function for _process_best_results tests.
         """
-        self.tempdir = TemporaryDirectory()
-        self.results_dir = os.path.join(self.tempdir.name, 'figures_dir')
+        with TemporaryDirectory() as directory:
+            self.results_dir = os.path.join(directory, 'figures_dir')
         results, self.options = generate_mock_results(self.results_dir)
         self.results = results[:5]
         for r, chisq, runtime in zip(self.results,

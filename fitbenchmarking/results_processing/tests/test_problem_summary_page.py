@@ -151,13 +151,12 @@ class CreateTests(TestCase):
         """
         Setup for create function tests
         """
-        self.results_dir = TemporaryDirectory()
-        self.supp_dir = os.path.join(self.results_dir.name, 'support_pages')
-        self.fig_dir = os.path.join(self.supp_dir, 'figures')
+        with TemporaryDirectory() as directory:
+            directory_name = directory
+            self.supp_dir = os.path.join(directory_name, 'support_pages')
+            self.fig_dir = os.path.join(self.supp_dir, 'figures')
         os.makedirs(self.fig_dir)
-        results, self.options = generate_mock_results(
-            self.results_dir.name
-        )
+        results, self.options = generate_mock_results(directory_name)
         self.best_results, self.results = preprocess_data(results)
 
     def test_create_all_plots(self):
@@ -215,12 +214,13 @@ class CreateSummaryPageTests(TestCase):
         """
         Setup tests for _create_summary_page
         """
-        self.results_dir = TemporaryDirectory()
-        self.supp_dir = os.path.join(self.results_dir.name, 'support_pages')
+        with TemporaryDirectory() as directory:
+            directory_name = directory
+            self.supp_dir = os.path.join(directory_name, 'support_pages')
+
         os.makedirs(self.supp_dir)
-        results, self.options = generate_mock_results(
-            self.results_dir.name
-        )
+        results, self.options = generate_mock_results(directory_name)
+
         best_results, results = preprocess_data(results)
         self.prob_name = list(results.keys())[0]
         self.results = results[self.prob_name]
