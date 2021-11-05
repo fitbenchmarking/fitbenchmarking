@@ -236,10 +236,10 @@ class Options:
         self.max_runtime = self.read_value(fitting.getfloat, 'max_runtime')
 
         jacobian = config['JACOBIAN']
-        self.num_method = {}
+        self.jac_num_method = {}
         for key in self.VALID_FITTING["jac_method"]:
-            self.num_method[key] = self.read_value(jacobian.getlist,
-                                                   key)
+            self.jac_num_method[key] = self.read_value(jacobian.getlist,
+                                                       key)
 
         hessian = config['HESSIAN']
         self.hes_num_method = {}
@@ -363,7 +363,7 @@ class Options:
                              'hes_method': list_to_string(self.hes_method),
                              'max_runtime': self.max_runtime}
         config['JACOBIAN'] = {k: list_to_string(m)
-                              for k, m in self.num_method.items()}
+                              for k, m in self.jac_num_method.items()}
         config['HESSIAN'] = {k: list_to_string(m)
                              for k, m in self.hes_num_method.items()}
 

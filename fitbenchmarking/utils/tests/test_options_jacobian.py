@@ -29,7 +29,7 @@ class JacobianOptionTesJacobians(unittest.TestCase):
                     'analytic': ['cutest'],
                     'numdifftools': ['central'],
                     'default': ['default']}
-        actual = self.options.num_method
+        actual = self.options.jac_num_method
         self.assertEqual(expected, actual)
 
 
@@ -118,7 +118,7 @@ class UserJacobianOptionTests(unittest.TestCase):
                       'default': ['default']}
         config_str = \
             "[JACOBIAN]\nscipy: cs"
-        self.shared_valid('num_method', set_option, config_str)
+        self.shared_valid('jac_num_method', set_option, config_str)
 
     def test_minimizer_num_method_invalid(self):
         """
@@ -126,4 +126,4 @@ class UserJacobianOptionTests(unittest.TestCase):
         """
         config_str = \
             "[JACOBIAN]\nnum_method: FD_3point"
-        self.shared_invalid('num_method', config_str)
+        self.shared_invalid('jac_num_method', config_str)
