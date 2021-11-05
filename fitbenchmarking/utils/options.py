@@ -68,14 +68,14 @@ class Options:
                             'poisson']}
     VALID_JACOBIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
-         'analytic': ['cutest'],
+         'analytic': ['default'],
          'default': ['default'],
          'numdifftools': ['central',
                           'complex', 'multicomplex',
                           'forward', 'backward']}
     VALID_HESSIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
-         'analytic': ['cutest'],
+         'analytic': ['default'],
          'default': ['default'],
          'numdifftools': ['central',
                           'complex', 'multicomplex',
@@ -141,12 +141,12 @@ class Options:
          'cost_func_type': 'weighted_nlls',
          'max_runtime': 600}
     DEFAULT_JACOBIAN = \
-        {'analytic': ['cutest'],
+        {'analytic': ['default'],
          'scipy': ['2-point'],
          'default': ['default'],
          'numdifftools': ['central']}
     DEFAULT_HESSIAN = \
-        {'analytic': ['cutest'],
+        {'analytic': ['default'],
          'scipy': ['2-point'],
          'default': ['default'],
          'numdifftools': ['central']}

@@ -10,16 +10,16 @@ Analytic (:code:`analytic`)
 ---------------------------
 
 Analytic Hessians can only be used for specific :ref:`problem_def`. Currently
-the supported formats are:
+the supported formats are cutest and NIST. The only option is:
 
-* ``cutest``
+* ``default`` - use the analytic derivative provided by a supported format.
 
-Default is ``cutest``
+Default is ``default``
 
 .. code-block:: rst
 
     [HESSIAN]
-    analytic: cutest
+    analytic: default
 
 .. _scipy-hes:
 

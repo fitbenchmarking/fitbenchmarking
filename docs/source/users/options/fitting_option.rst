@@ -118,7 +118,7 @@ Default is ``default``
 .. warning::
 
    Currently analytic Jacobians are only available for
-   problems that use the cutest parser.
+   problems that use the cutest and NIST parsers.
 
 
 Hessian method (:code:`hes_method`)
@@ -141,7 +141,7 @@ Default is ``default``
 .. warning::
 
    Currently analytic Hessians are only available for
-   problems that use the cutest parser.
+   problems that use the cutest and NIST parsers.
 
 Cost function (:code:`cost_func_type`)
 --------------------------------------

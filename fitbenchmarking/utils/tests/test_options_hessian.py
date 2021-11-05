@@ -1,5 +1,5 @@
 '''
-Test the JACOBIAN section for the options file
+Test the HESSIAN section for the options file
 '''
 import inspect
 import shutil
@@ -10,9 +10,9 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 
-class JacobianOptionTesJacobians(unittest.TestCase):
+class HessianOptionTesHessians(unittest.TestCase):
     """
-    Checks that the defaults in the JACOBIAN section are set correctly
+    Checks that the defaults in the HESSIAN section are set correctly
     """
 
     def setUp(self):
@@ -29,13 +29,13 @@ class JacobianOptionTesJacobians(unittest.TestCase):
                     'analytic': ['default'],
                     'numdifftools': ['central'],
                     'default': ['default']}
-        actual = self.options.jac_num_method
+        actual = self.options.hes_num_method
         self.assertEqual(expected, actual)
 
 
-class UserJacobianOptionTests(unittest.TestCase):
+class UserHessianOptionTests(unittest.TestCase):
     """
-    Checks the Jacobian in the options file are set correctly or raise errors
+    Checks the Hessian in the options file are set correctly or raise errors
     """
 
     def setUp(self):
@@ -73,7 +73,7 @@ class UserJacobianOptionTests(unittest.TestCase):
 
     def shared_valid(self, opt_name, options_set, config_str):
         """
-        Shared test to check that the Jacobian option set is valid
+        Shared test to check that the Hessian option set is valid
 
         :param opt_name: name of option to be set
         :type opt_name: str
@@ -89,7 +89,7 @@ class UserJacobianOptionTests(unittest.TestCase):
 
     def shared_invalid(self, opt_name, config_str):
         """
-        Shared test to check that the Jacobian option set is invalid
+        Shared test to check that the Hessian option set is invalid
 
         :param opt_name: name of option to be set
         :type opt_name: str
@@ -105,7 +105,7 @@ class UserJacobianOptionTests(unittest.TestCase):
         Tests that the user defined option key is invalid.
         """
         config_str = \
-            "[JACOBIAN]\nnum_minimizer_runs: 3"
+            "[HESSIAN]\nnum_minimizer_runs: 3"
         self.shared_invalid('num_minimizer_runs', config_str)
 
     def test_minimizer_num_method_valid(self):
@@ -117,13 +117,13 @@ class UserJacobianOptionTests(unittest.TestCase):
                       'numdifftools': ['central'],
                       'default': ['default']}
         config_str = \
-            "[JACOBIAN]\nscipy: cs"
-        self.shared_valid('jac_num_method', set_option, config_str)
+            "[HESSIAN]\nscipy: cs"
+        self.shared_valid('hes_num_method', set_option, config_str)
 
     def test_minimizer_num_method_invalid(self):
         """
         Checks user set num_method is invalid
         """
         config_str = \
-            "[JACOBIAN]\nnum_method: FD_3point"
-        self.shared_invalid('jac_num_method', config_str)
+            "[HESSIAN]\nnum_method: FD_3point"
+        self.shared_invalid('hes_num_method', config_str)
