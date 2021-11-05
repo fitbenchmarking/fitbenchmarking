@@ -10,7 +10,7 @@ from inspect import getfile
 import numpy as np
 
 import fitbenchmarking
-from fitbenchmarking.core.results_output import preproccess_data
+from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
 from fitbenchmarking.jacobian.default_jacobian import Default as DefaultJac
@@ -122,12 +122,13 @@ def generate_mock_results():
                               error_flag=error_in[i][j],
                               )
             r.support_page_link = link_in[i][j]
+            r.problem_summary_page_link = 'link0'
             results.append(r)
             options.minimizer_alg_type[options.minimizers[software]
                                        [j]] = 'all, ls'
-        results_out.append(results)
-    best = preproccess_data(results_out)
-    return best, results_out, options
+        results_out.extend(results)
+    best_results, results_out = preprocess_data(results_out)
+    return best_results, results_out, options
 
 
 class GenerateTableTests(unittest.TestCase):
@@ -140,7 +141,7 @@ class GenerateTableTests(unittest.TestCase):
         """
         Setup up method for test
         """
-        self.best, self.results, self.options = generate_mock_results()
+        self.best_results, self.results, self.options = generate_mock_results()
         root = os.path.dirname(getfile(fitbenchmarking))
 
         self.expected_results_dir = os.path.join(root, 'results_processing',
@@ -165,6 +166,7 @@ class GenerateTableTests(unittest.TestCase):
         for suffix in SORTED_TABLE_NAMES:
             _, html_table, txt_table, _ = generate_table(
                 results=self.results,
+                best_results=self.best_results,
                 options=self.options,
                 group_dir="group_dir",
                 fig_dir=self.fig_dir,
@@ -172,9 +174,9 @@ class GenerateTableTests(unittest.TestCase):
                 table_name="table_name",
                 suffix=suffix)
             html_table_name = os.path.join(self.expected_results_dir,
-                                           "{}.html".format(suffix))
+                                           f"{suffix}.html")
             txt_table_name = os.path.join(self.expected_results_dir,
-                                          "{}.txt".format(suffix))
+                                          f"{suffix}.txt")
 
             for f, t in zip([html_table_name, txt_table_name],
                             [html_table, txt_table]):
@@ -213,10 +215,10 @@ class GenerateTableTests(unittest.TestCase):
             if act_line != exp_line:
                 diff.append([i, exp_line, act_line])
         if diff != []:
-            print("Comparing against {}".format(expected_table)
-                  + "\n".join(['== Line {} ==\n'
-                               'Expected :{}\n'
-                               'Actual   :{}'.format(*change)
+            print(f"Comparing against {expected_table}\n"
+                  + "\n".join([f'== Line {change[0]} ==\n'
+                               f'Expected :{change[1]}\n'
+                               f'Actual   :{change[2]}'
                                for change in diff]))
             print("\n==\n")
             print("Output generated (also saved as actual.out):")
@@ -236,7 +238,7 @@ class CreateResultsTableTests(unittest.TestCase):
         """
         Setup up method for test
         """
-        self.best, self.results, self.options = generate_mock_results()
+        self.best_results, self.results, self.options = generate_mock_results()
         root = os.path.dirname(getfile(fitbenchmarking))
 
         self.group_dir = os.path.join(root, 'results_processing',
@@ -265,6 +267,7 @@ class CreateResultsTableTests(unittest.TestCase):
         """
         create_results_tables(options=self.options,
                               results=self.results,
+                              best_results=self.best_results,
                               group_dir=self.group_dir,
                               fig_dir=self.fig_dir,
                               pp_locations=["pp_1", "pp_2"],
@@ -273,8 +276,7 @@ class CreateResultsTableTests(unittest.TestCase):
         for suffix in SORTED_TABLE_NAMES:
 
             for table_type in ['html', 'txt']:
-                table_name = f"{suffix}_{self.options.cost_func_type}" \
-                             f"_table.{table_type}"
+                table_name = f'{suffix}_table.{table_type}'
                 file_name = os.path.join(self.group_dir, table_name)
                 self.assertTrue(os.path.isfile(file_name),
                                 f"Could not find {file_name}")
