@@ -179,8 +179,7 @@ def run(problem_sets, results_directory, options_file='', debug=False):
 
         LOGGER.info('Running the benchmarking on the %s problem set',
                     label)
-        results, failed_problems, unselected_minimzers, \
-            cost_func_description = \
+        results, failed_problems, unselected_minimizers = \
             benchmark(options=options,
                       data_dir=data_dir)
 
@@ -189,10 +188,10 @@ def run(problem_sets, results_directory, options_file='', debug=False):
         # produced as results tables won't show meaningful values.
         all_dummy_results_flag = True
         for result in results:
-            for res in result:
-                if res.error_flag != 4:
-                    all_dummy_results_flag = False
-                    continue
+            if result.error_flag != 4:
+                all_dummy_results_flag = False
+                break
+
         # If the results are an empty list then this means that all minimizers
         # raise an exception and the tables will produce errors if they run
         # for that problem set.
@@ -212,8 +211,7 @@ def run(problem_sets, results_directory, options_file='', debug=False):
                              results=results,
                              options=options,
                              failed_problems=failed_problems,
-                             unselected_minimzers=unselected_minimzers,
-                             cost_func_description=cost_func_description)
+                             unselected_minimizers=unselected_minimizers)
 
             LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
             group_results_dir = os.path.relpath(path=group_results_dir,

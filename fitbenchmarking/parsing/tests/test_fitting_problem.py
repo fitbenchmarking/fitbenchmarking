@@ -154,7 +154,7 @@ class TestFittingProblem(TestCase):
         self.assertTrue(
             np.isclose(fitting_problem.data_e[fitting_problem.sorted_index],
                        expected_e_data).all())
-        self.options.cost_func_type = "nlls"
+        self.options.cost_func_type = ["nlls"]
         fitting_problem.correct_data()
         self.assertTrue(
             np.isclose(fitting_problem.data_x[fitting_problem.sorted_index],
@@ -212,7 +212,7 @@ class TestFittingProblem(TestCase):
                     fitting_problem.data_e[i][fitting_problem.sorted_index[i]],
                     expected_e_data[i]).all())
 
-        self.options.cost_func_type = "nlls"
+        self.options.cost_func_type = ["nlls"]
         fitting_problem.correct_data()
         for i in range(3):
             self.assertTrue(

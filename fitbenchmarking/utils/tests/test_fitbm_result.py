@@ -101,18 +101,36 @@ class FitbmResultTests(unittest.TestCase):
         self.assertTrue(np.isclose(params[1], self.result.params).all())
         self.assertEqual(chi_sq[1], self.result.chi_sq)
 
-    def test_norm_acc(self):
+    def test_norm_acc_finite_min(self):
         """
-        Test that sanitised names are correct.
+        Test that sanitised names are correct when min_chi_sq is finite.
         """
         expected = self.chi_sq / self.min_chi_sq
         self.assertEqual(self.result.norm_acc, expected)
 
-    def test_norm_runtime(self):
+    def test_norm_acc_infinite_min(self):
         """
-        Test that sanitised names are correct.
+        Test that sanitised names are correct when min_chi_sq is infinite.
+        """
+        expected = np.inf
+        self.result.chi_sq = np.inf
+        self.result.min_chi_sq = np.inf
+        self.assertEqual(self.result.norm_acc, expected)
+
+    def test_norm_runtime_finite_min(self):
+        """
+        Test that sanitised names are correct when min_runtime is finite.
         """
         expected = self.runtime / self.min_runtime
+        self.assertEqual(self.result.norm_runtime, expected)
+
+    def test_norm_runtime_infinite_min(self):
+        """
+        Test that sanitised names are correct when min_runtime is infinite.
+        """
+        expected = np.inf
+        self.result.runtime = np.inf
+        self.result.min_runtime = np.inf
         self.assertEqual(self.result.norm_runtime, expected)
 
     def test_sanitised_name(self):

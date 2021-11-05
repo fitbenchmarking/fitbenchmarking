@@ -46,6 +46,9 @@ class FittingProblem:
         #: *string* Equation (function or model) to fit against data
         self.equation = None
 
+        #: *string* Description of the fitting problem
+        self.description = ''
+
         #: *float* The start of the range to fit model data over
         #: (if different from entire range)
         self.start_x = None
@@ -192,7 +195,7 @@ class FittingProblem:
         and approximate errors if not given.
         Modifications happen on member variables.
         """
-        use_errors = self.options.cost_func_type == "weighted_nlls"
+        use_errors = "weighted_nlls" in self.options.cost_func_type
         if not self.multifit:
             correct_vals = correct_data(x=self.data_x,
                                         y=self.data_y,
