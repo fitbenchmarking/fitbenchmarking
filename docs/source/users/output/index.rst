@@ -52,3 +52,4 @@ a summary page for the problem as a whole.
     :caption: Available Pages:
 
     support_pages
+    problem_summary_pages
