@@ -118,39 +118,24 @@ class TestJacobianClass(TestCase):
         self.params = [6, 0.1]
         self.actual = j(x=self.fitting_problem.data_x, p=self.params)
 
-    def test_scipy_two_point_eval(self):
-        """
-        Test for ScipyTwoPoint evaluation is correct
-        """
-        jac = Scipy(self.cost_func.problem)
-        jac.method = '2-point'
-        eval_result = jac.eval(params=self.params)
-        self.assertTrue(np.isclose(self.actual, eval_result).all())
-
-    def test_scipy_three_point_eval(self):
-        """
-        Test for ScipyThreePoint evaluation is correct
-        """
-        jac = Scipy(self.cost_func.problem)
-        jac.method = '3-point'
-        eval_result = jac.eval(params=self.params)
-        self.assertTrue(np.isclose(self.actual, eval_result).all())
-
-    def test_scipy_cs_eval(self):
-        """
-        Test for ScipyCS evaluation is correct
-        """
-        jac = Scipy(self.cost_func.problem)
-        jac.method = 'cs'
-        eval_result = jac.eval(params=self.params)
-        self.assertTrue(np.isclose(self.actual, eval_result).all())
-
     def test_default(self):
         """
         Test that minimizer default jacobian does what it should
         """
         jac = Default(self.cost_func.problem)
         self.assertTrue(jac.use_default_jac)
+
+    def test_scipy_eval(self):
+        """
+        Test whether Scipy evaluation is correct
+        """
+        for method in ['2-point',
+                       '3-point',
+                       'cs']:
+            jac = Scipy(self.cost_func.problem)
+            jac.method = method
+            eval_result = jac.eval(params=self.params)
+            self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_numdifftools_eval(self):
         """
@@ -249,35 +234,18 @@ class TestDerivCostFunc(TestCase):
                                                  p2=self.params[1])
         self.actual = 2.0 * np.matmul(J_eval.T, f_eval)
 
-    def test_scipy_two_point_eval(self):
+    def test_scipy_eval(self):
         """
-        Test for ScipyTwoPoint evaluation is correct
+        Test whether Scipy evaluation is correct
         """
-        jac = Scipy(self.cost_func.problem)
-        jac.method = '2-point'
-        self.cost_func.jacobian = jac
-        eval_result = self.cost_func.jac_cost(params=self.params)
-        self.assertTrue(np.isclose(self.actual, eval_result).all())
-
-    def test_scipy_three_point_eval(self):
-        """
-        Test for ScipyThreePoint evaluation is correct
-        """
-        jac = Scipy(self.cost_func.problem)
-        jac.method = '3-point'
-        self.cost_func.jacobian = jac
-        eval_result = self.cost_func.jac_cost(params=self.params)
-        self.assertTrue(np.isclose(self.actual, eval_result).all())
-
-    def test_scipy_cs_point_eval(self):
-        """
-        Test for ScipyCS evaluation is correct
-        """
-        jac = Scipy(self.cost_func.problem)
-        jac.method = 'cs'
-        self.cost_func.jacobian = jac
-        eval_result = self.cost_func.jac_cost(params=self.params)
-        self.assertTrue(np.isclose(self.actual, eval_result).all())
+        for method in ['2-point',
+                       '3-point',
+                       'cs']:
+            jac = Scipy(self.cost_func.problem)
+            jac.method = method
+            self.cost_func.jacobian = jac
+            eval_result = self.cost_func.jac_cost(params=self.params)
+            self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_numdifftools_eval(self):
         """

@@ -191,32 +191,17 @@ class TestHessianClass(TestCase):
 
         self.assertTrue(np.isclose(actual_hessian, eval_result).all())
 
-    def test_scipy_two_point(self):
+    def test_scipy_eval(self):
         """
-        Test for ScipyTwoPoint evaluation is correct
+        Test whether Scipy evaluation is correct
         """
-        hes = Scipy(self.cost_func.problem)
-        hes.method = '2-point'
-        eval_result = hes.eval(params=self.params)
-        self.assertTrue(np.isclose(self.actual_hessian, eval_result).all())
-
-    def test_scipy_three_point(self):
-        """
-        Test for ScipyThreePoint evaluation is correct
-        """
-        hes = Scipy(self.cost_func.problem)
-        hes.method = '3-point'
-        eval_result = hes.eval(params=self.params)
-        self.assertTrue(np.isclose(self.actual_hessian, eval_result).all())
-
-    def test_scipy_cs(self):
-        """
-        Test for ScipyCS evaluation is correct
-        """
-        hes = Scipy(self.cost_func.problem)
-        hes.method = 'cs'
-        eval_result = hes.eval(params=self.params)
-        self.assertTrue(np.isclose(self.actual_hessian, eval_result).all())
+        for method in ['2-point',
+                       '3-point',
+                       'cs']:
+            hes = Scipy(self.cost_func.problem)
+            hes.method = method
+            eval_result = hes.eval(params=self.params)
+            self.assertTrue(np.isclose(self.actual_hessian, eval_result).all())
 
     def test_numdifftools(self):
         """
@@ -271,35 +256,18 @@ class TestHesCostFunc(TestCase):
         self.actual = 2.0 * (np.matmul(J_eval.T, J_eval)
                              + np.matmul(actual_hessian, r_nlls))
 
-    def test_scipy_two_point(self):
+    def test_scipy_eval(self):
         """
-        Test for ScipyTwoPoint evaluation is correct
+        Test whether Scipy evaluation is correct
         """
-        hes = Scipy(self.cost_func.problem)
-        hes.method = '2-point'
-        self.cost_func.hessian = hes
-        eval_result = self.cost_func.hes_cost(params=self.params)
-        self.assertTrue(np.isclose(self.actual, eval_result).all())
-
-    def test_scipy_three_point(self):
-        """
-        Test for ScipyThreePoint evaluation is correct
-        """
-        hes = Scipy(self.cost_func.problem)
-        hes.method = '3-point'
-        self.cost_func.hessian = hes
-        eval_result = self.cost_func.hes_cost(params=self.params)
-        self.assertTrue(np.isclose(self.actual, eval_result).all())
-
-    def test_scipy_cs_point(self):
-        """
-        Test for ScipyCS evaluation is correct
-        """
-        hes = Scipy(self.cost_func.problem)
-        hes.method = 'cs'
-        self.cost_func.hessian = hes
-        eval_result = self.cost_func.hes_cost(params=self.params)
-        self.assertTrue(np.isclose(self.actual, eval_result).all())
+        for method in ['2-point',
+                       '3-point',
+                       'cs']:
+            hes = Scipy(self.cost_func.problem)
+            hes.method = method
+            self.cost_func.hessian = hes
+            eval_result = self.cost_func.hes_cost(params=self.params)
+            self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_numdifftools(self):
         """
