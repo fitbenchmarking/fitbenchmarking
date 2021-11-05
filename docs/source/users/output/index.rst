@@ -20,6 +20,9 @@ Tables
     runtime
     local_min
 
+Display modes
+-------------
+
 The tables for ``accuracy``, ``runtime`` and ``compare`` have three display modes:
 
 .. prettyprintmodulevalue::
@@ -29,6 +32,12 @@ The tables for ``accuracy``, ``runtime`` and ``compare`` have three display mode
 This can be set in the option file using the :ref:`Comparison Mode <ComparisonOption>` option.
 
 The :ref:`local_min` table is formatted differently, and doesn't use this convention.
+
+Performance profile
+-------------------
+
+Below the table there is a performance profile.
+This is documented in :ref:`performance_profile`
 
 Support Pages
 *************
