@@ -1,8 +1,8 @@
 .. _support_pages:
 
-=============
-Support Pages
-=============
+============
+Support Page
+============
 
 The support pages can be used to see more information about the problem and a
 given fit.

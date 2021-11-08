@@ -1,3 +1,5 @@
+.. _problem_summary_page:
+
 ====================
 Problem Summary Page
 ====================
@@ -14,8 +16,8 @@ If plots are enabled (see :ref:`MakePlots`), you will also see a scatter plot
 of the data to fit with a line of the initial fit given to the minimizer.
 
 
-Comparison Plot
-***************
+Comparison
+**********
 
 The main plot on the page shows a comparison of all fits at once.
 This can be used to compare how cost functions perform for a problem accross
@@ -32,5 +34,6 @@ input.
 Best Plots
 **********
 
-The best fit for each of the cost functions is then displayed in expandable
-sections to show how the parameter values compare.
+The page ends with an expandable section for each cost function tested, which
+gives the parameter values and plot of the best fit obtained for that cost
+function.
