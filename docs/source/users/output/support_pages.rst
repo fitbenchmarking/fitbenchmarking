@@ -7,15 +7,7 @@ Support Page
 The support pages can be used to see more information about the problem and a
 given fit.
 
-Each page represents a single fitting combination, for example:
-
-- *Problem*: ``cubic`` from the ``simple_tests`` dataset
-- *Software*: ``scipy_ls``
-- *Minimizer*: ``lm-scipy``
-- *Jacobian*: ``scipy``
-- *Jacobian method*: ``2-point``
-
-The page is split into 2 sections.
+Each page represents a single fitting combination and is split into 2 sections.
 
 Problem Outline
 ***************
