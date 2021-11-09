@@ -9,7 +9,6 @@ from __future__ import absolute_import, division, print_function
 import os
 import timeit
 import warnings
-from collections import defaultdict
 
 import numpy as np
 
@@ -56,10 +55,12 @@ def benchmark(options, data_dir):
                      definition files
     :type date_dir: str
 
-    :return: prob_results array of fitting results for the problem group,
-             list of failed problems and dictionary of unselected minimizers,
-             rst description of the cost function from the docstring
-    :rtype: tuple(list, list, dict, str)
+    :return: all results,
+             problems where all fitting failed,
+             minimizers that were unselected due to algorithm_type
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            list[str],
+            dict[str, list[str]]
     """
 
     # Extract problem definitions
@@ -68,20 +69,13 @@ def benchmark(options, data_dir):
     #################################
     # Loops over benchmark problems #
     #################################
-    results, failed_problems, unselected_minimzers, \
-        minimizer_dict, cost_func_description = \
+    results, failed_problems, unselected_minimizers, \
+        minimizer_dict = \
         loop_over_benchmark_problems(problem_group, options)
 
     options.minimizers = minimizer_dict
 
-    # Used to group elements in list by name
-    results_dict = defaultdict(list)
-    for problem_result in results:
-        results_dict[problem_result.name].append(problem_result)
-    results = [results_dict[r] for r in
-               sorted(results_dict.keys(), key=lambda x: x.lower())]
-    return results, failed_problems, unselected_minimzers, \
-        cost_func_description
+    return results, failed_problems, unselected_minimizers
 
 
 def loop_over_benchmark_problems(problem_group, options):
@@ -93,10 +87,14 @@ def loop_over_benchmark_problems(problem_group, options):
     :param options: FitBenchmarking options for current run
     :type options: fitbenchmarking.utils.options.Options
 
-    :return: prob_results array of fitting results for the problem group,
-             list of failed problems and dictionary of unselected minimizers,
-             rst description of the cost function from the docstring
-    :rtype: tuple(list, list, dict, str)
+    :return: all results,
+             problems where all fitting failed
+             minimizers that were unselected due to algorithm_type, and
+             composite minimizer-jacobian-hessian names grouped by software
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            list[str],
+            dict[str, list[str]],
+            dict[str, list[str]]
     """
     grabbed_output = output_grabber.OutputGrabber(options)
     results = []
@@ -135,37 +133,38 @@ def loop_over_benchmark_problems(problem_group, options):
         ##############################
         # Loops over starting values #
         ##############################
-        cost_func_cls = create_cost_func(options.cost_func_type)
-        cost_func = cost_func_cls(problem)
-        cost_func_description = cost_func.__doc__
         problem_results, problem_fails, \
-            unselected_minimzers, minimizer_dict = \
+            unselected_minimizers, minimizer_dict = \
             loop_over_starting_values(
-                cost_func, options, grabbed_output)
+                problem, options, grabbed_output)
         results.extend(problem_results)
         failed_problems.extend(problem_fails)
 
-    return results, failed_problems, unselected_minimzers, \
-        minimizer_dict, cost_func_description
+    return results, failed_problems, unselected_minimizers, \
+        minimizer_dict
 
 
-def loop_over_starting_values(cost_func, options, grabbed_output):
+def loop_over_starting_values(problem, options, grabbed_output):
     """
-    Loops over starting values from the fitting cost_func
+    Loops over starting values from the fitting problem.
 
-    :param cost_func: a cost_func object containing information used in fitting
-    :type cost_func: CostFunc
+    :param problem: The problem to benchmark on
+    :type problem: fitbenchmarking.parsing.fitting_problem.FittingProblem
     :param options: FitBenchmarking options for current run
     :type options: fitbenchmarking.utils.options.Options
-    :param grabbed_output: Object that removes third part output from console
+    :param grabbed_output: Object that removes third party output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
-    :return: prob_results array of fitting results for the problem group,
-             list of failed problems, dictionary of unselected minimizers and
-             dictionary of minimizers together with the Jacobian used
-    :rtype: tuple(list, list, dict, dict)
+    :return: all results,
+             problems where all fitting failed
+             minimizers that were unselected due to algorithm_type, and
+             composite minimizer-jacobian-hessian names grouped by software
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            list[str],
+            dict[str, list[str]],
+            dict[str, list[str]]
     """
-    problem = cost_func.problem
+    problem_fails = []
     name = problem.name
     num_start_vals = len(problem.starting_values)
     problem_results = []
@@ -174,18 +173,67 @@ def loop_over_starting_values(cost_func, options, grabbed_output):
         if num_start_vals > 1:
             problem.name = name + ', Start {}'.format(index + 1)
 
-        ################################
-        # Loops over fitting softwares #
-        ################################
-        individual_problem_results, problem_fails, \
-            unselected_minimzers, minimizer_dict = \
+        #############################
+        # Loops over cost functions #
+        #############################
+        individual_problem_results, unselected_minimizers, minimizer_dict = \
+            loop_over_cost_function(problem=problem,
+                                    options=options,
+                                    start_values_index=index,
+                                    grabbed_output=grabbed_output)
+
+        # Checks to see if all of the minimizers from every software raised an
+        # exception and record the problem name if that is the case
+        software_check = [np.isinf(v.chi_sq)
+                          for v in individual_problem_results]
+        if all(software_check):
+            problem_fails.append(problem.name)
+        problem_results.extend(individual_problem_results)
+
+        # Reset name for next loop
+        problem.name = name
+
+    return (problem_results, problem_fails,
+            unselected_minimizers, minimizer_dict)
+
+
+def loop_over_cost_function(problem, options, start_values_index,
+                            grabbed_output):
+    """
+    Run benchmarking for each cost function given in options.
+
+    :param problem: The problem to run fitting on
+    :type problem: fitbenchmarking.parsing.fitting_problem.FittingProblem
+    :param options: FitBenchmarking options for current run
+    :type options: fitbenchmarking.utils.options.Options
+    :param start_values_index: Integer that selects the starting values when
+                               datasets have multiple ones.
+    :type start_values_index: int
+    :param grabbed_output: Object that removes third part output from console
+    :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
+
+    :return: all results,
+             minimizers that were unselected due to algorithm_type, and
+             composite minimizer-jacobian-hessian names grouped by software
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            dict[str, list[str]],
+            dict[str, list[str]]
+    """
+    problem_results = []
+    for cf in options.cost_func_type:
+        cost_func_cls = create_cost_func(cf)
+        cost_func = cost_func_cls(problem)
+        #######################
+        # Loops over software #
+        #######################
+        individual_problem_results, unselected_minimizers, minimizer_dict = \
             loop_over_fitting_software(cost_func=cost_func,
                                        options=options,
-                                       start_values_index=index,
+                                       start_values_index=start_values_index,
                                        grabbed_output=grabbed_output)
         problem_results.extend(individual_problem_results)
 
-    return problem_results, problem_fails, unselected_minimzers, minimizer_dict
+    return problem_results, unselected_minimizers, minimizer_dict
 
 
 def loop_over_fitting_software(cost_func, options, start_values_index,
@@ -203,23 +251,20 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
-    :return: list of all results, failed problem names, dictionary of
-             unselected minimizers based on algorithm_type and
-             dictionary of minimizers together with the Jacobian used
-    :rtype: tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
-                  list of failed problem names,
-                  dictionary of minimizers.
-                  dictionary of minimizers and Jacobians)
+    :return: all results,
+             minimizers that were unselected due to algorithm_type, and
+             composite minimizer-jacobian-hessian names grouped by software
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            dict[str, list[str]],
+            dict[str, list[str]]
     """
     results = []
     software = options.software
     if not isinstance(software, list):
         software = [software]
 
-    problem_fails = []
-    unselected_minimzers = {}
+    unselected_minimizers = {}
     minimizer_dict = {}
-    software_results = []
     for s in software:
         LOGGER.info("        Software: %s", s.upper())
         try:
@@ -243,18 +288,11 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
                                  options=options,
                                  grabbed_output=grabbed_output)
 
-        unselected_minimzers[s] = minimizer_failed
+        unselected_minimizers[s] = minimizer_failed
         minimizer_dict[s] = new_minimizer_list
-        software_results.extend(problem_result)
+        results.extend(problem_result)
 
-    # Checks to see if all of the minimizers from every software raised an
-    # exception and record the problem name if that is the case
-    software_check = [np.isinf(v.chi_sq) for v in software_results]
-    if all(software_check):
-        problem_fails.append(cost_func.problem.name)
-    results.extend(software_results)
-
-    return results, problem_fails, unselected_minimzers, minimizer_dict
+    return results, unselected_minimizers, minimizer_dict
 
 
 def loop_over_minimizers(controller, minimizers, options, grabbed_output):
@@ -270,12 +308,12 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
-    :return: list of all results, dictionary of unselected minimizers
-             based on algorithm_type and dictionary of minimizers together
-             with the Jacobian used
-    :rtype: tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
-                  list of failed minimizers,
-                  list of minimizers and Jacobians)
+    :return: all results,
+             minimizers that were unselected due to algorithm_type, and
+             composite minimizer-jacobian-hessian names
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            list[str],
+            list[str])
     """
     problem = controller.problem
     algorithm_type = options.algorithm_type
@@ -374,12 +412,12 @@ def loop_over_jacobians(controller, options, grabbed_output):
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
-    :return: list of all results, dictionary of unselected minimizers
-             based on algorithm_type and dictionary of minimizers together
-             with the Jacobian used
-    :rtype: tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
-                  list of failed minimizers,
-                  list of minimizers and Jacobians)
+    :return: all results as a dictionary of arguments for FittingResult,
+             chi-squared values for each jacobian-hessian pair, and
+             composite minimizer-jacobian-hessian names.
+    :rtype: list[dict],
+            list[float],
+            list[str]
     """
     cost_func = controller.cost_func
     minimizer = controller.minimizer
@@ -450,12 +488,12 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
-    :return: list of all results, dictionary of unselected minimizers
-             based on algorithm_type and dictionary of minimizers together
-             with the Jacobian used.
-    :rtype: tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
-                  list of failed minimizers,
-                  list of minimizers and Jacobians)
+    :return: all results as a dictionary of arguments for FittingResult,
+             chi-squared values for each hessian, and
+             composite minimizer-jacobian-hessian names.
+    :rtype: list[dict],
+            list[float],
+            list[str]
     """
 
     hessian = False

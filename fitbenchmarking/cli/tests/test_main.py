@@ -41,7 +41,7 @@ class TestMain(TestCase):
         """
         Checks that exception is raised if no results are produced
         """
-        benchmark.return_value = ([], [], {}, '')
+        benchmark.return_value = ([], [], {})
 
         with self.assertRaises(exceptions.NoResultsError):
             main.run(['examples/benchmark_problems/simple_tests'],
@@ -74,10 +74,8 @@ class TestMain(TestCase):
                        'params': [],
                        'error_flag': 4}
         result = fitbm_result.FittingResult(**result_args)
-        results.append([result])
+        results.append(result)
 
         failed_problems = []
         unselected_minimzers = {}
-        cost_func_description = []
-        return (results, failed_problems, unselected_minimzers,
-                cost_func_description)
+        return (results, failed_problems, unselected_minimzers)

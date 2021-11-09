@@ -2,7 +2,6 @@
 Implements the base class for the tables.
 """
 import os
-import re
 from abc import ABCMeta, abstractmethod
 
 import docutils.core
@@ -34,14 +33,17 @@ class Table:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, results, options, group_dir,
+    def __init__(self, results, best_results, options, group_dir,
                  pp_locations, table_name):
         """
         Initialise the class.
 
-        :param results: results nested array of objects
-        :type results: list of list of
-                       fitbenchmarking.utils.fitbm_result.FittingResult
+        :param results: Results grouped by row and category (for colouring)
+        :type results:
+            dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
+        :param best_results: The best results from each row/category
+        :type best_results:
+            dict[str, dict[str, utils.fitbm_result.FittingResult]]
         :param options: Options used in fitting
         :type options: utils.options.Options
         :param group_dir: path to the directory where group results should be
@@ -54,9 +56,8 @@ class Table:
         :type table_name: str
         """
         # Flatten to reduce the necessity on having problems as rows.
-        self.results = [result
-                        for results_per_test in results
-                        for result in results_per_test]
+        self.results = results
+        self.best_results = best_results
         self.options = options
         self.group_dir = group_dir
         self.pp_locations = pp_locations
@@ -79,7 +80,6 @@ class Table:
 
         # Set up results as needed
         self.sorted_results = {}
-        self.best_results = []
         self.create_results_dict()
 
     @abstractmethod
@@ -119,7 +119,7 @@ class Table:
         result_template = self.output_string_type[self.options.comparison_mode]
         if comp_mode == "abs":
             return result_template.format(abs_value)
-        elif comp_mode == "rel":
+        if comp_mode == "rel":
             return result_template.format(rel_value)
         # comp_mode == "both"
         return result_template.format(abs_value, rel_value)
@@ -139,6 +139,7 @@ class Table:
                                start=self.group_dir)
 
     def get_error_str(self, result, error_template='[{}]'):
+        # pylint: disable=no-self-use
         """
         Get the error string for a result based on error_template
         This can be overridden if tables require different error formatting.
@@ -157,83 +158,13 @@ class Table:
 
     def create_results_dict(self):
         """
-        Generates a dictionary of results lists sorted into the correct order
-        with rows and columns as the key and list elements respectively.
+        Generate a dictionary of results lists with rows and columns as the key
+        and list elements respectively.
         This is used to create HTML and txt tables.
         This is stored in self.sorted_results
         """
-
-        # Might be worth breaking out into an option in future.
-        # sort_order[0] is the order of sorting for rows
-        # sort_order[1] is the order of sorting for columns
-        sort_order = (['problem'],
-                      ['software', 'minimizer', 'jacobian', 'hessian'])
-
-        # Generate the columns and row tags and sort
-        rows = set()
-        columns = set()
-        for r in self.results:
-            # Error 4 means none of the jacobians ran so can't infer the
-            # jacobian names from this.
-            if r.error_flag == 4:
-                continue
-            row = ''
-            col = ''
-            for sort_pos in sort_order[0]:
-                row += f':{getattr(r, sort_pos + "_tag")}'
-            rows.add(row.strip(':'))
-            for sort_pos in sort_order[1]:
-                col += f':{getattr(r, sort_pos + "_tag")}'
-            columns.add(col.strip(':'))
-
-        rows = sorted(rows, key=str.lower)
-        columns = {col: i for i, col in enumerate(
-            sorted(columns, key=str.lower))}
-
-        # Build the sorted results dictionary
-        sorted_results = {r.strip(':'): [None for _ in columns]
-                          for r in rows}
-
-        # Reorder best results
-        best_results = {r.strip(':'): None
-                        for r in rows}
-
-        for r in self.results:
-            row = ''
-            col = ''
-            for sort_pos in sort_order[0]:
-                tag = getattr(r, sort_pos + "_tag")
-                if sort_pos in ['jacobian', 'hessian'] and r.error_flag == 4:
-                    tag = '.+'
-                row += f':{tag}'
-            row = row.strip(':')
-            for sort_pos in sort_order[1]:
-                tag = getattr(r, sort_pos + "_tag")
-                if sort_pos in ['jacobian', 'hessian'] and r.error_flag == 4:
-                    tag = '.+'
-                col += f':{tag}'
-            col = col.strip(':')
-
-            # Fix up cells where error flag = 4
-            if r.error_flag == 4:
-                matching_rows = [match
-                                 for match in rows
-                                 if re.fullmatch(row, match)]
-                matching_cols = [match
-                                 for match in columns.keys()
-                                 if re.fullmatch(col, match)]
-                for row in matching_rows:
-                    for col in matching_cols:
-                        col = columns[col]
-                        sorted_results[row][col] = r
-            else:
-                col = columns[col]
-                sorted_results[row][col] = r
-                if r.is_best_fit:
-                    best_results[row] = r
-
-        self.sorted_results = sorted_results
-        self.best_results = list(best_results.values())
+        self.sorted_results = {k: [r for cat in row.values() for r in cat]
+                               for k, row in self.results.items()}
 
     def get_str_dict(self, html=False):
         """
@@ -382,7 +313,8 @@ class Table:
 
         row = next(iter(self.sorted_results.values()))
         minimizers_list = [
-            (link_template.format(result.software.replace('_', '-')),
+            (result.costfun_tag,
+             link_template.format(result.software.replace('_', '-')),
              minimizer_template.format(
                  self.options.minimizer_alg_type[result.minimizer],
                  result.minimizer))
@@ -392,15 +324,30 @@ class Table:
 
         # Format the row labels
         index = []
-        for b, i in zip(self.best_results, table.index):
-            rel_path = os.path.relpath(path=b.support_page_link,
-                                       start=self.group_dir)
+        for b, i in zip(self.best_results.values(), table.index):
+            b = next(iter(b.values()))
+            rel_path = os.path.relpath(
+                path=b.problem_summary_page_link,
+                start=self.group_dir)
             index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
         table.index = index
 
-        # Set the cell colours
-        table_style = table.style.apply(
-            lambda df: self.get_colour_df(like_df=df), axis=None)
+        # Get columns where cost function changes
+        column_dividers = [table.columns[0]]
+        for column in table.columns[1:]:
+            if column[0] != column_dividers[-1][0]:
+                column_dividers.append(column)
+        column_dividers = column_dividers[1:]
+
+        # Set the cell colours and increase bars between cost functions
+        table_style = table.style\
+            .apply(lambda df: self.get_colour_df(like_df=df), axis=None)\
+            .set_table_styles(table_styles={
+                k: [{'selector': 'td',
+                     'props': [('border-left-width', '3px')]},
+                    {'selector': 'th',
+                     'props': [('border-left-width', '3px')]}]
+                for k in column_dividers})
 
         return table_style.render()
 
