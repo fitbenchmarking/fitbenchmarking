@@ -1,11 +1,11 @@
-.. _support_pages:
+.. fitting_report:
 
-============
-Support Page
-============
+==============
+Fitting Report
+==============
 
-The support pages can be used to see more information about the problem and a
-given fit.
+The fitting report pages can be used to see more information about the problem
+and a given fit.
 
 Each page represents a single fitting combination and is split into 2 sections.
 

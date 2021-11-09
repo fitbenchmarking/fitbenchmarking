@@ -135,7 +135,7 @@ class Table:
         :return: The link to go to when the cell is selected
         :rtype: string
         """
-        return os.path.relpath(path=result.support_page_link,
+        return os.path.relpath(path=result.fitting_report_link,
                                start=self.group_dir)
 
     def get_error_str(self, result, error_template='[{}]'):

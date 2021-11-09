@@ -121,7 +121,7 @@ def generate_mock_results():
                               minimizer=options.minimizers[software][j],
                               error_flag=error_in[i][j],
                               )
-            r.support_page_link = link_in[i][j]
+            r.fitting_report_link = link_in[i][j]
             r.problem_summary_page_link = 'link0'
             results.append(r)
             options.minimizer_alg_type[options.minimizers[software]

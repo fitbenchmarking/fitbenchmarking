@@ -43,7 +43,7 @@ Below the table there is a :ref:`performance_profile`.
 Support Pages
 *************
 
-In each of the tables, a :ref:`support_pages` for an individual result can be accessed
+In each of the tables, a :ref:`fitting_report` for an individual result can be accessed
 by clicking on the associated table cell. Clicking the problem name at the
 start of a row will open a :ref:`problem_summary_page` for the problem as a whole.
 
@@ -52,5 +52,5 @@ start of a row will open a :ref:`problem_summary_page` for the problem as a whol
     :hidden:
     :maxdepth: 2
 
-    support_pages
+    fitting_report
     problem_summary_pages
