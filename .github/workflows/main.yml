@@ -42,7 +42,7 @@ jobs:
       uses: actions/checkout@v2
     - name: Installing
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gradient_free,levmar,minuit,SAS,numdifftools]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,levmar,minuit,SAS,numdifftools]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE

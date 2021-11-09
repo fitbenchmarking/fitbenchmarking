@@ -255,16 +255,16 @@ def setup_options(multi_fit=False) -> Options:
     opts.make_plots = False
 
     # The software to test for the different test types
-    software = {"all": ["bumps", "dfo", "gradient_free", "gsl", "levmar",
-                        "mantid", "minuit", "ralfit", "scipy", "scipy_ls"],
+    # 'gradient_free' and 'scipy_go' are left out as they require bounds
+    # 'dfo' is left out for now as it gives unreliable results
+    software = {"all": ["bumps", "gsl", "levmar", "mantid",
+                        "minuit", "ralfit", "scipy", "scipy_ls"],
                 "default": ["bumps", "scipy", "scipy_ls"],
                 "matlab": ["matlab", "matlab_curve", "matlab_opt",
                            "matlab_stats"]}
 
     # The minimizers to test for each software
     minimizers = {"bumps": "lm-bumps",
-                  "dfo": "dfogn",
-                  "gradient_free": "BayesianOptimizer",
                   "gsl": "lmsder",
                   "levmar": "levmar",
                   "mantid": "Levenberg-Marquardt",
