@@ -6,6 +6,7 @@ import os
 from tempfile import TemporaryDirectory
 from unittest import TestCase, main
 
+import shutil
 import numpy as np
 
 from fitbenchmarking.core.results_output import preprocess_data
@@ -159,6 +160,12 @@ class CreateTests(TestCase):
         results, self.options = generate_mock_results(directory_name)
         self.best_results, self.results = preprocess_data(results)
 
+    def tearDown(self) -> None:
+        """
+        Tear down the test suite.
+        """
+        shutil.rmtree(self.fig_dir)
+
     def test_create_all_plots(self):
         """
         Check that a plot is created for each result set.
@@ -232,6 +239,12 @@ class CreateSummaryPageTests(TestCase):
             summary_plot_path='plot_path',
             support_pages_dir=self.supp_dir,
             options=self.options)
+
+    def tearDown(self) -> None:
+        """
+        Tear down the test suite.
+        """
+        shutil.rmtree(self.supp_dir)
 
     def test_create_summary_pages(self):
         """

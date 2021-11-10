@@ -497,7 +497,6 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
     minimizer = controller.minimizer
     cost_func = controller.cost_func
     problem = controller.problem
-    num_runs = options.num_runs
     minimizer_check = minimizer in controller.hessian_enabled_solvers
     hessian_list = options.hes_method
     new_result = []
@@ -526,7 +525,7 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
                 LOGGER.warning(str(excp))
 
         # Perform the fit a number of times specified by num_runs
-        chi_sq, runtime = perform_fit(controller, num_runs, grabbed_output)
+        chi_sq, runtime = perform_fit(controller, options, grabbed_output)
 
         # record algorithm type for specified minimizer
         type_str = controller.record_alg_type(
@@ -564,18 +563,21 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
     return new_result, new_chi_sq, new_minimizer_list
 
 
-def perform_fit(controller, num_runs, grabbed_output):
+def perform_fit(controller, options, grabbed_output):
     """
     Performs a fit using the provided controller and its data. It
     will be run a number of times specified by num_runs.
 
     :param controller: The software controller for the fitting
     :type controller: Object derived from BaseSoftwareController
-    :param num_runs: The number of times to repeat the fit.
-    :type num_runs: int
+    :param options: The user options for the benchmark.
+    :type options: fitbenchmarking.utils.options.Options
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
+    :return: The chi squared and runtime of the fit.
+    :rtype: tuple(chi_squared, runtime)
     """
+    num_runs = options.num_runs
     try:
         with grabbed_output:
             controller.validate()

@@ -275,8 +275,8 @@ class CreatePlotsTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             self.results_dir = os.path.join(directory, 'figures_dir')
 
-        results, self.options = generate_mock_results(self.results_dir)
-        self.best_results, self.results = preprocess_data(results)
+            results, self.options = generate_mock_results(self.results_dir)
+            self.best_results, self.results = preprocess_data(results)
 
     @mock.patch('fitbenchmarking.results_processing.plots.Plot')
     def test_create_plots_with_params(self, plot_mock):
@@ -440,15 +440,15 @@ class ExtractTagsTests(unittest.TestCase):
         """
         with TemporaryDirectory() as directory:
             self.results_dir = os.path.join(directory, 'figures_dir')
-        results, self.options = generate_mock_results(self.results_dir)
-        self.result = results[0]
-        self.result.costfun_tag = 'cf0'
-        self.result.problem_tag = 'p0'
-        self.result.software_tag = 's0'
-        self.result.minimizer_tag = 'm0'
-        self.result.jacobian_tag = 'j0'
-        self.result.hessian_tag = 'h0'
-        self.result.error_flag = 0
+            results, self.options = generate_mock_results(self.results_dir)
+            self.result = results[0]
+            self.result.costfun_tag = 'cf0'
+            self.result.problem_tag = 'p0'
+            self.result.software_tag = 's0'
+            self.result.minimizer_tag = 'm0'
+            self.result.jacobian_tag = 'j0'
+            self.result.hessian_tag = 'h0'
+            self.result.error_flag = 0
 
     def test_correct_tags(self):
         """
@@ -522,14 +522,14 @@ class ProcessBestResultsTests(unittest.TestCase):
         """
         with TemporaryDirectory() as directory:
             self.results_dir = os.path.join(directory, 'figures_dir')
-        results, self.options = generate_mock_results(self.results_dir)
-        self.results = results[:5]
-        for r, chisq, runtime in zip(self.results,
-                                     [2, 1, 5, 3, 4],
-                                     [5, 4, 1, 2, 3]):
-            r.chi_sq = chisq
-            r.runtime = runtime
-        self.best = _process_best_results(self.results)
+            results, self.options = generate_mock_results(self.results_dir)
+            self.results = results[:5]
+            for r, chisq, runtime in zip(self.results,
+                                         [2, 1, 5, 3, 4],
+                                         [5, 4, 1, 2, 3]):
+                r.chi_sq = chisq
+                r.runtime = runtime
+            self.best = _process_best_results(self.results)
 
     def test_returns_best_result(self):
         """

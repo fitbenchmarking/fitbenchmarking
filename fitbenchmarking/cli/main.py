@@ -89,8 +89,9 @@ of the Fitbenchmarking docs. '''
 def _find_options_file(options_file: str, results_directory: str) -> Options:
     """
     Attempts to find the options file and creates an Options object for it.
+    Wildcards are accepted in the parameters of this function.
 
-    :param options_file: The path to an options file.
+    :param options_file: The path or glob pattern for an options file.
     :type options_file: str
     :param results_directory: The path to the results directory.
     :type results_directory: str
@@ -117,12 +118,12 @@ def _create_index_page(options: Options, groups: "list[str]",
     Creates the results index page for the benchmark, and copies
     the fonts and js directories to the correct location.
 
-    :param options: The options object containing all the options.
+    :param options: The user options for the benchmark.
     :type options: fitbenchmarking.utils.options.Options
-    :param groups: A list of problem set group names.
+    :param groups: Names for each of the problem set groups.
     :type groups: A list of strings.
-    :param result_directories: A list of directories to the results of
-    different problem sets.
+    :param result_directories: Result directory paths for each
+    problem set group.
     :type result_directories: A list of strings.
     :return: The filepath of the `results_index.html` file.
     :rtype: str

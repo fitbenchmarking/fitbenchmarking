@@ -164,8 +164,8 @@ class FitbenchmarkParser(Parser):
             self.fitting_problem.start_x = fit_ranges[0]['x'][0]
             self.fitting_problem.end_x = fit_ranges[0]['x'][1]
 
-    @staticmethod
-    def _set_additional_info() -> None:
+    def _set_additional_info(self) -> None:
+        # pylint: disable=no-self-use
         """
         Sets any additional info for a fitting problem.
         """
