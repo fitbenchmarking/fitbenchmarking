@@ -153,18 +153,18 @@ class CreateTests(TestCase):
         Setup for create function tests
         """
         with TemporaryDirectory() as directory:
-            directory_name = directory
-            self.supp_dir = os.path.join(directory_name, 'support_pages')
+            self.temp_dir = directory
+            self.supp_dir = os.path.join(self.temp_dir, 'support_pages')
             self.fig_dir = os.path.join(self.supp_dir, 'figures')
         os.makedirs(self.fig_dir)
-        results, self.options = generate_mock_results(directory_name)
+        results, self.options = generate_mock_results(self.temp_dir)
         self.best_results, self.results = preprocess_data(results)
 
     def tearDown(self) -> None:
         """
         Tear down the test suite.
         """
-        shutil.rmtree(self.fig_dir)
+        shutil.rmtree(self.temp_dir)
 
     def test_create_all_plots(self):
         """
@@ -222,11 +222,11 @@ class CreateSummaryPageTests(TestCase):
         Setup tests for _create_summary_page
         """
         with TemporaryDirectory() as directory:
-            directory_name = directory
-            self.supp_dir = os.path.join(directory_name, 'support_pages')
+            self.temp_dir = directory
+            self.supp_dir = os.path.join(self.temp_dir, 'support_pages')
 
         os.makedirs(self.supp_dir)
-        results, self.options = generate_mock_results(directory_name)
+        results, self.options = generate_mock_results(self.temp_dir)
 
         best_results, results = preprocess_data(results)
         self.prob_name = list(results.keys())[0]
@@ -244,7 +244,7 @@ class CreateSummaryPageTests(TestCase):
         """
         Tear down the test suite.
         """
-        shutil.rmtree(self.supp_dir)
+        shutil.rmtree(self.temp_dir)
 
     def test_create_summary_pages(self):
         """

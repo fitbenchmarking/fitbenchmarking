@@ -575,7 +575,7 @@ def perform_fit(controller, options, grabbed_output):
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
     :return: The chi squared and runtime of the fit.
-    :rtype: tuple(chi_squared, runtime)
+    :rtype: tuple(float, float)
     """
     num_runs = options.num_runs
     try:
