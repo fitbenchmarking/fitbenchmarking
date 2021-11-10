@@ -7,13 +7,18 @@ http://iminuit.readthedocs.org
 from iminuit import Minuit
 from iminuit import __version__ as iminuit_version
 import numpy as np
-
+import os
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
 def func(x, params):
-    return params[0] * (params[1]+x)**(-1/params[2])# + e
+    print(f"PROCESS ID = {os.getpid()}")
+    print(f"X = {str(x)}")
+    print(f"PARAMS = {str(params)}")
+    res = params[0] * (params[1]+x)**(-1/params[2])
+    print(f"RES = {str(res)}")
+    return res
 
 
 def eval_r(params, x, y, e):
