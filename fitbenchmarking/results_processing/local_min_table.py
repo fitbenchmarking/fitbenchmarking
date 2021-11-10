@@ -135,9 +135,9 @@ class LocalMinTable(Table):
 
         return local_min, norm_rel
 
-    # pylint: disable=unused-argument
     @staticmethod
     def vals_to_colour(vals, cmap, cmap_range, log_ulim):
+        # pylint: disable=unused-argument
         """
         Converts an array of values to a list of hexadecimal colour strings
         using sampling from a matplotlib colourmap according to whether a
@@ -161,7 +161,6 @@ class LocalMinTable(Table):
         rgba = cmap([cmap_range[0] if local_min else cmap_range[1]
                      for local_min in vals])
         return [clrs.rgb2hex(colour) for colour in rgba]
-    # pylint: enable=unused-argument
 
     def display_str(self, value):
         """

@@ -138,8 +138,8 @@ class Table:
         return os.path.relpath(path=result.support_page_link,
                                start=self.group_dir)
 
-    def get_error_str(self, result, error_template='[{}]'):
-        # pylint: disable=no-self-use
+    @staticmethod
+    def get_error_str(result, error_template='[{}]'):
         """
         Get the error string for a result based on error_template
         This can be overridden if tables require different error formatting.

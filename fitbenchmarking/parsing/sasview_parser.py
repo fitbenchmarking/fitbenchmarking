@@ -3,11 +3,11 @@ This file implements a parser for the SASView data format.
 """
 import typing
 
-from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
-
 from sasmodels.bumps_model import Experiment, Model
 from sasmodels.core import load_model
 from sasmodels.data import empty_data1D
+
+from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 
 
 class SASViewParser(FitbenchmarkParser):

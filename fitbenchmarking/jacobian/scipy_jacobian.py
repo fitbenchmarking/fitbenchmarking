@@ -7,7 +7,6 @@ from scipy.optimize._numdiff import approx_derivative
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 
 
-# pylint: disable=useless-super-delegation
 class Scipy(Jacobian):
     """
     Implements SciPy finite difference approximations to the derivative

@@ -494,12 +494,9 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
             list[float],
             list[str]
     """
-
-    hessian = False
     minimizer = controller.minimizer
     cost_func = controller.cost_func
     problem = controller.problem
-    num_runs = options.num_runs
     minimizer_check = minimizer in controller.hessian_enabled_solvers
     hessian_list = options.hes_method
     new_result = []
@@ -527,75 +524,8 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
             except NoHessianError as excp:
                 LOGGER.warning(str(excp))
 
-        try:
-            with grabbed_output:
-                controller.validate()
-                # Calls timeit repeat with repeat = num_runs and
-                # number = 1
-                runtime_list = timeit.Timer(
-                    setup=controller.prepare,
-                    stmt=controller.execute
-                ).repeat(num_runs, 1)
-
-                runtime = sum(runtime_list) / num_runs
-                controller.cleanup()
-                controller.check_attributes()
-            min_time = np.min(runtime_list)
-            ratio = np.max(runtime_list) / min_time
-            tol = 4
-            if ratio > tol:
-                warnings.warn(
-                    'The ratio of the max time to the min is {0},'
-                    ' which is larger than the tolerance of {1}.'
-                    ' The min time is {2}. This can indicate that'
-                    ' the fitting engine is caching results. If the'
-                    ' min time is small this may just indicate that'
-                    ' other non-FitBenchmarking CPU activities are'
-                    ' taking place that affects the timing'
-                    ' results'.format(ratio, tol, min_time))
-            chi_sq = controller.eval_chisq(
-                params=controller.final_params,
-                x=controller.data_x,
-                y=controller.data_y,
-                e=controller.data_e)
-
-            chi_sq_check = any(np.isnan(n) for n in chi_sq) \
-                if problem.multifit else np.isnan(chi_sq)
-            if np.isnan(runtime) or chi_sq_check:
-                raise ControllerAttributeError(
-                    "Either the computed runtime or chi_sq values "
-                    "was a NaN.")
-        except Exception as ex:  # pylint: disable=broad-except
-            LOGGER.warning(str(ex))
-
-            # Note: Handle all exceptions as general exception to cover case
-            #       where software re-raises our exception as a new type.
-            error_flags = {MaxRuntimeError: 6,
-                           IncompatibleJacobianError: 7}
-
-            controller.flag = 3
-            for error, flag in error_flags.items():
-                if error.class_message in str(ex):
-                    controller.flag = flag
-                    break
-
-        controller.timer.reset()
-
-        if controller.flag in [3, 6, 7]:
-            # If there was an exception, set the runtime and
-            # cost function value to be infinite
-            runtime = np.inf
-            controller.final_params = \
-                None if not problem.multifit \
-                else [None] * len(controller.data_x)
-
-            chi_sq = np.inf if not problem.multifit \
-                else [np.inf] * len(controller.data_x)
-        elif controller.problem.value_ranges is not None:
-            # If bounds have been set, check that they have
-            # been respected by the minimizer and set error
-            # flag if not
-            controller.check_bounds_respected()
+        # Perform the fit a number of times specified by num_runs
+        chi_sq, runtime = perform_fit(controller, options, grabbed_output)
 
         # record algorithm type for specified minimizer
         type_str = controller.record_alg_type(
@@ -631,3 +561,92 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
             break
 
     return new_result, new_chi_sq, new_minimizer_list
+
+
+def perform_fit(controller, options, grabbed_output):
+    """
+    Performs a fit using the provided controller and its data. It
+    will be run a number of times specified by num_runs.
+
+    :param controller: The software controller for the fitting
+    :type controller: Object derived from BaseSoftwareController
+    :param options: The user options for the benchmark.
+    :type options: fitbenchmarking.utils.options.Options
+    :param grabbed_output: Object that removes third part output from console
+    :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
+    :return: The chi squared and runtime of the fit.
+    :rtype: tuple(float, float)
+    """
+    num_runs = options.num_runs
+    try:
+        with grabbed_output:
+            controller.validate()
+            # Calls timeit repeat with repeat = num_runs and
+            # number = 1
+            runtime_list = timeit.Timer(
+                setup=controller.prepare,
+                stmt=controller.execute
+            ).repeat(num_runs, 1)
+
+            runtime = sum(runtime_list) / num_runs
+            controller.cleanup()
+            controller.check_attributes()
+        min_time = np.min(runtime_list)
+        ratio = np.max(runtime_list) / min_time
+        tol = 4
+        if ratio > tol:
+            warnings.warn(
+                'The ratio of the max time to the min is {0},'
+                ' which is larger than the tolerance of {1}.'
+                ' The min time is {2}. This can indicate that'
+                ' the fitting engine is caching results. If the'
+                ' min time is small this may just indicate that'
+                ' other non-FitBenchmarking CPU activities are'
+                ' taking place that affects the timing'
+                ' results'.format(ratio, tol, min_time))
+        chi_sq = controller.eval_chisq(
+            params=controller.final_params,
+            x=controller.data_x,
+            y=controller.data_y,
+            e=controller.data_e)
+
+        chi_sq_check = any(np.isnan(n) for n in chi_sq) \
+            if controller.problem.multifit else np.isnan(chi_sq)
+        if np.isnan(runtime) or chi_sq_check:
+            raise ControllerAttributeError(
+                "Either the computed runtime or chi_sq values "
+                "was a NaN.")
+    except Exception as ex:  # pylint: disable=broad-except
+        LOGGER.warning(str(ex))
+
+        # Note: Handle all exceptions as general exception to cover case
+        #       where software re-raises our exception as a new type.
+        error_flags = {MaxRuntimeError: 6,
+                       IncompatibleJacobianError: 7}
+
+        controller.flag = 3
+        for error, flag in error_flags.items():
+            if error.class_message in str(ex):
+                controller.flag = flag
+                break
+
+    controller.timer.reset()
+
+    if controller.flag in [3, 6, 7]:
+        # If there was an exception, set the runtime and
+        # cost function value to be infinite
+        runtime = np.inf
+        multi_fit = controller.problem.multifit
+        controller.final_params = \
+            None if not multi_fit \
+            else [None] * len(controller.data_x)
+
+        chi_sq = np.inf if not multi_fit \
+            else [np.inf] * len(controller.data_x)
+    elif controller.problem.value_ranges is not None:
+        # If bounds have been set, check that they have
+        # been respected by the minimizer and set error
+        # flag if not
+        controller.check_bounds_respected()
+
+    return chi_sq, runtime
