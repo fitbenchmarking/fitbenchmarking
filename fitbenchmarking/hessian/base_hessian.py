@@ -13,15 +13,19 @@ class Hessian:
     # Problem formats that are incompatible with certain Hessians
     INCOMPATIBLE_PROBLEMS = {}
 
-    def __init__(self, problem):
+    def __init__(self, problem, jacobian):
         """
         Base class for the Hessians
 
         :param problem: The parsed problem.
         :type problem:
-        :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
+            :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
+        :param jacobian: The jacobian for the problem
+        :type jacobian: subclass of
+            :class:`~fitbenchmarking.jacobian.base_jacobian`
         """
         self.problem = problem
+        self.jacobian = jacobian
 
         self._method = None
 

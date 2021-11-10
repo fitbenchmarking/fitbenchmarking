@@ -518,7 +518,8 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
             if minimizer_check and hes_method != 'default':
                 hessian_cls = create_hessian(hes_method)
                 try:
-                    hessian = hessian_cls(cost_func.problem)
+                    hessian = hessian_cls(cost_func.problem,
+                                          jacobian=cost_func.jacobian)
                     cost_func.hessian = hessian
 
                     num_method_str = ''

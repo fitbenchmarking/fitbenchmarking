@@ -32,7 +32,7 @@ class Scipy(Hessian):
         for i, x_i in enumerate(x):
             # pylint: disable=cell-var-from-loop
             def grad_i(params):
-                return self.problem.jacobian(x_i, params).squeeze()
+                return self.jacobian.eval(params, x=x_i).squeeze()
             hes[:, :, i] = approx_derivative(grad_i, params,
                                              method=self.method,
                                              rel_step=None,

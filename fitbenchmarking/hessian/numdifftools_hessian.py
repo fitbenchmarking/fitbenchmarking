@@ -24,7 +24,7 @@ class Numdifftools(Hessian):
         :rtype: 3D numpy array
         """
         x = kwargs.get("x", self.problem.data_x)
-        def jac_func(params): return self.problem.jacobian(x, params).T
+        def jac_func(params): return self.jacobian.eval(params, x=x).T
         hes_func = nd.Jacobian(jac_func, method=self.method)
         hes = hes_func(params)
 

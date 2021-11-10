@@ -11,8 +11,18 @@ class Analytic(Hessian):
     Class to apply an analytic Hessian
     """
 
-    def __init__(self, problem):
-        super().__init__(problem)
+    def __init__(self, problem, jacobian):
+        """
+        Analytic hessian for problems.
+
+        :param problem: The parsed problem.
+        :type problem:
+            :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
+        :param jacobian: The jacobian for the problem
+        :type jacobian: subclass of
+            :class:`~fitbenchmarking.jacobian.base_jacobian`
+        """
+        super().__init__(problem, jacobian)
         if not callable(self.problem.hessian):
             raise NoHessianError("Problem set selected does not currently "
                                  "support analytic Hessians")
