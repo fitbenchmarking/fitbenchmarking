@@ -13,7 +13,7 @@ HERE=${PWD}
 
 VENV_DIR=${HERE}/venv
 mkdir VENV_DIR
-export VIRTUAL_ENV=VENV_DIR
+export VIRTUAL_ENV=$VENV_DIR
 python3 -m venv $VIRTUAL_ENV
 export PATH="$VIRTUAL_ENV/bin:$PATH"
 
@@ -29,7 +29,7 @@ pip install pytest>3.6 \
 sudo apt-get install -y gsl-bin libgsl-dev libgsl-dbg
 
 # Install RALFit
-sudo apt-get install -y gfortran lcov libblas-dev liblapack-dev ligdal-dev
+sudo apt-get install -y gfortran lcov libblas-dev liblapack-dev libgdal-dev
 git clone https://github.com/ralna/RALFit
 pip install numpy
 mkdir -p ${HERE}/RALFit/libRALFit/build
