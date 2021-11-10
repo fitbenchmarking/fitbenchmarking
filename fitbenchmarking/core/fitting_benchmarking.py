@@ -579,18 +579,18 @@ def perform_fit(controller, options, grabbed_output):
     """
     num_runs = options.num_runs
     try:
-        #with grabbed_output:
-        controller.validate()
-        # Calls timeit repeat with repeat = num_runs and
-        # number = 1
-        runtime_list = timeit.Timer(
-            setup=controller.prepare,
-            stmt=controller.execute
-        ).repeat(num_runs, 1)
+        with grabbed_output:
+            controller.validate()
+            # Calls timeit repeat with repeat = num_runs and
+            # number = 1
+            runtime_list = timeit.Timer(
+                setup=controller.prepare,
+                stmt=controller.execute
+            ).repeat(num_runs, 1)
 
-        runtime = sum(runtime_list) / num_runs
-        controller.cleanup()
-        controller.check_attributes()
+            runtime = sum(runtime_list) / num_runs
+            controller.cleanup()
+            controller.check_attributes()
         min_time = np.min(runtime_list)
         ratio = np.max(runtime_list) / min_time
         tol = 4

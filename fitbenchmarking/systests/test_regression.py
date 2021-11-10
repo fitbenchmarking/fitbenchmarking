@@ -42,14 +42,14 @@ class TestRegressionAll(TestCase):
             debug=True)
         os.remove(opt_file_name)
 
-        # opt_file_name = create_options_file(multi_fit=True)
-        # problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
-        #                                        os.pardir,
-        #                                        'mock_problems',
-        #                                        'multifit_set'))
-        # run([problem], results_dir, options_file=opt_file_name,
-        #     debug=True)
-        # os.remove(opt_file_name)
+        opt_file_name = create_options_file(multi_fit=True)
+        problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                               os.pardir,
+                                               'mock_problems',
+                                               'multifit_set'))
+        run([problem], results_dir, options_file=opt_file_name,
+            debug=True)
+        os.remove(opt_file_name)
 
     def test_results_consistent_all(self):
         """
@@ -77,131 +77,131 @@ class TestRegressionAll(TestCase):
         diff, msg = diff_result(actual, expected)
         self.assertListEqual([], diff, msg)
 
-#     def test_multifit_consistent(self):
-#         """
-#         Regression testing that the results of fitting multifit problems
-#         against a single minimizer from mantid.
-#         """
-#
-#         expected_file = os.path.join(os.path.dirname(__file__),
-#                                      '{}_expected_results'.format(platform),
-#                                      'multifit.txt')
-#
-#         actual_file = os.path.join(os.path.dirname(__file__),
-#                                    'fitbenchmarking_results',
-#                                    'multifit_set',
-#                                    'acc_table.txt')
-#
-#         with open(expected_file, 'r') as f:
-#             expected = f.readlines()
-#
-#         with open(actual_file, 'r') as f:
-#             actual = f.readlines()
-#
-#         diff, msg = diff_result(actual, expected)
-#         self.assertListEqual([], diff, msg)
-#
-#
-# @run_for_test_types(TEST_TYPE, 'matlab')
-# class TestRegressionMatlab(TestCase):
-#     """
-#     Regression tests for the Fitbenchmarking software with
-#     matlab fitting software
-#     """
-#
-#     @classmethod
-#     def setUpClass(cls):
-#         """
-#         Create an options file, run it, and get the results.
-#         """
-#         results_dir = os.path.join(os.path.dirname(__file__),
-#                                    'fitbenchmarking_results')
-#
-#         opt_file_name = create_options_file()
-#         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
-#                                                os.pardir,
-#                                                'mock_problems',
-#                                                'all_parsers_set'))
-#         run([problem], results_dir, options_file=opt_file_name,
-#             debug=True)
-#         os.remove(opt_file_name)
-#
-#     def test_results_consistent_all(self):
-#         """
-#         Regression testing that the results of fitting a set of problems
-#         containing all problem types against a single minimizer from each of
-#         the supported softwares
-#         """
-#
-#         expected_file = os.path.join(os.path.dirname(__file__),
-#                                      '{}_expected_results'.format(platform),
-#                                      'matlab.txt')
-#
-#         actual_file = \
-#             os.path.join(os.path.dirname(__file__),
-#                          'fitbenchmarking_results',
-#                          'all_parsers_set',
-#                          'acc_table.txt')
-#
-#         with open(expected_file, 'r') as f:
-#             expected = f.readlines()
-#
-#         with open(actual_file, 'r') as f:
-#             actual = f.readlines()
-#
-#         diff, msg = diff_result(actual, expected)
-#         self.assertListEqual([], diff, msg)
-#
-#
-# @run_for_test_types(TEST_TYPE, 'default')
-# class TestRegressionDefault(TestCase):
-#     """
-#     Regression tests for the Fitbenchmarking software with all default fitting
-#     software packages
-#     """
-#
-#     @classmethod
-#     def setUpClass(cls):
-#         """
-#         Create an options file, run it, and get the results.
-#         """
-#         results_dir = os.path.join(os.path.dirname(__file__),
-#                                    'fitbenchmarking_results')
-#
-#         opt_file_name = create_options_file()
-#         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
-#                                                os.pardir,
-#                                                'mock_problems',
-#                                                'default_parsers'))
-#
-#         run([problem], results_dir, options_file=opt_file_name,
-#             debug=True)
-#         os.remove(opt_file_name)
-#
-#     def test_results_consistent(self):
-#         """
-#         Regression testing that the results of fitting a set of problems
-#         containing all problem types against a single minimizer from each of
-#         the supported softwares
-#         """
-#
-#         expected_file = os.path.join(os.path.dirname(__file__),
-#                                      '{}_expected_results'.format(platform),
-#                                      'default_parsers.txt')
-#         actual_file = \
-#             os.path.join(os.path.dirname(__file__),
-#                          'fitbenchmarking_results',
-#                          'default_parsers',
-#                          'acc_table.txt')
-#
-#         with open(expected_file, 'r') as f:
-#             expected = f.readlines()
-#
-#         with open(actual_file, 'r') as f:
-#             actual = f.readlines()
-#
-#         diff, msg = diff_result(actual, expected)
-#         self.assertListEqual([], diff, msg)
+    def test_multifit_consistent(self):
+        """
+        Regression testing that the results of fitting multifit problems
+        against a single minimizer from mantid.
+        """
+
+        expected_file = os.path.join(os.path.dirname(__file__),
+                                     '{}_expected_results'.format(platform),
+                                     'multifit.txt')
+
+        actual_file = os.path.join(os.path.dirname(__file__),
+                                   'fitbenchmarking_results',
+                                   'multifit_set',
+                                   'acc_table.txt')
+
+        with open(expected_file, 'r') as f:
+            expected = f.readlines()
+
+        with open(actual_file, 'r') as f:
+            actual = f.readlines()
+
+        diff, msg = diff_result(actual, expected)
+        self.assertListEqual([], diff, msg)
+
+
+@run_for_test_types(TEST_TYPE, 'matlab')
+class TestRegressionMatlab(TestCase):
+    """
+    Regression tests for the Fitbenchmarking software with
+    matlab fitting software
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Create an options file, run it, and get the results.
+        """
+        results_dir = os.path.join(os.path.dirname(__file__),
+                                   'fitbenchmarking_results')
+
+        opt_file_name = create_options_file()
+        problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                               os.pardir,
+                                               'mock_problems',
+                                               'all_parsers_set'))
+        run([problem], results_dir, options_file=opt_file_name,
+            debug=True)
+        os.remove(opt_file_name)
+
+    def test_results_consistent_all(self):
+        """
+        Regression testing that the results of fitting a set of problems
+        containing all problem types against a single minimizer from each of
+        the supported softwares
+        """
+
+        expected_file = os.path.join(os.path.dirname(__file__),
+                                     '{}_expected_results'.format(platform),
+                                     'matlab.txt')
+
+        actual_file = \
+            os.path.join(os.path.dirname(__file__),
+                         'fitbenchmarking_results',
+                         'all_parsers_set',
+                         'acc_table.txt')
+
+        with open(expected_file, 'r') as f:
+            expected = f.readlines()
+
+        with open(actual_file, 'r') as f:
+            actual = f.readlines()
+
+        diff, msg = diff_result(actual, expected)
+        self.assertListEqual([], diff, msg)
+
+
+@run_for_test_types(TEST_TYPE, 'default')
+class TestRegressionDefault(TestCase):
+    """
+    Regression tests for the Fitbenchmarking software with all default fitting
+    software packages
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Create an options file, run it, and get the results.
+        """
+        results_dir = os.path.join(os.path.dirname(__file__),
+                                   'fitbenchmarking_results')
+
+        opt_file_name = create_options_file()
+        problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                               os.pardir,
+                                               'mock_problems',
+                                               'default_parsers'))
+
+        run([problem], results_dir, options_file=opt_file_name,
+            debug=True)
+        os.remove(opt_file_name)
+
+    def test_results_consistent(self):
+        """
+        Regression testing that the results of fitting a set of problems
+        containing all problem types against a single minimizer from each of
+        the supported softwares
+        """
+
+        expected_file = os.path.join(os.path.dirname(__file__),
+                                     '{}_expected_results'.format(platform),
+                                     'default_parsers.txt')
+        actual_file = \
+            os.path.join(os.path.dirname(__file__),
+                         'fitbenchmarking_results',
+                         'default_parsers',
+                         'acc_table.txt')
+
+        with open(expected_file, 'r') as f:
+            expected = f.readlines()
+
+        with open(actual_file, 'r') as f:
+            actual = f.readlines()
+
+        diff, msg = diff_result(actual, expected)
+        self.assertListEqual([], diff, msg)
 
 
 def diff_result(actual, expected):
@@ -257,11 +257,12 @@ def setup_options(multi_fit=False) -> Options:
     # The software to test for the different test types
     # 'gradient_free' and 'scipy_go' are left out as they require bounds
     # 'dfo' is left out for now as it gives unreliable results
-    software = {"all": ["minuit"],
+    software = {"all": ["bumps", "gsl", "levmar", "mantid",
+                        "minuit", "ralfit", "scipy", "scipy_ls"],
                 "default": ["bumps", "scipy", "scipy_ls"],
                 "matlab": ["matlab", "matlab_curve", "matlab_opt",
                            "matlab_stats"]}
-    # ["bumps", "gsl", "levmar", "mantid", "minuit", "ralfit", "scipy", "scipy_ls"]
+
     # The minimizers to test for each software
     minimizers = {"bumps": "lm-bumps",
                   "gsl": "lmsder",

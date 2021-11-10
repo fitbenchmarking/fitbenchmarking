@@ -7,24 +7,9 @@ http://iminuit.readthedocs.org
 from iminuit import Minuit
 from iminuit import __version__ as iminuit_version
 import numpy as np
-import os
+
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import MissingSoftwareError
-
-
-def func(x, params):
-    print(f"PROCESS ID = {os.getpid()}")
-    print(f"X = {str(x)}")
-    print(f"PARAMS = {str(params)}")
-    res = params[0] * (params[1]+x)**(-1/params[2])
-    print(f"RES = {str(res)}")
-    return res
-
-
-def eval_r(params, x, y, e):
-    result = (y - func(x, params)) / e
-    # Flatten in case of a vector function
-    return np.ravel(result)
 
 
 class MinuitController(Controller):
@@ -74,18 +59,6 @@ class MinuitController(Controller):
         """
         Setup for Minuit
         """
-
-        data_x = self.cost_func.problem.data_x
-        data_y = self.cost_func.problem.data_y
-        data_e = self.cost_func.problem.data_e
-
-        def eval_cost(params, **kwargs):
-            x = kwargs.get("x", data_x)
-            y = kwargs.get("y", data_y)
-            e = kwargs.get("e", data_e)
-            r = eval_r(params, x, y, e)
-            return np.dot(r, r)
-
         # minuit requires an initial step size.
         # The docs say
         # "A good guess is a fraction of the initial
@@ -95,7 +68,7 @@ class MinuitController(Controller):
         self._initial_step = 0.1 * np.array(self.initial_params)
         # set small steps to something sensible(?)
         self._initial_step[self._initial_step < 1e-12] = 1e-12
-        self._minuit_problem = Minuit(eval_cost,
+        self._minuit_problem = Minuit(self.cost_func.eval_cost,
                                       self.initial_params)
         self._minuit_problem.errordef = 1
         self._minuit_problem.errors = self._initial_step
@@ -112,8 +85,9 @@ class MinuitController(Controller):
             self.param_ranges = [(-np.inf, np.inf)]*len(self.initial_params)
 
         self._minuit_problem.limits = self.param_ranges
-        self._minuit_problem.print_level = 3
-        #self._minuit_problem.tol = 0
+        #self._minuit_problem.print_level = 3
+        self._minuit_problem.precision = 0.000000000000001
+        self._minuit_problem.tol = 0
 
     def fit(self):
         """

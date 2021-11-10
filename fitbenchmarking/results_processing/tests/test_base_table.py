@@ -132,7 +132,6 @@ def generate_results():
 
     best_results = {'prob_0': {'cf1': results['prob_0']['cf1'][0]},
                     'prob_1': {'cf1': results['prob_1']['cf1'][0]}}
-
     return results, best_results
 
 

@@ -49,25 +49,7 @@ jobs:
     - name: 'Running Tests'
       run: |
         ci/system_tests.sh
-
-  full_system_linux2:
-    name: 'Full System Tests 2 (Linux)'
-    runs-on: 'ubuntu-latest'
-    container:
-      image: 'fitbenchmarking/fitbenchmarking-extras:latest'
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Installing
-      run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,levmar,minuit,SAS,numdifftools]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
-        mkdir -p $MASTSIF
-        mkdir -p $PYCUTEST_CACHE
-    - name: 'Running Tests'
-      run: |
-        ci/system_tests.sh
-        
+  
   default_unit_linux:
     name: 'Default Unit Tests (Linux)'
     runs-on: 'ubuntu-latest'
