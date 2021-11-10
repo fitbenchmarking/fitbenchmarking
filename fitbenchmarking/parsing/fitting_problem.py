@@ -72,7 +72,7 @@ class FittingProblem:
         #: e.g.
         #: :code:`[{p1_name: p1_val1, p2_name: p2_val1, ...},
         #: {p1_name: p1_val2, ...}, ...]`
-        self.starting_values = None
+        self.starting_values: list = []
 
         #: *list*
         #: Smallest and largest values of interest in the data
@@ -139,7 +139,6 @@ class FittingProblem:
         :rtype: list of str
         """
         if self._param_names is None:
-            # pylint: disable=unsubscriptable-object
             self._param_names = list(self.starting_values[0].keys())
         return self._param_names
 
@@ -235,7 +234,6 @@ class FittingProblem:
                             :code:`{p1_name: [p1_min, p1_max], ...}`
         :type value_ranges: dict
         """
-        # pylint: disable=unsubscriptable-object
         lower_param_names = [name.lower()
                              for name in self.starting_values[0].keys()]
         if not all(name in lower_param_names for name in value_ranges):

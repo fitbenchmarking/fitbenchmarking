@@ -191,7 +191,8 @@ class NISTParser(Parser):
 
         return equation_text, idx
 
-    def _get_equation_text(self, lines, idxerr, idx):
+    @staticmethod
+    def _get_equation_text(lines, idxerr, idx):
         """
         Gets the equation text from the NIST file.
 
@@ -220,7 +221,8 @@ class NISTParser(Parser):
 
         return equation_text, idx
 
-    def _get_data_txt(self, lines, idx):
+    @staticmethod
+    def _get_data_txt(lines, idx):
         """
         Gets the data pattern from the NIST problem file.
 
@@ -232,8 +234,6 @@ class NISTParser(Parser):
         :return: The data pattern and the new index
         :rtype: (list of str) and int
         """
-
-        data_text = None
         data_text = lines[idx:]
         idx = len(lines)
 
@@ -271,7 +271,8 @@ class NISTParser(Parser):
 
         return data_points
 
-    def _sort_data_from_x_data(self, data_points):
+    @staticmethod
+    def _sort_data_from_x_data(data_points):
         """
         Sort the numpy array of the data points of the problem
         using its x data.
@@ -309,7 +310,8 @@ class NISTParser(Parser):
         equation = self._convert_nist_to_muparser(equation)
         return equation
 
-    def _convert_nist_to_muparser(self, equation):
+    @staticmethod
+    def _convert_nist_to_muparser(equation):
         """
         Converts the raw equation from the NIST file into muparser format.
 
@@ -376,7 +378,8 @@ class NISTParser(Parser):
 
         return starting_vals
 
-    def _get_startvals_floats(self, startval_str):
+    @staticmethod
+    def _get_startvals_floats(startval_str):
         """
         Converts the starting values into floats.
 

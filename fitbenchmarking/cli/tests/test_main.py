@@ -31,6 +31,29 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     return cost_func
 
 
+def mock_func_call(*args, **kwargs):
+    """
+    Mock function to be used instead of benchmark
+    """
+    options = Options()
+    cost_func = make_cost_function()
+
+    results = []
+    result_args = {'options': options,
+                   'cost_func': cost_func,
+                   'jac': 'jac',
+                   'hess': 'hess',
+                   'initial_params': [],
+                   'params': [],
+                   'error_flag': 4}
+    result = fitbm_result.FittingResult(**result_args)
+    results.append(result)
+
+    failed_problems = []
+    unselected_minimizers = {}
+    return results, failed_problems, unselected_minimizers
+
+
 class TestMain(TestCase):
     """
     Tests for main.py
@@ -52,30 +75,8 @@ class TestMain(TestCase):
         """
         Checks that exception is raised if all dummy results
         """
-        benchmark.side_effect = self.mock_func_call
+        benchmark.side_effect = mock_func_call
 
         with self.assertRaises(exceptions.NoResultsError):
             main.run(['examples/benchmark_problems/simple_tests'],
                      os.path.dirname(__file__), debug=True)
-
-    def mock_func_call(self, *args, **kwargs):
-        """
-        Mock function to be used instead of benchmark
-        """
-        options = Options()
-        cost_func = make_cost_function()
-
-        results = []
-        result_args = {'options': options,
-                       'cost_func': cost_func,
-                       'jac': 'jac',
-                       'hess': 'hess',
-                       'initial_params': [],
-                       'params': [],
-                       'error_flag': 4}
-        result = fitbm_result.FittingResult(**result_args)
-        results.append(result)
-
-        failed_problems = []
-        unselected_minimzers = {}
-        return (results, failed_problems, unselected_minimzers)
