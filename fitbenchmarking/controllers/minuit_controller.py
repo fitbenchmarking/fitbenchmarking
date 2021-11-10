@@ -12,6 +12,16 @@ from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
+def func(x, params):
+    return params[0] * (params[1]+x)**(-1/params[2])# + e
+
+
+def eval_r(params, x, y, e):
+    result = (y - func(x, params)) / e
+    # Flatten in case of a vector function
+    return np.ravel(result)
+
+
 class MinuitController(Controller):
     """
     Controller for the Minuit fitting software
@@ -59,6 +69,18 @@ class MinuitController(Controller):
         """
         Setup for Minuit
         """
+
+        data_x = self.cost_func.problem.data_x
+        data_y = self.cost_func.problem.data_y
+        data_e = self.cost_func.problem.data_e
+
+        def eval_cost(params, **kwargs):
+            x = kwargs.get("x", data_x)
+            y = kwargs.get("y", data_y)
+            e = kwargs.get("e", data_e)
+            r = eval_r(params, x, y, e)
+            return np.dot(r, r)
+
         # minuit requires an initial step size.
         # The docs say
         # "A good guess is a fraction of the initial
@@ -68,7 +90,7 @@ class MinuitController(Controller):
         self._initial_step = 0.1 * np.array(self.initial_params)
         # set small steps to something sensible(?)
         self._initial_step[self._initial_step < 1e-12] = 1e-12
-        self._minuit_problem = Minuit(self.cost_func.eval_cost,
+        self._minuit_problem = Minuit(eval_cost,
                                       self.initial_params)
         self._minuit_problem.errordef = 1
         self._minuit_problem.errors = self._initial_step
