@@ -1,5 +1,5 @@
 """
-Set up and build the fitting repots for various types of problems.
+Set up and build the fitting reports for various types of problems.
 """
 
 from __future__ import (absolute_import, division, print_function)
