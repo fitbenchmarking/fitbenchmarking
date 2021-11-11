@@ -1,0 +1,5 @@
+                      minuit
+                      minuit
+BENNETT5       1.621e-05 (1)
+cubic-fba      3.862e-22 (1)
+Problem Def 1    0.03175 (1)

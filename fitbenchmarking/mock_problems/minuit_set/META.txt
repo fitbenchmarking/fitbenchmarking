@@ -1,0 +1,3 @@
+minuit_set
+
+This dataset contains problems that are numerically stable when performing fits in minuit.
