@@ -133,7 +133,7 @@ class TestHessianClass(TestCase):
                                    p=self.params)
         self.cost_func = NLLSCostFunc(self.fitting_problem)
         self.jacobian = JacobianClass(self.fitting_problem)
-        self.hessian = Analytic(self.fitting_problem)
+        self.hessian = Analytic(self.fitting_problem, self.jacobian)
 
     def test_analytic_nlls(self):
         """
@@ -263,7 +263,7 @@ class TestHesCostFunc(TestCase):
         for method in ['2-point',
                        '3-point',
                        'cs']:
-            hes = Scipy(self.cost_func.problem)
+            hes = Scipy(self.cost_func.problem, self.cost_func.jacobian)
             hes.method = method
             self.cost_func.hessian = hes
             eval_result = self.cost_func.hes_cost(params=self.params)
@@ -278,7 +278,7 @@ class TestHesCostFunc(TestCase):
                        'backward',
                        'complex',
                        'multicomplex']:
-            hes = Numdifftools(self.cost_func.problem)
+            hes = Numdifftools(self.cost_func.problem, self.cost_func.jacobian)
             hes.method = method
             self.cost_func.hessian = hes
             eval_result = self.cost_func.hes_cost(params=self.params)
@@ -289,7 +289,8 @@ class TestHesCostFunc(TestCase):
         Test analytic hessian
         """
         self.fitting_problem.format = "cutest"
-        self.cost_func.hessian = Analytic(self.cost_func.problem)
+        self.cost_func.hessian = Analytic(self.cost_func.problem,
+                                          self.cost_func.jacobian)
         eval_result = self.cost_func.hes_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
