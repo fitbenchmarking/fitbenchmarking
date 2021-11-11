@@ -5,7 +5,7 @@ problems.
 """
 
 import numpy as np
-import scipy.optimize as optimize
+from scipy import optimize
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import MissingBoundsError

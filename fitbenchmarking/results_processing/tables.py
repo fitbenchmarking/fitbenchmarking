@@ -82,17 +82,12 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                 del table_names[suffix]
                 continue
 
-            table_title = table.table_title
             file_path = table.file_path
 
             description = table.get_description(description)
 
             table_format = None if suffix == 'local_min' \
                 else description[options.comparison_mode]
-
-            has_pp = table.has_pp
-
-            pp_filenames = table.pp_filenames
 
             root = os.path.dirname(getfile(fitbenchmarking))
             template_dir = os.path.join(root, 'templates')
@@ -116,9 +111,9 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                                     mathjax=js['mathjax'],
                                     table_description=description[suffix],
                                     table_format=table_format,
-                                    result_name=table_title,
-                                    has_pp=has_pp,
-                                    pp_filenames=pp_filenames,
+                                    result_name=table.table_title,
+                                    has_pp=table.has_pp,
+                                    pp_filenames=table.pp_filenames,
                                     table=html_table,
                                     cbar=cbar,
                                     error_message=ERROR_OPTIONS,

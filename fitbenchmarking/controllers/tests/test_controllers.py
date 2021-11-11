@@ -91,11 +91,12 @@ class DummyController(Controller):
 
 
 class ControllerSharedTesting:
-    '''
+    """
     Tests used by all controllers
-    '''
+    """
 
-    def controller_run_test(self, controller):
+    @staticmethod
+    def controller_run_test(controller):
         """
         Utility function to run controller and check output is in generic form
 
@@ -109,7 +110,8 @@ class ControllerSharedTesting:
 
         assert len(controller.final_params) == len(controller.initial_params)
 
-    def check_converged(self, controller):
+    @staticmethod
+    def check_converged(controller):
         """
         Utility function to check controller.cleanup() produces a success flag
 
@@ -119,7 +121,8 @@ class ControllerSharedTesting:
         controller.cleanup()
         assert controller.flag == 0
 
-    def check_max_iterations(self, controller):
+    @staticmethod
+    def check_max_iterations(controller):
         """
         Utility function to check controller.cleanup() produces a maximum
         iteration flag
@@ -130,7 +133,8 @@ class ControllerSharedTesting:
         controller.cleanup()
         assert controller.flag == 1
 
-    def check_diverged(self, controller):
+    @staticmethod
+    def check_diverged(controller):
         """
         Utility function to check controller.cleanup() produces a fail
 
@@ -478,8 +482,8 @@ class ControllerBoundsTests(TestCase):
         controller.cleanup()
 
         for count, value in enumerate(controller.final_params):
-            assert controller.value_ranges[count][0] <= value \
-                <= controller.value_ranges[count][1]
+            self.assertLessEqual(controller.value_ranges[count][0], value)
+            self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
     def test_scipy(self):
         """
@@ -566,6 +570,9 @@ class ControllerBoundsTests(TestCase):
 
 @run_for_test_types(TEST_TYPE, 'all')
 class ControllerValidateTests(TestCase):
+    """
+    Tests to ensure controller data is validated correctly.
+    """
 
     def setUp(self):
         """

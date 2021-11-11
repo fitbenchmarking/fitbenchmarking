@@ -6,9 +6,10 @@ try:
     from itertools import zip_longest
 except ImportError:
     from itertools import izip_longest as zip_longest
+
 import os
 from sys import platform
-import tempfile
+from tempfile import NamedTemporaryFile
 from unittest import TestCase
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 from conftest import run_for_test_types
@@ -32,32 +33,23 @@ class TestRegressionAll(TestCase):
         results_dir = os.path.join(os.path.dirname(__file__),
                                    'fitbenchmarking_results')
 
-        opts = setup_options()
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
-                                               mode='w',
-                                               delete=False)
-        opts.write_to_stream(opt_file)
-        opt_file.close()
+        opt_file_name = create_options_file()
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,
                                                'mock_problems',
                                                'all_parsers_set'))
-        run([problem], results_dir, options_file=opt_file.name,
+        run([problem], results_dir, options_file=opt_file_name,
             debug=True)
-        os.remove(opt_file.name)
-        opts = setup_options(multi_fit=True)
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
-                                               mode='w',
-                                               delete=False)
-        opts.write_to_stream(opt_file)
-        opt_file.close()
+        os.remove(opt_file_name)
+
+        opt_file_name = create_options_file(multi_fit=True)
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,
                                                'mock_problems',
                                                'multifit_set'))
-        run([problem], results_dir, options_file=opt_file.name,
+        run([problem], results_dir, options_file=opt_file_name,
             debug=True)
-        os.remove(opt_file.name)
+        os.remove(opt_file_name)
 
     def test_results_consistent_all(self):
         """
@@ -125,19 +117,14 @@ class TestRegressionMatlab(TestCase):
         results_dir = os.path.join(os.path.dirname(__file__),
                                    'fitbenchmarking_results')
 
-        opts = setup_options()
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
-                                               mode='w',
-                                               delete=False)
-        opts.write_to_stream(opt_file)
-        opt_file.close()
+        opt_file_name = create_options_file()
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,
                                                'mock_problems',
                                                'all_parsers_set'))
-        run([problem], results_dir, options_file=opt_file.name,
+        run([problem], results_dir, options_file=opt_file_name,
             debug=True)
-        os.remove(opt_file.name)
+        os.remove(opt_file_name)
 
     def test_results_consistent_all(self):
         """
@@ -181,22 +168,15 @@ class TestRegressionDefault(TestCase):
         results_dir = os.path.join(os.path.dirname(__file__),
                                    'fitbenchmarking_results')
 
-        opts = setup_options()
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
-                                               mode='w',
-                                               delete=False)
-        # while opt_file is open it cannot be reoponed on Windows NT or later
-        # and hence option available is to write to the stream directly
-        opts.write_to_stream(opt_file)
-        opt_file.close()
+        opt_file_name = create_options_file()
         problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                os.pardir,
                                                'mock_problems',
                                                'default_parsers'))
 
-        run([problem], results_dir, options_file=opt_file.name,
+        run([problem], results_dir, options_file=opt_file_name,
             debug=True)
-        os.remove(opt_file.name)
+        os.remove(opt_file_name)
 
     def test_results_consistent(self):
         """
@@ -297,3 +277,18 @@ def setup_options(multi_fit=False) -> Options:
     opts.software = software.get(TEST_TYPE) if not multi_fit else ["mantid"]
     opts.minimizers = {s: [minimizers[s]] for s in opts.software}
     return opts
+
+
+def create_options_file(**kwargs):
+    """
+    Creates a temporary options file and returns its name.
+
+    :return: Name of the temporary options file.
+    :rtype: str
+    """
+    opts = setup_options(**kwargs)
+    with NamedTemporaryFile(suffix='.ini', mode='w',
+                            delete=False) as opt_file:
+        opts.write_to_stream(opt_file)
+        name = opt_file.name
+    return name

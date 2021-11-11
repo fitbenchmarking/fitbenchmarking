@@ -8,8 +8,9 @@ import matplotlib
 import numpy as np
 
 matplotlib.use('Agg')
-# pylint: disable=wrong-import-position
+# pylint: disable=wrong-import-position,ungrouped-imports
 import matplotlib.pyplot as plt  # noqa: E402
+# pylint: enable=wrong-import-position,ungrouped-imports
 
 
 def profile(results, fig_dir):

@@ -5,12 +5,11 @@ from collections import OrderedDict
 
 import typing
 
-from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
-
 import mantid.simpleapi as msapi
 
+from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 
-# pylint: disable=too-many-branches
+
 class MantidParser(FitbenchmarkParser):
     """
     Parser for a Mantid problem definition file.

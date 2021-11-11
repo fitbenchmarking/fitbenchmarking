@@ -5,7 +5,6 @@ from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.utils.exceptions import NoJacobianError
 
 
-# pylint: disable=useless-super-delegation
 class Analytic(Jacobian):
     """
     Class to apply an analytical Jacobian

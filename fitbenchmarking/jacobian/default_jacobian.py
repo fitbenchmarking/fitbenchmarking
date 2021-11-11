@@ -4,7 +4,6 @@ Module which uses the minimizer's default jacobian
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 
 
-# pylint: disable=useless-super-delegation
 class Default(Jacobian):
     """
     Use the minimizer's jacobian/derivative approximation

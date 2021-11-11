@@ -19,20 +19,13 @@ class CreateDirsTests(unittest.TestCase):
     Tests for the file and directory setting in misc.py
     """
 
-    def base_path(self):
-        """
-        Helper function that returns the path to
-        /fitbenchmarking/benchmark_problems
-        """
-        bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
-        return bench_prob_dir
-
     def setUp(self):
         """
         Create some datafiles to look for.
         """
-        self.dirname = os.path.join(self.base_path(),
-                                    'mock_datasets_{}'.format(time.time()))
+        base_path = os.path.dirname(inspect.getfile(mock_problems))
+        self.dirname = os.path.join(base_path,
+                                    f"mock_datasets_{time.time()}")
         os.mkdir(self.dirname)
 
         expected = []

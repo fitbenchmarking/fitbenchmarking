@@ -6,6 +6,7 @@ import os
 from tempfile import TemporaryDirectory
 from unittest import TestCase, main
 
+import shutil
 import numpy as np
 
 from fitbenchmarking.core.results_output import preprocess_data
@@ -151,14 +152,19 @@ class CreateTests(TestCase):
         """
         Setup for create function tests
         """
-        self.results_dir = TemporaryDirectory()
-        self.supp_dir = os.path.join(self.results_dir.name, 'support_pages')
-        self.fig_dir = os.path.join(self.supp_dir, 'figures')
+        with TemporaryDirectory() as directory:
+            self.temp_dir = directory
+            self.supp_dir = os.path.join(self.temp_dir, 'support_pages')
+            self.fig_dir = os.path.join(self.supp_dir, 'figures')
         os.makedirs(self.fig_dir)
-        results, self.options = generate_mock_results(
-            self.results_dir.name
-        )
+        results, self.options = generate_mock_results(self.temp_dir)
         self.best_results, self.results = preprocess_data(results)
+
+    def tearDown(self) -> None:
+        """
+        Tear down the test suite.
+        """
+        shutil.rmtree(self.temp_dir)
 
     def test_create_all_plots(self):
         """
@@ -215,12 +221,13 @@ class CreateSummaryPageTests(TestCase):
         """
         Setup tests for _create_summary_page
         """
-        self.results_dir = TemporaryDirectory()
-        self.supp_dir = os.path.join(self.results_dir.name, 'support_pages')
+        with TemporaryDirectory() as directory:
+            self.temp_dir = directory
+            self.supp_dir = os.path.join(self.temp_dir, 'support_pages')
+
         os.makedirs(self.supp_dir)
-        results, self.options = generate_mock_results(
-            self.results_dir.name
-        )
+        results, self.options = generate_mock_results(self.temp_dir)
+
         best_results, results = preprocess_data(results)
         self.prob_name = list(results.keys())[0]
         self.results = results[self.prob_name]
@@ -232,6 +239,12 @@ class CreateSummaryPageTests(TestCase):
             summary_plot_path='plot_path',
             support_pages_dir=self.supp_dir,
             options=self.options)
+
+    def tearDown(self) -> None:
+        """
+        Tear down the test suite.
+        """
+        shutil.rmtree(self.temp_dir)
 
     def test_create_summary_pages(self):
         """
