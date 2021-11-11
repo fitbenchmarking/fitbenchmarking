@@ -86,7 +86,7 @@ class MinuitController(Controller):
 
         self._minuit_problem.limits = self.param_ranges
         #self._minuit_problem.print_level = 3
-        self._minuit_problem.precision = 0.000000000000001
+        self._minuit_problem.precision = 0.00000000000001
         self._minuit_problem.tol = 0
 
     def fit(self):
