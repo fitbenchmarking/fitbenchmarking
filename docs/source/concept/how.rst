@@ -52,6 +52,8 @@ values of the parameters. Here is an example of the final plot fit:
 .. figure:: ../../images/example_plot.png
    :alt: Example Plot
 
+.. _performance_profile:
+
 Performance Profile
 -------------------
 

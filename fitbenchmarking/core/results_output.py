@@ -12,7 +12,7 @@ from jinja2 import Environment, FileSystemLoader
 import fitbenchmarking
 from fitbenchmarking.results_processing import (performance_profiler, plots,
                                                 problem_summary_page,
-                                                support_page, tables)
+                                                fitting_report, tables)
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -60,9 +60,9 @@ def save_results(options, results, group_name, failed_problems,
     if options.make_plots:
         create_plots(options, results_dict, best_results, fig_dir)
 
-    support_page.create(options=options,
-                        results=results,
-                        support_pages_dir=supp_dir)
+    fitting_report.create(options=options,
+                          results=results,
+                          support_pages_dir=supp_dir)
     problem_summary_page.create(options=options,
                                 results=results_dict,
                                 best_results=best_results,
