@@ -646,7 +646,8 @@ class ControllerValidateTests(TestCase):
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
-        self.hes = ScipyHessian(self.cost_func.problem)
+        self.hes = ScipyHessian(self.cost_func.problem,
+                                self.cost_func.jacobian)
         self.hes.method = "2-point"
         self.cost_func.hessian = self.hes
 
@@ -663,7 +664,8 @@ class ControllerValidateTests(TestCase):
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
-        self.hes = ScipyHessian(self.cost_func.problem)
+        self.hes = ScipyHessian(self.cost_func.problem,
+                                self.cost_func.jacobian)
         self.hes.method = "cs"
         self.cost_func.hessian = self.hes
 
@@ -681,7 +683,8 @@ class ControllerValidateTests(TestCase):
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
-        self.hes = ScipyHessian(self.cost_func.problem)
+        self.hes = ScipyHessian(self.cost_func.problem,
+                                self.cost_func.jacobian)
         self.hes.method = "cs"
         self.cost_func.hessian = self.hes
 
@@ -699,7 +702,8 @@ class ControllerValidateTests(TestCase):
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
-        self.hes = ScipyHessian(self.cost_func.problem)
+        self.hes = ScipyHessian(self.cost_func.problem,
+                                self.cost_func.jacobian)
         self.hes.method = "2-point"
         self.cost_func.hessian = self.hes
 

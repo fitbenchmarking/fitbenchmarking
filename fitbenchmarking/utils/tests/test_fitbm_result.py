@@ -81,7 +81,7 @@ class FitbmResultTests(unittest.TestCase):
         self.cost_func = NLLSCostFunc(self.problem)
         self.jac = Scipy(self.cost_func)
         self.jac.method = "2-point"
-        self.hess = AnalyticHessian(self.cost_func.problem)
+        self.hess = AnalyticHessian(self.cost_func.problem, self.jac)
         self.result = FittingResult(
             options=self.options, cost_func=self.cost_func, jac=self.jac,
             hess=self.hess, chi_sq=chi_sq, runtime=runtime,

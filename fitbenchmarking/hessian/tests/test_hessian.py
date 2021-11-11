@@ -198,7 +198,7 @@ class TestHessianClass(TestCase):
         for method in ['2-point',
                        '3-point',
                        'cs']:
-            hes = Scipy(self.cost_func.problem)
+            hes = Scipy(self.cost_func.problem, self.jacobian)
             hes.method = method
             eval_result = hes.eval(params=self.params)
             self.assertTrue(np.isclose(self.actual_hessian, eval_result).all())
@@ -212,7 +212,7 @@ class TestHessianClass(TestCase):
                        'backward',
                        'complex',
                        'multicomplex']:
-            hes = Numdifftools(self.cost_func.problem)
+            hes = Numdifftools(self.cost_func.problem, self.jacobian)
             hes.method = method
             eval_result = hes.eval(params=self.params)
             self.assertTrue(np.isclose(self.actual_hessian, eval_result).all())
@@ -224,7 +224,7 @@ class TestHessianClass(TestCase):
         """
         self.fitting_problem.hessian = None
         with self.assertRaises(exceptions.NoHessianError):
-            Analytic(self.cost_func.problem)
+            Analytic(self.cost_func.problem, self.jacobian)
 
 
 class TestHesCostFunc(TestCase):
