@@ -67,7 +67,7 @@ pip install pycutest
 cd $HERE
 # set noninteractive to stop tzdata prompt
 export DEBIAN_FRONTEND=noniteractive
-OLD_VENV=VIRTUAL_ENV
+OLD_VENV=$VIRTUAL_ENV
 export VIRTUAL_ENV=""
 export OLD_PATH=$PATH
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
