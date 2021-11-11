@@ -1,5 +1,5 @@
 '''
-Test support page
+Test fitting_report
 '''
 from __future__ import (absolute_import, division, print_function)
 
@@ -15,14 +15,14 @@ import fitbenchmarking
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
-from fitbenchmarking.results_processing import support_page
+from fitbenchmarking.results_processing import fitting_report
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
 
 class CreateTests(unittest.TestCase):
     '''
-    Create tests for support page
+    Create tests for fitting_report
     '''
 
     def setUp(self):
@@ -52,11 +52,11 @@ class CreateTests(unittest.TestCase):
         """
         Tests that the create function creates a set of unique files.
         """
-        support_page.create(results=self.results,
-                            support_pages_dir=self.dir.name,
-                            options=self.options)
+        fitting_report.create(results=self.results,
+                              support_pages_dir=self.dir.name,
+                              options=self.options)
 
-        file_names = sorted([r.support_page_link
+        file_names = sorted([r.fitting_report_link
                              for r in self.results])
 
         unique_names = sorted(list(set(file_names)))
@@ -96,19 +96,19 @@ class CreateProbGroupTests(unittest.TestCase):
         """
         Tests that files are created for each result.
         """
-        support_page.create_prob_group(result=self.result,
-                                       support_pages_dir=self.dir.name,
-                                       options=self.options)
-        self.assertTrue(os.path.exists(self.result.support_page_link))
+        fitting_report.create_prob_group(result=self.result,
+                                         support_pages_dir=self.dir.name,
+                                         options=self.options)
+        self.assertTrue(os.path.exists(self.result.fitting_report_link))
 
     def test_file_name(self):
         """
         Tests that the filenames are in the expected form.
         """
-        support_page.create_prob_group(result=self.result,
-                                       support_pages_dir=self.dir.name,
-                                       options=self.options)
-        file_name = self.result.support_page_link
+        fitting_report.create_prob_group(result=self.result,
+                                         support_pages_dir=self.dir.name,
+                                         options=self.options)
+        file_name = self.result.fitting_report_link
         expected = os.path.join(os.path.relpath(self.dir.name),
                                 'prob_a_nllscostfunc_min_a.html')
 
@@ -143,7 +143,7 @@ class GetFigurePathsTests(unittest.TestCase):
         """
         self.result.figure_link = 'some_link'
         self.result.start_figure_link = 'other_link'
-        figure_link, start_link = support_page.get_figure_paths(self.result)
+        figure_link, start_link = fitting_report.get_figure_paths(self.result)
         self.assertEqual(figure_link, os.path.join('figures', 'some_link'))
         self.assertEqual(start_link, os.path.join('figures', 'other_link'))
 
@@ -153,7 +153,7 @@ class GetFigurePathsTests(unittest.TestCase):
         """
         self.result.figure_link = ''
         self.result.start_figure_link = ''
-        figure_link, start_link = support_page.get_figure_paths(self.result)
+        figure_link, start_link = fitting_report.get_figure_paths(self.result)
         self.assertEqual(figure_link, '')
         self.assertEqual(start_link, '')
 
