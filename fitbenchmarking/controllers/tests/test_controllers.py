@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 """
 Tests for the controllers available from a default fitbenchmarking install
 """
