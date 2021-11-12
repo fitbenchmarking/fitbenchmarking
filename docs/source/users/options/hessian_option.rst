@@ -1,15 +1,15 @@
-.. _jacobian_option:
+.. _hessian_option:
 
-################
-Jacobian Options
-################
+###############
+Hessian Options
+###############
 
-The Jacobian section allows you to control which methods for computing Jacobians the software uses.
+The Hessian section allows you to control which methods for computing Hessians the software uses.
 
 Analytic (:code:`analytic`)
 ---------------------------
 
-Analytic Jacobians can only be used for specific :ref:`problem_def`. Currently
+Analytic Hessians can only be used for specific :ref:`problem_def`. Currently
 the supported formats are cutest and NIST. The only option is:
 
 * ``default`` - use the analytic derivative provided by a supported format.
@@ -18,15 +18,15 @@ Default is ``default``
 
 .. code-block:: rst
 
-    [JACOBIAN]
+    [HESSIAN]
     analytic: default
 
-.. _scipy-jac:
+.. _scipy-hes:
 
 SciPy (:code:`scipy`)
 ---------------------
 
-Calculates the Jacobian using the numerical Jacobian in
+Calculates the Hessian from the Jacobian using the finite differencing in
 SciPy, this uses ``scipy.optimize._numdiff.approx_derivative``. The supported
 options are:
 
@@ -40,36 +40,33 @@ Default is ``2-point``
 
 .. code-block:: rst
 
-    [JACOBIAN]
+    [HESSIAN]
     scipy: 2-point
 
-.. _defaultjacobian:
+.. _defaulthessian:
 
-Solver Default Jacobian (:code:`default`)
---------------------------------------------
+Default Hessian (:code:`default`)
+---------------------------------
 
-This uses the approximation of the Jacobian that is used by default in the minimizer,
-and will vary between solvers.  If the minimizer requires the user to pass a Jacobian,
-a warning will be printed to the screen and the :ref:`scipy-jac` 2-point
-approximation will be used.  The only option is:
+Hessian information is not passed to minimizers. The only option is:
 
-* ``default`` - use the default derivative approximation provided by the software.
+* ``default`` - don't pass Hessian information to minimizers.
 
 Default is ``default``
 
 .. code-block:: rst
 
-    [JACOBIAN]
+    [HESSIAN]
     default: default
 
-.. _numdifftools-jac:
+.. _numdifftools-hes:
 
 Numdifftools (:code:`numdifftools`)
 -----------------------------------
 
-Calculates the Jacobian using the python package :code:`numdifftools`.
+Calculates the Hessian from the Jacobian using the python package :code:`numdifftools`.
 We allow the user to change the method used, but other options
-(e.g, the step size generator and the order of the approximation) are set the defaults.
+(e.g, the step size generator and the order of the approximation) are set to the defaults.
 The supported options are:
 
 * ``central`` - central differencing.  Almost as accurate as complex, but with no restriction on the type of function.
@@ -84,5 +81,5 @@ Default is ``central``.
 
 .. code-block:: rst
 
-    [JACOBIAN]
+    [HESSIAN]
     numdifftools: central

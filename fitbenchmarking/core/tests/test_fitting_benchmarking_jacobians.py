@@ -113,7 +113,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         Test to check that only one Jacobian option has been added
         """
         self.options.jac_method = ["scipy"]
-        self.options.num_method = {"scipy": ["3-point"]}
+        self.options.jac_num_method = {"scipy": ["3-point"]}
         self.controller.minimizer = "general"
         loop_over_hessians.side_effect = self.mock_func_call
         new_name = ['general: scipy 3-point']
@@ -129,7 +129,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         Test to check multiple Jacobian options are set correctly
         """
         self.options.jac_method = ["scipy"]
-        self.options.num_method = {"scipy": ["3-point", "2-point"]}
+        self.options.jac_num_method = {"scipy": ["3-point", "2-point"]}
         self.controller.minimizer = "general"
         loop_over_hessians.side_effect = self.mock_func_call
         new_name = ['general: scipy 3-point', 'general: scipy 2-point']
@@ -146,7 +146,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         and the name does not have Jacobian information in it
         """
         self.options.jac_method = ["scipy"]
-        self.options.num_method = {"scipy": ["3-point", "2-point"]}
+        self.options.jac_num_method = {"scipy": ["3-point", "2-point"]}
         self.controller.minimizer = "deriv_free_algorithm"
         loop_over_hessians.side_effect = self.mock_func_call
         new_name = ['deriv_free_algorithm']

@@ -152,8 +152,9 @@ class TestNLLSCostFunc(TestCase):
         self.cost_function.problem.hessian = hes
         jacobian = Scipy(self.cost_function.problem)
         jacobian.method = "2-point"
-        hessian = Analytic(self.cost_function.problem)
         self.cost_function.jacobian = jacobian
+        hessian = Analytic(self.cost_function.problem,
+                           self.cost_function.jacobian)
         self.cost_function.hessian = hessian
 
         H, _ = self.cost_function.hes_res(params=[5],
@@ -175,8 +176,9 @@ class TestNLLSCostFunc(TestCase):
         self.cost_function.problem.hessian = hes
         jacobian = Scipy(self.cost_function.problem)
         jacobian.method = "2-point"
-        hessian = Analytic(self.cost_function.problem)
         self.cost_function.jacobian = jacobian
+        hessian = Analytic(self.cost_function.problem,
+                           self.cost_function.jacobian)
         self.cost_function.hessian = hessian
 
         hes_cost = self.cost_function.hes_cost(params=[0.01],
@@ -262,8 +264,9 @@ class TestWeightedNLLSCostFunc(TestCase):
         self.cost_function.problem.hessian = hes
         jacobian = Scipy(self.cost_function.problem)
         jacobian.method = "2-point"
-        hessian = Analytic(self.cost_function.problem)
         self.cost_function.jacobian = jacobian
+        hessian = Analytic(self.cost_function.problem,
+                           self.cost_function.jacobian)
         self.cost_function.hessian = hessian
 
         H, _ = self.cost_function.hes_res(params=[5],
@@ -352,8 +355,9 @@ class TestHellingerNLLSCostFunc(TestCase):
         self.cost_function.problem.hessian = hes
         jacobian = Scipy(self.cost_function.problem)
         jacobian.method = "2-point"
-        hessian = Analytic(self.cost_function.problem)
         self.cost_function.jacobian = jacobian
+        hessian = Analytic(self.cost_function.problem,
+                           self.cost_function.jacobian)
         self.cost_function.hessian = hessian
 
         H, _ = self.cost_function.hes_res(params=[5],
@@ -448,8 +452,9 @@ class TestPoissonCostFunc(TestCase):
         self.cost_function.problem.hessian = hes
         jacobian = Scipy(self.cost_function.problem)
         jacobian.method = "2-point"
-        hessian = Analytic(self.cost_function.problem)
         self.cost_function.jacobian = jacobian
+        hessian = Analytic(self.cost_function.problem,
+                           self.cost_function.jacobian)
         self.cost_function.hessian = hessian
 
         H, _ = self.cost_function.hes_res(params=[5],

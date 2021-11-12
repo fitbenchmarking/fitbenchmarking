@@ -10,15 +10,24 @@ class Hessian:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, problem):
+    # Problem formats that are incompatible with certain Hessians
+    INCOMPATIBLE_PROBLEMS = {}
+
+    def __init__(self, problem, jacobian):
         """
         Base class for the Hessians
 
         :param problem: The parsed problem.
         :type problem:
-        :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
+            :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
+        :param jacobian: The jacobian for the problem
+        :type jacobian: subclass of
+            :class:`~fitbenchmarking.jacobian.base_jacobian`
         """
         self.problem = problem
+        self.jacobian = jacobian
+
+        self._method = None
 
     @abstractmethod
     def eval(self, params, **kwargs):
@@ -29,6 +38,26 @@ class Hessian:
         :type params: list
 
         :return: Computed Hessian
-        :rtype: numpy array
+        :rtype: 3D numpy array
         """
         raise NotImplementedError
+
+    @property
+    def method(self):
+        """
+        Utility function to get the numerical method
+
+        :return: the names of the parameters
+        :rtype: list of str
+        """
+        return self._method
+
+    @method.setter
+    def method(self, value):
+        """
+        Utility function to set the numerical method
+
+        :param value: the name of the numerical method
+        :type value: str
+        """
+        self._method = value

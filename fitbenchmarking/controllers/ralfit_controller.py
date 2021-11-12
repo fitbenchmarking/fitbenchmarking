@@ -94,18 +94,18 @@ class RALFitController(Controller):
     def hes_eval(self, params, r):
         """
         Function to ensure correct inputs and outputs
-        are used for the RALFit hessian evalution
+        are used for the RALFit hessian evaluation
 
         :param params: parameters
         :type params: numpy array
-        :param r: resuiduals, required by RALFit to
-                  be passed to hessian evaluation
+        :param r: residuals, required by RALFit to
+                  be passed for hessian evaluation
         :type r: numpy array
-        :return: hessian evaluation from hessian.eval
+        :return: hessian 2nd order term: sum_{i=1}^m r_i \nabla^2 r_i
         :rtype: numpy array
         """
-        hes, _ = self.cost_func.hes_res(params)
-        return hes
+        H, _ = self.cost_func.hes_res(params)
+        return np.matmul(H, r)
     # pylint: enable=unused-argument
 
     def fit(self):
