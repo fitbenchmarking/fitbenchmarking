@@ -36,7 +36,7 @@ mkdir -p ${HERE}/RALFit/libRALFit/build
 cd ${HERE}/RALFit/libRALFit/build
 cmake .. && make && make install
 pip install .
-export LD_LIBRARY_PATH=/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=${HERE}/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
 
 # Install  cutest
 CUTEST_DIR=${HERE}/cutest
