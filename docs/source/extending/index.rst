@@ -10,6 +10,7 @@ to the software.  Below we outline instructions for doing this.
     :caption: Contents:
 
     parsers
+    adding_data
     cost_function
     hessian_extend
     jacobian_extend
