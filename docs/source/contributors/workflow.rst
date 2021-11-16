@@ -146,7 +146,7 @@ by:
 
 - adding the datasets to the master `examples.zip` and `examples.tar.gz` folders, and updating the versions on `powell`
 
-Please not that the maximum file size allowed by GitHub is 100MB, and the
+Please note that the maximum file size allowed by GitHub is 100MB, and the
 total repository size is recommended to be kept below 1GB.  Please bear
 this in mind when advising users whether or not they should also add their
 data to the `examples/benchmark_problems` directory of FitBenchmarking.
