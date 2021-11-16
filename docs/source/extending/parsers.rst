@@ -105,3 +105,6 @@ To add a new fitting problem definition type, complete the following steps:
 
 6. Verify that your tests have been found and are successful by running
    `pytest -vv fitbenchmarking/parsing/tests/test_parsers.py`
+
+Once the new parser is added, please add some examples that use this
+problem definition type following the instructions at :ref:`adding_data`.
