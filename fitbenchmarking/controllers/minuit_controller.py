@@ -85,8 +85,6 @@ class MinuitController(Controller):
             self.param_ranges = [(-np.inf, np.inf)]*len(self.initial_params)
 
         self._minuit_problem.limits = self.param_ranges
-        self._minuit_problem.precision = 0.00000000000001
-        self._minuit_problem.tol = 0
 
     def fit(self):
         """
