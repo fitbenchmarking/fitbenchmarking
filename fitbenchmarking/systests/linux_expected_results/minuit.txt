@@ -1,5 +1,0 @@
-                         minuit
-                         minuit
-cubic-fba         7.579e-06 (1)
-DanWood, Start 1   0.001171 (1)
-DanWood, Start 2   0.001183 (1)

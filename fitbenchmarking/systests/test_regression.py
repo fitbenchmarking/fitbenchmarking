@@ -58,20 +58,6 @@ class TestRegressionAll(TestCase):
         diff, msg = compare_results(problem_sub_directory, "multifit.txt")
         self.assertListEqual([], diff, msg)
 
-    # def test_minuit_results(self):
-    #     """
-    #     There is numerical instability for some datasets fitted using minuit
-    #     caused by rounding-off differences across different machines. This
-    #     test therefore only tests the datasets that result in a numerically
-    #     stable result. See PR #938 for more details.
-    #     """
-    #     problem_sub_directory = "minuit_set"
-    #
-    #     run_benchmark(self.results_dir, problem_sub_directory, ["minuit"])
-    #
-    #     diff, msg = compare_results(problem_sub_directory, "minuit.txt")
-    #     self.assertListEqual([], diff, msg)
-
 
 @run_for_test_types(TEST_TYPE, 'matlab')
 class TestRegressionMatlab(TestCase):
@@ -214,8 +200,9 @@ def setup_options(override_software: list = None) -> Options:
     opts.num_runs = 1
     opts.make_plots = False
 
-    # The software to test for the different test types
-    # 'gradient_free' and 'scipy_go' are left out as they require bounds
+    # The software to test for the different test types.
+    # - 'dfo' and 'minuit' are included but are unstable for other datasets.
+    # - 'gradient_free' and 'scipy_go' are left out as they require bounds.
     software = {"all": ["bumps", "dfo", "gsl", "levmar", "mantid", "minuit",
                         "ralfit", "scipy", "scipy_ls"],
                 "default": ["bumps", "scipy", "scipy_ls"],
