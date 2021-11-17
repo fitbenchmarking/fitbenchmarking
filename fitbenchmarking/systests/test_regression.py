@@ -58,7 +58,7 @@ class TestRegressionAll(TestCase):
         diff, msg = compare_results(problem_sub_directory, "multifit.txt")
         self.assertListEqual([], diff, msg)
 
-    def test_minuit_results(self):
+    def test_dfo_and_minuit_results(self):
         """
         There is numerical instability for some datasets fitted using minuit
         caused by rounding-off differences across different machines. This
@@ -67,7 +67,7 @@ class TestRegressionAll(TestCase):
         """
         problem_sub_directory = "minuit_set"
 
-        run_benchmark(self.results_dir, problem_sub_directory, ["minuit"])
+        run_benchmark(self.results_dir, problem_sub_directory, ["dfo", "minuit"])
 
         diff, msg = compare_results(problem_sub_directory, "minuit.txt")
         self.assertListEqual([], diff, msg)
@@ -216,7 +216,6 @@ def setup_options(override_software: list = None) -> Options:
 
     # The software to test for the different test types
     # 'gradient_free' and 'scipy_go' are left out as they require bounds
-    # 'dfo' is left out for now as it gives unreliable results
     software = {"all": ["bumps", "gsl", "levmar", "mantid", "ralfit",
                         "scipy", "scipy_ls"],
                 "default": ["bumps", "scipy", "scipy_ls"],
@@ -225,6 +224,7 @@ def setup_options(override_software: list = None) -> Options:
 
     # The minimizers to test for each software
     minimizers = {"bumps": "lm-bumps",
+                  "dfo": "dfols",
                   "gsl": "lmsder",
                   "levmar": "levmar",
                   "mantid": "Levenberg-Marquardt",
