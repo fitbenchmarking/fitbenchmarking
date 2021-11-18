@@ -113,7 +113,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         results = self.results[self.count]
         minimizer_list = self.minimizer_list[self.count]
         self.count += 1
-        return results, self.chi_sq, minimizer_list
+        return results, minimizer_list
 
     def test_run_minimzers_none_selected(self):
         """
@@ -134,7 +134,6 @@ class LoopOverMinimizersTests(unittest.TestCase):
         """
         self.options.algorithm_type = ["general"]
         self.results = [[self.result_args]]
-        self.chi_sq = 1
         self.minimizer_list = [["general"]]
         loop_over_hessians.side_effect = self.mock_func_call
 
@@ -152,7 +151,6 @@ class LoopOverMinimizersTests(unittest.TestCase):
         Tests that all minimizers are selected
         """
         self.results = [[self.result_args], [self.result_args]]
-        self.chi_sq = [1]
         self.minimizer_list = [["general"], ["deriv_free_algorithm"]]
         loop_over_hessians.side_effect = self.mock_func_call
 
