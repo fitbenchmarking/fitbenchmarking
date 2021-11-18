@@ -291,7 +291,6 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
         unselected_minimizers[s] = minimizer_failed
         minimizer_dict[s] = new_minimizer_list
         results.extend(problem_result)
-
     return results, unselected_minimizers, minimizer_dict
 
 
@@ -375,29 +374,14 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
             ########################
             # Loops over Jacobians #
             ########################
-            results, chi_sq, minimizer_list = \
-                loop_over_jacobians(controller,
-                                    options,
-                                    grabbed_output)
+            results, minimizer_list = loop_over_jacobians(controller,
+                                                          options,
+                                                          grabbed_output)
 
             for result in results:
-                if problem.multifit:
-                    # Multi fit
-                    # (will raise TypeError if these are not iterable)
-                    for i in range(len(chi_sq)):
-                        result.update({'dataset_id': i,
-                                       'name': '{}, Dataset {}'.format(
-                                           problem.name, (i + 1))})
-                        individual_result = \
-                            fitbm_result.FittingResult(**result)
-                        results_problem.append(individual_result)
-                else:
-                    # Normal fitting
-                    individual_result = fitbm_result.FittingResult(
-                        **result)
-                    results_problem.append(individual_result)
-            new_minimizer_list.extend(minimizer_list)
+                results_problem.append(fitbm_result.FittingResult(**result))
 
+            new_minimizer_list.extend(minimizer_list)
     return results_problem, minimizer_failed, new_minimizer_list
 
 
@@ -412,20 +396,16 @@ def loop_over_jacobians(controller, options, grabbed_output):
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
-    :return: all results as a dictionary of arguments for FittingResult,
-             chi-squared values for each jacobian-hessian pair, and
+    :return: all results as a dictionary of arguments for FittingResult, and
              composite minimizer-jacobian-hessian names.
     :rtype: list[dict],
-            list[float],
             list[str]
     """
     cost_func = controller.cost_func
     minimizer = controller.minimizer
     jacobian_list = options.jac_method
     minimizer_name = minimizer
-    jacobian = False
     results = []
-    chi_sq = []
     minimizer_list = []
     minimizer_check = minimizer in controller.jacobian_enabled_solvers
     try:
@@ -455,15 +435,11 @@ def loop_over_jacobians(controller, options, grabbed_output):
                 #######################
                 # Loops over Hessians #
                 #######################
-                new_result, new_chi_sq, new_minimizer_list = \
-                    loop_over_hessians(controller,
-                                       options,
-                                       minimizer_name,
-                                       grabbed_output)
+                new_result, new_minimizer_list = loop_over_hessians(
+                    controller, options, minimizer_name, grabbed_output)
 
                 minimizer_list.extend(new_minimizer_list)
                 results.extend(new_result)
-                chi_sq.extend(new_chi_sq)
                 # For minimizers that do not accept jacobians we raise an
                 # StopIteration exception to exit the loop through the
                 # Jacobians
@@ -472,7 +448,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
     except StopIteration:
         pass
 
-    return results, chi_sq, minimizer_list
+    return results, minimizer_list
 
 
 def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
@@ -488,11 +464,9 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
-    :return: all results as a dictionary of arguments for FittingResult,
-             chi-squared values for each hessian, and
+    :return: all results as a dictionary of arguments for FittingResult, and
              composite minimizer-jacobian-hessian names.
     :rtype: list[dict],
-            list[float],
             list[str]
     """
     minimizer = controller.minimizer
@@ -502,7 +476,6 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
     hessian_list = options.hes_method
     new_result = []
     new_minimizer_list = []
-    new_chi_sq = []
 
     # loop over selected hessian methods
     for hes_method in hessian_list:
@@ -553,15 +526,17 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
                        'params': controller.final_params,
                        'error_flag': controller.flag,
                        'name': problem.name}
-        new_result.append(result_args)
         new_minimizer_list.append(minimizer_name_hes)
         if problem.multifit:
             # for multifit problems, multiple chi_sq values are stored
-            # in a list, which should extend the empty new_chi_sq list
-            # rather than be appended to it
-            new_chi_sq.extend(chi_sq)
+            # in a list i.e. we have multiple results
+            for i in range(len(chi_sq)):
+                result_args.update(
+                    {'dataset_id': i,
+                     'name': f'{problem.name}, Dataset {i + 1}'})
+                new_result.append(result_args.copy())
         else:
-            new_chi_sq.append(chi_sq)
+            new_result.append(result_args)
 
         # For minimizers that do not accept hessians we raise an
         # StopIteration exception to exit the loop through the
@@ -569,7 +544,7 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
         if not minimizer_check:
             break
 
-    return new_result, new_chi_sq, new_minimizer_list
+    return new_result, new_minimizer_list
 
 
 def perform_fit(controller, options, grabbed_output):
