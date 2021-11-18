@@ -134,6 +134,8 @@ Current Hessian methods are:
 
 * ``default`` - Hessian information is not passed to minimizers
 * ``analytic`` - uses the analytic Hessian extracted from the fitting problem.
+* ``scipy`` -  uses :ref:`SciPy's finite difference approximations <scipy-hes>`.
+* ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-hes>`.
 
 Default is ``default``
 
