@@ -105,7 +105,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         Mock function to be used instead of loop_over_hessians
         """
         minimizer_name = args[2]
-        return [], [], [minimizer_name]
+        return [], [minimizer_name]
 
     @patch('{}.loop_over_hessians'.format(FITTING_DIR))
     def test_single_jacobian(self, loop_over_hessians):
