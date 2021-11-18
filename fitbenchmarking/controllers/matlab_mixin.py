@@ -39,6 +39,7 @@ class MatlabMixin:
                                        'fitting, module "dill" is required.')
 
         self.initial_params_mat = None
+        self.incompatible_minimizers.append('mantid')
 
     @staticmethod
     def py_to_mat(func, eng):
@@ -56,19 +57,3 @@ class MatlabMixin:
         eng.evalc('fp.close()')
 
         return eng.workspace['fm']
-
-    def validate(self):
-        """
-        Validates that the provided options are compatible with each other.
-        If there are some invalid options, the relevant exception is raised.
-        """
-        self._validate_problem_format()
-        super().validate()
-
-    def _validate_problem_format(self):
-        """
-        Validates that the problem format is compatible with matlab controllers
-        """
-        if self.problem.format == 'mantid':
-            raise IncompatibleProblemError(
-                'Mantid problems cannot be used with MATLAB controllers.')

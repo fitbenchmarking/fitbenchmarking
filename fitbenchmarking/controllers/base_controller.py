@@ -3,11 +3,14 @@ Implements the base class for the fitting software controllers.
 """
 
 from abc import ABCMeta, abstractmethod
-import numpy
 
-from fitbenchmarking.utils.exceptions import ControllerAttributeError, \
-    UnknownMinimizerError, IncompatibleMinimizerError, \
-    IncompatibleJacobianError, IncompatibleHessianError
+import numpy
+from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
+                                              IncompatibleHessianError,
+                                              IncompatibleJacobianError,
+                                              IncompatibleMinimizerError,
+                                              IncompatibleProblemError,
+                                              UnknownMinimizerError)
 
 
 class Controller:
@@ -82,6 +85,9 @@ class Controller:
     #: A name to be used in tables. If this is set to None it will be inferred
     #: from the class name.
     controller_name = None
+
+    #: A list of incompatible problem formats for this controller.
+    incompatible_problems = []
 
     def __init__(self, cost_func):
         """
@@ -182,6 +188,7 @@ class Controller:
         """
         self._validate_jacobian()
         self._validate_hessian()
+        self._validate_problem_format()
 
     def prepare(self):
         """
@@ -260,6 +267,15 @@ class Controller:
                           f"method is incompatible with the problem format " \
                           f"'{self.problem.format}'."
                 raise IncompatibleHessianError(message)
+
+    def _validate_problem_format(self):
+        """
+        Validates that the problem format is compatible with matlab controllers
+        """
+        if self.problem.format in self.incompatible_problems:
+            raise IncompatibleProblemError(
+                f'{self.problem.format} problems cannot be used with '
+                f'{self.software} controllers.')
 
     def validate_minimizer(self, minimizer, algorithm_type):
         """
