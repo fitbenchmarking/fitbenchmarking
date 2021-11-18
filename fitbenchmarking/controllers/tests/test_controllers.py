@@ -916,7 +916,6 @@ class MatlabControllerTests(TestCase):
         controller.validate()
         # Raise for Mantid problem
         cost_func = make_cost_func('cubic-fba-test-go.txt')
-        problem = cost_func.problem
         jac = Scipy(cost_func.problem)
         jac.method = '2-point'
         cost_func.jacobian = jac
