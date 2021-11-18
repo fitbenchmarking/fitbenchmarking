@@ -15,8 +15,7 @@ try:
 except ImportError:
     import_success = False
 
-from fitbenchmarking.utils.exceptions import (IncompatibleProblemError,
-                                              MissingSoftwareError)
+from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
 # If we re-implement caching, make sure the cache is cleared by the
