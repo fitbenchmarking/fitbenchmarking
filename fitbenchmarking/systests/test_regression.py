@@ -53,7 +53,9 @@ class TestRegressionAll(TestCase):
         """
         problem_sub_directory = "multifit_set"
 
-        run_benchmark(self.results_dir, problem_sub_directory, ["mantid"])
+        run_benchmark(self.results_dir, problem_sub_directory,
+                      override_software=["mantid"],
+                      jac_num_method={"scipy": ["2-point", "3-point"]})
 
         diff, msg = compare_results(problem_sub_directory, "multifit.txt")
         self.assertListEqual([], diff, msg)
@@ -185,13 +187,16 @@ def compare_results(problem_sub_directory: str, result_filename: str) -> list:
     return diff_result(actual, expected)
 
 
-def setup_options(override_software: list = None) -> Options:
+def setup_options(override_software: list = None,
+                  jac_num_method: dict = None) -> Options:
     """
     Setups up options class for system tests
 
     :param override_software: The software to use instead of the
     software determined by the test type.
     :type override_software: list of strings
+    :param jac_num_method: The jacobian methods to use when fitting.
+    :type jac_num_method: dict{str: list[str]}
 
     :return: Fitbenchmarking options file for tests
     :rtype: fitbenchmarking.utils.options.Options
@@ -227,20 +232,25 @@ def setup_options(override_software: list = None) -> Options:
     opts.software = software.get(TEST_TYPE) if override_software is None \
         else override_software
     opts.minimizers = {s: [minimizers[s]] for s in opts.software}
+    if jac_num_method is not None:
+        opts.jac_num_method = jac_num_method
     return opts
 
 
-def create_options_file(override_software: list = None):
+def create_options_file(override_software: list = None,
+                        jac_num_method: dict = None):
     """
     Creates a temporary options file and returns its name.
 
     :param override_software: The software to use instead of the
     software determined by the test type.
     :type override_software: list of strings
+    :param jac_num_method: The jacobian methods to use when fitting.
+    :type jac_num_method: dict{str: list[str]}
     :return: Name of the temporary options file.
     :rtype: str
     """
-    opts = setup_options(override_software)
+    opts = setup_options(override_software, jac_num_method)
     with NamedTemporaryFile(suffix='.ini', mode='w',
                             delete=False) as opt_file:
         opts.write_to_stream(opt_file)
@@ -249,7 +259,8 @@ def create_options_file(override_software: list = None):
 
 
 def run_benchmark(results_dir: str, problem_sub_directory: str,
-                  override_software: list = None) -> None:
+                  override_software: list = None,
+                  jac_num_method: dict = None) -> None:
     """
     Runs a benchmark of the problems in a specific directory
     and places them in the results directory.
@@ -261,8 +272,10 @@ def run_benchmark(results_dir: str, problem_sub_directory: str,
     :param override_software: The software to use instead of the
     software determined by the test type.
     :type override_software: list[str]
+    :param jac_num_method: The jacobian methods to use when fitting.
+    :type jac_num_method: dict{str: list[str]}
     """
-    opt_file_name = create_options_file(override_software)
+    opt_file_name = create_options_file(override_software, jac_num_method)
     problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                            os.pardir,
                                            "mock_problems",
