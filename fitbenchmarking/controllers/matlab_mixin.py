@@ -6,14 +6,17 @@ try:
     from tempfile import TemporaryDirectory
 except ImportError:
     from backports.tempfile import TemporaryDirectory
+
 import os
+
 try:
     import dill
     import_success = True
 except ImportError:
     import_success = False
 
-from fitbenchmarking.utils.exceptions import MissingSoftwareError
+from fitbenchmarking.utils.exceptions import (IncompatibleProblemError,
+                                              MissingSoftwareError)
 
 
 # If we re-implement caching, make sure the cache is cleared by the
@@ -53,3 +56,19 @@ class MatlabMixin:
         eng.evalc('fp.close()')
 
         return eng.workspace['fm']
+
+    def validate(self):
+        """
+        Validates that the provided options are compatible with each other.
+        If there are some invalid options, the relevant exception is raised.
+        """
+        self._validate_problem_format()
+        super().validate()
+
+    def _validate_problem_format(self):
+        """
+        Validates that the problem format is compatible with matlab controllers
+        """
+        if self.problem.format == 'mantid':
+            raise IncompatibleProblemError(
+                'Mantid problems cannot be used with MATLAB controllers.')
