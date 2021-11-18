@@ -270,7 +270,7 @@ class Controller:
 
     def _validate_problem_format(self):
         """
-        Validates that the problem format is compatible with matlab controllers
+        Validates that the problem format is compatible with the controller
         """
         if self.problem.format in self.incompatible_problems:
             raise IncompatibleProblemError(
