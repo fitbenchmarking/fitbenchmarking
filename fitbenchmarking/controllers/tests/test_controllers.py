@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 """
 Tests for the controllers available from a default fitbenchmarking install
 """
@@ -15,6 +16,7 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
 from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.hessian.scipy_hessian import Scipy as ScipyHessian
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
@@ -611,7 +613,7 @@ class ControllerValidateTests(TestCase):
     def test_scipy_controller_will_raise(self):
         """
         ScipyController: Test that the Scipy controller validation
-        will raise for an incompatible Jacobians
+        will raise for an incompatible Jacobian
         """
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "cs"
@@ -626,11 +628,85 @@ class ControllerValidateTests(TestCase):
     def test_controller_will_not_raise_for_compatible_jacobian(self):
         """
         ScipyController: Test that the Scipy controller validation
-        will not raise for a compatible Jacobians
+        will not raise for a compatible Jacobian
         """
         self.jac = Default(self.cost_func.problem)
         self.jac.method = "default"
         self.cost_func.jacobian = self.jac
+
+        controller = ScipyController(self.cost_func)
+        controller.minimizer = "L-BFGS-B"
+
+        controller.validate()
+
+    def test_mantid_controller_does_not_raise_hessian(self):
+        """
+        MantidController: Test that the Mantid controller validation
+        does not raise for a valid Hessian
+        """
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
+        self.hes = ScipyHessian(self.cost_func.problem,
+                                self.cost_func.jacobian)
+        self.hes.method = "2-point"
+        self.cost_func.hessian = self.hes
+
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'Levenberg-Marquardt'
+
+        controller.validate()
+
+    def test_mantid_controller_will_raise_hessian(self):
+        """
+        MantidController: Test that the Mantid controller validation
+        will raise for an incompatible Hessian
+        """
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
+        self.hes = ScipyHessian(self.cost_func.problem,
+                                self.cost_func.jacobian)
+        self.hes.method = "cs"
+        self.cost_func.hessian = self.hes
+
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'Levenberg-Marquardt'
+
+        with self.assertRaises(exceptions.IncompatibleHessianError):
+            controller.validate()
+
+    def test_scipy_controller_will_raise_hessian(self):
+        """
+        ScipyController: Test that the Scipy controller validation
+        will raise for an incompatible Hessian
+        """
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
+        self.hes = ScipyHessian(self.cost_func.problem,
+                                self.cost_func.jacobian)
+        self.hes.method = "cs"
+        self.cost_func.hessian = self.hes
+
+        controller = ScipyController(self.cost_func)
+        controller.minimizer = "L-BFGS-B"
+
+        with self.assertRaises(exceptions.IncompatibleHessianError):
+            controller.validate()
+
+    def test_controller_will_not_raise_for_compatible_hessian(self):
+        """
+        ScipyController: Test that the Scipy controller validation
+        will not raise for a compatible Hessian
+        """
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
+        self.hes = ScipyHessian(self.cost_func.problem,
+                                self.cost_func.jacobian)
+        self.hes.method = "2-point"
+        self.cost_func.hessian = self.hes
 
         controller = ScipyController(self.cost_func)
         controller.minimizer = "L-BFGS-B"

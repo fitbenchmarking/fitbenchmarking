@@ -132,3 +132,21 @@ For example, For a first beta version of release 0.1.0, one would run:
    git push origin release-0.1.x
 
    <And make the release on GitHub>
+
+===================
+Adding New Datasets
+===================
+
+Users or developers are encouraged to add new data sets following
+the instructions :ref:`here<adding_data>`.  Someone in SCD's 
+Computational Mathematics Group must make this publically available
+by:
+
+- adding the `zip` and `tar.gz` archives to `powell:/var/www/html/numerical-www/fitbenchmarking/`
+
+- adding the datasets to the master `examples.zip` and `examples.tar.gz` folders, and updating the versions on `powell`
+
+Please note that the maximum file size allowed by GitHub is 100MB, and the
+total repository size is recommended to be kept below 1GB.  Please bear
+this in mind when advising users whether or not they should also add their
+data to the `examples/benchmark_problems` directory of FitBenchmarking.
