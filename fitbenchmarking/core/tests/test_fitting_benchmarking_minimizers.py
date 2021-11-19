@@ -98,13 +98,10 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
         self.count = 0
-        self.result_args = {'options': self.options,
-                            'cost_func': self.cost_func,
-                            'jac': "jac",
-                            'hess': 'hess',
-                            'initial_params': self.problem.starting_values[0],
-                            'params': [],
-                            'chi_sq': 1}
+        self.result = fitbm_result.FittingResult(
+            options=self.options, cost_func=self.cost_func, jac="jac",
+            hess="hess", initial_params=self.problem.starting_values[0],
+            params=[], chi_sq=1)
 
     def mock_func_call(self, *args, **kwargs):
         """
@@ -133,7 +130,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         Tests that some minimizers are selected
         """
         self.options.algorithm_type = ["general"]
-        self.results = [[fitbm_result.FittingResult(**self.result_args)]]
+        self.results = [[self.result]]
         self.minimizer_list = [["general"]]
         loop_over_hessians.side_effect = self.mock_func_call
 
@@ -150,8 +147,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         """
         Tests that all minimizers are selected
         """
-        self.results = [[fitbm_result.FittingResult(**self.result_args)],
-                        [fitbm_result.FittingResult(**self.result_args)]]
+        self.results = [[self.result], [self.result]]
         self.minimizer_list = [["general"], ["deriv_free_algorithm"]]
         loop_over_hessians.side_effect = self.mock_func_call
 
