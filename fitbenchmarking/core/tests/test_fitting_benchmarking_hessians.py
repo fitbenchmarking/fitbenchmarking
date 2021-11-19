@@ -115,7 +115,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.minimizer = "general"
         new_name = ['general, analytic hessian']
         minimizer_name = "general"
-        _, _, new_minimizer_list = \
+        _, new_minimizer_list = \
             loop_over_hessians(self.controller,
                                self.options,
                                minimizer_name,
@@ -131,7 +131,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.minimizer = "deriv_free_algorithm"
         new_name = ['deriv_free_algorithm']
         minimizer_name = "deriv_free_algorithm"
-        _, _, new_minimizer_list = \
+        _, new_minimizer_list = \
             loop_over_hessians(self.controller,
                                self.options,
                                minimizer_name,
@@ -188,10 +188,10 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.parameter_set = 0
 
         self.controller.minimizer = "deriv_free_algorithm"
-        results, _, _ = loop_over_hessians(self.controller, self.options,
-                                           self.controller.minimizer,
-                                           self.grabbed_output)
-        self.assertEqual(results[0]["error_flag"], 6)
+        results, _ = loop_over_hessians(self.controller, self.options,
+                                        self.controller.minimizer,
+                                        self.grabbed_output)
+        self.assertEqual(results[0].error_flag, 6)
 
 
 if __name__ == "__main__":
