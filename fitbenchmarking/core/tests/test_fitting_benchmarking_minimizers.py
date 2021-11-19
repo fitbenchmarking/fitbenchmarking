@@ -98,13 +98,10 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
         self.count = 0
-        self.result_args = {'options': self.options,
-                            'cost_func': self.cost_func,
-                            'jac': "jac",
-                            'hess': 'hess',
-                            'initial_params': self.problem.starting_values[0],
-                            'params': [],
-                            'chi_sq': 1}
+        self.result = fitbm_result.FittingResult(
+            options=self.options, cost_func=self.cost_func, jac="jac",
+            hess="hess", initial_params=self.problem.starting_values[0],
+            params=[], chi_sq=1)
 
     def mock_func_call(self, *args, **kwargs):
         """
@@ -113,7 +110,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         results = self.results[self.count]
         minimizer_list = self.minimizer_list[self.count]
         self.count += 1
-        return results, self.chi_sq, minimizer_list
+        return results, minimizer_list
 
     def test_run_minimzers_none_selected(self):
         """
@@ -133,8 +130,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         Tests that some minimizers are selected
         """
         self.options.algorithm_type = ["general"]
-        self.results = [[self.result_args]]
-        self.chi_sq = 1
+        self.results = [[self.result]]
         self.minimizer_list = [["general"]]
         loop_over_hessians.side_effect = self.mock_func_call
 
@@ -151,8 +147,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         """
         Tests that all minimizers are selected
         """
-        self.results = [[self.result_args], [self.result_args]]
-        self.chi_sq = [1]
+        self.results = [[self.result], [self.result]]
         self.minimizer_list = [["general"], ["deriv_free_algorithm"]]
         loop_over_hessians.side_effect = self.mock_func_call
 

@@ -105,7 +105,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         Mock function to be used instead of loop_over_hessians
         """
         minimizer_name = args[2]
-        return [], [], [minimizer_name]
+        return [], [minimizer_name]
 
     @patch('{}.loop_over_hessians'.format(FITTING_DIR))
     def test_single_jacobian(self, loop_over_hessians):
@@ -117,7 +117,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.minimizer = "general"
         loop_over_hessians.side_effect = self.mock_func_call
         new_name = ['general: scipy 3-point']
-        _, _, new_minimizer_list = \
+        _, new_minimizer_list = \
             loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
@@ -133,7 +133,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.minimizer = "general"
         loop_over_hessians.side_effect = self.mock_func_call
         new_name = ['general: scipy 3-point', 'general: scipy 2-point']
-        _, _, new_minimizer_list = \
+        _, new_minimizer_list = \
             loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
@@ -150,7 +150,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.minimizer = "deriv_free_algorithm"
         loop_over_hessians.side_effect = self.mock_func_call
         new_name = ['deriv_free_algorithm']
-        _, _, new_minimizer_list = \
+        _, new_minimizer_list = \
             loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
