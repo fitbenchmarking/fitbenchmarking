@@ -310,9 +310,9 @@ class Options:
                 value_check = value in self.VALID[section][option]
             if not value_check:
                 self.error_message.append(
-                    "The option '{0}: {1}' in the ini file is invalid. {0} "
-                    "must be on or more of {2}".format(
-                        option, value, self.VALID[section][option]))
+                    f"The option '{option}: {value}' in the ini file is "
+                    f"invalid. {option} must be one or more of "
+                    f"{self.VALID[section][option]}")
         return value
 
     @property
