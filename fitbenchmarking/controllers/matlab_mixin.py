@@ -38,7 +38,6 @@ class MatlabMixin:
                                        'fitting, module "dill" is required.')
 
         self.initial_params_mat = None
-        self.incompatible_minimizers.append('mantid')
 
     @staticmethod
     def py_to_mat(func, eng):
