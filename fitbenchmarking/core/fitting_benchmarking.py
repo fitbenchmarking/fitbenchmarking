@@ -378,10 +378,9 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                                                           options,
                                                           grabbed_output)
 
-            for result in results:
-                results_problem.append(fitbm_result.FittingResult(**result))
-
+            results_problem.extend(results)
             new_minimizer_list.extend(minimizer_list)
+
     return results_problem, minimizer_failed, new_minimizer_list
 
 
@@ -398,7 +397,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
 
     :return: all results as a dictionary of arguments for FittingResult, and
              composite minimizer-jacobian-hessian names.
-    :rtype: list[dict],
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
             list[str]
     """
     cost_func = controller.cost_func
@@ -466,7 +465,7 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
 
     :return: all results as a dictionary of arguments for FittingResult, and
              composite minimizer-jacobian-hessian names.
-    :rtype: list[dict],
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
             list[str]
     """
     minimizer = controller.minimizer
@@ -534,9 +533,9 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
                 result_args.update(
                     {'dataset_id': i,
                      'name': f'{problem.name}, Dataset {i + 1}'})
-                new_result.append(result_args.copy())
+                new_result.append(fitbm_result.FittingResult(**result_args))
         else:
-            new_result.append(result_args)
+            new_result.append(fitbm_result.FittingResult(**result_args))
 
         # For minimizers that do not accept hessians we raise an
         # StopIteration exception to exit the loop through the

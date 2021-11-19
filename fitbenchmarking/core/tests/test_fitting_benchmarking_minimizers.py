@@ -133,7 +133,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         Tests that some minimizers are selected
         """
         self.options.algorithm_type = ["general"]
-        self.results = [[self.result_args]]
+        self.results = [[fitbm_result.FittingResult(**self.result_args)]]
         self.minimizer_list = [["general"]]
         loop_over_hessians.side_effect = self.mock_func_call
 
@@ -150,7 +150,8 @@ class LoopOverMinimizersTests(unittest.TestCase):
         """
         Tests that all minimizers are selected
         """
-        self.results = [[self.result_args], [self.result_args]]
+        self.results = [[fitbm_result.FittingResult(**self.result_args)],
+                        [fitbm_result.FittingResult(**self.result_args)]]
         self.minimizer_list = [["general"], ["deriv_free_algorithm"]]
         loop_over_hessians.side_effect = self.mock_func_call
 

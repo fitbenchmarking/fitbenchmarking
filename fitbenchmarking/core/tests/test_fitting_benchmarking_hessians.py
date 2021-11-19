@@ -191,7 +191,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         results, _ = loop_over_hessians(self.controller, self.options,
                                         self.controller.minimizer,
                                         self.grabbed_output)
-        self.assertEqual(results[0]["error_flag"], 6)
+        self.assertEqual(results[0].error_flag, 6)
 
 
 if __name__ == "__main__":
