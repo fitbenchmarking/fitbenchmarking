@@ -128,7 +128,7 @@ def diff_result(actual, expected):
     :param actual: The actual result
     :type actual: list of strings
     :return: The lines which differ and a formatted message
-    :rtype: list of list of strings and str
+    :rtype: list[list[str]], str
     """
     diff = []
     for i, (exp_line, act_line) in enumerate(
@@ -165,10 +165,10 @@ def compare_results(problem_sub_directory: str, result_filename: str) -> list:
     :param result_filename: The name of the actual result file.
     :type result_filename: str
     :return: The lines which differ and a formatted message
-    :rtype: list of list of strings and str
+    :rtype: list[list[str]], str
     """
     expected_file = os.path.join(os.path.dirname(__file__),
-                                 '{}_expected_results'.format(platform),
+                                 f'{platform}_expected_results',
                                  result_filename)
 
     actual_file = os.path.join(os.path.dirname(__file__),
@@ -260,7 +260,7 @@ def run_benchmark(results_dir: str, problem_sub_directory: str,
     :type problem_sub_directory: str
     :param override_software: The software to use instead of the
     software determined by the test type.
-    :type override_software: list of strings
+    :type override_software: list[str]
     """
     opt_file_name = create_options_file(override_software)
     problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
