@@ -67,11 +67,9 @@ class ScipyController(Controller):
                   "method": self.minimizer,
                   "options": self.options}
         if self.minimizer in self.jacobian_enabled_solvers:
-            if not self.cost_func.jacobian.use_default_jac:
+            if not self.cost_func.jacobian.use_default_jac \
+                    or self.minimizer == "Newton-CG":
                 kwargs["jac"] = self.cost_func.jac_cost
-            elif self.cost_func.jacobian.use_default_jac and self.minimizer == "Newton-CG":
-                jac = self._create_default_jacobian_for_newton_cg()
-                kwargs["jac"] = jac.eval
         if self.minimizer not in self.no_bounds_minimizers:
             kwargs["bounds"] = self.value_ranges
         if self.cost_func.hessian and \
@@ -79,20 +77,6 @@ class ScipyController(Controller):
             kwargs["hess"] = self.cost_func.hes_cost
         self.result = minimize(**kwargs)
         self._popt = self.result.x
-
-    def _create_default_jacobian_for_newton_cg(self):
-        """
-        Creates a default Jacobian to use for the Newton-CG minimizer in
-        Scipy. Unfortunately, the Newton-CG minimizer has a different
-        interface than the other minimizers in Scipy which requires a
-        callable Jacobian to be passed at all times. This function should
-        be removed when the Newton-CG minimizer is harmonized with the other
-        Scipy minimizers.
-        """
-        from fitbenchmarking.jacobian.scipy_jacobian import Scipy
-        jac = Scipy(self.cost_func.problem)
-        jac.method = "2-point"
-        return jac
 
     def cleanup(self):
         """
