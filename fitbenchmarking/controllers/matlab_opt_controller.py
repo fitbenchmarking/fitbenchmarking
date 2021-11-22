@@ -35,6 +35,8 @@ class MatlabOptController(MatlabMixin, Controller):
 
     controller_name = 'matlab_opt'
 
+    incompatible_problems = ['mantid']
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
