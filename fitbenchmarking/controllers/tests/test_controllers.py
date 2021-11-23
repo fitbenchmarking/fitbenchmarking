@@ -763,6 +763,24 @@ class ExternalControllerTests(TestCase):
         controller._status = "Failed"
         self.shared_tests.check_diverged(controller)
 
+    def test_mantid_default_jacobian(self):
+        """
+        MantidController: Test for default jacobian
+        """
+        self.shared_tests = ControllerSharedTesting()
+        self.cost_func.jacobian = Default(self.problem)
+
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'Levenberg-Marquardt'
+        self.shared_tests.controller_run_test(controller)
+
+        controller._status = "success"
+        self.shared_tests.check_converged(controller)
+        controller._status = "Failed to converge"
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = "Failed"
+        self.shared_tests.check_diverged(controller)
+
     def test_mantid_multifit(self):
         """
         MantidController: Additional bespoke test for multifit
