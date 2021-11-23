@@ -60,6 +60,8 @@ def generate_test_cases():
         formats = ['cutest', 'nist', 'mantid', 'ivp', 'sasview']
     elif TEST_TYPE == "default":
         formats = ['nist']
+    else:
+        formats = ['nist']
 
     # create list of test_cases
     expected_dir = os.listdir(os.path.join(test_dir, 'expected'))
