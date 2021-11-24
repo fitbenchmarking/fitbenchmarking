@@ -12,4 +12,16 @@ class Default(Scipy):
     def __init__(self, problem):
         super().__init__(problem)
         self.use_default_jac = True
+
+    def eval(self, params, **kwargs):
+        """
+        Evaluates Jacobian of problem.eval_model
+
+        :param params: The parameter values to find the Jacobian at
+        :type params: list
+
+        :return: Approximation of the Jacobian
+        :rtype: numpy array
+        """
         self.method = "2-point"
+        return super().eval(params, **kwargs)
