@@ -11,23 +11,20 @@ import timeit
 import warnings
 
 import numpy as np
-
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
-from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.hessian.hessian_factory import create_hessian
+from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result, misc, output_grabber
-from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
-                                              ControllerAttributeError,
-                                              IncompatibleJacobianError,
-                                              IncompatibleHessianError,
+from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
+                                              FitBenchmarkException,
                                               IncompatibleMinimizerError,
-                                              MaxRuntimeError,
+                                              MaxRuntimeError, NoHessianError,
                                               NoJacobianError,
-                                              NoHessianError,
                                               UnknownMinimizerError,
-                                              UnsupportedMinimizerError)
+                                              UnsupportedMinimizerError,
+                                              ValidationException)
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
@@ -99,6 +96,8 @@ def loop_over_benchmark_problems(problem_group, options):
     grabbed_output = output_grabber.OutputGrabber(options)
     results = []
     failed_problems = []
+    unselected_minimizers = []
+    minimizer_dict = []
 
     LOGGER.info('Parsing problems')
     problems = []
@@ -599,14 +598,15 @@ def perform_fit(controller, options, grabbed_output):
             raise ControllerAttributeError(
                 "Either the computed runtime or chi_sq values "
                 "was a NaN.")
+    except ValidationException as ex:
+        LOGGER.warning(str(ex))
+        controller.flag = 7
     except Exception as ex:  # pylint: disable=broad-except
         LOGGER.warning(str(ex))
 
         # Note: Handle all exceptions as general exception to cover case
         #       where software re-raises our exception as a new type.
-        error_flags = {MaxRuntimeError: 6,
-                       IncompatibleJacobianError: 7,
-                       IncompatibleHessianError: 7}
+        error_flags = {MaxRuntimeError: 6}
 
         controller.flag = 3
         for error, flag in error_flags.items():

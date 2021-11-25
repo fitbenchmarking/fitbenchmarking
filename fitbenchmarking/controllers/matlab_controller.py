@@ -29,6 +29,8 @@ class MatlabController(MatlabMixin, Controller):
             'steepest_descent': [],
             'global_optimization': []}
 
+    incompatible_problems = ['mantid']
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.

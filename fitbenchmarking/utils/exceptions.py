@@ -28,6 +28,14 @@ class FitBenchmarkException(Exception):
         return self._error_string.strip()
 
 
+class ValidationException(FitBenchmarkException):
+    """
+    This should be subclassed to indicate any validation errors that preclude
+    a combination from running.
+    """
+    class_message = "An error occured while verifying controller."
+
+
 class OptionsError(FitBenchmarkException):
     """
     Indicates an error during processing options.
@@ -215,7 +223,7 @@ class MaxRuntimeError(FitBenchmarkException):
     error_code = 23
 
 
-class IncompatibleJacobianError(FitBenchmarkException):
+class IncompatibleJacobianError(ValidationException):
     """
     Indicates that the selected jacobian method is not compatible
     with selected options/problem set
@@ -233,7 +241,7 @@ class FilepathTooLongError(FitBenchmarkException):
     error_code = 25
 
 
-class IncompatibleHessianError(FitBenchmarkException):
+class IncompatibleHessianError(ValidationException):
     """
     Indicates that the selected Hessian method is not compatible
     with selected options/problem set
@@ -241,3 +249,13 @@ class IncompatibleHessianError(FitBenchmarkException):
     class_message = 'The provided Hessian method cannot be used with ' \
                     'the selected options or problem set.'
     error_code = 26
+
+
+class IncompatibleProblemError(ValidationException):
+    """
+    Indicates that the selected problem is not compatible with the selected
+    options.
+    """
+    class_message = 'The selected software can not be used with the given ' \
+                    'problem.'
+    error_code = 27

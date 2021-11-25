@@ -925,6 +925,22 @@ class MatlabControllerTests(TestCase):
 
         assert result_py == result_mat
 
+    def test_verify(self):
+        """
+        MatlabController: Tests for correct error when fitting mantid problem
+        """
+        # No raise for default (NIST) problem
+        controller = MatlabController(self.cost_func)
+        controller.validate()
+        # Raise for Mantid problem
+        cost_func = make_cost_func('cubic-fba-test-go.txt')
+        jac = Scipy(cost_func.problem)
+        jac.method = '2-point'
+        cost_func.jacobian = jac
+        controller = MatlabController(cost_func)
+        with self.assertRaises(exceptions.IncompatibleProblemError):
+            controller.validate()
+
     def test_matlab(self):
         """
         MatlabController: Tests for output shape
