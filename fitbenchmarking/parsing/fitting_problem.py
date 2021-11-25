@@ -12,6 +12,7 @@ except ImportError:
     from itertools import zip_longest as izip_longest
 import numpy as np
 
+from fitbenchmarking.utils.debug import get_printable_table
 from fitbenchmarking.utils.exceptions import FittingProblemError, \
     IncorrectBoundsError
 from fitbenchmarking.utils.timer import TimerWithMaxTime
@@ -110,6 +111,17 @@ class FittingProblem:
 
         # The timer used to check if the 'max_runtime' is exceeded.
         self.timer = TimerWithMaxTime(self.options.max_runtime)
+
+    def __str__(self):
+        info = {"Name": self.name,
+                "Format": self.format,
+                "Equation": self.equation,
+                "Params": self._param_names,
+                "Start X": self.start_x,
+                "End X": self.end_x,
+                "MultiFit": self.multifit}
+
+        return get_printable_table("FittingProblem", info)
 
     def eval_model(self, params, **kwargs):
         """
