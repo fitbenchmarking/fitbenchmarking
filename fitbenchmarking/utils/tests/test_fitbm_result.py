@@ -54,6 +54,30 @@ class FitbmResultTests(unittest.TestCase):
         self.min_runtime = 1
         self.result.min_runtime = self.min_runtime
 
+    def test_fitting_result_str(self):
+        """
+        Test that the fitting result can be printed as a readable string.
+        """
+        self.assertEqual(str(self.result), "+================================+\n"
+                                           "| FittingResult                  |\n"
+                                           "+================================+\n"
+                                           "| Cost Function | NLLSCostFunc   |\n"
+                                           "+--------------------------------+\n"
+                                           "| Problem       | cubic          |\n"
+                                           "+--------------------------------+\n"
+                                           "| Software      | None           |\n"
+                                           "+--------------------------------+\n"
+                                           "| Minimizer     | test_minimizer |\n"
+                                           "+--------------------------------+\n"
+                                           "| Jacobian      | Scipy          |\n"
+                                           "+--------------------------------+\n"
+                                           "| Hessian       | Analytic       |\n"
+                                           "+--------------------------------+\n"
+                                           "| Chi Squared   | 10             |\n"
+                                           "+--------------------------------+\n"
+                                           "| Runtime       | 0.01           |\n"
+                                           "+--------------------------------+")
+
     def test_init_with_dataset_id(self):
         """
         Tests to check that the multifit id is setup correctly
