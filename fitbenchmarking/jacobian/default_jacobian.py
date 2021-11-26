@@ -1,10 +1,10 @@
 """
 Module which uses the minimizer's default jacobian
 """
-from fitbenchmarking.jacobian.base_jacobian import Jacobian
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
 
-class Default(Jacobian):
+class Default(Scipy):
     """
     Use the minimizer's jacobian/derivative approximation
     """
@@ -15,6 +15,13 @@ class Default(Jacobian):
 
     def eval(self, params, **kwargs):
         """
-        This should not be called?
+        Evaluates Jacobian of problem.eval_model
+
+        :param params: The parameter values to find the Jacobian at
+        :type params: list
+
+        :return: Approximation of the Jacobian
+        :rtype: numpy array
         """
-        raise NotImplementedError
+        self.method = "2-point"
+        return super().eval(params, **kwargs)
