@@ -8,7 +8,6 @@ import numpy as np
 
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
-from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.results_processing.base_table import Table
 from fitbenchmarking.utils.exceptions import IncompatibleTableError
 
@@ -102,23 +101,11 @@ class LocalMinTable(Table):
                                       x=result.data_x,
                                       y=result.data_y,
                                       e=result.data_e)
-        try:
-            jac = result.cost_func.jac_res(result.params,
-                                           x=result.data_x,
-                                           y=result.data_y,
-                                           e=result.data_e)
-        except NotImplementedError:
-            # If using a solver dependent Jacobian, we want
-            # to switch to a common jacobian here to generate
-            # comparisons
-            jacobian_cls = create_jacobian("scipy")
-            jacobian_instance = jacobian_cls(result.cost_func.problem)
-            jacobian_instance.method = "2-point"
-            result.cost_func.jacobian = jacobian_instance
-            jac = result.cost_func.jac_res(result.params,
-                                           x=result.data_x,
-                                           y=result.data_y,
-                                           e=result.data_e)
+
+        jac = result.cost_func.jac_res(result.params,
+                                       x=result.data_x,
+                                       y=result.data_y,
+                                       e=result.data_e)
 
         min_test = np.matmul(res, jac)
         norm_r = np.linalg.norm(res)

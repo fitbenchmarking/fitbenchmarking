@@ -125,6 +125,9 @@ class TestJacobianClass(TestCase):
         jac = Default(self.cost_func.problem)
         self.assertTrue(jac.use_default_jac)
 
+        eval_result = jac.eval(params=self.params)
+        self.assertTrue(np.isclose(self.actual, eval_result).all())
+
     def test_scipy_eval(self):
         """
         Test whether Scipy evaluation is correct
