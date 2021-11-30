@@ -7,6 +7,8 @@
     <link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="{{ mathjax }}"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="..\js\toggle-table.js"></script>
     <head>
         <title>Fitbenchmark Results Table</title>
     </head>
@@ -44,6 +46,20 @@
                         <h3>
                             Table:
                         </h3>
+                        <table id="T_8e2df_" width='100%'>
+                            <tbody>
+                                <tr>
+                                    <th class="col00" >Problem Set</th>
+                                    <th class="col01"><button onclick="toggle_row('ENSO, Start 1')" style="width:100%">ENSO, Start 1</button></th>
+                                    <th class="col02"><button onclick="toggle_row('ENSO, Start 2')" style="width:100%">ENSO, Start 2</button></th>
+                                </tr>
+                                <tr>
+                                    <th class="col10" >Minimizer</th>
+                                    <th class="col11"><button onclick="toggle_column('scipy', 'BFGS: scipy 2-point')" style="width:100%">BFGS: scipy 2-point</button></th>
+                                    <th class="col12"><button onclick="toggle_column('scipy', 'CG: scipy 2-point')" style="width:100%">CG: scipy 2-point</button></th>
+                                </tr>
+                            </tbody>
+                        </table>
                         <center>
                         <div class="table">
                             {{ table }}

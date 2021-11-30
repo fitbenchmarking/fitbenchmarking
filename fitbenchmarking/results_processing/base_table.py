@@ -306,19 +306,19 @@ class Table:
         table = self.create_pandas_data_frame(html=True)
 
         # Format the table headers
-        link_template = '<a href="https://fitbenchmarking.readthedocs.io/'\
+        link_template = '<a class="solver_header" href="https://fitbenchmarking.readthedocs.io/'\
                         'en/latest/users/options/minimizer_option.html#'\
                         '{0}" target="_blank">{0}</a>'
-        minimizer_template = '<span title="{0}">{1}</span>'
+        minimizer_template = '<span class="minimizer_header" col={0} title="{1}">{2}</span>'
 
         row = next(iter(self.sorted_results.values()))
         minimizers_list = [
             (result.costfun_tag,
              link_template.format(result.software.replace('_', '-')),
              minimizer_template.format(
-                 self.options.minimizer_alg_type[result.minimizer],
+                 i, self.options.minimizer_alg_type[result.minimizer],
                  result.minimizer))
-            for result in row]
+            for i, result in enumerate(row)]
         columns = pd.MultiIndex.from_tuples(minimizers_list)
         table.columns = columns
 
@@ -329,7 +329,8 @@ class Table:
             rel_path = os.path.relpath(
                 path=b.problem_summary_page_link,
                 start=self.group_dir)
-            index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
+            index.append('<a class="problem_header" href="{0}">{1}</a>'
+                         .format(rel_path, i))
         table.index = index
 
         # Get columns where cost function changes
