@@ -5,10 +5,12 @@
     <link rel="stylesheet" type="text/css" href="{{ css_style_sheet }}" />
     <link rel="stylesheet" type="text/css" href="{{ table_style }}" />
     <link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
+    <link rel="stylesheet" type="text/css" href="..\css\dropdown_style.css" />
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="{{ mathjax }}"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script type="text/javascript" src="..\js\toggle-table.js"></script>
+    <script type="text/javascript" src="..\js\show-dropdown.js"></script>
     <head>
         <title>Fitbenchmark Results Table</title>
     </head>
@@ -46,20 +48,20 @@
                         <h3>
                             Table:
                         </h3>
-                        <table id="T_8e2df_" width='100%'>
-                            <tbody>
-                                <tr>
-                                    <th class="col00" >Problem Set</th>
-                                    <th class="col01"><button onclick="toggle_row('ENSO, Start 1')" style="width:100%">ENSO, Start 1</button></th>
-                                    <th class="col02"><button onclick="toggle_row('ENSO, Start 2')" style="width:100%">ENSO, Start 2</button></th>
-                                </tr>
-                                <tr>
-                                    <th class="col10" >Minimizer</th>
-                                    <th class="col11"><button onclick="toggle_column('scipy', 'BFGS: scipy 2-point')" style="width:100%">BFGS: scipy 2-point</button></th>
-                                    <th class="col12"><button onclick="toggle_column('scipy', 'CG: scipy 2-point')" style="width:100%">CG: scipy 2-point</button></th>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div id="list1" class="dropdown-check-list" tabindex="100">
+                          <span class="anchor" onclick="show_dropdown('list1')">Select Problems</span>
+                          <ul class="items">
+                            <li><label><input type="checkbox" checked=true onclick="toggle_row('ENSO, Start 1')"/> ENSO, Start 1</label></li>
+                            <li><label><input type="checkbox" checked=true onclick="toggle_row('ENSO, Start 2')"/> ENSO, Start 2</label></li>
+                          </ul>
+                        </div>
+                        <div id="list2" class="dropdown-check-list" tabindex="100">
+                          <span class="anchor" onclick="show_dropdown('list2')">Select Minimizers</span>
+                          <ul class="items">
+                            <li><label><input type="checkbox" checked=true onclick="toggle_column('scipy', 'BFGS: scipy 2-point')"/> BFGS: scipy 2-point</label></li>
+                            <li><label><input type="checkbox" checked=true onclick="toggle_column('scipy', 'CG: scipy 2-point')"/> CG: scipy 2-point</label></li>
+                          </ul>
+                        </div>
                         <center>
                         <div class="table">
                             {{ table }}
