@@ -1,8 +1,8 @@
 .noselect {
   -webkit-touch-callout: none;
-    -webkit-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .dropdown-check-list {

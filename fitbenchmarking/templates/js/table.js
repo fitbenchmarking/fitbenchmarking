@@ -50,8 +50,10 @@ function toggle_minimizer(software, minimizer) {
     minimizer_header.toggle();
 
     // Decrement or increment the column span of the cost function and software header
-    _adjust_colspan(cost_function_header, minimizer_header.is(":visible"));
-    _adjust_colspan(software_header, minimizer_header.is(":visible"));
+    var is_visible = minimizer_header.is(":visible");
+
+    _adjust_colspan(cost_function_header, is_visible);
+    _adjust_colspan(software_header, is_visible);
 
     // Toggle the data cells in a column
     var table_id = software_header.parent().parent().parent().attr("id");

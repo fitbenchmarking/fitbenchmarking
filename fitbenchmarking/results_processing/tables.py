@@ -182,7 +182,8 @@ def generate_table(results, best_results, options, group_dir, fig_dir,
     :type suffix: str
 
     :return: (Table object, HTML string of table, text string of table,
-    path to colourbar, HTML string of problem dropdown list)
+    path to colourbar, HTML string of problem dropdown list, HTML string
+    of minimizer dropdown list)
     :rtype: tuple(Table object, str, str, str, str, str)
     """
     table_module = load_table(suffix)

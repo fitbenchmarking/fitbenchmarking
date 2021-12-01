@@ -306,16 +306,18 @@ class Table:
         table = self.create_pandas_data_frame(html=True)
 
         # Format the table headers
-        cost_function_template = '<span class="cost_function_header">{0}</span>'
-        link_template = '<a class="software_header" href="https://fitbenchmarking.readthedocs.io/'\
-                        'en/latest/users/options/minimizer_option.html#'\
-                        '{0}" target="_blank">{0}</a>'
-        minimizer_template = '<span class="minimizer_header" col={0} title="{1}">{2}</span>'
+        cost_func_template = '<span class="cost_function_header">{0}</span>'
+        software_template = '<a class="software_header" ' \
+                            'href="https://fitbenchmarking.readthedocs.io/' \
+                            'en/latest/users/options/minimizer_option.html' \
+                            '#{0}" target="_blank">{0}</a>'
+        minimizer_template = '<span class="minimizer_header" col={0} ' \
+                             'title="{1}">{2}</span>'
 
         row = next(iter(self.sorted_results.values()))
         minimizers_list = [
-            (cost_function_template.format(result.costfun_tag),
-             link_template.format(result.software.replace('_', '-')),
+            (cost_func_template.format(result.costfun_tag),
+             software_template.format(result.software.replace('_', '-')),
              minimizer_template.format(
                  i, self.options.minimizer_alg_type[result.minimizer],
                  result.minimizer))
@@ -511,7 +513,14 @@ class Table:
         return os.path.relpath(fig_path, self.group_dir)
 
     def problem_dropdown_html(self) -> str:
-        items = [f'        <li><label class="noselect"><input type="checkbox" checked=true '
+        """
+        Generates the HTML for a dropdown checklist of problem sets.
+
+        :return: HTML for a dropdown checklist of problem sets.
+        :rtype: str
+        """
+        items = [f'        <li><label class="noselect"><input '
+                 f'type="checkbox" checked=true '
                  f'onclick="toggle_problem(\'{problem_name}\')"/> '
                  f'{problem_name}</label></li>'
                  for problem_name in self.sorted_results.keys()]
@@ -520,24 +529,49 @@ class Table:
                                    items)
 
     def minimizer_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown checklist of minimizers.
+
+        :return: HTML for a dropdown checklist of minimizers.
+        :rtype: str
+        """
         minimizers = [(result.software.replace('_', '-'), result.minimizer)
                       for result in next(iter(self.sorted_results.values()))]
         # Remove duplicates
         minimizers = list(dict.fromkeys(minimizers))
 
-        items = [f'        <li><label class="noselect"><input type="checkbox" checked=true '
+        items = [f'        <li><label class="noselect"><input '
+                 f'type="checkbox" checked=true '
                  f'onclick="toggle_minimizer(\'{software}\', '
                  f'\'{minimizer}\')"/> {minimizer}</label></li>'
                  for software, minimizer in minimizers]
 
-        return self._dropdown_html("minimizer_dropdown", "Select Minimizers", items)
+        return self._dropdown_html("minimizer_dropdown",
+                                   "Select Minimizers", items)
 
     @staticmethod
-    def _dropdown_html(list_id: str, selector_text: str, checklist: str) -> str:
-        html = f'<div id="{list_id}" class="dropdown-check-list" tabindex="100">\n'
-        html += f'    <span class="anchor" onclick="show_dropdown(\'{list_id}\')">{selector_text}</span>\n'
-        html += f'    <ul class="items">\n'
+    def _dropdown_html(list_id: str, selector_text: str,
+                       checklist: list) -> str:
+        """
+        Generates the HTML for a dropdown checklist. The list of items
+        must be provided to this function.
+
+        :param list_id: The ID to give the dropdown button.
+        :type list_id: str
+        :param selector_text: The text to display on the dropdown button.
+        :type selector_text: str
+        :param checklist: A list of HTML checkboxes to include in the
+        dropdown.
+        :type checklist: list
+        :return: HTML for a dropdown checklist.
+        :rtype: str
+        """
+        html = f'<div id="{list_id}" class="dropdown-check-list" ' \
+               f'tabindex="100">\n'
+        html += f'    <span class="anchor" onclick="show_dropdown' \
+                f'(\'{list_id}\')">{selector_text}</span>\n'
+        html += '    <ul class="items">\n'
         html += "\n".join(checklist)
-        html += f'    </ul>\n'
-        html += f'</div>'
+        html += '    </ul>\n'
+        html += '</div>'
         return html
