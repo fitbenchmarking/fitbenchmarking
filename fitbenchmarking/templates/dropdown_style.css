@@ -1,9 +1,16 @@
+.noselect {
+  -webkit-touch-callout: none;
+    -webkit-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+
 .dropdown-check-list {
   display: inline-block;
 }
 
 .dropdown-check-list .anchor {
-  position: relative;
+  position: absolute;
   cursor: pointer;
   display: inline-block;
   padding: 5px 50px 5px 10px;
@@ -31,11 +38,14 @@
 }
 
 .dropdown-check-list ul.items {
+  position: absolute;
+  text-align: left;
   padding: 0px;
   display: none;
   margin: 0;
   border: 1px solid #ccc;
   border-top: none;
+  z-index: 1;
 }
 
 .dropdown-check-list ul.items li {

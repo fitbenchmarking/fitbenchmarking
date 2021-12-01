@@ -306,14 +306,15 @@ class Table:
         table = self.create_pandas_data_frame(html=True)
 
         # Format the table headers
-        link_template = '<a class="solver_header" href="https://fitbenchmarking.readthedocs.io/'\
+        cost_function_template = '<span class="cost_function_header">{0}</span>'
+        link_template = '<a class="software_header" href="https://fitbenchmarking.readthedocs.io/'\
                         'en/latest/users/options/minimizer_option.html#'\
                         '{0}" target="_blank">{0}</a>'
         minimizer_template = '<span class="minimizer_header" col={0} title="{1}">{2}</span>'
 
         row = next(iter(self.sorted_results.values()))
         minimizers_list = [
-            (result.costfun_tag,
+            (cost_function_template.format(result.costfun_tag),
              link_template.format(result.software.replace('_', '-')),
              minimizer_template.format(
                  i, self.options.minimizer_alg_type[result.minimizer],
@@ -510,8 +511,8 @@ class Table:
         return os.path.relpath(fig_path, self.group_dir)
 
     def problem_dropdown_html(self) -> str:
-        items = [f'        <li><label><input type="checkbox" checked=true '
-                 f'onclick="toggle_row(\'{problem_name}\')"/> '
+        items = [f'        <li><label class="noselect"><input type="checkbox" checked=true '
+                 f'onclick="toggle_problem(\'{problem_name}\')"/> '
                  f'{problem_name}</label></li>'
                  for problem_name in self.sorted_results.keys()]
 
@@ -521,10 +522,12 @@ class Table:
     def minimizer_dropdown_html(self) -> str:
         minimizers = [(result.software.replace('_', '-'), result.minimizer)
                       for result in next(iter(self.sorted_results.values()))]
+        # Remove duplicates
+        minimizers = list(dict.fromkeys(minimizers))
 
-        items = [f'        <li><label><input type="checkbox" checked=true '
-                 f'onclick="toggle_column(\'{software}\', '
-                 f'\'{minimizer}\')"/> {minimizer}</label></li>\n'
+        items = [f'        <li><label class="noselect"><input type="checkbox" checked=true '
+                 f'onclick="toggle_minimizer(\'{software}\', '
+                 f'\'{minimizer}\')"/> {minimizer}</label></li>'
                  for software, minimizer in minimizers]
 
         return self._dropdown_html("minimizer_dropdown", "Select Minimizers", items)
