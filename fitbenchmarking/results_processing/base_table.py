@@ -508,3 +508,33 @@ class Table:
         plt.savefig(fig_path, dpi=150)
 
         return os.path.relpath(fig_path, self.group_dir)
+
+    def problem_dropdown_html(self) -> str:
+        items = [f'        <li><label><input type="checkbox" checked=true '
+                 f'onclick="toggle_row(\'{problem_name}\')"/> '
+                 f'{problem_name}</label></li>'
+                 for problem_name in self.sorted_results.keys()]
+
+        return self._dropdown_html("problem_dropdown", "Select Problems",
+                                   items)
+
+    def minimizer_dropdown_html(self) -> str:
+        minimizers = [(result.software.replace('_', '-'), result.minimizer)
+                      for result in next(iter(self.sorted_results.values()))]
+
+        items = [f'        <li><label><input type="checkbox" checked=true '
+                 f'onclick="toggle_column(\'{software}\', '
+                 f'\'{minimizer}\')"/> {minimizer}</label></li>\n'
+                 for software, minimizer in minimizers]
+
+        return self._dropdown_html("minimizer_dropdown", "Select Minimizers", items)
+
+    @staticmethod
+    def _dropdown_html(list_id: str, selector_text: str, checklist: str) -> str:
+        html = f'<div id="{list_id}" class="dropdown-check-list" tabindex="100">\n'
+        html += f'    <span class="anchor" onclick="show_dropdown(\'{list_id}\')">{selector_text}</span>\n'
+        html += f'    <ul class="items">\n'
+        html += "\n".join(checklist)
+        html += f'    </ul>\n'
+        html += f'</div>'
+        return html

@@ -48,20 +48,8 @@
                         <h3>
                             Table:
                         </h3>
-                        <div id="list1" class="dropdown-check-list" tabindex="100">
-                          <span class="anchor" onclick="show_dropdown('list1')">Select Problems</span>
-                          <ul class="items">
-                            <li><label><input type="checkbox" checked=true onclick="toggle_row('ENSO, Start 1')"/> ENSO, Start 1</label></li>
-                            <li><label><input type="checkbox" checked=true onclick="toggle_row('ENSO, Start 2')"/> ENSO, Start 2</label></li>
-                          </ul>
-                        </div>
-                        <div id="list2" class="dropdown-check-list" tabindex="100">
-                          <span class="anchor" onclick="show_dropdown('list2')">Select Minimizers</span>
-                          <ul class="items">
-                            <li><label><input type="checkbox" checked=true onclick="toggle_column('scipy', 'BFGS: scipy 2-point')"/> BFGS: scipy 2-point</label></li>
-                            <li><label><input type="checkbox" checked=true onclick="toggle_column('scipy', 'CG: scipy 2-point')"/> CG: scipy 2-point</label></li>
-                          </ul>
-                        </div>
+                        {{ problem_dropdown }}
+                        {{ minimizer_dropdown }}
                         <center>
                         <div class="table">
                             {{ table }}

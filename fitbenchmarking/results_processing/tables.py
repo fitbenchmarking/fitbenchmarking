@@ -68,7 +68,8 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             table_names[suffix] = f'{suffix}_table.'
 
             try:
-                table, html_table, txt_table, cbar = \
+                (table, html_table, txt_table, cbar,
+                 problem_dropdown_html, minimizer_dropdown_html) = \
                     generate_table(results=results,
                                    best_results=best_results,
                                    options=options,
@@ -112,6 +113,8 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                                     dropdown_js=js['dropdown'],
                                     mathjax=js['mathjax'],
                                     table_js=js['table'],
+                                    problem_dropdown=problem_dropdown_html,
+                                    minimizer_dropdown=minimizer_dropdown_html,
                                     table_description=description[suffix],
                                     table_format=table_format,
                                     result_name=table.table_title,
@@ -178,8 +181,9 @@ def generate_table(results, best_results, options, group_dir, fig_dir,
     :param suffix: table suffix
     :type suffix: str
 
-    :return: Table object, HTML string of table and text string of table.
-    :rtype: tuple(Table object, str, str)
+    :return: (Table object, HTML string of table, text string of table,
+    path to colourbar, HTML string of problem dropdown list)
+    :rtype: tuple(Table object, str, str, str, str, str)
     """
     table_module = load_table(suffix)
     table = table_module(results, best_results, options, group_dir,
@@ -189,4 +193,8 @@ def generate_table(results, best_results, options, group_dir, fig_dir,
     txt_table = table.to_txt()
     cbar = table.save_colourbar(fig_dir)
 
-    return table, html_table, txt_table, cbar
+    problem_dropdown_html = table.problem_dropdown_html()
+    minimizer_dropdown_html = table.minimizer_dropdown_html()
+
+    return (table, html_table, txt_table, cbar, problem_dropdown_html,
+            minimizer_dropdown_html)

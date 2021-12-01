@@ -21,6 +21,13 @@ function toggle_column(solver, minimizer) {
 
     solver_header.attr('colspan', new_colspan);
 
+    // Hide the solver header if no minimizers are shown
+    if (new_colspan == 0) {
+        solver_header.hide();
+    } else {
+        solver_header.show();
+    }
+
     // Toggle the data cells in a column
     var table_id = solver_header.parent().parent().parent().attr("id");
     var column_num = parseInt(minimizer_text.attr('col')) + 2;
