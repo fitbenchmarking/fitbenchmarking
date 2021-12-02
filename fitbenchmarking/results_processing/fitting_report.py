@@ -80,6 +80,7 @@ def create_prob_group(result, support_pages_dir, options):
             table_style=css['table'],
             custom_style=css['custom'],
             title=result.name,
+            description=result.problem.description,
             equation=result.problem.equation,
             initial_guess=result.ini_function_params,
             minimizer=result.minimizer,
