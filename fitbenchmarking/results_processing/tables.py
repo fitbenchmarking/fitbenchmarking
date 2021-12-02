@@ -68,8 +68,7 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             table_names[suffix] = f'{suffix}_table.'
 
             try:
-                (table, html_table, txt_table, cbar,
-                 problem_dropdown_html, minimizer_dropdown_html) = \
+                table, html, txt_table, cbar = \
                     generate_table(results=results,
                                    best_results=best_results,
                                    options=options,
@@ -113,14 +112,14 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                                     dropdown_js=js['dropdown'],
                                     mathjax=js['mathjax'],
                                     table_js=js['table'],
-                                    problem_dropdown=problem_dropdown_html,
-                                    minimizer_dropdown=minimizer_dropdown_html,
+                                    table=html['table'],
+                                    problem_dropdown=html['problem_dropdown'],
+                                    minimizer_dropdown=html['minim_dropdown'],
                                     table_description=description[suffix],
                                     table_format=table_format,
                                     result_name=table.table_title,
                                     has_pp=table.has_pp,
                                     pp_filenames=table.pp_filenames,
-                                    table=html_table,
                                     cbar=cbar,
                                     error_message=ERROR_OPTIONS,
                                     failed_problems=failed_problems,
@@ -181,10 +180,9 @@ def generate_table(results, best_results, options, group_dir, fig_dir,
     :param suffix: table suffix
     :type suffix: str
 
-    :return: (Table object, HTML string of table, text string of table,
-    path to colourbar, HTML string of problem dropdown list, HTML string
-    of minimizer dropdown list)
-    :rtype: tuple(Table object, str, str, str, str, str)
+    :return: (Table object, Dict of HTML strings for table and dropdowns,
+    text string of table, path to colourbar)
+    :rtype: tuple(Table object, dict{str: str}, str, str)
     """
     table_module = load_table(suffix)
     table = table_module(results, best_results, options, group_dir,
@@ -197,5 +195,10 @@ def generate_table(results, best_results, options, group_dir, fig_dir,
     problem_dropdown_html = table.problem_dropdown_html()
     minimizer_dropdown_html = table.minimizer_dropdown_html()
 
-    return (table, html_table, txt_table, cbar, problem_dropdown_html,
-            minimizer_dropdown_html)
+    html_dict = {
+        'table': html_table,
+        'problem_dropdown': problem_dropdown_html,
+        'minim_dropdown': minimizer_dropdown_html
+    }
+
+    return table, html_dict, txt_table, cbar

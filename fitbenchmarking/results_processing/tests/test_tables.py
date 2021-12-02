@@ -164,7 +164,7 @@ class GenerateTableTests(unittest.TestCase):
         fitbenchmarking/results_processing/tests/expected_results
         """
         for suffix in SORTED_TABLE_NAMES:
-            _, html_table, txt_table, _ = generate_table(
+            _, html, txt_table, _ = generate_table(
                 results=self.results,
                 best_results=self.best_results,
                 options=self.options,
@@ -177,9 +177,8 @@ class GenerateTableTests(unittest.TestCase):
                                            f"{suffix}.html")
             txt_table_name = os.path.join(self.expected_results_dir,
                                           f"{suffix}.txt")
-
             for f, t in zip([html_table_name, txt_table_name],
-                            [html_table, txt_table]):
+                            [html["table"], txt_table]):
                 self.compare_files(f, t)
 
     def compare_files(self, expected_table, table):
