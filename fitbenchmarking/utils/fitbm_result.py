@@ -4,11 +4,10 @@ FitBenchmarking results object
 
 import numpy as np
 
-# To store the results in the object requires more than the default
-# max arguments and sanitised_name setter requires no use of self
+from fitbenchmarking.utils.debug import get_printable_table
+
+
 # pylint: disable=too-many-arguments, no-self-use
-
-
 class FittingResult:
     """
     Minimal definition of a class to hold results from a
@@ -116,6 +115,18 @@ class FittingResult:
         self.minimizer_tag = self.minimizer
         self.jacobian_tag = self.jac.__class__.__name__
         self.hessian_tag = self.hess.__class__.__name__
+
+    def __str__(self):
+        info = {"Cost Function": self.costfun_tag,
+                "Problem": self.problem_tag,
+                "Software": self.software_tag,
+                "Minimizer": self.minimizer_tag,
+                "Jacobian": self.jacobian_tag,
+                "Hessian": self.hessian_tag,
+                "Chi Squared": self.chi_sq,
+                "Runtime": self.runtime}
+
+        return get_printable_table("FittingResult", info)
 
     @property
     def norm_acc(self):

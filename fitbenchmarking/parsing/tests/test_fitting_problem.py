@@ -23,6 +23,35 @@ class TestFittingProblem(TestCase):
         """
         self.options = Options()
 
+    def test_fitting_problem_str(self):
+        """
+        Test that the fitting problem can be printed as a readable string.
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.name = "Fake"
+        fitting_problem.format = "nist"
+        fitting_problem.equation = "b1*x"
+        fitting_problem.start_x = 0.5
+        fitting_problem.end_x = 2.5
+
+        self.assertEqual(str(fitting_problem), "+==================+\n"
+                                               "| FittingProblem   |\n"
+                                               "+==================+\n"
+                                               "| Name     | Fake  |\n"
+                                               "+------------------+\n"
+                                               "| Format   | nist  |\n"
+                                               "+------------------+\n"
+                                               "| Equation | b1*x  |\n"
+                                               "+------------------+\n"
+                                               "| Params   | None  |\n"
+                                               "+------------------+\n"
+                                               "| Start X  | 0.5   |\n"
+                                               "+------------------+\n"
+                                               "| End X    | 2.5   |\n"
+                                               "+------------------+\n"
+                                               "| MultiFit | False |\n"
+                                               "+------------------+")
+
     def test_verify_problem(self):
         """
         Test that verify only passes if all required values are set.
