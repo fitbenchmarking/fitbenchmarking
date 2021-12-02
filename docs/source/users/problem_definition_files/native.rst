@@ -46,8 +46,8 @@ name
 description
   A description of the dataset.
 
-  This is currently unused within FitBenchmarking, but can be useful for
-  explaining problems.
+  This will be displayed in the Problem Summary Pages and Fitting Reports produced by a
+  benchmark.
 
 input_file
   The name of a file containing the data to fit.

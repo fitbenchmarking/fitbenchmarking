@@ -37,7 +37,8 @@ class NISTParser(Parser):
 
         fitting_problem = FittingProblem(self.options)
 
-        equation, data, starting_values, name = self._parse_line_by_line()
+        equation, data, starting_values, name, description = \
+            self._parse_line_by_line()
         data = self._parse_data(data)
 
         fitting_problem.data_x = data[:, 1]
@@ -46,6 +47,7 @@ class NISTParser(Parser):
             fitting_problem.data_e = data[:, 2]
 
         fitting_problem.name = name
+        fitting_problem.description = description
 
         # String containing a mathematical expression
         fitting_problem.equation = self._parse_equation(equation)
@@ -153,13 +155,16 @@ class NISTParser(Parser):
                 name = line.split(':', 1)[1]
                 name = name.split('(', 1)[0]
                 name = name.strip()
+            elif line.startswith("Description:"):
+                description, idx = self._get_description(lines, idx)
             else:
                 ignored_lines += 1
 
         LOGGER.debug("%s lines were ignored in this problem file",
                      ignored_lines)
 
-        return equation_text, data_pattern_text, starting_values, name
+        return (equation_text, data_pattern_text, starting_values, name,
+                description)
 
     def _get_nist_model(self, lines, idx):
         """
@@ -220,6 +225,29 @@ class NISTParser(Parser):
             raise ParsingError("Could not find the equation!")
 
         return equation_text, idx
+
+    @staticmethod
+    def _get_description(lines: list, idx: int) -> str:
+        """
+        Gets the description from the NIST problem file.
+
+        :param lines: All lines in the imported nist file
+        :type lines: list[str]
+        :param idx: the line at which the parser is at
+        :type idx: int
+
+        :return: The description text
+        :rtype: str
+        """
+        description = lines[idx - 1].split(":")[1].strip()
+        for line in lines[idx:]:
+            idx += 1
+            line = line.strip()
+            description += " "
+            description += line
+            if line == "":
+                break
+        return description.strip("\n"), idx
 
     @staticmethod
     def _get_data_txt(lines, idx):

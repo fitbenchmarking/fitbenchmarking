@@ -43,13 +43,11 @@ class FitbenchmarkParser(Parser):
 
         self.fitting_problem.multifit = self._is_multifit()
 
-        # NAME
         self.fitting_problem.name = self._entries['name']
+        self.fitting_problem.description = self._entries['description']
 
-        # DATA
         data_points = [_get_data_points(p) for p in self._get_data_file()]
 
-        # FUNCTION
         self.fitting_problem.function = self._create_function()
         self.fitting_problem.format = self._entries['software'].lower()
 
