@@ -181,31 +181,56 @@ class GenerateTableTests(unittest.TestCase):
                             [html["table"], txt_table]):
                 self.compare_files(f, t)
 
-    def compare_files(self, expected_table, table):
+    def test_dropdown_html_correct(self):
+        """
+        Test that the HTML for dropdown menus used for hiding/showing
+        table rows and columns is generated as expected.
+        """
+        _, html, _, _ = generate_table(
+            results=self.results,
+            best_results=self.best_results,
+            options=self.options,
+            group_dir="group_dir",
+            fig_dir=self.fig_dir,
+            pp_locations=["pp_1", "pp_2"],
+            table_name="table_name",
+            suffix="compare")
+
+        expected_problem_dropdown = os.path.join(self.expected_results_dir,
+                                                 "problem_dropdown.html")
+        expected_minimizer_dropdown = os.path.join(self.expected_results_dir,
+                                                   "minimizer_dropdown.html")
+
+        for expected_file, dropdown_name in zip(
+                [expected_problem_dropdown, expected_minimizer_dropdown],
+                ["problem_dropdown", "minim_dropdown"]):
+            self.compare_files(expected_file, html[dropdown_name])
+
+    def compare_files(self, expected, achieved):
         """
         Compares two tables line by line
 
-        :param expected_table: imported html output from expected results in
-                               fitbenchmarking/results_processing/tests/
-                               expected_results
-        :type expected_table: str
-        :param table: table generated using generate_table in
-                      fitbenchmarking.results_processing.tables
-        :type table: str
+        :param expected: imported HTML output from expected results in
+                         fitbenchmarking/results_processing/tests/
+                         expected_results
+        :type expected: str
+        :param achieved: HTML generated using generate_table in
+                         fitbenchmarking.results_processing.tables
+        :type achieved: str
         """
-        with open(expected_table, 'r') as f:
-            expected = f.readlines()
+        with open(expected, 'r') as f:
+            exp_lines = f.readlines()
 
-        file_extension = expected_table.split('.')[1]
+        file_extension = expected.split('.')[1]
         if file_extension == 'txt':
             html_id_expected = ''
             html_id = ''
         elif file_extension == 'html':
-            html_id_expected = expected[1].strip(' ').split('row')[0][1:]
-            html_id = table.splitlines()[1].strip(' ').split('row')[0][1:]
+            html_id_expected = exp_lines[1].strip(' ').split('row')[0][1:]
+            html_id = achieved.splitlines()[1].strip(' ').split('row')[0][1:]
         diff = []
         for i, (act_line, exp_line) in enumerate(
-                zip(table.splitlines(), expected)):
+                zip(achieved.splitlines(), exp_lines)):
             exp_line = '' if exp_line is None else exp_line.strip('\n')
             act_line = '' if act_line is None else act_line.strip('\n')
             exp_line = exp_line.replace(html_id_expected, html_id)
@@ -214,16 +239,16 @@ class GenerateTableTests(unittest.TestCase):
             if act_line != exp_line:
                 diff.append([i, exp_line, act_line])
         if diff != []:
-            print(f"Comparing against {expected_table}\n"
+            print(f"Comparing against {expected}\n"
                   + "\n".join([f'== Line {change[0]} ==\n'
                                f'Expected :{change[1]}\n'
                                f'Actual   :{change[2]}'
                                for change in diff]))
             print("\n==\n")
             print("Output generated (also saved as actual.out):")
-            print(table)
+            print(achieved)
             with open("actual.out", "w") as outfile:
-                outfile.write(table)
+                outfile.write(achieved)
         self.assertListEqual([], diff)
 
 
