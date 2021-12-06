@@ -88,6 +88,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         coveralls --service=github
+    - name: Publish Full Unit Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      if: always()
+      with:
+        files: test-results/**/full_unit_test_results.xml
 
   linting_linux:
     name: 'Linting Tests (Linux)'
