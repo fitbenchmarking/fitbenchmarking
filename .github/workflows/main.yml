@@ -35,7 +35,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v2
       with:
-        path: test-results/default_system_test_results.xml
+        path: test-results/default_system_pytest.xml
 
   full_system_linux:
     name: 'Full System Tests (Linux)'
@@ -58,7 +58,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v2
       with:
-        path: test-results/full_system_test_results.xml
+        path: test-results/full_system_pytest.xml
 
   default_unit_linux:
     name: 'Default Unit Tests (Linux)'
@@ -79,7 +79,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v2
       with:
-        path: test-results/default_unit_test_results.xml
+        path: test-results/default_unit_pytest.xml
 
   full_unit_linux:
     name: 'Full Unit Tests (Linux)'
@@ -107,7 +107,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v2
       with:
-        path: test-results/full_unit_test_results.xml
+        path: test-results/full_unit_pytest.xml
 
   linting_linux:
     name: 'Linting Tests (Linux)'
@@ -150,15 +150,10 @@ jobs:
     - name: 'Running Tests'
       run: |
         bash ci/unit_tests_default.sh
-    - name: 'Upload Test Results'
-      if: always()
-      uses: actions/upload-artifact@v2
-      with:
-        path: test-results/default_unit_test_windows_results.xml
 
   publish-test-results:
     name: 'Publish Test Results'
-    needs: [default_system_linux, full_system_linux, default_unit_linux, default_unit_windows, full_unit_linux]
+    needs: [default_system_linux, full_system_linux, default_unit_linux, full_unit_linux]
     runs-on: 'ubuntu-latest'
     if: always()
     steps:
