@@ -1041,6 +1041,7 @@ class GlobalOptimizationControllerTests(TestCase):
         self.shared_tests.check_max_iterations(controller)
         controller._status = 2
         self.shared_tests.check_diverged(controller)
+        self.assertTrue(False)
 
     def test_gradient_free(self):
         """
