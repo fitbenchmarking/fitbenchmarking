@@ -150,10 +150,15 @@ jobs:
     - name: 'Running Tests'
       run: |
         bash ci/unit_tests_default.sh
+    - name: 'Upload Test Results'
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        path: test-results/default_unit_test_windows_results.xml
 
   publish-test-results:
     name: 'Publish Test Results'
-    needs: [default_system_linux, full_system_linux, default_unit_linux, full_unit_linux]
+    needs: [default_system_linux, full_system_linux, default_unit_linux, default_unit_windows, full_unit_linux]
     runs-on: 'ubuntu-latest'
     if: always()
     steps:
@@ -165,4 +170,5 @@ jobs:
       - name: 'Publish Test Results'
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
+          check_name: 'Unit & System Test Results'
           files: artifacts/**/*.xml
