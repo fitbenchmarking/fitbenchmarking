@@ -84,6 +84,8 @@ def create_prob_group(result, support_pages_dir, options):
             equation=result.problem.equation,
             initial_guess=result.ini_function_params,
             minimizer=result.minimizer,
+            accuracy=f"{result.chi_sq:.7f}",
+            runtime=f"{result.runtime:.7f}",
             is_best_fit=result.is_best_fit,
             initial_plot_available=init_success,
             initial_plot=fig_start,
