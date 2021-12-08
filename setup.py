@@ -18,6 +18,7 @@ setup(name='FitBenchmarking',
           ]
       },
       packages=find_packages(exclude=('*mock*', '*test*')),
+      setup_requires=['wheel'],
       install_requires=['docutils',
                         'numpy',
                         'matplotlib>=2.0',
@@ -38,6 +39,5 @@ setup(name='FitBenchmarking',
                       'gradient_free': ['gradient-free-optimizers']},
       zip_safe=False,
       use_scm_version={'fallback_version': '1.0.0'},
-      setup_requires=['setuptools_scm'],
       include_package_data=True
 )
