@@ -18,7 +18,6 @@ setup(name='FitBenchmarking',
           ]
       },
       packages=find_packages(exclude=('*mock*', '*test*')),
-      setup_requires=['wheel'],
       install_requires=['docutils',
                         'numpy',
                         'matplotlib>=2.0',
