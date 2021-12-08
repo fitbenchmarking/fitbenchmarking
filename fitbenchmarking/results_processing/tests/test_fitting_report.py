@@ -41,7 +41,9 @@ class CreateTests(unittest.TestCase):
                                       hess=None,
                                       initial_params=[],
                                       params=[],
-                                      minimizer=m)
+                                      minimizer=m,
+                                      chi_sq=1.0001,
+                                      runtime=2.0002)
                         for m in minimizers
                         for c in cost_func]
 
@@ -87,7 +89,9 @@ class CreateProbGroupTests(unittest.TestCase):
                                     hess=None,
                                     initial_params=[],
                                     params=[],
-                                    minimizer=minimizer)
+                                    minimizer=minimizer,
+                                    chi_sq=1.0001,
+                                    runtime=2.0002)
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         self.dir = TemporaryDirectory(dir=root)
