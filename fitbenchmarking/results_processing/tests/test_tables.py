@@ -208,7 +208,7 @@ class GenerateTableTests(unittest.TestCase):
 
     def compare_files(self, expected, achieved):
         """
-        Compares two tables line by line
+        Compares two files line by line
 
         :param expected: imported HTML output from expected results in
                          fitbenchmarking/results_processing/tests/

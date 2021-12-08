@@ -566,12 +566,13 @@ class Table:
         :return: HTML for a dropdown checklist.
         :rtype: str
         """
+        checklist_str = "\n".join(checklist)
         html = f'<div id="{list_id}" class="dropdown-check-list" ' \
-               f'tabindex="100">\n'
-        html += f'    <span class="anchor" onclick="show_dropdown' \
-                f'(\'{list_id}\')">{selector_text}</span>\n'
-        html += '    <ul class="items">\n'
-        html += "\n".join(checklist)
-        html += '    </ul>\n'
-        html += '</div>'
+               f'tabindex="100">\n' \
+               f'    <span class="anchor" onclick="show_dropdown' \
+               f'(\'{list_id}\')">{selector_text}</span>\n' \
+               '    <ul class="items">\n' \
+               f'{checklist_str}\n' \
+               '    </ul>\n' \
+               '</div>'
         return html
