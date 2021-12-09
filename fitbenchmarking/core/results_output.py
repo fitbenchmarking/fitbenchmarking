@@ -42,7 +42,7 @@ def save_results(options, results, group_name, failed_problems,
     :return: Path to directory of group results
     :rtype: str
     """
-    group_dir, supp_dir, fig_dir, local_css_dir = \
+    group_dir, supp_dir, fig_dir = \
         create_directories(options, group_name)
 
     best_results, results_dict = preprocess_data(results)
@@ -89,16 +89,15 @@ def create_directories(options, group_name):
     :type options: fitbenchmarking.utils.options.Options
     :param group_name: name of the problem group
     :type group_name: str
-    :return: paths to the top level results, group results, support pages,
+    :return: paths to the top level group results, support pages,
              and figures directories
-    :rtype: (str, str, str, str)
+    :rtype: (str, str, str)
     """
     results_dir = create_dirs.results(options.results_dir)
     group_dir = create_dirs.group_results(results_dir, group_name)
     support_dir = create_dirs.support_pages(group_dir)
     figures_dir = create_dirs.figures(support_dir)
-    local_css_dir = create_dirs.css(options.results_dir)
-    return group_dir, support_dir, figures_dir, local_css_dir
+    return group_dir, support_dir, figures_dir
 
 
 def preprocess_data(results: "list[FittingResult]"):
