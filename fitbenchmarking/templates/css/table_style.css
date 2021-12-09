@@ -1,8 +1,10 @@
 table {
+  position: relative;
   border-collapse: separate;
   border-spacing: 0;
   border: white;
   margin: auto;
+  z-index: 0;
 }
 
 thead {

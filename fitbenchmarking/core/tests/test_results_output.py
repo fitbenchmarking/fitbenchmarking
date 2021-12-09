@@ -214,20 +214,17 @@ class CreateDirectoriesTests(unittest.TestCase):
         expected_support_dir = os.path.join(expected_group_dir,
                                             'support_pages')
         expected_figures_dir = os.path.join(expected_support_dir, 'figures')
-        expected_css_dir = os.path.join(expected_results_dir, 'css')
 
-        group_dir, support_dir, figures_dir, css_dir = \
+        group_dir, support_dir, figures_dir = \
             create_directories(self.options, group_name)
 
         self.assertEqual(group_dir, expected_group_dir)
         self.assertEqual(support_dir, expected_support_dir)
         self.assertEqual(figures_dir, expected_figures_dir)
-        self.assertEqual(css_dir, expected_css_dir)
 
         self.assertTrue(os.path.isdir(group_dir))
         self.assertTrue(os.path.isdir(support_dir))
         self.assertTrue(os.path.isdir(figures_dir))
-        self.assertTrue(os.path.isdir(css_dir))
 
 
 class PreprocessDataTests(unittest.TestCase):
