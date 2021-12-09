@@ -15,11 +15,15 @@ function _find_element_from_text(class_name, search_text) {
 */
 function _adjust_colspan(header, increment) {
     var colspan = parseInt(header.attr('colspan'));
-    var new_colspan = increment ? colspan + 1: colspan - 1;
-    header.attr('colspan', new_colspan);
+    if (isNaN(colspan)) {
+        var new_colspan = increment ? 1: 0;
+    } else {
+        var new_colspan = increment ? colspan + 1: colspan - 1;
+        header.attr('colspan', new_colspan);
+    }
 
     // Hide the header if the sub-headers are all hidden
-    if (new_colspan == 0 || isNaN(new_colspan)) {
+    if (new_colspan == 0) {
         header.hide();
     } else {
         header.show();
