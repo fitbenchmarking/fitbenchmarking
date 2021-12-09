@@ -18,7 +18,25 @@
         },
         {
             "affiliation": "STFC, Scientific Computing Department",
-            "name": "Andrew Lister"
+            "name": "Andrew Lister",
+	    "orcid": "0000-0003-0861-4034"
+        },   
+        {
+            "affiliation": "STFC, Scientific Computing Department",
+            "name": "Jessica Farmer"
+        },
+        {
+            "affiliation": "STFC, Technology Department",
+            "name": "Benjamin Peters"
+        },
+        {
+            "affiliation": "STFC, ISIS Neutron and Muon facility",
+            "name": "Robert Applin"
+        },
+        {
+            "affiliation": "STFC, Scientific Computing Department",
+            "name": "Jaroslav Fowkes",
+	    "orcid": "0000-0002-8048-4572"
         },
         {
 	    "affiliation": "STFC, ISIS Neutron and Muon facility",
