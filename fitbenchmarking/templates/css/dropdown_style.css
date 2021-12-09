@@ -10,7 +10,7 @@
 }
 
 .dropdown-check-list .anchor {
-  position: absolute;
+  position: relative;
   cursor: pointer;
   display: inline-block;
   padding: 5px 50px 5px 10px;
