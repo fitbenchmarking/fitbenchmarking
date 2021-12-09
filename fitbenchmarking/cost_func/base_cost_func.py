@@ -21,14 +21,15 @@ class CostFunc:
         :param problem: The parsed problem
         :type problem:
                 :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-
         """
         # Problem: The problem object from parsing
         self.problem = problem
 
-        #: *dict*
-        #: Container cached residual squared evaluation (cost function)
-        self.cache_cost_x = {'params': None, 'value': None}
+        # The Jacobian object to evaluate
+        self.jacobian = None
+
+        # The Hessian object to evaluate
+        self.hessian = None
 
         # Used to check whether the algorithm type of the
         # selected minimizer is incompatible with the cost function
@@ -44,6 +45,67 @@ class CostFunc:
 
         :return: evaluated cost function
         :rtype: float
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def jac_res(self, params, **kwargs):
+        """
+        Uses the Jacobian of the model to evaluate the Jacobian of the
+        cost function residual, :math:`\\nabla_p r(x,y,p)`, at the
+        given parameters.
+
+        :param params: The parameters at which to calculate Jacobians
+        :type params: list
+
+        :return: evaluated Jacobian of the residual at each x, y pair
+        :rtype: a list of 1D numpy arrays
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def jac_cost(self, params, **kwargs):
+        """
+        Uses the Jacobian of the model to evaluate the Jacobian of the
+        cost function, :math:`\\nabla_p F(r(x,y,p))`, at the given
+        parameters.
+
+        :param params: The parameters at which to calculate Jacobians
+        :type params: list
+
+        :return: evaluated Jacobian of the cost function
+        :rtype: 1D numpy array
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def hes_res(self, params, **kwargs):
+        """
+        Uses the Hessian of the model to evaluate the Hessian of the
+        cost function residual, :math:`\\nabla_p^2 r(x,y,p)`, at the
+        given parameters.
+
+        :param params: The parameters at which to calculate Hessians
+        :type params: list
+
+        :return: evaluated Hessian and Jacobian of the residual at
+        each x, y pair
+        :rtype: tuple(list of 2D numpy arrays, list of 1D numpy arrays)
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def hes_cost(self, params, **kwargs):
+        """
+        Uses the Hessian of the model to evaluate the Hessian of the
+        cost function, :math:`\\nabla_p^2 F(r(x,y,p))`, at the given
+        parameters.
+
+        :param params: The parameters at which to calculate Hessians
+        :type params: list
+
+        :return: evaluated Hessian of the cost function
+        :rtype: 2D numpy array
         """
         raise NotImplementedError
 

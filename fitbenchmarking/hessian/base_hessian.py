@@ -2,7 +2,6 @@
 Implements the base class for the Hessian.
 """
 from abc import ABCMeta, abstractmethod
-from numpy import array_equal
 
 
 class Hessian:
@@ -11,17 +10,24 @@ class Hessian:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, cost_func, jacobian):
+    # Problem formats that are incompatible with certain Hessians
+    INCOMPATIBLE_PROBLEMS = {}
+
+    def __init__(self, problem, jacobian):
         """
         Base class for the Hessians
 
-        :param cost_func: Cost function object selected from options.
-        :type cost_func: subclass of
-                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+        :param problem: The parsed problem.
+        :type problem:
+            :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
+        :param jacobian: The jacobian for the problem
+        :type jacobian: subclass of
+            :class:`~fitbenchmarking.jacobian.base_jacobian`
         """
-        self.cost_func = cost_func
-        self.problem = self.cost_func.problem
+        self.problem = problem
         self.jacobian = jacobian
+
+        self._method = None
 
     @abstractmethod
     def eval(self, params, **kwargs):
@@ -32,39 +38,26 @@ class Hessian:
         :type params: list
 
         :return: Computed Hessian
-        :rtype: numpy array
+        :rtype: 3D numpy array
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def eval_cost(self, params, **kwargs):
+    @property
+    def method(self):
         """
-        Evaluates Hessian of the cost function
+        Utility function to get the numerical method
 
-        :param params: The parameter values to find the Hessian at
-        :type params: list
-
-        :return: Computed derivative of the cost function
-        :rtype: numpy array
+        :return: the names of the parameters
+        :rtype: list of str
         """
-        raise NotImplementedError
+        return self._method
 
-    def cached_func_values(self, cached_dict, eval_model, params, **kwargs):
+    @method.setter
+    def method(self, value):
         """
-        Computes function values using cached or function evaluation
+        Utility function to set the numerical method
 
-        :param cached_dict: Cached function values
-        :type cached_dict: dict
-        :param eval_modelunc: Function to find the Hessian for
-        :type eval_modelunc: Callable
-        :param params: The parameter values to find the Hessian at
-        :type params: list
-
-        :return: Function evaluation
-        :rtype: numpy array
+        :param value: the name of the numerical method
+        :type value: str
         """
-        if array_equal(params, cached_dict['params']):
-            value = cached_dict['value']
-        else:
-            value = eval_model(params, **kwargs)
-        return value
+        self._method = value

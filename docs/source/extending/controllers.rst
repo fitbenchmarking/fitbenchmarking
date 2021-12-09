@@ -27,7 +27,7 @@ In order to add a new controller, you will need to:
       :class:`~fitbenchmarking.controllers.matlab_mixin.MatlabMixin`.
 
       .. autoclass:: fitbenchmarking.controllers.matlab_mixin.MatlabMixin
-          :members: py_to_mat, clear_cached_values
+          :members: py_to_mat
           :noindex:
 
    The new controller should implement four functions, as well as initializing the dictionary ``algorithm_check``:

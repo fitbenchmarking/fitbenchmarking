@@ -15,13 +15,17 @@ class RuntimeTable(Table):
 
     """
 
-    def __init__(self, results, options, group_dir, pp_locations, table_name):
+    def __init__(self, results, best_results, options, group_dir, pp_locations,
+                 table_name):
         """
         Initialise the runtime table which shows the average runtime results
 
-        :param results: results nested array of objects
-        :type results: list of list of
-                       fitbenchmarking.utils.fitbm_result.FittingResult
+        :param results: Results grouped by row and category (for colouring)
+        :type results:
+            dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
+        :param best_results: The best results from each row/category
+        :type best_results:
+            dict[str, dict[str, utils.fitbm_result.FittingResult]],
         :param options: Options used in fitting
         :type options: utils.options.Options
         :param group_dir: path to the directory where group results should be
@@ -34,7 +38,8 @@ class RuntimeTable(Table):
         :type table_name: str
         """
 
-        super().__init__(results, options, group_dir, pp_locations, table_name)
+        super().__init__(results, best_results, options, group_dir,
+                         pp_locations, table_name)
         self.name = 'runtime'
         self.has_pp = True
         self.pp_filenames = [os.path.relpath(self.pp_locations[1], group_dir)]

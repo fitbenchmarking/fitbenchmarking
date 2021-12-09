@@ -35,6 +35,8 @@ class MatlabOptController(MatlabMixin, Controller):
 
     controller_name = 'matlab_opt'
 
+    incompatible_problems = ['mantid']
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -60,9 +62,6 @@ class MatlabOptController(MatlabMixin, Controller):
         self.initial_params_mat = matlab.double([self.initial_params])
         self.x_data_mat = matlab.double(self.data_x.tolist())
 
-        # clear out cached values
-        self.clear_cached_values()
-
         # set matlab workspace variable for selected minimizer
         eng.workspace['minimizer'] = self.minimizer
 
@@ -87,8 +86,9 @@ class MatlabOptController(MatlabMixin, Controller):
 
         # if default jacobian is not selected then pass _jeval
         # function to matlab
-        if not self.jacobian.use_default_jac:
-            eng.workspace['eval_j'] = self.py_to_mat(self.jacobian.eval, eng)
+        if not self.cost_func.jacobian.use_default_jac:
+            eng.workspace['eval_j'] = self.py_to_mat(self.cost_func.jac_res,
+                                                     eng)
             eng.evalc('j_wrapper = @(p, x)double(eval_j(p))')
 
             eng.workspace['eval_func'] = [eng.workspace['f_wrapper'],

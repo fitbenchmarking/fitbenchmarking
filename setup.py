@@ -38,6 +38,5 @@ setup(name='FitBenchmarking',
                       'gradient_free': ['gradient-free-optimizers']},
       zip_safe=False,
       use_scm_version={'fallback_version': '1.0.0'},
-      setup_requires=['setuptools_scm'],
       include_package_data=True
 )

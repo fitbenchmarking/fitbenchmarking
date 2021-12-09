@@ -2,13 +2,12 @@
 FitBenchmarking results object
 """
 
-from __future__ import (absolute_import, division, print_function)
+import numpy as np
 
-# To store the results in the object requires more than the default
-# max arguments and sanitised_name setter requires no use of self
+from fitbenchmarking.utils.debug import get_printable_table
+
+
 # pylint: disable=too-many-arguments, no-self-use
-
-
 class FittingResult:
     """
     Minimal definition of a class to hold results from a
@@ -96,7 +95,8 @@ class FittingResult:
         self.error_flag = error_flag
 
         # Paths to various output files
-        self.support_page_link = ''
+        self.problem_summary_page_link = ''
+        self.fitting_report_link = ''
         self.start_figure_link = ''
         self.figure_link = ''
 
@@ -116,6 +116,18 @@ class FittingResult:
         self.jacobian_tag = self.jac.__class__.__name__
         self.hessian_tag = self.hess.__class__.__name__
 
+    def __str__(self):
+        info = {"Cost Function": self.costfun_tag,
+                "Problem": self.problem_tag,
+                "Software": self.software_tag,
+                "Minimizer": self.minimizer_tag,
+                "Jacobian": self.jacobian_tag,
+                "Hessian": self.hessian_tag,
+                "Chi Squared": self.chi_sq,
+                "Runtime": self.runtime}
+
+        return get_printable_table("FittingResult", info)
+
     @property
     def norm_acc(self):
         """
@@ -125,7 +137,10 @@ class FittingResult:
         :rtype: float
         """
         if self._norm_acc is None:
-            self._norm_acc = self.chi_sq / self.min_chi_sq
+            if self.min_chi_sq in [np.nan, np.inf]:
+                self._norm_acc = np.inf
+            else:
+                self._norm_acc = self.chi_sq / self.min_chi_sq
         return self._norm_acc
 
     @norm_acc.setter
@@ -147,7 +162,10 @@ class FittingResult:
         :rtype: float
         """
         if self._norm_runtime is None:
-            self._norm_runtime = self.runtime / self.min_runtime
+            if self.min_runtime in [np.nan, np.inf]:
+                self._norm_runtime = np.inf
+            else:
+                self._norm_runtime = self.runtime / self.min_runtime
         return self._norm_runtime
 
     @norm_runtime.setter

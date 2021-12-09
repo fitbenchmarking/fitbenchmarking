@@ -73,7 +73,7 @@ class RALFitController(Controller):
             raise UnknownMinimizerError(
                 "No {} minimizer for RALFit".format(self.minimizer))
 
-        if self.hessian:
+        if self.cost_func.hessian:
             self._options[b"exact_second_derivatives"] = True
         else:
             self._options[b"exact_second_derivatives"] = False
@@ -94,28 +94,28 @@ class RALFitController(Controller):
     def hes_eval(self, params, r):
         """
         Function to ensure correct inputs and outputs
-        are used for the RALFit hessian evalution
+        are used for the RALFit hessian evaluation
 
         :param params: parameters
         :type params: numpy array
-        :param r: resuiduals, required by RALFit to
-                  be passed to hessian evaluation
+        :param r: residuals, required by RALFit to
+                  be passed for hessian evaluation
         :type r: numpy array
-        :return: hessian evaluation from hessian.eval
+        :return: hessian 2nd order term: sum_{i=1}^m r_i \nabla^2 r_i
         :rtype: numpy array
         """
-        hes, _ = self.hessian.eval(params)
-        return hes
+        H, _ = self.cost_func.hes_res(params)
+        return np.matmul(H, r)
     # pylint: enable=unused-argument
 
     def fit(self):
         """
         Run problem with RALFit.
         """
-        if self.hessian:
+        if self.cost_func.hessian:
             self._popt = ral_nlls.solve(self.initial_params,
                                         self.cost_func.eval_r,
-                                        self.jacobian.eval,
+                                        self.cost_func.jac_res,
                                         self.hes_eval,
                                         options=self._options,
                                         lower_bounds=self.param_ranges[0],
@@ -123,7 +123,7 @@ class RALFitController(Controller):
         else:
             self._popt = ral_nlls.solve(self.initial_params,
                                         self.cost_func.eval_r,
-                                        self.jacobian.eval,
+                                        self.cost_func.jac_res,
                                         options=self._options,
                                         lower_bounds=self.param_ranges[0],
                                         upper_bounds=self.param_ranges[1])[0]

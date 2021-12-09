@@ -3,11 +3,14 @@ Implements the base class for the fitting software controllers.
 """
 
 from abc import ABCMeta, abstractmethod
-import numpy
 
-from fitbenchmarking.utils.exceptions import ControllerAttributeError, \
-    UnknownMinimizerError, IncompatibleMinimizerError, \
-    IncompatibleJacobianError
+import numpy
+from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
+                                              IncompatibleHessianError,
+                                              IncompatibleJacobianError,
+                                              IncompatibleMinimizerError,
+                                              IncompatibleProblemError,
+                                              UnknownMinimizerError)
 
 
 class Controller:
@@ -20,7 +23,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    VALID_FLAGS = [0, 1, 2, 3, 4, 5, 6]
+    VALID_FLAGS = [0, 1, 2, 3, 4, 5, 6, 7]
 
     #: Within the controller class, you must
     #: initialize a dictionary, ``algorithm_check``,
@@ -83,6 +86,9 @@ class Controller:
     #: from the class name.
     controller_name = None
 
+    #: A list of incompatible problem formats for this controller.
+    incompatible_problems = []
+
     def __init__(self, cost_func):
         """
         Initialise anything that is needed specifically for the
@@ -98,12 +104,6 @@ class Controller:
         self.cost_func = cost_func
         # Problem: The problem object from parsing
         self.problem = self.cost_func.problem
-
-        # Jacobian: The Jacobian object
-        self.jacobian = None
-
-        # Hessian: The Hessian object
-        self.hessian = None
 
         # Data: Data used in fitting. Might be different from problem
         #       if corrections are needed (e.g. startX)
@@ -154,8 +154,8 @@ class Controller:
         | 4: `Solver doesn't support bounded problems`
         | 5: `Solution doesn't respect parameter bounds`
         | 6: `Solver has exceeded maximum allowed runtime`
+        | 7: `Validation of the provided options failed`
         """
-
         return self._flag
 
     @flag.setter
@@ -187,6 +187,8 @@ class Controller:
         If there are some invalid options, the relevant exception is raised.
         """
         self._validate_jacobian()
+        self._validate_hessian()
+        self._validate_problem_format()
 
     def prepare(self):
         """
@@ -237,14 +239,43 @@ class Controller:
         other options and problem definition. An exception is raised if this
         is not true.
         """
-        incompatible_problems = self.jacobian.INCOMPATIBLE_PROBLEMS.get(
-            self.jacobian.method, [])
+        incompatible_problems = \
+            self.cost_func.jacobian.INCOMPATIBLE_PROBLEMS.get(
+                self.cost_func.jacobian.method, [])
 
         if self.problem.format in incompatible_problems:
-            message = f"The {self.jacobian.__class__.__name__} Jacobian " \
-                      f"'{self.jacobian.method}' method is incompatible " \
-                      f"with the problem format '{self.problem.format}'."
+            message = f"The {self.cost_func.jacobian.__class__.__name__} " \
+                      f"Jacobian '{self.cost_func.jacobian.method}' " \
+                      f"method is incompatible with the problem format " \
+                      f"'{self.problem.format}'."
             raise IncompatibleJacobianError(message)
+
+    def _validate_hessian(self) -> None:
+        """
+        Validates that the provided Hessian method is compatible with the
+        other options and problem definition. An exception is raised if this
+        is not true.
+        """
+        if self.cost_func.hessian is not None:
+            incompatible_problems = \
+                self.cost_func.hessian.INCOMPATIBLE_PROBLEMS.get(
+                    self.cost_func.hessian.method, [])
+
+            if self.problem.format in incompatible_problems:
+                message = f"The {self.cost_func.hessian.__class__.__name__} " \
+                          f"Hessian '{self.cost_func.hessian.method}' " \
+                          f"method is incompatible with the problem format " \
+                          f"'{self.problem.format}'."
+                raise IncompatibleHessianError(message)
+
+    def _validate_problem_format(self):
+        """
+        Validates that the problem format is compatible with the controller
+        """
+        if self.problem.format in self.incompatible_problems:
+            raise IncompatibleProblemError(
+                f'{self.problem.format} problems cannot be used with '
+                f'{self.software} controllers.')
 
     def validate_minimizer(self, minimizer, algorithm_type):
         """

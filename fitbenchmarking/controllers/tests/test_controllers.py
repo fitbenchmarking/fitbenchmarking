@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 """
 Tests for the controllers available from a default fitbenchmarking install
 """
@@ -15,6 +16,7 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
 from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.hessian.scipy_hessian import Scipy as ScipyHessian
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
@@ -90,11 +92,12 @@ class DummyController(Controller):
 
 
 class ControllerSharedTesting:
-    '''
+    """
     Tests used by all controllers
-    '''
+    """
 
-    def controller_run_test(self, controller):
+    @staticmethod
+    def controller_run_test(controller):
         """
         Utility function to run controller and check output is in generic form
 
@@ -108,7 +111,8 @@ class ControllerSharedTesting:
 
         assert len(controller.final_params) == len(controller.initial_params)
 
-    def check_converged(self, controller):
+    @staticmethod
+    def check_converged(controller):
         """
         Utility function to check controller.cleanup() produces a success flag
 
@@ -118,7 +122,8 @@ class ControllerSharedTesting:
         controller.cleanup()
         assert controller.flag == 0
 
-    def check_max_iterations(self, controller):
+    @staticmethod
+    def check_max_iterations(controller):
         """
         Utility function to check controller.cleanup() produces a maximum
         iteration flag
@@ -129,7 +134,8 @@ class ControllerSharedTesting:
         controller.cleanup()
         assert controller.flag == 1
 
-    def check_diverged(self, controller):
+    @staticmethod
+    def check_diverged(controller):
         """
         Utility function to check controller.cleanup() produces a fail
 
@@ -365,8 +371,9 @@ class DefaultControllerTests(TestCase):
     def setUp(self):
         self.cost_func = make_cost_func()
         self.problem = self.cost_func.problem
-        self.jac = Scipy(self.cost_func)
+        self.jac = Scipy(self.cost_func.problem)
         self.jac.method = '2-point'
+        self.cost_func.jacobian = self.jac
         self.shared_tests = ControllerSharedTesting()
 
     def test_bumps(self):
@@ -423,7 +430,6 @@ class DefaultControllerTests(TestCase):
         """
         controller = ScipyController(self.cost_func)
         controller.minimizer = 'CG'
-        controller.jacobian = self.jac
         self.shared_tests.controller_run_test(controller)
 
         controller.result.success = True
@@ -439,7 +445,6 @@ class DefaultControllerTests(TestCase):
         """
         controller = ScipyLSController(self.cost_func)
         controller.minimizer = 'lm'
-        controller.jacobian = self.jac
 
         self.shared_tests.controller_run_test(controller)
 
@@ -463,8 +468,9 @@ class ControllerBoundsTests(TestCase):
         """
         self.cost_func = make_cost_func('cubic-fba-test-bounds.txt')
         self.problem = self.cost_func.problem
-        self.jac = Scipy(self.cost_func)
+        self.jac = Scipy(self.cost_func.problem)
         self.jac.method = '2-point'
+        self.cost_func.jacobian = self.jac
 
     def check_bounds(self, controller):
         """
@@ -477,8 +483,8 @@ class ControllerBoundsTests(TestCase):
         controller.cleanup()
 
         for count, value in enumerate(controller.final_params):
-            assert controller.value_ranges[count][0] <= value \
-                <= controller.value_ranges[count][1]
+            self.assertLessEqual(controller.value_ranges[count][0], value)
+            self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
     def test_scipy(self):
         """
@@ -487,7 +493,6 @@ class ControllerBoundsTests(TestCase):
         """
         controller = ScipyController(self.cost_func)
         controller.minimizer = 'L-BFGS-B'
-        controller.jacobian = self.jac
 
         self.check_bounds(controller)
 
@@ -498,7 +503,6 @@ class ControllerBoundsTests(TestCase):
         """
         controller = ScipyLSController(self.cost_func)
         controller.minimizer = 'trf'
-        controller.jacobian = self.jac
 
         self.check_bounds(controller)
 
@@ -539,7 +543,6 @@ class ControllerBoundsTests(TestCase):
         """
         controller = RALFitController(self.cost_func)
         controller.minimizer = 'gn'
-        controller.jacobian = self.jac
 
         self.check_bounds(controller)
 
@@ -551,7 +554,6 @@ class ControllerBoundsTests(TestCase):
 
         controller = LevmarController(self.cost_func)
         controller.minimizer = 'levmar'
-        controller.jacobian = self.jac
 
         self.check_bounds(controller)
 
@@ -563,13 +565,15 @@ class ControllerBoundsTests(TestCase):
 
         controller = MantidController(self.cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
-        controller.jacobian = self.jac
 
         self.check_bounds(controller)
 
 
 @run_for_test_types(TEST_TYPE, 'all')
 class ControllerValidateTests(TestCase):
+    """
+    Tests to ensure controller data is validated correctly.
+    """
 
     def setUp(self):
         """
@@ -582,12 +586,12 @@ class ControllerValidateTests(TestCase):
         MantidController: Test that the Mantid controller validation
         does not raise for a valid Jacobian
         """
-        self.jac = Scipy(self.cost_func)
+        self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
 
         controller = MantidController(self.cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
-        controller.jacobian = self.jac
 
         controller.validate()
 
@@ -596,12 +600,12 @@ class ControllerValidateTests(TestCase):
         MantidController: Test that the Mantid controller validation
         will raise for an incompatible Jacobian
         """
-        self.jac = Scipy(self.cost_func)
+        self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "cs"
+        self.cost_func.jacobian = self.jac
 
         controller = MantidController(self.cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
-        controller.jacobian = self.jac
 
         with self.assertRaises(exceptions.IncompatibleJacobianError):
             controller.validate()
@@ -609,14 +613,14 @@ class ControllerValidateTests(TestCase):
     def test_scipy_controller_will_raise(self):
         """
         ScipyController: Test that the Scipy controller validation
-        will raise for an incompatible Jacobians
+        will raise for an incompatible Jacobian
         """
-        self.jac = Scipy(self.cost_func)
+        self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "cs"
+        self.cost_func.jacobian = self.jac
 
         controller = ScipyController(self.cost_func)
         controller.minimizer = "L-BFGS-B"
-        controller.jacobian = self.jac
 
         with self.assertRaises(exceptions.IncompatibleJacobianError):
             controller.validate()
@@ -624,14 +628,88 @@ class ControllerValidateTests(TestCase):
     def test_controller_will_not_raise_for_compatible_jacobian(self):
         """
         ScipyController: Test that the Scipy controller validation
-        will not raise for a compatible Jacobians
+        will not raise for a compatible Jacobian
         """
-        self.jac = Default(self.cost_func)
+        self.jac = Default(self.cost_func.problem)
         self.jac.method = "default"
+        self.cost_func.jacobian = self.jac
 
         controller = ScipyController(self.cost_func)
         controller.minimizer = "L-BFGS-B"
-        controller.jacobian = self.jac
+
+        controller.validate()
+
+    def test_mantid_controller_does_not_raise_hessian(self):
+        """
+        MantidController: Test that the Mantid controller validation
+        does not raise for a valid Hessian
+        """
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
+        self.hes = ScipyHessian(self.cost_func.problem,
+                                self.cost_func.jacobian)
+        self.hes.method = "2-point"
+        self.cost_func.hessian = self.hes
+
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'Levenberg-Marquardt'
+
+        controller.validate()
+
+    def test_mantid_controller_will_raise_hessian(self):
+        """
+        MantidController: Test that the Mantid controller validation
+        will raise for an incompatible Hessian
+        """
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
+        self.hes = ScipyHessian(self.cost_func.problem,
+                                self.cost_func.jacobian)
+        self.hes.method = "cs"
+        self.cost_func.hessian = self.hes
+
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'Levenberg-Marquardt'
+
+        with self.assertRaises(exceptions.IncompatibleHessianError):
+            controller.validate()
+
+    def test_scipy_controller_will_raise_hessian(self):
+        """
+        ScipyController: Test that the Scipy controller validation
+        will raise for an incompatible Hessian
+        """
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
+        self.hes = ScipyHessian(self.cost_func.problem,
+                                self.cost_func.jacobian)
+        self.hes.method = "cs"
+        self.cost_func.hessian = self.hes
+
+        controller = ScipyController(self.cost_func)
+        controller.minimizer = "L-BFGS-B"
+
+        with self.assertRaises(exceptions.IncompatibleHessianError):
+            controller.validate()
+
+    def test_controller_will_not_raise_for_compatible_hessian(self):
+        """
+        ScipyController: Test that the Scipy controller validation
+        will not raise for a compatible Hessian
+        """
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
+        self.hes = ScipyHessian(self.cost_func.problem,
+                                self.cost_func.jacobian)
+        self.hes.method = "2-point"
+        self.cost_func.hessian = self.hes
+
+        controller = ScipyController(self.cost_func)
+        controller.minimizer = "L-BFGS-B"
 
         controller.validate()
 
@@ -645,9 +723,10 @@ class ExternalControllerTests(TestCase):
     def setUp(self):
         self.cost_func = make_cost_func()
         self.problem = self.cost_func.problem
-        self.jac = Scipy(self.cost_func)
+        self.jac = Scipy(self.cost_func.problem)
         self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
+        self.cost_func.jacobian = self.jac
 
     def test_levmar(self):
         """
@@ -655,7 +734,6 @@ class ExternalControllerTests(TestCase):
         """
         controller = LevmarController(self.cost_func)
         controller.minimizer = 'levmar'
-        controller.jacobian = self.jac
         self.shared_tests.controller_run_test(controller)
 
         controller._info = (0, 1, 2, "Stop by small Dp", 4, 5, 6)
@@ -675,7 +753,24 @@ class ExternalControllerTests(TestCase):
         MantidController: Test for output shape
         """
         controller = MantidController(self.cost_func)
-        controller.jacobian = self.jac
+        controller.minimizer = 'Levenberg-Marquardt'
+        self.shared_tests.controller_run_test(controller)
+
+        controller._status = "success"
+        self.shared_tests.check_converged(controller)
+        controller._status = "Failed to converge"
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = "Failed"
+        self.shared_tests.check_diverged(controller)
+
+    def test_mantid_default_jacobian(self):
+        """
+        MantidController: Test for default jacobian
+        """
+        self.shared_tests = ControllerSharedTesting()
+        self.cost_func.jacobian = Default(self.problem)
+
+        controller = MantidController(self.cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
         self.shared_tests.controller_run_test(controller)
 
@@ -762,7 +857,6 @@ class ExternalControllerTests(TestCase):
         GSLController: Tests for output shape
         """
         controller = GSLController(self.cost_func)
-        controller.jacobian = self.jac
 
         # test one from each class
         minimizers = ['lmsder',
@@ -784,7 +878,6 @@ class ExternalControllerTests(TestCase):
         RALFitController: Tests for output shape
         """
         controller = RALFitController(self.cost_func)
-        controller.jacobian = self.jac
 
         minimizers = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg']
         for minimizer in minimizers:
@@ -807,8 +900,9 @@ class MatlabControllerTests(TestCase):
     def setUp(self):
         self.cost_func = make_cost_func()
         self.problem = self.cost_func.problem
-        self.jac = Scipy(self.cost_func)
+        self.jac = Scipy(self.cost_func.problem)
         self.jac.method = '2-point'
+        self.cost_func.jacobian = self.jac
         self.shared_tests = ControllerSharedTesting()
 
     def test_py_to_mat(self):
@@ -831,12 +925,27 @@ class MatlabControllerTests(TestCase):
 
         assert result_py == result_mat
 
+    def test_verify(self):
+        """
+        MatlabController: Tests for correct error when fitting mantid problem
+        """
+        # No raise for default (NIST) problem
+        controller = MatlabController(self.cost_func)
+        controller.validate()
+        # Raise for Mantid problem
+        cost_func = make_cost_func('cubic-fba-test-go.txt')
+        jac = Scipy(cost_func.problem)
+        jac.method = '2-point'
+        cost_func.jacobian = jac
+        controller = MatlabController(cost_func)
+        with self.assertRaises(exceptions.IncompatibleProblemError):
+            controller.validate()
+
     def test_matlab(self):
         """
         MatlabController: Tests for output shape
         """
         controller = MatlabController(self.cost_func)
-        controller.jacobian = self.jac
 
         minimizers = ['Nelder-Mead Simplex']
         for minimizer in minimizers:
@@ -855,7 +964,6 @@ class MatlabControllerTests(TestCase):
         MatlabOptController: Tests for output shape
         """
         controller = MatlabOptController(self.cost_func)
-        controller.jacobian = self.jac
 
         minimizers = ['levenberg-marquardt', 'trust-region-reflective']
         for minimizer in minimizers:
@@ -874,7 +982,6 @@ class MatlabControllerTests(TestCase):
         MatlabStatsController: Tests for output shape
         """
         controller = MatlabStatsController(self.cost_func)
-        controller.jacobian = self.jac
 
         minimizers = ['Levenberg-Marquardt']
         for minimizer in minimizers:
@@ -891,7 +998,6 @@ class MatlabControllerTests(TestCase):
         MatlabCurveController: Tests for output shape
         """
         controller = MatlabCurveController(self.cost_func)
-        controller.jacobian = self.jac
 
         minimizers = ['Levenberg-Marquardt', 'Trust-Region']
         for minimizer in minimizers:
@@ -915,8 +1021,9 @@ class GlobalOptimizationControllerTests(TestCase):
     def setUp(self):
         self.cost_func = make_cost_func('cubic-fba-test-go.txt')
         self.problem = self.cost_func.problem
-        self.jac = Scipy(self.cost_func)
+        self.jac = Scipy(self.cost_func.problem)
         self.jac.method = '2-point'
+        self.cost_func.jacobian = self.jac
         self.shared_tests = ControllerSharedTesting()
 
     def test_scipy_go(self):
@@ -925,7 +1032,6 @@ class GlobalOptimizationControllerTests(TestCase):
         """
         controller = ScipyGOController(self.cost_func)
         controller.minimizer = 'dual_annealing'
-        controller.jacobian = self.jac
 
         self.shared_tests.controller_run_test(controller)
 

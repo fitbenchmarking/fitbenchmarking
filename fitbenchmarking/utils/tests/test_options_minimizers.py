@@ -97,6 +97,7 @@ class MininimizerOptionTests(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+# pylint: disable=too-many-public-methods
 class UserMininimizerOptionTests(unittest.TestCase):
     """
     Checks the minimizers in the options file are set correctly or raise errors

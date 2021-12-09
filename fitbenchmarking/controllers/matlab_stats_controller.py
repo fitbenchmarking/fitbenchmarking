@@ -32,6 +32,8 @@ class MatlabStatsController(MatlabMixin, Controller):
 
     controller_name = 'matlab_stats'
 
+    incompatible_problems = ['mantid']
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -54,9 +56,6 @@ class MatlabStatsController(MatlabMixin, Controller):
         self.y_data_mat = matlab.double(np.zeros(self.data_y.shape).tolist())
         self.initial_params_mat = matlab.double([self.initial_params])
         self.x_data_mat = matlab.double(self.data_x.tolist())
-
-        # clear out cached values
-        self.clear_cached_values()
 
         # serialize cost_func.eval_r and open within matlab engine
         # so that matlab fitting function can be called

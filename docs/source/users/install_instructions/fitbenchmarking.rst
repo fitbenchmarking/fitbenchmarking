@@ -4,7 +4,7 @@
 Installing FitBenchmarking and default fitting packages
 #######################################################
 
-We recommend using |Python 3.6+| for running/installing Fitbenchmarking.
+We recommend using |Python 3.7.1+| for running/installing Fitbenchmarking.
 The easiest way to install FitBenchmarking is by using the Python package manager,
 `pip <https://pip.pypa.io/en/stable/>`__.
 
@@ -88,7 +88,7 @@ where valid strings ``option-x`` are:
 * ``numdifftools`` -- installs the `numdifftools <https://numdifftools.readthedocs.io/en/latest/index.html>`_ numerical differentiation package.
 
 
-.. |Python 3.6+| image:: https://img.shields.io/badge/python-3.6+-blue.svg
-   :alt: Python 3.6+
+.. |Python 3.7.1+| image:: https://img.shields.io/badge/python-3.7.1+-blue.svg
+   :alt: Python 3.7.1+
    :target: https://www.python.org/downloads/
 

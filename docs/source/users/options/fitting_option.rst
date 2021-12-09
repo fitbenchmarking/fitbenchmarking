@@ -67,7 +67,7 @@ Algorithm type (:code:`algorithm_type`)
 ---------------------------------------
 
 This is used to select what type of algorithm is used within a specific software.
-For a full list of available minimizers for each algorithm type, see :ref:`minimizer_types`. 
+For a full list of available minimizers for each algorithm type, see :ref:`minimizer_types`.
 The options are:
 
 * ``all`` - all minimizers
@@ -101,13 +101,16 @@ Default is ``all``
 Jacobian method (:code:`jac_method`)
 ------------------------------------
 
-This sets the Jacobian used. Current Jacobian methods are:
+This sets the Jacobian used.
+Choosing multiple options via a new line seperated list will result in all
+combinations being benchmarked.
+Current Jacobian methods are:
 
 * ``analytic`` - uses the analytic Jacobian extracted from the fitting problem.
 * ``scipy`` -  uses :ref:`SciPy's finite difference Jacobian approximations <scipy-jac>`.
 * ``default`` - uses the default derivative approximation implemented in the minimizer.
 * ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-jac>`.
-  
+
 Default is ``default``
 
 .. code-block:: rst
@@ -117,18 +120,23 @@ Default is ``default``
 
 .. warning::
 
-   Currently analytic Jacobians are available are only available for
+   Currently analytic Jacobians are only available for
    problems that use the cutest and NIST parsers.
 
 
 Hessian method (:code:`hes_method`)
 ------------------------------------
 
-This sets the Hessian used. Current Hessian methods are:
+This sets the Hessian used.
+Choosing multiple options via a new line seperated list will result in all
+combinations being benchmarked.
+Current Hessian methods are:
 
 * ``default`` - Hessian information is not passed to minimizers
 * ``analytic`` - uses the analytic Hessian extracted from the fitting problem.
-  
+* ``scipy`` -  uses :ref:`SciPy's finite difference approximations <scipy-hes>`.
+* ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-hes>`.
+
 Default is ``default``
 
 .. code-block:: rst
@@ -138,14 +146,16 @@ Default is ``default``
 
 .. warning::
 
-   Currently analytic Hessians are available are only available for
-   problems that use the NIST parser.
+   Currently analytic Hessians are only available for
+   problems that use the cutest and NIST parsers.
 
 Cost function (:code:`cost_func_type`)
 --------------------------------------
 
-This sets the cost function to be used for the given data. Current cost
-functions supported are:
+This sets the cost functions to be used for the given data.
+Choosing multiple options via a new line seperated list will result in all
+combinations being benchmarked.
+Currently supported cost functions are:
 
 * ``nlls`` - This sets the cost function to be non-weighted non-linear least squares, :class:`~fitbenchmarking.cost_func.nlls_cost_func.NLLSCostFunc`.
 

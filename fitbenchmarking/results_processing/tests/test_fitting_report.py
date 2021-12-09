@@ -1,5 +1,5 @@
 '''
-Test support page
+Test fitting_report
 '''
 from __future__ import (absolute_import, division, print_function)
 
@@ -15,15 +15,16 @@ import fitbenchmarking
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
-from fitbenchmarking.results_processing import support_page
+from fitbenchmarking.results_processing import fitting_report
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
 
 class CreateTests(unittest.TestCase):
     '''
-    Create tests for support page
+    Create tests for fitting_report
     '''
+
     def setUp(self):
         self.options = Options()
         cost_func = []
@@ -34,14 +35,16 @@ class CreateTests(unittest.TestCase):
             cost_func.append(NLLSCostFunc(problem))
 
         minimizers = ['min_a', 'min_b', 'min_c']
-        self.results = [[FittingResult(options=self.options,
-                                       cost_func=c,
-                                       jac=Scipy(c),
-                                       hess=None,
-                                       initial_params=[],
-                                       params=[],
-                                       minimizer=m)
-                         for m in minimizers]
+        self.results = [FittingResult(options=self.options,
+                                      cost_func=c,
+                                      jac=Scipy(c),
+                                      hess=None,
+                                      initial_params=[],
+                                      params=[],
+                                      minimizer=m,
+                                      chi_sq=1.0001,
+                                      runtime=2.0002)
+                        for m in minimizers
                         for c in cost_func]
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
@@ -51,13 +54,12 @@ class CreateTests(unittest.TestCase):
         """
         Tests that the create function creates a set of unique files.
         """
-        support_page.create(results_per_test=self.results,
-                            support_pages_dir=self.dir.name,
-                            options=self.options)
+        fitting_report.create(results=self.results,
+                              support_pages_dir=self.dir.name,
+                              options=self.options)
 
-        file_names = sorted([r.support_page_link
-                             for pr in self.results
-                             for r in pr])
+        file_names = sorted([r.fitting_report_link
+                             for r in self.results])
 
         unique_names = sorted(list(set(file_names)))
 
@@ -77,18 +79,19 @@ class CreateProbGroupTests(unittest.TestCase):
         problem.equation = 'equation!'
         problem.starting_values = [{'x': 1}]
 
-        minimizers = ['min_a', 'min_b', 'min_c']
+        minimizer = 'min_a'
         cost_func = NLLSCostFunc(problem)
         jac = Scipy(cost_func)
         jac.method = "2-point"
-        self.results = [FittingResult(options=self.options,
-                                      cost_func=cost_func,
-                                      jac=jac,
-                                      hess=None,
-                                      initial_params=[],
-                                      params=[],
-                                      minimizer=m)
-                        for m in minimizers]
+        self.result = FittingResult(options=self.options,
+                                    cost_func=cost_func,
+                                    jac=jac,
+                                    hess=None,
+                                    initial_params=[],
+                                    params=[],
+                                    minimizer=minimizer,
+                                    chi_sq=1.0001,
+                                    runtime=2.0002)
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         self.dir = TemporaryDirectory(dir=root)
@@ -97,26 +100,23 @@ class CreateProbGroupTests(unittest.TestCase):
         """
         Tests that files are created for each result.
         """
-        support_page.create_prob_group(prob_results=self.results,
-                                       support_pages_dir=self.dir.name,
-                                       options=self.options)
-        self.assertTrue(all(
-            os.path.exists(r.support_page_link) for r in self.results))
+        fitting_report.create_prob_group(result=self.result,
+                                         support_pages_dir=self.dir.name,
+                                         options=self.options)
+        self.assertTrue(os.path.exists(self.result.fitting_report_link))
 
     def test_file_name(self):
         """
         Tests that the filenames are in the expected form.
         """
-        support_page.create_prob_group(prob_results=self.results,
-                                       support_pages_dir=self.dir.name,
-                                       options=self.options)
-        file_names = [r.support_page_link for r in self.results]
-        expected = [os.path.join(os.path.relpath(self.dir.name), f)
-                    for f in ['prob_a_min_a.html',
-                              'prob_a_min_b.html',
-                              'prob_a_min_c.html']]
+        fitting_report.create_prob_group(result=self.result,
+                                         support_pages_dir=self.dir.name,
+                                         options=self.options)
+        file_name = self.result.fitting_report_link
+        expected = os.path.join(os.path.relpath(self.dir.name),
+                                'prob_a_nllscostfunc_min_a.html')
 
-        self.assertListEqual(file_names, expected)
+        self.assertEqual(file_name, expected)
 
 
 class GetFigurePathsTests(unittest.TestCase):
@@ -147,7 +147,7 @@ class GetFigurePathsTests(unittest.TestCase):
         """
         self.result.figure_link = 'some_link'
         self.result.start_figure_link = 'other_link'
-        figure_link, start_link = support_page.get_figure_paths(self.result)
+        figure_link, start_link = fitting_report.get_figure_paths(self.result)
         self.assertEqual(figure_link, os.path.join('figures', 'some_link'))
         self.assertEqual(start_link, os.path.join('figures', 'other_link'))
 
@@ -157,7 +157,7 @@ class GetFigurePathsTests(unittest.TestCase):
         """
         self.result.figure_link = ''
         self.result.start_figure_link = ''
-        figure_link, start_link = support_page.get_figure_paths(self.result)
+        figure_link, start_link = fitting_report.get_figure_paths(self.result)
         self.assertEqual(figure_link, '')
         self.assertEqual(start_link, '')
 

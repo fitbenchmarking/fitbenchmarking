@@ -13,6 +13,8 @@ from fitbenchmarking.cost_func.hellinger_nlls_cost_func import\
 from fitbenchmarking.cost_func.poisson_cost_func import\
     PoissonCostFunc
 from fitbenchmarking.hessian.analytic_hessian import Analytic
+from fitbenchmarking.hessian.numdifftools_hessian import Numdifftools
+from fitbenchmarking.hessian.scipy_hessian import Scipy
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic\
     as JacobianClass
 from fitbenchmarking.hessian.hessian_factory import create_hessian
@@ -127,72 +129,93 @@ class TestHessianClass(TestCase):
         self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.params = [6, 0.1]
-        self.fitting_problem.options.cost_func_type = "nlls"
+        self.actual_hessian = H_ls(x=self.fitting_problem.data_x,
+                                   p=self.params)
         self.cost_func = NLLSCostFunc(self.fitting_problem)
-        self.jacobian = JacobianClass(self.cost_func)
+        self.jacobian = JacobianClass(self.fitting_problem)
+        self.hessian = Analytic(self.fitting_problem, self.jacobian)
 
     def test_analytic_nlls(self):
         """
         Test analytic Hessian
         """
-        hes = Analytic(self.cost_func, self.jacobian)
-        eval_result, _ = hes.eval(params=self.params)
-        r_nlls = self.fitting_problem.data_y - \
-            f_ls(self.fitting_problem.data_x, self.params[0], self.params[1])
-        actual_hessian = np.sum(
-            r_nlls*grad2_r_nlls(self.fitting_problem.data_x, self.params), 2)
+        self.cost_func.jacobian = self.jacobian
+        self.cost_func.hessian = self.hessian
+        eval_result, _ = self.cost_func.hes_res(params=self.params)
+        actual_hessian = grad2_r_nlls(self.fitting_problem.data_x,
+                                      self.params)
+
         self.assertTrue(np.isclose(actual_hessian, eval_result).all())
 
     def test_analytic_weighted_nlls(self):
         """
         Test analytic Hessian for weighted_nlls
         """
-        self.fitting_problem.options.cost_func_type = "weighted_nlls"
         e = np.array([1, 2, 1, 3, 1])
         self.fitting_problem.data_e = e
         self.cost_func = WeightedNLLSCostFunc(self.fitting_problem)
-        self.jacobian = JacobianClass(self.cost_func)
-        hes = Analytic(self.cost_func, self.jacobian)
-        eval_result, _ = hes.eval(params=self.params)
-        r_weighted_nlls = (self.fitting_problem.data_y -
-                           f_ls(self.fitting_problem.data_x, self.params[0],
-                                self.params[1]))/e
-        actual_hessian = np.sum(
-            r_weighted_nlls*grad2_r_weighted_nlls(self.fitting_problem.data_x,
-                                                  e, self.params), 2)
+        self.cost_func.jacobian = self.jacobian
+        self.cost_func.hessian = self.hessian
+        eval_result, _ = self.cost_func.hes_res(params=self.params)
+        actual_hessian = grad2_r_weighted_nlls(
+            self.fitting_problem.data_x, e, self.params)
+
         self.assertTrue(np.isclose(actual_hessian, eval_result).all())
 
     def test_analytic_hellinger_nlls(self):
         """
         Test analytic Hessian for hellinger_nlls
         """
-        self.fitting_problem.options.cost_func_type = "hellinger_nlls"
         self.cost_func = HellingerNLLSCostFunc(self.fitting_problem)
-        self.jacobian = JacobianClass(self.cost_func)
-        hes = Analytic(self.cost_func, self.jacobian)
-        eval_result, _ = hes.eval(params=self.params)
-        r_hellinger = np.sqrt(self.fitting_problem.data_y) - np.sqrt(
-            f_ls(self.fitting_problem.data_x, self.params[0], self.params[1]))
-        actual_hessian = np.sum(
-            r_hellinger*grad2_r_hellinger(self.fitting_problem.data_x), 2)
+        self.cost_func.jacobian = self.jacobian
+        self.cost_func.hessian = self.hessian
+        eval_result, _ = self.cost_func.hes_res(params=self.params)
+        actual_hessian = grad2_r_hellinger(self.fitting_problem.data_x)
+
         self.assertTrue(np.isclose(actual_hessian, eval_result).all())
 
     def test_poisson(self):
         """
         Test analytic Hessian for poisson cost function
         """
-        self.fitting_problem.options.cost_func_type = "poisson"
         self.fitting_problem.function = f_poisson
         self.fitting_problem.jacobian = J_poisson
         self.fitting_problem.hessian = H_poisson
         self.cost_func = PoissonCostFunc(self.fitting_problem)
-        self.jacobian = JacobianClass(self.cost_func)
-        hes = Analytic(self.cost_func, self.jacobian)
-        eval_result, _ = hes.eval(params=self.params)
-        actual_hessian = np.sum(grad2_r_poisson(self.fitting_problem.data_x,
-                                                self.fitting_problem.data_y,
-                                                self.params), 2)
+        self.cost_func.jacobian = self.jacobian
+        self.cost_func.hessian = self.hessian
+        eval_result, _ = self.cost_func.hes_res(params=self.params)
+        actual_hessian = grad2_r_poisson(self.fitting_problem.data_x,
+                                         self.fitting_problem.data_y,
+                                         self.params)
+
         self.assertTrue(np.isclose(actual_hessian, eval_result).all())
+
+    def test_scipy_eval(self):
+        """
+        Test whether Scipy evaluation is correct
+        """
+        for method in ['2-point',
+                       '3-point',
+                       'cs']:
+            hes = Scipy(self.cost_func.problem, self.jacobian)
+            hes.method = method
+            eval_result = hes.eval(params=self.params)
+            self.assertTrue(np.isclose(self.actual_hessian, eval_result).all())
+
+    def test_numdifftools(self):
+        """
+        Test whether numdifftools evaluation is correct
+        """
+        for method in ['central',
+                       'forward',
+                       'backward',
+                       'complex',
+                       'multicomplex']:
+            hes = Numdifftools(self.cost_func.problem, self.jacobian)
+            hes.method = method
+            eval_result = hes.eval(params=self.params)
+            self.assertTrue(np.isclose(self.actual_hessian, eval_result).all())
 
     def test_analytic_raise_error(self):
         """
@@ -201,7 +224,7 @@ class TestHessianClass(TestCase):
         """
         self.fitting_problem.hessian = None
         with self.assertRaises(exceptions.NoHessianError):
-            Analytic(self.cost_func, self.jacobian)
+            Analytic(self.cost_func.problem, self.jacobian)
 
 
 class TestHesCostFunc(TestCase):
@@ -223,23 +246,52 @@ class TestHesCostFunc(TestCase):
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.params = [6, 0.1]
         self.cost_func = NLLSCostFunc(self.fitting_problem)
-        self.jacobian = JacobianClass(self.cost_func)
+        self.cost_func.jacobian = JacobianClass(self.cost_func.problem)
+
         J_eval = -1*J_ls(x=self.fitting_problem.data_x,
                          p=self.params)
         r_nlls = self.fitting_problem.data_y - \
             f_ls(self.fitting_problem.data_x, self.params[0], self.params[1])
-        actual_hessian = np.sum(
-            r_nlls*grad2_r_nlls(self.fitting_problem.data_x, self.params), 2)
-        self.actual = actual_hessian + np.matmul(J_eval.T, J_eval)
+        actual_hessian = grad2_r_nlls(self.fitting_problem.data_x, self.params)
+        self.actual = 2.0 * (np.matmul(J_eval.T, J_eval)
+                             + np.matmul(actual_hessian, r_nlls))
+
+    def test_scipy_eval(self):
+        """
+        Test whether Scipy evaluation is correct
+        """
+        for method in ['2-point',
+                       '3-point',
+                       'cs']:
+            hes = Scipy(self.cost_func.problem, self.cost_func.jacobian)
+            hes.method = method
+            self.cost_func.hessian = hes
+            eval_result = self.cost_func.hes_cost(params=self.params)
+            self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+    def test_numdifftools(self):
+        """
+        Test whether numdifftools evaluation is correct
+        """
+        for method in ['central',
+                       'forward',
+                       'backward',
+                       'complex',
+                       'multicomplex']:
+            hes = Numdifftools(self.cost_func.problem, self.cost_func.jacobian)
+            hes.method = method
+            self.cost_func.hessian = hes
+            eval_result = self.cost_func.hes_cost(params=self.params)
+            self.assertTrue(np.isclose(self.actual, eval_result).all())
 
     def test_analytic_cutest(self):
         """
         Test analytic hessian
         """
         self.fitting_problem.format = "cutest"
-        hes = Analytic(self.cost_func, self.jacobian)
-        self.fitting_problem.hes = hes
-        eval_result = hes.eval_cost(params=self.params)
+        self.cost_func.hessian = Analytic(self.cost_func.problem,
+                                          self.cost_func.jacobian)
+        eval_result = self.cost_func.hes_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
 

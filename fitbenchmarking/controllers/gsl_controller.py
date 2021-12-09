@@ -84,7 +84,7 @@ class GSLController(Controller):
         :return: result from jac.eval
         :rtype: numpy array
         """
-        return self.jacobian.eval(p)
+        return self.cost_func.jac_res(p)
 
     def _fdf(self, p, data=None):
         """
@@ -98,7 +98,7 @@ class GSLController(Controller):
         :rtype: (numpy array, numpy array)
         """
         f = self.cost_func.eval_r(p)
-        df = self.jacobian.eval(p)
+        df = self.cost_func.jac_res(p)
         return f, df
 
     def _chi_squared(self, p, data=None):
@@ -125,8 +125,7 @@ class GSLController(Controller):
         :return: jacobian approximation for cost_func.eval_cost
         :rtype: numpy array
         """
-        j = self.jacobian.eval_cost(p)
-        return j
+        return self.cost_func.jac_cost(p)
 
     def _chi_squared_fdf(self, p, data=None):
         """

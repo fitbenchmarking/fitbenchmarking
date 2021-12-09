@@ -4,23 +4,22 @@
 Jacobian Options
 ################
 
-The Jacobian section allows you to control which methods for computing Jacobians the software uses.  
+The Jacobian section allows you to control which methods for computing Jacobians the software uses.
 
 Analytic (:code:`analytic`)
 ---------------------------
 
 Analytic Jacobians can only be used for specific :ref:`problem_def`. Currently
-the supported formats are:
+the supported formats are cutest and NIST. The only option is:
 
-* ``cutest``
-* ``NIST``
-  
-Default is ``cutest``
+* ``default`` - use the analytic derivative provided by a supported format.
+
+Default is ``default``
 
 .. code-block:: rst
 
     [JACOBIAN]
-    analytic: cutest
+    analytic: default
 
 .. _scipy-jac:
 
@@ -62,7 +61,7 @@ Default is ``default``
 
     [JACOBIAN]
     default: default
-    
+
 .. _numdifftools-jac:
 
 Numdifftools (:code:`numdifftools`)
@@ -76,7 +75,7 @@ The supported options are:
 * ``central`` - central differencing.  Almost as accurate as complex, but with no restriction on the type of function.
 * ``forward`` - forward differencing.
 * ``backward`` - backward differencing.
-* ``complex`` - based on the complex-step derivative method of `Lyness and Moler <http://epubs.siam.org/doi/abs/10.1137/0704019>`__.  Usually the most accurate, provided the function is analytic.  
+* ``complex`` - based on the complex-step derivative method of `Lyness and Moler <http://epubs.siam.org/doi/abs/10.1137/0704019>`__.  Usually the most accurate, provided the function is analytic.
 * ``multicomplex`` - extends complex method using multicomplex numbers. (see, e.g., `Lantoine, Russell, Dargent (2012) <https://dl.acm.org/doi/10.1145/2168773.2168774>`__).
 
 Default is ``central``.

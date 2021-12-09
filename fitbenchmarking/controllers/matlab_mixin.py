@@ -6,7 +6,9 @@ try:
     from tempfile import TemporaryDirectory
 except ImportError:
     from backports.tempfile import TemporaryDirectory
+
 import os
+
 try:
     import dill
     import_success = True
@@ -16,6 +18,8 @@ except ImportError:
 from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
+# If we re-implement caching, make sure the cache is cleared by the
+# matlab controllers to avoid unwanted errors.
 class MatlabMixin:
     """
     Mixin class for matlab fitting software controllers
@@ -51,11 +55,3 @@ class MatlabMixin:
         eng.evalc('fp.close()')
 
         return eng.workspace['fm']
-
-    def clear_cached_values(self):
-        """
-        Clear cached values incase stored values are of type
-        matlab array as this causes a Python error
-        """
-        self.cost_func.cache_cost_x = {'params': None, 'value': None}
-        self.cost_func.cache_rx = {'params': None, 'value': None}

@@ -2,7 +2,6 @@
 Implements the base class for the Jacobian.
 """
 from abc import ABCMeta, abstractmethod
-from numpy import array_equal
 
 
 class Jacobian:
@@ -14,16 +13,15 @@ class Jacobian:
     # Problem formats that are incompatible with certain Jacobians
     INCOMPATIBLE_PROBLEMS = {}
 
-    def __init__(self, cost_func):
+    def __init__(self, problem):
         """
         Base class for the Jacobians
 
-        :param cost_func: Cost function object selected from options.
-        :type cost_func: subclass of
-                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+        :param problem: The parsed problem.
+        :type problem:
+        :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
         """
-        self.cost_func = cost_func
-        self.problem = self.cost_func.problem
+        self.problem = problem
 
         self.use_default_jac = False
         self._method = None
@@ -31,48 +29,16 @@ class Jacobian:
     @abstractmethod
     def eval(self, params, **kwargs):
         """
-        Evaluates Jacobian of the model
+        Evaluates Jacobian of the model, :math:`\\nabla_p f(x,p)`,
+        at the point given by the parameters.
 
-        :param params: The parameter values to find the Jacobian at
+        :param params: The parameter values at which to evaluate the Jacobian
         :type params: list
 
         :return: Computed Jacobian
         :rtype: numpy array
         """
         raise NotImplementedError
-
-    @abstractmethod
-    def eval_cost(self, params, **kwargs):
-        """
-        Evaluates Jacobian of the cost function
-
-        :param params: The parameter values to find the Jacobian at
-        :type params: list
-
-        :return: Computed derivative of the cost function
-        :rtype: numpy array
-        """
-        raise NotImplementedError
-
-    def cached_func_values(self, cached_dict, eval_model, params, **kwargs):
-        """
-        Computes function values using cached or function evaluation
-
-        :param cached_dict: Cached function values
-        :type cached_dict: dict
-        :param eval_modelunc: Function to find the Jacobian for
-        :type eval_modelunc: Callable
-        :param params: The parameter values to find the Jacobian at
-        :type params: list
-
-        :return: Function evaluation
-        :rtype: numpy array
-        """
-        if array_equal(params, cached_dict['params']):
-            value = cached_dict['value']
-        else:
-            value = eval_model(params, **kwargs)
-        return value
 
     @property
     def method(self):

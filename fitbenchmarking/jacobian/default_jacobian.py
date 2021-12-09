@@ -1,27 +1,27 @@
 """
 Module which uses the minimizer's default jacobian
 """
-from fitbenchmarking.jacobian.base_jacobian import Jacobian
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
 
-# pylint: disable=useless-super-delegation
-class Default(Jacobian):
+class Default(Scipy):
     """
     Use the minimizer's jacobian/derivative approximation
     """
 
-    def __init__(self, cost_func):
-        super().__init__(cost_func)
+    def __init__(self, problem):
+        super().__init__(problem)
         self.use_default_jac = True
 
     def eval(self, params, **kwargs):
         """
-        This should not be called?
-        """
-        raise NotImplementedError
+        Evaluates Jacobian of problem.eval_model
 
-    def eval_cost(self, params, **kwargs):
+        :param params: The parameter values to find the Jacobian at
+        :type params: list
+
+        :return: Approximation of the Jacobian
+        :rtype: numpy array
         """
-        This should not be called?
-        """
-        raise NotImplementedError
+        self.method = "2-point"
+        return super().eval(params, **kwargs)

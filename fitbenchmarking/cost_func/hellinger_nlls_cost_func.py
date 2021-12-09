@@ -1,7 +1,7 @@
 """
 Implements the root non-linear least squares cost function
 """
-from numpy import sqrt, ravel
+from numpy import array, matmul, sqrt, ravel
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
@@ -26,26 +26,11 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
 
     """
 
-    def __init__(self, problem):
-        """
-        Initialise the root non-linear least squares cost function class
-
-        :param problem: The parsed problem
-        :type problem:
-                :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
-
-        """
-        # Problem: The problem object from parsing
-        super().__init__(problem)
-        #: *dict*
-        #: Container cached residual evaluation
-        self.cache_rx = {'params': None, 'value': None}
-
     def eval_r(self, params, **kwargs):
         """
-        Calculate residuals
+        Calculate the residuals, :math:`\\sqrt{y_i} - \\sqrt{f(x_i, p)}`
 
-        :param params: The parameters to calculate residuals for
+        :param params: The parameters, :math:`p`, to calculate residuals for
         :type params: list
 
         :return: The residuals for the datapoints at the given parameters
@@ -60,8 +45,46 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         result = sqrt(y) - sqrt(self.problem.eval_model(params=params, x=x))
 
         # Flatten in case of a vector function
-        result = ravel(result)
+        return ravel(result)
 
-        self.cache_rx['params'] = params
-        self.cache_rx['value'] = result
-        return result
+    def jac_res(self, params, **kwargs):
+        """
+        Uses the Jacobian of the model to evaluate the Jacobian of the
+        cost function residual, :math:`\\nabla_p r(x,y,p)`, at the
+        given parameters.
+
+        :param params: The parameters at which to calculate Jacobians
+        :type params: list
+
+        :return: evaluated Jacobian of the residual at each x, y pair
+        :rtype: a list of 1D numpy arrays
+        """
+        x = kwargs.get("x", self.problem.data_x)
+
+        j = self.jacobian.eval(params, **kwargs)
+        return - j / (2 * sqrt(self.problem.eval_model(params, x=x)[:, None]))
+
+    def hes_res(self, params, **kwargs):
+        """
+        Uses the Hessian of the model to evaluate the Hessian of the
+        cost function residual, :math:`\\nabla_p^2 r(x,y,p)`, at the
+        given parameters.
+
+        :param params: The parameters at which to calculate Hessians
+        :type params: list
+
+        :return: evaluated Hessian and Jacobian of the residual at
+        each x, y pair
+        :rtype: tuple(list of 2D numpy arrays, list of 1D numpy arrays)
+        """
+        x = kwargs.get("x", self.problem.data_x)
+
+        f = self.problem.eval_model(params, x=x)
+        jac = self.jacobian.eval(params, **kwargs)
+        hes = self.hessian.eval(params, **kwargs)
+
+        for i in range(len(x)):
+            jac_i = array([jac[i]])
+            hes[:, :, i] = matmul(jac_i.T, jac_i) / (4 * f[i] ** (3/2)) \
+                - hes[:, :, i] / (2 * f[i] ** (1/2))
+        return hes, self.jac_res(params, **kwargs)
