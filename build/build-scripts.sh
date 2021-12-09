@@ -57,7 +57,7 @@ cd $SIFDECODE
 printf "6\n2\n6\n" > sifdecode.input 
 printf "nny" >> sifdecode.input
 ./install_sifdecode  < sifdecode.input
-cd  $CUTEST
+cd $CUTEST
 printf "6\n2\n6\n2\n8\n" > cutest.input
 printf "nnydn" >> cutest.input
 ./install_cutest < cutest.input
@@ -89,19 +89,19 @@ rm mantid*.xz
 sudo apt-get install -y ccache
 ccache --max-size=20G
 
-mkdir -p /opt/Mantid
+mkdir -p Mantid
 
-cd /opt/Mantid
+cd Mantid
 cmake ${HERE}/mantid-6.0.0-Source -DENABLE_MANTIDPLOT=OFF
 make
 
 export VIRTUAL_ENV=$OLD_VENV
 export PATH=$OLD_PATH
 unset OLD_PATH
-export PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib:/opt/Mantid/bin
+export PYTHONPATH=$PYTHONPATH:${HERE}/Mantid/lib:${HERE}/Mantid/bin
 pip install IPython six python-dateutil pyyaml h5py
 export HDF5_DISABLE_VERSION_CHECK=2
-/opt/Mantid/bin/mantidpython -m  mantid.simpleapi || echo "expected segfault on first run"
+${HERE}/Mantid/bin/mantidpython -m  mantid.simpleapi || echo "expected segfault on first run"
 
 cd $HERE
 

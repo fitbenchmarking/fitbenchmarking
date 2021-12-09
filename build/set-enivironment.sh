@@ -17,5 +17,8 @@ export MYARCH="pc64.lnx.gfo"
 export PYCUTEST_CACHE=${CUTEST_DIR}/pycutest_cache/
 export PYTHONPATH="${PYCUTEST_CACHE}:${PYTHONPATH}"
 # Mantid
-export PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib:/opt/Mantid/bin
+export PYTHONPATH=$PYTHONPATH:${HERE}/Mantid/lib:${HERE}/Mantid/bin
 export HDF5_DISABLE_VERSION_CHECK=2
+python3 -m venv $VIRTUAL_ENV
+# Matlab
+export PATH="$PATH:${HERE}/Matlab/R2021a/bin"
