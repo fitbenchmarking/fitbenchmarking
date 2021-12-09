@@ -4,7 +4,6 @@ Functions that create the tables, support pages, figures, and indexes.
 import inspect
 import os
 import re
-from shutil import copy2
 from typing import Dict, List, Optional, Set, Union
 
 from jinja2 import Environment, FileSystemLoader
@@ -45,13 +44,6 @@ def save_results(options, results, group_name, failed_problems,
     """
     group_dir, supp_dir, fig_dir, local_css_dir = \
         create_directories(options, group_name)
-
-    # copy the template css files into a subfolder of results
-    root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    template_dir = os.path.join(root, 'templates')
-    local_css_dir = os.path.join(options.results_dir, 'css')
-    for css_file in ["main_style", "custom_style", "table_style"]:
-        copy2(os.path.join(template_dir, css_file + ".css"), local_css_dir)
 
     best_results, results_dict = preprocess_data(results)
 
