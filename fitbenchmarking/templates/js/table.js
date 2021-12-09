@@ -19,7 +19,7 @@ function _adjust_colspan(header, increment) {
     header.attr('colspan', new_colspan);
 
     // Hide the header if the sub-headers are all hidden
-    if (new_colspan == 0) {
+    if (new_colspan == 0 || isNaN(new_colspan)) {
         header.hide();
     } else {
         header.show();
