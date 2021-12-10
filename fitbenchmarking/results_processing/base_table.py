@@ -306,13 +306,20 @@ class Table:
         table = self.create_pandas_data_frame(html=True)
 
         # Format the table headers
-        cost_func_template = '<span class="cost_function_header">{0}</span>'
+        cost_func_template = '<a class="cost_function_header" ' \
+                             'href=https://fitbenchmarking.readthedocs.io/' \
+                             'en/latest/users/options/fitting_option.html' \
+                             '#cost-function-cost-func-type ' \
+                             'target="_blank">{0}</a>'
         software_template = '<a class="software_header" ' \
                             'href="https://fitbenchmarking.readthedocs.io/' \
                             'en/latest/users/options/minimizer_option.html' \
                             '#{0}" target="_blank">{0}</a>'
-        minimizer_template = '<span class="minimizer_header" col={0} ' \
-                             'title="{1}">{2}</span>'
+        minimizer_template = '<a class="minimizer_header" col={0} ' \
+                             'title="{1}"' \
+                             'href="https://fitbenchmarking.readthedocs.io/' \
+                             'en/latest/users/options/minimizer_option.html' \
+                             '#{2}" target="_blank">{3}</a>'
 
         row = next(iter(self.sorted_results.values()))
         minimizers_list = [
@@ -320,6 +327,7 @@ class Table:
              software_template.format(result.software.replace('_', '-')),
              minimizer_template.format(
                  i, self.options.minimizer_alg_type[result.minimizer],
+                 result.software.replace('_', '-'),
                  result.minimizer))
             for i, result in enumerate(row)]
         columns = pd.MultiIndex.from_tuples(minimizers_list)
