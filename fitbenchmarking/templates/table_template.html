@@ -3,10 +3,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" href="{{ css_style_sheet }}" />
-    <link rel="stylesheet" type="text/css" href="{{ table_style }}" />
     <link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
+    <link rel="stylesheet" type="text/css" href="{{ dropdown_style }}" />
+    <link rel="stylesheet" type="text/css" href="{{ table_style }}" />
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="{{ dropdown_js }}"></script>
     <script id="MathJax-script" async src="{{ mathjax }}"></script>
+    <script type="text/javascript" src="{{ table_js }}"></script>
     <head>
         <title>Fitbenchmark Results Table</title>
     </head>
@@ -33,7 +37,13 @@
                                 {{ table_format }}
                             </p>
                         {% endif %}
-                        
+                        <center>
+                            <div>
+                                {{ problem_dropdown }}
+                                {{ minimizer_dropdown }}
+                            </div>
+                        </center>
+
                         <h3>
                             Key:
                         </h3>

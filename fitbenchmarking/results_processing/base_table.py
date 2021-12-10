@@ -306,19 +306,30 @@ class Table:
         table = self.create_pandas_data_frame(html=True)
 
         # Format the table headers
-        link_template = '<a href="https://fitbenchmarking.readthedocs.io/'\
-                        'en/latest/users/options/minimizer_option.html#'\
-                        '{0}" target="_blank">{0}</a>'
-        minimizer_template = '<span title="{0}">{1}</span>'
+        cost_func_template = '<a class="cost_function_header" ' \
+                             'href=https://fitbenchmarking.readthedocs.io/' \
+                             'en/latest/users/options/fitting_option.html' \
+                             '#cost-function-cost-func-type ' \
+                             'target="_blank">{0}</a>'
+        software_template = '<a class="software_header" ' \
+                            'href="https://fitbenchmarking.readthedocs.io/' \
+                            'en/latest/users/options/minimizer_option.html' \
+                            '#{0}" target="_blank">{0}</a>'
+        minimizer_template = '<a class="minimizer_header" col={0} ' \
+                             'title="{1}"' \
+                             'href="https://fitbenchmarking.readthedocs.io/' \
+                             'en/latest/users/options/minimizer_option.html' \
+                             '#{2}" target="_blank">{3}</a>'
 
         row = next(iter(self.sorted_results.values()))
         minimizers_list = [
-            (result.costfun_tag,
-             link_template.format(result.software.replace('_', '-')),
+            (cost_func_template.format(result.costfun_tag),
+             software_template.format(result.software.replace('_', '-')),
              minimizer_template.format(
-                 self.options.minimizer_alg_type[result.minimizer],
+                 i, self.options.minimizer_alg_type[result.minimizer],
+                 result.software.replace('_', '-'),
                  result.minimizer))
-            for result in row]
+            for i, result in enumerate(row)]
         columns = pd.MultiIndex.from_tuples(minimizers_list)
         table.columns = columns
 
@@ -329,7 +340,8 @@ class Table:
             rel_path = os.path.relpath(
                 path=b.problem_summary_page_link,
                 start=self.group_dir)
-            index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
+            index.append('<a class="problem_header" href="{0}">{1}</a>'
+                         .format(rel_path, i))
         table.index = index
 
         # Get columns where cost function changes
@@ -507,3 +519,68 @@ class Table:
         plt.savefig(fig_path, dpi=150)
 
         return os.path.relpath(fig_path, self.group_dir)
+
+    def problem_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown checklist of problem sets.
+
+        :return: HTML for a dropdown checklist of problem sets.
+        :rtype: str
+        """
+        items = [f'        <li><label class="noselect"><input '
+                 f'type="checkbox" checked=true '
+                 f'onclick="toggle_problem(\'{problem_name}\')"/> '
+                 f'{problem_name}</label></li>'
+                 for problem_name in self.sorted_results.keys()]
+
+        return self._dropdown_html("problem_dropdown", "Select Problems",
+                                   items)
+
+    def minimizer_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown checklist of minimizers.
+
+        :return: HTML for a dropdown checklist of minimizers.
+        :rtype: str
+        """
+        minimizers = [(result.software.replace('_', '-'), result.minimizer)
+                      for result in next(iter(self.sorted_results.values()))]
+        # Remove duplicates
+        minimizers = list(dict.fromkeys(minimizers))
+
+        items = [f'        <li><label class="noselect"><input '
+                 f'type="checkbox" checked=true '
+                 f'onclick="toggle_minimizer(\'{software}\', '
+                 f'\'{minimizer}\')"/> {minimizer}</label></li>'
+                 for software, minimizer in minimizers]
+
+        return self._dropdown_html("minimizer_dropdown",
+                                   "Select Minimizers", items)
+
+    @staticmethod
+    def _dropdown_html(list_id: str, selector_text: str,
+                       checklist: list) -> str:
+        """
+        Generates the HTML for a dropdown checklist. The list of items
+        must be provided to this function.
+
+        :param list_id: The ID to give the dropdown button.
+        :type list_id: str
+        :param selector_text: The text to display on the dropdown button.
+        :type selector_text: str
+        :param checklist: A list of HTML checkboxes to include in the
+        dropdown.
+        :type checklist: list
+        :return: HTML for a dropdown checklist.
+        :rtype: str
+        """
+        checklist_str = "\n".join(checklist)
+        html = f'<div id="{list_id}" class="dropdown-check-list" ' \
+               f'tabindex="100">\n' \
+               f'    <span class="anchor" onclick="show_dropdown' \
+               f'(\'{list_id}\')">{selector_text}</span>\n' \
+               '    <ul class="items">\n' \
+               f'{checklist_str}\n' \
+               '    </ul>\n' \
+               '</div>'
+        return html

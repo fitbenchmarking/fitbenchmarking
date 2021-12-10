@@ -143,6 +143,9 @@ def _create_index_page(options: Options, groups: "list[str]",
     # Copying js directory into results directory
     copy_tree(os.path.join(template_dir, "js"),
               os.path.join(options.results_dir, "js"))
+    # Copying css directory into results directory
+    copy_tree(os.path.join(template_dir, "css"),
+              os.path.join(options.results_dir, "css"))
 
     with open(output_file, "w") as fh:
         fh.write(template.render(
