@@ -45,9 +45,9 @@ function toggle_problem(problem_name) {
 * @param   {String} minimizer  The name of the minimizer as it appears in the table column header.
 */
 function toggle_minimizer(software, minimizer) {
-    var cost_function_header = $("span.cost_function_header").parent();
+    var cost_function_header = $("a.cost_function_header").parent();
     var software_header = _find_element_from_text("a.software_header", software).parent();
-    var minimizer_text = _find_element_from_text("span.minimizer_header", minimizer);
+    var minimizer_text = _find_element_from_text("a.minimizer_header", minimizer);
     var minimizer_header = minimizer_text.parent();
 
     // Toggle the minimizer header
