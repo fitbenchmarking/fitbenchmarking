@@ -129,10 +129,11 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.options.jac_num_method = {"scipy": ["3-point", "2-point"]}
         self.controller.minimizer = "general"
         loop_over_hessians.side_effect = self.mock_func_call
-        _= loop_over_jacobians(self.controller,
+        _ = loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
         self.assertEqual(loop_over_hessians.call_count, 2)
+
 
 if __name__ == "__main__":
     unittest.main()

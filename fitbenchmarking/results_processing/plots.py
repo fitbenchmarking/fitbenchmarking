@@ -244,8 +244,8 @@ class Plot:
                        x=self.x,
                        y=self.problem.eval_model(result.params, x=self.x))
         self.format_plot()
-        file = f"{result.sanitised_min_name(True)}_fit_for_{self.result.costfun_tag}"\
-               f"_{self.result.sanitised_name}.png"
+        file = f"{result.sanitised_min_name(True)}_fit_for_"\
+               f"{self.result.costfun_tag}_{self.result.sanitised_name}.png"
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
         return file

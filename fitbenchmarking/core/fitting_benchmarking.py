@@ -397,7 +397,6 @@ def loop_over_jacobians(controller, options, grabbed_output):
                         jacobian.name() if jacobian.name() else "default"
                     )
 
-
                 #######################
                 # Loops over Hessians #
                 #######################
