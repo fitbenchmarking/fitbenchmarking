@@ -47,16 +47,15 @@ def prepare_profile_data(results):
     for row in results.values():
         for cat in row.values():
             for i, result in enumerate(cat):
+                key = result.modified_minimizer_name(with_software=True)
                 if len(minimizers) <= i:
-                    minimizers.append(result.minimizer_tag)
-                    acc_dict[result.minimizer_tag] = []
-                    runtime_dict[result.minimizer_tag] = []
-                elif len(result.minimizer_tag) > len(minimizers[i]):
-                    acc_dict[result.minimizer_tag] = \
-                        acc_dict.pop(minimizers[i])
-                    runtime_dict[result.minimizer_tag] = \
-                        runtime_dict.pop(minimizers[i])
-                    minimizers[i] = result.minimizer_tag
+                    minimizers.append(key)
+                    acc_dict[key] = []
+                    runtime_dict[key] = []
+                elif len(key) > len(minimizers[i]):
+                    acc_dict[key] = acc_dict.pop(minimizers[i])
+                    runtime_dict[key] = runtime_dict.pop(minimizers[i])
+                    minimizers[i] = key
                 acc_dict[minimizers[i]].append(result.norm_acc)
                 runtime_dict[minimizers[i]].append(result.norm_runtime)
 
@@ -112,7 +111,8 @@ def plot(acc, runtime, fig_dir):
             legend_ax = 2
 
         # Plot linear performance profile
-        create_plot(ax[0], step_values, acc.keys())
+        keys = profile_plot.keys()
+        create_plot(ax[0], step_values, keys)
         ax[0].set_xlim(1, linear_upper_limit)
         ax[0].set_xticks([1, 2, 4, 6, 8, 10])
         ax[0].set_xticklabels(['$1$', '$2$', '$4$', '$6$', '$8$', '$10$'])
@@ -120,7 +120,7 @@ def plot(acc, runtime, fig_dir):
 
         if use_log_plot:
             # Plot log performance profile
-            create_plot(ax[1], step_values, acc.keys())
+            create_plot(ax[1], step_values, keys)
             ax[1].set_xlim(
                 linear_upper_limit,
                 min(max_value+1, 10000))

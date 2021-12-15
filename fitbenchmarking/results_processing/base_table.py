@@ -325,10 +325,9 @@ class Table:
         minimizers_list = [
             (cost_func_template.format(result.costfun_tag),
              software_template.format(result.software.replace('_', '-')),
-             minimizer_template.format(
-                 i, self.options.minimizer_alg_type[result.minimizer],
-                 result.software.replace('_', '-'),
-                 result.minimizer))
+             minimizer_template.format(i, result.algorithm_type,
+                                       result.software.replace('_', '-'),
+                                       result.modified_minimizer_name()))
             for i, result in enumerate(row)]
         columns = pd.MultiIndex.from_tuples(minimizers_list)
         table.columns = columns

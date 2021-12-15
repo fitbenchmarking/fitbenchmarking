@@ -40,3 +40,12 @@ class Analytic(Hessian):
         """
         x = kwargs.get("x", self.problem.data_x)
         return self.problem.hessian(x, params)
+
+    def name(self) -> str:
+        """
+        Get a name for the current status of the jacobian.
+
+        :return: A unique name for this jacobian/method combination
+        :rtype: str
+        """
+        return "analytic"

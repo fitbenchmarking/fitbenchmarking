@@ -113,30 +113,10 @@ class LoopOverHessiansTests(unittest.TestCase):
         """
         self.options.hes_method = ["analytic"]
         self.controller.minimizer = "general"
-        new_name = ['general, analytic hessian']
-        minimizer_name = "general"
-        _, new_minimizer_list = \
-            loop_over_hessians(self.controller,
+        _ = loop_over_hessians(self.controller,
                                self.options,
-                               minimizer_name,
                                self.grabbed_output)
-        assert new_minimizer_list == new_name
-
-    def test_single_no_hessian(self):
-        """
-        Test that checks that the minimizer doesn't need Hessian information
-        and the name does not have Hessian information in it
-        """
-        self.options.hes_method = ["analytic"]
-        self.controller.minimizer = "deriv_free_algorithm"
-        new_name = ['deriv_free_algorithm']
-        minimizer_name = "deriv_free_algorithm"
-        _, new_minimizer_list = \
-            loop_over_hessians(self.controller,
-                               self.options,
-                               minimizer_name,
-                               self.grabbed_output)
-        assert new_minimizer_list == new_name
+        self.assertEqual(self.controller.count, 1)
 
     @patch.object(DummyController, "check_bounds_respected")
     def test_bounds_respected_func_called(
@@ -148,11 +128,9 @@ class LoopOverHessiansTests(unittest.TestCase):
         """
         self.controller.problem.value_ranges = {'test': (0, 1)}
         self.controller.minimizer = "deriv_free_algorithm"
-        minimizer_name = "deriv_free_algorithm"
 
         _ = loop_over_hessians(self.controller,
                                self.options,
-                               minimizer_name,
                                self.grabbed_output)
         check_bounds_respected.assert_called()
 
@@ -166,11 +144,9 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.problem.value_ranges = {'test': (0, 1)}
         self.controller.minimizer = "deriv_free_algorithm"
         self.controller.flag_expected = [3]
-        minimizer_name = "deriv_free_algorithm"
 
         _ = loop_over_hessians(self.controller,
                                self.options,
-                               minimizer_name,
                                self.grabbed_output)
         check_bounds_respected.assert_not_called()
 
@@ -188,9 +164,8 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.parameter_set = 0
 
         self.controller.minimizer = "deriv_free_algorithm"
-        results, _ = loop_over_hessians(self.controller, self.options,
-                                        self.controller.minimizer,
-                                        self.grabbed_output)
+        results = loop_over_hessians(self.controller, self.options,
+                                     self.grabbed_output)
         self.assertEqual(results[0].error_flag, 6)
 
 

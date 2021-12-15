@@ -315,8 +315,7 @@ def create_plots(options, results, best_results, figures_dir):
             # If none of the fits succeeded, params could be None
             # Otherwise, add the best fit to the plot
             if best_in_cf.params is not None:
-                plot_path = plot.plot_best(best_in_cf.sanitised_min_name,
-                                           best_in_cf.params)
+                plot_path = plot.plot_best(best_in_cf)
                 best_in_cf.figure_link = plot_path
             else:
                 best_in_cf.figure_error = 'Minimizer failed to produce any ' \
@@ -335,8 +334,7 @@ def create_plots(options, results, best_results, figures_dir):
                 if not result.is_best_fit:
                     if result.params is not None:
                         cf = result.cost_func.__class__.__name__
-                        plot_path = plot_dict[cf].plot_fit(
-                            result.sanitised_min_name, result.params)
+                        plot_path = plot_dict[cf].plot_fit(result)
                         result.figure_link = plot_path
                     else:
                         result.figure_error = 'Minimizer failed to produce ' \

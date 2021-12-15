@@ -104,8 +104,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         """
         Mock function to be used instead of loop_over_hessians
         """
-        minimizer_name = args[2]
-        return [], [minimizer_name]
+        return []
 
     @patch('{}.loop_over_hessians'.format(FITTING_DIR))
     def test_single_jacobian(self, loop_over_hessians):
@@ -116,12 +115,10 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.options.jac_num_method = {"scipy": ["3-point"]}
         self.controller.minimizer = "general"
         loop_over_hessians.side_effect = self.mock_func_call
-        new_name = ['general: scipy 3-point']
-        _, new_minimizer_list = \
-            loop_over_jacobians(self.controller,
+        _ = loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
-        assert new_minimizer_list == new_name
+        loop_over_hessians.assert_called_once()
 
     @patch('{}.loop_over_hessians'.format(FITTING_DIR))
     def test_multiple_jacobian(self, loop_over_hessians):
@@ -132,30 +129,10 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.options.jac_num_method = {"scipy": ["3-point", "2-point"]}
         self.controller.minimizer = "general"
         loop_over_hessians.side_effect = self.mock_func_call
-        new_name = ['general: scipy 3-point', 'general: scipy 2-point']
-        _, new_minimizer_list = \
-            loop_over_jacobians(self.controller,
+        _= loop_over_jacobians(self.controller,
                                 self.options,
                                 self.grabbed_output)
-        assert new_minimizer_list == new_name
-
-    @patch('{}.loop_over_hessians'.format(FITTING_DIR))
-    def test_single_no_jacobian(self, loop_over_hessians):
-        """
-        Test that checks that the minimizer doesn't need Jacobian information
-        and the name does not have Jacobian information in it
-        """
-        self.options.jac_method = ["scipy"]
-        self.options.jac_num_method = {"scipy": ["3-point", "2-point"]}
-        self.controller.minimizer = "deriv_free_algorithm"
-        loop_over_hessians.side_effect = self.mock_func_call
-        new_name = ['deriv_free_algorithm']
-        _, new_minimizer_list = \
-            loop_over_jacobians(self.controller,
-                                self.options,
-                                self.grabbed_output)
-        assert new_minimizer_list == new_name
-
+        self.assertEqual(loop_over_hessians.call_count, 2)
 
 if __name__ == "__main__":
     unittest.main()
