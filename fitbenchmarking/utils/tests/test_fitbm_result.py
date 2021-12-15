@@ -5,6 +5,7 @@ from __future__ import absolute_import, division, print_function
 
 import inspect
 import os
+import textwrap
 import unittest
 
 import numpy as np
@@ -40,14 +41,14 @@ class FitbmResultTests(unittest.TestCase):
         self.params = np.array([1, 3, 4, 4])
         self.initial_params = np.array([0, 0, 0, 0])
         self.cost_func = NLLSCostFunc(self.problem)
-        self.jac = Scipy(self.cost_func)
-        self.jac.method = "2-point"
-        self.hess = AnalyticHessian(self.cost_func.problem, self.jac)
+        self.jac = 'jac1'
+        self.hess = 'hess1'
         self.result = FittingResult(
             options=self.options, cost_func=self.cost_func, jac=self.jac,
             hess=self.hess, chi_sq=self.chi_sq, runtime=self.runtime,
-            minimizer=self.minimizer, initial_params=self.initial_params,
-            params=self.params, error_flag=0)
+            minimizer=self.minimizer, software='s1',
+            initial_params=self.initial_params, params=self.params,
+            error_flag=0)
 
         self.min_chi_sq = 0.1
         self.result.min_chi_sq = self.min_chi_sq
@@ -58,26 +59,32 @@ class FitbmResultTests(unittest.TestCase):
         """
         Test that the fitting result can be printed as a readable string.
         """
-        self.assertEqual(str(self.result),
-                         "+================================+\n"
-                         "| FittingResult                  |\n"
-                         "+================================+\n"
-                         "| Cost Function | NLLSCostFunc   |\n"
-                         "+--------------------------------+\n"
-                         "| Problem       | cubic          |\n"
-                         "+--------------------------------+\n"
-                         "| Software      | None           |\n"
-                         "+--------------------------------+\n"
-                         "| Minimizer     | test_minimizer |\n"
-                         "+--------------------------------+\n"
-                         "| Jacobian      | Scipy          |\n"
-                         "+--------------------------------+\n"
-                         "| Hessian       | Analytic       |\n"
-                         "+--------------------------------+\n"
-                         "| Chi Squared   | 10             |\n"
-                         "+--------------------------------+\n"
-                         "| Runtime       | 0.01           |\n"
-                         "+--------------------------------+")
+        expected = textwrap.dedent('''\
+            +================================+
+            | FittingResult                  |
+            +================================+
+            | Cost Function | NLLSCostFunc   |
+            +--------------------------------+
+            | Problem       | cubic          |
+            +--------------------------------+
+            | Software      | s1             |
+            +--------------------------------+
+            | Minimizer     | test_minimizer |
+            +--------------------------------+
+            | Jacobian      | jac1           |
+            +--------------------------------+
+            | Hessian       | hess1          |
+            +--------------------------------+
+            | Chi Squared   | 10             |
+            +--------------------------------+
+            | Runtime       | 0.01           |
+            +--------------------------------+''')
+
+        for i, (r, e) in enumerate(zip(str(self.result).splitlines(),
+                                       expected.splitlines())):
+            if r != e:
+                print(f'Issue on line {i}:\n> {r}\n<{e}')
+        self.assertEqual(str(self.result), expected)
 
     def test_init_with_dataset_id(self):
         """
@@ -165,13 +172,49 @@ class FitbmResultTests(unittest.TestCase):
         self.result.name = 'test, name with commas'
         self.assertEqual(self.result.sanitised_name, 'test_name_with_commas')
 
-    def test_sanitised_min_name(self):
+    def test_modified_minimizer_name_no_software(self):
         """
-        Test that sanitised minimizer names are correct.
+        Test modified minimizer name is correct when not including software.
         """
-        self.result.minimizer = 'test: name with colon'
-        self.assertEqual(self.result.sanitised_min_name,
-                         'test_name_with_colon')
+        self.result.software_tag = 's1'
+        self.result.minimizer_tag = 'm1'
+        self.result.jacobian_tag = 'j1'
+        self.result.hessian_tag = 'h1'
+        self.assertEqual(self.result.modified_minimizer_name(False),
+                         'm1: j1 h1')
+
+    def test_modified_minimizer_name_with_software(self):
+        """
+        Test modified minimizer name is correct when including software.
+        """
+        self.result.software_tag = 's1'
+        self.result.minimizer_tag = 'm1'
+        self.result.jacobian_tag = 'j1'
+        self.result.hessian_tag = 'h1'
+        self.assertEqual(self.result.modified_minimizer_name(True),
+                         'm1 [s1]: j1 h1')
+
+    def test_sanitised_min_name_no_software(self):
+        """
+        Test that sanitised minimizer names are correct without software.
+        """
+        self.result.software_tag = 's1'
+        self.result.minimizer_tag = 'm1'
+        self.result.jacobian_tag = 'j1'
+        self.result.hessian_tag = 'h1'
+        self.assertEqual(self.result.sanitised_min_name(False),
+                         'm1_j1_h1')
+
+    def test_sanitised_min_name_with_software(self):
+        """
+        Test that sanitised minimizer names are correct with software.
+        """
+        self.result.software_tag = 's1'
+        self.result.minimizer_tag = 'm1'
+        self.result.jacobian_tag = 'j1'
+        self.result.hessian_tag = 'h1'
+        self.assertEqual(self.result.sanitised_min_name(True),
+                         'm1_[s1]_j1_h1')
 
 
 if __name__ == "__main__":
