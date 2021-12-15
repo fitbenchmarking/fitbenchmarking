@@ -22,8 +22,6 @@ from fitbenchmarking.core.results_output import (_extract_tags,
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
-from fitbenchmarking.jacobian.numdifftools_jacobian import Numdifftools
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -92,8 +90,7 @@ def generate_mock_results(results_directory: str):
 
     softwares = ['s1', 's2']
     minimizers = [['s1m1', 's1m2'], ['s2m1', 's2m2']]
-    jacobians = [[Scipy(p), Numdifftools(p)]
-                 for p in problems]
+    jacobians = [['j1', 'j2'] for _ in problems]
     cost_funcs = [[NLLSCostFunc(p), WeightedNLLSCostFunc(p)]
                   for p in problems]
 

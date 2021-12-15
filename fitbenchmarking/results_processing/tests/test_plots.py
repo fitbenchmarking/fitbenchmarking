@@ -12,7 +12,6 @@ except ImportError:
     from backports.tempfile import TemporaryDirectory
 
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing import plots
 from fitbenchmarking.utils.exceptions import PlottingError
@@ -34,12 +33,18 @@ class PlotTests(unittest.TestCase):
         self.prob.sorted_index = np.array([0, 1, 3, 2, 4])
         self.prob.data_y = np.array([4, 3, 5, 2, 1])
         self.prob.data_e = np.array([0.5, 0.2, 0.3, 0.1, 0.4])
-        self.prob.starting_values = [{'x': 1, 'y': 2}]
+        self.prob.starting_values = [{'p': 1.8}]
         self.prob.name = 'full name'
-        self.prob.eval_model = lambda y, x: y[0] * x + y[1]
+
+        def tmp(p, x=None, y=None):
+            if x is None:
+                x = self.prob.data_x
+            if y is None:
+                y = self.prob.data_y
+            return p + y * x + y
+        self.prob.eval_model = tmp
         cost_func = NLLSCostFunc(self.prob)
-        jac = Scipy(cost_func)
-        jac.method = "2-point"
+        jac = 'j1'
         self.fr = FittingResult(options=self.opts,
                                 cost_func=cost_func,
                                 jac=jac,
@@ -48,6 +53,7 @@ class PlotTests(unittest.TestCase):
                                 initial_params=[1.8],
                                 params=[1.2],
                                 runtime=2.0,
+                                software='s1',
                                 minimizer='fit',
                                 error_flag=1)
 
@@ -105,9 +111,10 @@ class PlotTests(unittest.TestCase):
         """
         Test that best plot creates a file.
         """
-        file_name = self.plot.plot_best('fit', [0.1, 3])
+        file_name = self.plot.plot_best(self.fr)
 
-        self.assertEqual(file_name, 'fit_fit_for_NLLSCostFunc_full_name.png')
+        self.assertEqual(file_name,
+                         'fit_[s1]_j1_fit_for_NLLSCostFunc_full_name.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 
@@ -115,9 +122,10 @@ class PlotTests(unittest.TestCase):
         """
         Test that fit plot creates a file.
         """
-        file_name = self.plot.plot_fit('fit', [8, 6.2])
+        file_name = self.plot.plot_fit(self.fr)
 
-        self.assertEqual(file_name, 'fit_fit_for_NLLSCostFunc_full_name.png')
+        self.assertEqual(file_name,
+                         'fit_[s1]_j1_fit_for_NLLSCostFunc_full_name.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 

@@ -13,8 +13,6 @@ from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
-from fitbenchmarking.jacobian.numdifftools_jacobian import Numdifftools
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing import problem_summary_page
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -85,8 +83,7 @@ def generate_mock_results(results_directory: str):
 
     softwares = ['s1', 's2']
     minimizers = [['s1m1', 's1m2'], ['s2m1', 's2m2']]
-    jacobians = [[Scipy(p), Numdifftools(p)]
-                 for p in problems]
+    jacobians = [['j1', 'j2'] for _ in problems]
     cost_funcs = [[NLLSCostFunc(p), WeightedNLLSCostFunc(p)]
                   for p in problems]
 
@@ -123,8 +120,6 @@ def generate_mock_results(results_directory: str):
                 for m, minim in enumerate(minimizers[k]):
                     jacs = jacobians[i] if minim != 's1m2' else [None]
                     for n, jac in enumerate(jacs):
-                        minim_name = f'{minim}, Jac: {n}'
-                        options.minimizer_alg_type[minim_name] = 'test'
                         results.append(FittingResult(
                             options=options,
                             cost_func=cf,
@@ -136,7 +131,7 @@ def generate_mock_results(results_directory: str):
                             chi_sq=acc[i][j][k][m][n],
                             runtime=runtime[i][j][k][m][n],
                             software=software,
-                            minimizer=minim_name,
+                            minimizer=minim,
                             error_flag=None if jac is not None else 4
                         ))
 
@@ -275,8 +270,7 @@ class GetFigurePathsTests(TestCase):
         problem.equation = 'equation!'
         problem.starting_values = [{'x': 1}]
         cost_func = NLLSCostFunc(problem)
-        jac = Scipy(cost_func)
-        jac.method = "2-point"
+        jac = 'j1'
         self.result = FittingResult(options=self.options,
                                     cost_func=cost_func,
                                     jac=jac,

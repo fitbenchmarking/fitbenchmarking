@@ -14,7 +14,6 @@ import unittest
 import fitbenchmarking
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.results_processing import fitting_report
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
@@ -37,7 +36,7 @@ class CreateTests(unittest.TestCase):
         minimizers = ['min_a', 'min_b', 'min_c']
         self.results = [FittingResult(options=self.options,
                                       cost_func=c,
-                                      jac=Scipy(c),
+                                      jac='j1',
                                       hess=None,
                                       initial_params=[],
                                       params=[],
@@ -81,14 +80,14 @@ class CreateProbGroupTests(unittest.TestCase):
 
         minimizer = 'min_a'
         cost_func = NLLSCostFunc(problem)
-        jac = Scipy(cost_func)
-        jac.method = "2-point"
+        jac = 'j1'
         self.result = FittingResult(options=self.options,
                                     cost_func=cost_func,
                                     jac=jac,
                                     hess=None,
                                     initial_params=[],
                                     params=[],
+                                    software='s1',
                                     minimizer=minimizer,
                                     chi_sq=1.0001,
                                     runtime=2.0002)
@@ -114,7 +113,7 @@ class CreateProbGroupTests(unittest.TestCase):
                                          options=self.options)
         file_name = self.result.fitting_report_link
         expected = os.path.join(os.path.relpath(self.dir.name),
-                                'prob_a_nllscostfunc_min_a.html')
+                                'prob_a_nllscostfunc_min_a_[s1]_j1.html')
 
         self.assertEqual(file_name, expected)
 
@@ -131,8 +130,7 @@ class GetFigurePathsTests(unittest.TestCase):
         problem.equation = 'equation!'
         problem.starting_values = [{'x': 1}]
         cost_func = NLLSCostFunc(problem)
-        jac = Scipy(cost_func)
-        jac.method = "2-point"
+        jac = 'j1'
         self.result = FittingResult(options=self.options,
                                     cost_func=cost_func,
                                     jac=jac,

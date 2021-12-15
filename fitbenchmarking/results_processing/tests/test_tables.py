@@ -110,7 +110,7 @@ def generate_mock_results():
             hess = None
             r = FittingResult(options=options,
                               cost_func=cost_func,
-                              jac=jac,
+                              jac=jac.name(),
                               hess=hess,
                               initial_params=starting_values,
                               params=params_in[i][j],
@@ -120,12 +120,11 @@ def generate_mock_results():
                               software=software,
                               minimizer=options.minimizers[software][j],
                               error_flag=error_in[i][j],
+                              algorithm_type='all, ls',
                               )
             r.fitting_report_link = link_in[i][j]
             r.problem_summary_page_link = 'link0'
             results.append(r)
-            options.minimizer_alg_type[options.minimizers[software]
-                                       [j]] = 'all, ls'
         results_out.extend(results)
     best_results, results_out = preprocess_data(results_out)
     return best_results, results_out, options

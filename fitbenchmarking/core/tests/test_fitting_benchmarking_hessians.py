@@ -10,6 +10,7 @@ from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.core.fitting_benchmarking import loop_over_hessians
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import output_grabber
 from fitbenchmarking.utils.options import Options
@@ -102,6 +103,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.minimizers = ["deriv_free_algorithm", "general"]
         self.cost_func = make_cost_function(minimizers=self.minimizers)
         self.problem = self.cost_func.problem
+        self.cost_func.jacobian = Scipy(self.problem)
         self.controller = DummyController(cost_func=self.cost_func)
         self.options = self.problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
@@ -155,17 +157,18 @@ class LoopOverHessiansTests(unittest.TestCase):
         """
         Test that the correct flag is set when the max_runtime is exceeded.
         """
-        self.cost_func = make_cost_function(minimizers=self.minimizers,
-                                            max_runtime=0.1)
-        self.cost_func.problem.timer.total_elapsed_time = 5
-        self.controller = DummyController(cost_func=self.cost_func)
-        self.options = self.cost_func.problem.options
-        self.grabbed_output = output_grabber.OutputGrabber(self.options)
-        self.controller.parameter_set = 0
+        cost_func = make_cost_function(minimizers=self.minimizers,
+                                       max_runtime=0.1)
+        cost_func.jacobian = Scipy(cost_func.problem)
+        cost_func.problem.timer.total_elapsed_time = 5
+        controller = DummyController(cost_func=cost_func)
+        options = cost_func.problem.options
+        grabbed_output = output_grabber.OutputGrabber(options)
+        controller.parameter_set = 0
 
-        self.controller.minimizer = "deriv_free_algorithm"
-        results = loop_over_hessians(self.controller, self.options,
-                                     self.grabbed_output)
+        controller.minimizer = "deriv_free_algorithm"
+        results = loop_over_hessians(controller, options,
+                                     grabbed_output)
         self.assertEqual(results[0].error_flag, 6)
 
 
