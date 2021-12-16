@@ -465,11 +465,16 @@ def loop_over_hessians(controller, options, grabbed_output):
             # Perform the fit a number of times specified by num_runs
             chi_sq, runtime = perform_fit(controller, options, grabbed_output)
 
+            jac_str = cost_func.jacobian.name() \
+                if minimizer in controller.jacobian_enabled_solvers else None
+            hess_str = cost_func.hessian.name() \
+                if cost_func.hessian is not None \
+                and minimizer in controller.hessian_enabled_solvers \
+                else None
             result_args = {'options': options,
                            'cost_func': cost_func,
-                           'jac': cost_func.jacobian.name(),
-                           'hess': cost_func.hessian.name()
-                           if cost_func.hessian is not None else "",
+                           'jac': jac_str,
+                           'hess': hess_str,
                            'chi_sq': chi_sq,
                            'runtime': runtime,
                            'software': controller.software,

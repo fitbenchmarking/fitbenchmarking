@@ -289,7 +289,8 @@ class Table:
         """
         str_results = self.get_str_dict(html)
         row = next(iter(self.sorted_results.values()))
-        minimizers_list = [(r.software, r.minimizer) for r in row]
+        minimizers_list = [(r.software, r.modified_minimizer_name(False))
+                           for r in row]
         columns = pd.MultiIndex.from_tuples(minimizers_list)
         table = pd.DataFrame.from_dict(str_results,
                                        orient='index',
