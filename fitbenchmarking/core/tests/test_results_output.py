@@ -468,8 +468,8 @@ class ExtractTagsTests(unittest.TestCase):
                              col_sorting=['hessian'],
                              cat_sorting=['costfun', 'software', 'minimizer'])
 
-        self.assertDictEqual(tags, {'row': '.+:p0',
-                                    'col': '.+',
+        self.assertDictEqual(tags, {'row': '[^:]*:p0',
+                                    'col': '[^:]*',
                                     'cat': 'cf0:s0:m0'})
 
 
@@ -482,14 +482,14 @@ class FindMatchingTagsTests(unittest.TestCase):
         """
         Test that the matching tags include all correct tags.
         """
-        matching = _find_matching_tags('cf0:.+:p0', ['cf0:j0:p0',
-                                                     'cf0:j0:p1',
-                                                     'cf0:j1:p0',
-                                                     'cf0:j1:p1',
-                                                     'cf1:j0:p0',
-                                                     'cf1:j0:p1',
-                                                     'cf1:j1:p0',
-                                                     'cf1:j1:p1'])
+        matching = _find_matching_tags('cf0:[^:]*:p0', ['cf0:j0:p0',
+                                                        'cf0:j0:p1',
+                                                        'cf0:j1:p0',
+                                                        'cf0:j1:p1',
+                                                        'cf1:j0:p0',
+                                                        'cf1:j0:p1',
+                                                        'cf1:j1:p0',
+                                                        'cf1:j1:p1'])
         self.assertIn('cf0:j0:p0', matching)
         self.assertIn('cf0:j1:p0', matching)
 
@@ -497,10 +497,10 @@ class FindMatchingTagsTests(unittest.TestCase):
         """
         Test that all tags that don't match are excluded.
         """
-        matching = _find_matching_tags('cf0:.+:p0', ['cf0:j0:p0',
-                                                     'cf0:j1:p0',
-                                                     'cf1:j0:p0',
-                                                     'cf1:j1:p0'])
+        matching = _find_matching_tags('cf0:[^:]*:p0', ['cf0:j0:p0',
+                                                        'cf0:j1:p0',
+                                                        'cf1:j0:p0',
+                                                        'cf1:j1:p0'])
         self.assertNotIn('cf1:j0:p0', matching)
         self.assertNotIn('cf1:j1:p0', matching)
 
