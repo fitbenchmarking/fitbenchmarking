@@ -327,25 +327,22 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                 if minimizer_check:
                     minimizer_check = False
                     controller.flag = 4
-                    dummy_results =\
-                        [{'options': options,
-                          'cost_func': controller.cost_func,
-                          'jac': None,
-                          'hess': None,
-                          'chi_sq': np.inf,
-                          'runtime': np.inf,
-                          'software': controller.software,
-                          'minimizer': minimizer,
-                          'algorithm_type': controller.record_alg_type(
-                              minimizer, options.algorithm_type),
-                          'initial_params': controller.initial_params,
-                          'params': None,
-                          'error_flag': controller.flag,
-                          'name': problem.name}]
-                    for result in dummy_results:
-                        individual_result = fitbm_result.FittingResult(
-                            **result)
-                        results_problem.append(individual_result)
+                    dummy_result = fitbm_result.FittingResult(
+                        options=options,
+                        cost_func=controller.cost_func,
+                        jac=None,
+                        hess=None,
+                        chi_sq=np.inf,
+                        runtime=np.inf,
+                        software=controller.software,
+                        minimizer=minimizer,
+                        algorithm_type=controller.record_alg_type(
+                           minimizer, options.algorithm_type),
+                        initial_params=controller.initial_params,
+                        params=None,
+                        error_flag=controller.flag,
+                        name=problem.name)
+                    results_problem.append(dummy_result)
                     LOGGER.warning(str(excp))
 
         if minimizer_check:

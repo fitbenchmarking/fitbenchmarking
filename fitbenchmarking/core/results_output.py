@@ -222,10 +222,10 @@ def _extract_tags(result: 'FittingResult', row_sorting: 'List[str]',
                        ('cat', cat_sorting)]:
         for sort_pos in order:
             if sort_pos in ['jacobian', 'hessian'] and result.error_flag == 4:
-                result_tags[tag] += ':.+'
+                result_tags[tag] += ':[^:]*'
             else:
                 result_tags[tag] += f':{getattr(result, sort_pos + "_tag")}'
-        result_tags[tag] = result_tags[tag].strip(':')
+        result_tags[tag] = result_tags[tag].lstrip(':')
 
     return result_tags
 
