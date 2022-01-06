@@ -9,25 +9,22 @@ from __future__ import absolute_import, division, print_function
 import os
 import timeit
 import warnings
-from collections import defaultdict
 
 import numpy as np
-
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
-from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.hessian.hessian_factory import create_hessian
+from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result, misc, output_grabber
-from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
-                                              ControllerAttributeError,
-                                              IncompatibleJacobianError,
+from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
+                                              FitBenchmarkException,
                                               IncompatibleMinimizerError,
-                                              MaxRuntimeError,
+                                              MaxRuntimeError, NoHessianError,
                                               NoJacobianError,
-                                              NoHessianError,
                                               UnknownMinimizerError,
-                                              UnsupportedMinimizerError)
+                                              UnsupportedMinimizerError,
+                                              ValidationException)
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
@@ -55,10 +52,12 @@ def benchmark(options, data_dir):
                      definition files
     :type date_dir: str
 
-    :return: prob_results array of fitting results for the problem group,
-             list of failed problems and dictionary of unselected minimizers,
-             rst description of the cost function from the docstring
-    :rtype: tuple(list, list, dict, str)
+    :return: all results,
+             problems where all fitting failed,
+             minimizers that were unselected due to algorithm_type
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            list[str],
+            dict[str, list[str]]
     """
 
     # Extract problem definitions
@@ -67,20 +66,13 @@ def benchmark(options, data_dir):
     #################################
     # Loops over benchmark problems #
     #################################
-    results, failed_problems, unselected_minimzers, \
-        minimizer_dict, cost_func_description = \
+    results, failed_problems, unselected_minimizers, \
+        minimizer_dict = \
         loop_over_benchmark_problems(problem_group, options)
 
     options.minimizers = minimizer_dict
 
-    # Used to group elements in list by name
-    results_dict = defaultdict(list)
-    for problem_result in results:
-        results_dict[problem_result.name].append(problem_result)
-    results = [results_dict[r] for r in
-               sorted(results_dict.keys(), key=lambda x: x.lower())]
-    return results, failed_problems, unselected_minimzers, \
-        cost_func_description
+    return results, failed_problems, unselected_minimizers
 
 
 def loop_over_benchmark_problems(problem_group, options):
@@ -92,14 +84,20 @@ def loop_over_benchmark_problems(problem_group, options):
     :param options: FitBenchmarking options for current run
     :type options: fitbenchmarking.utils.options.Options
 
-    :return: prob_results array of fitting results for the problem group,
-             list of failed problems and dictionary of unselected minimizers,
-             rst description of the cost function from the docstring
-    :rtype: tuple(list, list, dict, str)
+    :return: all results,
+             problems where all fitting failed
+             minimizers that were unselected due to algorithm_type, and
+             composite minimizer-jacobian-hessian names grouped by software
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            list[str],
+            dict[str, list[str]],
+            dict[str, list[str]]
     """
     grabbed_output = output_grabber.OutputGrabber(options)
     results = []
     failed_problems = []
+    unselected_minimizers = []
+    minimizer_dict = []
 
     LOGGER.info('Parsing problems')
     problems = []
@@ -134,37 +132,38 @@ def loop_over_benchmark_problems(problem_group, options):
         ##############################
         # Loops over starting values #
         ##############################
-        cost_func_cls = create_cost_func(options.cost_func_type)
-        cost_func = cost_func_cls(problem)
-        cost_func_description = cost_func.__doc__
         problem_results, problem_fails, \
-            unselected_minimzers, minimizer_dict = \
+            unselected_minimizers, minimizer_dict = \
             loop_over_starting_values(
-                cost_func, options, grabbed_output)
+                problem, options, grabbed_output)
         results.extend(problem_results)
         failed_problems.extend(problem_fails)
 
-    return results, failed_problems, unselected_minimzers, \
-        minimizer_dict, cost_func_description
+    return results, failed_problems, unselected_minimizers, \
+        minimizer_dict
 
 
-def loop_over_starting_values(cost_func, options, grabbed_output):
+def loop_over_starting_values(problem, options, grabbed_output):
     """
-    Loops over starting values from the fitting cost_func
+    Loops over starting values from the fitting problem.
 
-    :param cost_func: a cost_func object containing information used in fitting
-    :type cost_func: CostFunc
+    :param problem: The problem to benchmark on
+    :type problem: fitbenchmarking.parsing.fitting_problem.FittingProblem
     :param options: FitBenchmarking options for current run
     :type options: fitbenchmarking.utils.options.Options
-    :param grabbed_output: Object that removes third part output from console
+    :param grabbed_output: Object that removes third party output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
-    :return: prob_results array of fitting results for the problem group,
-             list of failed problems, dictionary of unselected minimizers and
-             dictionary of minimizers together with the Jacobian used
-    :rtype: tuple(list, list, dict, dict)
+    :return: all results,
+             problems where all fitting failed
+             minimizers that were unselected due to algorithm_type, and
+             composite minimizer-jacobian-hessian names grouped by software
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            list[str],
+            dict[str, list[str]],
+            dict[str, list[str]]
     """
-    problem = cost_func.problem
+    problem_fails = []
     name = problem.name
     num_start_vals = len(problem.starting_values)
     problem_results = []
@@ -173,18 +172,67 @@ def loop_over_starting_values(cost_func, options, grabbed_output):
         if num_start_vals > 1:
             problem.name = name + ', Start {}'.format(index + 1)
 
-        ################################
-        # Loops over fitting softwares #
-        ################################
-        individual_problem_results, problem_fails, \
-            unselected_minimzers, minimizer_dict = \
+        #############################
+        # Loops over cost functions #
+        #############################
+        individual_problem_results, unselected_minimizers, minimizer_dict = \
+            loop_over_cost_function(problem=problem,
+                                    options=options,
+                                    start_values_index=index,
+                                    grabbed_output=grabbed_output)
+
+        # Checks to see if all of the minimizers from every software raised an
+        # exception and record the problem name if that is the case
+        software_check = [np.isinf(v.chi_sq)
+                          for v in individual_problem_results]
+        if all(software_check):
+            problem_fails.append(problem.name)
+        problem_results.extend(individual_problem_results)
+
+        # Reset name for next loop
+        problem.name = name
+
+    return (problem_results, problem_fails,
+            unselected_minimizers, minimizer_dict)
+
+
+def loop_over_cost_function(problem, options, start_values_index,
+                            grabbed_output):
+    """
+    Run benchmarking for each cost function given in options.
+
+    :param problem: The problem to run fitting on
+    :type problem: fitbenchmarking.parsing.fitting_problem.FittingProblem
+    :param options: FitBenchmarking options for current run
+    :type options: fitbenchmarking.utils.options.Options
+    :param start_values_index: Integer that selects the starting values when
+                               datasets have multiple ones.
+    :type start_values_index: int
+    :param grabbed_output: Object that removes third part output from console
+    :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
+
+    :return: all results,
+             minimizers that were unselected due to algorithm_type, and
+             composite minimizer-jacobian-hessian names grouped by software
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            dict[str, list[str]],
+            dict[str, list[str]]
+    """
+    problem_results = []
+    for cf in options.cost_func_type:
+        cost_func_cls = create_cost_func(cf)
+        cost_func = cost_func_cls(problem)
+        #######################
+        # Loops over software #
+        #######################
+        individual_problem_results, unselected_minimizers, minimizer_dict = \
             loop_over_fitting_software(cost_func=cost_func,
                                        options=options,
-                                       start_values_index=index,
+                                       start_values_index=start_values_index,
                                        grabbed_output=grabbed_output)
         problem_results.extend(individual_problem_results)
 
-    return problem_results, problem_fails, unselected_minimzers, minimizer_dict
+    return problem_results, unselected_minimizers, minimizer_dict
 
 
 def loop_over_fitting_software(cost_func, options, start_values_index,
@@ -202,23 +250,20 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
-    :return: list of all results, failed problem names, dictionary of
-             unselected minimizers based on algorithm_type and
-             dictionary of minimizers together with the Jacobian used
-    :rtype: tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
-                  list of failed problem names,
-                  dictionary of minimizers.
-                  dictionary of minimizers and Jacobians)
+    :return: all results,
+             minimizers that were unselected due to algorithm_type, and
+             composite minimizer-jacobian-hessian names grouped by software
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            dict[str, list[str]],
+            dict[str, list[str]]
     """
     results = []
     software = options.software
     if not isinstance(software, list):
         software = [software]
 
-    problem_fails = []
-    unselected_minimzers = {}
+    unselected_minimizers = {}
     minimizer_dict = {}
-    software_results = []
     for s in software:
         LOGGER.info("        Software: %s", s.upper())
         try:
@@ -242,18 +287,10 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
                                  options=options,
                                  grabbed_output=grabbed_output)
 
-        unselected_minimzers[s] = minimizer_failed
+        unselected_minimizers[s] = minimizer_failed
         minimizer_dict[s] = new_minimizer_list
-        software_results.extend(problem_result)
-
-    # Checks to see if all of the minimizers from every software raised an
-    # exception and record the problem name if that is the case
-    software_check = [np.isinf(v.chi_sq) for v in software_results]
-    if all(software_check):
-        problem_fails.append(cost_func.problem.name)
-    results.extend(software_results)
-
-    return results, problem_fails, unselected_minimzers, minimizer_dict
+        results.extend(problem_result)
+    return results, unselected_minimizers, minimizer_dict
 
 
 def loop_over_minimizers(controller, minimizers, options, grabbed_output):
@@ -269,12 +306,12 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
-    :return: list of all results, dictionary of unselected minimizers
-             based on algorithm_type and dictionary of minimizers together
-             with the Jacobian used
-    :rtype: tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
-                  list of failed minimizers,
-                  list of minimizers and Jacobians)
+    :return: all results,
+             minimizers that were unselected due to algorithm_type, and
+             composite minimizer-jacobian-hessian names
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            list[str],
+            list[str])
     """
     problem = controller.problem
     algorithm_type = options.algorithm_type
@@ -336,27 +373,11 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
             ########################
             # Loops over Jacobians #
             ########################
-            results, chi_sq, minimizer_list = \
-                loop_over_jacobians(controller,
-                                    options,
-                                    grabbed_output)
+            results, minimizer_list = loop_over_jacobians(controller,
+                                                          options,
+                                                          grabbed_output)
 
-            for result in results:
-                if problem.multifit:
-                    # Multi fit
-                    # (will raise TypeError if these are not iterable)
-                    for i in range(len(chi_sq)):
-                        result.update({'dataset_id': i,
-                                       'name': '{}, Dataset {}'.format(
-                                           problem.name, (i + 1))})
-                        individual_result = \
-                            fitbm_result.FittingResult(**result)
-                        results_problem.append(individual_result)
-                else:
-                    # Normal fitting
-                    individual_result = fitbm_result.FittingResult(
-                        **result)
-                    results_problem.append(individual_result)
+            results_problem.extend(results)
             new_minimizer_list.extend(minimizer_list)
 
     return results_problem, minimizer_failed, new_minimizer_list
@@ -373,20 +394,16 @@ def loop_over_jacobians(controller, options, grabbed_output):
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
-    :return: list of all results, dictionary of unselected minimizers
-             based on algorithm_type and dictionary of minimizers together
-             with the Jacobian used
-    :rtype: tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
-                  list of failed minimizers,
-                  list of minimizers and Jacobians)
+    :return: all results as a dictionary of arguments for FittingResult, and
+             composite minimizer-jacobian-hessian names.
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            list[str]
     """
     cost_func = controller.cost_func
     minimizer = controller.minimizer
     jacobian_list = options.jac_method
     minimizer_name = minimizer
-    jacobian = False
     results = []
-    chi_sq = []
     minimizer_list = []
     minimizer_check = minimizer in controller.jacobian_enabled_solvers
     try:
@@ -400,7 +417,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
                 LOGGER.warning(str(excp))
                 continue
 
-            for num_method in options.num_method[jac_method]:
+            for num_method in options.jac_num_method[jac_method]:
                 if minimizer_check:
                     num_method_str = ''
                     if jac_method != "analytic":
@@ -416,15 +433,11 @@ def loop_over_jacobians(controller, options, grabbed_output):
                 #######################
                 # Loops over Hessians #
                 #######################
-                new_result, new_chi_sq, new_minimizer_list = \
-                    loop_over_hessians(controller,
-                                       options,
-                                       minimizer_name,
-                                       grabbed_output)
+                new_result, new_minimizer_list = loop_over_hessians(
+                    controller, options, minimizer_name, grabbed_output)
 
                 minimizer_list.extend(new_minimizer_list)
                 results.extend(new_result)
-                chi_sq.extend(new_chi_sq)
                 # For minimizers that do not accept jacobians we raise an
                 # StopIteration exception to exit the loop through the
                 # Jacobians
@@ -433,7 +446,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
     except StopIteration:
         pass
 
-    return results, chi_sq, minimizer_list
+    return results, minimizer_list
 
 
 def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
@@ -449,115 +462,50 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
 
-    :return: list of all results, dictionary of unselected minimizers
-             based on algorithm_type and dictionary of minimizers together
-             with the Jacobian used.
-    :rtype: tuple(list of fibenchmarking.utils.fitbm_result.FittingResult,
-                  list of failed minimizers,
-                  list of minimizers and Jacobians)
+    :return: all results as a dictionary of arguments for FittingResult, and
+             composite minimizer-jacobian-hessian names.
+    :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+            list[str]
     """
-
-    hessian = False
     minimizer = controller.minimizer
     cost_func = controller.cost_func
     problem = controller.problem
-    num_runs = options.num_runs
     minimizer_check = minimizer in controller.hessian_enabled_solvers
     hessian_list = options.hes_method
     new_result = []
     new_minimizer_list = []
-    new_chi_sq = []
 
     # loop over selected hessian methods
-    for method in hessian_list:
+    for hes_method in hessian_list:
         # if user has selected to use hessian info
         # then create hessian if minimizer accepts it
 
         minimizer_name_hes = minimizer_name
 
-        if minimizer_check and method != 'default':
-            hessian_cls = create_hessian(method)
-            try:
-                hessian = hessian_cls(cost_func.problem)
-                cost_func.hessian = hessian
+        for num_method in options.hes_num_method[hes_method]:
+            if minimizer_check and hes_method != 'default':
+                hessian_cls = create_hessian(hes_method)
+                try:
+                    hessian = hessian_cls(cost_func.problem,
+                                          jacobian=cost_func.jacobian)
+                    cost_func.hessian = hessian
 
-                LOGGER.info("                   Hessian: %s",
-                            method)
-                minimizer_name_hes = "{}, {} hessian".format(
-                    minimizer_name, method)
+                    num_method_str = ''
+                    if hes_method != "analytic":
+                        num_method_str = ' ' + num_method
 
-            except NoHessianError as excp:
-                LOGGER.warning(str(excp))
+                    LOGGER.info("                   Hessian: %s%s",
+                                hes_method, num_method_str)
+                    minimizer_name_hes = "{}, {}{} hessian".format(
+                        minimizer_name, hes_method, num_method_str)
 
-        try:
-            with grabbed_output:
-                controller.validate()
-                # Calls timeit repeat with repeat = num_runs and
-                # number = 1
-                runtime_list = timeit.Timer(
-                    setup=controller.prepare,
-                    stmt=controller.execute
-                ).repeat(num_runs, 1)
+                    hessian.method = num_method
 
-                runtime = sum(runtime_list) / num_runs
-                controller.cleanup()
-                controller.check_attributes()
-            min_time = np.min(runtime_list)
-            ratio = np.max(runtime_list) / min_time
-            tol = 4
-            if ratio > tol:
-                warnings.warn(
-                    'The ratio of the max time to the min is {0},'
-                    ' which is larger than the tolerance of {1}.'
-                    ' The min time is {2}. This can indicate that'
-                    ' the fitting engine is caching results. If the'
-                    ' min time is small this may just indicate that'
-                    ' other non-FitBenchmarking CPU activities are'
-                    ' taking place that affects the timing'
-                    ' results'.format(ratio, tol, min_time))
-            chi_sq = controller.eval_chisq(
-                params=controller.final_params,
-                x=controller.data_x,
-                y=controller.data_y,
-                e=controller.data_e)
+                except NoHessianError as excp:
+                    LOGGER.warning(str(excp))
 
-            chi_sq_check = any(np.isnan(n) for n in chi_sq) \
-                if problem.multifit else np.isnan(chi_sq)
-            if np.isnan(runtime) or chi_sq_check:
-                raise ControllerAttributeError(
-                    "Either the computed runtime or chi_sq values "
-                    "was a NaN.")
-        except Exception as ex:  # pylint: disable=broad-except
-            LOGGER.warning(str(ex))
-
-            # Note: Handle all exceptions as general exception to cover case
-            #       where software re-raises our exception as a new type.
-            error_flags = {MaxRuntimeError: 6,
-                           IncompatibleJacobianError: 7}
-
-            controller.flag = 3
-            for error, flag in error_flags.items():
-                if error.class_message in str(ex):
-                    controller.flag = flag
-                    break
-
-        controller.timer.reset()
-
-        if controller.flag in [3, 6, 7]:
-            # If there was an exception, set the runtime and
-            # cost function value to be infinite
-            runtime = np.inf
-            controller.final_params = \
-                None if not problem.multifit \
-                else [None] * len(controller.data_x)
-
-            chi_sq = np.inf if not problem.multifit \
-                else [np.inf] * len(controller.data_x)
-        elif controller.problem.value_ranges is not None:
-            # If bounds have been set, check that they have
-            # been respected by the minimizer and set error
-            # flag if not
-            controller.check_bounds_respected()
+        # Perform the fit a number of times specified by num_runs
+        chi_sq, runtime = perform_fit(controller, options, grabbed_output)
 
         # record algorithm type for specified minimizer
         type_str = controller.record_alg_type(
@@ -576,15 +524,17 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
                        'params': controller.final_params,
                        'error_flag': controller.flag,
                        'name': problem.name}
-        new_result.append(result_args)
         new_minimizer_list.append(minimizer_name_hes)
         if problem.multifit:
             # for multifit problems, multiple chi_sq values are stored
-            # in a list, which should extend the empty new_chi_sq list
-            # rather than be appended to it
-            new_chi_sq.extend(chi_sq)
+            # in a list i.e. we have multiple results
+            for i in range(len(chi_sq)):
+                result_args.update(
+                    {'dataset_id': i,
+                     'name': f'{problem.name}, Dataset {i + 1}'})
+                new_result.append(fitbm_result.FittingResult(**result_args))
         else:
-            new_chi_sq.append(chi_sq)
+            new_result.append(fitbm_result.FittingResult(**result_args))
 
         # For minimizers that do not accept hessians we raise an
         # StopIteration exception to exit the loop through the
@@ -592,4 +542,95 @@ def loop_over_hessians(controller, options, minimizer_name, grabbed_output):
         if not minimizer_check:
             break
 
-    return new_result, new_chi_sq, new_minimizer_list
+    return new_result, new_minimizer_list
+
+
+def perform_fit(controller, options, grabbed_output):
+    """
+    Performs a fit using the provided controller and its data. It
+    will be run a number of times specified by num_runs.
+
+    :param controller: The software controller for the fitting
+    :type controller: Object derived from BaseSoftwareController
+    :param options: The user options for the benchmark.
+    :type options: fitbenchmarking.utils.options.Options
+    :param grabbed_output: Object that removes third part output from console
+    :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
+    :return: The chi squared and runtime of the fit.
+    :rtype: tuple(float, float)
+    """
+    num_runs = options.num_runs
+    try:
+        with grabbed_output:
+            controller.validate()
+            # Calls timeit repeat with repeat = num_runs and
+            # number = 1
+            runtime_list = timeit.Timer(
+                setup=controller.prepare,
+                stmt=controller.execute
+            ).repeat(num_runs, 1)
+
+            runtime = sum(runtime_list) / num_runs
+            controller.cleanup()
+            controller.check_attributes()
+        min_time = np.min(runtime_list)
+        ratio = np.max(runtime_list) / min_time
+        tol = 4
+        if ratio > tol:
+            warnings.warn(
+                'The ratio of the max time to the min is {0},'
+                ' which is larger than the tolerance of {1}.'
+                ' The min time is {2}. This can indicate that'
+                ' the fitting engine is caching results. If the'
+                ' min time is small this may just indicate that'
+                ' other non-FitBenchmarking CPU activities are'
+                ' taking place that affects the timing'
+                ' results'.format(ratio, tol, min_time))
+        chi_sq = controller.eval_chisq(
+            params=controller.final_params,
+            x=controller.data_x,
+            y=controller.data_y,
+            e=controller.data_e)
+
+        chi_sq_check = any(np.isnan(n) for n in chi_sq) \
+            if controller.problem.multifit else np.isnan(chi_sq)
+        if np.isnan(runtime) or chi_sq_check:
+            raise ControllerAttributeError(
+                "Either the computed runtime or chi_sq values "
+                "was a NaN.")
+    except ValidationException as ex:
+        LOGGER.warning(str(ex))
+        controller.flag = 7
+    except Exception as ex:  # pylint: disable=broad-except
+        LOGGER.warning(str(ex))
+
+        # Note: Handle all exceptions as general exception to cover case
+        #       where software re-raises our exception as a new type.
+        error_flags = {MaxRuntimeError: 6}
+
+        controller.flag = 3
+        for error, flag in error_flags.items():
+            if error.class_message in str(ex):
+                controller.flag = flag
+                break
+
+    controller.timer.reset()
+
+    if controller.flag in [3, 6, 7]:
+        # If there was an exception, set the runtime and
+        # cost function value to be infinite
+        runtime = np.inf
+        multi_fit = controller.problem.multifit
+        controller.final_params = \
+            None if not multi_fit \
+            else [None] * len(controller.data_x)
+
+        chi_sq = np.inf if not multi_fit \
+            else [np.inf] * len(controller.data_x)
+    elif controller.problem.value_ranges is not None:
+        # If bounds have been set, check that they have
+        # been respected by the minimizer and set error
+        # flag if not
+        controller.check_bounds_respected()
+
+    return chi_sq, runtime

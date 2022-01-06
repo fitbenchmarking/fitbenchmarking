@@ -28,16 +28,17 @@ ERROR_OPTIONS = {0: "Successfully converged",
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 
 
-def create_results_tables(options, results, group_dir, fig_dir, pp_locations,
-                          failed_problems, unselected_minimzers):
+def create_results_tables(options, results, best_results, group_dir, fig_dir,
+                          pp_locations, failed_problems, unselected_minimzers):
     """
     Saves the results of the fitting to html/txt tables.
 
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
-    :param results: results nested array of objects
-    :type results: list of list of
-                   fitbenchmarking.utils.fitbm_result.FittingResult
+    :param results: Results grouped by row and category (for colouring)
+    :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
+    :param best_results: The best results from each row/category
+    :type best_results: dict[str, dict[str, utils.fitbm_result.FittingResult]]
     :param group_dir: path to the directory where group results should be
                       stored
     :type group_dir: str
@@ -64,34 +65,29 @@ def create_results_tables(options, results, group_dir, fig_dir, pp_locations,
     for suffix in SORTED_TABLE_NAMES:
         if suffix in options.table_type:
 
-            table_names[suffix] = \
-                f"{suffix}_{options.cost_func_type}_table."
+            table_names[suffix] = f'{suffix}_table.'
 
             try:
-                table, html_table, txt_table, cbar = \
-                    generate_table(results,
-                                   options,
-                                   group_dir,
-                                   fig_dir,
-                                   pp_locations,
-                                   table_names[suffix],
-                                   suffix)
+                table, html, txt_table, cbar = \
+                    generate_table(results=results,
+                                   best_results=best_results,
+                                   options=options,
+                                   group_dir=group_dir,
+                                   fig_dir=fig_dir,
+                                   pp_locations=pp_locations,
+                                   table_name=table_names[suffix],
+                                   suffix=suffix)
             except IncompatibleTableError as excp:
                 LOGGER.warning(str(excp))
                 del table_names[suffix]
                 continue
 
-            table_title = table.table_title
             file_path = table.file_path
 
             description = table.get_description(description)
 
             table_format = None if suffix == 'local_min' \
                 else description[options.comparison_mode]
-
-            has_pp = table.has_pp
-
-            pp_filenames = table.pp_filenames
 
             root = os.path.dirname(getfile(fitbenchmarking))
             template_dir = os.path.join(root, 'templates')
@@ -111,14 +107,19 @@ def create_results_tables(options, results, group_dir, fig_dir, pp_locations,
                 f.write(
                     template.render(css_style_sheet=css['main'],
                                     custom_style=css['custom'],
+                                    dropdown_style=css['dropdown'],
                                     table_style=css['table'],
+                                    dropdown_js=js['dropdown'],
                                     mathjax=js['mathjax'],
+                                    table_js=js['table'],
+                                    table=html['table'],
+                                    problem_dropdown=html['problem_dropdown'],
+                                    minimizer_dropdown=html['minim_dropdown'],
                                     table_description=description[suffix],
                                     table_format=table_format,
-                                    result_name=table_title,
-                                    has_pp=has_pp,
-                                    pp_filenames=pp_filenames,
-                                    table=html_table,
+                                    result_name=table.table_title,
+                                    has_pp=table.has_pp,
+                                    pp_filenames=table.pp_filenames,
                                     cbar=cbar,
                                     error_message=ERROR_OPTIONS,
                                     failed_problems=failed_problems,
@@ -155,14 +156,15 @@ def load_table(table):
     return classes[0][1]
 
 
-def generate_table(results, options, group_dir, fig_dir, pp_locations,
-                   table_name, suffix):
+def generate_table(results, best_results, options, group_dir, fig_dir,
+                   pp_locations, table_name, suffix):
     """
     Generate html/txt tables.
 
-    :param results: results nested array of objects
-    :type results: list of list of
-                   fitbenchmarking.utils.fitbm_result.FittingResult
+    :param results: Results grouped by row and category (for colouring)
+    :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
+    :param best_results: The best results from each row/category
+    :type best_results: dict[str, dict[str, utils.fitbm_result.FittingResult]]
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
     :param group_dir: path to the directory where group results should be
@@ -178,15 +180,25 @@ def generate_table(results, options, group_dir, fig_dir, pp_locations,
     :param suffix: table suffix
     :type suffix: str
 
-
-    :return: Table object, HTML string of table and text string of table.
-    :rtype: tuple(Table object, str, str)
+    :return: (Table object, Dict of HTML strings for table and dropdowns,
+    text string of table, path to colourbar)
+    :rtype: tuple(Table object, dict{str: str}, str, str)
     """
     table_module = load_table(suffix)
-    table = table_module(results, options, group_dir, pp_locations, table_name)
+    table = table_module(results, best_results, options, group_dir,
+                         pp_locations, table_name)
 
     html_table = table.to_html()
     txt_table = table.to_txt()
     cbar = table.save_colourbar(fig_dir)
 
-    return table, html_table, txt_table, cbar
+    problem_dropdown_html = table.problem_dropdown_html()
+    minimizer_dropdown_html = table.minimizer_dropdown_html()
+
+    html_dict = {
+        'table': html_table,
+        'problem_dropdown': problem_dropdown_html,
+        'minim_dropdown': minimizer_dropdown_html
+    }
+
+    return table, html_dict, txt_table, cbar

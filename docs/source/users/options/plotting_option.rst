@@ -22,7 +22,7 @@ Default is ``True`` (``yes``/``no`` can also be used)
     make_plots: yes
 
 Colourmap (:code:`colour_map`)
------------------------------------------------------------------------
+------------------------------
 Specifies the name of the colourmap the user wishes to use, e.g. ``magma``, ``viridis``, ``OrRd``. Options are:
 
 * Any colourmap from the library in ``matplotlib``, see the complete library `here <https://matplotlib.org/stable/gallery/color/colormap_reference.html>`_.
@@ -60,8 +60,8 @@ Default for ``magma`` is ``[0.2, 0.8]`` (suitability depends on colourmap)
     colour_map: magma_r
     cmap_range: [0.2, 0.8] 
 
-Colour Upper Limit :code:`colour_ulim`)
----------------------------------------
+Colour Upper Limit (:code:`colour_ulim`)
+----------------------------------------
 
 Controls how relatively poorly a minimizer has to perform in order to receive the `worst` colour. For example,
 a value of 100 would mean that any performance greater than or equal to 100 times worse than the best

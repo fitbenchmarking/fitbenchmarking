@@ -49,6 +49,7 @@ autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfogn', 'dfols',
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.todo',
               'sphinx.ext.mathjax',
+              'sphinx.ext.autosectionlabel',
               'prettyprintvalue',
               'algorithmcheckdocs',
               'm2r2']

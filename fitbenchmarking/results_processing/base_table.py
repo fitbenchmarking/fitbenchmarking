@@ -2,7 +2,6 @@
 Implements the base class for the tables.
 """
 import os
-import re
 from abc import ABCMeta, abstractmethod
 
 import docutils.core
@@ -34,14 +33,17 @@ class Table:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, results, options, group_dir,
+    def __init__(self, results, best_results, options, group_dir,
                  pp_locations, table_name):
         """
         Initialise the class.
 
-        :param results: results nested array of objects
-        :type results: list of list of
-                       fitbenchmarking.utils.fitbm_result.FittingResult
+        :param results: Results grouped by row and category (for colouring)
+        :type results:
+            dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
+        :param best_results: The best results from each row/category
+        :type best_results:
+            dict[str, dict[str, utils.fitbm_result.FittingResult]]
         :param options: Options used in fitting
         :type options: utils.options.Options
         :param group_dir: path to the directory where group results should be
@@ -54,9 +56,8 @@ class Table:
         :type table_name: str
         """
         # Flatten to reduce the necessity on having problems as rows.
-        self.results = [result
-                        for results_per_test in results
-                        for result in results_per_test]
+        self.results = results
+        self.best_results = best_results
         self.options = options
         self.group_dir = group_dir
         self.pp_locations = pp_locations
@@ -79,7 +80,6 @@ class Table:
 
         # Set up results as needed
         self.sorted_results = {}
-        self.best_results = []
         self.create_results_dict()
 
     @abstractmethod
@@ -119,7 +119,7 @@ class Table:
         result_template = self.output_string_type[self.options.comparison_mode]
         if comp_mode == "abs":
             return result_template.format(abs_value)
-        elif comp_mode == "rel":
+        if comp_mode == "rel":
             return result_template.format(rel_value)
         # comp_mode == "both"
         return result_template.format(abs_value, rel_value)
@@ -135,10 +135,11 @@ class Table:
         :return: The link to go to when the cell is selected
         :rtype: string
         """
-        return os.path.relpath(path=result.support_page_link,
+        return os.path.relpath(path=result.fitting_report_link,
                                start=self.group_dir)
 
-    def get_error_str(self, result, error_template='[{}]'):
+    @staticmethod
+    def get_error_str(result, error_template='[{}]'):
         """
         Get the error string for a result based on error_template
         This can be overridden if tables require different error formatting.
@@ -157,83 +158,13 @@ class Table:
 
     def create_results_dict(self):
         """
-        Generates a dictionary of results lists sorted into the correct order
-        with rows and columns as the key and list elements respectively.
+        Generate a dictionary of results lists with rows and columns as the key
+        and list elements respectively.
         This is used to create HTML and txt tables.
         This is stored in self.sorted_results
         """
-
-        # Might be worth breaking out into an option in future.
-        # sort_order[0] is the order of sorting for rows
-        # sort_order[1] is the order of sorting for columns
-        sort_order = (['problem'],
-                      ['software', 'minimizer', 'jacobian', 'hessian'])
-
-        # Generate the columns and row tags and sort
-        rows = set()
-        columns = set()
-        for r in self.results:
-            # Error 4 means none of the jacobians ran so can't infer the
-            # jacobian names from this.
-            if r.error_flag == 4:
-                continue
-            row = ''
-            col = ''
-            for sort_pos in sort_order[0]:
-                row += f':{getattr(r, sort_pos + "_tag")}'
-            rows.add(row.strip(':'))
-            for sort_pos in sort_order[1]:
-                col += f':{getattr(r, sort_pos + "_tag")}'
-            columns.add(col.strip(':'))
-
-        rows = sorted(rows, key=str.lower)
-        columns = {col: i for i, col in enumerate(
-            sorted(columns, key=str.lower))}
-
-        # Build the sorted results dictionary
-        sorted_results = {r.strip(':'): [None for _ in columns]
-                          for r in rows}
-
-        # Reorder best results
-        best_results = {r.strip(':'): None
-                        for r in rows}
-
-        for r in self.results:
-            row = ''
-            col = ''
-            for sort_pos in sort_order[0]:
-                tag = getattr(r, sort_pos + "_tag")
-                if sort_pos in ['jacobian', 'hessian'] and r.error_flag == 4:
-                    tag = '.+'
-                row += f':{tag}'
-            row = row.strip(':')
-            for sort_pos in sort_order[1]:
-                tag = getattr(r, sort_pos + "_tag")
-                if sort_pos in ['jacobian', 'hessian'] and r.error_flag == 4:
-                    tag = '.+'
-                col += f':{tag}'
-            col = col.strip(':')
-
-            # Fix up cells where error flag = 4
-            if r.error_flag == 4:
-                matching_rows = [match
-                                 for match in rows
-                                 if re.fullmatch(row, match)]
-                matching_cols = [match
-                                 for match in columns.keys()
-                                 if re.fullmatch(col, match)]
-                for row in matching_rows:
-                    for col in matching_cols:
-                        col = columns[col]
-                        sorted_results[row][col] = r
-            else:
-                col = columns[col]
-                sorted_results[row][col] = r
-                if r.is_best_fit:
-                    best_results[row] = r
-
-        self.sorted_results = sorted_results
-        self.best_results = list(best_results.values())
+        self.sorted_results = {k: [r for cat in row.values() for r in cat]
+                               for k, row in self.results.items()}
 
     def get_str_dict(self, html=False):
         """
@@ -375,32 +306,60 @@ class Table:
         table = self.create_pandas_data_frame(html=True)
 
         # Format the table headers
-        link_template = '<a href="https://fitbenchmarking.readthedocs.io/'\
-                        'en/latest/users/options/minimizer_option.html#'\
-                        '{0}" target="_blank">{0}</a>'
-        minimizer_template = '<span title="{0}">{1}</span>'
+        cost_func_template = '<a class="cost_function_header" ' \
+                             'href=https://fitbenchmarking.readthedocs.io/' \
+                             'en/latest/users/options/fitting_option.html' \
+                             '#cost-function-cost-func-type ' \
+                             'target="_blank">{0}</a>'
+        software_template = '<a class="software_header" ' \
+                            'href="https://fitbenchmarking.readthedocs.io/' \
+                            'en/latest/users/options/minimizer_option.html' \
+                            '#{0}" target="_blank">{0}</a>'
+        minimizer_template = '<a class="minimizer_header" col={0} ' \
+                             'title="{1}"' \
+                             'href="https://fitbenchmarking.readthedocs.io/' \
+                             'en/latest/users/options/minimizer_option.html' \
+                             '#{2}" target="_blank">{3}</a>'
 
         row = next(iter(self.sorted_results.values()))
         minimizers_list = [
-            (link_template.format(result.software.replace('_', '-')),
+            (cost_func_template.format(result.costfun_tag),
+             software_template.format(result.software.replace('_', '-')),
              minimizer_template.format(
-                 self.options.minimizer_alg_type[result.minimizer],
+                 i, self.options.minimizer_alg_type[result.minimizer],
+                 result.software.replace('_', '-'),
                  result.minimizer))
-            for result in row]
+            for i, result in enumerate(row)]
         columns = pd.MultiIndex.from_tuples(minimizers_list)
         table.columns = columns
 
         # Format the row labels
         index = []
-        for b, i in zip(self.best_results, table.index):
-            rel_path = os.path.relpath(path=b.support_page_link,
-                                       start=self.group_dir)
-            index.append('<a href="{0}">{1}</a>'.format(rel_path, i))
+        for b, i in zip(self.best_results.values(), table.index):
+            b = next(iter(b.values()))
+            rel_path = os.path.relpath(
+                path=b.problem_summary_page_link,
+                start=self.group_dir)
+            index.append('<a class="problem_header" href="{0}">{1}</a>'
+                         .format(rel_path, i))
         table.index = index
 
-        # Set the cell colours
-        table_style = table.style.apply(
-            lambda df: self.get_colour_df(like_df=df), axis=None)
+        # Get columns where cost function changes
+        column_dividers = [table.columns[0]]
+        for column in table.columns[1:]:
+            if column[0] != column_dividers[-1][0]:
+                column_dividers.append(column)
+        column_dividers = column_dividers[1:]
+
+        # Set the cell colours and increase bars between cost functions
+        table_style = table.style\
+            .apply(lambda df: self.get_colour_df(like_df=df), axis=None)\
+            .set_table_styles(table_styles={
+                k: [{'selector': 'td',
+                     'props': [('border-left-width', '3px')]},
+                    {'selector': 'th',
+                     'props': [('border-left-width', '3px')]}]
+                for k in column_dividers})
 
         return table_style.render()
 
@@ -560,3 +519,68 @@ class Table:
         plt.savefig(fig_path, dpi=150)
 
         return os.path.relpath(fig_path, self.group_dir)
+
+    def problem_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown checklist of problem sets.
+
+        :return: HTML for a dropdown checklist of problem sets.
+        :rtype: str
+        """
+        items = [f'        <li><label class="noselect"><input '
+                 f'type="checkbox" checked=true '
+                 f'onclick="toggle_problem(\'{problem_name}\')"/> '
+                 f'{problem_name}</label></li>'
+                 for problem_name in self.sorted_results.keys()]
+
+        return self._dropdown_html("problem_dropdown", "Select Problems",
+                                   items)
+
+    def minimizer_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown checklist of minimizers.
+
+        :return: HTML for a dropdown checklist of minimizers.
+        :rtype: str
+        """
+        minimizers = [(result.software.replace('_', '-'), result.minimizer)
+                      for result in next(iter(self.sorted_results.values()))]
+        # Remove duplicates
+        minimizers = list(dict.fromkeys(minimizers))
+
+        items = [f'        <li><label class="noselect"><input '
+                 f'type="checkbox" checked=true '
+                 f'onclick="toggle_minimizer(\'{software}\', '
+                 f'\'{minimizer}\')"/> {minimizer}</label></li>'
+                 for software, minimizer in minimizers]
+
+        return self._dropdown_html("minimizer_dropdown",
+                                   "Select Minimizers", items)
+
+    @staticmethod
+    def _dropdown_html(list_id: str, selector_text: str,
+                       checklist: list) -> str:
+        """
+        Generates the HTML for a dropdown checklist. The list of items
+        must be provided to this function.
+
+        :param list_id: The ID to give the dropdown button.
+        :type list_id: str
+        :param selector_text: The text to display on the dropdown button.
+        :type selector_text: str
+        :param checklist: A list of HTML checkboxes to include in the
+        dropdown.
+        :type checklist: list
+        :return: HTML for a dropdown checklist.
+        :rtype: str
+        """
+        checklist_str = "\n".join(checklist)
+        html = f'<div id="{list_id}" class="dropdown-check-list" ' \
+               f'tabindex="100">\n' \
+               f'    <span class="anchor" onclick="show_dropdown' \
+               f'(\'{list_id}\')">{selector_text}</span>\n' \
+               '    <ul class="items">\n' \
+               f'{checklist_str}\n' \
+               '    </ul>\n' \
+               '</div>'
+        return html

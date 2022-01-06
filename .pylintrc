@@ -24,7 +24,7 @@ disable=too-many-instance-attributes,
 output-format=colorized
 
 # Tells whether to display a full report or only the messages.
-reports=yes
+reports=no
 
 [VARIABLES]
 
@@ -37,10 +37,11 @@ ignored-argument-names=arg|args|kwargs
 # (useful for modules/projects where namespaces are manipulated during runtime
 # and thus existing member attributes cannot be deduced by static analysis). It
 # supports qualified module names, as well as Unix pattern matching.
-ignored-modules=mantid,
-                ral_nlls,
+ignored-modules=levmar,
+                mantid,
                 matlab,
-                levmar
+                pygsl,
+                ral_nlls
 
 [DESIGN]
 

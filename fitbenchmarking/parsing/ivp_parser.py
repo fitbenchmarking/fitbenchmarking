@@ -10,10 +10,10 @@ import sys
 import typing
 import numpy as np
 
+from scipy.integrate import solve_ivp
+
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 from fitbenchmarking.utils.exceptions import ParsingError
-
-from scipy.integrate import solve_ivp
 
 
 class IVPParser(FitbenchmarkParser):

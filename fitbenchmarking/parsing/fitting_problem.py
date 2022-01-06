@@ -12,6 +12,7 @@ except ImportError:
     from itertools import zip_longest as izip_longest
 import numpy as np
 
+from fitbenchmarking.utils.debug import get_printable_table
 from fitbenchmarking.utils.exceptions import FittingProblemError, \
     IncorrectBoundsError
 from fitbenchmarking.utils.timer import TimerWithMaxTime
@@ -46,6 +47,9 @@ class FittingProblem:
         #: *string* Equation (function or model) to fit against data
         self.equation = None
 
+        #: *string* Description of the fitting problem
+        self.description = ''
+
         #: *float* The start of the range to fit model data over
         #: (if different from entire range)
         self.start_x = None
@@ -69,7 +73,7 @@ class FittingProblem:
         #: e.g.
         #: :code:`[{p1_name: p1_val1, p2_name: p2_val1, ...},
         #: {p1_name: p1_val2, ...}, ...]`
-        self.starting_values = None
+        self.starting_values: list = []
 
         #: *list*
         #: Smallest and largest values of interest in the data
@@ -108,6 +112,17 @@ class FittingProblem:
         # The timer used to check if the 'max_runtime' is exceeded.
         self.timer = TimerWithMaxTime(self.options.max_runtime)
 
+    def __str__(self):
+        info = {"Name": self.name,
+                "Format": self.format,
+                "Equation": self.equation,
+                "Params": self._param_names,
+                "Start X": self.start_x,
+                "End X": self.end_x,
+                "MultiFit": self.multifit}
+
+        return get_printable_table("FittingProblem", info)
+
     def eval_model(self, params, **kwargs):
         """
         Function evaluation method
@@ -136,7 +151,6 @@ class FittingProblem:
         :rtype: list of str
         """
         if self._param_names is None:
-            # pylint: disable=unsubscriptable-object
             self._param_names = list(self.starting_values[0].keys())
         return self._param_names
 
@@ -192,7 +206,7 @@ class FittingProblem:
         and approximate errors if not given.
         Modifications happen on member variables.
         """
-        use_errors = self.options.cost_func_type == "weighted_nlls"
+        use_errors = "weighted_nlls" in self.options.cost_func_type
         if not self.multifit:
             correct_vals = correct_data(x=self.data_x,
                                         y=self.data_y,
@@ -232,7 +246,6 @@ class FittingProblem:
                             :code:`{p1_name: [p1_min, p1_max], ...}`
         :type value_ranges: dict
         """
-        # pylint: disable=unsubscriptable-object
         lower_param_names = [name.lower()
                              for name in self.starting_values[0].keys()]
         if not all(name in lower_param_names for name in value_ranges):

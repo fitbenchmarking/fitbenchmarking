@@ -67,7 +67,8 @@ class ScipyController(Controller):
                   "method": self.minimizer,
                   "options": self.options}
         if self.minimizer in self.jacobian_enabled_solvers:
-            if not self.cost_func.jacobian.use_default_jac:
+            if not self.cost_func.jacobian.use_default_jac \
+                    or self.minimizer == "Newton-CG":
                 kwargs["jac"] = self.cost_func.jac_cost
         if self.minimizer not in self.no_bounds_minimizers:
             kwargs["bounds"] = self.value_ranges

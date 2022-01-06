@@ -63,6 +63,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.cost_func = make_cost_function()
         self.problem = self.cost_func.problem
         self.options = self.problem.options
+        self.options.cost_func_type = ['weighted_nlls']
         self.options.software = ["scipy"]
         self.minimizers = self.options.minimizers
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
@@ -82,15 +83,15 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         """
         individual_problem_results = \
             self.individual_problem_results[self.count]
-        problem_fails = self.problem_fails
-        unselected_minimzers = self.unselected_minimzers
+        unselected_minimizers = self.unselected_minimizers
         self.count += 1
         expect_minimizers = {"scipy": ['TNC', 'lm-scipy']}
-        return individual_problem_results, problem_fails, \
-            unselected_minimzers, expect_minimizers
+        return (individual_problem_results,
+                unselected_minimizers,
+                expect_minimizers)
 
     def shared_tests(self, expected_list_len, expected_problem_fails,
-                     expected_unselected_minimzers):
+                     expected_unselected_minimizers):
         """
         Shared tests for the `loop_over_starting_values` function
 
@@ -98,18 +99,18 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         :type expected_list_len: int
         :param expected_problem_fails: Expected list of failed problems
         :type expected_problem_fails: list
-        :param expected_unselected_minimzers: Expected dictionary of unselected
-                                              minimizer
-        :type expected_unselected_minimzers: dict
+        :param expected_unselected_minimizers: Expected dictionary of
+                                               unselected minimizer
+        :type expected_unselected_minimizers: dict
         """
-        problem_results, problem_fails, unselected_minimzers,\
-            minimizer_dict = loop_over_starting_values(self.cost_func,
+        problem_results, problem_fails, unselected_minimizers,\
+            minimizer_dict = loop_over_starting_values(self.problem,
                                                        self.options,
                                                        self.grabbed_output)
         assert len(problem_results) == expected_list_len
         assert problem_fails == expected_problem_fails
 
-        dict_test(unselected_minimzers, expected_unselected_minimzers)
+        dict_test(unselected_minimizers, expected_unselected_minimizers)
         dict_test(minimizer_dict, {"scipy": ['TNC', 'lm-scipy']})
 
     @unittest.mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
@@ -122,13 +123,13 @@ class LoopOverStartingValuesTests(unittest.TestCase):
                         for i in range(self.scipy_len)]
         self.individual_problem_results = [list_results, list_results]
         self.problem_fails = []
-        self.unselected_minimzers = {"scipy": []}
+        self.unselected_minimizers = {"scipy": []}
         loop_over_fitting_software.side_effect = self.mock_func_call
         expected_list_length = len(list_results) * 2
         expected_problem_fails = self.problem_fails
-        expected_unselected_minimzers = self.unselected_minimzers
+        expected_unselected_minimizers = self.unselected_minimizers
         self.shared_tests(expected_list_length, expected_problem_fails,
-                          expected_unselected_minimzers)
+                          expected_unselected_minimizers)
 
     @unittest.mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_one_starting_values(self, loop_over_fitting_software):
@@ -141,30 +142,13 @@ class LoopOverStartingValuesTests(unittest.TestCase):
             [[fitbm_result.FittingResult(**self.result_args)
               for i in range(self.scipy_len)]]
         self.problem_fails = []
-        self.unselected_minimzers = {"scipy": []}
+        self.unselected_minimizers = {"scipy": []}
         loop_over_fitting_software.side_effect = self.mock_func_call
         expected_list_length = len(self.individual_problem_results[0])
         expected_problem_fails = self.problem_fails
-        expected_unselected_minimzers = self.unselected_minimzers
+        expected_unselected_minimizers = self.unselected_minimizers
         self.shared_tests(expected_list_length, expected_problem_fails,
-                          expected_unselected_minimzers)
-
-    @unittest.mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
-    def test_run_reports_failed_problems(self, loop_over_fitting_software):
-        """
-        Checks that the failed problems are reported correctly
-        """
-        list_results = [fitbm_result.FittingResult(**self.result_args)
-                        for i in range(self.scipy_len)]
-        self.individual_problem_results = [list_results, list_results]
-        self.problem_fails = ['Cubic_failed']
-        self.unselected_minimzers = {"scipy": []}
-        loop_over_fitting_software.side_effect = self.mock_func_call
-        expected_list_length = len(list_results) * 2
-        expected_problem_fails = self.problem_fails
-        expected_unselected_minimzers = self.unselected_minimzers
-        self.shared_tests(expected_list_length, expected_problem_fails,
-                          expected_unselected_minimzers)
+                          expected_unselected_minimizers)
 
     @unittest.mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_reports_unselected_minimizers(self,
@@ -176,13 +160,13 @@ class LoopOverStartingValuesTests(unittest.TestCase):
                         for i in range(self.scipy_len)]
         self.individual_problem_results = [list_results, list_results]
         self.problem_fails = []
-        self.unselected_minimzers = {"scipy": ['Powell', 'CG']}
+        self.unselected_minimizers = {"scipy": ['Powell', 'CG']}
         loop_over_fitting_software.side_effect = self.mock_func_call
         expected_list_length = len(list_results) * 2
         expected_problem_fails = self.problem_fails
-        expected_unselected_minimzers = self.unselected_minimzers
+        expected_unselected_minimizers = self.unselected_minimizers
         self.shared_tests(expected_list_length, expected_problem_fails,
-                          expected_unselected_minimzers)
+                          expected_unselected_minimizers)
 
 
 if __name__ == "__main__":

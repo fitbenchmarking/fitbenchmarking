@@ -3,7 +3,9 @@ Higher level functions that are used for plotting the fit plot and a starting
 guess plot.
 """
 import os
+
 import matplotlib
+import numpy as np
 
 from fitbenchmarking.utils.exceptions import PlottingError
 
@@ -16,6 +18,38 @@ class Plot:
     """
     Class providing plotting functionality.
     """
+    # These define the styles of the 4 types of plot
+    data_plot_options = {"label": "Data",
+                         "zorder": 0,
+                         "color": "black",
+                         "marker": "x",
+                         "linestyle": '',
+                         "linewidth": 1}
+    ini_guess_plot_options = {"label": "Starting Guess",
+                              "zorder": 1,
+                              "color": "#ff6699",
+                              "marker": "",
+                              "linestyle": '-',
+                              "linewidth": 3}
+    best_fit_plot_options = {"zorder": 3,
+                             "color": '#6699ff',
+                             "marker": "",
+                             "linestyle": ':',
+                             "linewidth": 3}
+    fit_plot_options = {"zorder": 2,
+                        "color": "#99ff66",
+                        "marker": "",
+                        "linestyle": '-',
+                        "linewidth": 3}
+    summary_best_plot_options = {"zorder": 2,
+                                 "marker": "",
+                                 "linestyle": '-',
+                                 "linewidth": 2}
+    summary_plot_options = {"zorder": 1,
+                            "marker": "",
+                            "linestyle": '-',
+                            "linewidth": 1,
+                            "alpha": 0.5, }
 
     def __init__(self, best_result, options, figures_dir):
         self.cost_func = best_result.cost_func
@@ -31,30 +65,6 @@ class Plot:
 
         self.legend_location = "upper left"
         self.title_size = 10
-
-        # These define the styles of the 4 types of plot
-        self.data_plot_options = {"label": "Data",
-                                  "zorder": 0,
-                                  "color": "black",
-                                  "marker": "x",
-                                  "linestyle": '',
-                                  "linewidth": 1}
-        self.ini_guess_plot_options = {"label": "Starting Guess",
-                                       "zorder": 1,
-                                       "color": "#ff6699",
-                                       "marker": "",
-                                       "linestyle": '-',
-                                       "linewidth": 3}
-        self.best_fit_plot_options = {"zorder": 3,
-                                      "color": '#6699ff',
-                                      "marker": "",
-                                      "linestyle": ':',
-                                      "linewidth": 3}
-        self.fit_plot_options = {"zorder": 2,
-                                 "color": "#99ff66",
-                                 "marker": "",
-                                 "linestyle": '-',
-                                 "linewidth": 3}
 
         # Create a single reusable plot containing the problem data.
         # We store a line here, which is updated to change the graph where we
@@ -199,8 +209,8 @@ class Plot:
                        plot_options=plot_options_dict,
                        y=y)
         self.format_plot()
-        file = "{}_fit_for_{}.png".format(minimizer,
-                                          self.result.sanitised_name)
+        file = f"{minimizer}_fit_for_{self.result.costfun_tag}_" \
+               f"{self.result.sanitised_name}.png"
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
 
@@ -238,8 +248,80 @@ class Plot:
                        x=self.x,
                        y=self.problem.eval_model(params, x=self.x))
         self.format_plot()
-        file = "{}_fit_for_{}.png".format(minimizer,
-                                          self.result.sanitised_name)
+        file = f"{minimizer}_fit_for_{self.result.costfun_tag}_"\
+               f"{self.result.sanitised_name}.png"
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
         return file
+
+    @classmethod
+    def plot_summary(cls, categories, title, options, figures_dir):
+        """
+        Create a comparison plot showing all fits from the results with the
+        best for each category highlighted.
+
+        :param categories: The results to plot sorted into colour groups
+        :type categories: dict[str, list[FittingResults]]
+        :param title: A title for the graph
+        :type title: str
+        :param options: The options for the run
+        :type options: utils.options.Options
+        :param figures_dir: The directory to save the figures in
+        :type figures_dir: str
+
+        :return: The path to the new plot
+        :rtype: str
+        """
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+
+        # Get a colour for each category
+        cmap = plt.cm.get_cmap('rainbow')
+        col_vals = np.linspace(0, 1, len(categories))
+        colours = iter(cmap(col_vals))
+
+        first_result = next(iter(categories.values()))[0]
+        problem = first_result.cost_func.problem
+
+        # Plot data
+        if "weighted_nlls" in options.cost_func_type:
+            ax.errorbar(first_result.data_x,
+                        first_result.data_y,
+                        yerr=first_result.data_e,
+                        **cls.data_plot_options)
+        else:
+            ax.plot(first_result.data_x,
+                    first_result.data_y,
+                    **cls.data_plot_options)
+
+        # Setup x for rest of plots
+        x = first_result.data_x
+        x = np.linspace(x.min(), x.max(), 50)
+
+        for (key, results), colour in zip(categories.items(), colours):
+            # Plot category
+            for result in results:
+                if result.params is not None:
+                    params = result.params
+                    y = result.problem.eval_model(params, x=x)
+                    plot_options = cls.summary_best_plot_options \
+                        if result.is_best_fit else cls.summary_plot_options
+                    plot_options['color'] = colour
+                    plot_options['label'] = key if result.is_best_fit else ''
+
+                    ax.plot(x, y, **plot_options)
+                    # log scale plot if problem is a SASView problem
+                    if problem.format == "sasview":
+                        ax.set_xscale("log", nonpositive='clip')
+                        ax.set_yscale("log", nonpositive='clip')
+                    ax.set_xlabel("X")
+                    ax.set_ylabel("Y")
+                    ax.set_title(title,
+                                 fontsize=10)
+                    ax.legend(loc="upper left")
+                    fig.set_tight_layout(True)
+
+        fname = f'summary_plot_for_{first_result.sanitised_name}.png'
+        fig.savefig(os.path.join(figures_dir, fname))
+        plt.close(fig)
+        return fname

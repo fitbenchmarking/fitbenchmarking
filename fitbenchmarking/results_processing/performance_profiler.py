@@ -2,23 +2,23 @@
 Set up performance profiles for both accuracy and runtime tables
 """
 import os
-from collections import OrderedDict
 from textwrap import wrap
-import numpy as np
 
 import matplotlib
+import numpy as np
+
 matplotlib.use('Agg')
-# pylint: disable=wrong-import-position
+# pylint: disable=wrong-import-position,ungrouped-imports
 import matplotlib.pyplot as plt  # noqa: E402
+# pylint: enable=wrong-import-position,ungrouped-imports
 
 
 def profile(results, fig_dir):
     """
     Function that generates profiler plots
 
-    :param results: results nested array of objects
-    :type results: list of list of
-                    fitbenchmarking.utils.fitbm_result.FittingResult
+    :param results: The sorted results grouped by row and category
+    :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
     :param fig_dir: path to directory containing the figures
     :type fig_dir: str
 
@@ -33,31 +33,33 @@ def profile(results, fig_dir):
 def prepare_profile_data(results):
     """
     Helper function which generates acc and runtime dictionaries which
-    contain number of occurrences that the minimizer produces a normalised
-    result which is less than the bounds in PROFILER_BOUNDS
+    contain the values for each minimizer.
 
-    :param results: results nested array of objects
-    :type results: list of list of
-                   fitbenchmarking.utils.fitbm_result.FittingResult
+    :param results: The sorted results grouped by row and category
+    :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
 
     :return: dictionary containing number of occurrences
     :rtype: tuple(dict, dict)
     """
-    out_acc = []
-    out_runtime = []
-    for res in results:
-        out_acc.append([r.norm_acc for r in res])
-        out_runtime.append([r.norm_runtime for r in res])
-    minimizers = [r.minimizer for r in results[0]]
+    acc_dict = {}
+    runtime_dict = {}
+    minimizers = []
+    for row in results.values():
+        for cat in row.values():
+            for i, result in enumerate(cat):
+                if len(minimizers) <= i:
+                    minimizers.append(result.minimizer_tag)
+                    acc_dict[result.minimizer_tag] = []
+                    runtime_dict[result.minimizer_tag] = []
+                elif len(result.minimizer_tag) > len(minimizers[i]):
+                    acc_dict[result.minimizer_tag] = \
+                        acc_dict.pop(minimizers[i])
+                    runtime_dict[result.minimizer_tag] = \
+                        runtime_dict.pop(minimizers[i])
+                    minimizers[i] = result.minimizer_tag
+                acc_dict[minimizers[i]].append(result.norm_acc)
+                runtime_dict[minimizers[i]].append(result.norm_runtime)
 
-    acc_array = np.array(out_acc).T
-    runtime_array = np.array(out_runtime).T
-    acc_dict = OrderedDict()
-    runtime_dict = OrderedDict()
-
-    for i, m in enumerate(minimizers):
-        acc_dict[m] = acc_array[i][:]
-        runtime_dict[m] = runtime_array[i][:]
     return acc_dict, runtime_dict
 
 
@@ -83,6 +85,7 @@ def plot(acc, runtime, fig_dir):
         step_values = []
         max_value = 0.0
         for value in profile_plot.values():
+            value = np.array(value)
             sorted_list = np.sort(_remove_nans(value))
             max_in_list = np.max(sorted_list) if len(sorted_list) > 0 else 0.0
             if max_in_list > max_value:
@@ -163,7 +166,7 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
     return values[~np.isnan(values)]
 
 
-def create_plot(ax, step_values, solvers):
+def create_plot(ax, step_values: 'list[np.ndarray]', solvers: 'list[str]'):
     """
     Function to draw the profile on a matplotlib axis
 
@@ -172,11 +175,10 @@ def create_plot(ax, step_values, solvers):
               (or a subclass of `~.axes.Axes`)
     :param step_values: a sorted list of the values of the metric
                         being profiled
-    :type step_values: list of float
+    :type step_values: list of np.array[float]
     :param solvers: A list of the labels for the different solvers
     :type solvers: list of strings
     """
-
     lines = ["-", "-.", "--", ":"]
     # use only 9 of matplotlib's colours, as this will give us
     # 9 * 4 = 36 line/colour combinations, as opposed to

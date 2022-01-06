@@ -13,10 +13,10 @@ import glob
 import inspect
 import os
 import platform
-import tempfile
 import sys
 import webbrowser
 
+from tempfile import NamedTemporaryFile
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
@@ -86,6 +86,78 @@ of the Fitbenchmarking docs. '''
     return parser
 
 
+def _find_options_file(options_file: str, results_directory: str) -> Options:
+    """
+    Attempts to find the options file and creates an Options object for it.
+    Wildcards are accepted in the parameters of this function.
+
+    :param options_file: The path or glob pattern for an options file.
+    :type options_file: str
+    :param results_directory: The path to the results directory.
+    :type results_directory: str
+    :return: An Options object.
+    :rtype: fitbenchmarking.utils.options.Options
+    """
+    if options_file != '':
+        # Read custom minimizer options from file
+        glob_options_file = glob.glob(options_file)
+
+        if not glob_options_file:
+            raise OptionsError('Could not find file {}'.format(options_file))
+        if not options_file.endswith(".ini"):
+            raise OptionsError('Options file must be a ".ini" file')
+
+        return Options(file_name=glob_options_file,
+                       results_directory=results_directory)
+    return Options(results_directory=results_directory)
+
+
+def _create_index_page(options: Options, groups: "list[str]",
+                       result_directories: "list[str]") -> str:
+    """
+    Creates the results index page for the benchmark, and copies
+    the fonts and js directories to the correct location.
+
+    :param options: The user options for the benchmark.
+    :type options: fitbenchmarking.utils.options.Options
+    :param groups: Names for each of the problem set groups.
+    :type groups: A list of strings.
+    :param result_directories: Result directory paths for each
+    problem set group.
+    :type result_directories: A list of strings.
+    :return: The filepath of the `results_index.html` file.
+    :rtype: str
+    """
+    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    template_dir = os.path.join(root, "templates")
+    env = Environment(loader=FileSystemLoader(template_dir))
+    css = get_css(options, options.results_dir)
+    template = env.get_template("index_page.html")
+    group_links = [os.path.join(d, f"{g}_index.html")
+                   for g, d in zip(groups, result_directories)]
+    output_file = os.path.join(options.results_dir, 'results_index.html')
+
+    # Copying fonts directory into results directory
+    copy_tree(os.path.join(root, "fonts"),
+              os.path.join(options.results_dir, "fonts"))
+    # Copying js directory into results directory
+    copy_tree(os.path.join(template_dir, "js"),
+              os.path.join(options.results_dir, "js"))
+    # Copying css directory into results directory
+    copy_tree(os.path.join(template_dir, "css"),
+              os.path.join(options.results_dir, "css"))
+
+    with open(output_file, "w") as fh:
+        fh.write(template.render(
+            css_style_sheet=css["main"],
+            custom_style=css["custom"],
+            groups=groups,
+            group_link=group_links,
+            zip=zip))
+
+    return output_file
+
+
 def _open_browser(output_file: str) -> None:
     """
     Opens a browser window to show the results of a fit benchmark.
@@ -126,35 +198,22 @@ def run(problem_sets, results_directory, options_file='', debug=False):
     """
     # Find the options file
     current_path = os.path.abspath(os.path.curdir)
-    if options_file != '':
-        # Read custom minimizer options from file
-        glob_options_file = glob.glob(options_file)
-
-        if glob_options_file == []:
-            raise OptionsError('Could not find file {}'.format(options_file))
-
-        if not options_file.endswith(".ini"):
-            raise OptionsError('Options file must be a ".ini" file')
-
-        options = Options(file_name=glob_options_file,
-                          results_directory=results_directory)
-    else:
-        options = Options(results_directory=results_directory)
+    options = _find_options_file(options_file, results_directory)
 
     setup_logger(log_file=options.log_file,
                  append=options.log_append,
                  level=options.log_level)
 
-    opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
-                                           mode='w',
-                                           delete=False)
-    options.write_to_stream(opt_file)
-    opt_file.close()
+    with NamedTemporaryFile(suffix='.ini', mode='w',
+                            delete=False) as opt_file:
+        options.write_to_stream(opt_file)
+        opt_file_name = opt_file.name
+
     LOGGER.debug("The options file used is as follows:")
-    with open(opt_file.name) as f:
+    with open(opt_file_name) as f:
         for line in f:
             LOGGER.debug(line.replace("\n", ""))
-    os.remove(opt_file.name)
+    os.remove(opt_file_name)
 
     groups = []
     result_dir = []
@@ -179,8 +238,7 @@ def run(problem_sets, results_directory, options_file='', debug=False):
 
         LOGGER.info('Running the benchmarking on the %s problem set',
                     label)
-        results, failed_problems, unselected_minimzers, \
-            cost_func_description = \
+        results, failed_problems, unselected_minimizers = \
             benchmark(options=options,
                       data_dir=data_dir)
 
@@ -189,10 +247,10 @@ def run(problem_sets, results_directory, options_file='', debug=False):
         # produced as results tables won't show meaningful values.
         all_dummy_results_flag = True
         for result in results:
-            for res in result:
-                if res.error_flag != 4:
-                    all_dummy_results_flag = False
-                    continue
+            if result.error_flag != 4:
+                all_dummy_results_flag = False
+                break
+
         # If the results are an empty list then this means that all minimizers
         # raise an exception and the tables will produce errors if they run
         # for that problem set.
@@ -212,8 +270,7 @@ def run(problem_sets, results_directory, options_file='', debug=False):
                              results=results,
                              options=options,
                              failed_problems=failed_problems,
-                             unselected_minimzers=unselected_minimzers,
-                             cost_func_description=cost_func_description)
+                             unselected_minimizers=unselected_minimizers)
 
             LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
             group_results_dir = os.path.relpath(path=group_results_dir,
@@ -225,7 +282,7 @@ def run(problem_sets, results_directory, options_file='', debug=False):
         options.reset()
 
     # Check result_dir is non empty before producing output
-    if result_dir == []:
+    if not result_dir:
         message = "The user chosen options and/or problem setup resulted in " \
                   "all minimizers and/or parsers raising an exception. " \
                   "For more detail on what caused this, please see the " \
@@ -240,31 +297,8 @@ def run(problem_sets, results_directory, options_file='', debug=False):
                     "You can also set 'results_dir' in an options file.",
                     options.results_dir)
 
-    root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    template_dir = os.path.join(root, 'templates')
-    env = Environment(loader=FileSystemLoader(template_dir))
-    css = get_css(options, options.results_dir)
-    template = env.get_template("index_page.html")
-    group_links = [os.path.join(d, "{}_index.html".format(g))
-                   for g, d in zip(groups, result_dir)]
-    output_file = os.path.join(options.results_dir, 'results_index.html')
-
-    # Copying fonts directory into results directory
-    copy_tree(os.path.join(root, 'fonts'),
-              os.path.join(options.results_dir, "fonts"))
-    # Copying js directory into results directory
-    copy_tree(os.path.join(template_dir, 'js'),
-              os.path.join(options.results_dir, "js"))
-
-    with open(output_file, 'w') as fh:
-        fh.write(template.render(
-            css_style_sheet=css['main'],
-            custom_style=css['custom'],
-            groups=groups,
-            group_link=group_links,
-            zip=zip))
-
-    _open_browser(output_file)
+    index_page = _create_index_page(options, groups, result_dir)
+    _open_browser(index_page)
 
 
 def main():

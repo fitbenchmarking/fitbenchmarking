@@ -14,14 +14,18 @@ class CompareTable(Table):
 
     """
 
-    def __init__(self, results, options, group_dir, pp_locations, table_name):
+    def __init__(self, results, best_results, options, group_dir, pp_locations,
+                 table_name):
         """
         Initialise the compare table which shows both accuracy and runtime
         results
 
-        :param results: results nested array of objects
-        :type results: list of list of
-                       fitbenchmarking.utils.fitbm_result.FittingResult
+        :param results: Results grouped by row and category (for colouring)
+        :type results:
+            dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
+        :param best_results: The best results from each row/category
+        :type best_results:
+            dict[str, dict[str, utils.fitbm_result.FittingResult]],
         :param options: Options used in fitting
         :type options: utils.options.Options
         :param group_dir: path to the directory where group results should be
@@ -33,7 +37,8 @@ class CompareTable(Table):
         :param table_name: Name of the table
         :type table_name: str
         """
-        super().__init__(results, options, group_dir, pp_locations, table_name)
+        super().__init__(results, best_results, options, group_dir,
+                         pp_locations, table_name)
         self.name = 'compare'
         self.has_pp = True
         self.pp_filenames = \
@@ -89,12 +94,12 @@ class CompareTable(Table):
         if comp_mode == "abs":
             return result_template.format(acc_abs) + '<br>' + \
                 result_template.format(runtime_abs)
-        elif comp_mode == "rel":
+        if comp_mode == "rel":
             return result_template.format(acc_rel) + '<br>' + \
                 result_template.format(runtime_rel)
-        else:  # comp_mode == "both":
-            return result_template.format(acc_abs, acc_rel) + '<br>' + \
-                result_template.format(runtime_abs, runtime_rel)
+        # comp_mode == "both":
+        return result_template.format(acc_abs, acc_rel) + '<br>' + \
+            result_template.format(runtime_abs, runtime_rel)
 
     def vals_to_colour(self, vals, *args):
         """

@@ -65,7 +65,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks cost_func default
         """
-        expected = 'weighted_nlls'
+        expected = ['weighted_nlls']
         actual = self.options.cost_func_type
         self.assertEqual(expected, actual)
 
@@ -225,7 +225,7 @@ class UserFittingOptionTests(unittest.TestCase):
         """
         Checks user set cost_func_type is valid
         """
-        set_option = "nlls"
+        set_option = ["nlls"]
         config_str = \
             "[FITTING]\ncost_func_type: nlls"
         self.shared_valid('cost_func_type', set_option, config_str)

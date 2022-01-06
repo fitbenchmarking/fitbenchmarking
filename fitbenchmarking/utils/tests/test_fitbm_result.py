@@ -42,7 +42,7 @@ class FitbmResultTests(unittest.TestCase):
         self.cost_func = NLLSCostFunc(self.problem)
         self.jac = Scipy(self.cost_func)
         self.jac.method = "2-point"
-        self.hess = AnalyticHessian(self.cost_func.problem)
+        self.hess = AnalyticHessian(self.cost_func.problem, self.jac)
         self.result = FittingResult(
             options=self.options, cost_func=self.cost_func, jac=self.jac,
             hess=self.hess, chi_sq=self.chi_sq, runtime=self.runtime,
@@ -53,6 +53,31 @@ class FitbmResultTests(unittest.TestCase):
         self.result.min_chi_sq = self.min_chi_sq
         self.min_runtime = 1
         self.result.min_runtime = self.min_runtime
+
+    def test_fitting_result_str(self):
+        """
+        Test that the fitting result can be printed as a readable string.
+        """
+        self.assertEqual(str(self.result),
+                         "+================================+\n"
+                         "| FittingResult                  |\n"
+                         "+================================+\n"
+                         "| Cost Function | NLLSCostFunc   |\n"
+                         "+--------------------------------+\n"
+                         "| Problem       | cubic          |\n"
+                         "+--------------------------------+\n"
+                         "| Software      | None           |\n"
+                         "+--------------------------------+\n"
+                         "| Minimizer     | test_minimizer |\n"
+                         "+--------------------------------+\n"
+                         "| Jacobian      | Scipy          |\n"
+                         "+--------------------------------+\n"
+                         "| Hessian       | Analytic       |\n"
+                         "+--------------------------------+\n"
+                         "| Chi Squared   | 10             |\n"
+                         "+--------------------------------+\n"
+                         "| Runtime       | 0.01           |\n"
+                         "+--------------------------------+")
 
     def test_init_with_dataset_id(self):
         """
@@ -81,7 +106,7 @@ class FitbmResultTests(unittest.TestCase):
         self.cost_func = NLLSCostFunc(self.problem)
         self.jac = Scipy(self.cost_func)
         self.jac.method = "2-point"
-        self.hess = AnalyticHessian(self.cost_func.problem)
+        self.hess = AnalyticHessian(self.cost_func.problem, self.jac)
         self.result = FittingResult(
             options=self.options, cost_func=self.cost_func, jac=self.jac,
             hess=self.hess, chi_sq=chi_sq, runtime=runtime,
@@ -101,18 +126,36 @@ class FitbmResultTests(unittest.TestCase):
         self.assertTrue(np.isclose(params[1], self.result.params).all())
         self.assertEqual(chi_sq[1], self.result.chi_sq)
 
-    def test_norm_acc(self):
+    def test_norm_acc_finite_min(self):
         """
-        Test that sanitised names are correct.
+        Test that sanitised names are correct when min_chi_sq is finite.
         """
         expected = self.chi_sq / self.min_chi_sq
         self.assertEqual(self.result.norm_acc, expected)
 
-    def test_norm_runtime(self):
+    def test_norm_acc_infinite_min(self):
         """
-        Test that sanitised names are correct.
+        Test that sanitised names are correct when min_chi_sq is infinite.
+        """
+        expected = np.inf
+        self.result.chi_sq = np.inf
+        self.result.min_chi_sq = np.inf
+        self.assertEqual(self.result.norm_acc, expected)
+
+    def test_norm_runtime_finite_min(self):
+        """
+        Test that sanitised names are correct when min_runtime is finite.
         """
         expected = self.runtime / self.min_runtime
+        self.assertEqual(self.result.norm_runtime, expected)
+
+    def test_norm_runtime_infinite_min(self):
+        """
+        Test that sanitised names are correct when min_runtime is infinite.
+        """
+        expected = np.inf
+        self.result.runtime = np.inf
+        self.result.min_runtime = np.inf
         self.assertEqual(self.result.norm_runtime, expected)
 
     def test_sanitised_name(self):

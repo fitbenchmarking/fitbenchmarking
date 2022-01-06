@@ -52,6 +52,8 @@ values of the parameters. Here is an example of the final plot fit:
 .. figure:: ../../images/example_plot.png
    :alt: Example Plot
 
+.. _performance_profile:
+
 Performance Profile
 -------------------
 
@@ -59,7 +61,11 @@ With each test FitBenchmarking also produces a Dolan-Moré performance profile:
 
 .. figure:: ../../images/example_pp.png
 	    :alt: Example Performance Profile
-		  
+
+Fits are taken from all benchmarks, so if FitBenchmarking is run with
+``n`` problems and ``m`` cost functions, the resulting profile plots will have
+``n*m`` steps on the y-axis.
+
 The solvers appearing in the top left corner may be considered the best
 performing on this test set.
 See `Dolan and Moré (2001) <https://link.springer.com/article/10.1007/s101070100263>`_

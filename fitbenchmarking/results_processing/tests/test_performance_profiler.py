@@ -9,7 +9,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-from fitbenchmarking.core.results_output import preproccess_data
+from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -29,7 +29,7 @@ class PerformanceProfillerTests(unittest.TestCase):
         """
         self.results, self.acc_expected, self.runtime_expected = \
             self.generate_mock_results()
-        _ = preproccess_data(self.results)
+        _, self.results = preprocess_data(self.results)
         self.fig_dir = ''
         self.acc_name = "acc_profile.png"
         self.runtime_name = "runtime_profile.png"
@@ -72,6 +72,7 @@ class PerformanceProfillerTests(unittest.TestCase):
         acc_expected = []
         runtime_expected = []
         for i in range(self.num_problems):
+            problem.name = f'problem {i}'
             acc_results = acc_in[i][:]
             acc_expected.append(list(acc_results) / np.min(acc_results))
 
@@ -94,7 +95,7 @@ class PerformanceProfillerTests(unittest.TestCase):
                                                   chi_sq=acc_results[j],
                                                   runtime=runtime_results[j],
                                                   minimizer=minimizer))
-            results.append(prob_results)
+            results.extend(prob_results)
         return results, acc_expected, runtime_expected
 
     def test_correct_prepare_profile_data(self):

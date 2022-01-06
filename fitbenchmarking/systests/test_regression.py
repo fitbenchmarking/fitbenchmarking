@@ -6,9 +6,10 @@ try:
     from itertools import zip_longest
 except ImportError:
     from itertools import izip_longest as zip_longest
+
 import os
 from sys import platform
-import tempfile
+from tempfile import NamedTemporaryFile
 from unittest import TestCase
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 from conftest import run_for_test_types
@@ -29,35 +30,8 @@ class TestRegressionAll(TestCase):
         """
         Create an options file, run it, and get the results.
         """
-        results_dir = os.path.join(os.path.dirname(__file__),
-                                   'fitbenchmarking_results')
-
-        opts = setup_options()
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
-                                               mode='w',
-                                               delete=False)
-        opts.write_to_stream(opt_file)
-        opt_file.close()
-        problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               os.pardir,
-                                               'mock_problems',
-                                               'all_parsers_set'))
-        run([problem], results_dir, options_file=opt_file.name,
-            debug=True)
-        os.remove(opt_file.name)
-        opts = setup_options(multifit=True)
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
-                                               mode='w',
-                                               delete=False)
-        opts.write_to_stream(opt_file)
-        opt_file.close()
-        problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               os.pardir,
-                                               'mock_problems',
-                                               'multifit_set'))
-        run([problem], results_dir, options_file=opt_file.name,
-            debug=True)
-        os.remove(opt_file.name)
+        cls.results_dir = os.path.join(os.path.dirname(__file__),
+                                       "fitbenchmarking_results")
 
     def test_results_consistent_all(self):
         """
@@ -65,24 +39,11 @@ class TestRegressionAll(TestCase):
         containing all problem types against a single minimizer from each of
         the supported softwares
         """
+        problem_sub_directory = "all_parsers_set"
 
-        expected_file = os.path.join(os.path.dirname(__file__),
-                                     '{}_expected_results'.format(platform),
-                                     'all_parsers.txt')
+        run_benchmark(self.results_dir, problem_sub_directory)
 
-        actual_file = \
-            os.path.join(os.path.dirname(__file__),
-                         'fitbenchmarking_results',
-                         'all_parsers_set',
-                         'acc_weighted_nlls_table.txt')
-
-        with open(expected_file, 'r') as f:
-            expected = f.readlines()
-
-        with open(actual_file, 'r') as f:
-            actual = f.readlines()
-
-        diff, msg = diff_result(actual, expected)
+        diff, msg = compare_results(problem_sub_directory, "all_parsers.txt")
         self.assertListEqual([], diff, msg)
 
     def test_multifit_consistent(self):
@@ -90,23 +51,13 @@ class TestRegressionAll(TestCase):
         Regression testing that the results of fitting multifit problems
         against a single minimizer from mantid.
         """
+        problem_sub_directory = "multifit_set"
 
-        expected_file = os.path.join(os.path.dirname(__file__),
-                                     '{}_expected_results'.format(platform),
-                                     'multifit.txt')
+        run_benchmark(self.results_dir, problem_sub_directory,
+                      override_software=["mantid"],
+                      jac_num_method={"scipy": ["2-point", "3-point"]})
 
-        actual_file = os.path.join(os.path.dirname(__file__),
-                                   'fitbenchmarking_results',
-                                   'multifit_set',
-                                   'acc_weighted_nlls_table.txt')
-
-        with open(expected_file, 'r') as f:
-            expected = f.readlines()
-
-        with open(actual_file, 'r') as f:
-            actual = f.readlines()
-
-        diff, msg = diff_result(actual, expected)
+        diff, msg = compare_results(problem_sub_directory, "multifit.txt")
         self.assertListEqual([], diff, msg)
 
 
@@ -122,22 +73,8 @@ class TestRegressionMatlab(TestCase):
         """
         Create an options file, run it, and get the results.
         """
-        results_dir = os.path.join(os.path.dirname(__file__),
-                                   'fitbenchmarking_results')
-
-        opts = setup_options()
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
-                                               mode='w',
-                                               delete=False)
-        opts.write_to_stream(opt_file)
-        opt_file.close()
-        problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               os.pardir,
-                                               'mock_problems',
-                                               'all_parsers_set'))
-        run([problem], results_dir, options_file=opt_file.name,
-            debug=True)
-        os.remove(opt_file.name)
+        cls.results_dir = os.path.join(os.path.dirname(__file__),
+                                       'fitbenchmarking_results')
 
     def test_results_consistent_all(self):
         """
@@ -145,24 +82,11 @@ class TestRegressionMatlab(TestCase):
         containing all problem types against a single minimizer from each of
         the supported softwares
         """
+        problem_sub_directory = "all_parsers_set"
 
-        expected_file = os.path.join(os.path.dirname(__file__),
-                                     '{}_expected_results'.format(platform),
-                                     'matlab.txt')
+        run_benchmark(self.results_dir, problem_sub_directory)
 
-        actual_file = \
-            os.path.join(os.path.dirname(__file__),
-                         'fitbenchmarking_results',
-                         'all_parsers_set',
-                         'acc_weighted_nlls_table.txt')
-
-        with open(expected_file, 'r') as f:
-            expected = f.readlines()
-
-        with open(actual_file, 'r') as f:
-            actual = f.readlines()
-
-        diff, msg = diff_result(actual, expected)
+        diff, msg = compare_results(problem_sub_directory, "matlab.txt")
         self.assertListEqual([], diff, msg)
 
 
@@ -178,26 +102,8 @@ class TestRegressionDefault(TestCase):
         """
         Create an options file, run it, and get the results.
         """
-        results_dir = os.path.join(os.path.dirname(__file__),
-                                   'fitbenchmarking_results')
-
-        # Get defaults which should have minimizers for every software
-        opts = setup_options()
-        opt_file = tempfile.NamedTemporaryFile(suffix='.ini',
-                                               mode='w',
-                                               delete=False)
-        # while opt_file is open it cannot be reoponed on Windows NT or later
-        # and hence option available is to write to the stream directly
-        opts.write_to_stream(opt_file)
-        opt_file.close()
-        problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               os.pardir,
-                                               'mock_problems',
-                                               'default_parsers'))
-
-        run([problem], results_dir, options_file=opt_file.name,
-            debug=True)
-        os.remove(opt_file.name)
+        cls.results_dir = os.path.join(os.path.dirname(__file__),
+                                       'fitbenchmarking_results')
 
     def test_results_consistent(self):
         """
@@ -205,23 +111,12 @@ class TestRegressionDefault(TestCase):
         containing all problem types against a single minimizer from each of
         the supported softwares
         """
+        problem_sub_directory = "default_parsers"
 
-        expected_file = os.path.join(os.path.dirname(__file__),
-                                     '{}_expected_results'.format(platform),
-                                     'default_parsers.txt')
-        actual_file = \
-            os.path.join(os.path.dirname(__file__),
-                         'fitbenchmarking_results',
-                         'default_parsers',
-                         'acc_weighted_nlls_table.txt')
+        run_benchmark(self.results_dir, problem_sub_directory)
 
-        with open(expected_file, 'r') as f:
-            expected = f.readlines()
-
-        with open(actual_file, 'r') as f:
-            actual = f.readlines()
-
-        diff, msg = diff_result(actual, expected)
+        diff, msg = compare_results(problem_sub_directory,
+                                    "default_parsers.txt")
         self.assertListEqual([], diff, msg)
 
 
@@ -235,7 +130,7 @@ def diff_result(actual, expected):
     :param actual: The actual result
     :type actual: list of strings
     :return: The lines which differ and a formatted message
-    :rtype: list of list of strings and str
+    :rtype: list[list[str]], str
     """
     diff = []
     for i, (exp_line, act_line) in enumerate(
@@ -261,32 +156,130 @@ def diff_result(actual, expected):
     return diff, msg
 
 
-def setup_options(multifit=False):
+def compare_results(problem_sub_directory: str, result_filename: str) -> list:
+    """
+    Compares the expected benchmark results with the actual results,
+    and returns the lines which differ between expected and actual
+    along with a formatted message.
+
+    :param problem_sub_directory: The directory containing problems.
+    :type problem_sub_directory: str
+    :param result_filename: The name of the actual result file.
+    :type result_filename: str
+    :return: The lines which differ and a formatted message
+    :rtype: list[list[str]], str
+    """
+    expected_file = os.path.join(os.path.dirname(__file__),
+                                 f'{platform}_expected_results',
+                                 result_filename)
+
+    actual_file = os.path.join(os.path.dirname(__file__),
+                               'fitbenchmarking_results',
+                               problem_sub_directory,
+                               'acc_table.txt')
+
+    with open(expected_file, 'r') as f:
+        expected = f.readlines()
+
+    with open(actual_file, 'r') as f:
+        actual = f.readlines()
+
+    return diff_result(actual, expected)
+
+
+def setup_options(override_software: list = None,
+                  jac_num_method: dict = None) -> Options:
     """
     Setups up options class for system tests
+
+    :param override_software: The software to use instead of the
+    software determined by the test type.
+    :type override_software: list of strings
+    :param jac_num_method: The jacobian methods to use when fitting.
+    :type jac_num_method: dict{str: list[str]}
 
     :return: Fitbenchmarking options file for tests
     :rtype: fitbenchmarking.utils.options.Options
     """
-
-    # Get defaults which should have minimizers for every software
     opts = Options()
     opts.num_runs = 1
     opts.make_plots = False
-    # Use only the first minimizer from the selected software packages
-    if multifit:
-        opts.software = ['mantid']
-        opts.minimizers = {'mantid': [opts.minimizers['mantid'][0]]}
-    elif TEST_TYPE not in ['default', 'matlab']:
-        opts.software = ['bumps', 'gsl', 'levmar', 'mantid', 'ralfit', 'scipy',
-                         'scipy_ls']
-        opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
-    elif TEST_TYPE == "matlab":
-        opts.software = ['matlab', 'matlab_curve', 'matlab_opt',
-                         'matlab_stats']
-        opts.minimizers = {k: [v[0]] for k, v in opts.minimizers.items()}
-    else:
-        opts.software = ['bumps', 'scipy', 'scipy_ls']
-        opts.minimizers = {s: [opts.minimizers[s][0]] for s in opts.software}
 
+    # The software to test for the different test types.
+    # - 'dfo' and 'minuit' are included but are unstable for other datasets.
+    # - 'gradient_free' and 'scipy_go' are left out as they require bounds.
+    software = {"all": ["bumps", "dfo", "gsl", "levmar", "mantid", "minuit",
+                        "ralfit", "scipy", "scipy_ls"],
+                "default": ["bumps", "scipy", "scipy_ls"],
+                "matlab": ["matlab", "matlab_curve", "matlab_opt",
+                           "matlab_stats"]}
+
+    # The minimizers to test for each software
+    minimizers = {"bumps": "lm-bumps",
+                  "dfo": "dfols",
+                  "gsl": "lmsder",
+                  "levmar": "levmar",
+                  "mantid": "Levenberg-Marquardt",
+                  "matlab": "Nelder-Mead Simplex",
+                  "matlab_curve": "Levenberg-Marquardt",
+                  "matlab_opt": "levenberg-marquardt",
+                  "matlab_stats": "Levenberg-Marquardt",
+                  "minuit": "minuit",
+                  "ralfit": "hybrid",
+                  "scipy": "Nelder-Mead",
+                  "scipy_ls": "lm-scipy"}
+
+    opts.software = software.get(TEST_TYPE) if override_software is None \
+        else override_software
+    opts.minimizers = {s: [minimizers[s]] for s in opts.software}
+    if jac_num_method is not None:
+        opts.jac_num_method = jac_num_method
     return opts
+
+
+def create_options_file(override_software: list = None,
+                        jac_num_method: dict = None):
+    """
+    Creates a temporary options file and returns its name.
+
+    :param override_software: The software to use instead of the
+    software determined by the test type.
+    :type override_software: list of strings
+    :param jac_num_method: The jacobian methods to use when fitting.
+    :type jac_num_method: dict{str: list[str]}
+    :return: Name of the temporary options file.
+    :rtype: str
+    """
+    opts = setup_options(override_software, jac_num_method)
+    with NamedTemporaryFile(suffix='.ini', mode='w',
+                            delete=False) as opt_file:
+        opts.write_to_stream(opt_file)
+        name = opt_file.name
+    return name
+
+
+def run_benchmark(results_dir: str, problem_sub_directory: str,
+                  override_software: list = None,
+                  jac_num_method: dict = None) -> None:
+    """
+    Runs a benchmark of the problems in a specific directory
+    and places them in the results directory.
+
+    :param results_dir: The directory to place the results in.
+    :type results_dir: str
+    :param problem_sub_directory: The directory containing problems.
+    :type problem_sub_directory: str
+    :param override_software: The software to use instead of the
+    software determined by the test type.
+    :type override_software: list[str]
+    :param jac_num_method: The jacobian methods to use when fitting.
+    :type jac_num_method: dict{str: list[str]}
+    """
+    opt_file_name = create_options_file(override_software, jac_num_method)
+    problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                           os.pardir,
+                                           "mock_problems",
+                                           problem_sub_directory))
+    run([problem], results_dir, options_file=opt_file_name,
+        debug=True)
+    os.remove(opt_file_name)

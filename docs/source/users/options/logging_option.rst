@@ -61,8 +61,7 @@ Logging external output (:code:`external_output`)
 This selects the amount of information displayed from third-parties.
 There are 3 options:
 
-* ``display``: Print information from third-parties to the stdout stream
-               during a run.
+* ``display``: Print information from third-parties to the stdout stream during a run.
 * ``log_only``: Print information to the log file but not the stdout stream.
 * ``debug``: Do not intercept third-party use of output streams.
 
