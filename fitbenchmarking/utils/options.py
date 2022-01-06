@@ -53,7 +53,9 @@ class Options:
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing'],
-         'smoothd': ['SmoothD','SmoothD-Improved', 'Rembed']}
+         'smoothd': ['SmoothD', 'SmoothD-Improved', 'Rembed'],
+         'globalmultistart': ['ms3', 'regularisation', 'linesearch', 'l_bfgs']}
+
     VALID_FITTING = \
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general', 'simplex',
                             'trust_region', 'levenberg-marquardt',
@@ -62,7 +64,7 @@ class Options:
          'software': ['bumps', 'dfo', 'gradient_free', 'gsl', 'levmar',
                       'mantid', 'matlab', 'matlab_curve', 'matlab_opt',
                       'matlab_stats', 'minuit', 'ralfit', 'scipy',
-                      'scipy_ls', 'scipy_go', 'smoothd'],
+                      'scipy_ls', 'scipy_go', 'smoothd', 'globalmultistart'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'hes_method': ['default', 'analytic'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
@@ -123,7 +125,9 @@ class Options:
                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'dual_annealing'],
-         'smoothd': ['SmoothD','SmoothD-Improved','Rembed']}
+         'smoothd': ['SmoothD', 'SmoothD-Improved', 'Rembed'],
+         'globalmultistart': ['ms3', 'regularisation', 'linesearch', 'l_bfgs']}
+
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': ['all'],
