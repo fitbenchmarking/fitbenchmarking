@@ -144,6 +144,7 @@ WORKDIR /
 #################
 # install pygsl #
 #################
+RUN apt-get -y install swig
 RUN python -m pip install pygsl
 
 ###########
