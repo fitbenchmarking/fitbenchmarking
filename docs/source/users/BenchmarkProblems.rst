@@ -12,7 +12,9 @@ supported file format.
 
 .. topic:: Downloads
 	   
-	   | **You can download a folder containing all examples here:** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/examples.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/examples.tar.gz>`
+	   | **You can download a folder containing all examples here:**
+      | :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/examples.zip>`
+      | or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/examples.tar.gz>`
 	   | Individual problem sets are also available to download below.
 
 We supply some standard nonlinear least-squares test problems in the
@@ -30,7 +32,7 @@ Each of the test problems contain:
 * a definition of the fitting function, :math:`f({\boldsymbol{\beta}};x)`; and
 * (at least) one set of initial values for the function parameters :math:`{\boldsymbol{\beta}}_0`.
   
-If a problem doesn’t have observational
+If a problem doesn't have observational
 errors (e.g., the NIST problem set), then FitBenchmarking can
 approximate errors by taking :math:`\sigma_i = \sqrt{y_i}`.
 Alternatively, there is an option to disregard errors and solve the
@@ -46,10 +48,50 @@ the available fitting methods.
 
 Currently FitBenchmarking ships with data from the following sources:
 
+
+CrystalField Data (Mantid)
+==========================
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/CrystalField.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/CrystalField.tar.gz>`
+
+Elit et velit deserunt ex mollit nulla pariatur et ex laborum cillum est. Quis incididunt consequat est culpa excepteur qui mollit nostrud incididunt laborum. Exercitation enim fugiat tempor proident cupidatat anim eiusmod adipisicing voluptate enim duis in deserunt incididunt.
+
+These problems have ... parameters, and fit ... data points. 
+
+
+CUTEst (NIST files)
+===================
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/CUTEst.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/CUTEst.tar.gz>`
+
+Enim labore ea proident mollit officia minim exercitation amet do veniam. Culpa et reprehenderit officia nulla eu mollit ad Lorem Lorem officia. Nulla minim sit exercitation exercitation ex ad dolor eiusmod cillum laborum eiusmod consequat. Velit anim proident nostrud laboris Lorem ea pariatur culpa.
+
+
+Data Assimilation
+=================
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Data_Assimilation.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Data_Assimilation.tar.gz>`
+
+This folder (also found in `examples/benchmark_problems/Data_Assimilation`) contains
+two examples using the data assimilation problem definition in fitbenchmarking.
+These examples follow the method set out in 
+`this paper <https://www.researchgate.net/publication/324956488_Data_assimilation_approach_to_analysing_systems_of_ordinary_differential_equations>`_.
+
+These data files are synthetic and have been generated as an initial test of
+the minimizers. We plan to extend this with time series data which is more
+representative of the expectations for data assimilation in future updates.
+
+These problems have ... unknown parameters, and fit ... data points.
+
+
 Powder Diffraction Data (SIF files)
 ===================================
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.tar.gz>`
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/DIAMOND_SIF`)
 contain data from powder diffraction experiments.  The data supplied comes
@@ -103,24 +145,11 @@ These problems have between 5 and 13 unknown parameters, and fit around 1,000 da
    |MantidWarning|
 
 
-NIST
-====
-
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/NIST.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/NIST.tar.gz>`
-
-These problems (also found in the folder `examples/benchmark_problems/NIST`) contain
-data from the `NIST Nonlinear Regression <https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`_ test set.
-
-These problems are split into low, average and high difficulty.
-They have between 2 and 9 unknown parameters, and
-fit between 6 and 250 data points.
-
-
 Neutron Data (Mantid)
 =====================
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Neutron.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Neutron.tar.gz>`
-
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Neutron.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Neutron.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/Neutron`)
 contain
@@ -146,10 +175,36 @@ The WISH problems find 5 unknown parameters, and fit to 512 data points.
    |MantidWarning|
 
 
+NIST
+====
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/NIST.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/NIST.tar.gz>`
+
+These problems (also found in the folder `examples/benchmark_problems/NIST`) contain
+data from the `NIST Nonlinear Regression <https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`_ test set.
+
+These problems are split into low, average and high difficulty.
+They have between 2 and 9 unknown parameters, and
+fit between 6 and 250 data points.
+
+
+Poisson Data
+============
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Poisson.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Poisson.tar.gz>`
+
+Deserunt culpa consequat ullamco aliqua qui voluptate. Dolor nulla quis cillum voluptate duis incididunt aliqua labore quis officia voluptate deserunt. Pariatur ut veniam consequat fugiat. Ipsum fugiat sint culpa ipsum nisi Lorem cillum occaecat pariatur cupidatat incididunt sunt deserunt fugiat. Officia laborum officia culpa nisi eu ex qui esse dolor mollit qui. Et duis dolor ipsum pariatur elit eiusmod laboris aliqua enim dolore mollit anim.
+
+These problems have ... unknown parameters, and ... data points.
+
+
 Small Angle Scattering (SASView)
 ================================
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.tar.gz>`
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.tar.gz>`
 
 
 These problems (also found in the folder `examples/benchmark_problems/SAS_modelling/1D`) are
@@ -165,11 +220,12 @@ These have 6 unknown parameters, and fit to either 20 or 54 data points.
    The external package ``sasmodels`` must be installed to run this data
    set.  See :ref:`external-instructions` for details.
 
+
 CUTEst (SIF files)
 ==================
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/SIF.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/SIF.tar.gz>`
-
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/SIF.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/SIF.tar.gz>`
 
 This directory (also found in the folder `examples/benchmark_problems/SIF`) contain
 `SIF files <https://github.com/ralna/SIFDecode>`_
@@ -189,6 +245,9 @@ instrument at ISIS) have 1,025 data points (with 8 unknown parameters).
 
 SIF_GO
 ======
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/SIF_GO.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/SIF_GO.tar.gz>`
 
 This directory (also found in the folder `examples/benchmark_problems/SIF_GO`) contains
 `SIF files <https://github.com/ralna/SIFDecode>`_
@@ -217,23 +276,6 @@ a number of simple tests with known, and easy to obtain,
 answers.  We recommend that this is used to test any new minimizers
 that are added, and also that any new parsers reimplement these
 data sets and models (if possible).
-
-
-Data Assimilation
-=================
-
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/data_assimilation.zip>`
-or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/data_assimilation.tar.gz>`
-
-This folder (also found in `examples/benchmark_problems/data_assimilation`) contains
-two examples using the data assimilation problem definition in fitbenchmarking.
-These examples follow the method set out in 
-`this paper <https://www.researchgate.net/publication/324956488_Data_assimilation_approach_to_analysing_systems_of_ordinary_differential_equations>`_.
-
-These data files are synthetic and have been generated as an initial test of
-the minimizers. We plan to extend this with time series data which is more
-representative of the expectations for data assimilation in future updates.
-
 
 
 .. |CUTEstWarning| replace::
