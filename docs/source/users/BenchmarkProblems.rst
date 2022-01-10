@@ -55,9 +55,11 @@ CrystalField Data (Mantid)
 **Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/CrystalField.zip>`
 or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/CrystalField.tar.gz>`
 
-Elit et velit deserunt ex mollit nulla pariatur et ex laborum cillum est. Quis incididunt consequat est culpa excepteur qui mollit nostrud incididunt laborum. Exercitation enim fugiat tempor proident cupidatat anim eiusmod adipisicing voluptate enim duis in deserunt incididunt.
+This folder (also found in `examples/benchmark_problems/CrystalField`) contains
+a test set for inelastic neutron scattering measurements of transitions between
+crystal field energy levels.
 
-These problems have ... parameters, and fit ... data points. 
+This problem has 8 parameters, and fits around 200 data points. 
 
 
 CUTEst (NIST files)
@@ -66,8 +68,13 @@ CUTEst (NIST files)
 **Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/CUTEst.zip>`
 or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/CUTEst.tar.gz>`
 
-Enim labore ea proident mollit officia minim exercitation amet do veniam. Culpa et reprehenderit officia nulla eu mollit ad Lorem Lorem officia. Nulla minim sit exercitation exercitation ex ad dolor eiusmod cillum laborum eiusmod consequat. Velit anim proident nostrud laboris Lorem ea pariatur culpa.
+This folder (also found in `examples/benchmark_problems/CUTEst`) contains
+several problems from the `CUTEst <https://github.com/ralna/CUTEst>`_
+continuous optimization testing environment which have been converted to the NIST
+format.
 
+These problems all have 8 unknown parameters, and fit around 15 data points
+with the exception of ``VESUVIOLS`` which fits around 1000.
 
 Data Assimilation
 =================
@@ -84,7 +91,8 @@ These data files are synthetic and have been generated as an initial test of
 the minimizers. We plan to extend this with time series data which is more
 representative of the expectations for data assimilation in future updates.
 
-These problems have ... unknown parameters, and fit ... data points.
+These problems have either 2 or 3 unknown parameters, and fit either 100 or
+1000 data points for ``Simplified ANAC`` and ``Lorentz`` problems respectively.
 
 
 Powder Diffraction Data (SIF files)
@@ -109,7 +117,8 @@ These problems have either 66 or 99 unknown parameters, and fit around 5,000 dat
 MultiFit Data (Mantid)
 ======================
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/MultiFit.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/MultiFit.tar.gz>`
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/MultiFit.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/MultiFit.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/MultiFit`)
 contain data
@@ -124,11 +133,14 @@ See :ref:`The MultiFit documentation<multifit>` for more details.
    
    This will also only work using the :ref:`Mantid Minimizers<MantidMinimizers>`.
 
+Basic Multifit has 3 unknown parameters, and fits 40 data points.
+MUSR62260 has 18 unknown parameters, and fits around 8000 data points.
 
 Muon Data (Mantid)
 ==================
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Muon.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Muon.tar.gz>`
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Muon.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Muon.tar.gz>`
 
 
 These problems (also found in the folder `examples/benchmark_problems/Muon`)
@@ -195,9 +207,14 @@ Poisson Data
 **Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Poisson.zip>`
 or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Poisson.tar.gz>`
 
-Deserunt culpa consequat ullamco aliqua qui voluptate. Dolor nulla quis cillum voluptate duis incididunt aliqua labore quis officia voluptate deserunt. Pariatur ut veniam consequat fugiat. Ipsum fugiat sint culpa ipsum nisi Lorem cillum occaecat pariatur cupidatat incididunt sunt deserunt fugiat. Officia laborum officia culpa nisi eu ex qui esse dolor mollit qui. Et duis dolor ipsum pariatur elit eiusmod laboris aliqua enim dolore mollit anim.
+These problems (also found in the folder `examples/benchmark_problems/Poisson`) contain
+both simulated and real data measuring particle counts. The real data is ISIS
+muon data, and the simulated datasets have been made to represent counts using
+models provided by both Mantid and Bumps.
 
-These problems have ... unknown parameters, and ... data points.
+These problems have between 4 and 6 unknown parameters, and around 350, 800,
+and 2000 data points for simulated bumps, HIFI_160973, and simulated mantid
+respectively.
 
 
 Small Angle Scattering (SASView)
@@ -269,7 +286,8 @@ These problems have between 3 and 7 unknown parameters, and fit between 9 and 37
 Simple tests
 ============
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/simple_tests.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/simple_tests.tar.gz>`
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/simple_tests.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/simple_tests.tar.gz>`
 
 This folder (also found in `examples/benchmark_problems/simple_tests`) contains
 a number of simple tests with known, and easy to obtain,
@@ -277,6 +295,7 @@ answers.  We recommend that this is used to test any new minimizers
 that are added, and also that any new parsers reimplement these
 data sets and models (if possible).
 
+These problems have 3 or 4 unknown parameters, and around 100 data points.
 
 .. |CUTEstWarning| replace::
 		   The external packages CUTEst and pycutest must be installed to run
