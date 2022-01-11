@@ -3,6 +3,25 @@ FROM fitbenchmarking/fitbenchmarking-deps:latest
 
 WORKDIR /
 
+##############################################################
+# Update cmake -- kitware hosts 3.22 where ubuntu hosts 3.16 #
+# (follows instructions on apt.kitware.com)                  #
+##############################################################
+RUN apt-get install -y wget
+
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
+    | gpg --dearmor - \
+    | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+
+RUN echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main" \
+    | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
+
+RUN sudo apt-get update
+
+RUN sudo apt-get install -y kitware-archive-keyring
+
+RUN sudo apt-get install -y cmake
+
 #################
 # Install pygsl #
 #################
@@ -96,8 +115,11 @@ RUN apt-get install -y git g++ qt5-default clang-format-6.0 cmake dvipng doxygen
   python3-mock python3-psutil python3-requests python3-toml python3-yaml wget
 
 # Details from mantid website
-RUN wget https://downloads.sourceforge.net/project/mantid/6.0/mantid-6.0.0-Source.tar.xz
-RUN tar -xvf mantid-6.0.0-Source.tar.xz
+ARG MANTID_VERSION=6.2
+ARG MANTID_SOURCE="mantid-$MANTID_VERSION.0-Source"
+
+RUN wget https://downloads.sourceforge.net/project/mantid/$MANTID_VERSION/$MANTID_SOURCE.tar.xz
+RUN tar -xvf $MANTID_SOURCE.tar.xz
 RUN rm mantid*.xz
 
 RUN apt-get install -y ccache
@@ -106,7 +128,7 @@ RUN ccache --max-size=20G
 RUN mkdir -p /opt/Mantid
 
 WORKDIR /opt/Mantid
-RUN cmake /mantid-6.0.0-Source -DENABLE_MANTIDPLOT=OFF
+RUN cmake /$MANTID_SOURCE -DENABLE_PRECOMMIT=OFF
 RUN make
 
 ENV VIRTUAL_ENV=/opt/venv
@@ -122,8 +144,13 @@ WORKDIR /
 #################
 # install pygsl #
 #################
+RUN apt-get -y install swig
 RUN python -m pip install pygsl
 
+###########
+# Tidy up #
+###########
+RUN apt -y autoremove
 
 ## ALL SET UP ##
 WORKDIR /home/
