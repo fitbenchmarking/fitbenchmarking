@@ -257,6 +257,7 @@ The Mantid minimizers are set as follows:
             Conjugate gradient (Fletcher-Reeves imp.)
             Conjugate gradient (Polak-Ribiere imp.)
             Damped GaussNewton
+	    FABADA
             Levenberg-Marquardt
             Levenberg-MarquardtMD
             Simplex
