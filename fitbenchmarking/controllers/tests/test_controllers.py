@@ -757,7 +757,7 @@ class ExternalControllerTests(TestCase):
         for minimizer in minimizers:
             controller.minimizer = minimizer
             self.shared_tests.controller_run_test(controller)
-            
+
             controller._status = "success"
             self.shared_tests.check_converged(controller)
             controller._status = "Failed to converge"
