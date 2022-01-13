@@ -32,10 +32,10 @@ class MantidController(Controller):
                     'Conjugate gradient (Polak-Ribiere imp.)',
                     'Damped GaussNewton', 'Levenberg-Marquardt',
                     'Levenberg-MarquardtMD', 'Simplex', 'SteepestDescent',
-                    'Trust Region','FABADA'],
+                    'Trust Region', 'FABADA'],
             'ls': ['Levenberg-Marquardt', 'Levenberg-MarquardtMD',
-                   'Trust Region','FABADA'],
-            'deriv_free': ['Simplex','FABADA'],
+                   'Trust Region', 'FABADA'],
+            'deriv_free': ['Simplex', 'FABADA'],
             'general': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
                         'Conjugate gradient (Polak-Ribiere imp.)',
                         'Damped GaussNewton', 'Simplex', 'SteepestDescent'],
@@ -231,7 +231,7 @@ class MantidController(Controller):
         """
         Run problem with Mantid.
         """
-        if self.minimizer=='FABADA':
+        if self.minimizer == 'FABADA':
             # The max iterations needs to be larger for FABADA
             # to work; setting to the value in the mantid docs
             fit_result = msapi.Fit(Function=self._mantid_function,
