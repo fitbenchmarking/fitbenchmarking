@@ -111,6 +111,36 @@ def grad2_r_poisson(x, y, p):
                       p[0]*x**2*np.exp((x*p[1]))], ])
 
 
+class TestHessianName(TestCase):
+    """
+    Tests for the name function
+    """
+
+    def setUp(self):
+        """
+        Setting up tests
+        """
+        options = Options()
+        self.fitting_problem = FittingProblem(options)
+        self.jacobian = JacobianClass(self.fitting_problem)
+
+    def test_scipy_hessian(self):
+        """
+        Test the name is correct for the scipy hessian.
+        """
+        hessian = Scipy(self.fitting_problem, self.jacobian)
+        hessian.method = 'some_method'
+        self.assertEqual(hessian.name(), "scipy some_method")
+
+    def test_analytic_hessian(self):
+        """
+        Test the name is correct for the analytic hessian.
+        """
+        hessian = Analytic(self.fitting_problem, self.jacobian)
+        hessian.method = 'some_method'
+        self.assertEqual(hessian.name(), "analytic")
+
+
 class TestHessianClass(TestCase):
     """
     Tests for Hessian classes
