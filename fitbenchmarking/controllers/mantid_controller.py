@@ -231,26 +231,21 @@ class MantidController(Controller):
         """
         Run problem with Mantid.
         """
+        minimizer_str = self.minimizer
         if self.minimizer == 'FABADA':
             # The max iterations needs to be larger for FABADA
             # to work; setting to the value in the mantid docs
-            minimizer_str = self.minimizer+(",Chain Length=100000"
-                                            ",Steps between values=10"
-                                            ",Convergence Criteria=0.01")
-            fit_result = msapi.Fit(Function=self._mantid_function,
-                                   CostFunction=self._cost_function,
-                                   Minimizer=minimizer_str,
-                                   InputWorkspace=self._mantid_data,
-                                   Output='fit',
-                                   MaxIterations=2000000,
-                                   **self._added_args)
-        else:
-            fit_result = msapi.Fit(Function=self._mantid_function,
-                                   CostFunction=self._cost_function,
-                                   Minimizer=self.minimizer,
-                                   InputWorkspace=self._mantid_data,
-                                   Output='fit',
-                                   **self._added_args)
+            minimizer_str += (",Chain Length=100000"
+                                        ",Steps between values=10"
+                                        ",Convergence Criteria=0.01")
+            self._added_args['MaxIterations'] = 2e6
+
+        fit_result = msapi.Fit(Function=self._mantid_function,
+                               CostFunction=self._cost_function,
+                               Minimizer=minimizer_str,
+                               InputWorkspace=self._mantid_data,
+                               Output='fit',
+                               **self._added_args)
 
         self._mantid_results = fit_result
         self._status = self._mantid_results.OutputStatus
