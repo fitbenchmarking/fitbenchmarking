@@ -238,7 +238,7 @@ class MantidController(Controller):
             minimizer_str += (",Chain Length=100000"
                               ",Steps between values=10"
                               ",Convergence Criteria=0.01")
-            self._added_args['MaxIterations'] = 2e6
+            self._added_args['MaxIterations'] = 2000000
 
         fit_result = msapi.Fit(Function=self._mantid_function,
                                CostFunction=self._cost_function,
