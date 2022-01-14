@@ -150,12 +150,10 @@ class FittingResult:
             name += f' [{self.software_tag}]'
 
         if self.jacobian_tag:
-            name += f': {self.jacobian_tag}'
-        elif self.hessian_tag:
-            name += ': default'
+            name += f': j:{self.jacobian_tag}'
 
         if self.hessian_tag:
-            name += f' {self.hessian_tag}'
+            name += f' h:{self.hessian_tag}'
 
         return name
 
