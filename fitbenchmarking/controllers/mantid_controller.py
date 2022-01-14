@@ -32,10 +32,10 @@ class MantidController(Controller):
                     'Conjugate gradient (Polak-Ribiere imp.)',
                     'Damped GaussNewton', 'Levenberg-Marquardt',
                     'Levenberg-MarquardtMD', 'Simplex', 'SteepestDescent',
-                    'Trust Region'],
+                    'Trust Region', 'FABADA'],
             'ls': ['Levenberg-Marquardt', 'Levenberg-MarquardtMD',
-                   'Trust Region'],
-            'deriv_free': ['Simplex'],
+                   'Trust Region', 'FABADA'],
+            'deriv_free': ['Simplex', 'FABADA'],
             'general': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
                         'Conjugate gradient (Polak-Ribiere imp.)',
                         'Damped GaussNewton', 'Simplex', 'SteepestDescent'],
@@ -49,7 +49,7 @@ class MantidController(Controller):
             'conjugate_gradient': ['Conjugate gradient (Fletcher-Reeves imp.)',
                                    'Conjugate gradient (Polak-Ribiere imp.)'],
             'steepest_descent': ['SteepestDescent'],
-            'global_optimization': []}
+            'global_optimization': ['FABADA']}
 
     jacobian_enabled_solvers = ['BFGS',
                                 'Conjugate gradient (Fletcher-Reeves imp.)',
@@ -231,9 +231,18 @@ class MantidController(Controller):
         """
         Run problem with Mantid.
         """
+        minimizer_str = self.minimizer
+        if self.minimizer == 'FABADA':
+            # The max iterations needs to be larger for FABADA
+            # to work; setting to the value in the mantid docs
+            minimizer_str += (",Chain Length=100000"
+                              ",Steps between values=10"
+                              ",Convergence Criteria=0.01")
+            self._added_args['MaxIterations'] = 2000000
+
         fit_result = msapi.Fit(Function=self._mantid_function,
                                CostFunction=self._cost_function,
-                               Minimizer=self.minimizer,
+                               Minimizer=minimizer_str,
                                InputWorkspace=self._mantid_data,
                                Output='fit',
                                **self._added_args)
