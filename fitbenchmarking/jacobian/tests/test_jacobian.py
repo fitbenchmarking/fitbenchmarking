@@ -109,6 +109,10 @@ class TestJacobianName(TestCase):
         """
         options = Options()
         self.fitting_problem = FittingProblem(options)
+        self.fitting_problem.function = f
+        self.fitting_problem.jacobian = j
+        self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
+        self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
 
     def test_scipy_jacobian(self):
         """

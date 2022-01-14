@@ -122,6 +122,11 @@ class TestHessianName(TestCase):
         """
         options = Options()
         self.fitting_problem = FittingProblem(options)
+        self.fitting_problem.function = f_ls
+        self.fitting_problem.jacobian = J_ls
+        self.fitting_problem.hessian = H_ls
+        self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
+        self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.jacobian = JacobianClass(self.fitting_problem)
 
     def test_scipy_hessian(self):

@@ -181,7 +181,7 @@ class FitbmResultTests(unittest.TestCase):
         self.result.jacobian_tag = 'j1'
         self.result.hessian_tag = 'h1'
         self.assertEqual(self.result.modified_minimizer_name(False),
-                         'm1: j1 h1')
+                         'm1: j:j1 h:h1')
 
     def test_modified_minimizer_name_with_software(self):
         """
@@ -192,7 +192,7 @@ class FitbmResultTests(unittest.TestCase):
         self.result.jacobian_tag = 'j1'
         self.result.hessian_tag = 'h1'
         self.assertEqual(self.result.modified_minimizer_name(True),
-                         'm1 [s1]: j1 h1')
+                         'm1 [s1]: j:j1 h:h1')
 
     def test_sanitised_min_name_no_software(self):
         """
@@ -203,7 +203,7 @@ class FitbmResultTests(unittest.TestCase):
         self.result.jacobian_tag = 'j1'
         self.result.hessian_tag = 'h1'
         self.assertEqual(self.result.sanitised_min_name(False),
-                         'm1_j1_h1')
+                         'm1_jj1_hh1')
 
     def test_sanitised_min_name_with_software(self):
         """
@@ -214,7 +214,7 @@ class FitbmResultTests(unittest.TestCase):
         self.result.jacobian_tag = 'j1'
         self.result.hessian_tag = 'h1'
         self.assertEqual(self.result.sanitised_min_name(True),
-                         'm1_[s1]_j1_h1')
+                         'm1_[s1]_jj1_hh1')
 
 
 if __name__ == "__main__":

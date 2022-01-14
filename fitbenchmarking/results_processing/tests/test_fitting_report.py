@@ -113,7 +113,7 @@ class CreateProbGroupTests(unittest.TestCase):
                                          options=self.options)
         file_name = self.result.fitting_report_link
         expected = os.path.join(os.path.relpath(self.dir.name),
-                                'prob_a_nllscostfunc_min_a_[s1]_j1.html')
+                                'prob_a_nllscostfunc_min_a_[s1]_jj1.html')
 
         self.assertEqual(file_name, expected)
 

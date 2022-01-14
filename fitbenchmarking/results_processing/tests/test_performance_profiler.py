@@ -17,7 +17,7 @@ from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
 
-class PerformanceProfillerTests(unittest.TestCase):
+class PerformanceProfilerTests(unittest.TestCase):
     """
     General tests for the performance profiler code.
     """
@@ -107,8 +107,8 @@ class PerformanceProfillerTests(unittest.TestCase):
         acc_dict = OrderedDict()
         runtime_dict = OrderedDict()
         for j in range(self.num_minimizers):
-            acc_dict['min_{} [s1]: j1'.format(j)] = acc_expected[j]
-            runtime_dict['min_{} [s1]: j1'.format(j)] = runtime_expected[j]
+            acc_dict['min_{} [s1]: j:j1'.format(j)] = acc_expected[j]
+            runtime_dict['min_{} [s1]: j:j1'.format(j)] = runtime_expected[j]
         for k, v in acc_dict.items():
             assert np.allclose(v, acc[k])
         for k, v in runtime_dict.items():
