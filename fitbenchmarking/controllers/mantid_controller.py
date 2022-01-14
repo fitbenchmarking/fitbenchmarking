@@ -236,8 +236,8 @@ class MantidController(Controller):
             # The max iterations needs to be larger for FABADA
             # to work; setting to the value in the mantid docs
             minimizer_str += (",Chain Length=100000"
-                                        ",Steps between values=10"
-                                        ",Convergence Criteria=0.01")
+                              ",Steps between values=10"
+                              ",Convergence Criteria=0.01")
             self._added_args['MaxIterations'] = 2e6
 
         fit_result = msapi.Fit(Function=self._mantid_function,
