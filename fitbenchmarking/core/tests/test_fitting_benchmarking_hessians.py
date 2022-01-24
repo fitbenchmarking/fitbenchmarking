@@ -171,6 +171,24 @@ class LoopOverHessiansTests(unittest.TestCase):
                                      grabbed_output)
         self.assertEqual(results[0].error_flag, 6)
 
+    @patch('fitbenchmarking.core.fitting_benchmarking.perform_fit')
+    def test_multifit_num_results(self, perform_fit):
+        """
+        Test that a multifit problem produces the correct number of results.
+        """
+        cost_func = make_cost_function('multifit_set/multifit.txt')
+        problem = cost_func.problem
+        cost_func.jacobian = Scipy(problem)
+        controller = DummyController(cost_func=cost_func)
+        options = problem.options
+        grabbed_output = output_grabber.OutputGrabber(options)
+        controller.final_params = [[0.1, 0.1], [0.1, 0.1]]
+        perform_fit.return_value = ([0.1, 0.2], [0.1, 0.01])
+        results = loop_over_hessians(controller=controller,
+                                     options=options,
+                                     grabbed_output=grabbed_output)
+        self.assertTrue(len(results) == 2)
+
 
 if __name__ == "__main__":
     unittest.main()

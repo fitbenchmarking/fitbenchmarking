@@ -101,6 +101,7 @@ class PerformanceProfilerTests(unittest.TestCase):
         """
         Test that prepare profile data gives the correct result
         """
+        list(list(self.results.values())[0].values())[0][0].jacobian_tag = ''
         acc, runtime = performance_profiler.prepare_profile_data(self.results)
         acc_expected = np.array(self.acc_expected).T
         runtime_expected = np.array(self.runtime_expected).T
