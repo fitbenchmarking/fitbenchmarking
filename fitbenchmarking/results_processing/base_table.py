@@ -361,7 +361,7 @@ class Table:
                      'props': [('border-left-width', '3px')]}]
                 for k in column_dividers})
 
-        return table_style.render()
+        return table_style.to_html(table_uuid='table')
 
     def to_txt(self):
         """

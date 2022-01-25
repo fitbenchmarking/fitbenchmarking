@@ -42,7 +42,7 @@ class Options:
                     'Conjugate gradient (Polak-Ribiere imp.)',
                     'Damped GaussNewton', 'Levenberg-Marquardt',
                     'Levenberg-MarquardtMD', 'Simplex',
-                    'SteepestDescent', 'Trust Region'],
+                    'SteepestDescent', 'Trust Region', 'FABADA'],
          'matlab': ['Nelder-Mead Simplex'],
          'matlab_curve': ['Levenberg-Marquardt', 'Trust-Region'],
          'matlab_opt': ['levenberg-marquardt', 'trust-region-reflective'],

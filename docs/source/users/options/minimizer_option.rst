@@ -231,6 +231,8 @@ It has support for a number of minimizers, most of which are from GSL.
 
 * `Damped GaussNewton <https://docs.mantidproject.org/nightly/fitting/fitminimizers/DampedGaussNewton.html>`__ (:code:`Damped GaussNewton`)
 
+* `FABADA <https://docs.mantidproject.org/nightly/concepts/FABADA.html>`__ (:code:`FABADA`)
+ 
 * `Levenberg-Marquardt algorithm <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardt.html>`__ (:code:`Levenberg-Marquardt`)
 
 * `Levenberg-Marquardt MD <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardtMD.html>`__ (:code:`Levenberg-MarquardtMD`) - An implementation of Levenberg-Marquardt intended for MD workspaces, where work is divided into chunks to achieve a greater efficiency for a large number of data points.
@@ -255,6 +257,7 @@ The Mantid minimizers are set as follows:
             Conjugate gradient (Fletcher-Reeves imp.)
             Conjugate gradient (Polak-Ribiere imp.)
             Damped GaussNewton
+	    FABADA
             Levenberg-Marquardt
             Levenberg-MarquardtMD
             Simplex

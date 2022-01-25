@@ -5,3 +5,4 @@ coverage==5.3
 pylint==2.9.5
 flake8==3.9.2
 pylint-exit==1.2.0
+pandas==1.4.0
