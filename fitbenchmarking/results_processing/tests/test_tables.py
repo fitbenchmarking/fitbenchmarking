@@ -221,19 +221,11 @@ class GenerateTableTests(unittest.TestCase):
         with open(expected, 'r') as f:
             exp_lines = f.readlines()
 
-        file_extension = expected.split('.')[1]
-        if file_extension == 'txt':
-            html_id_expected = ''
-            html_id = ''
-        elif file_extension == 'html':
-            html_id_expected = exp_lines[1].strip(' ').split('row')[0][1:]
-            html_id = achieved.splitlines()[1].strip(' ').split('row')[0][1:]
         diff = []
         for i, (act_line, exp_line) in enumerate(
                 zip(achieved.splitlines(), exp_lines)):
             exp_line = '' if exp_line is None else exp_line.strip('\n')
             act_line = '' if act_line is None else act_line.strip('\n')
-            exp_line = exp_line.replace(html_id_expected, html_id)
             # to pass on windows need to first do this before comparing
             act_line = act_line.replace('href=\"..\\', 'href=\"../')
             if act_line != exp_line:
