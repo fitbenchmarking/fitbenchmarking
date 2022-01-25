@@ -6,6 +6,9 @@ import os
 import unittest
 from unittest.mock import patch
 
+from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
+
+from conftest import run_for_test_types
 from fitbenchmarking import mock_problems
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.core.fitting_benchmarking import loop_over_hessians
@@ -171,6 +174,7 @@ class LoopOverHessiansTests(unittest.TestCase):
                                      grabbed_output)
         self.assertEqual(results[0].error_flag, 6)
 
+    @run_for_test_types(TEST_TYPE, 'all')
     @patch('fitbenchmarking.core.fitting_benchmarking.perform_fit')
     def test_multifit_num_results(self, perform_fit):
         """
