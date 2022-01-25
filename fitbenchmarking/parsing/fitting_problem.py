@@ -140,7 +140,7 @@ class FittingProblem:
         self.timer.check_elapsed_time()
 
         x = kwargs.get("x", self.data_x)
-        return self.function(x, *params)
+        return self.function(x, *params)  # pylint: disable=not-callable
 
     @property
     def param_names(self):
