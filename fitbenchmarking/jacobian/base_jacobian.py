@@ -59,3 +59,12 @@ class Jacobian:
         :type value: str
         """
         self._method = value
+
+    def name(self) -> str:
+        """
+        Get a name for the current status of the jacobian.
+
+        :return: A unique name for this jacobian/method combination
+        :rtype: str
+        """
+        return f'{self.__class__.__name__.lower()} {self.method}'

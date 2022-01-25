@@ -61,3 +61,12 @@ class Hessian:
         :type value: str
         """
         self._method = value
+
+    def name(self) -> str:
+        """
+        Get a name for the current status of the hessian.
+
+        :return: A unique name for this hessian/method combination
+        :rtype: str
+        """
+        return f'{self.__class__.__name__.lower()} {self.method}'

@@ -1,6 +1,6 @@
-                                 matlab           matlab_curve                         matlab_opt        matlab_stats
-                    Nelder-Mead Simplex    Levenberg-Marquardt levenberg-marquardt: scipy 2-point Levenberg-Marquardt
-BENNETT5            1.66e-05 (1.024)[1]       1.652e-05 (1.02)                   1.652e-05 (1.02)        1.62e-05 (1)
-cubic, Start 1  0.003982 (1.031e+19)[1]  9.158e-15 (2.372e+07)              9.158e-15 (2.372e+07)       3.862e-22 (1)
-cubic, Start 2    7.176e-11 (1.859e+11)  1.593e-17 (4.126e+04)              1.592e-17 (4.124e+04)       3.861e-22 (1)
-Problem Def 1              inf (inf)[4]   22.45 (1.729e+11)[1]                   1.299e-10 (1)[2]        inf (inf)[4]
+                                 matlab           matlab_curve                           matlab_opt        matlab_stats
+                    Nelder-Mead Simplex    Levenberg-Marquardt levenberg-marquardt: j:scipy 2-point Levenberg-Marquardt
+BENNETT5            1.66e-05 (1.024)[1]       1.652e-05 (1.02)                     1.652e-05 (1.02)        1.62e-05 (1)
+cubic, Start 1  0.003982 (1.031e+19)[1]  9.158e-15 (2.372e+07)                9.158e-15 (2.372e+07)       3.862e-22 (1)
+cubic, Start 2    7.176e-11 (1.859e+11)  1.593e-17 (4.126e+04)                1.592e-17 (4.124e+04)       3.861e-22 (1)
+Problem Def 1              inf (inf)[4]   22.45 (1.729e+11)[1]                     1.299e-10 (1)[2]        inf (inf)[4]

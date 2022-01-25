@@ -16,7 +16,8 @@ class FittingResult:
 
     def __init__(self, options, cost_func, jac, hess, initial_params, params,
                  name=None, chi_sq=None, runtime=None, software=None,
-                 minimizer=None, error_flag=None, dataset_id=None):
+                 minimizer=None, error_flag=None, algorithm_type=None,
+                 dataset_id=None):
         """
         Initialise the Fitting Result
 
@@ -25,10 +26,10 @@ class FittingResult:
         :param cost_func: Cost function object selected from options.
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
-        :param jac: The Jacobian definition
-        :type jac: fitbenchmarking.jacobian.base_jacobian.Jacobian subclass
-        :param hess: The Hessian definition
-        :type hess: fitbenchmarking.hessian.base_hessian.Hessian subclass
+        :param jac: The Jacobian used in the fitting
+        :type jac: str
+        :param hess: The Hessian used in the fitting
+        :type hess: str
         :param initial_params: The starting parameters for the fit
         :type initial_params: list of float
         :param params: The parameters found by the fit
@@ -45,6 +46,9 @@ class FittingResult:
         :type minimizer: str, optional
         :param error_flag: [description], defaults to None
         :type error_flag: [type], optional
+        :param algorithm_type: The tags associated with the minimizer,
+                               defaults to None
+        :type algorithm_type: str, optional
         :param dataset_id: The index of the dataset (Only used for MultiFit),
                            defaults to None
         :type dataset_id: int, optional
@@ -52,8 +56,6 @@ class FittingResult:
         self.options = options
         self.cost_func = cost_func
         self.problem = self.cost_func.problem
-        self.jac = jac
-        self.hess = hess
         self.name = name if name is not None else \
             self.problem.name
 
@@ -84,6 +86,9 @@ class FittingResult:
         # Minimizer for a certain problem and its function definition
         self.software = software
         self.minimizer = minimizer
+        self.algorithm_type = algorithm_type
+        self.jac = jac
+        self.hess = hess
 
         # String interpretations of the params
         self.ini_function_params = self.problem.get_function_params(
@@ -109,12 +114,14 @@ class FittingResult:
         self.is_best_fit = False
 
         # Attributes for table creation
-        self.costfun_tag = self.cost_func.__class__.__name__
-        self.problem_tag = self.name
-        self.software_tag = self.software
-        self.minimizer_tag = self.minimizer
-        self.jacobian_tag = self.jac.__class__.__name__
-        self.hessian_tag = self.hess.__class__.__name__
+        self.costfun_tag: str = self.cost_func.__class__.__name__
+        self.problem_tag: str = self.name
+        self.software_tag: str = self.software \
+            if self.software is not None else ""
+        self.minimizer_tag: str = self.minimizer \
+            if self.minimizer is not None else ""
+        self.jacobian_tag: str = self.jac if self.jac is not None else ""
+        self.hessian_tag: str = self.hess if self.hess is not None else ""
 
     def __str__(self):
         info = {"Cost Function": self.costfun_tag,
@@ -127,6 +134,39 @@ class FittingResult:
                 "Runtime": self.runtime}
 
         return get_printable_table("FittingResult", info)
+
+    def modified_minimizer_name(self, with_software: bool = False) -> str:
+        """
+        Get a minimizer name which contains jacobian and hessian information.
+        Optionally also include the software.
+
+        :param with_software: Add software to the name, defaults to False
+        :type with_software: bool, optional
+        :return: A name for the result combination
+        :rtype: str
+        """
+        name: str = self.minimizer_tag
+        if with_software:
+            name += f' [{self.software_tag}]'
+
+        if self.jacobian_tag:
+            name += f': j:{self.jacobian_tag}'
+
+        if self.hessian_tag:
+            name += f' h:{self.hessian_tag}'
+
+        return name
+
+    def sanitised_min_name(self, with_software=False):
+        """
+        Sanitise the modified minimizer name into one which can be used as a
+        filename.
+
+        :return: sanitised name
+        :rtype: str
+        """
+        return self.modified_minimizer_name(with_software)\
+            .replace(':', '').replace(' ', '_')
 
     @property
     def norm_acc(self):
@@ -188,20 +228,6 @@ class FittingResult:
         """
         return self.name.replace(',', '').replace(' ', '_')
 
-    @property
-    def sanitised_min_name(self):
-        """
-        Sanitise the minimizer name into one which can be used as a filename.
-
-        :return: sanitised name
-        :rtype: str
-        """
-        return self.minimizer.replace(':', '').replace(' ', '_')
-
     @sanitised_name.setter
     def sanitised_name(self, value):
         raise RuntimeError('sanitised_name can not be edited')
-
-    @sanitised_min_name.setter
-    def sanitised_min_name(self, value):
-        raise RuntimeError('sanitised_min_name can not be edited')
