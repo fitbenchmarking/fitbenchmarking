@@ -61,6 +61,8 @@ crystal field energy levels.
 
 This problem has 8 parameters, and fits around 200 data points. 
 
+.. warning::   
+   |MantidWarning|
 
 CUTEst (NIST files)
 ===================
@@ -215,7 +217,8 @@ models provided by both Mantid and Bumps.
 These problems have between 4 and 6 unknown parameters, and around 350, 800,
 and 2000 data points for simulated bumps, HIFI_160973, and simulated mantid
 respectively.
-
+.. warning::   
+   |MantidWarning|
 
 Small Angle Scattering (SASView)
 ================================
