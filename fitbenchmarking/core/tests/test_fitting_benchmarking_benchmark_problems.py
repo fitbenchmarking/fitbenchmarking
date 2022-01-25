@@ -92,9 +92,8 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         problem_fails = self.problem_fails
         unselected_minimizers = {"scipy": []}
         self.count += 1
-        expect_minimizers = {"scipy": ['TNC', 'lm-scipy']}
         return individual_problem_results, problem_fails, \
-            unselected_minimizers, expect_minimizers
+            unselected_minimizers
 
     def shared_tests(self, list_len, expected_problem_fails):
         """
@@ -105,12 +104,11 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         :param expected_problem_fails: list of problems which fail
         :type expected_problem_fails: list
         """
-        results, failed_problems, unselected_minimizers, minimizer_dict = \
+        results, failed_problems, unselected_minimizers = \
             loop_over_benchmark_problems(self.problem_group, self.options)
         assert len(results) == list_len
         assert failed_problems == expected_problem_fails
         dict_test(unselected_minimizers, {"scipy": []})
-        dict_test(minimizer_dict, {"scipy": ['TNC', 'lm-scipy']})
 
     @unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
     def test_run_multiple_benchmark_problems(self, loop_over_starting_values):

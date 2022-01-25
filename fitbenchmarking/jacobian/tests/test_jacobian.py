@@ -51,7 +51,7 @@ def j(x, p):
     :rtype: 1D numpy array
     """
     return np.column_stack((np.exp(p[1] * x),
-                           x * p[0] * np.exp(p[1] * x)))
+                            x * p[0] * np.exp(p[1] * x)))
 
 
 def J(x, p):
@@ -96,6 +96,39 @@ def J_poisson(x, y, p):
     """
     return np.column_stack((-y/p[0]+np.exp(p[1]*x),
                             -y*x+p[0]*x*np.exp(p[1]*x)))
+
+
+class TestJacobianName(TestCase):
+    """
+    Tests for the name function
+    """
+
+    def setUp(self):
+        """
+        Setting up tests
+        """
+        options = Options()
+        self.fitting_problem = FittingProblem(options)
+        self.fitting_problem.function = f
+        self.fitting_problem.jacobian = j
+        self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
+        self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
+
+    def test_scipy_jacobian(self):
+        """
+        Test the name is correct for the scipy jacobian.
+        """
+        jacobian = Scipy(self.fitting_problem)
+        jacobian.method = 'some_method'
+        self.assertEqual(jacobian.name(), "scipy some_method")
+
+    def test_analytic_jacobian(self):
+        """
+        Test the name is correct for the analytic jacobian.
+        """
+        jacobian = Analytic(self.fitting_problem)
+        jacobian.method = 'some_method'
+        self.assertEqual(jacobian.name(), "analytic")
 
 
 class TestJacobianClass(TestCase):

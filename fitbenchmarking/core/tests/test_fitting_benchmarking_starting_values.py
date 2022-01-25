@@ -85,10 +85,8 @@ class LoopOverStartingValuesTests(unittest.TestCase):
             self.individual_problem_results[self.count]
         unselected_minimizers = self.unselected_minimizers
         self.count += 1
-        expect_minimizers = {"scipy": ['TNC', 'lm-scipy']}
         return (individual_problem_results,
-                unselected_minimizers,
-                expect_minimizers)
+                unselected_minimizers)
 
     def shared_tests(self, expected_list_len, expected_problem_fails,
                      expected_unselected_minimizers):
@@ -103,15 +101,14 @@ class LoopOverStartingValuesTests(unittest.TestCase):
                                                unselected minimizer
         :type expected_unselected_minimizers: dict
         """
-        problem_results, problem_fails, unselected_minimizers,\
-            minimizer_dict = loop_over_starting_values(self.problem,
-                                                       self.options,
-                                                       self.grabbed_output)
+        problem_results, problem_fails, unselected_minimizers \
+            = loop_over_starting_values(self.problem,
+                                        self.options,
+                                        self.grabbed_output)
         assert len(problem_results) == expected_list_len
         assert problem_fails == expected_problem_fails
 
         dict_test(unselected_minimizers, expected_unselected_minimizers)
-        dict_test(minimizer_dict, {"scipy": ['TNC', 'lm-scipy']})
 
     @unittest.mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_multiple_starting_values(self, loop_over_fitting_software):

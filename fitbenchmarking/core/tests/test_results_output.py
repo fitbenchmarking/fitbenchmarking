@@ -22,8 +22,6 @@ from fitbenchmarking.core.results_output import (_extract_tags,
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
-from fitbenchmarking.jacobian.numdifftools_jacobian import Numdifftools
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -92,8 +90,7 @@ def generate_mock_results(results_directory: str):
 
     softwares = ['s1', 's2']
     minimizers = [['s1m1', 's1m2'], ['s2m1', 's2m2']]
-    jacobians = [[Scipy(p), Numdifftools(p)]
-                 for p in problems]
+    jacobians = [['j1', 'j2'] for _ in problems]
     cost_funcs = [[NLLSCostFunc(p), WeightedNLLSCostFunc(p)]
                   for p in problems]
 
@@ -471,8 +468,8 @@ class ExtractTagsTests(unittest.TestCase):
                              col_sorting=['hessian'],
                              cat_sorting=['costfun', 'software', 'minimizer'])
 
-        self.assertDictEqual(tags, {'row': '.+:p0',
-                                    'col': '.+',
+        self.assertDictEqual(tags, {'row': '[^:]*:p0',
+                                    'col': '[^:]*',
                                     'cat': 'cf0:s0:m0'})
 
 
@@ -485,14 +482,14 @@ class FindMatchingTagsTests(unittest.TestCase):
         """
         Test that the matching tags include all correct tags.
         """
-        matching = _find_matching_tags('cf0:.+:p0', ['cf0:j0:p0',
-                                                     'cf0:j0:p1',
-                                                     'cf0:j1:p0',
-                                                     'cf0:j1:p1',
-                                                     'cf1:j0:p0',
-                                                     'cf1:j0:p1',
-                                                     'cf1:j1:p0',
-                                                     'cf1:j1:p1'])
+        matching = _find_matching_tags('cf0:[^:]*:p0', ['cf0:j0:p0',
+                                                        'cf0:j0:p1',
+                                                        'cf0:j1:p0',
+                                                        'cf0:j1:p1',
+                                                        'cf1:j0:p0',
+                                                        'cf1:j0:p1',
+                                                        'cf1:j1:p0',
+                                                        'cf1:j1:p1'])
         self.assertIn('cf0:j0:p0', matching)
         self.assertIn('cf0:j1:p0', matching)
 
@@ -500,10 +497,10 @@ class FindMatchingTagsTests(unittest.TestCase):
         """
         Test that all tags that don't match are excluded.
         """
-        matching = _find_matching_tags('cf0:.+:p0', ['cf0:j0:p0',
-                                                     'cf0:j1:p0',
-                                                     'cf1:j0:p0',
-                                                     'cf1:j1:p0'])
+        matching = _find_matching_tags('cf0:[^:]*:p0', ['cf0:j0:p0',
+                                                        'cf0:j1:p0',
+                                                        'cf1:j0:p0',
+                                                        'cf1:j1:p0'])
         self.assertNotIn('cf1:j0:p0', matching)
         self.assertNotIn('cf1:j1:p0', matching)
 

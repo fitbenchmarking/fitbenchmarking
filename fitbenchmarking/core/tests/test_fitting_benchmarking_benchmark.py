@@ -88,7 +88,6 @@ class BenchmarkTests(unittest.TestCase):
 
         assert failed_problems == []
         dict_test(expected_unselected_minimizers, unselected_minimizers)
-        dict_test(expected_minimizers, self.options.minimizers)
 
     @mock.patch('{}.loop_over_benchmark_problems'.format(FITTING_DIR))
     def test_check_no_unselected_minimizers(self,
@@ -116,8 +115,7 @@ class BenchmarkTests(unittest.TestCase):
         expected_minimizers = copy.copy(self.all_minimizers)
         expected_unselected_minimizers = {"scipy": []}
         loop_over_benchmark_problems.return_value = \
-            (results, problem_fails, expected_unselected_minimizers,
-             expected_minimizers)
+            (results, problem_fails, expected_unselected_minimizers)
 
         # run shared test and see if it match expected
         self.shared_tests(expected_problem_names,
@@ -153,8 +151,7 @@ class BenchmarkTests(unittest.TestCase):
         expected_minimizers = copy.copy(self.all_minimizers)
 
         loop_over_benchmark_problems.return_value = \
-            (results, problem_fails, expected_unselected_minimizers,
-             expected_minimizers)
+            (results, problem_fails, expected_unselected_minimizers)
 
         self.shared_tests(expected_names, expected_unselected_minimizers,
                           expected_minimizers)

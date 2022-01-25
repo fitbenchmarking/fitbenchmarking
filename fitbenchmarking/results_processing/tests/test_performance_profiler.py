@@ -11,14 +11,13 @@ import numpy as np
 
 from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing import performance_profiler
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
 
-class PerformanceProfillerTests(unittest.TestCase):
+class PerformanceProfilerTests(unittest.TestCase):
     """
     General tests for the performance profiler code.
     """
@@ -81,8 +80,7 @@ class PerformanceProfillerTests(unittest.TestCase):
                 list(runtime_results) / np.min(runtime_results))
             prob_results = []
             cost_func = NLLSCostFunc(problem)
-            jac = Scipy(cost_func)
-            jac.method = "2-point"
+            jac = 'j1'
             hess = None
             for j in range(self.num_minimizers):
                 minimizer = 'min_{}'.format(j)
@@ -94,6 +92,7 @@ class PerformanceProfillerTests(unittest.TestCase):
                                                   params=[1, 2, 3],
                                                   chi_sq=acc_results[j],
                                                   runtime=runtime_results[j],
+                                                  software='s1',
                                                   minimizer=minimizer))
             results.extend(prob_results)
         return results, acc_expected, runtime_expected
@@ -102,14 +101,15 @@ class PerformanceProfillerTests(unittest.TestCase):
         """
         Test that prepare profile data gives the correct result
         """
+        list(list(self.results.values())[0].values())[0][0].jacobian_tag = ''
         acc, runtime = performance_profiler.prepare_profile_data(self.results)
         acc_expected = np.array(self.acc_expected).T
         runtime_expected = np.array(self.runtime_expected).T
         acc_dict = OrderedDict()
         runtime_dict = OrderedDict()
         for j in range(self.num_minimizers):
-            acc_dict['min_{}'.format(j)] = acc_expected[j]
-            runtime_dict['min_{}'.format(j)] = runtime_expected[j]
+            acc_dict['min_{} [s1]: j:j1'.format(j)] = acc_expected[j]
+            runtime_dict['min_{} [s1]: j:j1'.format(j)] = runtime_expected[j]
         for k, v in acc_dict.items():
             assert np.allclose(v, acc[k])
         for k, v in runtime_dict.items():
