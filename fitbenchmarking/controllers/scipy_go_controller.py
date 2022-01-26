@@ -21,7 +21,7 @@ class ScipyGOController(Controller):
         'all': ['differential_evolution', 'shgo', 'dual_annealing'],
         'ls': [None],
         'deriv_free': ['differential_evolution'],
-        'general': ['shgo', 'dual_annealing'],
+        'general': ['differential_evolution', 'shgo', 'dual_annealing'],
         'simplex': [],
         'trust_region': [],
         'levenberg-marquardt': [],
