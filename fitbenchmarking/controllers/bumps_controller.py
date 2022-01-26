@@ -32,7 +32,7 @@ class BumpsController(Controller):
             'bfgs': ['newton'],
             'conjugate_gradient': [],
             'steepest_descent': [],
-            'global_optimization': []}
+            'global_optimization': ['de']}
 
     def __init__(self, cost_func):
         """
