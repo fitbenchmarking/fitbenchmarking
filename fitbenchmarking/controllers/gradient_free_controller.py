@@ -48,7 +48,18 @@ class GradientFreeController(Controller):
         'bfgs': [],
         'conjugate_gradient': [],
         'steepest_descent': [],
-        'global_optimization': []}
+        'global_optimization': ['HillClimbingOptimizer',
+                                'RepulsingHillClimbingOptimizer',
+                                'SimulatedAnnealingOptimizer',
+                                'RandomSearchOptimizer',
+                                'RandomRestartHillClimbingOptimizer',
+                                'RandomAnnealingOptimizer',
+                                'ParallelTemperingOptimizer',
+                                'ParticleSwarmOptimizer',
+                                'EvolutionStrategyOptimizer',
+                                'BayesianOptimizer',
+                                'TreeStructuredParzenEstimators',
+                                'DecisionTreeOptimizer']}
 
     controller_name = 'gradient_free'
 
