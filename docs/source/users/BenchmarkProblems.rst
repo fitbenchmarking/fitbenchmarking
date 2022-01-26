@@ -11,11 +11,12 @@ add custom data sets to the benchmark, if that is more appropriate; see
 supported file format.
 
 .. topic:: Downloads
-	   
-	   | **You can download a folder containing all examples here:**
-      | :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/examples.zip>`
-      | or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/examples.tar.gz>`
-	   | Individual problem sets are also available to download below.
+
+    **You can download a folder containing all examples here:**
+    :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/examples.zip>`
+    or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/examples.tar.gz>`
+
+    Individual problem sets are also available to download below.
 
 We supply some standard nonlinear least-squares test problems in the
 form of the `NIST nonlinear regression set <https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`_
@@ -62,7 +63,7 @@ crystal field energy levels.
 This problem has 8 parameters, and fits around 200 data points. 
 
 .. warning::
-   |MantidWarning|
+    |MantidWarning|
 
 CUTEst (NIST files)
 ===================
@@ -113,7 +114,7 @@ These problems have either 66 or 99 unknown parameters, and fit around 5,000 dat
 
 
 .. warning::
-   |CUTEstWarning|
+    |CUTEstWarning|
 
    
 MultiFit Data (Mantid)
@@ -130,13 +131,13 @@ dataset from the `MuSR <https://www.isis.stfc.ac.uk/Pages/musr.aspx>`_
 spectrometer at ISIS, on which there are four fits available.
 See :ref:`The MultiFit documentation<multifit>` for more details.
 
-.. warning::   
-   |MantidWarning|
-   
-   This will also only work using the :ref:`Mantid Minimizers<MantidMinimizers>`.
-
 Basic Multifit has 3 unknown parameters, and fits 40 data points.
 MUSR62260 has 18 unknown parameters, and fits around 8000 data points.
+
+.. warning::
+    |MantidWarning|
+   
+    This will also only work using the :ref:`Mantid Minimizers<MantidMinimizers>`.
 
 Muon Data (Mantid)
 ==================
@@ -155,8 +156,8 @@ the data.
 
 These problems have between 5 and 13 unknown parameters, and fit around 1,000 data points.
 
-.. warning::   
-   |MantidWarning|
+.. warning::
+    |MantidWarning|
 
 
 Neutron Data (Mantid)
@@ -185,8 +186,8 @@ The eVS problems find 8 unknown parameters, and fit to 1,025 data points.
 The GEM problem finds 105 unknown parameters, and fits to 1,314 data points.
 The WISH problems find 5 unknown parameters, and fit to 512 data points.
 
-.. warning::   
-   |MantidWarning|
+.. warning::
+    |MantidWarning|
 
 
 NIST
@@ -219,7 +220,7 @@ and 2000 data points for simulated bumps, HIFI_160973, and simulated mantid
 respectively.
 
 .. warning::
-   |MantidWarning|
+    |MantidWarning|
 
 Small Angle Scattering (SASView)
 ================================
@@ -238,8 +239,8 @@ uses to process the data.
 These have 6 unknown parameters, and fit to either 20 or 54 data points.
 
 .. warning::
-   The external package ``sasmodels`` must be installed to run this data
-   set.  See :ref:`external-instructions` for details.
+    The external package ``sasmodels`` must be installed to run this data
+    set.  See :ref:`external-instructions` for details.
 
 
 CUTEst (SIF files)
@@ -261,7 +262,7 @@ the `VESUVIO <https://www.isis.stfc.ac.uk/Pages/Vesuvio.aspx>`_
 instrument at ISIS) have 1,025 data points (with 8 unknown parameters).
 
 .. warning::
-   |CUTEstWarning|
+    |CUTEstWarning|
 
 
 SIF_GO
@@ -284,7 +285,7 @@ have been added to each problem are the same as those used in SciPy's
 These problems have between 3 and 7 unknown parameters, and fit between 9 and 37 data points.
 
 .. warning::
-   |CUTEstWarning|
+    |CUTEstWarning|
 
 
 Simple tests
@@ -302,9 +303,9 @@ data sets and models (if possible).
 These problems have 3 or 4 unknown parameters, and around 100 data points.
 
 .. |CUTEstWarning| replace::
-		   The external packages CUTEst and pycutest must be installed to run
-		   this data set.   See :ref:`external-instructions` for details.
+    The external packages CUTEst and pycutest must be installed to run
+    this data set.   See :ref:`external-instructions` for details.
 
 .. |MantidWarning| replace::
-		   The external package Mantid must be installed to run
-		   this data set.  See :ref:`external-instructions` for details.
+    The external package Mantid must be installed to run
+    this data set.  See :ref:`external-instructions` for details.
