@@ -25,3 +25,12 @@ class Default(Scipy):
         """
         self.method = "2-point"
         return super().eval(params, **kwargs)
+
+    def name(self) -> str:
+        """
+        Get a name for the current status of the jacobian.
+
+        :return: A unique name for this jacobian/method combination
+        :rtype: str
+        """
+        return ""

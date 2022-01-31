@@ -180,20 +180,18 @@ class Plot:
         self.fig.savefig(file_name)
         return file
 
-    def plot_best(self, minimizer, params):
+    def plot_best(self, result):
         """
         Plots the fit along with the data using the "best_fit" style
         and saves to a file
 
-        :param minimizer: name of the best fit minimizer
-        :type minimizer: str
-        :param params: fit parameters returned from the best fit minimizer
-        :type params: list
+        :param result: The result to plot
+        :type result: FittingResult
 
         :return: path to the saved file
         :rtype: str
         """
-        label = 'Best Fit ({})'.format(minimizer)
+        label = f'Best Fit ({result.modified_minimizer_name(True)})'
 
         # Plot line and save.
         # This should have the style of fit plot options and the colour of
@@ -204,13 +202,13 @@ class Plot:
         plot_options_dict['label'] = label
         plot_options_dict['color'] = self.best_fit_plot_options['color']
 
-        y = self.problem.eval_model(params, x=self.x)
+        y = self.problem.eval_model(result.params, x=self.x)
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
                        y=y)
         self.format_plot()
-        file = f"{minimizer}_fit_for_{self.result.costfun_tag}_" \
-               f"{self.result.sanitised_name}.png"
+        file = f"{result.sanitised_min_name(True)}_fit_for_" \
+               f"{self.result.costfun_tag}_{self.result.sanitised_name}.png"
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
 
@@ -226,30 +224,28 @@ class Plot:
         self.line_plot = None
         return file
 
-    def plot_fit(self, minimizer, params):
+    def plot_fit(self, result):
         """
         Updates self.line to show the fit using the passed in params.
         If self.line is empty it will create a new line.
         Stores the plot in a file
 
-        :param minimizer: name of the fit minimizer
-        :type minimizer: str
-        :param params: fit parameters returned from the best fit minimizer
-        :type params: list
+        :param result: The result to plot
+        :type result: FittingResult
 
         :return: path to the saved file
         :rtype: str
         """
         plot_options_dict = self.fit_plot_options.copy()
-        plot_options_dict['label'] = minimizer
+        plot_options_dict['label'] = result.modified_minimizer_name(True)
 
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
                        x=self.x,
-                       y=self.problem.eval_model(params, x=self.x))
+                       y=self.problem.eval_model(result.params, x=self.x))
         self.format_plot()
-        file = f"{minimizer}_fit_for_{self.result.costfun_tag}_"\
-               f"{self.result.sanitised_name}.png"
+        file = f"{result.sanitised_min_name(True)}_fit_for_"\
+               f"{self.result.costfun_tag}_{self.result.sanitised_name}.png"
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
         return file

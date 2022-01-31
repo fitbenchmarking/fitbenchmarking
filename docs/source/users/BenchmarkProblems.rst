@@ -11,9 +11,12 @@ add custom data sets to the benchmark, if that is more appropriate; see
 supported file format.
 
 .. topic:: Downloads
-	   
-	   | **You can download a folder containing all examples here:** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/examples.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/examples.tar.gz>`
-	   | Individual problem sets are also available to download below.
+
+    **You can download a folder containing all examples here:**
+    :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/examples.zip>`
+    or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/examples.tar.gz>`
+
+    Individual problem sets are also available to download below.
 
 We supply some standard nonlinear least-squares test problems in the
 form of the `NIST nonlinear regression set <https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`_
@@ -30,7 +33,7 @@ Each of the test problems contain:
 * a definition of the fitting function, :math:`f({\boldsymbol{\beta}};x)`; and
 * (at least) one set of initial values for the function parameters :math:`{\boldsymbol{\beta}}_0`.
   
-If a problem doesn’t have observational
+If a problem doesn't have observational
 errors (e.g., the NIST problem set), then FitBenchmarking can
 approximate errors by taking :math:`\sigma_i = \sqrt{y_i}`.
 Alternatively, there is an option to disregard errors and solve the
@@ -46,10 +49,60 @@ the available fitting methods.
 
 Currently FitBenchmarking ships with data from the following sources:
 
+
+CrystalField Data (Mantid)
+==========================
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/CrystalField.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/CrystalField.tar.gz>`
+
+This folder (also found in `examples/benchmark_problems/CrystalField`) contains
+a test set for inelastic neutron scattering measurements of transitions between
+crystal field energy levels.
+
+This problem has 8 parameters, and fits around 200 data points. 
+
+.. warning::
+    |MantidWarning|
+
+CUTEst (NIST files)
+===================
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/CUTEst.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/CUTEst.tar.gz>`
+
+This folder (also found in `examples/benchmark_problems/CUTEst`) contains
+several problems from the `CUTEst <https://github.com/ralna/CUTEst>`_
+continuous optimization testing environment which have been converted to the NIST
+format.
+
+These problems all have 8 unknown parameters, and fit around 15 data points
+with the exception of ``VESUVIOLS`` which fits around 1000.
+
+Data Assimilation
+=================
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Data_Assimilation.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Data_Assimilation.tar.gz>`
+
+This folder (also found in `examples/benchmark_problems/Data_Assimilation`) contains
+two examples using the data assimilation problem definition in fitbenchmarking.
+These examples follow the method set out in 
+`this paper <https://www.researchgate.net/publication/324956488_Data_assimilation_approach_to_analysing_systems_of_ordinary_differential_equations>`_.
+
+These data files are synthetic and have been generated as an initial test of
+the minimizers. We plan to extend this with time series data which is more
+representative of the expectations for data assimilation in future updates.
+
+These problems have either 2 or 3 unknown parameters, and fit either 100 or
+1000 data points for ``Simplified ANAC`` and ``Lorentz`` problems respectively.
+
+
 Powder Diffraction Data (SIF files)
 ===================================
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.tar.gz>`
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/DIAMOND_SIF`)
 contain data from powder diffraction experiments.  The data supplied comes
@@ -61,13 +114,14 @@ These problems have either 66 or 99 unknown parameters, and fit around 5,000 dat
 
 
 .. warning::
-   |CUTEstWarning|
+    |CUTEstWarning|
 
    
 MultiFit Data (Mantid)
 ======================
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/MultiFit.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/MultiFit.tar.gz>`
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/MultiFit.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/MultiFit.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/MultiFit`)
 contain data
@@ -77,16 +131,19 @@ dataset from the `MuSR <https://www.isis.stfc.ac.uk/Pages/musr.aspx>`_
 spectrometer at ISIS, on which there are four fits available.
 See :ref:`The MultiFit documentation<multifit>` for more details.
 
-.. warning::   
-   |MantidWarning|
-   
-   This will also only work using the :ref:`Mantid Minimizers<MantidMinimizers>`.
+Basic Multifit has 3 unknown parameters, and fits 40 data points.
+MUSR62260 has 18 unknown parameters, and fits around 8000 data points.
 
+.. warning::
+    |MantidWarning|
+   
+    This will also only work using the :ref:`Mantid Minimizers<MantidMinimizers>`.
 
 Muon Data (Mantid)
 ==================
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Muon.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Muon.tar.gz>`
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Muon.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Muon.tar.gz>`
 
 
 These problems (also found in the folder `examples/benchmark_problems/Muon`)
@@ -99,28 +156,15 @@ the data.
 
 These problems have between 5 and 13 unknown parameters, and fit around 1,000 data points.
 
-.. warning::   
-   |MantidWarning|
-
-
-NIST
-====
-
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/NIST.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/NIST.tar.gz>`
-
-These problems (also found in the folder `examples/benchmark_problems/NIST`) contain
-data from the `NIST Nonlinear Regression <https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`_ test set.
-
-These problems are split into low, average and high difficulty.
-They have between 2 and 9 unknown parameters, and
-fit between 6 and 250 data points.
+.. warning::
+    |MantidWarning|
 
 
 Neutron Data (Mantid)
 =====================
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Neutron.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Neutron.tar.gz>`
-
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Neutron.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Neutron.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/Neutron`)
 contain
@@ -142,14 +186,47 @@ The eVS problems find 8 unknown parameters, and fit to 1,025 data points.
 The GEM problem finds 105 unknown parameters, and fits to 1,314 data points.
 The WISH problems find 5 unknown parameters, and fit to 512 data points.
 
-.. warning::   
-   |MantidWarning|
+.. warning::
+    |MantidWarning|
 
+
+NIST
+====
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/NIST.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/NIST.tar.gz>`
+
+These problems (also found in the folder `examples/benchmark_problems/NIST`) contain
+data from the `NIST Nonlinear Regression <https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`_ test set.
+
+These problems are split into low, average and high difficulty.
+They have between 2 and 9 unknown parameters, and
+fit between 6 and 250 data points.
+
+
+Poisson Data
+============
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/Poisson.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/Poisson.tar.gz>`
+
+These problems (also found in the folder `examples/benchmark_problems/Poisson`) contain
+both simulated and real data measuring particle counts. The real data is ISIS
+muon data, and the simulated datasets have been made to represent counts using
+models provided by both Mantid and Bumps.
+
+These problems have between 4 and 6 unknown parameters, and around 350, 800,
+and 2000 data points for simulated bumps, HIFI_160973, and simulated mantid
+respectively.
+
+.. warning::
+    |MantidWarning|
 
 Small Angle Scattering (SASView)
 ================================
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.tar.gz>`
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.tar.gz>`
 
 
 These problems (also found in the folder `examples/benchmark_problems/SAS_modelling/1D`) are
@@ -162,14 +239,15 @@ uses to process the data.
 These have 6 unknown parameters, and fit to either 20 or 54 data points.
 
 .. warning::
-   The external package ``sasmodels`` must be installed to run this data
-   set.  See :ref:`external-instructions` for details.
+    The external package ``sasmodels`` must be installed to run this data
+    set.  See :ref:`external-instructions` for details.
+
 
 CUTEst (SIF files)
 ==================
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/SIF.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/SIF.tar.gz>`
-
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/SIF.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/SIF.tar.gz>`
 
 This directory (also found in the folder `examples/benchmark_problems/SIF`) contain
 `SIF files <https://github.com/ralna/SIFDecode>`_
@@ -184,11 +262,14 @@ the `VESUVIO <https://www.isis.stfc.ac.uk/Pages/Vesuvio.aspx>`_
 instrument at ISIS) have 1,025 data points (with 8 unknown parameters).
 
 .. warning::
-   |CUTEstWarning|
+    |CUTEstWarning|
 
 
 SIF_GO
 ======
+
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/SIF_GO.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/SIF_GO.tar.gz>`
 
 This directory (also found in the folder `examples/benchmark_problems/SIF_GO`) contains
 `SIF files <https://github.com/ralna/SIFDecode>`_
@@ -204,13 +285,14 @@ have been added to each problem are the same as those used in SciPy's
 These problems have between 3 and 7 unknown parameters, and fit between 9 and 37 data points.
 
 .. warning::
-   |CUTEstWarning|
+    |CUTEstWarning|
 
 
 Simple tests
 ============
 
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/simple_tests.zip>` or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/simple_tests.tar.gz>`
+**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/simple_tests.zip>`
+or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/simple_tests.tar.gz>`
 
 This folder (also found in `examples/benchmark_problems/simple_tests`) contains
 a number of simple tests with known, and easy to obtain,
@@ -218,28 +300,12 @@ answers.  We recommend that this is used to test any new minimizers
 that are added, and also that any new parsers reimplement these
 data sets and models (if possible).
 
-
-Data Assimilation
-=================
-
-**Download** :download:`.zip <http://numerical.rl.ac.uk/fitbenchmarking/data_assimilation.zip>`
-or :download:`.tar.gz <http://numerical.rl.ac.uk/fitbenchmarking/data_assimilation.tar.gz>`
-
-This folder (also found in `examples/benchmark_problems/data_assimilation`) contains
-two examples using the data assimilation problem definition in fitbenchmarking.
-These examples follow the method set out in 
-`this paper <https://www.researchgate.net/publication/324956488_Data_assimilation_approach_to_analysing_systems_of_ordinary_differential_equations>`_.
-
-These data files are synthetic and have been generated as an initial test of
-the minimizers. We plan to extend this with time series data which is more
-representative of the expectations for data assimilation in future updates.
-
-
+These problems have 3 or 4 unknown parameters, and around 100 data points.
 
 .. |CUTEstWarning| replace::
-		   The external packages CUTEst and pycutest must be installed to run
-		   this data set.   See :ref:`external-instructions` for details.
+    The external packages CUTEst and pycutest must be installed to run
+    this data set.   See :ref:`external-instructions` for details.
 
 .. |MantidWarning| replace::
-		   The external package Mantid must be installed to run
-		   this data set.  See :ref:`external-instructions` for details.
+    The external package Mantid must be installed to run
+    this data set.  See :ref:`external-instructions` for details.

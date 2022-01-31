@@ -49,7 +49,7 @@ def create_prob_group(result, support_pages_dir, options):
     prob_name = result.sanitised_name
 
     file_name = f'{prob_name}_{result.costfun_tag}_' \
-                f'{result.sanitised_min_name}.html'
+                f'{result.sanitised_min_name(with_software=True)}.html'
     file_name = file_name.lower()
     file_path = os.path.join(support_pages_dir, file_name)
 
@@ -83,7 +83,7 @@ def create_prob_group(result, support_pages_dir, options):
             description=result.problem.description,
             equation=result.problem.equation,
             initial_guess=result.ini_function_params,
-            minimizer=result.minimizer,
+            minimizer=result.modified_minimizer_name(),
             accuracy=f"{result.chi_sq:.4g}",
             runtime=f"{result.runtime:.4g}",
             is_best_fit=result.is_best_fit,

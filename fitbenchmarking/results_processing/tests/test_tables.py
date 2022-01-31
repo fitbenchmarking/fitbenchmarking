@@ -110,7 +110,7 @@ def generate_mock_results():
             hess = None
             r = FittingResult(options=options,
                               cost_func=cost_func,
-                              jac=jac,
+                              jac=jac.name(),
                               hess=hess,
                               initial_params=starting_values,
                               params=params_in[i][j],
@@ -120,12 +120,11 @@ def generate_mock_results():
                               software=software,
                               minimizer=options.minimizers[software][j],
                               error_flag=error_in[i][j],
+                              algorithm_type='all, ls',
                               )
             r.fitting_report_link = link_in[i][j]
             r.problem_summary_page_link = 'link0'
             results.append(r)
-            options.minimizer_alg_type[options.minimizers[software]
-                                       [j]] = 'all, ls'
         results_out.extend(results)
     best_results, results_out = preprocess_data(results_out)
     return best_results, results_out, options
@@ -221,19 +220,11 @@ class GenerateTableTests(unittest.TestCase):
         with open(expected, 'r') as f:
             exp_lines = f.readlines()
 
-        file_extension = expected.split('.')[1]
-        if file_extension == 'txt':
-            html_id_expected = ''
-            html_id = ''
-        elif file_extension == 'html':
-            html_id_expected = exp_lines[1].strip(' ').split('row')[0][1:]
-            html_id = achieved.splitlines()[1].strip(' ').split('row')[0][1:]
         diff = []
         for i, (act_line, exp_line) in enumerate(
                 zip(achieved.splitlines(), exp_lines)):
             exp_line = '' if exp_line is None else exp_line.strip('\n')
             act_line = '' if act_line is None else act_line.strip('\n')
-            exp_line = exp_line.replace(html_id_expected, html_id)
             # to pass on windows need to first do this before comparing
             act_line = act_line.replace('href=\"..\\', 'href=\"../')
             if act_line != exp_line:
