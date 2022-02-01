@@ -9,7 +9,7 @@ import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
-from fitbenchmarking.utils.exceptions import CostFuncError
+from fitbenchmarking.utils.exceptions import CostFuncError, MaxRuntimeError
 
 
 class BumpsController(Controller):
@@ -121,11 +121,26 @@ class BumpsController(Controller):
         if self.minimizer == "lm-bumps":
             self.minimizer = "lm"
 
+    def _check_timer_abort_test(self):
+        """
+        Boolean check for if the fit should be stopped.
+
+        :return: If the time limit has been reached.
+        :rtype: bool
+        """
+        try:
+            self.timer.check_elapsed_time()
+        except MaxRuntimeError:
+            return True
+        return False
+
     def fit(self):
         """
         Run problem with Bumps.
         """
-        result = bumpsFit(self._fit_problem, method=self.minimizer)
+        result = bumpsFit(self._fit_problem,
+                          method=self.minimizer,
+                          abort_test=self._check_timer_abort_test)
 
         self._bumps_result = result
         self._status = self._bumps_result.status
