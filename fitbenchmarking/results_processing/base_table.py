@@ -543,7 +543,8 @@ class Table:
         :return: HTML for a dropdown checklist of minimizers.
         :rtype: str
         """
-        minimizers = [(result.software.replace('_', '-'), result.minimizer)
+        minimizers = [(result.software.replace('_', '-'),
+                       result.modified_minimizer_name())
                       for result in next(iter(self.sorted_results.values()))]
         # Remove duplicates
         minimizers = list(dict.fromkeys(minimizers))
