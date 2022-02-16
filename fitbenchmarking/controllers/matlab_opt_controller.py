@@ -6,7 +6,7 @@ import matlab.engine
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.controllers.matlab_mixin import MatlabMixin, MatlabTimerInterface
+from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
 
 eng = matlab.engine.start_matlab()
 

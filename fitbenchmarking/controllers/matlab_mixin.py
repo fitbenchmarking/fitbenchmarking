@@ -60,14 +60,14 @@ class MatlabMixin:
         Function that serializes a python function and then
         loads it into the Matlab engine workspace
         """
-        temp_dir = TemporaryDirectory()
-        temp_file = os.path.join(temp_dir.name, 'temp.pickle')
-        with open(temp_file, 'wb') as f:
-            dill.dump(func, f)
-        eng.workspace['temp_file'] = temp_file
-        eng.evalc('fp = py.open(temp_file,"rb")')
-        eng.evalc('fm = py.dill.load(fp)')
-        eng.evalc('fp.close()')
+        with TemporaryDirectory() as temp_dir:
+            temp_file = os.path.join(temp_dir, 'temp.pickle')
+            with open(temp_file, 'wb') as f:
+                dill.dump(func, f)
+            eng.workspace['temp_file'] = temp_file
+            eng.evalc('fp = py.open(temp_file,"rb")')
+            eng.evalc('fm = py.dill.load(fp)')
+            eng.evalc('fp.close()')
         return eng.workspace['fm']
 
 
