@@ -55,6 +55,9 @@ class MatlabController(MatlabMixin, Controller):
         eng.workspace['eval_cost_mat'] =\
             self.py_to_mat(self.cost_func.eval_cost, eng)
 
+        # Setup the timer to track using calls to eval_cost_mat
+        self.setup_timer('eval_cost_mat', eng)
+
     def fit(self):
         """
         Run problem with Matlab

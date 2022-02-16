@@ -6,7 +6,7 @@ import matlab.engine
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
+from fitbenchmarking.controllers.matlab_mixin import MatlabMixin, MatlabTimerInterface
 
 eng = matlab.engine.start_matlab()
 
@@ -51,6 +51,7 @@ class MatlabOptController(MatlabMixin, Controller):
         self.y_data_mat = None
         self._status = None
         self.result = None
+        self.eng = eng
 
     def setup(self):
         """
@@ -78,35 +79,34 @@ class MatlabOptController(MatlabMixin, Controller):
         # using default jacobian) and open within matlab engine
         # so matlab fitting function can be called
         eng.workspace['eval_f'] = self.py_to_mat(self.cost_func.eval_r, eng)
-        eng.evalc('f_wrapper = @(p, x)double(eval_f(p))')
+        eng.evalc('f_wrapper = @(p, x)double(eval_f(p));')
+
+        # Setup the timer to track using calls to eval_f
+        self.setup_timer('eval_f', eng)
 
         eng.workspace['init'] = self.initial_params_mat
         eng.workspace['x'] = self.x_data_mat
-        print(eng.eval('f_wrapper(init, x)'))
 
         # if default jacobian is not selected then pass _jeval
         # function to matlab
         if not self.cost_func.jacobian.use_default_jac:
             eng.workspace['eval_j'] = self.py_to_mat(self.cost_func.jac_res,
                                                      eng)
-            eng.evalc('j_wrapper = @(p, x)double(eval_j(p))')
+            eng.evalc('j_wrapper = @(p, x)double(eval_j(p));')
 
             eng.workspace['eval_func'] = [eng.workspace['f_wrapper'],
                                           eng.workspace['j_wrapper']]
-            eng.evalc('options = \
-                optimoptions("lsqcurvefit", \
-                             "Algorithm", minimizer, \
-                             "SpecifyObjectiveGradient", true)')
+            eng.evalc('options = optimoptions("lsqcurvefit", "Algorithm", '
+                      'minimizer, "SpecifyObjectiveGradient", true);')
         else:
             eng.workspace['eval_func'] = eng.workspace['f_wrapper']
-            eng.evalc('options = optimoptions("lsqcurvefit", \
-                                          "Algorithm", minimizer)')
+            eng.evalc('options = optimoptions("lsqcurvefit", '
+                      '"Algorithm", minimizer);')
 
     def fit(self):
         """
         Run problem with Matlab Optimization Toolbox
         """
-
         self.result, _, _, exitflag, _ = eng.lsqcurvefit(
             eng.workspace['eval_func'], self.initial_params_mat,
             self.x_data_mat, self.y_data_mat, self.param_ranges[0],

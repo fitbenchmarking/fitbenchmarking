@@ -76,6 +76,9 @@ class MatlabCurveController(MatlabMixin, Controller):
         eng.workspace['eval_cost_mat'] =\
             self.py_to_mat(wrapper, eng)
 
+        # Setup the timer to track using calls to eval_cost_mat
+        self.setup_timer('eval_cost_mat', eng)
+
         if self.value_ranges is not None:
             lb, ub = zip(*self.value_ranges)
             eng.workspace['lower_bounds'] = matlab.double(lb)
@@ -104,7 +107,7 @@ class MatlabCurveController(MatlabMixin, Controller):
         Run problem with Matlab
         """
         eng.evalc("[fitobj, gof, output] = fit([x_data', y_data'],"
-                  "zeros(size(x_data))', ft)")
+                  "zeros(size(x_data))', ft);")
         self._status = int(eng.workspace['output']['exitflag'])
 
     def cleanup(self):
