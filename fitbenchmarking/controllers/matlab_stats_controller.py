@@ -62,6 +62,9 @@ class MatlabStatsController(MatlabMixin, Controller):
         eng.workspace['eval_f'] = self.py_to_mat(self.cost_func.eval_r, eng)
         eng.evalc('f_wrapper = @(p, x)double(eval_f(p))')
 
+        # Setup the timer to track using calls to eval_f
+        self.setup_timer('eval_f', eng)
+
     def fit(self):
         """
         Run problem with Matlab Statistics Toolbox

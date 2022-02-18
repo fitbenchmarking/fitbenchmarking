@@ -544,11 +544,13 @@ def perform_fit(controller, options, grabbed_output):
                 ' other non-FitBenchmarking CPU activities are'
                 ' taking place that affects the timing'
                 ' results'.format(ratio, tol, min_time))
-        chi_sq = controller.eval_chisq(
-            params=controller.final_params,
-            x=controller.data_x,
-            y=controller.data_y,
-            e=controller.data_e)
+
+        # Avoid deleting results (max runtime exception) if gotten this far
+        controller.timer.reset()
+        chi_sq = controller.eval_chisq(params=controller.final_params,
+                                       x=controller.data_x,
+                                       y=controller.data_y,
+                                       e=controller.data_e)
 
         chi_sq_check = any(np.isnan(n) for n in chi_sq) \
             if controller.problem.multifit else np.isnan(chi_sq)
@@ -572,6 +574,7 @@ def perform_fit(controller, options, grabbed_output):
                 controller.flag = flag
                 break
 
+    # Ensure reset incase of exception before above reset
     controller.timer.reset()
 
     if controller.flag in [3, 6, 7]:
