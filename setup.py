@@ -12,6 +12,7 @@ setup(name='FitBenchmarking',
       long_description=long_description,
       long_description_content_type="text/markdown",
       license='BSD',
+      python_requires='>=3.7.1',
       entry_points={
           "console_scripts": [
               'fitbenchmarking = fitbenchmarking.cli.main:main'
