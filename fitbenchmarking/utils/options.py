@@ -17,160 +17,182 @@ class Options:
     DEFAULTS = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                             'default_options.ini'))
     VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN', 'HESSIAN',
-                      'PLOTTING', 'OUTPUT', 'LOGGING']
-    VALID_MINIMIZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
-         'dfo': ['dfogn', 'dfols'],
-         'gradient_free': ['HillClimbingOptimizer',
-                           'RepulsingHillClimbingOptimizer',
-                           'SimulatedAnnealingOptimizer',
-                           'RandomSearchOptimizer',
-                           'RandomRestartHillClimbingOptimizer',
-                           'RandomAnnealingOptimizer',
-                           'ParallelTemperingOptimizer',
-                           'ParticleSwarmOptimizer',
-                           'EvolutionStrategyOptimizer',
-                           'BayesianOptimizer',
-                           'TreeStructuredParzenEstimators',
-                           'DecisionTreeOptimizer'],
-         'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
-                 'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
-                 'vector_bfgs2', 'steepest_descent'],
-         'levmar': ['levmar'],
-         'mantid': ['BFGS',
-                    'Conjugate gradient (Fletcher-Reeves imp.)',
-                    'Conjugate gradient (Polak-Ribiere imp.)',
-                    'Damped GaussNewton', 'Levenberg-Marquardt',
-                    'Levenberg-MarquardtMD', 'Simplex',
-                    'SteepestDescent', 'Trust Region', 'FABADA'],
-         'matlab': ['Nelder-Mead Simplex'],
-         'matlab_curve': ['Levenberg-Marquardt', 'Trust-Region'],
-         'matlab_opt': ['levenberg-marquardt', 'trust-region-reflective'],
-         'matlab_stats': ['Levenberg-Marquardt'],
-         'minuit': ['minuit'],
-         'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
-         'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                   'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-         'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
-         'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing']}
-    VALID_FITTING = \
-        {'algorithm_type': ['all', 'ls', 'deriv_free', 'general', 'simplex',
-                            'trust_region', 'levenberg-marquardt',
-                            'gauss_newton', 'bfgs', 'conjugate_gradient',
-                            'steepest_descent', 'global_optimization'],
-         'software': ['bumps', 'dfo', 'gradient_free', 'gsl', 'levmar',
-                      'mantid', 'matlab', 'matlab_curve', 'matlab_opt',
-                      'matlab_stats', 'minuit', 'ralfit', 'scipy',
-                      'scipy_ls', 'scipy_go'],
-         'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
-         'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
-         'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
-                            'poisson']}
-    VALID_JACOBIAN = \
-        {'scipy': ['2-point', '3-point', 'cs'],
-         'analytic': ['default'],
-         'default': ['default'],
-         'numdifftools': ['central',
-                          'complex', 'multicomplex',
-                          'forward', 'backward']}
-    VALID_HESSIAN = \
-        {'scipy': ['2-point', '3-point', 'cs'],
-         'analytic': ['default'],
-         'default': ['default'],
-         'numdifftools': ['central',
-                          'complex', 'multicomplex',
-                          'forward', 'backward']}
-    VALID_PLOTTING = \
-        {'make_plots': [True, False],
-         'comparison_mode': ['abs', 'rel', 'both'],
-         'table_type': ['acc', 'runtime', 'compare', 'local_min'],
-         'colour_map': plt.colormaps()}
+                      'PLOTTING', 'OUTPUT', 'LOGGING', 'MATLAB']
+    VALID_MINIMIZERS = {
+        'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
+        'dfo': ['dfogn', 'dfols'],
+        'gradient_free': ['HillClimbingOptimizer',
+                          'RepulsingHillClimbingOptimizer',
+                          'SimulatedAnnealingOptimizer',
+                          'RandomSearchOptimizer',
+                          'RandomRestartHillClimbingOptimizer',
+                          'RandomAnnealingOptimizer',
+                          'ParallelTemperingOptimizer',
+                          'ParticleSwarmOptimizer',
+                          'EvolutionStrategyOptimizer',
+                          'BayesianOptimizer',
+                          'TreeStructuredParzenEstimators',
+                          'DecisionTreeOptimizer'],
+        'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
+                'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
+                'vector_bfgs2', 'steepest_descent'],
+        'levmar': ['levmar'],
+        'mantid': ['BFGS',
+                   'Conjugate gradient (Fletcher-Reeves imp.)',
+                   'Conjugate gradient (Polak-Ribiere imp.)',
+                   'Damped GaussNewton', 'Levenberg-Marquardt',
+                   'Levenberg-MarquardtMD', 'Simplex',
+                   'SteepestDescent', 'Trust Region', 'FABADA'],
+        'matlab': ['Nelder-Mead Simplex'],
+        'matlab_curve': ['Levenberg-Marquardt', 'Trust-Region'],
+        'matlab_opt': ['levenberg-marquardt', 'trust-region-reflective'],
+        'matlab_stats': ['Levenberg-Marquardt'],
+        'minuit': ['minuit'],
+        'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
+        'rat': ['fminsearch'],
+        'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
+                  'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
+        'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
+        'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing'],
+    }
+    VALID_FITTING = {
+        'algorithm_type': ['all', 'ls', 'deriv_free', 'general', 'simplex',
+                           'trust_region', 'levenberg-marquardt',
+                           'gauss_newton', 'bfgs', 'conjugate_gradient',
+                           'steepest_descent', 'global_optimization'],
+        'software': ['bumps', 'dfo', 'gradient_free', 'gsl', 'levmar',
+                     'mantid', 'matlab', 'matlab_curve', 'matlab_opt',
+                     'matlab_stats', 'minuit', 'ralfit', 'rat', 'scipy',
+                     'scipy_ls', 'scipy_go'],
+        'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
+        'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
+        'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
+                           'poisson'],
+    }
+    VALID_JACOBIAN = {
+        'scipy': ['2-point', '3-point', 'cs'],
+        'analytic': ['default'],
+        'default': ['default'],
+        'numdifftools': ['central', 'complex', 'multicomplex',
+                         'forward', 'backward'],
+    }
+    VALID_HESSIAN = {
+        'scipy': ['2-point', '3-point', 'cs'],
+        'analytic': ['default'],
+        'default': ['default'],
+        'numdifftools': ['central', 'complex', 'multicomplex',
+                         'forward', 'backward',
+                         ],
+    }
+    VALID_PLOTTING = {
+        'make_plots': [True, False],
+        'comparison_mode': ['abs', 'rel', 'both'],
+        'table_type': ['acc', 'runtime', 'compare', 'local_min'],
+        'colour_map': plt.colormaps(),
+    }
     VALID_OUTPUT = {}
-    VALID_LOGGING = \
-        {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
-                   'CRITICAL'],
-         'append': [True, False],
-         'external_output': ['debug', 'display', 'log_only']}
+    VALID_LOGGING = {
+        'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
+                  'CRITICAL'],
+        'append': [True, False],
+        'external_output': ['debug', 'display', 'log_only'],
+    }
+    VALID_MATLAB = {}
 
-    VALID = {'MINIMIZERS': VALID_MINIMIZERS,
-             'FITTING': VALID_FITTING,
-             'JACOBIAN': VALID_JACOBIAN,
-             'HESSIAN': VALID_HESSIAN,
-             'PLOTTING': VALID_PLOTTING,
-             'OUTPUT': VALID_OUTPUT,
-             'LOGGING': VALID_LOGGING}
+    VALID = {
+        'MINIMIZERS': VALID_MINIMIZERS,
+        'FITTING': VALID_FITTING,
+        'JACOBIAN': VALID_JACOBIAN,
+        'HESSIAN': VALID_HESSIAN,
+        'PLOTTING': VALID_PLOTTING,
+        'OUTPUT': VALID_OUTPUT,
+        'LOGGING': VALID_LOGGING,
+        'MATLAB': VALID_MATLAB,
+    }
 
-    DEFAULT_MINIMZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'mp'],
-         'dfo': ['dfogn', 'dfols'],
-         'gradient_free': ['HillClimbingOptimizer',
-                           'RepulsingHillClimbingOptimizer',
-                           'SimulatedAnnealingOptimizer',
-                           'RandomSearchOptimizer',
-                           'RandomRestartHillClimbingOptimizer',
-                           'RandomAnnealingOptimizer',
-                           'ParallelTemperingOptimizer',
-                           'ParticleSwarmOptimizer',
-                           'EvolutionStrategyOptimizer'],
-         'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
-                 'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
-                 'vector_bfgs2', 'steepest_descent'],
-         'levmar': ['levmar'],
-         'mantid': ['BFGS',
-                    'Conjugate gradient (Fletcher-Reeves imp.)',
-                    'Conjugate gradient (Polak-Ribiere imp.)',
-                    'Damped GaussNewton', 'Levenberg-Marquardt',
-                    'Levenberg-MarquardtMD', 'Simplex',
-                    'SteepestDescent', 'Trust Region'],
-         'matlab': ['Nelder-Mead Simplex'],
-         'matlab_curve': ['Levenberg-Marquardt', 'Trust-Region'],
-         'matlab_opt': ['levenberg-marquardt', 'trust-region-reflective'],
-         'matlab_stats': ['Levenberg-Marquardt'],
-         'minuit': ['minuit'],
-         'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
-         'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                   'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-         'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
-         'scipy_go': ['differential_evolution', 'dual_annealing']}
-    DEFAULT_FITTING = \
-        {'num_runs': 5,
-         'algorithm_type': ['all'],
-         'software': ['scipy', 'scipy_ls'],
-         'jac_method': ['scipy'],
-         'hes_method': ['default'],
-         'cost_func_type': ['weighted_nlls'],
-         'max_runtime': 600}
-    DEFAULT_JACOBIAN = \
-        {'analytic': ['default'],
-         'scipy': ['2-point'],
-         'default': ['default'],
-         'numdifftools': ['central']}
-    DEFAULT_HESSIAN = \
-        {'analytic': ['default'],
-         'scipy': ['2-point'],
-         'default': ['default'],
-         'numdifftools': ['central']}
-    DEFAULT_PLOTTING = \
-        {'make_plots': True,
-         'colour_map': 'magma_r',
-         'colour_ulim': 100,
-         'cmap_range': [0.2, 0.8],
-         'comparison_mode': 'both',
-         'table_type': ['acc', 'runtime', 'compare', 'local_min']}
-    DEFAULT_OUTPUT = \
-        {'results_dir': 'fitbenchmarking_results'}
-    DEFAULT_LOGGING = \
-        {'file_name': 'fitbenchmarking.log',
-         'append': False,
-         'level': 'INFO',
-         'external_output': 'log_only'}
-    DEFAULTS = {'MINIMIZERS': DEFAULT_MINIMZERS,
-                'FITTING': DEFAULT_FITTING,
-                'JACOBIAN': DEFAULT_JACOBIAN,
-                'HESSIAN': DEFAULT_HESSIAN,
-                'PLOTTING': DEFAULT_PLOTTING,
-                'OUTPUT': DEFAULT_OUTPUT,
-                'LOGGING': DEFAULT_LOGGING}
+    DEFAULT_MINIMZERS = {
+        'bumps': ['amoeba', 'lm-bumps', 'newton', 'mp'],
+        'dfo': ['dfogn', 'dfols'],
+        'gradient_free': ['HillClimbingOptimizer',
+                          'RepulsingHillClimbingOptimizer',
+                          'SimulatedAnnealingOptimizer',
+                          'RandomSearchOptimizer',
+                          'RandomRestartHillClimbingOptimizer',
+                          'RandomAnnealingOptimizer',
+                          'ParallelTemperingOptimizer',
+                          'ParticleSwarmOptimizer',
+                          'EvolutionStrategyOptimizer'],
+        'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
+                'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
+                'vector_bfgs2', 'steepest_descent'],
+        'levmar': ['levmar'],
+        'mantid': ['BFGS',
+                   'Conjugate gradient (Fletcher-Reeves imp.)',
+                   'Conjugate gradient (Polak-Ribiere imp.)',
+                   'Damped GaussNewton', 'Levenberg-Marquardt',
+                   'Levenberg-MarquardtMD', 'Simplex',
+                   'SteepestDescent', 'Trust Region'],
+        'matlab': ['Nelder-Mead Simplex'],
+        'matlab_curve': ['Levenberg-Marquardt', 'Trust-Region'],
+        'matlab_opt': ['levenberg-marquardt', 'trust-region-reflective'],
+        'matlab_stats': ['Levenberg-Marquardt'],
+        'minuit': ['minuit'],
+        'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
+        'rat': ['fminsearch'],
+        'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
+                  'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
+        'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
+        'scipy_go': ['differential_evolution', 'dual_annealing'],
+    }
+    DEFAULT_FITTING = {
+        'num_runs': 5,
+        'algorithm_type': ['all'],
+        'software': ['scipy', 'scipy_ls'],
+        'jac_method': ['scipy'],
+        'hes_method': ['default'],
+        'cost_func_type': ['weighted_nlls'],
+        'max_runtime': 600,
+    }
+    DEFAULT_JACOBIAN = {
+        'analytic': ['default'],
+        'scipy': ['2-point'],
+        'default': ['default'],
+        'numdifftools': ['central'],
+    }
+    DEFAULT_HESSIAN = {
+        'analytic': ['default'],
+        'scipy': ['2-point'],
+        'default': ['default'],
+        'numdifftools': ['central'],
+    }
+    DEFAULT_PLOTTING = {
+        'make_plots': True,
+        'colour_map': 'magma_r',
+        'colour_ulim': 100,
+        'cmap_range': [0.2, 0.8],
+        'comparison_mode': 'both',
+        'table_type': ['acc', 'runtime', 'compare', 'local_min'],
+    }
+    DEFAULT_OUTPUT = {'results_dir': 'fitbenchmarking_results'}
+    DEFAULT_LOGGING = {
+        'file_name': 'fitbenchmarking.log',
+        'append': False,
+        'level': 'INFO',
+        'external_output': 'log_only',
+    }
+    DEFAULT_MATLAB = {
+        'path': 'matlab',
+    }
+    DEFAULTS = {
+        'MINIMIZERS': DEFAULT_MINIMZERS,
+        'FITTING': DEFAULT_FITTING,
+        'JACOBIAN': DEFAULT_JACOBIAN,
+        'HESSIAN': DEFAULT_HESSIAN,
+        'PLOTTING': DEFAULT_PLOTTING,
+        'OUTPUT': DEFAULT_OUTPUT,
+        'LOGGING': DEFAULT_LOGGING,
+        'MATLAB': DEFAULT_MATLAB,
+    }
 
     def __init__(self, file_name=None, results_directory: str = ""):
         """
@@ -271,6 +293,9 @@ class Options:
 
         self.external_output = self.read_value(logging.getstr,
                                                'external_output')
+
+        matlab = config['MATLAB']
+        self.matlab_path = self.read_value(matlab.getlist, 'path')
 
         if self.error_message != []:
             raise OptionsError('\n'.join(self.error_message))
@@ -379,6 +404,7 @@ class Options:
                              'level': self.log_level,
                              'append': self.log_append,
                              'external_output': self.external_output}
+        config['MATLAB'] = {'path': list_to_string(self.matlab_path)}
 
         return config
 
