@@ -41,6 +41,7 @@ class HoraceController(MatlabMixin, Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
+        self._status = None
 
     def setup(self):
         """
@@ -75,14 +76,15 @@ class HoraceController(MatlabMixin, Controller):
         Run problem with Horace
         """
         eng.evalc('[fitted_data, fit_params] = kk.fit')
+        self._status = int(eng.workspace['fit_params']['converged'])
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        if int(eng.workspace['fit_params']['converged']) == 0:
-            self.flag = 1
+        if self._status == 0:
+            self.flag = 2
         else:
             self.flag = 0
 
