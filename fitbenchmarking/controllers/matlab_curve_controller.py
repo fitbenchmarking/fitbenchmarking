@@ -1,13 +1,11 @@
 """
 Implements a controller for MATLAB Curve Fitting Toolbox
 """
+import matlab
 import numpy as np
-import matlab.engine
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
-
-eng = matlab.engine.start_matlab()
 
 
 class MatlabCurveController(MatlabMixin, Controller):
@@ -16,18 +14,19 @@ class MatlabCurveController(MatlabMixin, Controller):
     """
 
     algorithm_check = {
-            'all': ['Trust-Region', 'Levenberg-Marquardt'],
-            'ls': ['Trust-Region', 'Levenberg-Marquardt'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['Trust-Region', 'Levenberg-Marquardt'],
-            'levenberg-marquardt': ['Levenberg-Marquardt'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': []}
+        'all': ['Trust-Region', 'Levenberg-Marquardt'],
+        'ls': ['Trust-Region', 'Levenberg-Marquardt'],
+        'deriv_free': [],
+        'general': [],
+        'simplex': [],
+        'trust_region': ['Trust-Region', 'Levenberg-Marquardt'],
+        'levenberg-marquardt': ['Levenberg-Marquardt'],
+        'gauss_newton': [],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': [],
+    }
 
     incompatible_problems = ['mantid']
 
@@ -53,8 +52,8 @@ class MatlabCurveController(MatlabMixin, Controller):
         """
         # Convert initial params into matlab array
         self.initial_params_mat = matlab.double(list(self.initial_params))
-        eng.workspace['x_data'] = matlab.double(self.data_x.tolist())
-        eng.workspace['y_data'] = matlab.double(self.data_y.tolist())
+        self.eng.workspace['x_data'] = matlab.double(self.data_x.tolist())
+        self.eng.workspace['y_data'] = matlab.double(self.data_y.tolist())
 
         def wrapper(x, y, *p):
 
@@ -73,42 +72,42 @@ class MatlabCurveController(MatlabMixin, Controller):
 
         # serialize cost_func.eval_cost and open within matlab engine
         # so that matlab fitting function can be called
-        eng.workspace['eval_cost_mat'] =\
-            self.py_to_mat(wrapper, eng)
+        self.eng.workspace['eval_cost_mat'] =\
+            self.py_to_mat(wrapper)
 
         # Setup the timer to track using calls to eval_cost_mat
-        self.setup_timer('eval_cost_mat', eng)
+        self.setup_timer('eval_cost_mat')
 
         if self.value_ranges is not None:
             lb, ub = zip(*self.value_ranges)
-            eng.workspace['lower_bounds'] = matlab.double(lb)
-            eng.workspace['upper_bounds'] = matlab.double(ub)
+            self.eng.workspace['lower_bounds'] = matlab.double(lb)
+            self.eng.workspace['upper_bounds'] = matlab.double(ub)
         else:
             # if no bounds are set, then pass empty arrays to
             # fitoptions function
-            eng.workspace['lower_bounds'] = matlab.double([])
-            eng.workspace['upper_bounds'] = matlab.double([])
+            self.eng.workspace['lower_bounds'] = matlab.double([])
+            self.eng.workspace['upper_bounds'] = matlab.double([])
 
         params = self.problem.param_names
-        eng.workspace['init_params'] = self.initial_params_mat
-        eng.evalc("opts = fitoptions('StartPoint', init_params,"
-                  "'Method', 'NonLinearLeastSquares',"
-                  f"'Algorithm', '{self.minimizer}',"
-                  "'Lower', lower_bounds,"
-                  "'Upper', upper_bounds)")
+        self.eng.workspace['init_params'] = self.initial_params_mat
+        self.eng.evalc("opts = fitoptions('StartPoint', init_params,"
+                       "'Method', 'NonLinearLeastSquares',"
+                       f"'Algorithm', '{self.minimizer}',"
+                       "'Lower', lower_bounds,"
+                       "'Upper', upper_bounds)")
 
-        eng.evalc(f"ft = fittype(@({', '.join(params)}, x, y)"
-                  f"double(eval_cost_mat(x, y, {', '.join(params)}))',"
-                  f"'options', opts, 'independent', {{'x', 'y'}},"
-                  "'dependent', 'z')")
+        self.eng.evalc(f"ft = fittype(@({', '.join(params)}, x, y)"
+                       f"double(eval_cost_mat(x, y, {', '.join(params)}))',"
+                       f"'options', opts, 'independent', {{'x', 'y'}},"
+                       "'dependent', 'z')")
 
     def fit(self):
         """
         Run problem with Matlab
         """
-        eng.evalc("[fitobj, gof, output] = fit([x_data', y_data'],"
-                  "zeros(size(x_data))', ft);")
-        self._status = int(eng.workspace['output']['exitflag'])
+        self.eng.evalc("[fitobj, gof, output] = fit([x_data', y_data'],"
+                       "zeros(size(x_data))', ft);")
+        self._status = int(self.eng.workspace['output']['exitflag'])
 
     def cleanup(self):
         """
@@ -122,4 +121,6 @@ class MatlabCurveController(MatlabMixin, Controller):
         else:
             self.flag = 2
 
-        self.final_params = eng.coeffvalues(eng.workspace['fitobj'])[0]
+        self.final_params = self.eng.coeffvalues(
+            self.eng.workspace['fitobj'])[0]
+        self.clear_matlab()
