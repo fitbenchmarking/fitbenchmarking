@@ -53,6 +53,7 @@ Instructions on how to install Mantid for a range of systems are available
 at `<https://download.mantidproject.org/>`_.
 
 .. _matlab-install:
+
 MATLAB
 ------
 
