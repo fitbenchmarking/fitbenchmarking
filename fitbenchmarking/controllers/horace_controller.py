@@ -13,7 +13,7 @@ eng = matlab.engine.start_matlab()
 
 class HoraceController(MatlabMixin, Controller):
     """
-    Controlller for fit in Herbert
+    Controller for fit in Herbert
     """
 
     algorithm_check = {
