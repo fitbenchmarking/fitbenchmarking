@@ -91,4 +91,4 @@ class HoraceController(MatlabMixin, Controller):
         else:
             self.flag = 0
 
-        self.final_params = eng.workspace['fit_params']['p'][0]        
+        self.final_params = eng.workspace['fit_params']['p'][0]
