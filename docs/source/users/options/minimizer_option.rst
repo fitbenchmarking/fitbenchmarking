@@ -226,11 +226,11 @@ spectrometers.*  We currently support:
 * Levenberg-Marquardt (:code:`lm-lsqr`)
 
 **Licence** Matlab must be installed to use Horace within FitBenchmarking, which is a
-`proprietary product <https://www.mathworks.com/pricing-licensing.html>`__ .
-Horace is made available under the the `GPL-3 licence <https://www.gnu.org/licenses/gpl-3.0.html>`__ .
+`proprietary product <https://www.mathworks.com/pricing-licensing.html>`__.
+Horace is made available under the the `GPL-3 licence <https://www.gnu.org/licenses/gpl-3.0.html>`__.
 
 .. warning::
-   The Horace Toolbox and MATLAB must be installed for this to be available; See :ref:`external-instructions`.
+   The Horace Toolbox and MATLAB must be installed for this to be available; see :ref:`external-instructions`.
 
 
 .. _mantid:
