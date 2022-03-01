@@ -50,13 +50,16 @@ class HoraceController(MatlabMixin, Controller):
         # Initialize Horace in the Matlab engine
         eng.evalc('horace_on')
 
-        print("Setup matlab array")
-        # Convert initial params into matlab array        
-        eng.workspace['x_mat'] = matlab.double(self.data_x.tolist())
-        eng.workspace['y_mat'] = matlab.double(np.zeros(self.data_y.shape).tolist())
-        eng.workspace['e_mat'] = matlab.double(np.ones(self.data_y.shape).tolist())
+        # Convert initial params into matlab array
+        eng.workspace['x_mat'] = matlab.double(
+            self.data_x.tolist())
+        eng.workspace['y_mat'] = matlab.double(
+            np.zeros(self.data_y.shape).tolist())
+        eng.workspace['e_mat'] = matlab.double(
+            np.ones(self.data_y.shape).tolist())
         eng.evalc("W = struct('x', x_mat, 'y', y_mat, 'e', e_mat)")
-        eng.workspace['initial_params'] = matlab.double([self.initial_params])
+        eng.workspace['initial_params'] = matlab.double(
+            [self.initial_params])
 
         # serialize cost_func.eval_r and open within matlab engine
         # so that matlab fitting function can be called
@@ -88,5 +91,4 @@ class HoraceController(MatlabMixin, Controller):
         else:
             self.flag = 0
 
-        self.final_params = eng.workspace['fit_params']['p'][0]
-        
+        self.final_params = eng.workspace['fit_params']['p'][0]        
