@@ -15,7 +15,6 @@ try:
 except ImportError:
     import_success = False
 
-
 eng = matlab.engine.start_matlab()
 
 
@@ -33,13 +32,26 @@ class MatlabMixin:
         """
 
         super().__init__(cost_func)
-        self.original_timer = None
-        self.eng = eng
+
         if not import_success:
             raise MissingSoftwareError('Requirements are missing for Matlab '
                                        'fitting, module "dill" is required.')
 
         self.initial_params_mat = None
+        self.original_timer = None
+        self.eng = eng
+
+        with TemporaryDirectory() as temp_dir:
+            temp_file = os.path.join(temp_dir, 'temp.pickle')
+            with open(temp_file, 'wb') as f:
+                dill.dump(cost_func, f)
+            self.eng.workspace['temp_file'] = temp_file
+            self.eng.evalc('cf_f = py.open(temp_file,"rb")')
+            self.eng.evalc('global cf')
+            self.eng.evalc('cf = py.dill.load(cf_f)')
+            self.eng.evalc('cf_f.close()')
+
+        self.setup_timer()
 
     def clear_matlab(self):
         """
@@ -50,39 +62,29 @@ class MatlabMixin:
             self.timer = self.original_timer
             self.original_timer = None
 
-    def setup_timer(self, func):
+    def setup_timer(self):
         """
-        Create an interface into the timer associated with the named function.
+        Create an interface into the timer associated with the cost function.
         The timer will be created in the matlab engine as "timer" and must
         not be overridden, although this can be changed in this function if
         there's a conflict.
 
         This overrides the controller's timer so that it can be controlled from
         other parts of the code.
-
-        :param func: The name of the function to use for timing
-                     (from the perspective of the matlab engine).
-        :type func: str
         """
-        self.eng.evalc(f'timer = py.getattr({func}, "__self__").problem.timer')
+        self.eng.evalc('timer = cf.problem.timer')
         if self.original_timer is None:
             self.original_timer = self.timer
         self.timer = MatlabTimerInterface('timer')
 
     def py_to_mat(self, func):
         """
-        Function that serializes a python function and then
-        loads it into the Matlab engine workspace
+        Get the named function from the matlab version of the cost function
+
+        :param func: The name of the function to retrieve
+        :type func: str
         """
-        with TemporaryDirectory() as temp_dir:
-            temp_file = os.path.join(temp_dir, 'temp.pickle')
-            with open(temp_file, 'wb') as f:
-                dill.dump(func, f)
-            self.eng.workspace['temp_file'] = temp_file
-            self.eng.evalc('fp = py.open(temp_file,"rb")')
-            self.eng.evalc('fm = py.dill.load(fp)')
-            self.eng.evalc('fp.close()')
-        return self.eng.workspace['fm']
+        return self.eng.evalc(f'py.getattr(cf, "{func}")')
 
 
 class MatlabTimerInterface:

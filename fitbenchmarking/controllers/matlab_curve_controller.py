@@ -1,8 +1,10 @@
 """
 Implements a controller for MATLAB Curve Fitting Toolbox
 """
+import os
+from tempfile import TemporaryDirectory
+
 import matlab
-import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
@@ -29,6 +31,7 @@ class MatlabCurveController(MatlabMixin, Controller):
     }
 
     incompatible_problems = ['mantid']
+    controller_name = 'matlab_curve'
 
     def __init__(self, cost_func):
         """
@@ -43,8 +46,7 @@ class MatlabCurveController(MatlabMixin, Controller):
         self.options = None
         self._status = None
         self.result = None
-
-    controller_name = 'matlab_curve'
+        self.tempdir = TemporaryDirectory()
 
     def setup(self):
         """
@@ -55,28 +57,32 @@ class MatlabCurveController(MatlabMixin, Controller):
         self.eng.workspace['x_data'] = matlab.double(self.data_x.tolist())
         self.eng.workspace['y_data'] = matlab.double(self.data_y.tolist())
 
-        def wrapper(x, y, *p):
+        self.eng.evalc('global e_data')
+        if self.data_e is not None:
+            self.eng.workspace['e_data'] = matlab.double(self.data_e.tolist())
+        else:
+            self.eng.workspace['e_data'] = matlab.double([])
 
-            kwargs = {"x": np.array(x),
-                      "y": np.array(y)}
+        eval_r_path = os.path.join(self.tempdir.name, 'eval_r.m')
+        with open(eval_r_path, 'w', encoding='utf-8') as f:
+            f.write(
+                "function out=eval_r(x, y, varargin)                     \n"
+                "    global data_e;                                      \n"
+                "    global cf;                                          \n"
+                "    if length(data_e) == length(y)                      \n"
+                "        e = data_e;                                     \n"
+                "    else                                                \n"
+                "        e = ones(size(y));                              \n"
+                "    end                                                 \n"
+                "    p = py.list(cell2mat(varargin));                    \n"
+                "    x = py.numpy.array(x);                              \n"
+                "    y = py.numpy.array(y);                              \n"
+                "    e = py.numpy.array(e);                              \n"
+                "    out = cf.eval_r(p, pyargs('x', x, 'y', y, 'e', e)); \n"
+                "end                                                     \n"
+            )
 
-            # To avoid errors in fittype function evaluation, if e is
-            # not the same length as y, then replace e with an array
-            # of ones
-            if self.data_e is not None and len(self.data_e) != len(y):
-                kwargs["e"] = np.ones(len(y))
-
-            result = self.cost_func.eval_r(p, **kwargs)
-
-            return result
-
-        # serialize cost_func.eval_cost and open within matlab engine
-        # so that matlab fitting function can be called
-        self.eng.workspace['eval_cost_mat'] =\
-            self.py_to_mat(wrapper)
-
-        # Setup the timer to track using calls to eval_cost_mat
-        self.setup_timer('eval_cost_mat')
+        self.eng.addpath(self.tempdir.name)
 
         if self.value_ranges is not None:
             lb, ub = zip(*self.value_ranges)
@@ -97,8 +103,8 @@ class MatlabCurveController(MatlabMixin, Controller):
                        "'Upper', upper_bounds)")
 
         self.eng.evalc(f"ft = fittype(@({', '.join(params)}, x, y)"
-                       f"double(eval_cost_mat(x, y, {', '.join(params)}))',"
-                       f"'options', opts, 'independent', {{'x', 'y'}},"
+                       f"double(eval_r(x, y, {', '.join(params)}))',"
+                       "'options', opts, 'independent', {'x', 'y'},"
                        "'dependent', 'z')")
 
     def fit(self):
