@@ -5,6 +5,8 @@ Implements mixin class for the matlab fitting software controllers.
 import os
 from tempfile import TemporaryDirectory
 
+import matlab.engine
+
 from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 try:
@@ -13,8 +15,6 @@ try:
 except ImportError:
     import_success = False
 
-
-import matlab.engine
 
 eng = matlab.engine.start_matlab()
 

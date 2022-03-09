@@ -915,10 +915,9 @@ class MatlabControllerTests(TestCase):
         from python
         """
         controller = MatlabController(self.cost_func)
-        eng = matlab.engine.start_matlab()
-
+        eng = controller.eng
         eng.workspace['test_mat_func'] =\
-            controller.py_to_mat(self.cost_func.eval_cost, eng)
+            controller.py_to_mat(self.cost_func.eval_cost)
 
         params = np.array([1, 2, 3, 4])
 
