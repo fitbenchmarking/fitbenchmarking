@@ -74,11 +74,8 @@ class MatlabOptController(MatlabMixin, Controller):
         # serialize cost_func.eval_r and jacobian.eval (if not
         # using default jacobian) and open within matlab engine
         # so matlab fitting function can be called
-        self.eng.workspace['eval_f'] = self.py_to_mat(self.cost_func.eval_r)
+        self.eng.workspace['eval_f'] = self.py_to_mat('eval_r')
         self.eng.evalc('f_wrapper = @(p, x)double(eval_f(p));')
-
-        # Setup the timer to track using calls to eval_f
-        self.setup_timer('eval_f')
 
         self.eng.workspace['init'] = self.initial_params_mat
         self.eng.workspace['x'] = self.x_data_mat
@@ -86,8 +83,7 @@ class MatlabOptController(MatlabMixin, Controller):
         # if default jacobian is not selected then pass _jeval
         # function to matlab
         if not self.cost_func.jacobian.use_default_jac:
-            self.eng.workspace['eval_j'] = self.py_to_mat(
-                self.cost_func.jac_res)
+            self.eng.workspace['eval_j'] = self.py_to_mat('jac_res')
             self.eng.evalc('j_wrapper = @(p, x)double(eval_j(p));')
 
             self.eng.workspace['eval_func'] = [self.eng.workspace['f_wrapper'],

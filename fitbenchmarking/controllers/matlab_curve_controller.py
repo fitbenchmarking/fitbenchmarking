@@ -63,26 +63,9 @@ class MatlabCurveController(MatlabMixin, Controller):
         else:
             self.eng.workspace['e_data'] = matlab.double([])
 
-        eval_r_path = os.path.join(self.tempdir.name, 'eval_r.m')
-        with open(eval_r_path, 'w', encoding='utf-8') as f:
-            f.write(
-                "function out=eval_r(x, y, varargin)                     \n"
-                "    global data_e;                                      \n"
-                "    global cf;                                          \n"
-                "    if length(data_e) == length(y)                      \n"
-                "        e = data_e;                                     \n"
-                "    else                                                \n"
-                "        e = ones(size(y));                              \n"
-                "    end                                                 \n"
-                "    p = py.list(cell2mat(varargin));                    \n"
-                "    x = py.numpy.array(x);                              \n"
-                "    y = py.numpy.array(y);                              \n"
-                "    e = py.numpy.array(e);                              \n"
-                "    out = cf.eval_r(p, pyargs('x', x, 'y', y, 'e', e)); \n"
-                "end                                                     \n"
-            )
-
-        self.eng.addpath(self.tempdir.name)
+        eval_path = os.path.join(os.path.dirname(__file__),
+                                 'matlab_curve_controller')
+        self.eng.addpath(eval_path)
 
         if self.value_ranges is not None:
             lb, ub = zip(*self.value_ranges)

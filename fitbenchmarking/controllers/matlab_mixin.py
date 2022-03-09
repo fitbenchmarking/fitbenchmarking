@@ -84,7 +84,8 @@ class MatlabMixin:
         :param func: The name of the function to retrieve
         :type func: str
         """
-        return self.eng.evalc(f'py.getattr(cf, "{func}")')
+        self.eng.evalc(f'fct = py.getattr(cf, "{func}");')
+        return self.eng.workspace['fct']
 
 
 class MatlabTimerInterface:
