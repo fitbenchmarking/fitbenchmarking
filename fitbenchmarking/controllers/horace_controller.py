@@ -15,18 +15,18 @@ class HoraceController(MatlabMixin, Controller):
     """
 
     algorithm_check = {
-            'all': ['lm-lsqr'],
-            'ls': ['lm-lsqr'],
-            'deriv_free': ['lm-lsqr'],
-            'general': [],
-            'simplex': [],
-            'trust_region': [],
-            'levenberg-marquardt': ['lm-lsqr'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': []}
+        'all': ['lm-lsqr'],
+        'ls': ['lm-lsqr'],
+        'deriv_free': ['lm-lsqr'],
+        'general': [],
+        'simplex': [],
+        'trust_region': [],
+        'levenberg-marquardt': ['lm-lsqr'],
+        'gauss_newton': [],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': []}
 
     incompatible_problems = ['mantid']
 
@@ -78,7 +78,7 @@ class HoraceController(MatlabMixin, Controller):
         """
         self.eng.evalc('[fitted_data, fit_params] = kk.fit')
         self._fit_params = self.eng.workspace['fit_params']
-        
+
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
