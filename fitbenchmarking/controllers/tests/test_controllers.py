@@ -1025,9 +1025,9 @@ class MatlabControllerTests(TestCase):
             controller.minimizer = minimizer
             self.shared_tests.controller_run_test(controller)
 
-            controller._status = 1
+            controller._fit_params['converged'] = 1
             self.shared_tests.check_converged(controller)
-            controller._status = 0
+            controller._fit_params['converged'] = 0
             self.shared_tests.check_diverged(controller)
 
 
