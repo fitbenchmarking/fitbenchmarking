@@ -211,13 +211,14 @@ def setup_options(override_software: list = None,
     software = {"all": ["bumps", "dfo", "gsl", "levmar", "mantid", "minuit",
                         "ralfit", "scipy", "scipy_ls"],
                 "default": ["bumps", "scipy", "scipy_ls"],
-                "matlab": ["matlab", "matlab_curve", "matlab_opt",
+                "matlab": ["horace", "matlab", "matlab_curve", "matlab_opt",
                            "matlab_stats"]}
 
     # The minimizers to test for each software
     minimizers = {"bumps": "lm-bumps",
                   "dfo": "dfols",
                   "gsl": "lmsder",
+                  "horace": "lm-lsqr",
                   "levmar": "levmar",
                   "mantid": "Levenberg-Marquardt",
                   "matlab": "Nelder-Mead Simplex",
