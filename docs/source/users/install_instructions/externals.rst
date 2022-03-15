@@ -35,6 +35,15 @@ see our example build script in `build/gsl`.
 
 Note: pyGSL may not be installable with the latest versions of pip. We have found that 20.0.2 works for our tests.
 
+Horace
+------
+
+Horace can be installed by following the instructions `on the Horace
+website <https://pace-neutrons.github.io/Horace/3.6.0/Download_and_setup.html>`__.
+In addition, MATLAB and the MATLAB engine must be installed following the
+:ref:`instructions given below<matlab-install>`.
+
+
 Mantid
 ------
 
@@ -42,6 +51,8 @@ Mantid is used both as fitting software, and to parse data files.
 
 Instructions on how to install Mantid for a range of systems are available
 at `<https://download.mantidproject.org/>`_.
+
+.. _matlab-install:
 
 MATLAB
 ------
