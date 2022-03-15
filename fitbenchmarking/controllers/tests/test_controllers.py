@@ -49,6 +49,8 @@ if TEST_TYPE == 'matlab':
         MatlabStatsController
     from fitbenchmarking.controllers.matlab_curve_controller import\
         MatlabCurveController
+    from fitbenchmarking.controllers.horace_controller import\
+        HoraceController
     import matlab.engine
 
 
@@ -1011,6 +1013,22 @@ class MatlabControllerTests(TestCase):
             controller._status = 0
             self.shared_tests.check_max_iterations(controller)
             controller._status = -1
+            self.shared_tests.check_diverged(controller)
+
+    def test_horace(self):
+        """
+        Horace: Tests for output shape
+        """
+        controller = HoraceController(self.cost_func)
+
+        minimizers = ['lm-lsqr']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._status = 1
+            self.shared_tests.check_converged(controller)
+            controller._status = 0
             self.shared_tests.check_diverged(controller)
 
 
