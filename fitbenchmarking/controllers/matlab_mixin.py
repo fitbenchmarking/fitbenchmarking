@@ -33,7 +33,7 @@ class MatlabMixin:
         """
 
         super().__init__(cost_func)
-        self.old_timer = None
+        self.original_timer = None
         self.eng = eng
         if not import_success:
             raise MissingSoftwareError('Requirements are missing for Matlab '
@@ -46,9 +46,9 @@ class MatlabMixin:
         Clear the matlab instance, ready for the next setup.
         """
         self.eng.clear('all', nargout=0)
-        if self.old_timer is not None:
-            self.timer = self.old_timer
-            self.old_timer = None
+        if self.original_timer is not None:
+            self.timer = self.original_timer
+            self.original_timer = None
 
     def setup_timer(self, func):
         """
@@ -65,7 +65,8 @@ class MatlabMixin:
         :type func: str
         """
         self.eng.evalc(f'timer = py.getattr({func}, "__self__").problem.timer')
-        self.old_timer = self.timer
+        if self.original_timer is None:
+            self.original_timer = self.timer
         self.timer = MatlabTimerInterface('timer')
 
     def py_to_mat(self, func):
