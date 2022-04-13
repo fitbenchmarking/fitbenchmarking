@@ -124,4 +124,3 @@ class MatlabOptController(MatlabMixin, Controller):
             self.flag = 2
 
         self.final_params = self.result[0]
-        self.clear_matlab()

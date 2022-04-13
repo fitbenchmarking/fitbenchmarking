@@ -44,8 +44,6 @@ class MatlabMixin:
     def clear_matlab(self):
         """
         Clear the matlab instance, ready for the next setup.
-
-        This should be called at the end of self.cleanup()
         """
         self.eng.clear('all', nargout=0)
         if self.old_timer is not None:

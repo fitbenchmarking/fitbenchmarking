@@ -90,4 +90,3 @@ class HoraceController(MatlabMixin, Controller):
             self.flag = 0
 
         self.final_params = self._fit_params['p'][0]
-        self.clear_matlab()
