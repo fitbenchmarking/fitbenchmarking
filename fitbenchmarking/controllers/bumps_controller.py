@@ -120,8 +120,8 @@ class BumpsController(Controller):
 
         if self.minimizer == "lm-bumps":
             self.minimizer = "lm"
-        if self.minimizer == "scipy-leastsq":
-            self.minmizer = "scipy.leastsq"
+        elif self.minimizer == "scipy-leastsq":
+            self.minimizer = "scipy.leastsq"
 
     def _check_timer_abort_test(self):
         """
