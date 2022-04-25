@@ -19,7 +19,7 @@ class Options:
     VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN', 'HESSIAN',
                       'PLOTTING', 'OUTPUT', 'LOGGING']
     VALID_MINIMIZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
+        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq'],
          'dfo': ['dfogn', 'dfols'],
          'gradient_free': ['HillClimbingOptimizer',
                            'RepulsingHillClimbingOptimizer',
@@ -102,7 +102,7 @@ class Options:
              'LOGGING': VALID_LOGGING}
 
     DEFAULT_MINIMZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'mp'],
+        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq'],
          'dfo': ['dfogn', 'dfols'],
          'gradient_free': ['HillClimbingOptimizer',
                            'RepulsingHillClimbingOptimizer',
