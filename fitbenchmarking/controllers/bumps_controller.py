@@ -21,13 +21,13 @@ class BumpsController(Controller):
     """
 
     algorithm_check = {
-            'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
-            'ls': ['lm-bumps', 'mp'],
+            'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq'],
+            'ls': ['lm-bumps', 'scipy-leastsq'],
             'deriv_free': ['amoeba', 'de'],
             'general': ['amoeba', 'newton', 'de'],
             'simplex': ['amoeba'],
-            'trust_region': ['lm-bumps'],
-            'levenberg-marquardt': ['lm-bumps'],
+            'trust_region': ['lm-bumps', 'scipy-leastsq'],
+            'levenberg-marquardt': ['lm-bumps', 'scipy-leastsq'],
             'gauss_newton': [],
             'bfgs': ['newton'],
             'conjugate_gradient': [],
@@ -120,6 +120,8 @@ class BumpsController(Controller):
 
         if self.minimizer == "lm-bumps":
             self.minimizer = "lm"
+        elif self.minimizer == "scipy-leastsq":
+            self.minimizer = "scipy.leastsq"
 
     def _check_timer_abort_test(self):
         """
