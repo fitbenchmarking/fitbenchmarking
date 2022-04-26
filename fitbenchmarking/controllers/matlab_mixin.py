@@ -5,6 +5,8 @@ Implements mixin class for the matlab fitting software controllers.
 import os
 from tempfile import TemporaryDirectory
 
+import matlab.engine
+
 from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 try:
@@ -12,6 +14,9 @@ try:
     import_success = True
 except ImportError:
     import_success = False
+
+
+eng = matlab.engine.start_matlab()
 
 
 # If we re-implement caching, make sure the cache is cleared by the
@@ -28,14 +33,24 @@ class MatlabMixin:
         """
 
         super().__init__(cost_func)
-
+        self.original_timer = None
+        self.eng = eng
         if not import_success:
             raise MissingSoftwareError('Requirements are missing for Matlab '
                                        'fitting, module "dill" is required.')
 
         self.initial_params_mat = None
 
-    def setup_timer(self, func, eng):
+    def clear_matlab(self):
+        """
+        Clear the matlab instance, ready for the next setup.
+        """
+        self.eng.clear('all', nargout=0)
+        if self.original_timer is not None:
+            self.timer = self.original_timer
+            self.original_timer = None
+
+    def setup_timer(self, func):
         """
         Create an interface into the timer associated with the named function.
         The timer will be created in the matlab engine as "timer" and must
@@ -48,14 +63,13 @@ class MatlabMixin:
         :param func: The name of the function to use for timing
                      (from the perspective of the matlab engine).
         :type func: str
-        :param eng: The matlab engine for the work
-        :type eng: matlab.engine
         """
-        eng.evalc(f'timer = py.getattr({func}, "__self__").problem.timer')
-        self.timer = MatlabTimerInterface('timer', eng)
+        self.eng.evalc(f'timer = py.getattr({func}, "__self__").problem.timer')
+        if self.original_timer is None:
+            self.original_timer = self.timer
+        self.timer = MatlabTimerInterface('timer')
 
-    @staticmethod
-    def py_to_mat(func, eng):
+    def py_to_mat(self, func):
         """
         Function that serializes a python function and then
         loads it into the Matlab engine workspace
@@ -64,11 +78,11 @@ class MatlabMixin:
             temp_file = os.path.join(temp_dir, 'temp.pickle')
             with open(temp_file, 'wb') as f:
                 dill.dump(func, f)
-            eng.workspace['temp_file'] = temp_file
-            eng.evalc('fp = py.open(temp_file,"rb")')
-            eng.evalc('fm = py.dill.load(fp)')
-            eng.evalc('fp.close()')
-        return eng.workspace['fm']
+            self.eng.workspace['temp_file'] = temp_file
+            self.eng.evalc('fp = py.open(temp_file,"rb")')
+            self.eng.evalc('fm = py.dill.load(fp)')
+            self.eng.evalc('fp.close()')
+        return self.eng.workspace['fm']
 
 
 class MatlabTimerInterface:
@@ -76,14 +90,12 @@ class MatlabTimerInterface:
     A timer to convert from matlab to the python timer.
     """
 
-    def __init__(self, timer, eng):
+    def __init__(self, timer):
         """
         Initialiser for MatlabTimerInterface
 
         :param timer: The name of the timer in the matlab engine
         :type timer: str
-        :param eng: The matlab engine that the timer is in
-        :type eng: matlab.engine
         """
         self.timer = timer
         self.eng = eng
