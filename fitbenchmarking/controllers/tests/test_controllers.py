@@ -51,12 +51,9 @@ if TEST_TYPE == 'matlab':
         MatlabCurveController
     from fitbenchmarking.controllers.horace_controller import\
         HoraceController
-    import matlab.engine
 
 
 # pylint: disable=attribute-defined-outside-init, protected-access
-
-
 def make_cost_func(file_name='cubic.dat'):
     """
     Helper function that returns a simple fitting problem
@@ -917,10 +914,9 @@ class MatlabControllerTests(TestCase):
         from python
         """
         controller = MatlabController(self.cost_func)
-        eng = matlab.engine.start_matlab()
-
+        eng = controller.eng
         eng.workspace['test_mat_func'] =\
-            controller.py_to_mat(self.cost_func.eval_cost, eng)
+            controller.py_to_mat(self.cost_func.eval_cost)
 
         params = np.array([1, 2, 3, 4])
 
@@ -1026,9 +1022,9 @@ class MatlabControllerTests(TestCase):
             controller.minimizer = minimizer
             self.shared_tests.controller_run_test(controller)
 
-            controller._status = 1
+            controller._fit_params['converged'] = 1
             self.shared_tests.check_converged(controller)
-            controller._status = 0
+            controller._fit_params['converged'] = 0
             self.shared_tests.check_diverged(controller)
 
 

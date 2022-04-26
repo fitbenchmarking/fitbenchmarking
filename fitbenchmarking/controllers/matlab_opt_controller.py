@@ -1,14 +1,11 @@
 """
 Implements a controller for MATLAB Optimization Toolbox
 """
-
-import matlab.engine
+import matlab
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
-
-eng = matlab.engine.start_matlab()
 
 
 class MatlabOptController(MatlabMixin, Controller):
@@ -51,7 +48,6 @@ class MatlabOptController(MatlabMixin, Controller):
         self.y_data_mat = None
         self._status = None
         self.result = None
-        self.eng = eng
 
     def setup(self):
         """
@@ -64,7 +60,7 @@ class MatlabOptController(MatlabMixin, Controller):
         self.x_data_mat = matlab.double(self.data_x.tolist())
 
         # set matlab workspace variable for selected minimizer
-        eng.workspace['minimizer'] = self.minimizer
+        self.eng.workspace['minimizer'] = self.minimizer
 
         # set bounds if they have been set in problem definition file
         if self.value_ranges is not None:
@@ -78,39 +74,40 @@ class MatlabOptController(MatlabMixin, Controller):
         # serialize cost_func.eval_r and jacobian.eval (if not
         # using default jacobian) and open within matlab engine
         # so matlab fitting function can be called
-        eng.workspace['eval_f'] = self.py_to_mat(self.cost_func.eval_r, eng)
-        eng.evalc('f_wrapper = @(p, x)double(eval_f(p));')
+        self.eng.workspace['eval_f'] = self.py_to_mat(self.cost_func.eval_r)
+        self.eng.evalc('f_wrapper = @(p, x)double(eval_f(p));')
 
         # Setup the timer to track using calls to eval_f
-        self.setup_timer('eval_f', eng)
+        self.setup_timer('eval_f')
 
-        eng.workspace['init'] = self.initial_params_mat
-        eng.workspace['x'] = self.x_data_mat
+        self.eng.workspace['init'] = self.initial_params_mat
+        self.eng.workspace['x'] = self.x_data_mat
 
         # if default jacobian is not selected then pass _jeval
         # function to matlab
         if not self.cost_func.jacobian.use_default_jac:
-            eng.workspace['eval_j'] = self.py_to_mat(self.cost_func.jac_res,
-                                                     eng)
-            eng.evalc('j_wrapper = @(p, x)double(eval_j(p));')
+            self.eng.workspace['eval_j'] = self.py_to_mat(
+                self.cost_func.jac_res)
+            self.eng.evalc('j_wrapper = @(p, x)double(eval_j(p));')
 
-            eng.workspace['eval_func'] = [eng.workspace['f_wrapper'],
-                                          eng.workspace['j_wrapper']]
-            eng.evalc('options = optimoptions("lsqcurvefit", "Algorithm", '
-                      'minimizer, "SpecifyObjectiveGradient", true);')
+            self.eng.workspace['eval_func'] = [self.eng.workspace['f_wrapper'],
+                                               self.eng.workspace['j_wrapper']]
+            self.eng.evalc('options = optimoptions("lsqcurvefit", '
+                           '"Algorithm", minimizer, '
+                           '"SpecifyObjectiveGradient", true);')
         else:
-            eng.workspace['eval_func'] = eng.workspace['f_wrapper']
-            eng.evalc('options = optimoptions("lsqcurvefit", '
-                      '"Algorithm", minimizer);')
+            self.eng.workspace['eval_func'] = self.eng.workspace['f_wrapper']
+            self.eng.evalc('options = optimoptions("lsqcurvefit", '
+                           '"Algorithm", minimizer);')
 
     def fit(self):
         """
         Run problem with Matlab Optimization Toolbox
         """
-        self.result, _, _, exitflag, _ = eng.lsqcurvefit(
-            eng.workspace['eval_func'], self.initial_params_mat,
+        self.result, _, _, exitflag, _ = self.eng.lsqcurvefit(
+            self.eng.workspace['eval_func'], self.initial_params_mat,
             self.x_data_mat, self.y_data_mat, self.param_ranges[0],
-            self.param_ranges[1], eng.workspace['options'], nargout=5)
+            self.param_ranges[1], self.eng.workspace['options'], nargout=5)
         self._status = int(exitflag)
 
     def cleanup(self):
