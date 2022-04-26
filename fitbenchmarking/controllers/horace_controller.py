@@ -61,11 +61,8 @@ class HoraceController(MatlabMixin, Controller):
 
         # serialize cost_func.eval_r and open within matlab engine
         # so that matlab fitting function can be called
-        self.eng.workspace['eval_f'] = self.py_to_mat(self.cost_func.eval_r)
+        self.eng.workspace['eval_f'] = self.py_to_mat('eval_r')
         self.eng.evalc('f_wrapper = @(x, p) double(eval_f(p))')
-
-        # Setup the timer to track using calls to eval_f
-        self.setup_timer('eval_f')
 
         # Setup multifit data structures
         self.eng.evalc('kk = multifit(W)')
