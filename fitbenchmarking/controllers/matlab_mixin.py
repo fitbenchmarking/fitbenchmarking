@@ -15,7 +15,11 @@ try:
 except ImportError:
     import_success = False
 
-eng = matlab.engine.start_matlab()
+try:
+    eng = matlab.engine.connect_matlab(name='FITBENCHMARKING_MATLAB')
+except matlab.engine.EngineError:
+    eng = matlab.engine.start_matlab()
+    eng.shareEngine('FITBENCHMARKING_MATLAB')
 
 
 # If we re-implement caching, make sure the cache is cleared by the
