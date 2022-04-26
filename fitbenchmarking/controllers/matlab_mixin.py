@@ -19,7 +19,7 @@ try:
     eng = matlab.engine.connect_matlab(name='FITBENCHMARKING_MATLAB')
 except matlab.engine.EngineError:
     eng = matlab.engine.start_matlab()
-    eng.shareEngine('FITBENCHMARKING_MATLAB')
+    eng.matlab.engine.shareEngine('FITBENCHMARKING_MATLAB', nargout=0)
 
 
 # If we re-implement caching, make sure the cache is cleared by the

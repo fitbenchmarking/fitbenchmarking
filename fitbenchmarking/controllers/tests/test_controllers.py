@@ -894,7 +894,7 @@ class ExternalControllerTests(TestCase):
 @run_for_test_types(TEST_TYPE, 'matlab')
 class MatlabControllerTests(TestCase):
     """
-    Tests for each controller classb and for the
+    Tests for each controller class and for the
     Base Matlab Controller
     """
 
@@ -916,7 +916,7 @@ class MatlabControllerTests(TestCase):
         controller = MatlabController(self.cost_func)
         eng = controller.eng
         eng.workspace['test_mat_func'] =\
-            controller.py_to_mat(self.cost_func.eval_cost)
+            controller.py_to_mat('eval_cost')
 
         params = np.array([1, 2, 3, 4])
 
