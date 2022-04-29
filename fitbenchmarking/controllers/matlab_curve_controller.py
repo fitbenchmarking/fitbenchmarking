@@ -2,8 +2,6 @@
 Implements a controller for MATLAB Curve Fitting Toolbox
 """
 import os
-from tempfile import TemporaryDirectory
-
 import matlab
 
 from fitbenchmarking.controllers.base_controller import Controller
@@ -46,7 +44,6 @@ class MatlabCurveController(MatlabMixin, Controller):
         self.options = None
         self._status = None
         self.result = None
-        self.tempdir = TemporaryDirectory()
 
     def setup(self):
         """

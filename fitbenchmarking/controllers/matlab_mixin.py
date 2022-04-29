@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 
 import matlab.engine
 
-from fitbenchmarking.utils.exceptions import MissingSoftwareError
+from fitbenchmarking.utils.exceptions import IncompatibleProblemError, MissingSoftwareError
 
 try:
     import dill
@@ -29,6 +29,8 @@ class MatlabMixin:
     Mixin class for matlab fitting software controllers
     """
 
+    incompatible_problems = ['mantid']
+
     def __init__(self, cost_func):
         """
         Initialise anything that is needed specifically for matlab
@@ -44,24 +46,34 @@ class MatlabMixin:
         self.initial_params_mat = None
         self.original_timer = None
         self.eng = eng
+        self.pickle_error = None
 
-        with TemporaryDirectory() as temp_dir:
-            temp_file = os.path.join(temp_dir, 'temp.pickle')
-            with open(temp_file, 'wb') as f:
-                dill.dump(cost_func, f)
-            self.eng.workspace['temp_file'] = temp_file
-            self.eng.evalc('cf_f = py.open(temp_file,"rb")')
-            self.eng.evalc('global cf')
-            self.eng.evalc('cf = py.dill.load(cf_f)')
-            self.eng.evalc('cf_f.close()')
+        try:
+            with TemporaryDirectory() as temp_dir:
+                temp_file = os.path.join(temp_dir, 'temp.pickle')
+                with open(temp_file, 'wb') as f:
+                    dill.dump(cost_func, f)
+                self.eng.workspace['temp_file'] = temp_file
+                self.eng.evalc('cf_f = py.open(temp_file,"rb")')
+                self.eng.evalc('global cf')
+                self.eng.evalc('cf = py.dill.load(cf_f)')
+                self.eng.evalc('cf_f.close()')
+            self.setup_timer()
+        except RuntimeError as e:
+            self.pickle_error = e
 
-        self.setup_timer()
+    def _validate_problem_format(self):
+        super()._validate_problem_format()
+        if self.pickle_error is not None:
+            raise IncompatibleProblemError(
+                'Failed to load problem in MATLAB') from self.pickle_error
 
     def clear_matlab(self):
         """
         Clear the matlab instance, ready for the next setup.
         """
-        self.eng.clear('all', nargout=0)
+        self.eng.clear('variables', nargout=0)
+        self.eng.evalc('global cf')
         if self.original_timer is not None:
             self.timer = self.original_timer
             self.original_timer = None

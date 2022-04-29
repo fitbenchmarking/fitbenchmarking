@@ -105,7 +105,7 @@ class ControllerSharedTesting:
         """
         controller.parameter_set = 0
         controller.prepare()
-        controller.fit()
+        controller.execute()
         controller.cleanup()
 
         assert len(controller.final_params) == len(controller.initial_params)
@@ -922,7 +922,7 @@ class MatlabControllerTests(TestCase):
 
         result_py = self.cost_func.eval_cost(params=params)
         result_mat = eng.eval('test_mat_func([1, 2, 3, 4])')
-
+        controller.clear_matlab()
         assert result_py == result_mat
 
     def test_verify(self):
@@ -940,6 +940,7 @@ class MatlabControllerTests(TestCase):
         controller = MatlabController(cost_func)
         with self.assertRaises(exceptions.IncompatibleProblemError):
             controller.validate()
+        controller.clear_matlab()
 
     def test_matlab(self):
         """
@@ -958,6 +959,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_max_iterations(controller)
             controller._status = -1
             self.shared_tests.check_diverged(controller)
+            controller.clear_matlab()
 
     def test_matlab_opt(self):
         """
@@ -976,6 +978,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_max_iterations(controller)
             controller._status = -1
             self.shared_tests.check_diverged(controller)
+            controller.clear_matlab()
 
     def test_matlab_stats(self):
         """
@@ -992,6 +995,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_converged(controller)
             controller._status = 1
             self.shared_tests.check_diverged(controller)
+            controller.clear_matlab()
 
     def test_matlab_curve(self):
         """
@@ -1010,6 +1014,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_max_iterations(controller)
             controller._status = -1
             self.shared_tests.check_diverged(controller)
+            controller.clear_matlab()
 
     def test_horace(self):
         """
@@ -1026,6 +1031,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_converged(controller)
             controller._fit_params['converged'] = 0
             self.shared_tests.check_diverged(controller)
+            controller.clear_matlab()
 
 
 @run_for_test_types(TEST_TYPE, 'all')
