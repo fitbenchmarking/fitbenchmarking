@@ -7,7 +7,8 @@ from tempfile import TemporaryDirectory
 
 import matlab.engine
 
-from fitbenchmarking.utils.exceptions import IncompatibleProblemError, MissingSoftwareError
+from fitbenchmarking.utils.exceptions import (IncompatibleProblemError,
+                                              MissingSoftwareError)
 
 try:
     import dill
