@@ -155,6 +155,7 @@ def plot(acc, runtime, fig_dir):
         ax[0].set_ylim(0.0, 1.05)
 
         plt.savefig(this_filename, dpi=150)
+        plt.close(fig)
 
     return figure_path
 

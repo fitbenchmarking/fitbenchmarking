@@ -8,7 +8,7 @@ docs.fitbenchmarking.com.
 from __future__ import absolute_import, division, print_function
 
 import argparse
-from distutils.dir_util import copy_tree
+from shutil import copytree
 import glob
 import inspect
 import os
@@ -138,14 +138,17 @@ def _create_index_page(options: Options, groups: "list[str]",
     output_file = os.path.join(options.results_dir, 'results_index.html')
 
     # Copying fonts directory into results directory
-    copy_tree(os.path.join(root, "fonts"),
-              os.path.join(options.results_dir, "fonts"))
+    copytree(os.path.join(root, "fonts"),
+             os.path.join(options.results_dir, "fonts"),
+             dirs_exist_ok=True)
     # Copying js directory into results directory
-    copy_tree(os.path.join(template_dir, "js"),
-              os.path.join(options.results_dir, "js"))
+    copytree(os.path.join(template_dir, "js"),
+             os.path.join(options.results_dir, "js"),
+             dirs_exist_ok=True)
     # Copying css directory into results directory
-    copy_tree(os.path.join(template_dir, "css"),
-              os.path.join(options.results_dir, "css"))
+    copytree(os.path.join(template_dir, "css"),
+             os.path.join(options.results_dir, "css"),
+             dirs_exist_ok=True)
 
     with open(output_file, "w") as fh:
         fh.write(template.render(
