@@ -39,5 +39,9 @@ setup(name='FitBenchmarking',
                       'gradient_free': ['gradient-free-optimizers']},
       zip_safe=False,
       use_scm_version={'fallback_version': '1.0.0'},
-      include_package_data=True
+      include_package_data=True,
+      package_data={'': ['examples',
+                         'fitbenchmarking/fonts',
+                         'fitbenchmarking/templates'],
+                   }
 )
