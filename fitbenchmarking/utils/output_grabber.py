@@ -32,8 +32,10 @@ class OutputGrabber:
 
         self.external_output = options.external_output
         self.active = (self.system
-                       and self.external_output == 'debug'
+                       and self.external_output != 'debug'
                        and not IPYTHON)
+        print(self.active)
+        print(IPYTHON)
 
     def __enter__(self):
         if self.active:
