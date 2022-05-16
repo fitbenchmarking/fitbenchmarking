@@ -39,5 +39,12 @@ setup(name='FitBenchmarking',
                       'gradient_free': ['gradient-free-optimizers']},
       zip_safe=False,
       use_scm_version={'fallback_version': '1.0.0'},
-      include_package_data=True
+      include_package_data=True,
+      package_data={'': ['fonts/FiraSans/*/*',
+                         'fonts/FontAwesome/*',
+                         'templates/*',
+                         'templates/css/*',
+                         'templates/js/*',
+                         'templates/js/output/chtml/fonts/woff-v2/*'],
+                   }
 )
