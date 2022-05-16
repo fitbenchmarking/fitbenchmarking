@@ -87,3 +87,9 @@ class HoraceController(MatlabMixin, Controller):
             self.flag = 0
 
         self.final_params = self._fit_params['p'][0]
+
+        # Allow repeat calls to cleanup without falling over
+        try:
+            self.eng.evalc('horace_off')
+        except matlab.engine.MatlabExecutionError:
+            pass

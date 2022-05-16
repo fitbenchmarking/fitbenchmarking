@@ -75,9 +75,7 @@ class MatlabMixin:
         """
         self.eng.clear('variables', nargout=0)
         self.eng.evalc('global cf')
-        if self.original_timer is not None:
-            self.timer = self.original_timer
-            self.original_timer = None
+        self.eng.evalc('global timer')
 
     def setup_timer(self):
         """
@@ -89,6 +87,7 @@ class MatlabMixin:
         This overrides the controller's timer so that it can be controlled from
         other parts of the code.
         """
+        self.eng.evalc('global timer')
         self.eng.evalc('timer = cf.problem.timer')
         if self.original_timer is None:
             self.original_timer = self.timer
