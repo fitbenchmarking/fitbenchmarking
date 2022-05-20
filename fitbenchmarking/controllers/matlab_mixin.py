@@ -30,8 +30,6 @@ class MatlabMixin:
     Mixin class for matlab fitting software controllers
     """
 
-    incompatible_problems = ['mantid']
-
     def __init__(self, cost_func):
         """
         Initialise anything that is needed specifically for matlab
