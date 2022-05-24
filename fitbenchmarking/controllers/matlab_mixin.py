@@ -7,7 +7,8 @@ from tempfile import TemporaryDirectory
 
 import matlab.engine
 
-from fitbenchmarking.utils.exceptions import MissingSoftwareError
+from fitbenchmarking.utils.exceptions import (IncompatibleProblemError,
+                                              MissingSoftwareError)
 
 try:
     import dill
@@ -15,8 +16,11 @@ try:
 except ImportError:
     import_success = False
 
-
-eng = matlab.engine.start_matlab()
+try:
+    eng = matlab.engine.connect_matlab(name='FITBENCHMARKING_MATLAB')
+except matlab.engine.EngineError:
+    eng = matlab.engine.start_matlab()
+    eng.matlab.engine.shareEngine('FITBENCHMARKING_MATLAB', nargout=0)
 
 
 # If we re-implement caching, make sure the cache is cleared by the
@@ -33,56 +37,69 @@ class MatlabMixin:
         """
 
         super().__init__(cost_func)
-        self.original_timer = None
-        self.eng = eng
+
         if not import_success:
             raise MissingSoftwareError('Requirements are missing for Matlab '
                                        'fitting, module "dill" is required.')
 
         self.initial_params_mat = None
+        self.original_timer = None
+        self.eng = eng
+        self.pickle_error = None
+
+        try:
+            with TemporaryDirectory() as temp_dir:
+                temp_file = os.path.join(temp_dir, 'temp.pickle')
+                with open(temp_file, 'wb') as f:
+                    dill.dump(cost_func, f)
+                self.eng.workspace['temp_file'] = temp_file
+                self.eng.evalc('cf_f = py.open(temp_file,"rb")')
+                self.eng.evalc('global cf')
+                self.eng.evalc('cf = py.dill.load(cf_f)')
+                self.eng.evalc('cf_f.close()')
+            self.setup_timer()
+        except RuntimeError as e:
+            self.pickle_error = e
+
+    def _validate_problem_format(self):
+        super()._validate_problem_format()
+        if self.pickle_error is not None:
+            raise IncompatibleProblemError(
+                'Failed to load problem in MATLAB') from self.pickle_error
 
     def clear_matlab(self):
         """
         Clear the matlab instance, ready for the next setup.
         """
-        self.eng.clear('all', nargout=0)
-        if self.original_timer is not None:
-            self.timer = self.original_timer
-            self.original_timer = None
+        self.eng.clear('variables', nargout=0)
+        self.eng.evalc('global cf')
+        self.eng.evalc('global timer')
 
-    def setup_timer(self, func):
+    def setup_timer(self):
         """
-        Create an interface into the timer associated with the named function.
+        Create an interface into the timer associated with the cost function.
         The timer will be created in the matlab engine as "timer" and must
         not be overridden, although this can be changed in this function if
         there's a conflict.
 
         This overrides the controller's timer so that it can be controlled from
         other parts of the code.
-
-        :param func: The name of the function to use for timing
-                     (from the perspective of the matlab engine).
-        :type func: str
         """
-        self.eng.evalc(f'timer = py.getattr({func}, "__self__").problem.timer')
+        self.eng.evalc('global timer')
+        self.eng.evalc('timer = cf.problem.timer')
         if self.original_timer is None:
             self.original_timer = self.timer
         self.timer = MatlabTimerInterface('timer')
 
     def py_to_mat(self, func):
         """
-        Function that serializes a python function and then
-        loads it into the Matlab engine workspace
+        Get the named function from the matlab version of the cost function
+
+        :param func: The name of the function to retrieve
+        :type func: str
         """
-        with TemporaryDirectory() as temp_dir:
-            temp_file = os.path.join(temp_dir, 'temp.pickle')
-            with open(temp_file, 'wb') as f:
-                dill.dump(func, f)
-            self.eng.workspace['temp_file'] = temp_file
-            self.eng.evalc('fp = py.open(temp_file,"rb")')
-            self.eng.evalc('fm = py.dill.load(fp)')
-            self.eng.evalc('fp.close()')
-        return self.eng.workspace['fm']
+        self.eng.evalc(f'fct = py.getattr(cf, "{func}");')
+        return self.eng.workspace['fct']
 
 
 class MatlabTimerInterface:
