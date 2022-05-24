@@ -50,11 +50,7 @@ class MatlabController(MatlabMixin, Controller):
 
         # serialize cost_func.eval_cost and open within matlab engine
         # so that matlab fitting function can be called
-        self.eng.workspace['eval_cost_mat'] =\
-            self.py_to_mat(self.cost_func.eval_cost)
-
-        # Setup the timer to track using calls to eval_cost_mat
-        self.setup_timer('eval_cost_mat')
+        self.eng.workspace['eval_cost_mat'] = self.py_to_mat('eval_cost')
 
     def fit(self):
         """
