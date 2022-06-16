@@ -2,13 +2,11 @@
 Implements a controller for MATLAB Statistics Toolbox
 """
 
-import matlab.engine
+import matlab
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
-
-eng = matlab.engine.start_matlab()
 
 
 class MatlabStatsController(MatlabMixin, Controller):
@@ -59,20 +57,17 @@ class MatlabStatsController(MatlabMixin, Controller):
 
         # serialize cost_func.eval_r and open within matlab engine
         # so that matlab fitting function can be called
-        eng.workspace['eval_f'] = self.py_to_mat(self.cost_func.eval_r, eng)
-        eng.evalc('f_wrapper = @(p, x)double(eval_f(p))')
-
-        # Setup the timer to track using calls to eval_f
-        self.setup_timer('eval_f', eng)
+        self.eng.workspace['eval_f'] = self.py_to_mat('eval_r')
+        self.eng.evalc('f_wrapper = @(p, x)double(eval_f(p))')
 
     def fit(self):
         """
         Run problem with Matlab Statistics Toolbox
         """
 
-        self.result = eng.nlinfit(self.x_data_mat, self.y_data_mat,
-                                  eng.workspace['f_wrapper'],
-                                  self.initial_params_mat, nargout=1)
+        self.result = self.eng.nlinfit(self.x_data_mat, self.y_data_mat,
+                                       self.eng.workspace['f_wrapper'],
+                                       self.initial_params_mat, nargout=1)
         self._status = 0 if self.result is not None else 1
 
     def cleanup(self):

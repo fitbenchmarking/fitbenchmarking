@@ -574,7 +574,11 @@ def perform_fit(controller, options, grabbed_output):
                 controller.flag = flag
                 break
 
-    # Ensure reset incase of exception before above reset
+    # If Using a matlab controller, release the memory in matlab
+    if hasattr(controller, 'clear_matlab'):
+        controller.clear_matlab()
+
+    # Reset the controller timer once exceptions have been handled
     controller.timer.reset()
 
     if controller.flag in [3, 6, 7]:

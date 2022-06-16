@@ -17,6 +17,7 @@ a newline-separated list. Available options are:
 * ``dfo`` (default software)
 * ``gradient_free`` (default software)
 * ``gsl`` (external software -- see :ref:`external-instructions`)
+* ``horace`` (external software -- see :ref:`external-instructions`)
 * ``levmar`` (external software -- see :ref:`extra_dependencies`)
 * ``mantid`` (external software -- see :ref:`external-instructions`)
 * ``matlab`` (external software -- see :ref:`external-instructions`)

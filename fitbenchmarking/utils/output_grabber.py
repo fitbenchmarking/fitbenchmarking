@@ -10,6 +10,12 @@ from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
 
+IPYTHON = True
+try:
+    get_ipython
+except NameError:
+    IPYTHON = False
+
 
 class OutputGrabber:
     """
@@ -25,15 +31,18 @@ class OutputGrabber:
         self.system = platform.system() != "Windows"
 
         self.external_output = options.external_output
+        self.active = (self.system
+                       and self.external_output != 'debug'
+                       and not IPYTHON)
 
     def __enter__(self):
-        if self.system and self.external_output != 'debug':
+        if self.active:
             self.stdout_grabber.start()
             self.stderr_grabber.start()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        if self.system and self.external_output != 'debug':
+        if self.active:
             self.stdout_grabber.stop()
             self.stderr_grabber.stop()
             if self.stdout_grabber.capturedtext:

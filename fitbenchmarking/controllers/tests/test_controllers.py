@@ -49,12 +49,11 @@ if TEST_TYPE == 'matlab':
         MatlabStatsController
     from fitbenchmarking.controllers.matlab_curve_controller import\
         MatlabCurveController
-    import matlab.engine
+    from fitbenchmarking.controllers.horace_controller import\
+        HoraceController
 
 
 # pylint: disable=attribute-defined-outside-init, protected-access
-
-
 def make_cost_func(file_name='cubic.dat'):
     """
     Helper function that returns a simple fitting problem
@@ -106,7 +105,7 @@ class ControllerSharedTesting:
         """
         controller.parameter_set = 0
         controller.prepare()
-        controller.fit()
+        controller.execute()
         controller.cleanup()
 
         assert len(controller.final_params) == len(controller.initial_params)
@@ -895,7 +894,7 @@ class ExternalControllerTests(TestCase):
 @run_for_test_types(TEST_TYPE, 'matlab')
 class MatlabControllerTests(TestCase):
     """
-    Tests for each controller classb and for the
+    Tests for each controller class and for the
     Base Matlab Controller
     """
 
@@ -915,16 +914,15 @@ class MatlabControllerTests(TestCase):
         from python
         """
         controller = MatlabController(self.cost_func)
-        eng = matlab.engine.start_matlab()
-
+        eng = controller.eng
         eng.workspace['test_mat_func'] =\
-            controller.py_to_mat(self.cost_func.eval_cost, eng)
+            controller.py_to_mat('eval_cost')
 
         params = np.array([1, 2, 3, 4])
 
         result_py = self.cost_func.eval_cost(params=params)
         result_mat = eng.eval('test_mat_func([1, 2, 3, 4])')
-
+        controller.clear_matlab()
         assert result_py == result_mat
 
     def test_verify(self):
@@ -942,6 +940,7 @@ class MatlabControllerTests(TestCase):
         controller = MatlabController(cost_func)
         with self.assertRaises(exceptions.IncompatibleProblemError):
             controller.validate()
+        controller.clear_matlab()
 
     def test_matlab(self):
         """
@@ -960,6 +959,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_max_iterations(controller)
             controller._status = -1
             self.shared_tests.check_diverged(controller)
+            controller.clear_matlab()
 
     def test_matlab_opt(self):
         """
@@ -978,6 +978,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_max_iterations(controller)
             controller._status = -1
             self.shared_tests.check_diverged(controller)
+            controller.clear_matlab()
 
     def test_matlab_stats(self):
         """
@@ -994,6 +995,7 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_converged(controller)
             controller._status = 1
             self.shared_tests.check_diverged(controller)
+            controller.clear_matlab()
 
     def test_matlab_curve(self):
         """
@@ -1012,6 +1014,24 @@ class MatlabControllerTests(TestCase):
             self.shared_tests.check_max_iterations(controller)
             controller._status = -1
             self.shared_tests.check_diverged(controller)
+            controller.clear_matlab()
+
+    def test_horace(self):
+        """
+        Horace: Tests for output shape
+        """
+        controller = HoraceController(self.cost_func)
+
+        minimizers = ['lm-lsqr']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._fit_params['converged'] = 1
+            self.shared_tests.check_converged(controller)
+            controller._fit_params['converged'] = 0
+            self.shared_tests.check_diverged(controller)
+            controller.clear_matlab()
 
 
 @run_for_test_types(TEST_TYPE, 'all')

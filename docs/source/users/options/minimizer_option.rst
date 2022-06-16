@@ -29,13 +29,13 @@ FitBenchmarking currently supports the Bumps minimizers:
 
 * `Nelder-Mead Simplex <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#nelder-mead-simplex>`__ (:code:`amoeba`)
 
-* `Levenberg-Marquardt <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#fit-lm>`__  (:code:`lm`)
+* `Levenberg-Marquardt <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#fit-lm>`__  (:code:`lm-bumps`) This is `mpfit`, a translation of `MINPACK` to Python.
 
 * `Quasi-Newton BFGS <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#quasi-newton-bfgs>`__ (:code:`newton`)
 
 * `Differential Evolution <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#differential-evolution>`__ (:code:`de`)
 
-* `MINPACK <https://github.com/bumps/bumps/blob/96b5100fc3d5b9485bd4a444c83a33617b74aa9d/bumps/mpfit.py>`__ (:code:`mp`)  This is a translation of `MINPACK` to Python.
+* `scipy's leastsq <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#fit-lm>`__ (:code:`scipy-leastsq`)  This calls scipy's Levenberg-Marquardt method. Note that this was the default method for `lm` prior to Bumps v0.8.2.
 
 **Licence** The main licence file for Bumps is `here <https://github.com/bumps/bumps/blob/master/LICENSE.txt>`__.  Individual files have their own copyright and licence
 -- if you plan to incorporate this in your own software you should first check that the
@@ -52,7 +52,7 @@ The Bumps minimizers are set as follows:
            lm-bumps
            newton
            de
-           mp
+           scipy-leastsq
 
 .. warning::
    The additional dependency Bumps must be installed for this to be available;
@@ -213,6 +213,25 @@ The GSL minimizers are set as follows:
 	 
 .. warning::
    The external packages GSL and pygsl must be installed to use these minimizers.
+
+.. _horace:
+
+Horace (``horace``)
+===================
+
+`Horace <https://pace-neutrons.github.io/Horace/>`_ is described as *a suite of programs for
+the visiualization and analysis from time-of-flight neutron inelastic scattering
+spectrometers.*  We currently support:
+
+* Levenberg-Marquardt (:code:`lm-lsqr`)
+
+**Licence** Matlab must be installed to use Horace within FitBenchmarking, which is a
+`proprietary product <https://www.mathworks.com/pricing-licensing.html>`__.
+Horace is made available under the the `GPL-3 licence <https://www.gnu.org/licenses/gpl-3.0.html>`__.
+
+.. warning::
+   The Horace Toolbox and MATLAB must be installed for this to be available; see :ref:`external-instructions`.
+
 
 .. _mantid:
 

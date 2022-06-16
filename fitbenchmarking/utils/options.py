@@ -19,7 +19,7 @@ class Options:
     VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN', 'HESSIAN',
                       'PLOTTING', 'OUTPUT', 'LOGGING']
     VALID_MINIMIZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'mp'],
+        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq'],
          'dfo': ['dfogn', 'dfols'],
          'gradient_free': ['HillClimbingOptimizer',
                            'RepulsingHillClimbingOptimizer',
@@ -36,6 +36,7 @@ class Options:
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                  'vector_bfgs2', 'steepest_descent'],
+         'horace': ['lm-lsqr'],
          'levmar': ['levmar'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
@@ -58,10 +59,10 @@ class Options:
                             'trust_region', 'levenberg-marquardt',
                             'gauss_newton', 'bfgs', 'conjugate_gradient',
                             'steepest_descent', 'global_optimization'],
-         'software': ['bumps', 'dfo', 'gradient_free', 'gsl', 'levmar',
-                      'mantid', 'matlab', 'matlab_curve', 'matlab_opt',
-                      'matlab_stats', 'minuit', 'ralfit', 'scipy',
-                      'scipy_ls', 'scipy_go'],
+         'software': ['bumps', 'dfo', 'gradient_free', 'gsl', 'horace',
+                      'levmar', 'mantid', 'matlab', 'matlab_curve',
+                      'matlab_opt', 'matlab_stats', 'minuit', 'ralfit',
+                      'scipy', 'scipy_ls', 'scipy_go'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
@@ -101,7 +102,7 @@ class Options:
              'LOGGING': VALID_LOGGING}
 
     DEFAULT_MINIMZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'mp'],
+        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq'],
          'dfo': ['dfogn', 'dfols'],
          'gradient_free': ['HillClimbingOptimizer',
                            'RepulsingHillClimbingOptimizer',
@@ -115,6 +116,7 @@ class Options:
          'gsl': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                  'vector_bfgs2', 'steepest_descent'],
+         'horace': ['lm-lsqr'],
          'levmar': ['levmar'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',

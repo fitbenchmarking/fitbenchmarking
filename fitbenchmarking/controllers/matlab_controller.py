@@ -1,13 +1,10 @@
 """
 Implements a controller for MATLAB
 """
-
-import matlab.engine
+import matlab
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
-
-eng = matlab.engine.start_matlab()
 
 
 class MatlabController(MatlabMixin, Controller):
@@ -16,18 +13,19 @@ class MatlabController(MatlabMixin, Controller):
     """
 
     algorithm_check = {
-            'all': ['Nelder-Mead Simplex'],
-            'ls': [],
-            'deriv_free': ['Nelder-Mead Simplex'],
-            'general': ['Nelder-Mead Simplex'],
-            'simplex': ['Nelder-Mead Simplex'],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': []}
+        'all': ['Nelder-Mead Simplex'],
+        'ls': [],
+        'deriv_free': ['Nelder-Mead Simplex'],
+        'general': ['Nelder-Mead Simplex'],
+        'simplex': ['Nelder-Mead Simplex'],
+        'trust_region': [],
+        'levenberg-marquardt': [],
+        'gauss_newton': [],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': [],
+    }
 
     incompatible_problems = ['mantid']
 
@@ -52,18 +50,14 @@ class MatlabController(MatlabMixin, Controller):
 
         # serialize cost_func.eval_cost and open within matlab engine
         # so that matlab fitting function can be called
-        eng.workspace['eval_cost_mat'] =\
-            self.py_to_mat(self.cost_func.eval_cost, eng)
-
-        # Setup the timer to track using calls to eval_cost_mat
-        self.setup_timer('eval_cost_mat', eng)
+        self.eng.workspace['eval_cost_mat'] = self.py_to_mat('eval_cost')
 
     def fit(self):
         """
         Run problem with Matlab
         """
-        [self.result, _, exitflag] = eng.fminsearch(
-            eng.workspace['eval_cost_mat'],
+        [self.result, _, exitflag] = self.eng.fminsearch(
+            self.eng.workspace['eval_cost_mat'],
             self.initial_params_mat, nargout=3)
         self._status = int(exitflag)
 
