@@ -24,12 +24,14 @@ indicating it is a FitBenchmark problem followed by key-value pairs. Available
 keys are described below:
 
 software
-  Either 'IVP', 'Mantid', or 'SasView' (case insensitive).
+  Either 'IVP', 'Mantid', 'SasView', or 'SpinW' (case insensitive).
   
   This defines whether to use an IVP format, Mantid, or SasView to generate the model.
   The 'Mantid' software also supports Mantid's MultiFit functionality, which
   requires the parameters listed here to be defined slightly differently.
   More information can be found in :ref:`multifit`.
+
+  For information on the 'SpinW' format, see :ref:`spinw_format`.
 
   **Licence** Mantid is available under a
   `GPL-3 Licence <https://github.com/mantidproject/mantid/blob/master/LICENSE.txt>`_.

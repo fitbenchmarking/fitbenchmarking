@@ -90,6 +90,10 @@ class HoraceController(MatlabMixin, Controller):
 
         # Allow repeat calls to cleanup without falling over
         try:
-            self.eng.evalc('horace_off')
+            self.eng.evalc(
+                'if not(any(cellfun(@(x) x=="horace", persistent_vars)));'
+                ' horace_off;'
+                'end;'
+            )
         except matlab.engine.MatlabExecutionError:
             pass
