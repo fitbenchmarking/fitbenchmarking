@@ -324,20 +324,7 @@ class FitbenchmarkParser(Parser):
         if value.lower() == 'true':
             return True
         if value.lower() == 'false':
-            return False 
-        if '(' in value:
-            raise ParsingError(
-                f'Unexpected opening bracket in value: {value}.')
-        if ')' in value:
-            raise ParsingError(
-                f'Unexpected closing bracket in value: {value}.')
-        if '[' in value:
-            raise ParsingError(
-                f'Unexpected start of vector in value: {value}.')
-        if ']' in value:
-            raise ParsingError(f'Unexpected end of vector in value: {value}')
-        if '=' in value:
-            raise ParsingError(f'Unexpected "=" in value: {value}')
+            return False
         for convert in [int, float, str]:
             try:
                 return convert(value)
