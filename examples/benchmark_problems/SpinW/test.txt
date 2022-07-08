@@ -16,3 +16,5 @@ spinwpars_formfact = true
 spinwpars_resfun = gauss
 spinwpars_coordtrans = 'diag([2. 2. 1. 1.])'
 intrinsic_energy_width = 0.1
+mc_points = 5
+random_fraction_pixels = 0.0001

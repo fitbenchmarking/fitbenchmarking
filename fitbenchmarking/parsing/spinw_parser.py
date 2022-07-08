@@ -47,9 +47,15 @@ class SpinWParser(FitbenchmarkParser):
         # Add instrument
         eng.workspace['instrument'] = self._parse_instrument()
         eng.evalc('w1 = w1.set_instrument(instrument);')
+        # Reduce size of problem if set
+        if "random_fraction_pixels" in self._entries:
+            eng.evalc('w1 = w1.mask_random_fraction_pixels('
+                      f'{self._entries["random_fraction_pixels"]});')
         # Create tbf
-        eng.evalc('w1 = w1.mask_random_fraction_pixels(0.0005);')
         eng.evalc('tbf = tobyfit(w1);')
+        # Set mc points if defined
+        if "mc_points" in self._entries:
+            eng.evalc(f'tbf = tbf.set_mc_points({self._entries["mc_points"]})')
         add_persistent_matlab_var('tbf')
 
         bins = [np.array(v) for v in eng.eval('sqw_cut.data.p')]
@@ -249,7 +255,13 @@ class SpinWParser(FitbenchmarkParser):
 
         self._starting_values = [{n: pf[n] for n in p_names}]
 
-        cpars = list(self._starting_values[0].values()) + [0.1]
+        try:
+            intrinsic_energy_width = self._entries['intrinsic_energy_width']
+        except KeyError as e:
+            raise ParsingError('SpinW requires an "intrinsic_energy_width". '
+                               'Please check the problem file') from e
+        cpars = list(self._starting_values[0].values())
+        cpars.append(intrinsic_energy_width)
         eng.workspace['cpars'] = matlab.double(cpars)
         debug_str = f'{{{eng.evalc("cpars")}'
         cpars_kwargs = '{cpars'
@@ -266,14 +278,14 @@ class SpinWParser(FitbenchmarkParser):
         eng.workspace['spinw_args'] = matlab.double([pf[n] for n in p_names])
         eng.evalc('spinw_args = num2cell(spinw_args);')
         eng.evalc(f'sw_obj = {func_name}(spinw_args{{:}})')
-        eng.evalc(f'prf = swpref(); prf.fid = 0;')
         eng.evalc(f'tbf = tbf.set_fun(@sw_obj.horace_sqw, {cpars_kwargs})')
 
         def fit_function(x, *p):
             # Assume, for efficiency, matching shape => matching values
             if x.shape != self._spinw_x.shape:
                 return np.ones(x.shape)
-            eng.workspace['spinw_pin'] = matlab.double(list(p)+[0.1])
+            eng.workspace['spinw_pin'] = matlab.double(
+                list(p) + [intrinsic_energy_width])
             eng.evalc(f'tbf = tbf.set_pin({{spinw_pin, {cpars_kwargs[7:]});')
             eng.eval('wsim = tbf.simulate();', nargout=0)
             eng.evalc('spinw_y = wsim.data.s')
