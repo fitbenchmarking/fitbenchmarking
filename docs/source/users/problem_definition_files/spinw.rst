@@ -80,6 +80,30 @@ function
   e.g.::
     function = 'matlab_script=pcsmo_model.m,J=35,D=0,gam=30,temp=10,amp=300'
 
+random_fraction_pixels
+  SpinW problems can be very large. This option will mask out a proportion of
+  pixels to reduce the problem size.
+
+  The following example retains only 1% of the data.
+
+  e.g.::
+    random_fraction_pixels = 0.01
+
+mc_points
+  SpinW used Monte Carlo sampling during it's calculation. This controls the
+  number of samples taken. It is left to the experienced SpinW user to tune
+  this.
+
+  e.g.::
+    mc_points = 5
+
+intrinsic_energy_width
+  Each call to SpinW also requires an energy width. This parameter is not
+  fitted.
+
+  e.g.::
+    intrinsic_energy_width = 0.1
+
 spinwpars
   SpinW models have some additional parameters which are passed to TobyFit.
   These can be set for the model by adding them to the file as a new value
