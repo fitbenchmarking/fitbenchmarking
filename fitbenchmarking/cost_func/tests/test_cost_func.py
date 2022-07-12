@@ -409,7 +409,7 @@ class TestPoissonCostFunc(TestCase):
         # + 20*(log(20) - log(16))
         # - (6 - 6) - (10 - 13) - (20 - 16)
         # == 30*log(5) - 10*log(13) - 30*log(2) - 1
-        self.assertEqual(eval_result, 0.8392283816092849)
+        self.assertAlmostEqual(eval_result, 0.8392283816092849, places=12)
 
     def test_safe_a_log_b(self):
         """
