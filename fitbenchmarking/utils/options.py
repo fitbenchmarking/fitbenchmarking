@@ -21,6 +21,7 @@ class Options:
     VALID_MINIMIZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq'],
          'dfo': ['dfogn', 'dfols'],
+         'gofit': ['alternating', 'multistart', 'regularisation'],
          'gradient_free': ['HillClimbingOptimizer',
                            'RepulsingHillClimbingOptimizer',
                            'SimulatedAnnealingOptimizer',
@@ -59,8 +60,8 @@ class Options:
                             'trust_region', 'levenberg-marquardt',
                             'gauss_newton', 'bfgs', 'conjugate_gradient',
                             'steepest_descent', 'global_optimization'],
-         'software': ['bumps', 'dfo', 'gradient_free', 'gsl', 'horace',
-                      'levmar', 'mantid', 'matlab', 'matlab_curve',
+         'software': ['bumps', 'dfo', 'gofit', 'gradient_free', 'gsl',
+                      'horace', 'levmar', 'mantid', 'matlab', 'matlab_curve',
                       'matlab_opt', 'matlab_stats', 'minuit', 'ralfit',
                       'scipy', 'scipy_ls', 'scipy_go'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
@@ -104,6 +105,7 @@ class Options:
     DEFAULT_MINIMZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq'],
          'dfo': ['dfogn', 'dfols'],
+         'gofit': ['alternating', 'multistart'],
          'gradient_free': ['HillClimbingOptimizer',
                            'RepulsingHillClimbingOptimizer',
                            'SimulatedAnnealingOptimizer',
