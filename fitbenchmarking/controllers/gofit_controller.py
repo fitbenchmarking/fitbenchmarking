@@ -48,6 +48,7 @@ class GOFitController(Controller):
         self._p0 = None
         self._pl = None
         self._pu = None
+        self._status = None
         self._popt = None
 
     def setup(self):
