@@ -914,7 +914,7 @@ class ExternalControllerTests(TestCase):
 
             controller._status = 0
             self.shared_tests.check_converged(controller)
-            controller.flag = 1
+            controller._status = 1
             self.shared_tests.check_max_iterations(controller)
 
 
