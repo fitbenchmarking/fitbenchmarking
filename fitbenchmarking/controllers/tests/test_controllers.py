@@ -907,7 +907,7 @@ class ExternalControllerTests(TestCase):
         """
         controller = GOFitController(self.cost_func)
 
-        minimizers = ['multistart', 'regularisation']
+        minimizers = ['regularisation']
         for minimizer in minimizers:
             controller.minimizer = minimizer
             self.shared_tests.controller_run_test(controller)
