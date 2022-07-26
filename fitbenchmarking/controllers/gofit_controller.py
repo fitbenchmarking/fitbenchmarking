@@ -68,9 +68,11 @@ class GOFitController(Controller):
             raise MissingBoundsError(
                 "GOFit global minimizers require bounds on parameters")
 
-        low, high = zip(*self.value_ranges)
-        self._pl = np.array(low)
-        self._pu = np.array(high)
+        if self.minimizer != "regularisation":
+            low, high = zip(*self.value_ranges)
+            self._pl = np.array(low)
+            self._pu = np.array(high)
+
         self._p0 = self.initial_params  # store initial guess params
 
     def fit(self):
