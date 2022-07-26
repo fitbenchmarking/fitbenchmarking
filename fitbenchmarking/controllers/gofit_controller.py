@@ -6,7 +6,8 @@ import numpy as np
 from gofit import alternating, multistart, regularisation
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import MissingBoundsError, UnknownMinimizerError
+from fitbenchmarking.utils.exceptions import MissingBoundsError
+from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 
 
 class GOFitController(Controller):
@@ -43,7 +44,10 @@ class GOFitController(Controller):
         super().__init__(cost_func)
         self.support_for_bounds = True
         self.no_bounds_minimizers = ['regularisation']
-        self.options = None
+        self._options = None
+        self._p0 = None
+        self._pl = None
+        self._pu = None
         self._popt = None
 
     def setup(self):
@@ -52,34 +56,28 @@ class GOFitController(Controller):
         """
 
         # these are the GOFit defaults (for now)
-        self.options = {'maxit': 200,
-                        'samples': 100,
-                        'eps_r': 1e-5,
-                        'eps_g': 1e-4,
-                        'eps_s': 1e-8
-                        }
+        self._options = {'maxit': 200,
+                         'samples': 100,
+                         'eps_r': 1e-5,
+                         'eps_g': 1e-4,
+                         'eps_s': 1e-8
+                         }
 
         if self.value_ranges is None:
             raise MissingBoundsError("GOFit requires bounds on parameters")
 
         low, high = zip(*self.value_ranges)
-        self._low = np.array(low)
-        self._high = np.array(high)
-        self._x0 = self.initial_params  # store initial guess params
+        self._pl = np.array(low)
+        self._pu = np.array(high)
+        self._p0 = self.initial_params  # store initial guess params
 
     def fit(self):
         """
         Run problem with GoFit
         """
-        # initial paramter guess
-        x0 = self._x0
-
-        # lower and upper bounds of the parameters to optimize
-        xl = self._low
-        xu = self._high
 
         # number of dimensions of problem
-        n = len(self._low)
+        n = len(self._p0)
         m = len(self.data_x)
 
         # split point for alternating optimization
@@ -88,19 +86,21 @@ class GOFitController(Controller):
         # Optimization based on minimizer selected
         if self.minimizer == "alternating":
             xopt, status = alternating(
-                m, n, n_split, x0, xl, xu, self.cost_func.eval_r, **self.options)
+                m, n, n_split, self._p0, self._pl, self._pu,
+                self.cost_func.eval_r, **self._options)
         elif self.minimizer == "multistart":
             if not self.cost_func.jacobian.use_default_jac:
-                self.options['jac'] = self.cost_func.jac_res
+                self._options['jac'] = self.cost_func.jac_res
             xopt, status = multistart(
-                m, n, xl, xu, self.cost_func.eval_r, **self.options)
+                m, n, self._pl, self._pu, self.cost_func.eval_r,
+                **self._options)
         elif self.minimizer == "regularisation":
-            del self.options['eps_r']
-            del self.options['samples']
+            del self._options['eps_r']
+            del self._options['samples']
             if not self.cost_func.jacobian.use_default_jac:
-                self.options['jac'] = self.cost_func.jac_res
+                self._options['jac'] = self.cost_func.jac_res
             xopt, status = regularisation(
-                m, n, x0, self.cost_func.eval_r, **self.options)
+                m, n, self._p0, self.cost_func.eval_r, **self._options)
         else:
             raise UnknownMinimizerError(
                 "No {} minimizer for GOFit".format(self.minimizer))
