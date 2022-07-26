@@ -64,8 +64,9 @@ class GOFitController(Controller):
                          'eps_s': 1e-8
                          }
 
-        if self.value_ranges is None:
-            raise MissingBoundsError("GOFit requires bounds on parameters")
+        if self.value_ranges is None and self.minimizer != "regularisation":
+            raise MissingBoundsError(
+                "GOFit global minimizers require bounds on parameters")
 
         low, high = zip(*self.value_ranges)
         self._pl = np.array(low)
