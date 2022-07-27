@@ -551,6 +551,14 @@ class ControllerBoundsTests(TestCase):
         GOFitController: Test that parameter bounds are
         respected for bounded problems
         """
+
+        # GOFit requires bounds on all parameters
+        self.cost_func = make_cost_func('cubic-fba-test-go.txt')
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = '2-point'
+        self.cost_func.jacobian = self.jac
+
         controller = GOFitController(self.cost_func)
         controller.minimizer = 'multistart'
 
