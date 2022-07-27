@@ -75,10 +75,10 @@ class GOFitController(Controller):
             try:
                 self._nsplit = self.problem.param_names.index(
                     'IntensityScaling')
-            except ValueError:
+            except ValueError as minimizer_incompatible:
                 raise IncompatibleMinimizerError(
                     "alternating minimizer currently only supports "
-                    "CrystalField problems")
+                    "CrystalField problems") from minimizer_incompatible
 
         if self.minimizer != "regularisation":
             low, high = zip(*self.value_ranges)
@@ -99,7 +99,7 @@ class GOFitController(Controller):
         # Optimization based on minimizer selected
         if self.minimizer == "alternating":
             xopt, status = alternating(
-                m, n, self._n_split, self._p0, self._pl, self._pu,
+                m, n, self._nsplit, self._p0, self._pl, self._pu,
                 self.cost_func.eval_r, **self._options)
         elif self.minimizer == "multistart":
             if not self.cost_func.jacobian.use_default_jac:
