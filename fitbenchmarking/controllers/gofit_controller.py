@@ -8,6 +8,7 @@ from gofit import alternating, multistart, regularisation
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import MissingBoundsError
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
+from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
 
 
 class GOFitController(Controller):
@@ -45,6 +46,7 @@ class GOFitController(Controller):
         self.support_for_bounds = True
         self.no_bounds_minimizers = ['regularisation']
         self._options = None
+        self._nsplit = None
         self._p0 = None
         self._pl = None
         self._pu = None
@@ -68,6 +70,16 @@ class GOFitController(Controller):
             raise MissingBoundsError(
                 "GOFit global minimizers require bounds on parameters")
 
+        # set split point for CrystalField problems
+        if self.minimizer == "alternating":
+            try:
+                self._nsplit = self.problem.param_names.index(
+                    'IntensityScaling')
+            except ValueError:
+                raise IncompatibleMinimizerError(
+                    "alternating minimizer currently only supports "
+                    "CrystalField problems")
+
         if self.minimizer != "regularisation":
             low, high = zip(*self.value_ranges)
             self._pl = np.array(low)
@@ -84,13 +96,10 @@ class GOFitController(Controller):
         n = len(self._p0)
         m = len(self.data_x)
 
-        # split point for alternating optimization
-        n_split = 9  # All B parameters
-
         # Optimization based on minimizer selected
         if self.minimizer == "alternating":
             xopt, status = alternating(
-                m, n, n_split, self._p0, self._pl, self._pu,
+                m, n, self._n_split, self._p0, self._pl, self._pu,
                 self.cost_func.eval_r, **self._options)
         elif self.minimizer == "multistart":
             if not self.cost_func.jacobian.use_default_jac:
