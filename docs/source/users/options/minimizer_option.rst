@@ -125,6 +125,9 @@ The GOFit minimizers are set as follows:
            alternating
            regularisation
 
+.. note::
+   The alternating minimizer currently only supports Crystal Field problems.
+
 .. warning::
    The additional dependency GOFit must be installed to use these minimizers. See :ref:`extra_dependencies`.
 
