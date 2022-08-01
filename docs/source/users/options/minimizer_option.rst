@@ -40,7 +40,7 @@ FitBenchmarking currently supports the Bumps minimizers:
 **Licence** The main licence file for Bumps is `here <https://github.com/bumps/bumps/blob/master/LICENSE.txt>`__.  Individual files have their own copyright and licence
 -- if you plan to incorporate this in your own software you should first check that the
 licences used are compatible.
-  
+
 **Links** `GitHub - bumps <https://github.com/bumps/bumps>`__
 
 The Bumps minimizers are set as follows:
@@ -56,12 +56,12 @@ The Bumps minimizers are set as follows:
 
 .. warning::
    The additional dependency Bumps must be installed for this to be available;
-   See :ref:`extra_dependencies`.	 
+   See :ref:`extra_dependencies`.
 
 .. note::
    `de` is not included in the default list of minimizers for bumps. To run this solver, you must
    explicitly set the minimizer as seen above.
-	   
+
 .. _dfo:
 
 DFO (``dfo``)
@@ -78,8 +78,8 @@ FitBenchmarking currently supports the DFO minimizers:
 
 * `Derivative-Free Gauss-Newton Solver <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`__ (:code:`dfogn`)
 
-**Licence** Both `DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn/blob/master/LICENSE.txt>`__ and `DFO-LS <https://github.com/numericalalgorithmsgroup/dfols/blob/master/LICENSE.txt>`__ are available under the GPL-3 licence.  A proprietary licence is also available from `NAG <https://www.nag.com/content/worldwide-contact-information>`__ . 
-  
+**Licence** Both `DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn/blob/master/LICENSE.txt>`__ and `DFO-LS <https://github.com/numericalalgorithmsgroup/dfols/blob/master/LICENSE.txt>`__ are available under the GPL-3 licence.  A proprietary licence is also available from `NAG <https://www.nag.com/content/worldwide-contact-information>`__ .
+
 **Links** `GitHub - DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn>`__ `GitHub - DFO-LS <https://github.com/numericalalgorithmsgroup/dfols>`__
 
 The DFO minimizers are set as follows:
@@ -95,6 +95,42 @@ The DFO minimizers are set as follows:
    these to be available;
    See :ref:`extra_dependencies`.
 
+.. _gofit:
+
+GOFit (``gofit``)
+=================
+
+`GOFit <https://github.com/ralna/GOFit>`__ is a package of C++ algorithms with Python interfaces designed
+for the global optimization of parameters in curve fitting, i.e. for nonlinear least-squares problems
+arising from curve fitting. It is also included with Mantid since release 6.5.
+
+FitBenchmarking currently supports the GOFit minimizers:
+
+*  Multistart Global Minimizer (:code:`multistart`)
+
+*  Alternating Multistart Global Minimizer (:code:`alternating`)
+
+*  Quadratic Regularisation Local Minimizer (:code:`regularisation`)
+
+**Links** `Documentation <https://ralna.github.io/GOFit/>`__
+
+**Licence** GOFit is available under a `3-clause BSD Licence <https://github.com/ralna/GOFit/blob/master/LICENSE>`__
+
+The GOFit minimizers are set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    gofit: multistart
+           alternating
+           regularisation
+
+.. note::
+   The alternating minimizer currently only supports Crystal Field problems.
+
+.. warning::
+   The additional dependency GOFit must be installed to use these minimizers. See :ref:`extra_dependencies`.
+
 .. _gradient-free:
 
 Gradient-Free-Optimizers (``gradient_free``)
@@ -107,30 +143,30 @@ must be run with problems that have finite bounds on all parameters.
 *  Hill Climbing (:code:`HillClimbingOptimizer`)
 
 *  Repulsing Hill Climbing (:code:`RepulsingHillClimbingOptimizer`)
-                   
+
 *  Simulated Annealing (:code:`SimulatedAnnealingOptimizer`)
 
 *  Random Search (:code:`RandomSearchOptimizer`)
-                   
+
 *  Random Restart Hill Climbing (:code:`RandomRestartHillClimbingOptimizer`)
-               
+
 *  Random Annealing (:code:`RandomAnnealingOptimizer`)
-   
+
 *  Parallel Tempering (:code:`ParallelTemperingOptimizer`)
-   
+
 *  Particle Swarm (:code:`ParticleSwarmOptimizer`)
-                   
+
 *  Evolution Strategy (:code:`EvolutionStrategyOptimizer`)
-                   
+
 *  Bayesian (:code:`BayesianOptimizer`)
 
 *  Tree Structured Parzen Estimators (:code:`TreeStructuredParzenEstimators`)
-                   
+
 *  Decision Tree (:code:`DecisionTreeOptimizer`)
 
 **Licence** The Gradient-Free-Optimizers package is available under an `MIT Licence <https://github.com/SimonBlanke/Gradient-Free-Optimizers/blob/master/LICENSE>`__ .
 
-   
+
 The `gradient_free` minimizers are set as follows:
 
 .. code-block:: rst
@@ -159,7 +195,7 @@ The `gradient_free` minimizers are set as follows:
    explicity set them as seen above.
 
 .. _gsl:
-	 
+
 GSL (``gsl``)
 =============
 
@@ -210,7 +246,7 @@ The GSL minimizers are set as follows:
          vector_bfgs
          vector_bfgs2
          steepest_descent
-	 
+
 .. warning::
    The external packages GSL and pygsl must be installed to use these minimizers.
 
@@ -251,7 +287,7 @@ It has support for a number of minimizers, most of which are from GSL.
 * `Damped GaussNewton <https://docs.mantidproject.org/nightly/fitting/fitminimizers/DampedGaussNewton.html>`__ (:code:`Damped GaussNewton`)
 
 * `FABADA <https://docs.mantidproject.org/nightly/concepts/FABADA.html>`__ (:code:`FABADA`)
- 
+
 * `Levenberg-Marquardt algorithm <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardt.html>`__ (:code:`Levenberg-Marquardt`)
 
 * `Levenberg-Marquardt MD <https://docs.mantidproject.org/nightly/fitting/fitminimizers/LevenbergMarquardtMD.html>`__ (:code:`Levenberg-MarquardtMD`) - An implementation of Levenberg-Marquardt intended for MD workspaces, where work is divided into chunks to achieve a greater efficiency for a large number of data points.
@@ -266,7 +302,7 @@ It has support for a number of minimizers, most of which are from GSL.
 
 **Licence** Mantid is available under the `GPL-3 licence <https://github.com/mantidproject/mantid/blob/master/LICENSE.txt>`__ .
 
- 
+
 The Mantid minimizers are set as follows:
 
 .. code-block:: rst
@@ -298,7 +334,7 @@ We interface via the python interface `available on PyPI <https://pypi.org/proje
 * Levenberg-Marquardt with supplied Jacobian (:code:`levmar`)  - the Levenberg-Marquardt method
 
 **Licence** Levmar is available under the `GPL-3 licence <http://www.gnu.org/copyleft/gpl.html>`__ .  A paid licence for proprietary commerical use is `available from the author <http://users.ics.forth.gr/~lourakis/levmar/faq.html#Q37>`__ .
-  
+
 The `levmar` minimizer is set as follows:
 
 .. code-block:: rst
@@ -324,7 +360,7 @@ MATLAB Engine API for Python.
 * Nelder-Mead Simplex (:code:`Nelder-Mead Simplex`)
 
 **Licence** Matlab is a `proprietary product <https://www.mathworks.com/pricing-licensing.html>`__ .
-  
+
 The `matlab` minimizer is set as follows:
 
 .. code-block:: rst
@@ -348,7 +384,7 @@ using the MATLAB Engine API for Python.
 * Trust-Region (:code:`Trust-Region`)
 
 **Licence** Matlab and the Curve Fitting Toolbox are both `proprietary products <https://www.mathworks.com/pricing-licensing.html>`__ .
-  
+
 The `matlab_curve` minimizers are set as follows:
 
 .. code-block:: rst
@@ -373,7 +409,7 @@ using the MATLAB Engine API for Python.
 * Trust-Region-Reflective (:code:`trust-region-reflective`)
 
 **Licence** Matlab and the Optimization Toolbox are both `proprietary products <https://www.mathworks.com/pricing-licensing.html>`__ .
-  
+
 The `matlab_opt` minimizers are set as follows:
 
 .. code-block:: rst
@@ -398,11 +434,11 @@ using the MATLAB Engine API for Python.
 * Levenberg-Marquardt (:code:`Levenberg-Marquardt`)
 
 **Licence** Matlab and the Statistics Toolbox are both `proprietary products <https://www.mathworks.com/pricing-licensing.html>`__ .
-  
+
 The `matlab_stats` minimizer is set as follows:
 
 .. code-block:: rst
-  
+
   [MINIMIZERS]
   matlab_stats: Levenberg-Marquardt
 
@@ -410,7 +446,7 @@ The `matlab_stats` minimizer is set as follows:
    MATLAB Statistics Toolbox must be installed for this to be available; See :ref:`external-instructions`.
 
 .. _minuit:
-	   
+
 Minuit (``minuit``)
 ===================
 
@@ -418,7 +454,7 @@ CERN developed the `Minuit 2 <https://root.cern.ch/doc/master/Minuit2Page.html>`
 to find the minimum value of a multi-parameter function, and also to compute the
 uncertainties.
 We interface via the python interface `iminuit <https://iminuit.readthedocs.io>`__ with
-support for the 2.x series. 
+support for the 2.x series.
 
 * `Minuit's MIGRAD <https://root.cern.ch/root/htmldoc/guides/minuit2/Minuit2.pdf>`__ (:code:`minuit`)
 
@@ -435,10 +471,10 @@ The Minuit minimizers are set as follows:
 
 .. warning::
    The additional dependency Minuit must be installed for this to be available;
-   See :ref:`extra_dependencies`.	 
+   See :ref:`extra_dependencies`.
 
 .. _ralfit:
-    
+
 RALFit (``ralfit``)
 ===================
 

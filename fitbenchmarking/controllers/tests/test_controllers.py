@@ -40,6 +40,7 @@ if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
     from fitbenchmarking.controllers.gradient_free_controller import\
         GradientFreeController
+    from fitbenchmarking.controllers.gofit_controller import GOFitController
 
 if TEST_TYPE == 'matlab':
     from fitbenchmarking.controllers.matlab_controller import MatlabController
@@ -889,6 +890,22 @@ class ExternalControllerTests(TestCase):
             self.shared_tests.check_converged(controller)
             controller._status = 2
             self.shared_tests.check_diverged(controller)
+
+    def test_gofit(self):
+        """
+        GOFitController: Tests for output shape
+        """
+        controller = GOFitController(self.cost_func)
+
+        minimizers = ['regularisation']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._status = 0
+            self.shared_tests.check_converged(controller)
+            controller._status = 1
+            self.shared_tests.check_max_iterations(controller)
 
 
 @run_for_test_types(TEST_TYPE, 'matlab')
