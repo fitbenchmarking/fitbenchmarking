@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pylint --extension-pkg-whitelist=gofit fitbenchmarking || pylint-exit $? --error-fail --warn-fail --refactor-fail --convention-fail
+pylint fitbenchmarking || pylint-exit $? --error-fail --warn-fail --refactor-fail --convention-fail
 status=$?
 
 flake8 fitbenchmarking
