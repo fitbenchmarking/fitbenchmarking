@@ -105,7 +105,7 @@ class Options:
     DEFAULT_MINIMZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq'],
          'dfo': ['dfogn', 'dfols'],
-         'gofit': ['alternating', 'multistart'],
+         'gofit': ['multistart'],
          'gradient_free': ['HillClimbingOptimizer',
                            'RepulsingHillClimbingOptimizer',
                            'SimulatedAnnealingOptimizer',
