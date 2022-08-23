@@ -9,14 +9,16 @@ import inspect
 from fitbenchmarking.cli import main
 from fitbenchmarking import test_files
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.utils import fitbm_result, exceptions
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 
 
-def make_cost_function(file_name='cubic.dat', minimizers=None):
+def make_controller(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
+    in a scipy controller.
     """
     options = Options()
     if minimizers:
@@ -28,7 +30,9 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
     cost_func = NLLSCostFunc(fitting_problem)
-    return cost_func
+
+    controller = ScipyController(cost_func)
+    return controller
 
 
 def mock_func_call(*args, **kwargs):
@@ -36,20 +40,16 @@ def mock_func_call(*args, **kwargs):
     Mock function to be used instead of benchmark
     """
     options = Options()
-    cost_func = make_cost_function()
+    controller = make_controller()
 
-    results = []
-    result_args = {'options': options,
-                   'cost_func': cost_func,
-                   'jac': 'jac',
-                   'hess': 'hess',
-                   'initial_params': [],
-                   'params': [],
-                   'error_flag': 4}
-    result = fitbm_result.FittingResult(**result_args)
+    results: 'list[fitbm_result.FittingResult]' = []
+    controller.flag = 4
+    result = fitbm_result.FittingResult(
+        options=options,
+        controller=controller)
     results.append(result)
 
-    failed_problems = []
+    failed_problems: 'list[str]' = []
     unselected_minimizers = {}
     return results, failed_problems, unselected_minimizers
 

@@ -358,19 +358,7 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                     controller.flag = 4
                     dummy_result = fitbm_result.FittingResult(
                         options=options,
-                        cost_func=controller.cost_func,
-                        jac=None,
-                        hess=None,
-                        chi_sq=np.inf,
-                        runtime=np.inf,
-                        software=controller.software,
-                        minimizer=minimizer,
-                        algorithm_type=controller.record_alg_type(
-                           minimizer, options.algorithm_type),
-                        initial_params=controller.initial_params,
-                        params=None,
-                        error_flag=controller.flag,
-                        name=problem.name)
+                        controller=controller)
                     results_problem.append(dummy_result)
                     LOGGER.warning(str(excp))
 
@@ -489,32 +477,15 @@ def loop_over_hessians(controller, options, grabbed_output):
                             hess_name)
 
             # Perform the fit a number of times specified by num_runs
-            chi_sq, runtime = perform_fit(controller, options, grabbed_output)
-
-            jac_str = cost_func.jacobian.name() \
-                if minimizer in controller.jacobian_enabled_solvers else None
-            hess_str = cost_func.hessian.name() \
-                if cost_func.hessian is not None \
-                and minimizer in controller.hessian_enabled_solvers \
-                else None
+            accuracy, runtime = perform_fit(controller, options, grabbed_output)
             result_args = {'options': options,
-                           'cost_func': cost_func,
-                           'jac': jac_str,
-                           'hess': hess_str,
-                           'chi_sq': chi_sq,
-                           'runtime': runtime,
-                           'software': controller.software,
-                           'minimizer': minimizer,
-                           'algorithm_type': controller.record_alg_type(
-                               minimizer, options.algorithm_type),
-                           'initial_params': controller.initial_params,
-                           'params': controller.final_params,
-                           'error_flag': controller.flag,
-                           'name': problem.name}
+                           'controller': controller,
+                           'accuracy': accuracy,
+                           'runtime': runtime,}
             if problem.multifit:
                 # for multifit problems, multiple chi_sq values are stored
                 # in a list i.e. we have multiple results
-                for i in range(len(chi_sq)):
+                for i in range(len(accuracy)):
                     result_args.update(
                         {'dataset_id': i,
                          'name': f'{problem.name}, Dataset {i + 1}'})
