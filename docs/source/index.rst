@@ -21,6 +21,7 @@ Table Of Contents
    Concept <concept/index>
    Users <users/index>
    Extending <extending/index>
+   Continuous Benchmarking <continuous-benchmarking/index>
    Contributors <contributors/index>
 
 
