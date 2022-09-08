@@ -9,7 +9,7 @@ Fitbenchmarking will install all packages that are available through pip.
 To enable Fitbenchmarking with the other supported software,
 they need to be installed and available on your machine.  We give
 pointers outlining how to do this below, and you can find install scripts
-for Ubuntu 18.04 in the directory `/build/<software>/`
+for Ubuntu 18.04 in the script `build/build-scripts.sh`
 
 CUTEst
 ------
@@ -31,7 +31,7 @@ pyGSL interface.
 
 Install instructions can be found at the `pyGSL docs <http://pygsl.sourceforge.net/>`__.
 This package is also installable via pip, provided GSL is available on your system;
-see our example build script in `build/gsl`.
+see our example build script in `build/build-scripts.sh`.
 
 Note: pyGSL may not be installable with the latest versions of pip. We have found that 20.0.2 works for our tests.
 
