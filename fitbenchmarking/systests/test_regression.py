@@ -208,8 +208,8 @@ def setup_options(override_software: list = None,
     # The software to test for the different test types.
     # - 'dfo' and 'minuit' are included but are unstable for other datasets.
     # - 'gradient_free' and 'scipy_go' are left out as they require bounds.
-    software = {"all": ["bumps", "dfo", "gsl", "levmar", "mantid", "minuit",
-                        "ralfit", "scipy", "scipy_ls"],
+    software = {"all": ["bumps", "dfo", "gofit", "gsl", "levmar", "mantid",
+                        "minuit", "ralfit", "scipy", "scipy_ls"],
                 "default": ["bumps", "scipy", "scipy_ls"],
                 "matlab": ["horace", "matlab", "matlab_curve", "matlab_opt",
                            "matlab_stats"]}
@@ -217,6 +217,7 @@ def setup_options(override_software: list = None,
     # The minimizers to test for each software
     minimizers = {"bumps": "lm-bumps",
                   "dfo": "dfols",
+                  "gofit": "regularisation",
                   "gsl": "lmsder",
                   "horace": "lm-lsqr",
                   "levmar": "levmar",

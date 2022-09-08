@@ -31,7 +31,7 @@ os.environ["PYCUTEST_CACHE"] = mock_pycutest_cache
 
 # set mock imports
 autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfogn', 'dfols',
-                        'dill', 'matlab', 'pygsl', 'iminuit', 'bumps',
+                        'dill', 'gofit', 'matlab', 'pygsl', 'iminuit', 'bumps',
                         'bumps.fitters', 'tempfile', 'backports',
                         'backports.tempfile', 'gradient_free_optimizers',
                         'levmar']
