@@ -75,6 +75,9 @@ class Checkpoint:
             'jacobian': result.jac,
             'hessian': result.hess,
             'cost_func': result.costfun_tag,
+            'r': pickle.dumps(result.r_x),
+            'J': pickle.dumps(result.jac_x),
+            'fin_y': pickle.dumps(result.fin_y),
             'tags': [],
         }
 
@@ -102,6 +105,7 @@ class Checkpoint:
             'format': result.problem_format,
             'ini_params': result.initial_params,
             'ini_params_str': result.ini_function_params,
+            'ini_y': pickle.dumps(result.ini_y),
             'x': pickle.dumps(result.data_x),
             'y': pickle.dumps(result.data_y),
             'e': pickle.dumps(result.data_e),
@@ -111,7 +115,7 @@ class Checkpoint:
         with open(self.problems_file, 'a', encoding='utf-8') as f:
             if self.problem_names:
                 f.write(',\n')
-            f.write(json.dumps(as_dict, indent=2))
+            f.write(f'"{result.name}": {json.dumps(as_dict, indent=2)}')
 
         self.problem_names.append(result.name)
 
@@ -124,10 +128,10 @@ class Checkpoint:
 
         filename = os.path.join(self.options.results_dir, self.filename)
         with open(filename, 'w', encoding='utf-8') as f:
-            f.write('{"problems": [')
+            f.write('{"problems": {')
             with open(self.problems_file, 'r', encoding='utf-8') as tmp:
                 f.write(tmp.read())
-            f.write('\n ],\n "results":[')
+            f.write('\n },\n "results":[')
             with open(self.results_file, 'r', encoding='utf-8') as tmp:
                 f.write(tmp.read())
             f.write(' ]}')
@@ -149,6 +153,16 @@ class Checkpoint:
         results = tmp['results']
 
         output: 'list[FittingResult]' = []
+
+        # Unpickle problems so that we use 1 shared object for all results per
+        # array
+        for p in problems:
+            p['ini_y'] = pickle.loads(p['ini_y'])
+            p['x'] = pickle.loads(p['x'])
+            p['y'] = pickle.loads(p['y'])
+            p['e'] = pickle.loads(p['e'])
+            p['sorted_idx'] = pickle.loads(p['sorted_idx'])
+
         for r in results:
             new_result = FittingResult.__new__(FittingResult)
 
@@ -162,6 +176,9 @@ class Checkpoint:
             new_result.jac = r['jacobian']
             new_result.hess = r['hessian']
             new_result.costfun_tag = r['cost_func']
+            new_result.fin_y = pickle.loads(r['fin_y'])
+            new_result.r_x = pickle.loads(r['r'])
+            new_result.jac_x = pickle.loads(r['J'])
             # new_result.? = r['tags']
 
             new_result.name = r['name']
@@ -170,10 +187,11 @@ class Checkpoint:
             new_result.problem_format = p['format']
             new_result.initial_params = p['ini_params']
             new_result.ini_function_params = p['ini_params_str']
-            new_result.data_x = pickle.dumps(p['x'])
-            new_result.data_y = pickle.dumps(p['y'])
-            new_result.data_e = pickle.dumps(p['e'])
-            new_result.sorted_index = pickle.dumps(p['sorted_idx'])
+            new_result.data_x = p['x']
+            new_result.data_y = p['y']
+            new_result.data_e = p['e']
+            new_result.sorted_index = p['sorted_idx']
+            new_result.ini_y = p['ini_y']
 
             output.append(new_result)
 

@@ -4,6 +4,7 @@ FitBenchmarking results object
 from typing import TYPE_CHECKING
 
 import numpy as np
+from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 
 from fitbenchmarking.utils.debug import get_printable_table
 
@@ -47,6 +48,8 @@ class FittingResult:
         self.options: 'Options' = options
         cost_func: 'CostFunc' = controller.cost_func
         problem: 'FittingProblem' = controller.problem
+
+        # Problem definition + scores
         self.name: 'str' = problem.name
         self.multivariate: 'bool' = problem.multivariate
         self.problem_format: 'str' = problem.format
@@ -70,7 +73,7 @@ class FittingResult:
 
         self.runtime = runtime
 
-        # Minimizer for a certain problem and its function definition
+        # Details of options used for this run
         self.software = controller.software
         self.minimizer = controller.minimizer
         self.algorithm_type = [k for k, v in controller.algorithm_check.items()
@@ -82,6 +85,25 @@ class FittingResult:
 
         self.jac = cost_func.jacobian.name() if jac_enabled else None
         self.hess = cost_func.hessian.name() if hess_enabled else None
+
+        # Precalculate values required for plotting
+        self.r_x = None
+        self.jac_x = None
+
+        self.ini_y = problem.ini_y(controller.parameter_set)
+        self.fin_y = None
+        if self.params is not None:
+            if isinstance(cost_func, BaseNLLSCostFunc):
+                self.r_x = cost_func.eval_r(self.params,
+                                            x=self.data_x,
+                                            y=self.data_y,
+                                            e=self.data_e)
+                self.jac_x = cost_func.jac_res(self.params,
+                                               x=self.data_x,
+                                               y=self.data_y,
+                                               e=self.data_e)
+            self.fin_y = cost_func.problem.eval_model(
+                self.params, x=self.data_x)
 
         # String interpretations of the params
         self.ini_function_params = problem.get_function_params(

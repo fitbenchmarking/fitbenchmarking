@@ -112,6 +112,9 @@ class FittingProblem:
         # The timer used to check if the 'max_runtime' is exceeded.
         self.timer = TimerWithMaxTime(self.options.max_runtime)
 
+        #: Cache for calulating the initial value of the problem for plots
+        self._ini_y = {}
+
     def __str__(self):
         info = {"Name": self.name,
                 "Format": self.format,
@@ -261,6 +264,27 @@ class FittingProblem:
                     (value_ranges[name][0], value_ranges[name][1]))
             else:
                 self.value_ranges.append((-np.inf, np.inf))
+
+    def ini_y(self, parameter_set=0):
+        """
+        Return the result of evaluating the problem at the initial parameters
+        for plotting.
+
+        :param parameter_set: The initial parameters to use, defaults to 0
+        :type parameter_set: int, optional
+        :return: The initial estimates
+        :rtype: numpy.ndarray
+        """
+        if parameter_set not in self._ini_y:
+            params = self.starting_values[parameter_set].values()
+            if self.multifit:
+                self._ini_y[parameter_set] = [
+                    self.eval_model(params=params, x=x)
+                    for x in self.data_x
+                ]
+            else:
+                self._ini_y[parameter_set] = self.eval_model(params=params)
+        return self._ini_y[parameter_set]
 
 
 def correct_data(x, y, e, startx, endx, use_errors):
