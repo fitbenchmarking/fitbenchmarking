@@ -74,7 +74,11 @@ class Checkpoint:
             'minimizer': result.minimizer,
             'jacobian': result.jac,
             'hessian': result.hess,
-            'cost_func': result.costfun_tag,
+            'software_tag': result.software_tag,
+            'minimizer_tag': result.minimizer_tag,
+            'jacobian_tag': result.jacobian_tag,
+            'hessian_tag': result.hessian_tag,
+            'costfun_tag': result.costfun_tag,
             'r': pickle.dumps(result.r_x),
             'J': pickle.dumps(result.jac_x),
             'fin_y': pickle.dumps(result.fin_y),
@@ -110,6 +114,7 @@ class Checkpoint:
             'y': pickle.dumps(result.data_y),
             'e': pickle.dumps(result.data_e),
             'sorted_idx': pickle.dumps(result.sorted_index),
+            'problem_tag': result.problem_tag,
         }
 
         with open(self.problems_file, 'a', encoding='utf-8') as f:
@@ -175,6 +180,10 @@ class Checkpoint:
             new_result.minimizer = r['minimizer']
             new_result.jac = r['jacobian']
             new_result.hess = r['hessian']
+            new_result.software_tag = r['software_tag']
+            new_result.minimizer_tag = r['minimizer_tag']
+            new_result.jacobian_tag = r['jacobian_tag']
+            new_result.hessian_tag = r['hessian_tag']
             new_result.costfun_tag = r['cost_func']
             new_result.fin_y = pickle.loads(r['fin_y'])
             new_result.r_x = pickle.loads(r['r'])
@@ -192,6 +201,7 @@ class Checkpoint:
             new_result.data_e = p['e']
             new_result.sorted_index = p['sorted_idx']
             new_result.ini_y = p['ini_y']
+            new_result.problem_tag = p['problem_tag']
 
             output.append(new_result)
 
