@@ -19,7 +19,7 @@ from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.hessian.hessian_factory import create_hessian
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.utils import fitbm_result, misc, output_grabber
+from fitbenchmarking.utils import fitbm_result, misc, output_grabber, checkpoint
 from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               FitBenchmarkException,
                                               IncompatibleMinimizerError,
@@ -67,11 +67,15 @@ def benchmark(options, data_dir):
     # Extract problem definitions
     problem_group = misc.get_problem_files(data_dir)
 
+    cp = checkpoint.Checkpoint(options=options)
+
     #################################
     # Loops over benchmark problems #
     #################################
     results, failed_problems, unselected_minimizers = \
         loop_over_benchmark_problems(problem_group, options)
+
+    cp.finalise()
 
     return results, failed_problems, unselected_minimizers
 
@@ -327,6 +331,7 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
     """
     problem = controller.problem
     algorithm_type = options.algorithm_type
+    cp = checkpoint.Checkpoint(options=options)
 
     results_problem = []
     minimizer_failed = []
@@ -359,6 +364,7 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                     dummy_result = fitbm_result.FittingResult(
                         options=options,
                         controller=controller)
+                    cp.add_result(dummy_result)
                     results_problem.append(dummy_result)
                     LOGGER.warning(str(excp))
 
@@ -444,6 +450,7 @@ def loop_over_hessians(controller, options, grabbed_output):
     :return: a FittingResult for each run
     :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
     """
+    cp = checkpoint.Checkpoint(options=options)
     minimizer = controller.minimizer
     cost_func = controller.cost_func
     problem = controller.problem
@@ -489,10 +496,13 @@ def loop_over_hessians(controller, options, grabbed_output):
                     result_args.update(
                         {'dataset_id': i,
                          'name': f'{problem.name}, Dataset {i + 1}'})
-                    new_result.append(
-                        fitbm_result.FittingResult(**result_args))
+                    result = fitbm_result.FittingResult(**result_args)
+                    new_result.append(result)
+                    cp.add_result(result)
             else:
-                new_result.append(fitbm_result.FittingResult(**result_args))
+                result = fitbm_result.FittingResult(**result_args)
+                new_result.append(result)
+                cp.add_result(result)
 
             # For minimizers that do not accept hessians we raise an
             # StopIteration exception to exit the loop through the

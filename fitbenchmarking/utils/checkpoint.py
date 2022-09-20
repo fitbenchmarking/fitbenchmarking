@@ -25,12 +25,12 @@ class Checkpoint:
     # The single instance of Checkpoint
     instance = None
 
-    def __new__(cls):
+    def __new__(cls, *args, **kwargs):
         """
         Ensure new calls to checkpoint use the same state (temporary files)
         """
         if cls.instance is not None:
-            cls.instance = object.__new__(cls)
+            cls.instance = object.__new__(cls, *args, **kwargs)
         return cls.instance
 
     def __init__(self, options: 'Options', filename: str = "checkpoint"):
