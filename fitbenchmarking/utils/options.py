@@ -176,7 +176,7 @@ class Options:
                 'OUTPUT': DEFAULT_OUTPUT,
                 'LOGGING': DEFAULT_LOGGING}
 
-    def __init__(self, file_name=None, results_directory: str = ""):
+    def __init__(self, additional_options = {}, file_name=None, results_directory: str = ""):
         """
         Initialise the options from a file if file is given.
         Priority is values in the file, failing that, values are taken from
@@ -230,14 +230,34 @@ class Options:
                                                     key)
 
         fitting = config['FITTING']
-        self.num_runs = self.read_value(fitting.getint, 'num_runs')
-        self.algorithm_type = self.read_value(
-            fitting.getlist, 'algorithm_type')
-        self.software = self.read_value(fitting.getlist, 'software')
-        self.jac_method = self.read_value(fitting.getlist, 'jac_method')
+
+        if 'num_runs' in additional_options and additional_options['num_runs']:
+            self.num_runs = additional_options['num_runs']
+        else:
+            self.num_runs = self.read_value(fitting.getint, 'num_runs')
+
+        if 'algorithm_type' in additional_options and additional_options['algorithm_type']:
+            self.algorithm_type = additional_options['algorithm_type']
+        else:
+            self.algorithm_type = self.read_value(fitting.getlist, 'algorithm_type')
+        
+        if 'software' in additional_options and additional_options['software']:
+            self.software = additional_options['software']
+        else:
+            self.software = self.read_value(fitting.getlist, 'software')
+
+        if 'jac_method' in additional_options and additional_options['jac_method']:
+            self.jac_method = additional_options['jac_method']
+        else:
+            self.jac_method = self.read_value(fitting.getlist, 'jac_method')
+        
         self.hes_method = self.read_value(fitting.getlist, 'hes_method')
-        self.cost_func_type = self.read_value(
-            fitting.getlist, 'cost_func_type')
+        
+        if 'cost_func_type' in additional_options and additional_options['cost_func_type']:
+            self.cost_func_type = additional_options['cost_func_type']
+        else:      
+            self.cost_func_type = self.read_value(fitting.getlist, 'cost_func_type')
+       
         self.max_runtime = self.read_value(fitting.getfloat, 'max_runtime')
 
         jacobian = config['JACOBIAN']
@@ -253,14 +273,25 @@ class Options:
                                                        key)
 
         plotting = config['PLOTTING']
-        self.make_plots = self.read_value(plotting.getboolean, 'make_plots')
+        
+        if 'make_plots' in additional_options:
+            self.make_plots = additional_options['make_plots']
+        else:      
+            self.make_plots = self.read_value(plotting.getboolean, 'make_plots')
+
         self.colour_map = self.read_value(plotting.getstr, 'colour_map')
         self.colour_ulim = self.read_value(plotting.getfloat, 'colour_ulim')
         self.cmap_range = self.read_value(plotting.getrng, 'cmap_range')
+        
+        if 'comparison_mode' in additional_options and additional_options['comparison_mode']:
+            self.comparison_mode = additional_options['comparison_mode']
+        else:
+            self.comparison_mode = self.read_value(plotting.getstr,'comparison_mode')
 
-        self.comparison_mode = self.read_value(plotting.getstr,
-                                               'comparison_mode')
-        self.table_type = self.read_value(plotting.getlist, 'table_type')
+        if 'table_type' in additional_options and additional_options['table_type']:
+            self.table_type = additional_options['table_type']
+        else:
+            self.table_type = self.read_value(plotting.getlist, 'table_type')
 
         output = config['OUTPUT']
         if results_directory == "":
@@ -269,21 +300,29 @@ class Options:
             self.results_dir = results_directory
 
         logging = config['LOGGING']
-        self.log_append = self.read_value(logging.getboolean, 'append')
-        self.log_file = self.read_value(logging.getstr, 'file_name')
-        self.log_level = self.read_value(logging.getstr, 'level')
+        
+        if 'append' in additional_options:
+            self.log_append = additional_options['append']
+        else:       
+            self.log_append = self.read_value(logging.getboolean, 'append')
 
-        self.external_output = self.read_value(logging.getstr,
-                                               'external_output')
+        if 'logging_file_name' in additional_options and additional_options['logging_file_name']:
+            self.log_file = additional_options['logging_file_name']
+        else:
+            self.log_file = self.read_value(logging.getstr, 'file_name')
+
+        if 'level' in additional_options and additional_options['level']:
+            self.log_level = additional_options['level']
+        else:
+            self.log_level = self.read_value(logging.getstr, 'level')
+        
+        if 'external_output' in additional_options and additional_options['external_output']:
+            self.external_output = additional_options['external_output']
+        else:
+            self.external_output = self.read_value(logging.getstr, 'external_output')
 
         if self.error_message != []:
             raise OptionsError('\n'.join(self.error_message))
-
-    def reset(self):
-        """
-        Resets options object when running multiple problem groups.
-        """
-        self.__init__(self.stored_file_name, self.results_dir)
 
     def read_value(self, func, option):
         """
