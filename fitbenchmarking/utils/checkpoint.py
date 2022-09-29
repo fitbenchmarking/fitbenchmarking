@@ -13,6 +13,8 @@ from typing import TYPE_CHECKING
 from fitbenchmarking.utils.fitbm_result import FittingResult
 
 if TYPE_CHECKING:
+    from typing import Tuple
+
     from fitbenchmarking.utils.options import Options
 
 
@@ -33,22 +35,18 @@ class Checkpoint:
             cls.instance = object.__new__(cls, *args, **kwargs)
         return cls.instance
 
-    def __init__(self, options: 'Options', filename: str = "checkpoint"):
+    def __init__(self, options: 'Options'):
         """
         Set up a new Checkpoint class
         """
+        self.writing: bool = False
         self.finalised: bool = False
-        self.filename = filename
         self.options = options
-        self.dir: 'TemporaryDirectory[str]' = TemporaryDirectory()
-        self.problems_file = os.path.join(
-            self.dir.name, 'problems_tmp.txt')
-        self.results_file = os.path.join(self.dir.name, 'results_tmp.txt')
+
+        self.dir: 'TemporaryDirectory[str] | None' = None
+        self.problems_file: 'str | None' = None
+        self.results_file: 'str | None' = None
         self.problem_names: 'list[str]' = []
-        with open(self.results_file, 'w', encoding='utf-8') as f:
-            f.write('[\n')
-        with open(self.problems_file, 'w', encoding='utf-8') as f:
-            f.write('[\n')
 
     def add_result(self, result: 'FittingResult'):
         """
@@ -60,6 +58,17 @@ class Checkpoint:
         if self.finalised:
             raise RuntimeError(
                 "Cannot add to checkpoint - checkpoint has been finalised.")
+
+        if not self.writing:
+            self.dir = TemporaryDirectory()
+            self.problems_file = os.path.join(
+                self.dir.name, 'problems_tmp.txt')
+            self.results_file = os.path.join(self.dir.name, 'results_tmp.txt')
+            with open(self.results_file, 'w', encoding='utf-8') as f:
+                f.write('[\n')
+            with open(self.problems_file, 'w', encoding='utf-8') as f:
+                f.write('[\n')
+            self.writing = True
 
         self._add_problem(result)
 
@@ -124,38 +133,62 @@ class Checkpoint:
 
         self.problem_names.append(result.name)
 
-    def finalise(self):
+    def finalise(self, label='benchmark', failed_problems=None,
+                 unselected_minimizers=None):
         """
         Combine the problem and results file and save somewhere non temporary.
         """
         if self.finalised:
             return
 
-        filename = os.path.join(self.options.results_dir, self.filename)
+        if failed_problems is None:
+            failed_problems = []
+        if unselected_minimizers is None:
+            unselected_minimizers = {}
+
+        filename = os.path.join(self.options.results_dir,
+                                self.options.checkpoint_filename)
         with open(filename, 'w', encoding='utf-8') as f:
-            f.write('{"problems": {')
+            f.write(f'{{"label": {label},\n "problems": {{\n')
             with open(self.problems_file, 'r', encoding='utf-8') as tmp:
                 f.write(tmp.read())
-            f.write('\n },\n "results":[')
+            f.write('\n },\n "results":[\n')
             with open(self.results_file, 'r', encoding='utf-8') as tmp:
                 f.write(tmp.read())
-            f.write(' ]}')
+            f.write(' ],\n')
+            f.write(json.dumps({'failed_problems': failed_problems,
+                                'unselected_minimizers': unselected_minimizers}))
+            f.write('}')
 
-    @classmethod
-    def load(cls, filename: str) -> 'list[FittingResult]':
-        """
-        Load a list of fitting results from a checkpoint file
+        self.finalised = True
+        self.writing = False
 
-        :param filename: The file to load
-        :type filename: str
-        :return: Instantiated fitting results
-        :rtype: list[FittingProblem]
+    def load(self) -> 'Tuple[str, list[FittingResult], dict, list[str]]':
         """
+        Load a list of fitting results from a checkpoint file along with
+        failed problems and unselected minimizers.
+
+        :return: Dataset name, Instantiated fitting results,
+                 unselected minimisers, failed problems
+        :rtype: Tuple[str, list[FittingResult], dict, list[str]]
+        """
+        for f in [self.options.checkpoint_filename,
+                  os.path.join(self.options.results_dir,
+                               self.options.checkpoint_filename)]:
+            if os.path.isfile(f):
+                filename: str = f
+                break
+        else:
+            raise FileNotFoundError('Could not find checkpoint file.')
+
         with open(filename, 'r', encoding='utf-8') as f:
             tmp = json.load(f)
 
+        label = tmp['label']
         problems = tmp['problems']
         results = tmp['results']
+        unselected_minimizers = tmp['unselected_minimizers']
+        failed_problems = tmp['failed_problems']
 
         output: 'list[FittingResult]' = []
 
@@ -205,4 +238,4 @@ class Checkpoint:
 
             output.append(new_result)
 
-        return output
+        return label, output, unselected_minimizers, failed_problems

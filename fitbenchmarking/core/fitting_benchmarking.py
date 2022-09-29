@@ -34,7 +34,7 @@ from fitbenchmarking.utils.log import get_logger
 LOGGER = get_logger()
 
 
-def benchmark(options, data_dir):
+def benchmark(options, data_dir, label='benchmark'):
     """
     Gather the user input and list of paths. Call benchmarking on these.
     The benchmarking structure is:
@@ -55,6 +55,8 @@ def benchmark(options, data_dir):
     :param data_dir: full path of a directory that holds a group of problem
                      definition files
     :type date_dir: str
+    :param label: The name for the dataset in the checkpoint
+    :type label: str
 
     :return: all results,
              problems where all fitting failed,
@@ -75,7 +77,9 @@ def benchmark(options, data_dir):
     results, failed_problems, unselected_minimizers = \
         loop_over_benchmark_problems(problem_group, options)
 
-    cp.finalise()
+    cp.finalise(label=label,
+                failed_problems=failed_problems,
+                unselected_minimizers=unselected_minimizers)
 
     return results, failed_problems, unselected_minimizers
 

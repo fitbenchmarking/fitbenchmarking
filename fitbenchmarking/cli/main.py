@@ -21,12 +21,13 @@ from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
 from fitbenchmarking.cli.exception_handler import exception_handler
+from fitbenchmarking.cli.checkpoint_handler import generate_report
 from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.core.results_output import save_results
-from fitbenchmarking.utils.exceptions import OptionsError, NoResultsError
+from fitbenchmarking.utils.exceptions import NoResultsError
 from fitbenchmarking.utils.log import get_logger, setup_logger
 from fitbenchmarking.utils.misc import get_css
-from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.options import Options, find_options_file
 
 LOGGER = get_logger()
 
@@ -190,34 +191,14 @@ of the Fitbenchmarking docs. '''
                         default='',
                         help="Select the amount of information displayed"
                         "from third-parties.")
+
+    parser.add_argument('--load-checkpoint',
+                        metavar='FROM_CHECKPOINT',
+                        default=False,
+                        action='store_true',
+                        help='Load results from the checkpoint and generate'
+                             'reports. Will not run any new tests.')
     return parser
-
-
-def _find_options_file(options_file: str, additional_options: dict) -> Options:
-    """
-    Attempts to find the options file and creates an Options object for it.
-    Wildcards are accepted in the parameters of this function.
-
-    :param options_file: The path or glob pattern for an options file.
-    :type options_file: str
-    :param additional_options: A dictionary of options input by the user
-    into the command line.
-    :type additional_options: dict
-    :return: An Options object.
-    :rtype: fitbenchmarking.utils.options.Options
-    """
-    if options_file != '':
-        # Read custom minimizer options from file
-        glob_options_file = glob.glob(options_file)
-
-        if not glob_options_file:
-            raise OptionsError('Could not find file {}'.format(options_file))
-        if not options_file.endswith(".ini"):
-            raise OptionsError('Options file must be a ".ini" file')
-
-        return Options(file_name=glob_options_file,
-                       additional_options=additional_options)
-    return Options(additional_options=additional_options)
 
 
 def _create_index_page(options: Options, groups: "list[str]",
@@ -317,8 +298,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
 
     # Find the options file
     current_path = os.path.abspath(os.path.curdir)
-    options = _find_options_file(
-        options_file, additional_options)
+    options = find_options_file(options_file, additional_options)
 
     setup_logger(log_file=options.log_file,
                  append=options.log_append,
@@ -360,7 +340,8 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
                     label)
         results, failed_problems, unselected_minimizers = \
             benchmark(options=options,
-                      data_dir=data_dir)
+                      data_dir=data_dir,
+                      label=label)
 
         # If a result has error flag 4 then the result contains dummy values,
         # if this is the case for all results then output should not be
@@ -474,10 +455,14 @@ def main():
     elif args.overwrite_log:
         options_dictionary['append'] = False
 
-    run(problem_sets=args.problem_sets,
-        options_file=args.options_file,
-        debug=args.debug_mode,
-        additional_options=options_dictionary)
+    if args.from_checkpoint:
+        generate_report(options_file=args.options_file,
+                        additional_options=options_dictionary)
+    else:
+        run(problem_sets=args.problem_sets,
+            options_file=args.options_file,
+            debug=args.debug_mode,
+            additional_options=options_dictionary)
 
 
 if __name__ == '__main__':
