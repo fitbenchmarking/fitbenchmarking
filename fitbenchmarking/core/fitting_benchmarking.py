@@ -114,7 +114,7 @@ def loop_over_benchmark_problems(problem_group, options):
     name_index = {key: 0 for key in name_count}
     LOGGER.info('Running problems')
     pb = tqdm(problems,colour='green',leave=True)
-    with logging_redirect_tqdm():
+    with logging_redirect_tqdm(loggers=[LOGGER]):
         for i, (fname, problem) in enumerate(pb):
             # Make the name unique
             if name_count[problem.name] > 1:
