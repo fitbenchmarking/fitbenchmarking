@@ -26,6 +26,8 @@ from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               UnsupportedMinimizerError,
                                               ValidationException)
 from fitbenchmarking.utils.log import get_logger
+from tqdm import tqdm
+from tqdm.contrib.logging import logging_redirect_tqdm
 
 LOGGER = get_logger()
 
@@ -111,27 +113,29 @@ def loop_over_benchmark_problems(problem_group, options):
 
     name_index = {key: 0 for key in name_count}
     LOGGER.info('Running problems')
-    for i, (fname, problem) in enumerate(problems):
-        # Make the name unique
-        if name_count[problem.name] > 1:
-            name_index[problem.name] += 1
-            problem.name += f' {name_index[problem.name]}'
+    pb = tqdm(problems,colour='green',leave=True)
+    with logging_redirect_tqdm():
+        for i, (fname, problem) in enumerate(pb):
+            # Make the name unique
+            if name_count[problem.name] > 1:
+                name_index[problem.name] += 1
+                problem.name += f' {name_index[problem.name]}'
 
-        info_str = f" Running data from: {os.path.basename(fname)} " + \
-                   f"{i + 1}/{len(problem_group)}"
-        LOGGER.info('\n%s', '#' * (len(info_str) + 1))
-        LOGGER.info(info_str)
-        LOGGER.info('#' * (len(info_str) + 1))
-
-        ##############################
-        # Loops over starting values #
-        ##############################
-        problem_results, problem_fails, \
-            unselected_minimizers = \
-            loop_over_starting_values(
-                problem, options, grabbed_output)
-        results.extend(problem_results)
-        failed_problems.extend(problem_fails)
+            info_str = f" Running data from: {os.path.basename(fname)} " + \
+                    f"{i + 1}/{len(problem_group)}"
+            LOGGER.info('\n%s', '#' * (len(info_str) + 1))
+            LOGGER.info(info_str)
+            LOGGER.info('#' * (len(info_str) + 1))
+  
+            ##############################
+            # Loops over starting values #
+            ##############################
+            problem_results, problem_fails, \
+                unselected_minimizers = \
+                loop_over_starting_values(
+                    problem, options, grabbed_output)
+            results.extend(problem_results)
+            failed_problems.extend(problem_fails)
 
     return results, failed_problems, unselected_minimizers
 
