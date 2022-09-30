@@ -274,7 +274,7 @@ class Options:
         if 'make_plots' in additional_options:
             self.make_plots = additional_options['make_plots']
         else:      
-            self.make_plots = self.read_value(plotting.getboolean, 'make_plots')
+            self.make_plots = self.read_value(plotting.getboolean, 'make_plots', additional_options)
 
         self.colour_map = self.read_value(plotting.getstr, 'colour_map', additional_options)
         self.colour_ulim = self.read_value(plotting.getfloat, 'colour_ulim', additional_options)

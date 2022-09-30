@@ -392,7 +392,7 @@ def main():
         'cost_func_type': args.cost_func_type,
         'comparison_mode': args.comparison_mode,
         'table_type': args.table_type,
-        'logging_file_name': args.logging_file_name,
+        'file_name': args.logging_file_name,
         'level': args.level,
         'external_output': args.external_output
     }
