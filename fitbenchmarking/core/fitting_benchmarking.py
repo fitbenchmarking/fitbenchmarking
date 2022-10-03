@@ -620,5 +620,5 @@ def perform_fit(controller, options, grabbed_output):
         # been respected by the minimizer and set error
         # flag if not
         controller.check_bounds_respected()
-
     return chi_sq, runtime
+    
