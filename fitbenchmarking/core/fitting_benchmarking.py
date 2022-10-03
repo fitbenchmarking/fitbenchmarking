@@ -10,7 +10,7 @@ import os
 import timeit
 import warnings
 
-from tqdm import (tqdm , trange)
+from tqdm import (tqdm, trange)
 from tqdm.contrib.logging import logging_redirect_tqdm
 
 import numpy as np
@@ -116,8 +116,8 @@ def loop_over_benchmark_problems(problem_group, options):
     name_index = {key: 0 for key in name_count}
     LOGGER.info('Running problems')
 
-    benchmark_pbar = tqdm(problems,colour='green',desc="Benchmark problems",
-     unit="Benchmark problems",leave=True)
+    benchmark_pbar = tqdm(problems, colour='green', desc="Benchmark problems",
+     unit="Benchmark problems", leave=True)
 
     with logging_redirect_tqdm(loggers=[LOGGER]):
         for i, (fname, problem) in enumerate(benchmark_pbar):
@@ -169,8 +169,8 @@ def loop_over_starting_values(problem, options, grabbed_output):
     problem_results = []
 
     if num_start_vals >= 3:
-        num_start_vals_pbar = trange(num_start_vals,colour='blue',
-         leave=False,desc="Starting values   ", unit="Starting values   ")
+        num_start_vals_pbar = trange(num_start_vals, colour='blue',
+         leave=False, desc="Starting values   ", unit="Starting values   ")
     else:
         num_start_vals_pbar = range(num_start_vals)
 
@@ -268,8 +268,8 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
     unselected_minimizers = {}
 
     if len (software) >=3:
-        software_pbar =  tqdm(software,colour='yellow',desc="Software          ",
-         unit="Software          ",leave=False)
+        software_pbar =  tqdm(software, colour='yellow',
+         desc="Software          ", unit="Software          ", leave=False)
     else:
         software_pbar = software
 
@@ -621,4 +621,3 @@ def perform_fit(controller, options, grabbed_output):
         # flag if not
         controller.check_bounds_respected()
     return chi_sq, runtime
-    
