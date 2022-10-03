@@ -328,7 +328,7 @@ class Options:
         :type func: callable
         :param option: option to be read for file
         :type option: str
-        :param additional_options: A dictionary of options 
+        :param additional_options: A dictionary of options
         input by the user into the command line.
         :type additional_options: dict
 
