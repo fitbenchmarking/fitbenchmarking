@@ -1,7 +1,6 @@
 '''
 Test the options write function
 '''
-import copy
 import os
 import unittest
 
@@ -152,3 +151,4 @@ class OptionsWriteTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+

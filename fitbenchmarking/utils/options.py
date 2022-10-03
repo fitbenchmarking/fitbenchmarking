@@ -189,7 +189,8 @@ class Options:
         :type additional_options: dict
 
         """
-        # additional_options is initialied to an empty dict if no value is given
+        # additional_options is initialied to an empty dict if
+        # no value is given
         if additional_options is None:
             additional_options = {}
 

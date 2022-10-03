@@ -112,7 +112,8 @@ of the Fitbenchmarking docs. '''
                         nargs='+',
                         type=str,
                         default=[],
-                        help="Set the cost functions to be used for the given data.")
+                        help="Set the cost functions to be used"
+                        "for the given data.")
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--make_plots', action='store_true',
