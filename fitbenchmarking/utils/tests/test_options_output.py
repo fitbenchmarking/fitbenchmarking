@@ -14,7 +14,7 @@ class OutputOptionTests(unittest.TestCase):
     Checks that the defaults in the PLOTTING section are set correctly
     """
 
-    def test_results_dir_not_default(additional_options, self):
+    def test_results_dir_not_default(self):
         """
         Checks results_dir default
         """

@@ -149,6 +149,6 @@ class OptionsWriteTests(unittest.TestCase):
             Options(opts_file)
         os.remove(opts_file)
 
+
 if __name__ == '__main__':
     unittest.main()
-
