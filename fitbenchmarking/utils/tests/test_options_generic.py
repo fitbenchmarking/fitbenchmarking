@@ -150,18 +150,5 @@ class OptionsWriteTests(unittest.TestCase):
             Options(opts_file)
         os.remove(opts_file)
 
-    def test_options_reset(self):
-        """
-        Tests options reset
-        """
-        options = Options()
-        options_save = copy.copy(options)
-        options.minimizers = {}
-        options.software = ['updated_software1', 'updated_software2']
-
-        options.reset()
-        self.assertDictEqual(options.__dict__, options_save.__dict__)
-
-
 if __name__ == '__main__':
     unittest.main()

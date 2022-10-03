@@ -86,7 +86,8 @@ of the Fitbenchmarking docs. '''
                         metavar='NUM_RUNS',
                         type=int,
                         default=0,
-                        help="Set the number of runs to average each fit over.")
+                        help="Set the number of runs to average"
+                        "each fit over.")
     parser.add_argument('-a', '--algorithm_type',
                         metavar='ALGORITHM_TYPE',
                         nargs='+',
@@ -115,20 +116,24 @@ of the Fitbenchmarking docs. '''
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--make_plots', action='store_true',
-                        help = "Use this option if you have decided to create plots during runtime.")
+                       help="Use this option if you have decided to"
+                       "create plots during runtime.")
     group.add_argument('--dont_make_plots', action='store_true',
-                        help = "Use this option if you have decided not to create plots during runtime.")
+                       help="Use this option if you have decided not to"
+                       "create plots during runtime.")
 
     parser.add_argument('-m', '--comparison_mode',
                         metavar='COMPARISON_MODE',
                         default='',
-                        help="Select the mode for displaying values in the resulting table.")
+                        help="Select the mode for displaying values in"
+                        "the resulting table.")
     parser.add_argument('-t', '--table_type',
                         metavar='TABLE_TYPE',
                         nargs='+',
                         type=str,
                         default=[],
-                        help="Select the type of table to be produced in FitBenchmarking.")
+                        help="Select the type of table to be produced"
+                        "in FitBenchmarking.")
     parser.add_argument('-f', '--logging_file_name',
                         metavar='LOGGING_FILE_NAME',
                         default='',
@@ -141,11 +146,13 @@ of the Fitbenchmarking docs. '''
     parser.add_argument('-l', '--level',
                         metavar='LEVEL',
                         default='',
-                        help="Specify the minimum level of logging to display on console during runtime.")
+                        help="Specify the minimum level of logging to display"
+                        "on console during runtime.")
     parser.add_argument('-e', '--external_output',
                         metavar='EXTERNAL_OUTPUT',
                         default='',
-                        help="Select the amount of information displayed from third-parties.")
+                        help="Select the amount of information displayed"
+                        "from third-parties.")
     return parser
 
 
@@ -156,7 +163,8 @@ def _find_options_file(options_file: str, additional_options: dict) -> Options:
 
     :param options_file: The path or glob pattern for an options file.
     :type options_file: str
-    :param additional_options: A dictionary of options input by the user into the command line.
+    :param additional_options: A dictionary of options input by the user
+    into the command line.
     :type additional_options: dict
     :return: An Options object.
     :rtype: fitbenchmarking.utils.options.Options
@@ -255,7 +263,8 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
 
     :param problem_sets: The paths to directories containing problem_sets.
     :type problem_sets: list of str
-    :param additional_options: A dictionary of options input by the user into the command line.
+    :param additional_options: A dictionary of options input by the
+    user into the command line.
     :type additional_options: dict
     :param options_file: The path to an options file, defaults to ''.
     :type options_file: str, optional
@@ -384,7 +393,7 @@ def main():
     # Dictionary of options which can be set via argparse
     # rather than from an ini file or from the default options
     options_dictionary = {
-        'results_dir' : args.results_dir,
+        'results_dir': args.results_dir,
         'num_runs': args.num_runs,
         'algorithm_type': args.algorithm_type,
         'software': args.software,
@@ -397,13 +406,15 @@ def main():
         'external_output': args.external_output
     }
 
-    # Check if make_plots in options.py should be overridden, and if so, add to options_dictionary
+    # Check if make_plots in options.py should be overridden, and if so,
+    # add to options_dictionary
     if args.make_plots:
         options_dictionary['make_plots'] = True
     elif args.dont_make_plots:
         options_dictionary['make_plots'] = False
 
-    # Check if log_append in options.py should be overridden, and if so, add to options_dictionary
+    # Check if log_append in options.py should be overridden, and if so,
+    # add to options_dictionary
     if args.append_log:
         options_dictionary['append'] = True
     elif args.overwrite_log:

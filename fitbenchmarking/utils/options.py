@@ -184,9 +184,10 @@ class Options:
 
         :param file_name: The options file to load
         :type file_name: str
-        :param additional_options: A dictionary of options input by the user into the command line.
+        :param additional_options: A dictionary of options input
+        by the user into the command line.
         :type additional_options: dict
-     
+
         """
         # additional_options is initialied to an empty dict if no value is given
         if additional_options is None:
@@ -239,71 +240,81 @@ class Options:
         self.num_runs = self.read_value(fitting.getint, 'num_runs',
                                         additional_options)
 
-        self.algorithm_type = self.read_value(fitting.getlist, 'algorithm_type',
-                                                additional_options)
+        self.algorithm_type = self.read_value(fitting.getlist,
+                                              'algorithm_type',
+                                              additional_options)
 
         self.software = self.read_value(fitting.getlist, 'software',
                                         additional_options)
 
         self.jac_method = self.read_value(fitting.getlist, 'jac_method',
-                                            additional_options)
+                                          additional_options)
 
         self.hes_method = self.read_value(fitting.getlist, 'hes_method',
-                                            additional_options)
+                                          additional_options)
 
-        self.cost_func_type = self.read_value(fitting.getlist, 'cost_func_type',
-                                                additional_options)
+        self.cost_func_type = self.read_value(fitting.getlist,
+                                              'cost_func_type',
+                                              additional_options)
 
         self.max_runtime = self.read_value(fitting.getfloat, 'max_runtime',
-                                            additional_options)
+                                           additional_options)
 
         jacobian = config['JACOBIAN']
         self.jac_num_method = {}
         for key in self.VALID_FITTING["jac_method"]:
             self.jac_num_method[key] = self.read_value(jacobian.getlist,
-                                                       key, additional_options)
+                                                       key,
+                                                       additional_options)
 
         hessian = config['HESSIAN']
         self.hes_num_method = {}
         for key in self.VALID_FITTING["hes_method"]:
             self.hes_num_method[key] = self.read_value(hessian.getlist,
-                                                       key, additional_options)
+                                                       key,
+                                                       additional_options)
 
         plotting = config['PLOTTING']
 
         if 'make_plots' in additional_options:
             self.make_plots = additional_options['make_plots']
-        else:      
-            self.make_plots = self.read_value(plotting.getboolean, 'make_plots', additional_options)
+        else:
+            self.make_plots = self.read_value(
+                plotting.getboolean, 'make_plots', additional_options)
 
-        self.colour_map = self.read_value(plotting.getstr, 'colour_map', additional_options)
-        self.colour_ulim = self.read_value(plotting.getfloat, 'colour_ulim', additional_options)
-        self.cmap_range = self.read_value(plotting.getrng, 'cmap_range', additional_options)
+        self.colour_map = self.read_value(
+            plotting.getstr, 'colour_map', additional_options)
+        self.colour_ulim = self.read_value(
+            plotting.getfloat, 'colour_ulim', additional_options)
+        self.cmap_range = self.read_value(
+            plotting.getrng, 'cmap_range', additional_options)
 
-        self.comparison_mode = self.read_value(plotting.getstr, 'comparison_mode',
-                                                additional_options)
+        self.comparison_mode = self.read_value(plotting.getstr,
+                                               'comparison_mode',
+                                               additional_options)
 
         self.table_type = self.read_value(plotting.getlist, 'table_type',
-                                            additional_options)
+                                          additional_options)
 
         output = config['OUTPUT']
 
         self.results_dir = self.read_value(output.getstr, 'results_dir',
-                                            additional_options)
+                                           additional_options)
 
         logging = config['LOGGING']
 
         self.log_append = self.read_value(logging.getboolean, 'append',
-                                            additional_options)
+                                          additional_options)
 
         self.log_file = self.read_value(logging.getstr, 'file_name',
                                         additional_options)
 
         self.log_level = self.read_value(logging.getstr, 'level',
-                                            additional_options)
+                                         additional_options)
 
-        self.external_output = self.read_value(logging.getstr, 'external_output',
-                                                additional_options)
+        self.external_output = self.read_value(logging.getstr,
+                                               'external_output',
+                                               additional_options)
 
         if self.error_message != []:
             raise OptionsError('\n'.join(self.error_message))
@@ -316,7 +327,8 @@ class Options:
         :type func: callable
         :param option: option to be read for file
         :type option: str
-        :param additional_options: A dictionary of options input by the user into the command line.
+        :param additional_options: A dictionary of options 
+        input by the user into the command line.
         :type additional_options: dict
 
         :return: value of the option
@@ -324,11 +336,12 @@ class Options:
         """
         section = func.__str__().split("Section: ")[1].split('>')[0]
         try:
-            if option in additional_options_func and additional_options_func[option]:
+            if (option in additional_options_func and
+                    additional_options_func[option]):
                 value = additional_options_func[option]
             else:
                 value = func(option, fallback=self.DEFAULTS[section][option])
-       
+
         except ValueError as e:
             self.error_message.append(
                 "Incorrect options type for {}.\n{}".format(option, e))

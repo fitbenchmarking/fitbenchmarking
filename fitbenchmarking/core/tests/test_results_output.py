@@ -62,7 +62,7 @@ def fitting_function_2(data, x1, x2):
     return x1 * x2 * data
 
 
-def generate_mock_results(results_directory: str):
+def generate_mock_results(additional_options):
     """
     Generates results to test against
 
@@ -72,7 +72,7 @@ def generate_mock_results(results_directory: str):
                   list of list fitting results,
                   Options object)
     """
-    options = Options(results_directory=results_directory)
+    options = Options(additional_options=additional_options)
     options.table_type = ['acc']
     problems = [FittingProblem(options), FittingProblem(options)]
     starting_values = [{"a": .3, "b": .11}, {"a": 0, "b": 0}]
@@ -192,7 +192,7 @@ class CreateDirectoriesTests(unittest.TestCase):
         """
         test_path = os.path.dirname(os.path.realpath(__file__))
         self.results_dir = os.path.join(test_path, 'fitbenchmarking_results')
-        self.options = Options(results_directory=self.results_dir)
+        self.options = Options(additional_options=self.results_dir)
         os.mkdir(self.results_dir)
 
     def tearDown(self):
