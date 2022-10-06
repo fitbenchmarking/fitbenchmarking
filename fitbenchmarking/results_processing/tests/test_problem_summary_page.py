@@ -152,7 +152,8 @@ class CreateTests(TestCase):
             self.supp_dir = os.path.join(self.temp_dir, 'support_pages')
             self.fig_dir = os.path.join(self.supp_dir, 'figures')
         os.makedirs(self.fig_dir)
-        results, self.options = generate_mock_results(self.temp_dir)
+        results, self.options = generate_mock_results(
+            {'results_dir': self.temp_dir})
         self.best_results, self.results = preprocess_data(results)
 
     def tearDown(self) -> None:
