@@ -66,12 +66,13 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.cost_func = make_cost_function()
         self.problem = self.cost_func.problem
         self.options = self.problem.options
-        self.options.software = ["scipy", "dfo"]
+        self.options.software = ["scipy", "dfo", "scipy_ls"]
         self.minimizers = self.options.minimizers
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.start_values_index = 0
         self.scipy_len = len(self.options.minimizers["scipy"])
         self.dfo_len = len(self.options.minimizers["dfo"])
+        self.scipy_ls_len = len(self.options.minimizers["scipy_ls"])
         self.result_args = {'options': self.options,
                             'cost_func': self.cost_func,
                             'jac': 'jac',
@@ -110,18 +111,17 @@ class LoopOverSoftwareTests(unittest.TestCase):
     @unittest.mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_software(self, loop_over_minimizers):
         """
-        Checks that results are produced for all minimizers within the
+        Checks that results are produced for one minimizers within the
         softwares
         """
         self.count = 0
-        self.minimizer_failed = {'scipy': [], 'dfo': []}
+        self.options.software = ["scipy"]
+        self.minimizer_failed = {'scipy': []}
         self.results_problem = \
             [[fitbm_result.FittingResult(**self.result_args)
-              for i in range(self.scipy_len)],
-             [fitbm_result.FittingResult(**self.result_args)
-              for i in range(self.dfo_len)]]
+              for i in range(self.scipy_len)]]
         loop_over_minimizers.side_effect = self.mock_func_call
-        expected_list_len = self.scipy_len + self.dfo_len
+        expected_list_len = self.scipy_len
         expected_minimizer_failed = self.minimizer_failed
         self.shared_test(expected_list_len, expected_minimizer_failed)
 

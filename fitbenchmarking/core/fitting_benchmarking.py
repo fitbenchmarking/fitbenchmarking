@@ -168,7 +168,7 @@ def loop_over_starting_values(problem, options, grabbed_output):
     num_start_vals = len(problem.starting_values)
     problem_results = []
 
-    if num_start_vals >= 3:
+    if num_start_vals >= 2:
         num_start_vals_pbar = trange(num_start_vals, colour='blue',
                                      leave=False, desc="Starting values   ",
                                      unit="Starting values   ")
