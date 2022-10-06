@@ -256,7 +256,7 @@ class SpinWParser(FitbenchmarkParser):
         self._starting_values = [{n: pf[n] for n in p_names}]
 
         try:
-            intrinsic_energy_width = self._entries['intrinsic_energy_width']
+            intrinsic_energy_width = float(self._entries['intrinsic_energy_width'])
         except KeyError as e:
             raise ParsingError('SpinW requires an "intrinsic_energy_width". '
                                'Please check the problem file') from e
