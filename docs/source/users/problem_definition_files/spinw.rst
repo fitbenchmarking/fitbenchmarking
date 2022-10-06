@@ -40,7 +40,7 @@ projection
 
 cut
   The cut defines the extent of the data and consists of 4 ranges for binning
-  boundaries.
+  boundaries along u, v, w, and energy axes defined in projection.
   Each range can be defined by:
   - no value: Keep the data as stored in the file
   - single value: Sets a bin width, the data is rebinned into this width
