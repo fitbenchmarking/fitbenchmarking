@@ -24,7 +24,8 @@ projection
   seperated list of key-value pairs and has several parameters.
   Usually only u, v, and type are used.
   - u, v, and w: 3D vectors used to define the viewing coordinate system.
-                 w can be calculated given u and v if they are orthognonal
+                 w will be defined as normal to the plane spanned by u and v
+                 if not given.
   - type: 3 chars (a, r, or p) to define the type of axes.
           a - The axis is measured in angstroms,
           r - The axis is measured in rlu (scaled so the 1-norm == 1),
