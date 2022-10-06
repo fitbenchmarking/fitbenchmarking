@@ -19,7 +19,7 @@ class OutputOptionTests(unittest.TestCase):
         Checks results_dir default
         """
         options = Options(additional_options={
-                          'results_directory': os.path.dirname(__file__)})
+                          'results_dir': os.path.dirname(__file__)})
         default = os.path.abspath('fitbenchmarking_results')
         self.assertNotEqual(default, options.results_dir)
 
