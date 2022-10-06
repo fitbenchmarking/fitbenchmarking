@@ -160,7 +160,8 @@ class SaveResultsTests(unittest.TestCase):
         self.results_dir = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
             'fitbenchmarking_results')
-        self.results, self.options = generate_mock_results(self.results_dir)
+        self.results, self.options = generate_mock_results(
+            {'results_dir': self.results_dir})
         os.mkdir(self.results_dir)
 
     def tearDown(self):
@@ -192,7 +193,8 @@ class CreateDirectoriesTests(unittest.TestCase):
         """
         test_path = os.path.dirname(os.path.realpath(__file__))
         self.results_dir = os.path.join(test_path, 'fitbenchmarking_results')
-        self.options = Options(additional_options=self.results_dir)
+        self.options = Options(additional_options={
+                               'results_dir': self.results_dir})
         os.mkdir(self.results_dir)
 
     def tearDown(self):
@@ -236,7 +238,8 @@ class PreprocessDataTests(unittest.TestCase):
         self.results_dir = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
             'fitbenchmarking_results')
-        self.results, self.options = generate_mock_results(self.results_dir)
+        self.results, self.options = generate_mock_results(
+            {'results_dir': self.results_dir})
         self.min_chi_sq = 0.1
         self.min_runtime = 0.1
 
