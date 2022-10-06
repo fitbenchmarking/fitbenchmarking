@@ -25,8 +25,6 @@ projection
   Usually only u, v, and type are used.
   - u, v, and w: 3D vectors used to define the viewing coordinate system.
                  w can be calculated given u and v if they are orthognonal
-  - nonorthogonal: Boolean flag for if the vectors in u, v, and w are meant
-                   to be orthogonal (Default is false)
   - type: 3 chars (a, r, or p) to define the type of axes.
           a - The axis is measured in angstroms,
           r - The axis is measured in rlu (scaled so the 1-norm == 1),
