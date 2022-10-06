@@ -20,7 +20,7 @@ FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 # Due to structure of tests, some variables may not be previously defined
 # in the init function. Removes pytest dictionary iteration suggestion
 # pylint: disable=attribute-defined-outside-init, consider-iterating-dictionary
-def make_cost_function(file_name='cubic.dat', minimizers=None):
+def make_cost_function(file_name='cubic_3_start_vals.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
@@ -118,11 +118,12 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         """
         list_results = [fitbm_result.FittingResult(**self.result_args)
                         for i in range(self.scipy_len)]
-        self.individual_problem_results = [list_results, list_results]
+        self.individual_problem_results = [list_results, list_results,
+                                           list_results]
         self.problem_fails = []
         self.unselected_minimizers = {"scipy": []}
         loop_over_fitting_software.side_effect = self.mock_func_call
-        expected_list_length = len(list_results) * 2
+        expected_list_length = len(list_results) * 3
         expected_problem_fails = self.problem_fails
         expected_unselected_minimizers = self.unselected_minimizers
         self.shared_tests(expected_list_length, expected_problem_fails,
