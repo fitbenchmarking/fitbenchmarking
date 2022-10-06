@@ -222,7 +222,8 @@ class CreateSummaryPageTests(TestCase):
             self.supp_dir = os.path.join(self.temp_dir, 'support_pages')
 
         os.makedirs(self.supp_dir)
-        results, self.options = generate_mock_results(self.temp_dir)
+        results, self.options = generate_mock_results(
+            {'results_dir': self.temp_dir})
 
         best_results, results = preprocess_data(results)
         self.prob_name = list(results.keys())[0]
