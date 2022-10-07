@@ -44,8 +44,28 @@ Details about how the options file must be formatted are given in :ref:`options`
 
 .. _change_results_directory:
 
-Changing the results directory
+.. Changing the results directory
+.. ------------------------------
+
+.. The default directory where the results are saved can be changed using the ``-r``
+.. or ``--results-dir`` argument. The :ref:`results directory option <results_directory_option>`
+.. can also be changed in the options file.
+
+.. .. code-block:: bash
+
+..    fitbenchmarking -r new_results/
+
+.. The default results directory is ``fitbenchmarking_results``.
+
+Changing options via the command line
 ------------------------------
+
+It is possible to change the following options via the command line rather than from an ini file or from the default options.
+They can be changed using the arguments in the table below.
+
+.. figure:: ../../../images/Fitbenchmarking_options_table.png
+
+For example, to change the results directory:
 
 The default directory where the results are saved can be changed using the ``-r``
 or ``--results-dir`` argument. The :ref:`results directory option <results_directory_option>`
@@ -56,3 +76,16 @@ can also be changed in the options file.
    fitbenchmarking -r new_results/
 
 The default results directory is ``fitbenchmarking_results``.
+
+For options for which you wish to make several choices e.g. table_type, simply use a comma to separate the arguments:
+
+.. code-block:: bash
+
+   fitbenchmarking -t acc, runtime
+
+For more information on changing options via the command line, you can use the ``-h``
+or ``--help`` argument.
+
+.. code-block:: bash
+
+   fitbenchmarking -h
