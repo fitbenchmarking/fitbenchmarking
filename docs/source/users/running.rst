@@ -67,17 +67,17 @@ The default results directory is ``fitbenchmarking_results``.
 
 **Multiple options**
 
-For an option for which you wish to make several choices e.g. ``table_type``, simply use a comma to separate your choices:
+For an option for which you wish to make several choices e.g. ``table_type``, simply use a space to separate your choices:
 
 .. code-block:: bash
 
-   fitbenchmarking -t acc, runtime
+   fitbenchmarking -t acc runtime
 
-If you wish to change several different options, use a comma to separate the arguments:
+If you wish to change several different options, use a space to separate the arguments:
 
 .. code-block:: bash
 
-   fitbenchmarking -t acc, -l WARNING
+   fitbenchmarking -t acc -l WARNING
 
 **Help**
 
