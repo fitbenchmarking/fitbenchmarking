@@ -77,7 +77,7 @@ can also be changed in the options file.
 
 The default results directory is ``fitbenchmarking_results``.
 
-For options for which you wish to make several choices e.g. table_type, simply use a comma to separate the arguments:
+For options for which you wish to make several choices e.g. ``table_type``, simply use a comma to separate the arguments:
 
 .. code-block:: bash
 
