@@ -6,7 +6,6 @@ import inspect
 import os
 import unittest
 
-
 from fitbenchmarking import mock_problems
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.utils import fitbm_result, output_grabber

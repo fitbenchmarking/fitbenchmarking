@@ -156,7 +156,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.count = 0
         self.minimizer_failed = {'scipy': ['Powell'],
                                  'dfo': ['dfogn', 'dfols'],
-                                 'scipy_ls' : ['dogbox']}
+                                 'scipy_ls': ['dogbox']}
         failed_scipy = 1
         failed_dfo = 2
         failed_scipy_ls = 1
@@ -168,8 +168,8 @@ class LoopOverSoftwareTests(unittest.TestCase):
              [fitbm_result.FittingResult(**self.result_args)
               for i in range(self.scipy_ls_len - failed_scipy_ls)]]
         loop_over_minimizers.side_effect = self.mock_func_call
-        expected_list_len = self.scipy_len + self.dfo_len + self.scipy_ls_len - \
-            failed_scipy - failed_dfo - failed_scipy_ls
+        expected_list_len = self.scipy_len + self.dfo_len +  \
+            self.scipy_ls_len - failed_scipy - failed_dfo - failed_scipy_ls
         expected_minimizer_failed = self.minimizer_failed
         self.shared_test(expected_list_len, expected_minimizer_failed)
 
@@ -191,7 +191,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
                                 [fitbm_result.FittingResult(**self.result_args)
                                  for i in range(self.scipy_ls_len)]]
         loop_over_minimizers.side_effect = self.mock_func_call
-        expected_list_len = 10
+        expected_list_len = 13
         expected_minimizer_failed = self.minimizer_failed
         self.shared_test(expected_list_len, expected_minimizer_failed)
 
