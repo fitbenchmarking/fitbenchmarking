@@ -66,7 +66,7 @@ of the Fitbenchmarking docs. '''
     parser.add_argument('-o', '--options-file',
                         metavar='OPTIONS_FILE',
                         default='',
-                        help='The path to a %(prog)s options file')
+                        help='The path to a %(prog)s options file.')
     parser.add_argument('-p', '--problem_sets',
                         nargs='+',
                         default=glob.glob(os.path.join(root,
@@ -74,27 +74,106 @@ of the Fitbenchmarking docs. '''
                                                        'NIST',
                                                        'average_difficulty')),
                         help='Paths to directories containing problem sets.')
-    parser.add_argument('-r', '--results-dir',
+    parser.add_argument('-r', '--results_dir',
                         metavar='RESULTS_DIR',
                         default='',
                         help='The directory to store resulting files in.')
     parser.add_argument('-d', '--debug-mode',
                         default=False,
                         action='store_true',
-                        help='Enable debug mode (prints traceback)',)
+                        help='Enable debug mode (prints traceback).',)
+    parser.add_argument('-n', '--num_runs',
+                        metavar='NUM_RUNS',
+                        type=int,
+                        default=0,
+                        help="Set the number of runs to average"
+                        "each fit over.")
+    parser.add_argument('-a', '--algorithm_type',
+                        metavar='ALGORITHM_TYPE',
+                        nargs='+',
+                        type=str,
+                        default=[],
+                        help="Select what type of algorithm is used within a"
+                        "specific software.")
+    parser.add_argument('-s', '--software',
+                        metavar='SOFTWARE',
+                        nargs='+',
+                        type=str,
+                        default=[],
+                        help="Select the fitting software to benchmark.")
+    parser.add_argument('-j', '--jac_method',
+                        metavar='JAC_METHOD',
+                        nargs='+',
+                        type=str,
+                        default=[],
+                        help="Set the Jacobian to be used.")
+    parser.add_argument('-c', '--cost_func_type',
+                        metavar='COST_FUNC_TYPE',
+                        nargs='+',
+                        type=str,
+                        default=[],
+                        help="Set the cost functions to be used"
+                        "for the given data.")
 
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--make_plots', action='store_true',
+                       help="Use this option if you have decided to"
+                       "create plots during runtime.")
+    group.add_argument('--dont_make_plots', action='store_true',
+                       help="Use this option if you have decided not to"
+                       "create plots during runtime.")
+
+    parser.add_argument('-m', '--comparison_mode',
+                        metavar='COMPARISON_MODE',
+                        default='',
+                        help="Select the mode for displaying values in"
+                        "the resulting table.")
+    parser.add_argument('-t', '--table_type',
+                        metavar='TABLE_TYPE',
+                        nargs='+',
+                        type=str,
+                        default=[],
+                        help="Select the type of table to be produced"
+                        "in FitBenchmarking.")
+    parser.add_argument('-f', '--logging_file_name',
+                        metavar='LOGGING_FILE_NAME',
+                        default='',
+                        help="Specify the file path to write the logs to.")
+
+    group2 = parser.add_mutually_exclusive_group()
+    group2.add_argument('--append_log', action='store_true',
+                        help="Use this option if you have decided to"
+                        "log in append mode. If append mode is active,"
+                        "the log file will be extended with each"
+                        "subsequent run.")
+    group2.add_argument('--overwrite_log', action='store_true',
+                        help="Use this option if you have decided not to"
+                        "log in append mode. If append mode is not active,"
+                        "the log will be cleared after each run.")
+
+    parser.add_argument('-l', '--level',
+                        metavar='LEVEL',
+                        default='',
+                        help="Specify the minimum level of logging to display"
+                        "on console during runtime.")
+    parser.add_argument('-e', '--external_output',
+                        metavar='EXTERNAL_OUTPUT',
+                        default='',
+                        help="Select the amount of information displayed"
+                        "from third-parties.")
     return parser
 
 
-def _find_options_file(options_file: str, results_directory: str) -> Options:
+def _find_options_file(options_file: str, additional_options: dict) -> Options:
     """
     Attempts to find the options file and creates an Options object for it.
     Wildcards are accepted in the parameters of this function.
 
     :param options_file: The path or glob pattern for an options file.
     :type options_file: str
-    :param results_directory: The path to the results directory.
-    :type results_directory: str
+    :param additional_options: A dictionary of options input by the user
+    into the command line.
+    :type additional_options: dict
     :return: An Options object.
     :rtype: fitbenchmarking.utils.options.Options
     """
@@ -108,8 +187,8 @@ def _find_options_file(options_file: str, results_directory: str) -> Options:
             raise OptionsError('Options file must be a ".ini" file')
 
         return Options(file_name=glob_options_file,
-                       results_directory=results_directory)
-    return Options(results_directory=results_directory)
+                       additional_options=additional_options)
+    return Options(additional_options=additional_options)
 
 
 def _create_index_page(options: Options, groups: "list[str]",
@@ -184,24 +263,30 @@ def _open_browser(output_file: str) -> None:
 
 
 @exception_handler
-def run(problem_sets, results_directory, options_file='', debug=False):
+def run(problem_sets, additional_options=None, options_file='', debug=False):
     # pylint: disable=unused-argument
     """
     Run benchmarking for the problems sets and options file given.
     Opens a webbrowser to the results_index after fitting.
 
-    :param problem_sets: The paths to directories containing problem_sets
+    :param problem_sets: The paths to directories containing problem_sets.
     :type problem_sets: list of str
-    :param results_directory: The directory to store the resulting files in
-    :type results_directory: str
-    :param options_file: The path to an options file, defaults to ''
+    :param additional_options: A dictionary of options input by the
+    user into the command line.
+    :type additional_options: dict
+    :param options_file: The path to an options file, defaults to ''.
     :type options_file: str, optional
-    :param debug: Enable debugging output
+    :param debug: Enable debugging output.
     :type debug: bool
     """
+    # additional_options is initialied to an empty dict if no value is given
+    if additional_options is None:
+        additional_options = {}
+
     # Find the options file
     current_path = os.path.abspath(os.path.curdir)
-    options = _find_options_file(options_file, results_directory)
+    options = _find_options_file(
+        options_file, additional_options)
 
     setup_logger(log_file=options.log_file,
                  append=options.log_append,
@@ -281,9 +366,6 @@ def run(problem_sets, results_directory, options_file='', debug=False):
             result_dir.append(group_results_dir)
             groups.append(label)
 
-        # resets options to original values
-        options.reset()
-
     # Check result_dir is non empty before producing output
     if not result_dir:
         message = "The user chosen options and/or problem setup resulted in " \
@@ -293,10 +375,10 @@ def run(problem_sets, results_directory, options_file='', debug=False):
                   "and/or problem set then re-run FitBenchmarking"
         raise NoResultsError(message)
 
-    if results_directory == "":
+    if additional_options['results_dir'] == "":
         LOGGER.info("\nINFO:\nThe FitBenchmarking results will be placed "
                     "into the folder:\n\n   %s\n\nTo change this use the "
-                    "-r or --results-dir optional command line argument. "
+                    "-r or --results_dir optional command line argument. "
                     "You can also set 'results_dir' in an options file.",
                     options.results_dir)
 
@@ -316,10 +398,40 @@ def main():
 
     args = parser.parse_args(sys.argv[1:])
 
+    # Dictionary of options which can be set via argparse
+    # rather than from an ini file or from the default options
+    options_dictionary = {
+        'results_dir': args.results_dir,
+        'num_runs': args.num_runs,
+        'algorithm_type': args.algorithm_type,
+        'software': args.software,
+        'jac_method': args.jac_method,
+        'cost_func_type': args.cost_func_type,
+        'comparison_mode': args.comparison_mode,
+        'table_type': args.table_type,
+        'file_name': args.logging_file_name,
+        'level': args.level,
+        'external_output': args.external_output
+    }
+
+    # Check if make_plots in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.make_plots:
+        options_dictionary['make_plots'] = True
+    elif args.dont_make_plots:
+        options_dictionary['make_plots'] = False
+
+    # Check if log_append in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.append_log:
+        options_dictionary['append'] = True
+    elif args.overwrite_log:
+        options_dictionary['append'] = False
+
     run(problem_sets=args.problem_sets,
-        results_directory=args.results_dir,
         options_file=args.options_file,
-        debug=args.debug_mode)
+        debug=args.debug_mode,
+        additional_options=options_dictionary)
 
 
 if __name__ == '__main__':

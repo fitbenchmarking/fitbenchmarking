@@ -14,19 +14,12 @@ class OutputOptionTests(unittest.TestCase):
     Checks that the defaults in the PLOTTING section are set correctly
     """
 
-    def test_results_dir_default(self):
-        """
-        Checks results_dir default
-        """
-        options = Options(results_directory="")
-        expected = os.path.abspath('fitbenchmarking_results')
-        self.assertEqual(expected, options.results_dir)
-
     def test_results_dir_not_default(self):
         """
         Checks results_dir default
         """
-        options = Options(results_directory=os.path.dirname(__file__))
+        options = Options(additional_options={
+                          'results_dir': os.path.dirname(__file__)})
         default = os.path.abspath('fitbenchmarking_results')
         self.assertNotEqual(default, options.results_dir)
 

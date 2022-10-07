@@ -176,17 +176,24 @@ class Options:
                 'OUTPUT': DEFAULT_OUTPUT,
                 'LOGGING': DEFAULT_LOGGING}
 
-    def __init__(self, file_name=None, results_directory: str = ""):
+    def __init__(self, file_name=None, additional_options=None):
         """
         Initialise the options from a file if file is given.
         Priority is values in the file, failing that, values are taken from
         DEFAULTS (stored in ./default_options.ini)
 
-        :param results_directory: The directory to store the results in.
-        :type results_directory: str
         :param file_name: The options file to load
         :type file_name: str
+        :param additional_options: A dictionary of options input
+        by the user into the command line.
+        :type additional_options: dict
+
         """
+        # additional_options is initialied to an empty dict if
+        # no value is given
+        if additional_options is None:
+            additional_options = {}
+
         # stores the file name to be used to reset options for multiple
         # problem groups
         self.stored_file_name = file_name
@@ -227,65 +234,93 @@ class Options:
         self.minimizer_alg_type = {}
         for key in self.VALID_FITTING["software"]:
             self._minimizers[key] = self.read_value(minimizers.getlist,
-                                                    key)
+                                                    key, additional_options)
 
         fitting = config['FITTING']
-        self.num_runs = self.read_value(fitting.getint, 'num_runs')
-        self.algorithm_type = self.read_value(
-            fitting.getlist, 'algorithm_type')
-        self.software = self.read_value(fitting.getlist, 'software')
-        self.jac_method = self.read_value(fitting.getlist, 'jac_method')
-        self.hes_method = self.read_value(fitting.getlist, 'hes_method')
-        self.cost_func_type = self.read_value(
-            fitting.getlist, 'cost_func_type')
-        self.max_runtime = self.read_value(fitting.getfloat, 'max_runtime')
+
+        self.num_runs = self.read_value(fitting.getint, 'num_runs',
+                                        additional_options)
+
+        self.algorithm_type = self.read_value(fitting.getlist,
+                                              'algorithm_type',
+                                              additional_options)
+
+        self.software = self.read_value(fitting.getlist, 'software',
+                                        additional_options)
+
+        self.jac_method = self.read_value(fitting.getlist, 'jac_method',
+                                          additional_options)
+
+        self.hes_method = self.read_value(fitting.getlist, 'hes_method',
+                                          additional_options)
+
+        self.cost_func_type = self.read_value(fitting.getlist,
+                                              'cost_func_type',
+                                              additional_options)
+
+        self.max_runtime = self.read_value(fitting.getfloat, 'max_runtime',
+                                           additional_options)
 
         jacobian = config['JACOBIAN']
         self.jac_num_method = {}
         for key in self.VALID_FITTING["jac_method"]:
             self.jac_num_method[key] = self.read_value(jacobian.getlist,
-                                                       key)
+                                                       key,
+                                                       additional_options)
 
         hessian = config['HESSIAN']
         self.hes_num_method = {}
         for key in self.VALID_FITTING["hes_method"]:
             self.hes_num_method[key] = self.read_value(hessian.getlist,
-                                                       key)
+                                                       key,
+                                                       additional_options)
 
         plotting = config['PLOTTING']
-        self.make_plots = self.read_value(plotting.getboolean, 'make_plots')
-        self.colour_map = self.read_value(plotting.getstr, 'colour_map')
-        self.colour_ulim = self.read_value(plotting.getfloat, 'colour_ulim')
-        self.cmap_range = self.read_value(plotting.getrng, 'cmap_range')
+
+        if 'make_plots' in additional_options:
+            self.make_plots = additional_options['make_plots']
+        else:
+            self.make_plots = self.read_value(
+                plotting.getboolean, 'make_plots', additional_options)
+
+        self.colour_map = self.read_value(
+            plotting.getstr, 'colour_map', additional_options)
+        self.colour_ulim = self.read_value(
+            plotting.getfloat, 'colour_ulim', additional_options)
+        self.cmap_range = self.read_value(
+            plotting.getrng, 'cmap_range', additional_options)
 
         self.comparison_mode = self.read_value(plotting.getstr,
-                                               'comparison_mode')
-        self.table_type = self.read_value(plotting.getlist, 'table_type')
+                                               'comparison_mode',
+                                               additional_options)
+
+        self.table_type = self.read_value(plotting.getlist, 'table_type',
+                                          additional_options)
 
         output = config['OUTPUT']
-        if results_directory == "":
-            self.results_dir = self.read_value(output.getstr, 'results_dir')
-        else:
-            self.results_dir = results_directory
+
+        self.results_dir = self.read_value(output.getstr, 'results_dir',
+                                           additional_options)
 
         logging = config['LOGGING']
-        self.log_append = self.read_value(logging.getboolean, 'append')
-        self.log_file = self.read_value(logging.getstr, 'file_name')
-        self.log_level = self.read_value(logging.getstr, 'level')
+
+        self.log_append = self.read_value(logging.getboolean, 'append',
+                                          additional_options)
+
+        self.log_file = self.read_value(logging.getstr, 'file_name',
+                                        additional_options)
+
+        self.log_level = self.read_value(logging.getstr, 'level',
+                                         additional_options)
 
         self.external_output = self.read_value(logging.getstr,
-                                               'external_output')
+                                               'external_output',
+                                               additional_options)
 
         if self.error_message != []:
             raise OptionsError('\n'.join(self.error_message))
 
-    def reset(self):
-        """
-        Resets options object when running multiple problem groups.
-        """
-        self.__init__(self.stored_file_name, self.results_dir)
-
-    def read_value(self, func, option):
+    def read_value(self, func, option, additional_options):
         """
         Helper function which loads in the value
 
@@ -293,13 +328,21 @@ class Options:
         :type func: callable
         :param option: option to be read for file
         :type option: str
+        :param additional_options: A dictionary of options
+        input by the user into the command line.
+        :type additional_options: dict
 
         :return: value of the option
         :rtype: list/str/int/bool
         """
         section = func.__str__().split("Section: ")[1].split('>')[0]
         try:
-            value = func(option, fallback=self.DEFAULTS[section][option])
+            if (option in additional_options and
+                    additional_options[option]):
+                value = additional_options[option]
+            else:
+                value = func(option, fallback=self.DEFAULTS[section][option])
+
         except ValueError as e:
             self.error_message.append(
                 "Incorrect options type for {}.\n{}".format(option, e))
