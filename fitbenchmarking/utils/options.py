@@ -320,7 +320,7 @@ class Options:
         if self.error_message != []:
             raise OptionsError('\n'.join(self.error_message))
 
-    def read_value(self, func, option, additional_options_func):
+    def read_value(self, func, option, additional_options):
         """
         Helper function which loads in the value
 
@@ -337,9 +337,9 @@ class Options:
         """
         section = func.__str__().split("Section: ")[1].split('>')[0]
         try:
-            if (option in additional_options_func and
-                    additional_options_func[option]):
-                value = additional_options_func[option]
+            if (option in additional_options and
+                    additional_options[option]):
+                value = additional_options[option]
             else:
                 value = func(option, fallback=self.DEFAULTS[section][option])
 
