@@ -65,11 +65,19 @@ can also be changed in the options file.
 
 The default results directory is ``fitbenchmarking_results``.
 
-**For options for which you wish to make several choices e.g. ``table_type``, simply use a comma to separate the arguments:**
+**Multiple options**
+
+For an option for which you wish to make several choices e.g. ``table_type``, simply use a comma to separate your choices:
 
 .. code-block:: bash
 
    fitbenchmarking -t acc, runtime
+
+If you wish to change several different options, use a comma to separate the arguments:
+
+.. code-block:: bash
+
+   fitbenchmarking -t acc, -l WARNING
 
 **Help**
 
