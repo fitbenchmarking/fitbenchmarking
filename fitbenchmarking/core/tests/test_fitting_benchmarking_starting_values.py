@@ -5,7 +5,7 @@ from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 import unittest
-from unittest import mock
+
 
 from fitbenchmarking import mock_problems
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
@@ -111,7 +111,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
 
         dict_test(unselected_minimizers, expected_unselected_minimizers)
 
-    @mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_multiple_starting_values(self, loop_over_fitting_software):
         """
         Checks that all selected minimizers run with multiple starting
@@ -129,7 +129,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_unselected_minimizers)
 
-    @mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_one_starting_values(self, loop_over_fitting_software):
         """
         Checks that all selected minimizers run with one starting
@@ -148,7 +148,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_unselected_minimizers)
 
-    @mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
+    @unittest.mock.patch('{}.loop_over_fitting_software'.format(FITTING_DIR))
     def test_run_reports_unselected_minimizers(self,
                                                loop_over_fitting_software):
         """
