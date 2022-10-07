@@ -141,8 +141,15 @@ of the Fitbenchmarking docs. '''
                         help="Specify the file path to write the logs to.")
 
     group2 = parser.add_mutually_exclusive_group()
-    group2.add_argument('--append_log', action='store_true')
-    group2.add_argument('--overwrite_log', action='store_true')
+    group2.add_argument('--append_log', action='store_true',
+                        help="Use this option if you have decided to"
+                        "log in append mode. If append mode is active,"
+                        "the log file will be extended with each"
+                        "subsequent run.")
+    group2.add_argument('--overwrite_log', action='store_true',
+                        help="Use this option if you have decided not to"
+                        "log in append mode. If append mode is not active,"
+                        "the log will be cleared after each run.")
 
     parser.add_argument('-l', '--level',
                         metavar='LEVEL',
