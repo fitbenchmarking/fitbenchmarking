@@ -117,7 +117,7 @@ def loop_over_benchmark_problems(problem_group, options):
     LOGGER.info('Running problems')
 
     benchmark_pbar = tqdm(problems, colour='green', desc="Benchmark problems",
-                          unit="Benchmark problems", leave=True)
+                          unit="Benchmark problem", leave=True)
 
     with logging_redirect_tqdm(loggers=[LOGGER]):
         for i, (fname, problem) in enumerate(benchmark_pbar):
@@ -171,7 +171,7 @@ def loop_over_starting_values(problem, options, grabbed_output):
     if num_start_vals >= 2:
         num_start_vals_pbar = trange(num_start_vals, colour='blue',
                                      leave=False, desc="Starting values   ",
-                                     unit="Starting values   ")
+                                     unit="Starting value   ")
     else:
         num_start_vals_pbar = range(num_start_vals)
 

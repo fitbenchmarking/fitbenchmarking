@@ -112,7 +112,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
     @unittest.mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
     def test_run_one_software(self, loop_over_minimizers):
         """
-        Checks that results are produced for one minimizers within the
+        Checks that results are produced for one minimizer within the
         softwares
         """
         self.count = 0
@@ -127,7 +127,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.shared_test(expected_list_len, expected_minimizer_failed)
 
     @unittest.mock.patch('{}.loop_over_minimizers'.format(FITTING_DIR))
-    def test_run_multitple_softwares(self, loop_over_minimizers):
+    def test_run_multiple_softwares(self, loop_over_minimizers):
         """
         Checks that results are produced for all minimizers within the
         softwares when the variable software is wrapped a tdqm object.
