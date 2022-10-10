@@ -282,6 +282,7 @@ def run_benchmark(results_dir: str, problem_sub_directory: str,
                                            os.pardir,
                                            "mock_problems",
                                            problem_sub_directory))
-    run([problem], results_dir, options_file=opt_file_name,
+    run([problem], additional_options={'results_dir': results_dir},
+        options_file=opt_file_name,
         debug=True)
     os.remove(opt_file_name)

@@ -55,7 +55,7 @@ def fitting_function_2(data, x1, x2):
     return x1 * x2 * np.ones_like(data)
 
 
-def generate_mock_results(results_directory: str):
+def generate_mock_results(additional_options):
     """
     Generates results to test against
 
@@ -65,7 +65,7 @@ def generate_mock_results(results_directory: str):
                   list of list fitting results,
                   Options object)
     """
-    options = Options(results_directory=results_directory)
+    options = Options(additional_options=additional_options)
     options.table_type = ['acc']
     problems = [FittingProblem(options), FittingProblem(options)]
     starting_values = [{"a": .3, "b": .11}, {"a": 0, "b": 0}]
@@ -152,7 +152,8 @@ class CreateTests(TestCase):
             self.supp_dir = os.path.join(self.temp_dir, 'support_pages')
             self.fig_dir = os.path.join(self.supp_dir, 'figures')
         os.makedirs(self.fig_dir)
-        results, self.options = generate_mock_results(self.temp_dir)
+        results, self.options = generate_mock_results(
+            {'results_dir': self.temp_dir})
         self.best_results, self.results = preprocess_data(results)
 
     def tearDown(self) -> None:
@@ -221,7 +222,8 @@ class CreateSummaryPageTests(TestCase):
             self.supp_dir = os.path.join(self.temp_dir, 'support_pages')
 
         os.makedirs(self.supp_dir)
-        results, self.options = generate_mock_results(self.temp_dir)
+        results, self.options = generate_mock_results(
+            {'results_dir': self.temp_dir})
 
         best_results, results = preprocess_data(results)
         self.prob_name = list(results.keys())[0]
