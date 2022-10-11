@@ -97,7 +97,7 @@ class SpinWParser(FitbenchmarkParser):
 
             args.append(matlab.double(vector))
 
-        kwargs = [['nonorthogonal', True]]
+        kwargs = ['nonorthogonal', True]
         if 'type' in proj_args:
             if len(proj_args['type']) != 3 or \
                     any(c not in 'apr' for c in proj_args['type']):
