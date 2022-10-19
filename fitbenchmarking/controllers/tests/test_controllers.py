@@ -41,6 +41,7 @@ if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.gradient_free_controller import\
         GradientFreeController
     from fitbenchmarking.controllers.gofit_controller import GOFitController
+    from fitbenchmarking.controllers.ceres_controller import CeresController
 
 if TEST_TYPE == 'matlab':
     from fitbenchmarking.controllers.matlab_controller import MatlabController
@@ -747,6 +748,25 @@ class ExternalControllerTests(TestCase):
         self.shared_tests.check_max_iterations(controller)
         controller._info = (0, 1, 2, "diverged", 4, 5, 6)
         self.shared_tests.check_diverged(controller)
+
+    def test_ceres(self):
+        """
+        CeresController: Tests for output shape
+        """
+        controller = CeresController(self.cost_func)
+
+        # test one from each class
+        minimizers = ['Levenberg_Marquardt',
+                      'BFGS',
+                      'Fletcher_Reeves']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._status = 0
+            self.shared_tests.check_converged(controller)
+            controller._status = 2
+            self.shared_tests.check_diverged(controller)
 
     def test_mantid(self):
         """

@@ -15,6 +15,7 @@ a newline-separated list. Available options are:
 
 * ``bumps`` (default software)
 * ``dfo`` (default software)
+* ``ceres``(external software -- see :ref:`external-instructions`)
 * ``gofit`` (external software -- see :ref:`extra_dependencies`)
 * ``gradient_free`` (default software)
 * ``gsl`` (external software -- see :ref:`external-instructions`)
