@@ -184,7 +184,7 @@ RUN make -j3
 RUN make test
 RUN make install
 # Set the PYCERES_LOCATION
-ENV PYCERES_LOCATION = "/ceres/ceres-bin/lib/"
+ENV PYCERES_LOCATION=/ceres/ceres-bin/lib/
 
 ###########
 # Tidy up #
