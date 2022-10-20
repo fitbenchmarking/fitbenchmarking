@@ -49,7 +49,18 @@ def get_parser():
 
 Runtimes for these usage examples are approximately \
 75, 200 and 90 seconds respectively (on an i7 core laptop \
-with 32GB RAM)
+with 32GB RAM).
+
+The progress bar output format is:
+
+(Percentage complete) |█▋        | (Number of items iterated \
+over total number of items) [(elapsed time) < (remaining time), \
+ (iterations per second)]
+
+For example:
+
+11%|█▋        | 1/9 [00:18<02:25, 18.18s/Benchmark problem]
+
 
 Please note that the third listed example assumes that \
 Fitbenchmarking has been installed with a number of pip \

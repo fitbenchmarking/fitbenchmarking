@@ -10,6 +10,9 @@ import os
 import timeit
 import warnings
 
+from tqdm import (tqdm, trange)
+from tqdm.contrib.logging import logging_redirect_tqdm
+
 import numpy as np
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
@@ -25,6 +28,7 @@ from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               UnknownMinimizerError,
                                               UnsupportedMinimizerError,
                                               ValidationException)
+
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
@@ -111,27 +115,32 @@ def loop_over_benchmark_problems(problem_group, options):
 
     name_index = {key: 0 for key in name_count}
     LOGGER.info('Running problems')
-    for i, (fname, problem) in enumerate(problems):
-        # Make the name unique
-        if name_count[problem.name] > 1:
-            name_index[problem.name] += 1
-            problem.name += f' {name_index[problem.name]}'
 
-        info_str = f" Running data from: {os.path.basename(fname)} " + \
-                   f"{i + 1}/{len(problem_group)}"
-        LOGGER.info('\n%s', '#' * (len(info_str) + 1))
-        LOGGER.info(info_str)
-        LOGGER.info('#' * (len(info_str) + 1))
+    benchmark_pbar = tqdm(problems, colour='green', desc="Benchmark problems",
+                          unit="Benchmark problem", leave=True)
 
-        ##############################
-        # Loops over starting values #
-        ##############################
-        problem_results, problem_fails, \
-            unselected_minimizers = \
-            loop_over_starting_values(
-                problem, options, grabbed_output)
-        results.extend(problem_results)
-        failed_problems.extend(problem_fails)
+    with logging_redirect_tqdm(loggers=[LOGGER]):
+        for i, (fname, problem) in enumerate(benchmark_pbar):
+            # Make the name unique
+            if name_count[problem.name] > 1:
+                name_index[problem.name] += 1
+                problem.name += f' {name_index[problem.name]}'
+
+            info_str = f" Running data from: {os.path.basename(fname)} " + \
+                       f"{i + 1}/{len(problem_group)}"
+            LOGGER.info('\n%s', '#' * (len(info_str) + 1))
+            LOGGER.info(info_str)
+            LOGGER.info('#' * (len(info_str) + 1))
+
+            ##############################
+            # Loops over starting values #
+            ##############################
+            problem_results, problem_fails, \
+                unselected_minimizers = \
+                loop_over_starting_values(
+                    problem, options, grabbed_output)
+            results.extend(problem_results)
+            failed_problems.extend(problem_fails)
 
     return results, failed_problems, unselected_minimizers
 
@@ -158,7 +167,15 @@ def loop_over_starting_values(problem, options, grabbed_output):
     name = problem.name
     num_start_vals = len(problem.starting_values)
     problem_results = []
-    for index in range(num_start_vals):
+
+    if num_start_vals >= 2:
+        num_start_vals_pbar = trange(num_start_vals, colour='blue',
+                                     leave=False, desc="Starting values   ",
+                                     unit="Starting value   ")
+    else:
+        num_start_vals_pbar = range(num_start_vals)
+
+    for index in num_start_vals_pbar:
         LOGGER.info("    Starting value: %i/%i", index + 1, num_start_vals)
         if num_start_vals > 1:
             problem.name = name + ', Start {}'.format(index + 1)
@@ -250,7 +267,15 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
         software = [software]
 
     unselected_minimizers = {}
-    for s in software:
+
+    if len(software) >= 3:
+        software_pbar = tqdm(software, colour='yellow',
+                             desc="Software          ",
+                             unit="Software          ", leave=False)
+    else:
+        software_pbar = software
+
+    for s in software_pbar:
         LOGGER.info("        Software: %s", s.upper())
         try:
             minimizers = options.minimizers[s]
@@ -597,5 +622,4 @@ def perform_fit(controller, options, grabbed_output):
         # been respected by the minimizer and set error
         # flag if not
         controller.check_bounds_respected()
-
     return chi_sq, runtime
