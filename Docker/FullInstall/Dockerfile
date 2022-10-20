@@ -184,8 +184,9 @@ RUN make -j3
 RUN make test
 RUN make install
 # Set the PYCERES_LOCATION
-ENV PYCERES_LOCATION=/ceres/ceres-bin/lib/
+ENV PYCERES_LOCATION=/ceres/ceres-bin/lib
 
+WORKDIR /
 ###########
 # Tidy up #
 ###########
@@ -193,6 +194,3 @@ RUN apt -y autoremove
 
 ## ALL SET UP ##
 WORKDIR /home/
-
-
-

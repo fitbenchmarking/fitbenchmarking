@@ -8,8 +8,9 @@ from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 pyceres_location = os.environ["PYCERES_LOCATION"]
 sys.path.insert(0, pyceres_location)
 
+# pylint: disable=wrong-import-position,wrong-import-order
 import PyCeres
-
+# pylint: enable=wrong-import-position,wrong-import-order
 
 class CeresCostFunction(PyCeres.CostFunction):
     """
@@ -29,6 +30,8 @@ class CeresCostFunction(PyCeres.CostFunction):
         self.invalid_algorithm_types = ['ls']
 
     # The CostFunction::Evaluate(...) virtual function implementation
+
+    # pylint: disable=no-self-use
     def Evaluate(self, parameters, residuals, jacobians):
         """
         Evaluate for Ceres solver
@@ -41,7 +44,7 @@ class CeresCostFunction(PyCeres.CostFunction):
             jacobians[0][0] = -1
 
         return True
-
+    # pylint: enable=no-self-use
 
 class CeresController(Controller):
     """
