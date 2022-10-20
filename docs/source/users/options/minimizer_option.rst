@@ -71,9 +71,9 @@ Ceres Solver (``ceres``)
 `Ceres Solver <http://ceres-solver.org/>`__ is an open source C++ library for modeling and solving large, complicated optimization problems. 
 It can be used to solve Non-linear Least Squares problems with bounds constraints and general unconstrained optimization problems.
 
-FitBenchmarking currently supports the DFO minimizers:
+FitBenchmarking currently supports the Ceres Solver minimizers:
 
-* `Levenberg-Marquardt <http://ceres-solver.org/nnls_solving.html#levenberg-marquardt`__ (:code:`Levenberg-Marquardt`)
+* `Levenberg-Marquardt <http://ceres-solver.org/nnls_solving.html#levenberg-marquardt>`__ (:code:`Levenberg-Marquardt`)
 * `Dogleg <http://ceres-solver.org/nnls_solving.html#dogleg>`__ (:code:`Dogleg`)
 * `Steepest Descent <http://ceres-solver.org/nnls_solving.html#line-search-methods>`__ (:code:`steepest_descent`)
 * `BFGS algorithm <http://ceres-solver.org/nnls_solving.html#line-search-methods>`__ (:code:`BFGS`)
@@ -83,8 +83,10 @@ FitBenchmarking currently supports the DFO minimizers:
 * `Hestenes-Stiefel Non Linear Conjugate-Gradient <http://ceres-solver.org/nnls_solving.html#line-search-methods>`__ (:code:`Hestenes_Stiefel`)
 
 **Licence** Ceres Solver is available `here <http://ceres-solver.org/license.html>`__ 
+
 **Links** `Ceres Solver <http://ceres-solver.org/>`__ `PyCeres - Ceres Python Bindings <https://github.com/Edwinem/ceres_python_bindings>`__
 
+The Ceres Solver minimizers are set as follows:
 .. code-block:: rst
 
     [MINIMIZERS]
