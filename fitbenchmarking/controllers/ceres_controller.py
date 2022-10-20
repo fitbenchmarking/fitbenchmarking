@@ -9,8 +9,9 @@ pyceres_location = os.environ["PYCERES_LOCATION"]
 sys.path.insert(0, pyceres_location)
 
 # pylint: disable=wrong-import-position,wrong-import-order
-import PyCeres
+import PyCeres # noqa
 # pylint: enable=wrong-import-position,wrong-import-order
+
 
 class CeresCostFunction(PyCeres.CostFunction):
     """
@@ -45,6 +46,7 @@ class CeresCostFunction(PyCeres.CostFunction):
 
         return True
     # pylint: enable=no-self-use
+
 
 class CeresController(Controller):
     """

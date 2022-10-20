@@ -20,9 +20,9 @@ class Options:
                       'PLOTTING', 'OUTPUT', 'LOGGING']
     VALID_MINIMIZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq'],
-         'ceres' : ['Levenberg_Marquardt','Dogleg','BFGS','LBFGS',
-                    'steepest_descent','Fletcher_Reeves','Polak_Ribiere',
-                    'Hestenes_Stiefel'],
+         'ceres': ['Levenberg_Marquardt', 'Dogleg', 'BFGS', 'LBFGS',
+                   'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
+                   'Hestenes_Stiefel'],
          'dfo': ['dfogn', 'dfols'],
          'gofit': ['alternating', 'multistart', 'regularisation'],
          'gradient_free': ['HillClimbingOptimizer',
@@ -63,7 +63,7 @@ class Options:
                             'trust_region', 'levenberg-marquardt',
                             'gauss_newton', 'bfgs', 'conjugate_gradient',
                             'steepest_descent', 'global_optimization'],
-         'software': ['bumps','ceres', 'dfo', 'gofit', 'gradient_free', 'gsl',
+         'software': ['bumps', 'ceres', 'dfo', 'gofit', 'gradient_free', 'gsl',
                       'horace', 'levmar', 'mantid', 'matlab', 'matlab_curve',
                       'matlab_opt', 'matlab_stats', 'minuit', 'ralfit',
                       'scipy', 'scipy_ls', 'scipy_go'],
@@ -107,9 +107,9 @@ class Options:
 
     DEFAULT_MINIMZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq'],
-         'ceres':['Levenberg_Marquardt','Dogleg','BFGS','LBFGS',
-                    'steepest_descent','Fletcher_Reeves','Polak_Ribiere',
-                    'Hestenes_Stiefel'],
+         'ceres': ['Levenberg_Marquardt', 'Dogleg', 'BFGS', 'LBFGS',
+                   'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
+                   'Hestenes_Stiefel'],
          'dfo': ['dfogn', 'dfols'],
          'gofit': ['multistart'],
          'gradient_free': ['HillClimbingOptimizer',
