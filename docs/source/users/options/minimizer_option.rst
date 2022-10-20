@@ -87,6 +87,7 @@ FitBenchmarking currently supports the Ceres Solver minimizers:
 **Links** `Ceres Solver <http://ceres-solver.org/>`__ `PyCeres - Ceres Python Bindings <https://github.com/Edwinem/ceres_python_bindings>`__
 
 The Ceres Solver minimizers are set as follows:
+
 .. code-block:: rst
 
     [MINIMIZERS]
