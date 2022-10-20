@@ -13,8 +13,8 @@ Software (:code:`software`)
 Software is used to select the fitting software to benchmark, this should be
 a newline-separated list. Available options are:
 
-* ``bumps`` (default software)
-* ``dfo`` (default software)
+* ``bumps`` (external software)
+* ``dfo`` (external software)
 * ``gofit`` (external software -- see :ref:`extra_dependencies`)
 * ``gradient_free`` (default software)
 * ``gsl`` (external software -- see :ref:`external-instructions`)
@@ -25,14 +25,14 @@ a newline-separated list. Available options are:
 * ``matlab_curve`` (external software -- see :ref:`external-instructions`)
 * ``matlab_opt`` (external software -- see :ref:`external-instructions`)
 * ``matlab_stats`` (external software -- see :ref:`external-instructions`)
-* ``minuit`` (default software)
+* ``minuit`` (external software)
 * ``ralfit`` (external software -- see :ref:`external-instructions`)
 * ``scipy`` (default software)
 * ``scipy_ls`` (default software)
-* ``scipy_go`` (default software)
+* ``scipy_go``
 
 
-Default are ``bumps``, ``dfo``, ``gradient_free``, ``minuit``, ``scipy``, ``scipy_ls`` and ``scipy_go``
+Default software options are ``scipy`` and ``scipy_ls``
 
 .. code-block:: rst
 
