@@ -17,7 +17,7 @@ a newline-separated list. Available options are:
 * ``CUTEst`` (external software -- see :ref:`external-instructions`)
 * ``dfo`` (external software -- see :ref:`extra_dependencies`)
 * ``gofit`` (external software -- see :ref:`extra_dependencies`)
-* ``gradient_free`` (default software -- see :ref:`extra_dependencies`)
+* ``gradient_free`` (external software -- see :ref:`extra_dependencies`)
 * ``gsl`` (external software -- see :ref:`external-instructions`)
 * ``horace`` (external software -- see :ref:`external-instructions`)
 * ``levmar`` (external software -- see :ref:`extra_dependencies`)
