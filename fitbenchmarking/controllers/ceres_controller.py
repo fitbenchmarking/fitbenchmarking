@@ -25,7 +25,7 @@ class CeresCostFunction(PyCeres.CostFunction):
 
         # MUST BE CALLED. Sets the size of the residuals and parameters
         self.set_num_residuals(1)
-        self.set_parameter_block_sizes([1])
+        self.set_parameter_block_sizes([len(self.fb_cf.problem.param_names)])
 
 
 
@@ -35,13 +35,19 @@ class CeresCostFunction(PyCeres.CostFunction):
         """
         Evaluate for Ceres solver
         """
-        x = parameters[0][0]
-
+        print(f"{parameters=}")
+        print(f"{residuals=}")
+        print(f"{jacobians=}")
+        x =list(parameters[0])
+        print("step 1")
         residuals[0] = self.fb_cf.eval_cost(x)
+        print("step 2")
         if jacobians is not None:
-            jacobians[0][0] = self.fb_cf.jac_cost(x)
-
-
+            jacobians[0] = self.fb_cf.jac_cost(x)
+        print("step 3")
+        print(f"{parameters=}")
+        print(f"{residuals=}")
+        print(f"{jacobians=}")
         return True
 
 
@@ -111,7 +117,7 @@ class CeresController(Controller):
         Setup problem ready to be run with Ceres solver
         """
         self.result = np.array(self.initial_params)
-        print("intial results", self.result)
+        #print("intial results", self.result)
 
         self.ceres_problem.AddResidualBlock(self.ceres_cost_func, None,
                                             self.result)
