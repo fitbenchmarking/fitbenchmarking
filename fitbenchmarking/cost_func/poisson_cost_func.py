@@ -105,7 +105,7 @@ class PoissonCostFunc(CostFunc):
         :type params: list
 
         :return: evaluated Hessian and Jacobian of the residual at
-        each x, y pair
+                 each x, y pair
         :rtype: tuple(list of 2D numpy arrays, list of 1D numpy arrays)
         """
         x = kwargs.get("x", self.problem.data_x)
