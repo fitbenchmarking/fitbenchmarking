@@ -3,9 +3,9 @@ Implements a controller for the Ceres fitting software.
 """
 import sys
 import os
+import numpy as np
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
-import numpy as np 
 pyceres_location = os.environ["PYCERES_LOCATION"]
 sys.path.insert(0, pyceres_location)
 
@@ -18,36 +18,30 @@ class CeresCostFunction(PyCeres.CostFunction):
     """
     Cost function for Ceres solver
     """
-    def __init__(self,cf):
+    def __init__(self, fb_cf):
         # MUST BE CALLED. Initializes the Ceres::CostFunction class
         super().__init__()
-        self.fb_cf = cf
+        self.fb_cf = fb_cf
 
         # MUST BE CALLED. Sets the size of the residuals and parameters
-        self.set_num_residuals(1)
+        self.set_num_residuals(len(self.fb_cf.problem.data_x))
         self.set_parameter_block_sizes([len(self.fb_cf.problem.param_names)])
-
-
 
     # The CostFunction::Evaluate(...) virtual function implementation
 
-    def Evaluate(self,parameters, residuals, jacobians):
+    def Evaluate(self, parameters, residuals, jacobians):
         """
         Evaluate for Ceres solver
         """
-        print(f"{parameters=}")
-        print(f"{residuals=}")
-        print(f"{jacobians=}")
-        x =list(parameters[0])
-        print("step 1")
-        residuals[0] = self.fb_cf.eval_cost(x)
-        print("step 2")
+
+        x = parameters[0]
+
+        np.copyto(residuals, self.fb_cf.eval_r(x))
+
         if jacobians is not None:
-            jacobians[0] = self.fb_cf.jac_cost(x)
-        print("step 3")
-        print(f"{parameters=}")
-        print(f"{residuals=}")
-        print(f"{jacobians=}")
+
+            np.copyto(jacobians[0], np.ravel(self.fb_cf.jac_res(x)))
+
         return True
 
 
@@ -117,10 +111,11 @@ class CeresController(Controller):
         Setup problem ready to be run with Ceres solver
         """
         self.result = np.array(self.initial_params)
-        #print("intial results", self.result)
 
         self.ceres_problem.AddResidualBlock(self.ceres_cost_func, None,
                                             self.result)
+
+        self.ceres_options.max_num_iterations = 10000
 
         self.ceres_options.linear_solver_type = \
             PyCeres.LinearSolverType.DENSE_QR
@@ -159,24 +154,21 @@ class CeresController(Controller):
         """
         Run problem with Ceres solver
         """
-        # Here we create the problem as in normal Ceres00
 
         PyCeres.Solve(self.ceres_options, self.ceres_problem,
                       self.ceres_summary)
-
-
-        self._status = 0 if self.ceres_summary.IsSolutionUsable()  \
-            else 1
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
+        self._status = 0 if self.ceres_summary.IsSolutionUsable()  \
+            else 1
+
         if self._status == 0:
             self.flag = 0
         else:
             self.flag = 2
-        print(self.ceres_summary.message)
+
         self.final_params = self.result
-        print("final results", self.result)

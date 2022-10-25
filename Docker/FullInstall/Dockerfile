@@ -87,7 +87,7 @@ RUN printf "6\n2\n6\n" > sifdecode.input && \
 
 # Install cutest
 WORKDIR $CUTEST
-RUN printf "6\n2\n6\n2\n8\n" > cutest.input && \
+RUN printf "6\n2\n6\n2\n9\n" > cutest.input && \
     printf "nnydn" >> cutest.input && \
     ./install_cutest < cutest.input
 
@@ -152,14 +152,11 @@ RUN python -m pip install pygsl
 #################
 WORKDIR /
 
-# google-glog + gflags
-RUN apt-get install libgoogle-glog-dev libgflags-dev
-# Use ATLAS for BLAS & LAPACK
-RUN apt-get install libatlas-base-dev
-# Eigen3
-RUN apt-get install libeigen3-dev
-# SuiteSparse (optional)
-RUN apt-get install libsuitesparse-dev
+RUN apt-get install -y libgoogle-glog-dev \
+ libgflags-dev \
+ libatlas-base-dev \
+ libeigen3-dev \
+ libsuitesparse-dev
 # Make ceres directory 
 RUN mkdir -p /ceres
 # Change working directory to ceres  
@@ -178,10 +175,9 @@ RUN echo "include(ceres_python_bindings/AddToCeres.cmake)" >> ./ceres-solver-2.0
 # Make ceres-bin directory
 RUN mkdir -p ceres-bin 
 # Change working directory to ceres-bin
-WORKDIR ./ceres-bin
+WORKDIR /ceres/ceres-bin
 RUN cmake ../ceres-solver-2.0.0
 RUN make -j3
-RUN make test
 RUN make install
 # Set the PYCERES_LOCATION
 ENV PYCERES_LOCATION=/ceres/ceres-bin/lib
