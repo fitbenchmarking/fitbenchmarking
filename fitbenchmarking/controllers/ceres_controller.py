@@ -36,10 +36,14 @@ class CeresCostFunction(PyCeres.CostFunction):
 
         x = parameters[0]
 
-        np.copyto(residuals, self.fb_cf.eval_r(x))
+        res = self.fb_cf.eval_r(x)
+
+        if np.any(np.isinf(res)):
+            return False
+
+        np.copyto(residuals, res)
 
         if jacobians is not None:
-
             np.copyto(jacobians[0], np.ravel(self.fb_cf.jac_res(x)))
 
         return True
@@ -147,8 +151,6 @@ class CeresController(Controller):
         else:
             raise UnknownMinimizerError(
                 "No {} minimizer for Ceres solver".format(self.minimizer))
-
-        self.ceres_options.minimizer_progress_to_stdout = True
 
     def fit(self):
         """
