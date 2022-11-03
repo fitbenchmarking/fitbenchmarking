@@ -1,10 +1,10 @@
-.. _plotting_option:
+.. _output_option:
 
 ################
-Plotting Options
+Output Options
 ################
 
-The plotting section contains options to control how results are outputted and presented.
+The output section contains options to control how results are outputted and presented.
 
 .. _results_directory_option:
 
@@ -34,7 +34,7 @@ Default is ``True`` (``yes``/``no`` can also be used)
 
 .. code-block:: rst
 
-    [PLOTTING]
+    [OUTPUT]
     make_plots: yes
 
 Colourmap (:code:`colour_map`)
@@ -53,7 +53,7 @@ Default colourmap is ``magma_r``
 
 .. code-block:: rst
 
-    [PLOTTING]
+    [OUTPUT]
     colour_map: magma_r
 
 
@@ -72,7 +72,7 @@ Default for ``magma`` is ``[0.2, 0.8]`` (suitability depends on colourmap)
 
 .. code-block:: rst
 
-    [PLOTTING]
+    [OUTPUT]
     colour_map: magma_r
     cmap_range: [0.2, 0.8] 
 
@@ -91,7 +91,7 @@ Default is ``100``
 
 .. code-block:: rst
 
-    [PLOTTING]
+    [OUTPUT]
     colour_map: magma_r
     cmap_range: [0.2, 0.8] 
     colour_ulim: 100
@@ -113,7 +113,7 @@ Default is ``both``
 
 .. code-block:: rst
 
-    [PLOTTING]
+    [OUTPUT]
     comparison_mode: both
 
 
@@ -135,7 +135,7 @@ Default is ``acc``, ``runtime``, ``compare``, and ``local_min``.
 
 .. code-block:: rst
 
-    [PLOTTING]
+    [OUTPUT]
     table_type: acc
                 runtime
                 compare
