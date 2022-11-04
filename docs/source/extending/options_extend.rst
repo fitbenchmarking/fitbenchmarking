@@ -13,7 +13,7 @@ The options used can be changed using an `.ini` formatted file
 FitBenchmarking.
 
 To add a new option to one of the five sections ``FITTING``, ``MINIMIZERS``,
-``JACOBIAN``, ``PLOTTING`` and ``LOGGING``, follow the steps below.
+``JACOBIAN``, ``OUTPUT`` and ``LOGGING``, follow the steps below.
 We'll illustrate the steps using ``<SECTION>``, which could be any of the
 sections above.
 
