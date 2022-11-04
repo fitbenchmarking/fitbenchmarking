@@ -32,7 +32,7 @@ In order to add a new table, you will need to:
    - .. automethod:: fitbenchmarking.results_processing.base_table.Table.vals_to_colour
         :noindex:
 
-3. Extend the ``table_type`` option in ``PLOTTING`` following the instructions in
+3. Extend the ``table_type`` option in ``OUTPUT`` following the instructions in
    :ref:`options_extend`.
 	   
 4. Document the new table class is by setting the docstring to be
