@@ -132,3 +132,9 @@ class MantidParser(FitbenchmarkParser):
         except KeyError:
             ties = []
         return ties
+
+    def _parse_function(*args, **kwargs):
+        return []
+
+    def _get_equation(*args, **kwargs):
+        return 'Mantid function'
