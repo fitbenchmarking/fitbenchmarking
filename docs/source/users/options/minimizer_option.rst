@@ -82,7 +82,7 @@ FitBenchmarking currently supports the Ceres Solver minimizers:
 * `Polak-Ribiere Non Linear Conjugate-Gradient <http://ceres-solver.org/nnls_solving.html#line-search-methods>`__ (:code:`Polak_Ribiere`)
 * `Hestenes-Stiefel Non Linear Conjugate-Gradient <http://ceres-solver.org/nnls_solving.html#line-search-methods>`__ (:code:`Hestenes_Stiefel`)
 
-**Licence** Ceres Solver is available `here <http://ceres-solver.org/license.html>`__ 
+**Licence** Ceres Solver is available under the new BSD licence -- details can be found `here <http://ceres-solver.org/license.html>`__ 
 
 **Links** `Ceres Solver <http://ceres-solver.org/>`__ `PyCeres - Ceres Python Bindings <https://github.com/Edwinem/ceres_python_bindings>`__
 
