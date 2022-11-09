@@ -166,7 +166,7 @@ class CeresController(Controller):
         will be read from
         """
         self._status = 0 if self.ceres_summary.IsSolutionUsable()  \
-            else 1
+            else 2
 
         if self._status == 0:
             self.flag = 0
