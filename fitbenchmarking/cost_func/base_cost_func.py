@@ -89,8 +89,8 @@ class CostFunc:
         :type params: list
 
         :return: evaluated Hessian and Jacobian of the residual at
-        each x, y pair
-        :rtype: tuple(list of 2D numpy arrays, list of 1D numpy arrays)
+                 each x, y pair
+        :rtype: tuple (list of 2D numpy arrays, list of 1D numpy arrays)
         """
         raise NotImplementedError
 
