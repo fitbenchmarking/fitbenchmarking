@@ -17,7 +17,7 @@ class Options:
     DEFAULTS = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                             'default_options.ini'))
     VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN', 'HESSIAN',
-                      'PLOTTING', 'OUTPUT', 'LOGGING']
+                      'OUTPUT', 'LOGGING']
     VALID_MINIMIZERS = \
         {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq'],
          'ceres': ['Levenberg_Marquardt', 'Dogleg', 'BFGS', 'LBFGS',
@@ -85,12 +85,15 @@ class Options:
          'numdifftools': ['central',
                           'complex', 'multicomplex',
                           'forward', 'backward']}
-    VALID_PLOTTING = \
-        {'make_plots': [True, False],
+    VALID_OUTPUT = \
+        {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
+                   'CRITICAL'],
+         'append': [True, False],
+         'external_output': ['debug', 'display', 'log_only'],
+         'make_plots': [True, False],
          'comparison_mode': ['abs', 'rel', 'both'],
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
          'colour_map': plt.colormaps()}
-    VALID_OUTPUT = {}
     VALID_LOGGING = \
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
                    'CRITICAL'],
@@ -101,7 +104,6 @@ class Options:
              'FITTING': VALID_FITTING,
              'JACOBIAN': VALID_JACOBIAN,
              'HESSIAN': VALID_HESSIAN,
-             'PLOTTING': VALID_PLOTTING,
              'OUTPUT': VALID_OUTPUT,
              'LOGGING': VALID_LOGGING}
 
@@ -160,15 +162,14 @@ class Options:
          'scipy': ['2-point'],
          'default': ['default'],
          'numdifftools': ['central']}
-    DEFAULT_PLOTTING = \
-        {'make_plots': True,
+    DEFAULT_OUTPUT = \
+        {'results_dir': 'fitbenchmarking_results',
+         'make_plots': True,
          'colour_map': 'magma_r',
          'colour_ulim': 100,
          'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
          'table_type': ['acc', 'runtime', 'compare', 'local_min']}
-    DEFAULT_OUTPUT = \
-        {'results_dir': 'fitbenchmarking_results'}
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
          'append': False,
@@ -178,7 +179,6 @@ class Options:
                 'FITTING': DEFAULT_FITTING,
                 'JACOBIAN': DEFAULT_JACOBIAN,
                 'HESSIAN': DEFAULT_HESSIAN,
-                'PLOTTING': DEFAULT_PLOTTING,
                 'OUTPUT': DEFAULT_OUTPUT,
                 'LOGGING': DEFAULT_LOGGING}
 
@@ -281,29 +281,27 @@ class Options:
                                                        key,
                                                        additional_options)
 
-        plotting = config['PLOTTING']
+        output = config['OUTPUT']
 
         if 'make_plots' in additional_options:
             self.make_plots = additional_options['make_plots']
         else:
             self.make_plots = self.read_value(
-                plotting.getboolean, 'make_plots', additional_options)
+                output.getboolean, 'make_plots', additional_options)
 
         self.colour_map = self.read_value(
-            plotting.getstr, 'colour_map', additional_options)
+            output.getstr, 'colour_map', additional_options)
         self.colour_ulim = self.read_value(
-            plotting.getfloat, 'colour_ulim', additional_options)
+            output.getfloat, 'colour_ulim', additional_options)
         self.cmap_range = self.read_value(
-            plotting.getrng, 'cmap_range', additional_options)
+            output.getrng, 'cmap_range', additional_options)
 
-        self.comparison_mode = self.read_value(plotting.getstr,
+        self.comparison_mode = self.read_value(output.getstr,
                                                'comparison_mode',
                                                additional_options)
 
-        self.table_type = self.read_value(plotting.getlist, 'table_type',
+        self.table_type = self.read_value(output.getlist, 'table_type',
                                           additional_options)
-
-        output = config['OUTPUT']
 
         self.results_dir = self.read_value(output.getstr, 'results_dir',
                                            additional_options)
@@ -421,13 +419,14 @@ class Options:
         config['HESSIAN'] = {k: list_to_string(m)
                              for k, m in self.hes_num_method.items()}
 
-        config['PLOTTING'] = {'colour_map': self.colour_map,
-                              'cmap_range': self.cmap_range,
-                              'colour_ulim': self.colour_ulim,
-                              'comparison_mode': self.comparison_mode,
-                              'make_plots': self.make_plots,
-                              'table_type': list_to_string(self.table_type)}
-        config['OUTPUT'] = {'results_dir': self.results_dir}
+        config['OUTPUT'] = {'results_dir': self.results_dir,
+                            'colour_map': self.colour_map,
+                            'cmap_range': self.cmap_range,
+                            'colour_ulim': self.colour_ulim,
+                            'comparison_mode': self.comparison_mode,
+                            'make_plots': self.make_plots,
+                            'table_type': list_to_string(self.table_type)}
+
         config['LOGGING'] = {'file_name': self.log_file,
                              'level': self.log_level,
                              'append': self.log_append,
