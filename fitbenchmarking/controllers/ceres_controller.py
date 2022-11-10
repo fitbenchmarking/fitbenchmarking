@@ -160,13 +160,14 @@ class CeresController(Controller):
         PyCeres.Solve(self.ceres_options, self.ceres_problem,
                       self.ceres_summary)
 
+        self._status = 0 if self.ceres_summary.IsSolutionUsable()  \
+            else 2
+
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-        self._status = 0 if self.ceres_summary.IsSolutionUsable()  \
-            else 2
 
         if self._status == 0:
             self.flag = 0
