@@ -29,12 +29,15 @@ if not os.path.isdir(mock_pycutest_cache):
     os.makedirs(mock_pycutest_cache)
 os.environ["PYCUTEST_CACHE"] = mock_pycutest_cache
 
+# PYCERES_LOCATION needs to be set to use PyCeres
+pyceres_mock_name = "/mock_pyceres_location"
+os.environ["PYCERES_LOCATION"] = pyceres_mock_name
 # set mock imports
 autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfogn', 'dfols',
                         'dill', 'gofit', 'matlab', 'pygsl', 'iminuit', 'bumps',
                         'bumps.fitters', 'tempfile', 'backports',
                         'backports.tempfile', 'gradient_free_optimizers',
-                        'levmar']
+                        'levmar','PyCeres']
 
 
 # -- General configuration ------------------------------------------------

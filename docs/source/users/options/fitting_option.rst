@@ -13,7 +13,8 @@ Software (:code:`software`)
 Software is used to select the fitting software to benchmark, this should be
 a newline-separated list. Available options are:
 
-* ``bumps`` (external software -- see :ref:`extra_dependencies`)
+* ``bumps`` (default software)
+* ``ceres`` (external software -- see :ref:`external-instructions`)
 * ``CUTEst`` (external software -- see :ref:`external-instructions`)
 * ``dfo`` (external software -- see :ref:`extra_dependencies`)
 * ``gofit`` (external software -- see :ref:`extra_dependencies`)
