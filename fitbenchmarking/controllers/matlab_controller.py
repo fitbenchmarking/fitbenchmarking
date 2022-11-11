@@ -4,10 +4,11 @@ Implements a controller for MATLAB
 import matlab
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
+# from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
+from fitbenchmarking.extern import matlab_controller_c as mc
 
 
-class MatlabController(MatlabMixin, Controller):
+class MatlabController(Controller):
     """
     Controller for MATLAB fitting (fminsearch)
     """
@@ -46,19 +47,21 @@ class MatlabController(MatlabMixin, Controller):
         Setup for Matlab fitting
         """
         # Convert initial params into matlab array
-        self.initial_params_mat = matlab.double([self.initial_params])
+        #self.initial_params_mat = matlab.double([self.initial_params])
 
         # serialize cost_func.eval_cost and open within matlab engine
         # so that matlab fitting function can be called
-        self.eng.workspace['eval_cost_mat'] = self.py_to_mat('eval_cost')
+        #self.eng.workspace['eval_cost_mat'] = self.py_to_mat('eval_cost')
+        mc.init(self.cost_func.eval_cost, len(self.initial_params))
 
     def fit(self):
         """
         Run problem with Matlab
         """
-        [self.result, _, exitflag] = self.eng.fminsearch(
-            self.eng.workspace['eval_cost_mat'],
-            self.initial_params_mat, nargout=3)
+        # [self.result, _, exitflag] = self.eng.fminsearch(
+        #     self.eng.workspace['eval_cost_mat'],
+        #     self.initial_params_mat, nargout=3)
+        [self.result, exitflag] = mc.fit(self.initial_params)
         self._status = int(exitflag)
 
     def cleanup(self):
@@ -73,4 +76,5 @@ class MatlabController(MatlabMixin, Controller):
         else:
             self.flag = 2
 
-        self.final_params = self.result[0]
+        mc.cleanup()
+        self.final_params = self.result

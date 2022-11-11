@@ -49,9 +49,13 @@ class MatlabMixin:
                 self.eng.workspace['temp_file'] = temp_file
                 self.eng.evalc('cf_f = py.open(temp_file,"rb")')
                 self.eng.evalc('global cf')
-                self.eng.evalc('cf = py.dill.load(cf_f)')
                 add_persistent_matlab_var('cf')
+                self.eng.evalc('cf = py.dill.load(cf_f)')
                 self.eng.evalc('cf_f.close()')
+                print(1)
+                print(self.eng.workspace['cf'])
+                self.eng.evalc('cf.problem.set_tbf(tbf)')
+
             self.setup_timer()
         except RuntimeError as e:
             self.pickle_error = e

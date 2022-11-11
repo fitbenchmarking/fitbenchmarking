@@ -1,0 +1,7 @@
+libmatlabcontrollerInitialize
+libmatlabcontrollerInitializeWithHandlers
+libmatlabcontrollerTerminate
+libmatlabcontrollerPrintStackTrace
+mlxMin_wrapper
+mlfMin_wrapper
+

@@ -1,6 +1,7 @@
-
 import matlab.engine
+
 ENG = matlab.engine.start_matlab()
+
 
 def add_persistent_matlab_var(name):
     """

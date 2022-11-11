@@ -12,6 +12,7 @@ from fitbenchmarking.utils.exceptions import ParsingError
 from fitbenchmarking.utils.matlab_engine import ENG as eng
 from fitbenchmarking.utils.matlab_engine import add_persistent_matlab_var
 
+
 eng.evalc('horace_on;')
 # Keep horace active - even after cleanup of horace controller..
 add_persistent_matlab_var('horace')
@@ -307,3 +308,9 @@ class SpinWParser(FitbenchmarkParser):
         :rtype: list
         """
         return self._starting_values
+
+    def _set_additional_info(self) -> None:
+        def set_tbf(tbf):
+            eng.workspace['tbf'] = tbf
+        self.fitting_problem.set_tbf = set_tbf
+        return super()._set_additional_info()
