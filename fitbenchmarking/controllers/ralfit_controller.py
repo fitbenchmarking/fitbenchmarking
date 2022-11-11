@@ -16,12 +16,14 @@ class RALFitController(Controller):
     """
 
     algorithm_check = {
-            'all': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
-            'ls': ['gn', 'hybrid', 'gn_reg', 'hybrid_reg'],
+            'all': ['gn', 'hybrid', 'newton', 'newton-tensor',
+                    'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
+            'ls': ['gn', 'hybrid', 'newton', 'newton-tensor',
+                    'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
             'deriv_free': [],
             'general': [],
             'simplex': [],
-            'trust_region': ['gn', 'hybrid'],
+            'trust_region': ['gn', 'hybrid', 'newton', 'newton-tensor'],
             'levenberg-marquardt': ['gn', 'gn_reg'],
             'gauss_newton': ['gn', 'gn_reg'],
             'bfgs': [],
@@ -29,9 +31,12 @@ class RALFitController(Controller):
             'steepest_descent': [],
             'global_optimization': []}
 
-    jacobian_enabled_solvers = ['gn', 'hybrid', 'gn_reg', 'hybrid_reg']
+    jacobian_enabled_solvers = ['gn', 'hybrid', 'newton', 'newton-tensor',
+                                'gn_reg', 'hybrid_reg', 'newton_reg',
+                                'newton-tensor_reg']
 
-    hessian_enabled_solvers = ['hybrid', 'hybrid_reg']
+    hessian_enabled_solvers = ['hybrid', 'newton', 'newton-tensor',
+                               'hybrid_reg', 'newton_reg', 'newton-tensor_reg']
 
     def __init__(self, cost_func):
         """
@@ -68,6 +73,18 @@ class RALFitController(Controller):
             self._options[b"nlls_method"] = 4
         elif self.minimizer == "hybrid_reg":
             self._options[b"model"] = 3
+            self._options[b"type_of_method"] = 2
+        elif self.minimizer == "newton":
+            self._options[b"model"] = 2
+            self._options[b"type_of_method"] = 1
+        elif self.minimizer == "newton_reg":
+            self._options[b"model"] = 2
+            self._options[b"type_of_method"] = 2
+        elif self.minimizer == "newton-tensor":
+            self._options[b"model"] = 4
+            self._options[b"type_of_method"] = 1
+        elif self.minimizer == "newton-tensor_reg":
+            self._options[b"model"] = 4
             self._options[b"type_of_method"] = 2
         else:
             raise UnknownMinimizerError(
