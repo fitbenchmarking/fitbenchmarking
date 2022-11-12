@@ -87,7 +87,7 @@ RUN printf "6\n2\n6\n" > sifdecode.input && \
 
 # Install cutest
 WORKDIR $CUTEST
-RUN printf "6\n2\n6\n2\n8\n" > cutest.input && \
+RUN printf "6\n2\n6\n2\n9\n" > cutest.input && \
     printf "nnydn" >> cutest.input && \
     ./install_cutest < cutest.input
 
@@ -147,6 +147,42 @@ WORKDIR /
 RUN apt-get -y install swig
 RUN python -m pip install pygsl
 
+#################
+# Install Ceres #
+#################
+WORKDIR /
+
+RUN apt-get install -y libgoogle-glog-dev \
+ libgflags-dev \
+ libatlas-base-dev \
+ libeigen3-dev \
+ libsuitesparse-dev
+# Make ceres directory 
+RUN mkdir -p /ceres
+# Change working directory to ceres  
+WORKDIR /ceres 
+# Download ceres solver 2.0.0 tar 
+RUN wget http://ceres-solver.org/ceres-solver-2.0.0.tar.gz
+# unpack the tar file 
+RUN tar zxf ceres-solver-2.0.0.tar.gz
+# Clone PyCeres repository
+RUN git clone https://github.com/Edwinem/ceres_python_bindings.git ./ceres-solver-2.0.0/ceres_python_bindings
+# Initialise and update ceres_python_bindings for PyBind11
+RUN git -C ./ceres-solver-2.0.0/ceres_python_bindings submodule init
+RUN git -C ./ceres-solver-2.0.0/ceres_python_bindings submodule update
+# Append PyCeres installer to ceres solver camkelist.txt
+RUN echo "include(ceres_python_bindings/AddToCeres.cmake)" >> ./ceres-solver-2.0.0/CMakeLists.txt
+# Make ceres-bin directory
+RUN mkdir -p ceres-bin 
+# Change working directory to ceres-bin
+WORKDIR /ceres/ceres-bin
+RUN cmake ../ceres-solver-2.0.0
+RUN make -j3
+RUN make install
+# Set the PYCERES_LOCATION
+ENV PYCERES_LOCATION=/ceres/ceres-bin/lib
+
+WORKDIR /
 ###########
 # Tidy up #
 ###########

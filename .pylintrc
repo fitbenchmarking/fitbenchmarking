@@ -46,7 +46,8 @@ ignored-modules=levmar,
                 mantid,
                 matlab,
                 pygsl,
-                ral_nlls
+                ral_nlls,
+                PyCeres
 
 [DESIGN]
 
