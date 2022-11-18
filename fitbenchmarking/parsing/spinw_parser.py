@@ -3,6 +3,7 @@ This file implements a parser for SpinW data.
 """
 import os
 import typing
+import sys
 
 import matlab
 import numpy as np
@@ -12,7 +13,12 @@ from fitbenchmarking.utils.exceptions import ParsingError
 from fitbenchmarking.utils.matlab_engine import ENG as eng
 from fitbenchmarking.utils.matlab_engine import add_persistent_matlab_var
 
-eng.evalc('horace_on;')
+horace_location = os.environ["HORACE_LOCATION"]
+sys.path.insert(0, horace_location)
+
+eng.evalc(f"addpath('{horace_location}')")
+
+eng.evalc('horace_on')
 # Keep horace active - even after cleanup of horace controller..
 add_persistent_matlab_var('horace')
 
@@ -43,6 +49,11 @@ class SpinWParser(FitbenchmarkParser):
         eng.workspace['sqw_cut'] = self._parse_cut(data_file_path, proj)
         # Add sample
         eng.workspace['sample'] = self._parse_sample()
+        if 'angdeg'  in self._entries:
+            eng.evalc(f'sample.angdeg= {self._entries["angdeg"]}')
+        if 'alatt' in self._entries:
+            eng.evalc(f'sample.alatt= {self._entries["alatt"]}')
+        #print(self._parse_sample()[1])
         eng.evalc('w1 = sqw_cut.set_sample(sample);')
         # Add instrument
         eng.workspace['instrument'] = self._parse_instrument()
@@ -56,17 +67,14 @@ class SpinWParser(FitbenchmarkParser):
         # Set mc points if defined
         if "mc_points" in self._entries:
             eng.evalc(f'tbf = tbf.set_mc_points({self._entries["mc_points"]})')
-        add_persistent_matlab_var('tbf')
-
+        add_persistent_matlab_var('tbf')       
         bins = [np.array(v) for v in eng.eval('sqw_cut.data.p')]
         counts = np.array(eng.eval('sqw_cut.data.s'))
-
         x = np.array([[a/2, b/2, c/2]
-                      for a in bins[0][1:]+bins[0][:-1]
-                      for b in bins[1][1:]+bins[1][:-1]
-                      for c in bins[2][1:]+bins[2][:-1]])
+                      for a in bins[0][0][1:]+bins[0][0][:-1]
+                      for b in bins[1][0][1:]+bins[1][0][:-1]
+                      for c in bins[2][0][1:]+bins[2][0][:-1]])
         y = counts.flatten()
-
         self._spinw_x = x
 
         return {'x': x, 'y': y}
@@ -111,7 +119,7 @@ class SpinWParser(FitbenchmarkParser):
                                    f'1x{len(vector)}.')
             kwargs.extend(['uoffset', matlab.double(vector)])
 
-        return eng.projaxes(*args + kwargs)
+        return eng.ortho_proj(*args + kwargs)
 
     def _parse_cut(self, data_file_path, proj):
         """
@@ -260,18 +268,16 @@ class SpinWParser(FitbenchmarkParser):
         cpars = list(self._starting_values[0].values())
         cpars.append(intrinsic_energy_width)
         eng.workspace['cpars'] = matlab.double(cpars)
-        debug_str = f'{{{eng.evalc("cpars")}'
         cpars_kwargs = '{cpars'
         for key, value in self._entries.items():
             if key.startswith('spinwpars_'):
                 try:
-                    eng.evalc(f'{key}={value}')
+                    eng.evalc(f'{key}={value};')
                 except:
-                    eng.evalc(f"{key}='{value}'")
+                    eng.evalc(f"{key}='{value}';")
                 add_persistent_matlab_var(key)
-                cpars_kwargs += f', "{key[10:]}", {key}'
-                debug_str += f', "{key[10:]}", {eng.evalc(key)}"'
-        cpars_kwargs += '}'
+                cpars_kwargs += f", '{key[10:]}', {key}"
+        cpars_kwargs  += ',"fid", 0}'
         eng.workspace['spinw_args'] = matlab.double([pf[n] for n in p_names])
         eng.evalc('spinw_args = num2cell(spinw_args);')
         eng.evalc(f'sw_obj = {func_name}(spinw_args{{:}})')
@@ -279,6 +285,7 @@ class SpinWParser(FitbenchmarkParser):
 
         def fit_function(x, *p):
             # Assume, for efficiency, matching shape => matching values
+            print(*p)
             if x.shape != self._spinw_x.shape:
                 return np.ones(x.shape)
             eng.workspace['spinw_pin'] = matlab.double(
@@ -286,7 +293,7 @@ class SpinWParser(FitbenchmarkParser):
             eng.evalc(f'tbf = tbf.set_pin({{spinw_pin, {cpars_kwargs[7:]});')
             eng.eval('wsim = tbf.simulate();', nargout=0)
             eng.evalc('spinw_y = wsim.data.s')
-            return np.array(eng.workspace['spinw_y'][0]).flatten()
+            return np.array(eng.workspace['spinw_y']).flatten()
 
         return fit_function
 
