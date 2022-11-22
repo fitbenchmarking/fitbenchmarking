@@ -13,14 +13,15 @@ from fitbenchmarking.utils.exceptions import ParsingError
 from fitbenchmarking.utils.matlab_engine import ENG as eng
 from fitbenchmarking.utils.matlab_engine import add_persistent_matlab_var
 
-horace_location = os.environ["HORACE_LOCATION"]
-sys.path.insert(0, horace_location)
+# horace_location = os.environ["HORACE_LOCATION"]
+# sys.path.insert(0, horace_location)
 
-eng.evalc(f"addpath('{horace_location}')")
+# eng.evalc(f"addpath('{horace_location}')")
 
-eng.evalc('horace_on')
 # Keep horace active - even after cleanup of horace controller..
+eng.evalc('horace = 1;')
 add_persistent_matlab_var('horace')
+eng.evalc('horace_on')
 
 
 class SpinWParser(FitbenchmarkParser):
@@ -50,10 +51,9 @@ class SpinWParser(FitbenchmarkParser):
         # Add sample
         eng.workspace['sample'] = self._parse_sample()
         if 'angdeg'  in self._entries:
-            eng.evalc(f'sample.angdeg= {self._entries["angdeg"]}')
+            eng.evalc(f'sample.angdeg = {self._entries["angdeg"]}')
         if 'alatt' in self._entries:
-            eng.evalc(f'sample.alatt= {self._entries["alatt"]}')
-        #print(self._parse_sample()[1])
+            eng.evalc(f'sample.alatt = {self._entries["alatt"]}')
         eng.evalc('w1 = sqw_cut.set_sample(sample);')
         # Add instrument
         eng.workspace['instrument'] = self._parse_instrument()
@@ -276,12 +276,14 @@ class SpinWParser(FitbenchmarkParser):
                 except:
                     eng.evalc(f"{key}='{value}';")
                 add_persistent_matlab_var(key)
+                #print(key, eng.evalc(f"disp({key})"))
                 cpars_kwargs += f", '{key[10:]}', {key}"
-        cpars_kwargs  += ',"fid", 0}'
+        cpars_kwargs  += "}"
         eng.workspace['spinw_args'] = matlab.double([pf[n] for n in p_names])
         eng.evalc('spinw_args = num2cell(spinw_args);')
         eng.evalc(f'sw_obj = {func_name}(spinw_args{{:}})')
-        eng.evalc(f'tbf = tbf.set_fun(@sw_obj.horace_sqw, {cpars_kwargs})')
+        #print(cpars_kwargs)
+        print(eng.evalc(f'tbf = tbf.set_fun(@sw_obj.horace_sqw, {cpars_kwargs})'))
 
         def fit_function(x, *p):
             # Assume, for efficiency, matching shape => matching values
@@ -314,3 +316,19 @@ class SpinWParser(FitbenchmarkParser):
         :rtype: list
         """
         return self._starting_values
+
+    def _set_additional_info(self) -> None:
+        """
+        Add set_tbf to the fitting problem.
+        """
+        def set_persistent_vars(path):
+            """
+            Update the persistent_vars from a matlab dump.
+
+            :param path: The file to update from
+            :type path: str
+            """
+            eng.evalc('horace_on;')
+            print(eng.evalc(f"load('{path}')"))
+        self.fitting_problem.set_persistent_vars = set_persistent_vars
+        return super()._set_additional_info()

@@ -3,13 +3,14 @@ Implements mixin class for the matlab fitting software controllers.
 """
 
 import os
-from tempfile import TemporaryDirectory
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 
 from fitbenchmarking.utils.exceptions import (IncompatibleProblemError,
                                               MissingSoftwareError)
 from fitbenchmarking.utils.matlab_engine import ENG as eng
 from fitbenchmarking.utils.matlab_engine import (
-    add_persistent_matlab_var, clear_non_persistent_matlab_vars)
+    add_persistent_matlab_var, clear_non_persistent_matlab_vars,
+    list_persistent_matlab_vars)
 
 try:
     import dill
@@ -52,9 +53,21 @@ class MatlabMixin:
                 self.eng.evalc('cf = py.dill.load(cf_f)')
                 add_persistent_matlab_var('cf')
                 self.eng.evalc('cf_f.close()')
-            self.setup_timer()
+
+                matlab_dump = os.path.join(temp_dir, 'dump.mat')
+                to_transfer = list_persistent_matlab_vars()
+                to_transfer_str = "', '".join(
+                    v for v in to_transfer if v != 'cf')
+                to_transfer_str = f"'{to_transfer_str}'"
+                self.eng.evalc(f"save('{matlab_dump}', {to_transfer_str});"
+                               )
+                print(self.eng.evalc(
+                    f"cf.problem.set_persistent_vars('{matlab_dump}')"))
+
         except RuntimeError as e:
             self.pickle_error = e
+
+        self.setup_timer()
 
     def _validate_problem_format(self):
         super()._validate_problem_format()
