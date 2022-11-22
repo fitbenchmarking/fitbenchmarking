@@ -22,78 +22,6 @@ RUN sudo apt-get install -y kitware-archive-keyring
 
 RUN sudo apt-get install -y cmake
 
-#################
-# Install pygsl #
-#################
-
-RUN apt-get update && \
- apt-get install -y gsl-bin \
- libgsl-dev \
- libgsl-dbg
-
-##################
-# Install RALFit #
-##################
-RUN apt-get install -y gfortran \
-    lcov \
-    libblas-dev \
-    liblapack-dev \
-    libgdal-dev
-
-RUN git clone https://github.com/ralna/RALFit
-
-RUN pip install numpy
-
-RUN mkdir -p /RALFit/libRALFit/build
-
-WORKDIR /RALFit/libRALFit/build
-
-RUN cmake .. && make && make install
-
-# make install for RALFit doesn't work on docker, so manually pip install
-RUN pip install .
-
-ENV LD_LIBRARY_PATH=/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
-
-################
-# Build cutest #
-################
-
-RUN mkdir -p /cutest
-
-WORKDIR /cutest
-
-RUN git clone https://github.com/ralna/ARCHDefs ./archdefs && \
-    git clone https://github.com/ralna/SIFDecode ./sifdecode && \
-    git clone https://github.com/ralna/CUTEst ./cutest
-
-RUN mkdir pycutest_cache
-
-ENV ARCHDEFS=/cutest/archdefs/ \
-    SIFDECODE=/cutest/sifdecode/ \
-    MASTSIF=/home/fitbenchmarking/examples/benchmark_problems/SIF/ \
-    CUTEST=/cutest/cutest/ \
-    MYARCH="pc64.lnx.gfo" \
-    PYCUTEST_CACHE=/cutest/pycutest_cache/
-
-ENV PYTHONPATH="${PYCUTEST_CACHE}:${PYTHONPATH}"
-
-# Install sifdecode
-
-WORKDIR $SIFDECODE
-RUN printf "6\n2\n6\n" > sifdecode.input && \
-    printf "nny" >> sifdecode.input && \
-    ./install_sifdecode  < sifdecode.input
-
-# Install cutest
-WORKDIR $CUTEST
-RUN printf "6\n2\n6\n2\n9\n" > cutest.input && \
-    printf "nnydn" >> cutest.input && \
-    ./install_cutest < cutest.input
-
-# install pycutest
-RUN python -m pip install pycutest
-
 ##################
 # Install Mantid #
 ##################
@@ -142,12 +70,6 @@ RUN /opt/Mantid/bin/mantidpython -m  mantid.simpleapi || echo "expected segfault
 WORKDIR /
 
 #################
-# install pygsl #
-#################
-RUN apt-get -y install swig
-RUN python -m pip install pygsl
-
-#################
 # Install Ceres #
 #################
 WORKDIR /
@@ -181,6 +103,88 @@ RUN make -j3
 RUN make install
 # Set the PYCERES_LOCATION
 ENV PYCERES_LOCATION=/ceres/ceres-bin/lib
+
+
+#################
+# Install pygsl #
+#################
+
+RUN apt-get update && \
+ apt-get install -y gsl-bin \
+ libgsl-dev \
+ libgsl-dbg
+
+##################
+# Install RALFit #
+##################
+WORKDIR /
+
+RUN apt-get install -y gfortran \
+    lcov \
+    libblas-dev \
+    liblapack-dev \
+    libgdal-dev
+
+RUN git clone https://github.com/ralna/RALFit
+
+RUN pip install numpy
+
+RUN mkdir -p /RALFit/libRALFit/build
+
+WORKDIR /RALFit/libRALFit/build
+
+RUN cmake .. && make && make install
+
+# make install for RALFit doesn't work on docker, so manually pip install
+RUN pip install .
+
+ENV LD_LIBRARY_PATH=/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
+
+################
+# Build cutest #
+################
+
+RUN mkdir -p /cutest
+
+WORKDIR /cutest
+
+RUN git clone https://github.com/ralna/ARCHDefs ./archdefs && \
+    git clone https://github.com/ralna/SIFDecode ./sifdecode && \
+    git clone https://github.com/ralna/CUTEst ./cutest
+
+RUN mkdir pycutest_cache
+
+ENV ARCHDEFS=/cutest/archdefs/ \
+    SIFDECODE=/cutest/sifdecode/ \
+    MASTSIF=/home/fitbenchmarking/examples/benchmark_problems/SIF/ \
+    CUTEST=/cutest/cutest/ \
+    MYARCH="pc64.lnx.gfo" \
+    PYCUTEST_CACHE=/cutest/pycutest_cache/
+
+ENV PYTHONPATH="${PYCUTEST_CACHE}:${PYTHONPATH}"
+
+# Install sifdecode
+
+WORKDIR $SIFDECODE
+RUN printf "6\n2\n2\n" > sifdecode.input && \
+    printf "nny" >> sifdecode.input && \
+    ./install_sifdecode  < sifdecode.input
+
+# Install cutest
+WORKDIR $CUTEST
+RUN printf "6\n2\n2\n2\n4\n" > cutest.input && \
+    printf "nnydn" >> cutest.input && \
+    ./install_cutest < cutest.input
+
+# install pycutest
+RUN python -m pip install pycutest
+
+#################
+# install pygsl #
+#################
+RUN apt-get -y install swig
+RUN python -m pip install pygsl
+
 
 WORKDIR /
 ###########
