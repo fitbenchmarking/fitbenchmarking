@@ -262,11 +262,12 @@ class SpinWParser(FitbenchmarkParser):
 
         try:
             intrinsic_energy_width = float(self._entries['intrinsic_energy_width'])
+            self._starting_values[0]['intrinsic_enegry_width'] = intrinsic_energy_width
         except KeyError as e:
             raise ParsingError('SpinW requires an "intrinsic_energy_width". '
                                'Please check the problem file') from e
         cpars = list(self._starting_values[0].values())
-        cpars.append(intrinsic_energy_width)
+
         eng.workspace['cpars'] = matlab.double(cpars)
         cpars_kwargs = '{cpars'
         for key, value in self._entries.items():
@@ -277,8 +278,8 @@ class SpinWParser(FitbenchmarkParser):
                     eng.evalc(f"{key}='{value}';")
                 add_persistent_matlab_var(key)
                 #print(key, eng.evalc(f"disp({key})"))
-                cpars_kwargs += f", '{key[10:]}', {key}"
-        cpars_kwargs  += "}"
+                cpars_kwargs += f" '{key[10:]}' {key}"
+        cpars_kwargs += "}"
         eng.workspace['spinw_args'] = matlab.double([pf[n] for n in p_names])
         eng.evalc('spinw_args = num2cell(spinw_args);')
         eng.evalc(f'sw_obj = {func_name}(spinw_args{{:}})')
@@ -287,13 +288,12 @@ class SpinWParser(FitbenchmarkParser):
 
         def fit_function(x, *p):
             # Assume, for efficiency, matching shape => matching values
-            print(*p)
+            # print(*p)
             if x.shape != self._spinw_x.shape:
                 return np.ones(x.shape)
-            eng.workspace['spinw_pin'] = matlab.double(
-                list(p) + [intrinsic_energy_width])
-            eng.evalc(f'tbf = tbf.set_pin({{spinw_pin, {cpars_kwargs[7:]});')
-            eng.eval('wsim = tbf.simulate();', nargout=0)
+            eng.workspace['cpars'] = matlab.double(p)
+            eng.evalc(f'tbf = tbf.set_pin({cpars_kwargs});')
+            eng.eval('[wsim, calcdata] = tbf.simulate();', nargout=0)
             eng.evalc('spinw_y = wsim.data.s')
             return np.array(eng.workspace['spinw_y']).flatten()
 
