@@ -111,12 +111,12 @@ class TestRegressionDefault(TestCase):
         containing all problem types against a single minimizer from each of
         the supported softwares
         """
-        problem_sub_directory = "default_parsers"
+        problem_sub_directory = "default_parsers_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
 
         diff, msg = compare_results(problem_sub_directory,
-                                    "default_parsers.txt")
+                                    "default_parsers_set.txt")
         self.assertListEqual([], diff, msg)
 
 
@@ -280,7 +280,7 @@ def run_benchmark(results_dir: str, problem_sub_directory: str,
     opt_file_name = create_options_file(override_software, jac_num_method)
     problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                            os.pardir,
-                                           "mock_problems",
+                                           "test_files",
                                            problem_sub_directory))
     run([problem], additional_options={'results_dir': results_dir},
         options_file=opt_file_name,
