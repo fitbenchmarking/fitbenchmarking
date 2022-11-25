@@ -134,6 +134,15 @@ of the Fitbenchmarking docs. '''
                        help="Use this option if you have decided not to"
                        "create plots during runtime.")
 
+    group.add_argument('--results_browser', action='store_true',
+                       help="Use this option if you have decided to"
+                       "open a browser window to show the results"
+                       "of a fit benchmark.")
+    group.add_argument('--dont_open_browser', action='store_true',
+                       help="Use this option if you have decided not to"
+                       "open a browser window to show the results"
+                       "of a fit benchmark.")
+
     parser.add_argument('-m', '--comparison_mode',
                         metavar='COMPARISON_MODE',
                         default='',
@@ -251,7 +260,7 @@ def _create_index_page(options: Options, groups: "list[str]",
     return output_file
 
 
-def _open_browser(output_file: str) -> None:
+def _open_browser(output_file: str, options) -> None:
     """
     Opens a browser window to show the results of a fit benchmark.
 
@@ -263,14 +272,17 @@ def _open_browser(output_file: str) -> None:
     # Constructs a url that can be pasted into a browser
     is_mac = platform.system() == "Darwin"
     url = "file://" + output_file if is_mac else output_file
-
-    if webbrowser.open_new(url if is_mac else relative_path):
-        LOGGER.info("\nINFO:\nThe FitBenchmarking results have been opened "
-                    "in your browser from this url:\n\n   %s", url)
+    if options.results_browser:
+        if webbrowser.open_new(url if is_mac else relative_path):
+            LOGGER.info("\nINFO:\nThe FitBenchmarking results have been opened"
+                        " in your browser from this url:\n\n   %s", url)
+        else:
+            LOGGER.warning("\nWARNING:\nThe browser failed to open "
+                           "automatically. Copy and paste the following url "
+                           "into your browser:\n\n   %s", url)
     else:
-        LOGGER.warning("\nWARNING:\nThe browser failed to open "
-                       "automatically. Copy and paste the following url "
-                       "into your browser:\n\n   %s", url)
+        LOGGER.info("\nINFO:\nYou have chosen not to open FitBenchmarking "
+                    "results in your browser\n\n   %s",)
 
 
 @exception_handler
@@ -394,7 +406,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
                     options.results_dir)
 
     index_page = _create_index_page(options, groups, result_dir)
-    _open_browser(index_page)
+    _open_browser(index_page, options)
 
 
 def main():
@@ -431,6 +443,13 @@ def main():
         options_dictionary['make_plots'] = True
     elif args.dont_make_plots:
         options_dictionary['make_plots'] = False
+
+    # Check if results_browser in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.results_browser:
+        options_dictionary['results_browser'] = True
+    elif args.dont_open_browser:
+        options_dictionary['results_browser'] = False
 
     # Check if log_append in options.py should be overridden, and if so,
     # add to options_dictionary
