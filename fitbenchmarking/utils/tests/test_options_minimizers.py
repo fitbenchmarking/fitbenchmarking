@@ -75,7 +75,9 @@ class MininimizerOptionTests(unittest.TestCase):
         """
         Checks valid ralfit minimizers are set correctly
         """
-        expected = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg']
+        expected = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg',
+                    'newton', 'newton_reg',
+                    'newton-tensor', 'newton-tensor_reg']
         actual = self.options.minimizers['ralfit']
         self.assertEqual(expected, actual)
 
