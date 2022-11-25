@@ -62,6 +62,7 @@ class RALFitController(Controller):
         # Use bytestrings explicitly as thats whats expected in RALFit and
         # python 3 defaults to unicode.
         self._options[b"maxit"] = 500
+        # pylint: disable=too-many-branches
         if self.minimizer == "gn":
             self._options[b"model"] = 1
             self._options[b"nlls_method"] = 4
