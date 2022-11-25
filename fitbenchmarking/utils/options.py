@@ -290,7 +290,7 @@ class Options:
         else:
             self.make_plots = self.read_value(
                 output.getboolean, 'make_plots', additional_options)
-            
+
         if 'results_browser' in additional_options:
             self.results_browser = additional_options['results_browser']
         else:
