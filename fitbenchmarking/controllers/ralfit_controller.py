@@ -19,7 +19,7 @@ class RALFitController(Controller):
             'all': ['gn', 'hybrid', 'newton', 'newton-tensor',
                     'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
             'ls': ['gn', 'hybrid', 'newton', 'newton-tensor',
-                    'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
+                   'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
             'deriv_free': [],
             'general': [],
             'simplex': [],
