@@ -54,6 +54,7 @@ class RALFitController(Controller):
         self._popt = None
         self._options = {}
 
+    # pylint: disable=too-many-branches
     def setup(self):
         """
         Setup for RALFit
@@ -62,7 +63,6 @@ class RALFitController(Controller):
         # Use bytestrings explicitly as thats whats expected in RALFit and
         # python 3 defaults to unicode.
         self._options[b"maxit"] = 500
-        # pylint: disable=too-many-branches
         if self.minimizer == "gn":
             self._options[b"model"] = 1
             self._options[b"nlls_method"] = 4
@@ -107,6 +107,7 @@ class RALFitController(Controller):
             self.param_ranges = (
                 [-np.inf]*len(self.initial_params),
                 [np.inf]*len(self.initial_params))
+    # pylint: enable=too-many-branches
 
     # pylint: disable=unused-argument
     def hes_eval(self, params, r):
