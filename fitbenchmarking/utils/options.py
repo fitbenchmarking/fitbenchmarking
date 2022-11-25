@@ -1,6 +1,7 @@
 '''
 This file will handle all interaction with the options configuration file.
 '''
+# pylint: disable=too-many-branches
 
 import configparser
 import os
