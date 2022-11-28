@@ -174,9 +174,9 @@ class GenerateTableTests(unittest.TestCase):
                 suffix=suffix)
             html_table_name = os.path.join(self.expected_results_dir,
                                            f"{suffix}.html")
-            txt_table_name = os.path.join(self.expected_results_dir,
-                                          f"{suffix}.txt")
-            for f, t in zip([html_table_name, txt_table_name],
+            csv_table_name = os.path.join(self.expected_results_dir,
+                                          f"{suffix}.csv")
+            for f, t in zip([html_table_name, csv_table_name],
                             [html["table"], csv_table]):
                 self.compare_files(f, t)
 
