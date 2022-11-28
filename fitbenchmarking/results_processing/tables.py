@@ -96,9 +96,9 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             env = Environment(loader=FileSystemLoader(template_dir))
             template = env.get_template("table_template.html")
             html_output_file = file_path + 'html'
-            txt_output_file = file_path + 'txt'
+            csv_output_file = file_path + 'csv'
 
-            with open(txt_output_file, "w") as f:
+            with open(csv_output_file, "w") as f:
                 f.write(txt_table)
             failed_minimzers = sum(list(unselected_minimzers.values()), [])
             report_failed_min = failed_minimzers != []
@@ -189,7 +189,7 @@ def generate_table(results, best_results, options, group_dir, fig_dir,
                          pp_locations, table_name)
 
     html_table = table.to_html()
-    txt_table = table.to_txt()
+    csv_table = table.to_csv_file()
     cbar = table.save_colourbar(fig_dir)
 
     problem_dropdown_html = table.problem_dropdown_html()
@@ -201,4 +201,4 @@ def generate_table(results, best_results, options, group_dir, fig_dir,
         'minim_dropdown': minimizer_dropdown_html
     }
 
-    return table, html_dict, txt_table, cbar
+    return table, html_dict, csv_table, cbar

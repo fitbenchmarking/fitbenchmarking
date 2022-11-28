@@ -363,7 +363,7 @@ class Table:
 
         return table_style.to_html(table_uuid='table')
 
-    def to_txt(self):
+    def to_csv_file(self):
         """
         Generate a plain text version of the table
 
@@ -371,7 +371,7 @@ class Table:
         :rtype: str
         """
         table = self.create_pandas_data_frame(html=False)
-        return table.to_string()
+        return table.to_csv()
 
     def get_description(self, html_description):
         """
