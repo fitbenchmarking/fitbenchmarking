@@ -160,7 +160,7 @@ class Table:
         """
         Generate a dictionary of results lists with rows and columns as the key
         and list elements respectively.
-        This is used to create HTML and txt tables.
+        This is used to create HTML and csv tables.
         This is stored in self.sorted_results
         """
         self.sorted_results = {k: [r for cat in row.values() for r in cat]

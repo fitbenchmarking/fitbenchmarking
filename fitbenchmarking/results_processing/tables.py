@@ -31,7 +31,7 @@ SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
 def create_results_tables(options, results, best_results, group_dir, fig_dir,
                           pp_locations, failed_problems, unselected_minimzers):
     """
-    Saves the results of the fitting to html/txt tables.
+    Saves the results of the fitting to html/csv tables.
 
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
@@ -68,7 +68,7 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             table_names[suffix] = f'{suffix}_table.'
 
             try:
-                table, html, txt_table, cbar = \
+                table, html, csv_table, cbar = \
                     generate_table(results=results,
                                    best_results=best_results,
                                    options=options,
@@ -99,7 +99,7 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             csv_output_file = file_path + 'csv'
 
             with open(csv_output_file, "w") as f:
-                f.write(txt_table)
+                f.write(csv_table)
             failed_minimzers = sum(list(unselected_minimzers.values()), [])
             report_failed_min = failed_minimzers != []
 
@@ -159,7 +159,7 @@ def load_table(table):
 def generate_table(results, best_results, options, group_dir, fig_dir,
                    pp_locations, table_name, suffix):
     """
-    Generate html/txt tables.
+    Generate html/csv tables.
 
     :param results: Results grouped by row and category (for colouring)
     :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
