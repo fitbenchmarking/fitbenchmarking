@@ -86,7 +86,7 @@ class TestRegressionMatlab(TestCase):
 
         run_benchmark(self.results_dir, problem_sub_directory)
 
-        diff, msg = compare_results(problem_sub_directory, "matlab.txt")
+        diff, msg = compare_results(problem_sub_directory, "matlab.csv")
         self.assertListEqual([], diff, msg)
 
 
