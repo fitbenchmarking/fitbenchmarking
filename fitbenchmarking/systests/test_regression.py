@@ -176,7 +176,7 @@ def compare_results(problem_sub_directory: str, result_filename: str) -> list:
     actual_file = os.path.join(os.path.dirname(__file__),
                                'fitbenchmarking_results',
                                problem_sub_directory,
-                               'acc_table.txt')
+                               'acc_table.csv')
 
     with open(expected_file, 'r') as f:
         expected = f.readlines()
