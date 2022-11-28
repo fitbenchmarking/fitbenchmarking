@@ -163,7 +163,7 @@ class GenerateTableTests(unittest.TestCase):
         fitbenchmarking/results_processing/tests/expected_results
         """
         for suffix in SORTED_TABLE_NAMES:
-            _, html, txt_table, _ = generate_table(
+            _, html, csv_table, _ = generate_table(
                 results=self.results,
                 best_results=self.best_results,
                 options=self.options,
@@ -177,7 +177,7 @@ class GenerateTableTests(unittest.TestCase):
             txt_table_name = os.path.join(self.expected_results_dir,
                                           f"{suffix}.txt")
             for f, t in zip([html_table_name, txt_table_name],
-                            [html["table"], txt_table]):
+                            [html["table"], csv_table]):
                 self.compare_files(f, t)
 
     def test_dropdown_html_correct(self):
@@ -290,7 +290,7 @@ class CreateResultsTableTests(unittest.TestCase):
                               unselected_minimzers={'min1': []})
         for suffix in SORTED_TABLE_NAMES:
 
-            for table_type in ['html', 'txt']:
+            for table_type in ['html', 'csv']:
                 table_name = f'{suffix}_table.{table_type}'
                 file_name = os.path.join(self.group_dir, table_name)
                 self.assertTrue(os.path.isfile(file_name),
