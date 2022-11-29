@@ -68,16 +68,19 @@ class SpinWParser(FitbenchmarkParser):
         if "mc_points" in self._entries:
             eng.evalc(f'tbf = tbf.set_mc_points({self._entries["mc_points"]})')
         add_persistent_matlab_var('tbf')       
-        bins = [np.array(v) for v in eng.eval('sqw_cut.data.p')]
-        counts = np.array(eng.eval('sqw_cut.data.s'))
+        bins = [np.array(v) for v in eng.eval('w1.data.p')]
         x = np.array([[a/2, b/2, c/2]
                       for a in bins[0][0][1:]+bins[0][0][:-1]
                       for b in bins[1][0][1:]+bins[1][0][:-1]
                       for c in bins[2][0][1:]+bins[2][0][:-1]])
-        y = counts.flatten()
+        eng.evalc('[spinw_y, spinw_e, msk] = sigvar_get(w1)')
+        signal = np.array(eng.workspace['spinw_y'])
+        error = np.array(eng.workspace['spinw_e'])
+        y = signal.flatten()
+        e = error.flatten()
         self._spinw_x = x
 
-        return {'x': x, 'y': y}
+        return {'x': x, 'y': y, 'e': e}
 
     def _parse_proj(self):
         """
@@ -294,7 +297,7 @@ class SpinWParser(FitbenchmarkParser):
             eng.workspace['cpars'] = matlab.double(p)
             eng.evalc(f'tbf = tbf.set_pin({cpars_kwargs});')
             eng.eval('[wsim, calcdata] = tbf.simulate();', nargout=0)
-            eng.evalc('spinw_y = wsim.data.s')
+            eng.evalc('[spinw_y, e, msk] = sigvar_get(wsim)')
             return np.array(eng.workspace['spinw_y']).flatten()
 
         return fit_function
