@@ -46,7 +46,7 @@ The versions on Docker Hub can be updated from a connected account by issuing th
 
 .. code-block:: bash
 		
-		docker build --tag fitbenchmarking-<type>:<tag>
+		docker build --tag fitbenchmarking-<type>:<tag> .
 		docker tag fitbenchmarking-<type>:<tag> fitbenchmarking/fitbenchmarking-<type>:<tag>
 		docker push fitbenchmarking/fitbenchmarking-<type>:<tag>
 
