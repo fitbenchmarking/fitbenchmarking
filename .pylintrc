@@ -48,7 +48,8 @@ ignored-modules=levmar,
                 pygsl,
                 ral_nlls,
                 PyCeres,
-                kmpfit
+                kmpfit,
+                kapteyn
 
 [DESIGN]
 
