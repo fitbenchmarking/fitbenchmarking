@@ -309,10 +309,37 @@ spectrometers.*  We currently support:
 `proprietary product <https://www.mathworks.com/pricing-licensing.html>`__.
 Horace is made available under the the `GPL-3 licence <https://www.gnu.org/licenses/gpl-3.0.html>`__.
 
+.. code-block:: rst
+
+   [MINIMIZERS]
+   kmpfit: lm-lsqr
+
 .. warning::
    The Horace Toolbox and MATLAB must be installed for this to be available; see :ref:`external-instructions`.
 
 
+kmpfit (``kmpfit``)
+=============
+
+`Kmpfit <https://www.astro.rug.nl/software/kapteyn/kmpfit.html?highlight=kmpfit#module-kapteyn.kmpfit/>`_  
+provides the class Fitter, which uses the implementation in C of MPFIT, 
+Craig Markwardt’s non-linear least squares curve fitting routines for IDL. 
+MPFIT uses the Levenberg-Marquardt technique to solve the least-squares problem, 
+which is a particular strategy for iteratively searching for the best fit.
+
+* Levenberg-Marquardt (:code:`lm-lsqr`)
+
+**Licence**  Kmpfit is available under the `BSD License, GNU Library or Lesser General Public License (LGPL) (BSD) <https://www.astro.rug.nl/software/kapteyn/license.html/>`__
+
+.. code-block:: rst
+
+   [MINIMIZERS]
+   kmpfit: lm-lsqr
+
+
+.. warning::
+   The additional dependency Kmpfit must be installed for this to be available;
+   See :ref:`extra_dependencies`.
 .. _mantid:
 
 Mantid (``mantid``)

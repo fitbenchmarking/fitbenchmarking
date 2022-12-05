@@ -54,6 +54,16 @@ website <https://pace-neutrons.github.io/Horace/3.6.0/Download_and_setup.html>`_
 In addition, MATLAB and the MATLAB engine must be installed following the
 :ref:`instructions given below<matlab-install>`.
 
+Kmpfit
+------------
+
+Kmpfit is used as a fitting software in FitBenchmarking, and is called via the
+kmpfit interface.
+
+Install instructions can be found on the `Kmpfit https://www.astro.rug.nl/software/kapteyn/intro.html#installing`__  and 
+`Kmpfit documentation <https://www.astro.rug.nl/software/kapteyn/kmpfit.html?highlight=kmpfit#module-kapteyn.kmpfit>`__ 
+
+Please note that the library module of kmpfit must be moved into the ``PYTHONPATH``.
 
 Mantid
 ------

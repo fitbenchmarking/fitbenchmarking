@@ -1,15 +1,11 @@
 """
-Implements a controller for the Ceres fitting software.
+Implements a controller for the Kmpfit software.
 """
 import sys
 import os
 import numpy as np
 from kapteyn import kmpfit
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import UnknownMinimizerError
-
-
-
 
 class KmpfitController(Controller):
     """
@@ -66,21 +62,19 @@ class KmpfitController(Controller):
 
     def setup(self):
         """
-        Setup problem ready to be run with Ceres solver
+        Setup problem ready to be run with Kmpfit solver
         """
         self.kmpfit_object = kmpfit.Fitter(residuals=self.kmpfit_residuals,
                                            deriv=self.kmpfit_jacobians ,
                                            data=(self.data_x,self.data_y)
                                            )
 
-
     def fit(self):
         """
-        Run problem with Ceres solver
+        Run problem with Kmpfit solver
         """
 
-        self.kmpfit_object.fit(params0=self.initial_params)
-         
+        self.kmpfit_object.fit(params0=self.initial_params)     
         self._status = 0 if "success" in self.kmpfit_object.message else 2
 
 
