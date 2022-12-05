@@ -1,4 +1,4 @@
-                scipy_ls                                   
-                  dogbox           lm-scipy             trf
-prob_0  False (2.941)[2]  False (0.5174)[1]    False (1.48)
-prob_1  False (15.01)[3]      False (6.708)  False (4.5)[1]
+,scipy_ls,scipy_ls,scipy_ls
+,dogbox,lm-scipy,trf
+prob_0,False (2.941)[2],False (0.5174)[1],False (1.48)
+prob_1,False (15.01)[3],False (6.708),False (4.5)[1]
