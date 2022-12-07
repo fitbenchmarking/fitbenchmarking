@@ -163,9 +163,7 @@ class LmfitController(Controller):
         else:
             self.flag = 2
         
-        for _, param in self.lmfit_out.params.items():
-              self.result.append(param.value)
-
+        self.result = list(self.lmfit_out.params.values())
         self.final_params = self.result
         
         
