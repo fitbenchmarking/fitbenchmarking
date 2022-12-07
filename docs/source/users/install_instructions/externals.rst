@@ -60,10 +60,11 @@ Kmpfit
 Kmpfit is used as a fitting software in FitBenchmarking, and is called via the
 kmpfit interface.
 
-Install instructions can be found on the `Kmpfit https://www.astro.rug.nl/software/kapteyn/intro.html#installing`__  and 
+Install instructions can be found on the `Kmpfit <https://www.astro.rug.nl/software/kapteyn/intro.html#installing/>`__  and 
 `Kmpfit documentation <https://www.astro.rug.nl/software/kapteyn/kmpfit.html?highlight=kmpfit#module-kapteyn.kmpfit>`__ 
 
-Please note that the library module of kmpfit must be moved into the ``PYTHONPATH``.
+Please note that the library module of kapteyn must download with a version of ``numpy`` less than ``1.23.`` .
+
 
 Mantid
 ------

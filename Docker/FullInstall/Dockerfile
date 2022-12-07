@@ -42,7 +42,7 @@ RUN apt-get install -y gfortran \
 
 RUN git clone https://github.com/ralna/RALFit
 
-RUN pip install numpy
+RUN pip install numpy~=1.22.1
 
 RUN mkdir -p /RALFit/libRALFit/build
 
@@ -183,6 +183,14 @@ RUN make install
 ENV PYCERES_LOCATION=/ceres/ceres-bin/lib
 
 WORKDIR /
+
+
+###################
+#  Install kmpfit # 
+###################
+
+RUN pip install https://www.astro.rug.nl/software/kapteyn/kapteyn-3.0.tar.gz
+
 ###########
 # Tidy up #
 ###########
