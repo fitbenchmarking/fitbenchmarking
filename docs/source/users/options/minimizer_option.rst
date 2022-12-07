@@ -329,7 +329,7 @@ which is a particular strategy for iteratively searching for the best fit.
 
 * Levenberg-Marquardt (:code:`lm-lsqr`)
 
-**Licence**  Kmpfit is available under the `BSD License, GNU Library or Lesser General Public License (LGPL) (BSD) <https://www.astro.rug.nl/software/kapteyn/license.html/>`__
+**Licence**  Kmpfit is available under the `BSD License, (BSD) <https://www.astro.rug.nl/software/kapteyn/license.html/>`__
 
 .. code-block:: rst
 
