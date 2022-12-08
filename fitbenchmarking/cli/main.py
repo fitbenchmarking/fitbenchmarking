@@ -135,11 +135,11 @@ of the Fitbenchmarking docs. '''
                        "create plots during runtime.")
 
     group.add_argument('--pbar', action='store_true',
-                       help="Use this option if you have decided to"
-                       "create plots during runtime.")
+                       help="Use this option if you would like to"
+                       "see the progress bar during runtime.")
     group.add_argument('--no_pbar', action='store_true',
-                       help="Use this option if you have decided not to"
-                       "create plots during runtime.")
+                       help="Use this option if you do not want to"
+                       "see the progress bar during runtime.")
 
     parser.add_argument('-m', '--comparison_mode',
                         metavar='COMPARISON_MODE',
