@@ -51,7 +51,7 @@ Changing options via the command line
 It is possible to change the following options via the command line rather than from an ``.ini`` file or from the default options.
 They can be changed using the arguments in the table below.
 
-.. figure:: ../../images/FitBenchmarking_options_table_08_12_2022.png
+.. figure:: ../../images/FitBenchmarking_options_table_09_12_2022.png
 
 **For example, to change the results directory:**
 
