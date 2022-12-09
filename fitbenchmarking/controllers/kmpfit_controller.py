@@ -78,8 +78,9 @@ class KmpfitController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-
-        if "success" in self.kmpfit_object.message:
+        self._status = self.kmpfit_object.message
+        print(self._status)
+        if "success" in self._status:
             self.flag = 0
         else:
             self.flag = 2
