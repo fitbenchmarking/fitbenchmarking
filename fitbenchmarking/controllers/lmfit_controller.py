@@ -4,32 +4,11 @@ Implements a controller for the Ceres fitting software.
 import sys
 import os
 import numpy as np
-from lmfit import minimize, Parameters
+from lmfit import Minimizer, Parameters
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
+from fitbenchmarking.utils.exceptions import MissingBoundsError
 
-
-# class lmfit_resdiuals():
-#     def __init__(self, fb_cf,initial_params,lmfit_p,params_names):
-#         # MUST BE CALLED. Initializes the Ceres::CostFunction class
-#         super().__init__()
-#         self.fb_cf = fb_cf
-#         self.initial_params = initial_params
-#         self.lmfit_p = lmfit_p
-#         self.params_names = params_names
-
-#     def lmfit_resdiual (self,params):
-#         """
-#         """
-#         p_ini = self.initial_params
-#         self.lmfit_p = np.zeros(len(p_ini))
-#         for i , name in enumerate(self.params_names):
-#             self.lmfit_p[i] = params[name]
-#             #print(type(self.lmfit_p.tolist()))
-#             #print(len(self.initial_params))
-#             p = self.lmfit_p.tolist()
-#         if  len(p) ==  len(p_ini):
-#             return self.fb_cf.eval_r(self.lmfit_p.tolist())
 
 class LmfitController(Controller):
     """
@@ -38,8 +17,6 @@ class LmfitController(Controller):
 
     algorithm_check = {
         'all': ['differential_evolution',
-                'brute',
-                'basinhopping',
                 'powell',
                 'cobyla',
                 'slsqp',
@@ -62,10 +39,7 @@ class LmfitController(Controller):
                 'dual_annealing'
                 ],
         'ls': [],
-        'deriv_free': ['differential_evolution',
-                       'brute',
-                       'basinhopping',
-                       'powell',
+        'deriv_free': ['powell',
                        'cobyla',
                        'slsqp',
                        'emcee',
@@ -85,14 +59,30 @@ class LmfitController(Controller):
                  'bfgs'],
         'conjugate_gradient': ['cg'],
         'steepest_descent': [],
-        'global_optimization': ['ampgo',
+        'global_optimization': ['differential_evolution',
+                                'ampgo',
                                 'shgo',
                                 'dual_annealing']
         }
 
 
-    #jacobian_enabled_solvers = ['lm-lsqr']
-
+    jacobian_enabled_solvers = ['cg',
+                                'bfgs',
+                                'newton',
+                                'lbfgsb',
+                                'tnc',
+                                'slsqp',
+                                'dogleg',
+                                'trust-ncg',
+                                'trust-krylov', 
+                                'trust-exact']
+    
+    hessian_enabled_solvers = ['Newton-CG',
+                               'dogleg',
+                               'trust-constr',
+                               'trust-ncg',
+                               'trust-krylov',
+                               'trust-exact']
 
     def __init__(self, cost_func):
         """
@@ -102,64 +92,88 @@ class LmfitController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.result = []
-        self._status = None
+        self.result = None
         self._popt = None
         self.lmfit_out = None
         self.lmfit_params = Parameters()
-        self.lmfit_p = None
-        #self.param_dict = None
         self.params_names = self.problem.param_names
-        self.res = None
+        self.value_ranges_ub = None
+        self.value_ranges_lb = None
 
-    def lmfit_resdiual (self,params):
+    def lmfit_resdiuals (self,params):
         """
+        lmfit resdiuals
         """
-        p_ini = self.initial_params
-        self.lmfit_p = np.zeros(len(p_ini))
+        self.lmfit_p = np.zeros(len(self.initial_params))
         for i , name in enumerate(self.params_names):
             self.lmfit_p[i] = params[name]
-            #print(type(self.lmfit_p.tolist()))
-            #print(len(self.initial_params))
-            p = self.lmfit_p.tolist()
-        if  len(p) ==  len(p_ini):
-            return self.cost_func.eval_r(self.lmfit_p.tolist())
+        return self.cost_func.eval_r(self.lmfit_p.tolist())
+
+    def lmfit_jacobians (self,params):
+        """
+        lmfit jacobians
+        """
+        self.lmfit_p = np.zeros(len(self.initial_params))
+        for i , name in enumerate(self.params_names):
+            self.lmfit_p[i] = params[name]
+        jac = self.cost_func.jac_res(self.lmfit_p.tolist())        
+        return jac[0]
+
     def setup(self):
         """
         Setup problem ready to be run with Ceres solver
         """
-        #self.res = lmfit_resdiuals(self.cost_func,self.initial_params,self.lmfit_p,self.params_names)
         
-        for i ,names in enumerate(self.params_names):
-            self.lmfit_params.add(names, value=self.initial_params[i])
+        if self.value_ranges is not None:
+            self.value_ranges_lb, self.value_ranges_ub = zip(*self.value_ranges)
+        
 
+        if (self.value_ranges is None or np.any(np.isinf(self.value_ranges))) and \
+         self.minimizer in self.algorithm_check['global_optimization'] :
 
-        #print(self.param_dict)
-        #print(self.lmfit_params)
+            raise MissingBoundsError(
+                "Global optimization requires finite bounds on all parameters")
 
+        for i ,name in enumerate(self.params_names):
+            kwargs = {"name":name,
+                      "value":self.initial_params[i]}
+            if self.value_ranges_lb is not None and self.value_ranges_ub is not None:
+                kwargs["max"] = self.value_ranges_ub[i]
+                kwargs["min"] = self.value_ranges_lb[i]
+            self.lmfit_params.add(**kwargs)
 
     def fit(self):
         """
         Run problem with Ceres solver
         """
         
+        minner = Minimizer(self.lmfit_resdiuals, self.lmfit_params)
 
-   
-        self.lmfit_out = minimize(self.lmfit_resdiual, self.lmfit_params, method=self.minimizer)
+
+        kwargs = {"method":self.minimizer}
+        if self.minimizer in self.jacobian_enabled_solvers:
+            if not self.cost_func.jacobian.use_default_jac \
+                    or self.minimizer == "newton":
+                kwargs["Dfun"] = self.lmfit_jacobians
+        if self.cost_func.hessian and \
+                self.minimizer in self.hessian_enabled_solvers:
+            kwargs["hess"] = self.cost_func.hes_cost
+        self.lmfit_out = minner.minimize(**kwargs)
  
-        # for _, param in out.params.items():
-        #       self.result.append(param.value)
-        #self._status = 0 if "success" in self.kmpfit_object.message else 2
-
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-
-        if self._status == 0:
+        max_iters_messages = ['maximum number of iterations',
+                              'iteration limit reached',
+                              'iterations reached limit']
+        if self.lmfit_out.success:
             self.flag = 0
+        elif any(message in self.lmfit_out.message.lower()
+                 for message in max_iters_messages):
+            self.flag = 1
         else:
             self.flag = 2
         
