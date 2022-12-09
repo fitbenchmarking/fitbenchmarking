@@ -41,6 +41,7 @@ class KmpfitController(Controller):
         self.kmpfit_fitter = kmpfit.Fitter
         self.kmpfit_object = None
 
+    # pylint: disable=unused-argument
     def kmpfit_residuals(self, p, data):
         """
         Residuals for Kmpfit
@@ -52,10 +53,9 @@ class KmpfitController(Controller):
         """
         Jacobians for Kmpfit
         """
-        _, _ = data
-        _ = dflags
         jac = self.cost_func.jac_res(p)
         return jac[0]
+    # pylint: enable=unused-argument
 
     def setup(self):
         """
@@ -72,7 +72,6 @@ class KmpfitController(Controller):
         """
 
         self.kmpfit_object.fit(params0=self.initial_params)
-        self._status = 0 if "success" in self.kmpfit_object.message else 2
 
     def cleanup(self):
         """
@@ -80,7 +79,7 @@ class KmpfitController(Controller):
         will be read from
         """
 
-        if self._status == 0:
+        if "success" in self.kmpfit_object.message:
             self.flag = 0
         else:
             self.flag = 2

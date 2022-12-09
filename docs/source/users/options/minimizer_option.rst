@@ -312,7 +312,7 @@ Horace is made available under the the `GPL-3 licence <https://www.gnu.org/licen
 .. code-block:: rst
 
    [MINIMIZERS]
-   kmpfit: lm-lsqr
+   horace: lm-lsqr
 
 .. warning::
    The Horace Toolbox and MATLAB must be installed for this to be available; see :ref:`external-instructions`.
