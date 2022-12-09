@@ -46,7 +46,6 @@ class KmpfitController(Controller):
         """
         Residuals for Kmpfit
         """
-        _, _ = data
         return self.cost_func.eval_r(p)
 
     def kmpfit_jacobians(self, p, data, dflags):
