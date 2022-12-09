@@ -128,21 +128,21 @@ of the Fitbenchmarking docs. '''
 
     group1 = parser.add_mutually_exclusive_group()
     group1.add_argument('--make_plots', action='store_true',
-                       help="Use this option if you have decided to"
-                       "create plots during runtime.")
+                        help="Use this option if you have decided to"
+                        "create plots during runtime.")
     group1.add_argument('--dont_make_plots', action='store_true',
-                       help="Use this option if you have decided not to"
-                       "create plots during runtime.")
-  
+                        help="Use this option if you have decided not to"
+                        "create plots during runtime.")
+
     group2 = parser.add_mutually_exclusive_group()
     group2.add_argument('--results_browser', action='store_true',
-                       help="Use this option if you have decided to"
-                       "open a browser window to show the results"
-                       "of a fit benchmark.")
-    group2.add_argument('--dont_open_browser', action='store_true',
-                       help="Use this option if you have decided not to"
-                       "open a browser window to show the results"
-                       "of a fit benchmark.")
+                        help="Use this option if you have decided to"
+                        "open a browser window to show the results"
+                        "of a fit benchmark.")
+    group2.add_argument('--no_results_browser', action='store_true',
+                        help="Use this option if you have decided not to"
+                        "open a browser window to show the results"
+                        "of a fit benchmark.")
 
     parser.add_argument('-m', '--comparison_mode',
                         metavar='COMPARISON_MODE',
@@ -449,7 +449,7 @@ def main():
     # add to options_dictionary
     if args.results_browser:
         options_dictionary['results_browser'] = True
-    elif args.dont_open_browser:
+    elif args.no_results_browser:
         options_dictionary['results_browser'] = False
 
     # Check if log_append in options.py should be overridden, and if so,
