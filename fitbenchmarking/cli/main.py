@@ -126,18 +126,19 @@ of the Fitbenchmarking docs. '''
                         help="Set the cost functions to be used"
                         "for the given data.")
 
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('--make_plots', action='store_true',
+    group1 = parser.add_mutually_exclusive_group()
+    group1.add_argument('--make_plots', action='store_true',
                        help="Use this option if you have decided to"
                        "create plots during runtime.")
-    group.add_argument('--dont_make_plots', action='store_true',
+    group1.add_argument('--dont_make_plots', action='store_true',
                        help="Use this option if you have decided not to"
                        "create plots during runtime.")
-
-    group.add_argument('--pbar', action='store_true',
+                       
+    group3 = parser.add_mutually_exclusive_group()
+    group3.add_argument('--pbar', action='store_true',
                        help="Use this option if you would like to"
                        "see the progress bar during runtime.")
-    group.add_argument('--no_pbar', action='store_true',
+    group3.add_argument('--no_pbar', action='store_true',
                        help="Use this option if you do not want to"
                        "see the progress bar during runtime.")
 
