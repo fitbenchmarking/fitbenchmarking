@@ -1,12 +1,9 @@
 """
 Implements a controller for the Ceres fitting software.
 """
-import sys
-import os
 import numpy as np
 from lmfit import Minimizer, Parameters
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 from fitbenchmarking.utils.exceptions import MissingBoundsError
 
 
@@ -32,8 +29,8 @@ class LmfitController(Controller):
                 'newton',
                 'tnc',
                 'lbfgsb',
-                'bfgs' ,
-                'cg' ,
+                'bfgs',
+                'cg',
                 'ampgo',
                 'shgo',
                 'dual_annealing'
@@ -65,7 +62,6 @@ class LmfitController(Controller):
                                 'dual_annealing']
         }
 
-
     jacobian_enabled_solvers = ['cg',
                                 'bfgs',
                                 'newton',
@@ -74,10 +70,10 @@ class LmfitController(Controller):
                                 'slsqp',
                                 'dogleg',
                                 'trust-ncg',
-                                'trust-krylov', 
+                                'trust-krylov',
                                 'trust-exact']
-    
-    hessian_enabled_solvers = ['Newton-CG',
+
+    hessian_enabled_solvers = ['newton',
                                'dogleg',
                                'trust-constr',
                                'trust-ncg',
@@ -92,74 +88,69 @@ class LmfitController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.result = None
         self._popt = None
         self.lmfit_out = None
+        self.lmfit_p = None
         self.lmfit_params = Parameters()
         self.params_names = self.problem.param_names
         self.value_ranges_ub = None
         self.value_ranges_lb = None
 
-    def lmfit_resdiuals (self,params):
+    def lmfit_resdiuals(self, params):
         """
         lmfit resdiuals
         """
-        self.lmfit_p = np.zeros(len(self.initial_params))
-        for i , name in enumerate(self.params_names):
-            self.lmfit_p[i] = params[name]
-        return self.cost_func.eval_r(self.lmfit_p.tolist())
+        self.lmfit_p = list(map(lambda name: params[name].value,
+                            self.params_names))
+        return self.cost_func.eval_r(self.lmfit_p)
 
-    def lmfit_jacobians (self,params):
+    def lmfit_jacobians(self, params):
         """
         lmfit jacobians
         """
-        self.lmfit_p = np.zeros(len(self.initial_params))
-        for i , name in enumerate(self.params_names):
-            self.lmfit_p[i] = params[name]
-        jac = self.cost_func.jac_res(self.lmfit_p.tolist())        
+        self.lmfit_p = list(map(lambda name: params[name].value,
+                            self.params_names))
+        jac = self.cost_func.jac_res(self.lmfit_p)
         return jac[0]
 
     def setup(self):
         """
-        Setup problem ready to be run with Ceres solver
+        Setup problem ready to be run with lmfit
         """
-        
+
         if self.value_ranges is not None:
-            self.value_ranges_lb, self.value_ranges_ub = zip(*self.value_ranges)
-        
+            self.value_ranges_lb, self.value_ranges_ub =  \
+                zip(*self.value_ranges)
 
-        if (self.value_ranges is None or np.any(np.isinf(self.value_ranges))) and \
-         self.minimizer in self.algorithm_check['global_optimization'] :
-
+        if (self.value_ranges is None or np.any(np.isinf(self.value_ranges))) \
+           and self.minimizer == 'differential_evolution':
             raise MissingBoundsError(
-                "Global optimization requires finite bounds on all parameters")
+                    "Differential evolution' requires finite bounds on all"
+                    " parameters")
 
-        for i ,name in enumerate(self.params_names):
-            kwargs = {"name":name,
-                      "value":self.initial_params[i]}
-            if self.value_ranges_lb is not None and self.value_ranges_ub is not None:
+        for i, name in enumerate(self.params_names):
+            kwargs = {"name": name,
+                      "value": self.initial_params[i]}
+            if self.value_ranges_lb is not None \
+               and self.value_ranges_ub is not None:
                 kwargs["max"] = self.value_ranges_ub[i]
                 kwargs["min"] = self.value_ranges_lb[i]
             self.lmfit_params.add(**kwargs)
 
     def fit(self):
         """
-        Run problem with Ceres solver
+        Run problem with lmfit
         """
-        
+
         minner = Minimizer(self.lmfit_resdiuals, self.lmfit_params)
 
-
-        kwargs = {"method":self.minimizer}
+        kwargs = {"method": self.minimizer}
         if self.minimizer in self.jacobian_enabled_solvers:
-            if not self.cost_func.jacobian.use_default_jac \
-                    or self.minimizer == "newton":
-                kwargs["Dfun"] = self.lmfit_jacobians
+            kwargs["Dfun"] = self.lmfit_jacobians
         if self.cost_func.hessian and \
                 self.minimizer in self.hessian_enabled_solvers:
             kwargs["hess"] = self.cost_func.hes_cost
         self.lmfit_out = minner.minimize(**kwargs)
- 
 
     def cleanup(self):
         """
@@ -169,6 +160,7 @@ class LmfitController(Controller):
         max_iters_messages = ['maximum number of iterations',
                               'iteration limit reached',
                               'iterations reached limit']
+
         if self.lmfit_out.success:
             self.flag = 0
         elif any(message in self.lmfit_out.message.lower()
@@ -176,8 +168,6 @@ class LmfitController(Controller):
             self.flag = 1
         else:
             self.flag = 2
-        
-        self.result = list(self.lmfit_out.params.values())
-        self.final_params = self.result
-        
-        
+
+        self.final_params = list(map(lambda params: params.value,
+                                 self.lmfit_out.params.values()))
