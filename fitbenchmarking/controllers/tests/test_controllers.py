@@ -781,9 +781,10 @@ class ExternalControllerTests(TestCase):
             controller.minimizer = minimizer
             self.shared_tests.controller_run_test(controller)
 
-            controller._status = "mpfit (potential) success: Convergence in chi-square and parameter value (3)"
+            controller.kmpfit_message =  \
+                "mpfit (potential) success: Convergence in parameter value (2)"
             self.shared_tests.check_converged(controller)
-            controller._status = 2
+            controller.kmpfit_message = ""
             self.shared_tests.check_diverged(controller)
 
     def test_mantid(self):

@@ -36,7 +36,7 @@ class KmpfitController(Controller):
         """
         super().__init__(cost_func)
         self.result = None
-        self._status = None
+        self.kmpfit_message = None
         self._popt = None
         self.kmpfit_fitter = kmpfit.Fitter
         self.kmpfit_object = None
@@ -72,15 +72,15 @@ class KmpfitController(Controller):
         """
 
         self.kmpfit_object.fit(params0=self.initial_params)
+        self.kmpfit_message = self.kmpfit_object.message
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-        self._status = self.kmpfit_object.message
-        print(self._status)
-        if "success" in self._status:
+
+        if "success" in self.kmpfit_message:
             self.flag = 0
         else:
             self.flag = 2
