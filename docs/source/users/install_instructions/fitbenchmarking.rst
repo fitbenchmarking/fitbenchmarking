@@ -50,7 +50,7 @@ of the code that is still in development.
 
    .. code-block:: bash
 
-      python -m pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools]
+      python -m pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit]
 
 4. Additional software that cannot be installed via pip can also be used
    with FitBenchmarking.  Follow the instructions at
