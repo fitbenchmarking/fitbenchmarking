@@ -62,7 +62,7 @@ The Bumps minimizers are set as follows:
    `de` is not included in the default list of minimizers for bumps. To run this solver, you must
    explicitly set the minimizer as seen above.
 
-.. _dfo:
+.. _ceres:
 
 Ceres Solver (``ceres``)
 =============
@@ -107,6 +107,8 @@ The Ceres Solver minimizers are set as follows:
 
 .. note::
    The PyCeres currently only works with Ceres Solver versions 2.0.0 
+
+.. _dfo:
 
 DFO (``dfo``)
 =============
@@ -317,6 +319,7 @@ Horace is made available under the the `GPL-3 licence <https://www.gnu.org/licen
 .. warning::
    The Horace Toolbox and MATLAB must be installed for this to be available; see :ref:`external-instructions`.
 
+.. _kmpfit:
 
 kmpfit (``kmpfit``)
 =============
@@ -340,6 +343,7 @@ which is a particular strategy for iteratively searching for the best fit.
 .. warning::
    The additional dependency Kmpfit must be installed for this to be available;
    See :ref:`extra_dependencies`.
+
 .. _mantid:
 
 Mantid (``mantid``)
