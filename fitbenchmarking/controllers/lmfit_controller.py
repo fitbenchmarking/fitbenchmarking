@@ -33,14 +33,12 @@ class LmfitController(Controller):
                 'cg',
                 'ampgo',
                 'shgo',
-                'dual_annealing'
-                ],
+                'dual_annealing'],
         'ls': [],
         'deriv_free': ['powell',
                        'cobyla',
                        'slsqp',
-                       'emcee',
-                       ],
+                       'emcee'],
         'general': [],
         'simplex': ['nelder'],
         'trust_region': ['least_squares',
@@ -88,9 +86,7 @@ class LmfitController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self._popt = None
         self.lmfit_out = None
-        self.lmfit_p = None
         self.lmfit_params = Parameters()
         self.params_names = self.problem.param_names
         self.value_ranges_ub = None
@@ -100,18 +96,15 @@ class LmfitController(Controller):
         """
         lmfit resdiuals
         """
-        self.lmfit_p = list(map(lambda name: params[name].value,
-                            self.params_names))
-        return self.cost_func.eval_r(self.lmfit_p)
+        return self.cost_func.eval_r(list(map(lambda name: params[name].value,
+                                     self.params_names)))
 
     def lmfit_jacobians(self, params):
         """
         lmfit jacobians
         """
-        self.lmfit_p = list(map(lambda name: params[name].value,
-                            self.params_names))
-        jac = self.cost_func.jac_res(self.lmfit_p)
-        return jac[0]
+        return self.cost_func.jac_cost(list(map(lambda name:
+                                       params[name].value, self.params_names)))
 
     def setup(self):
         """
@@ -125,7 +118,7 @@ class LmfitController(Controller):
         if (self.value_ranges is None or np.any(np.isinf(self.value_ranges))) \
            and self.minimizer == 'differential_evolution':
             raise MissingBoundsError(
-                    "Differential evolution' requires finite bounds on all"
+                    "Differential evolution requires finite bounds on all"
                     " parameters")
 
         for i, name in enumerate(self.params_names):
