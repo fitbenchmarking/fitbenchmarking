@@ -170,7 +170,6 @@ class Options:
                    'bfgs',
                    'cg',
                    'ampgo',
-                   'shgo',
                    'dual_annealing'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',

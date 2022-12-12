@@ -86,6 +86,8 @@ class LmfitController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
+        self.support_for_bounds = True
+        self.bound_minimizers = ['dual_annealing', 'differential_evolution']
         self.lmfit_out = None
         self.lmfit_params = Parameters()
         self.params_names = self.problem.param_names
@@ -110,13 +112,12 @@ class LmfitController(Controller):
         """
         Setup problem ready to be run with lmfit
         """
-
         if self.value_ranges is not None:
             self.value_ranges_lb, self.value_ranges_ub =  \
                 zip(*self.value_ranges)
 
         if (self.value_ranges is None or np.any(np.isinf(self.value_ranges))) \
-           and self.minimizer == 'differential_evolution':
+           and self.minimizer in self.bound_minimizers:
             raise MissingBoundsError(
                     "Differential evolution requires finite bounds on all"
                     " parameters")
@@ -150,15 +151,9 @@ class LmfitController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-        max_iters_messages = ['maximum number of iterations',
-                              'iteration limit reached',
-                              'iterations reached limit']
 
         if self.lmfit_out.success:
             self.flag = 0
-        elif any(message in self.lmfit_out.message.lower()
-                 for message in max_iters_messages):
-            self.flag = 1
         else:
             self.flag = 2
 

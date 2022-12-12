@@ -22,6 +22,7 @@ a newline-separated list. Available options are:
 * ``gsl`` (external software -- see :ref:`external-instructions`)
 * ``horace`` (external software -- see :ref:`external-instructions`)
 * ``levmar`` (external software -- see :ref:`extra_dependencies`)
+* ``lmfit`` (default software)
 * ``mantid`` (external software -- see :ref:`external-instructions`)
 * ``matlab`` (external software -- see :ref:`external-instructions`)
 * ``matlab_curve`` (external software -- see :ref:`external-instructions`)
