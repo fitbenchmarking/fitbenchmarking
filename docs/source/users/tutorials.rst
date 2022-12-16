@@ -23,7 +23,7 @@ The following video explains how to run FitBenchmarking.
         src="../_static/captions/Modified_AutoTranscript_FitBenchmarking_Tutorials-Running_FitBenchmarking.vtt" />
     </video>
 
-<br/>
+|
 
 Choosing your options
 ----------------------------
@@ -40,7 +40,7 @@ The following video explains how to choose the best cost function / software / m
         src="../_static/captions/Modified_AutoTranscript_FitBenchmarking_Tutorials-Choosing_your_options.vtt" />
     </video>
 
-<br/>
+|
 
 Interpreting FitBenchmarking results
 -------------------------------------
