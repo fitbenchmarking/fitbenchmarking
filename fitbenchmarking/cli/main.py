@@ -133,7 +133,7 @@ of the Fitbenchmarking docs. '''
     group1.add_argument('--dont_make_plots', action='store_true',
                         help="Use this option if you have decided not to"
                         "create plots during runtime.")
-                        
+
     group2 = parser.add_mutually_exclusive_group()
     group2.add_argument('--results_browser', action='store_true',
                         help="Use this option if you have decided to"
