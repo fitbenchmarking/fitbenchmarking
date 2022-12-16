@@ -15,7 +15,7 @@ The following video explains how to run FitBenchmarking.
 
 .. raw:: html
 
-   <video controls src="_static/videos/FitBenchmarking_Tutorials-Running_FitBenchmarking.webm"></video>
+   <video controls src="videos/FitBenchmarking_Tutorials-Running_FitBenchmarking.webm"></video>
 
 
 Choosing your options
