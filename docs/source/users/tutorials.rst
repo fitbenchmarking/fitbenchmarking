@@ -46,7 +46,7 @@ The following video explains how to interpret FitBenchmarking results.
 
 .. raw:: html
 
-    <video width="640" height="360" src="../_static/videos/FitBenchmarking_Tutorials-Interpreting_FitBenchmarking_results.webm">
+    <video width="640" height="360" controls src="../_static/videos/FitBenchmarking_Tutorials-Interpreting_FitBenchmarking_results.webm">
         <track
         label="English"
         kind="subtitles"
