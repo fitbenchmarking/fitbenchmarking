@@ -95,7 +95,7 @@ To add a new fitting problem definition type, complete the following steps:
      same example to ``fitbenchmarking/test_files/default_parsers_set/``.
 
      As part of this, the ``systests/expected_results/all_parsers.txt`` file,
-      and if necessary the ``systests/expected_results/default_parsers_set.txt`` file,
+      and if necessary the ``systests/expected_results/default_parsers_set.csv`` file,
       will need to be updated. This is done by running the systests::
 
        pytest fitbenchmarking/systests
