@@ -43,7 +43,7 @@ class TestRegressionAll(TestCase):
 
         run_benchmark(self.results_dir, problem_sub_directory)
 
-        diff, msg = compare_results(problem_sub_directory, "all_parsers.txt")
+        diff, msg = compare_results(problem_sub_directory, "all_parsers.csv")
         self.assertListEqual([], diff, msg)
 
     def test_multifit_consistent(self):
@@ -57,7 +57,7 @@ class TestRegressionAll(TestCase):
                       override_software=["mantid"],
                       jac_num_method={"scipy": ["2-point", "3-point"]})
 
-        diff, msg = compare_results(problem_sub_directory, "multifit.txt")
+        diff, msg = compare_results(problem_sub_directory, "multifit.csv")
         self.assertListEqual([], diff, msg)
 
 
@@ -86,7 +86,7 @@ class TestRegressionMatlab(TestCase):
 
         run_benchmark(self.results_dir, problem_sub_directory)
 
-        diff, msg = compare_results(problem_sub_directory, "matlab.txt")
+        diff, msg = compare_results(problem_sub_directory, "matlab.csv")
         self.assertListEqual([], diff, msg)
 
 
@@ -116,7 +116,7 @@ class TestRegressionDefault(TestCase):
         run_benchmark(self.results_dir, problem_sub_directory)
 
         diff, msg = compare_results(problem_sub_directory,
-                                    "default_parsers_set.txt")
+                                    "default_parsers_set.csv")
         self.assertListEqual([], diff, msg)
 
 
@@ -176,7 +176,7 @@ def compare_results(problem_sub_directory: str, result_filename: str) -> list:
     actual_file = os.path.join(os.path.dirname(__file__),
                                'fitbenchmarking_results',
                                problem_sub_directory,
-                               'acc_table.txt')
+                               'acc_table.csv')
 
     with open(expected_file, 'r') as f:
         expected = f.readlines()
