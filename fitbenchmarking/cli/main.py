@@ -144,6 +144,14 @@ of the Fitbenchmarking docs. '''
                         "open a browser window to show the results"
                         "of a fit benchmark.")
 
+    group3 = parser.add_mutually_exclusive_group()
+    group3.add_argument('--pbar', action='store_true',
+                        help="Use this option if you would like to"
+                        "see the progress bar during runtime.")
+    group3.add_argument('--no_pbar', action='store_true',
+                        help="Use this option if you do not want to"
+                        "see the progress bar during runtime.")
+
     parser.add_argument('-m', '--comparison_mode',
                         metavar='COMPARISON_MODE',
                         default='',
@@ -451,6 +459,13 @@ def main():
         options_dictionary['results_browser'] = True
     elif args.no_results_browser:
         options_dictionary['results_browser'] = False
+
+    # Check if benchmark in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.pbar:
+        options_dictionary['pbar'] = True
+    elif args.no_pbar:
+        options_dictionary['pbar'] = False
 
     # Check if log_append in options.py should be overridden, and if so,
     # add to options_dictionary
