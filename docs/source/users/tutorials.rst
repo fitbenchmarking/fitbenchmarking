@@ -15,7 +15,7 @@ The following video explains how to run FitBenchmarking.
 
 .. raw:: html
 
-   <video controls src="../_static/videos/FitBenchmarking_Tutorials-Running_FitBenchmarking.webm"></video>
+   <video width="320" height="240" controls src="../_static/videos/FitBenchmarking_Tutorials-Running_FitBenchmarking.webm"></video>
 
 
 Choosing your options
@@ -25,7 +25,7 @@ The following video explains how to choose the best cost function / software / m
 
 .. raw:: html
 
-    <video controls src="../_static/videos/FitBenchmarking_Tutorials-Choosing_your_options.mp4"></video>
+    <video width="320" height="240" controls src="../_static/videos/FitBenchmarking_Tutorials-Choosing_your_options.mp4"></video>
 
 
 Interpreting FitBenchmarking results
@@ -35,4 +35,4 @@ The following video explains how to interpret FitBenchmarking results.
 
 .. raw:: html
 
-    <video controls src="../_static/videos/FitBenchmarking_Tutorials-Interpreting_FitBenchmarking_results.webm"></video>
+    <video width="320" height="240" src="../_static/videos/FitBenchmarking_Tutorials-Interpreting_FitBenchmarking_results.webm"></video>
