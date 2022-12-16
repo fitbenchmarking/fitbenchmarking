@@ -453,21 +453,19 @@ def main():
     elif args.dont_make_plots:
         options_dictionary['make_plots'] = False
 
-<<<<<<< HEAD
-    # Check if benchmark in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.pbar:
-        options_dictionary['pbar'] = True
-    elif args.no_pbar:
-        options_dictionary['pbar'] = False
-=======
     # Check if results_browser in options.py should be overridden, and if so,
     # add to options_dictionary
     if args.results_browser:
         options_dictionary['results_browser'] = True
     elif args.no_results_browser:
         options_dictionary['results_browser'] = False
->>>>>>> master
+
+    # Check if benchmark in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.pbar:
+        options_dictionary['pbar'] = True
+    elif args.no_pbar:
+        options_dictionary['pbar'] = False
 
     # Check if log_append in options.py should be overridden, and if so,
     # add to options_dictionary

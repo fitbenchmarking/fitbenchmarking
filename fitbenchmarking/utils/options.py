@@ -442,11 +442,8 @@ class Options:
                             'colour_ulim': self.colour_ulim,
                             'comparison_mode': self.comparison_mode,
                             'make_plots': self.make_plots,
-<<<<<<< HEAD
-                            'pbar': self.pbar,
-=======
                             'results_browser': self.results_browser,
->>>>>>> master
+                            'pbar': self.pbar,
                             'table_type': list_to_string(self.table_type)}
 
         config['LOGGING'] = {'file_name': self.log_file,
