@@ -175,6 +175,7 @@ class TheseusController(Controller):
             _, self.th_info = self.th_optim.forward(
                 self.th_inputs, optimizer_kwargs={"track_best_solution": True,
                                                   "verbose": False})
+        self._status = str(self.th_info.status[0])
 
     def cleanup(self):
         """
@@ -182,7 +183,6 @@ class TheseusController(Controller):
         will be read from
         """
 
-        self._status = str(self.th_info.status[0])
         if self._status == "NonlinearOptimizerStatus.CONVERGED":
             self.flag = 0
         elif self._status == "NonlinearOptimizerStatus.MAX_ITERATIONS":
