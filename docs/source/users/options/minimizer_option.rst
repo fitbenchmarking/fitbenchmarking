@@ -64,6 +64,50 @@ The Bumps minimizers are set as follows:
 
 .. _dfo:
 
+Ceres Solver (``ceres``)
+=============
+
+
+`Ceres Solver <http://ceres-solver.org/>`__ is an open source C++ library for modeling and solving large, complicated optimization problems. 
+It can be used to solve Non-linear Least Squares problems with bounds constraints and general unconstrained optimization problems.
+
+FitBenchmarking currently supports the Ceres Solver minimizers:
+
+* `Levenberg-Marquardt <http://ceres-solver.org/nnls_solving.html#levenberg-marquardt>`__ (:code:`Levenberg-Marquardt`)
+* `Dogleg <http://ceres-solver.org/nnls_solving.html#dogleg>`__ (:code:`Dogleg`)
+* `Steepest Descent <http://ceres-solver.org/nnls_solving.html#line-search-methods>`__ (:code:`steepest_descent`)
+* `BFGS algorithm <http://ceres-solver.org/nnls_solving.html#line-search-methods>`__ (:code:`BFGS`)
+* `LBFGS algorithm <http://ceres-solver.org/nnls_solving.html#line-search-methods>`__ (:code:`LBFGS`)
+* `Fletcher-Reeves Non Linear Conjugate-Gradient <http://ceres-solver.org/nnls_solving.html#line-search-methods>`__ (:code:`Fletcher_Reeves`)
+* `Polak-Ribiere Non Linear Conjugate-Gradient <http://ceres-solver.org/nnls_solving.html#line-search-methods>`__ (:code:`Polak_Ribiere`)
+* `Hestenes-Stiefel Non Linear Conjugate-Gradient <http://ceres-solver.org/nnls_solving.html#line-search-methods>`__ (:code:`Hestenes_Stiefel`)
+
+**Licence** Ceres Solver is available under the new BSD licence -- details can be found `here <http://ceres-solver.org/license.html>`__ 
+
+**Links** `Ceres Solver <http://ceres-solver.org/>`__ `PyCeres - Ceres Python Bindings <https://github.com/Edwinem/ceres_python_bindings>`__
+
+The Ceres Solver minimizers are set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    ceres: Levenberg_Marquardt
+           Dogleg
+           BFGS
+           LBFGS
+           steepest_descent
+           Fletcher_Reeves
+           Polak_Ribiere
+           Hestenes_Stiefel
+
+
+.. warning::
+   The additional dependency Ceres Solver must be installed for this to be available;
+   See :ref:`extra_dependencies`.
+
+.. note::
+   The PyCeres currently only works with Ceres Solver versions 2.0.0 
+
 DFO (``dfo``)
 =============
 

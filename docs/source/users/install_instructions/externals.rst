@@ -11,6 +11,17 @@ they need to be installed and available on your machine.  We give
 pointers outlining how to do this below, and you can find install scripts
 for Ubuntu 18.04 in the directory `/build/<software>/`
 
+Ceres Solver
+------------
+
+Ceres Solver is used as a fitting software in FitBenchmarking, and is called via the
+PyCeres interface.
+
+Install instructions can be found on the `PyCeres <https://github.com/Edwinem/ceres_python_bindings#recommended-build-alongside-ceres>`__ Github page and 
+`Ceres Solver documentation <http://ceres-solver.org/installation.html>`__ 
+
+Please note that the ``PYCERES_LOCATION`` environment variable must be set.
+
 CUTEst
 ------
 
