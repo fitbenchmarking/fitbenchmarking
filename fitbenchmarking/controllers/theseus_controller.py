@@ -116,11 +116,10 @@ class TheseusController(Controller):
         self._status = None
         self.th_objective = None
         self.th_optim = None
-        self.th_x = None
-        self.th_y = None
         self.th_info = None
         self.th_cost_func = None
         self._param_names = self.problem.param_names
+        self.th_inputs = None
 
     def setup(self):
         """
@@ -129,12 +128,20 @@ class TheseusController(Controller):
         x_tensor = torch.from_numpy(np.array([self.problem.data_x]))
         y_tensor = torch.from_numpy(np.array([self.problem.data_x]))
 
-        self.th_x = th.Variable(x_tensor.float(), name="x_data")
-        self.th_y = th.Variable(y_tensor.float(), name="y_data")
+        th_x = th.Variable(x_tensor.float(), name="x_data")
+        th_y = th.Variable(y_tensor.float(), name="y_data")
 
-        th_aux_vars = self.th_x, self.th_y
+        th_aux_vars = th_x, th_y
         th_optim_vars = [th.Vector(1, name=f"{name}")
                          for name in self._param_names]
+
+        params = [params*torch.ones((1, 1)) for params in self.initial_params]
+        param_dict = dict(zip(self.problem.param_names, params))
+
+        self.th_inputs = {
+                            "x_data": th_x,
+                            "y_data": th_y,
+                            **param_dict}
 
         self.th_objective = th.Objective()
 
@@ -164,17 +171,9 @@ class TheseusController(Controller):
         Run problem with Theseus
         """
 
-        params = [params*torch.ones((1, 1)) for params in self.initial_params]
-        param_dict = dict(zip(self.problem.param_names, params))
-
-        theseus_inputs = {
-                            "x_data": self.th_x,
-                            "y_data": self.th_y,
-                            **param_dict}
-
         with torch.no_grad():
             _, self.th_info = self.th_optim.forward(
-                theseus_inputs, optimizer_kwargs={"track_best_solution": True,
+                self.th_inputs, optimizer_kwargs={"track_best_solution": True,
                                                   "verbose": False})
 
     def cleanup(self):
