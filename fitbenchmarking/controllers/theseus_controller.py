@@ -5,6 +5,7 @@ Implements a controller for the Theseus fitting software.
 from typing import Iterable, List, Optional, Tuple ,Sequence
 import theseus as th
 import torch
+import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
@@ -14,67 +15,53 @@ class TheseusCostFunction(th.CostFunction):
     def __init__(
         self,
         fb_cf,
-        th_optim_vars, #: Iterable[th.Variable],
-        # th_aux_vars,
+        var,
+        auxvar,
         cost_weight: Optional[th.CostWeight] = None,
         name: Optional[str] = None,
         # aux_vars: Optional[Sequence[th.Variable]] = None,
     ):
-        # if cost_weight is None:
-        #     cost_weight = th.ScaleCostWeight(1.0)
+        if cost_weight is None:
+            cost_weight = th.ScaleCostWeight(1.0)
         super().__init__(cost_weight, name=name)
         self.fb_cf = fb_cf
-        self.th_optim_vars = th_optim_vars
-        # self.th_aux_vars = aux_vars
-        #print (" \n \n step 1 \n")
-        if len(self.th_optim_vars) < 1:
+        self.var = var
+        self.auxvar = auxvar or []
+
+        if len(var) < 1:
             raise ValueError(
                 "TheseusCostFunction must receive at least one optimization variable."
             )
 
-        self.register_vars(self.th_optim_vars, is_optim_vars=True)
-        #self.register_vars(self.th_aux_vars, is_optim_vars=False)
-        #print (" \n step 2 \n")
-        # self._tmp_optim_vars = tuple(v.copy() for v in self.th_optim_vars)
-        # self._tmp_aux_vars = None
-        # self._tmp_optim_vars_for_loop = None
-        # self._tmp_aux_vars_for_loop = None
+        self.register_vars(var, is_optim_vars=True)
+        self.register_vars(auxvar, is_optim_vars=False)
 
-        self.x = [float(optim_vars1[0]) for optim_vars1 in self.th_optim_vars]
-        # test = self.th_optim_vars.copy()
-        # self._tmp_optim_vars = tuple(v.copy() for v in self.th_optim_vars)
-        # print(test)
-        # print(self._tmp_optim_vars)
-        #print(self.x)
-        #print (" \n step 3 \n")
-        print(" \n \n values",self.x)
-        print("out res",(th.Variable(self.fb_cf.eval_r(self.x), name="residuals")).tensor)
-        print("out jac",(th.Variable(self.fb_cf.jac_res(self.x), name="jacobians")).tensor)
-        print("fdsfs",self.fb_cf.jac_res(self.x))
-        jacobian = self.fb_cf.jac_res(self.x)
-        if jacobian is not None:
-            jac = (th.Variable(jacobian, name="jacobians")).tensor
-        print("check",jac)
-    def error(self) -> torch.Tensor:
-        print((th.Variable(self.fb_cf.eval_r(self.x), name="residuals")).tensor)
-        #print("fsdfsdfds",(th.Variable(self.fb_cf.jac_res(self.x), name="jacobians")).tensor)
-        print (" \n step error \n")
-        return (th.Variable(self.fb_cf.eval_r(self.x), name="residuals")).tensor
+    def error(self) -> List[torch.Tensor]:
+
+        optim_vars = tuple(v for v in self.optim_vars)
+        optim_vars_list = [float(optim_vars1[0]) for optim_vars1 in optim_vars]
+        res = self.fb_cf.eval_r(optim_vars_list) 
+        th_res = torch.Tensor(np.array([res]))
+        return th_res, optim_vars_list
 
     def jacobians(self) -> Tuple[List[torch.Tensor], torch.Tensor]:
-        jacobian = self.fb_cf.jac_res(self.x)
-        if jacobian is not None:
-            jac = (th.Variable(jacobian, name="jacobians")).tensor
-    
-        return [jac], self.error()
+        err, optim_vars_list = self.error()
+        jacs = self.fb_cf.jac_res(optim_vars_list)
+        #print(f"{jacs=}") 
+        th_jac = [torch.Tensor([[[item] for item in jacs[:,index]]]) for index in range(len(optim_vars_list))]
+        return th_jac, err
 
     def dim(self) -> int:
-        print("length",len(self.th_optim_vars))
-        return len(self.th_optim_vars)
+        x_data = self.auxvar[0].tensor.numpy()
+        return len(x_data[0])
 
     def _copy_impl(self, new_name: Optional[str] = None) -> "TheseusCostFunction":
         return TheseusCostFunction(  # type: ignore
-            self.th_optim_vars.copy(), self.weight.copy(), name=new_name
+            var=[v.copy() for v in self.var],
+            auxvar=[v.copy() for v in self.auxvar],
+            cost_weight=self.weight.copy(),
+            name=new_name,
+            fb_cf=self.fb_cf
         )
 
 
@@ -108,9 +95,7 @@ class TheseusController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.result = None
         self._status = None
-        self._popt = None
         self.theseus_objective = None
         self.theseus_optim = None
         self.data_x = self.problem.data_x
@@ -119,33 +104,34 @@ class TheseusController(Controller):
         self.theseus_cost_func = None
         self._param_names = self.problem.param_names
 
+
     def setup(self):
         """
         Setup problem ready to be run with Theseus
         """
        
-        x = th.Variable(self.data_x, name="x")
-        y = th.Variable(self.data_y, name="y")
+        x = th.Variable(torch.from_numpy(np.array([self.data_x])).float(), name="x_data")
+        y = th.Variable(torch.from_numpy(np.array([self.data_y])).float(), name="y_data")
+
         th_aux_vars = x, y
         
         self.theseus_objective = th.Objective()
         
         th_optim_vars = [th.Vector(1,name=f"{name}") for name in self._param_names]
 
-        self.theseus_cost_func = TheseusCostFunction(self.cost_func,th_optim_vars)
+        self.theseus_cost_func =  TheseusCostFunction(self.cost_func, th_optim_vars, th_aux_vars, name="theseus")
 
         self.theseus_objective.add(self.theseus_cost_func)
-
         if self.minimizer == 'Levenberg_Marquardt':
             optimizer = th.LevenbergMarquardt(self.theseus_objective,
-                                              max_iterations=10000,
+                                              max_iterations=100000,
                                               step_size=0.5)
-        if self.minimizer == 'Gauss-Newton':
+        elif self.minimizer == 'Gauss-Newton':
             optimizer = th.GaussNewton(self.theseus_objective,
-                                       max_iterations=10000, step_size=0.5)
+                                       max_iterations=100000, step_size=0.5)
         else:
             raise UnknownMinimizerError(
-                "No {} minimizer for Ceres solver".format(self.minimizer))
+                "No {} minimizer for Theseus-ai ".format(self.minimizer))
 
         self.theseus_optim = th.TheseusLayer(optimizer)
 
@@ -158,19 +144,28 @@ class TheseusController(Controller):
         param_dict = dict(zip(self.problem.param_names, params))
 
         theseus_inputs = {
-                            "x": self.data_x,
-                            "y": self.data_y,
+                            "x_data": torch.from_numpy(np.array([self.data_x])).float(),
+                            "y_data": torch.from_numpy(np.array([self.data_y])).float(),
                             **param_dict}
 
         with torch.no_grad():
             _, self.theseus_info = self.theseus_optim.forward(
                 theseus_inputs, optimizer_kwargs={"track_best_solution": True,
-                                                  "verbose": True})
+                                                  "verbose": False})
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-        print(self.theseus_info.best_solution)
-        self.final_params = self.theseus_info.best_solution
+
+        self._status = str(self.theseus_info.status[0])
+        if self._status == "NonlinearOptimizerStatus.CONVERGED":
+            self.flag = 0
+        elif self._status == "NonlinearOptimizerStatus.MAX_ITERATIONS":
+            self.flag = 1
+        else:
+            self.flag = 2
+
+
+        self.final_params = list(map(float,self.theseus_info.best_solution.values()))
