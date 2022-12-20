@@ -18,8 +18,8 @@ class TheseusCostFunction(th.CostFunction):
     def __init__(
         self,
         fb_cf,
-        var: Optional[Sequence[th.Vector]],
-        auxvar: Optional[Sequence[th.Variable]],
+        var: List[th.Vector],
+        auxvar: Sequence[th.Variable],
         dim: int,
         cost_weight: Optional[th.CostWeight] = None,
         name: Optional[str] = None,
