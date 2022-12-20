@@ -126,7 +126,7 @@ class TheseusController(Controller):
         Setup problem ready to be run with Theseus
         """
         x_tensor = torch.from_numpy(np.array([self.problem.data_x]))
-        y_tensor = torch.from_numpy(np.array([self.problem.data_x]))
+        y_tensor = torch.from_numpy(np.array([self.problem.data_y]))
 
         th_x = th.Variable(x_tensor.float(), name="x_data")
         th_y = th.Variable(y_tensor.float(), name="y_data")
