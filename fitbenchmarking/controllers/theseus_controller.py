@@ -43,7 +43,7 @@ class TheseusCostFunction(th.CostFunction):
         self.register_vars(var, is_optim_vars=True)
         self.register_vars(auxvar, is_optim_vars=False)
 
-    def error(self) -> Tuple[List[torch.Tensor], List[Union[int, float]]]:
+    def error(self) -> Tuple[List[torch.Tensor], List[float]]:
         """
         Resdiuals in pytorch tensor form for Theseus ai
         """
