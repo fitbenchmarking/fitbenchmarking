@@ -20,7 +20,12 @@ class Options:
     VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN', 'HESSIAN',
                       'OUTPUT', 'LOGGING']
     VALID_MINIMIZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq'],
+        {'bumps': ['amoeba',
+                   'lm-bumps',
+                   'newton',
+                   'de',
+                   'scipy-leastsq',
+                   'dream'],
          'ceres': ['Levenberg_Marquardt', 'Dogleg', 'BFGS', 'LBFGS',
                    'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
                    'Hestenes_Stiefel'],
@@ -111,7 +116,12 @@ class Options:
              'LOGGING': VALID_LOGGING}
 
     DEFAULT_MINIMZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq'],
+        {'bumps': ['amoeba',
+                   'lm-bumps',
+                   'newton',
+                   'de',
+                   'scipy-leastsq',
+                   'dream'],
          'ceres': ['Levenberg_Marquardt', 'Dogleg', 'BFGS', 'LBFGS',
                    'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
                    'Hestenes_Stiefel'],
