@@ -48,7 +48,7 @@ class NLoptController(Controller):
                 'GD_STOGO_RAND',
                 'GN_AGS',
                 'GN_ISRES'],
-        'ls': [''],
+        'ls': [],
         'deriv_free': ['LN_BOBYQA',
                        'LN_NEWUOA',
                        'LN_NEWUOA_BOUND',
@@ -177,7 +177,7 @@ class NLoptController(Controller):
         will be read from
         """
 
-        converged = [nlopt.nlopt.SUCCESS,
+        converged = [nlopt.SUCCESS,
                      nlopt.XTOL_REACHED,
                      nlopt.FTOL_REACHED]
 
