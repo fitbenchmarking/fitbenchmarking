@@ -47,7 +47,8 @@ ignored-modules=levmar,
                 matlab,
                 pygsl,
                 ral_nlls,
-                PyCeres
+                PyCeres,
+                theseus
 
 [DESIGN]
 
