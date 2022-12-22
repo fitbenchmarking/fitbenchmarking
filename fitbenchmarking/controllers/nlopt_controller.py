@@ -111,7 +111,8 @@ class NLoptController(Controller):
         self.opt = None
         self.value_ranges_ub = None
         self.value_ranges_lb = None
-        self.bound_minimizers = None
+        self.bound_minimizers = self.algorithm_check['global_optimization'] + \
+                                                    ['LN_NEWUOA_BOUND']
         self.local_optimizer_minimizers = ['G_MLSL',
                                            'G_MLSL_LDS',
                                            'GD_MLSL',
@@ -136,9 +137,6 @@ class NLoptController(Controller):
         """
         Setup problem ready to be run with NLOPT
         """
-
-        self.bound_minimizers = self.algorithm_check['global_optimization']
-        self.bound_minimizers.append('LN_NEWUOA_BOUND')
 
         nlopt_minimizer = getattr(nlopt, self.minimizer)
         self.opt = nlopt.opt(nlopt_minimizer, len(self.initial_params))
