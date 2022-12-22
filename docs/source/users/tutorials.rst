@@ -40,7 +40,8 @@ The following video explains how to run FitBenchmarking.
         src="../_static/captions/Modified_AutoTranscript_FitBenchmarking_Tutorials-Running_FitBenchmarking.vtt" />
     </video>
 
-Useful links:
+|
+Useful links: <br>
 <https://www.python.org/downloads/>
 
 Code demonstrated in this video:
