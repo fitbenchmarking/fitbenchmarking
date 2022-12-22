@@ -23,7 +23,7 @@ The following video explains how to interpret FitBenchmarking results.
         src="../_static/captions/Modified_AutoTranscript_FitBenchmarking_Tutorials-Interpreting_FitBenchmarking_results.vtt" />
     </video>
 
-
+|
 
 Running FitBenchmarking
 ----------------------------
@@ -46,27 +46,34 @@ Useful links:
 Code demonstrated in this video:
 
 .. code-block:: bash
-    python -m pip install fitbenchmarking[bumps,DFO,gradient_free,minuit,SAS,numdifftools]
+
+   python -m pip install fitbenchmarking[bumps,DFO,gradient_free,minuit,SAS,numdifftools]
 
 .. code-block:: bash
-    fitbenchmarking
+
+   fitbenchmarking
 
 .. code-block:: bash
-    fitbenchmarking -p examples/benchmark_problems/NIST/low_difficulty
+
+   fitbenchmarking -p examples/benchmark_problems/NIST/low_difficulty
 
 .. code-block:: bash
-    fitbenchmarking -o examples/options_template.ini
+
+   fitbenchmarking -o examples/options_template.ini
 
 .. code-block:: bash
-    fitbenchmarking -r new_results/
+
+   fitbenchmarking -r new_results/
 
 .. code-block:: bash
-    fitbenchmarking -t acc runtime
+
+   fitbenchmarking -t acc runtime
 
 .. code-block:: bash
-    fitbenchmarking -t acc -l WARNING
 
+   fitbenchmarking -t acc -l WARNING
 
+|
 
 Choosing your options
 ----------------------------
