@@ -182,6 +182,7 @@ RUN make install
 # Set the PYCERES_LOCATION
 ENV PYCERES_LOCATION=/ceres/ceres-bin/lib
 
+WORKDIR /
 ###########
 # Tidy up #
 ###########
