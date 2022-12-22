@@ -41,10 +41,12 @@ The following video explains how to run FitBenchmarking.
     </video>
 
 |
-Useful links: <br />
+Useful links:
+^^^^^^^^^^^^^
 <https://www.python.org/downloads/>
 
 Code demonstrated in this video:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
