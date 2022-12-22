@@ -84,3 +84,10 @@ RALFit is available to use as fitting software.
 
 Instructions on how to build the python interface are at `<https://ralfit.readthedocs.io/projects/Python/en/latest/install.html>`_
 
+Theseus
+------
+
+Theseus is used as a fitting software in FitBenchmarking, and is called via theseus-ai python
+module which requries pytorch
+
+Install instructions can be found on the `Theseus Github page <https://github.com/facebookresearch/theseus#getting-started/>`__
