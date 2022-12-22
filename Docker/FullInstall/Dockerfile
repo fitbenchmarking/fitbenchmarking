@@ -182,7 +182,12 @@ RUN make install
 # Set the PYCERES_LOCATION
 ENV PYCERES_LOCATION=/ceres/ceres-bin/lib
 
-WORKDIR /
+#########
+# lmfit #
+#########
+
+RUN pip install emcee~=3.1.0 lmfit
+
 ###########
 # Tidy up #
 ###########
