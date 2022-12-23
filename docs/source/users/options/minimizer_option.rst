@@ -421,7 +421,7 @@ optimization and curve fitting problems for Python. It builds on and extends man
 * Trust-region for constrained optimization (:code:`trust-constr`)
 * Dog-leg trust-region (:code:`dogleg`)
 * Sequential Linear Squares Programming (:code:`slsqp`)
-* Maximum likelihood via Monte-Carlo Markov Chain (:code:`emcee`)
+* `Maximum likelihood via Monte-Carlo Markov Chain <https://emcee.readthedocs.io/en/stable/>`__ (:code:`emcee`)
 * Simplicial Homology Global Optimization (:code:`shgo`)
 * Dual Annealing optimization (:code:`dual_annealing`)
 
