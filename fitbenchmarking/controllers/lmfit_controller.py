@@ -144,6 +144,8 @@ class LmfitController(Controller):
         if self.cost_func.hessian and \
                 self.minimizer in self.hessian_enabled_solvers:
             kwargs["hess"] = self.cost_func.hes_cost
+        if self.minimizer == "emcee":
+            kwargs["progress"] = False
         self.lmfit_out = minner.minimize(**kwargs)
 
     def cleanup(self):
