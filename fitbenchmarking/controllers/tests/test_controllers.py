@@ -10,7 +10,7 @@ import numpy as np
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 
 from conftest import run_for_test_types
-from fitbenchmarking import mock_problems
+from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
@@ -64,7 +64,7 @@ def make_cost_func(file_name='cubic.dat'):
 
     options = Options()
 
-    bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
+    bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
     fname = os.path.join(bench_prob_dir, file_name)
 
     fitting_problem = parse_problem_file(fname, options)
@@ -583,6 +583,16 @@ class ControllerBoundsTests(TestCase):
 
         self.check_bounds(controller)
 
+    def test_lmfit(self):
+        """
+        LmfitController: Test that parameter bounds are
+        respected for bounded problems
+        """
+
+        controller = LmfitController(self.cost_func)
+        controller.minimizer = 'dual_annealing'
+
+        self.check_bounds(controller)
 
 @run_for_test_types(TEST_TYPE, 'all')
 class ControllerValidateTests(TestCase):
