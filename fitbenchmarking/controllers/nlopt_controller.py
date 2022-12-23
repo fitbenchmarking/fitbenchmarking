@@ -119,6 +119,7 @@ class NLoptController(Controller):
                                            'GD_MLSL_LDS',
                                            'AUGLAG',
                                            'AUGLAG_EQ']
+        self._status = None
 
     def objective_master_nlopt(self, x, grad):
         """
@@ -168,6 +169,7 @@ class NLoptController(Controller):
         """
 
         self.result = self.opt.optimize(self.initial_params)
+        self._status = self.opt.last_optimize_result()
 
     def cleanup(self):
         """
@@ -179,12 +181,10 @@ class NLoptController(Controller):
                      nlopt.XTOL_REACHED,
                      nlopt.FTOL_REACHED]
 
-        if self.opt.last_optimize_result() in converged:
+        if self._status in converged:
             self.flag = 0
-        elif self.opt.last_optimize_result() == nlopt.MAXEVAL_REACHED:
+        elif self._status == nlopt.MAXEVAL_REACHED:
             self.flag = 1
-        elif self.opt.last_optimize_result() == nlopt.MAXTIME_REACHED:
-            self.flag = 6
         else:
             self.flag = 2
         self.final_params = self.result

@@ -38,6 +38,7 @@ setup(
                     'levmar': ['levmar'],
                     'mantid': ['h5py>=2.10.0,<3', 'pyyaml>=5.4.1'],
                     'matlab': ['dill'],
+                    'nlopt': ['nlopt'],
                     'gofit': ['gofit'],
                     'gradient_free': ['gradient-free-optimizers']},
     zip_safe=False,
