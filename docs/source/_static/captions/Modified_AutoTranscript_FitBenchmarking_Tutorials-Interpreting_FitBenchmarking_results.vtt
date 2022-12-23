@@ -1,0 +1,536 @@
+WEBVTT
+
+NOTE duration:"00:03:07"
+
+NOTE recognizability:0.864
+
+NOTE language:en-us
+
+NOTE Confidence: 0.865153092
+
+d25d892d-c828-47f2-8589-4944dd4498f9
+00:00:00.000 --> 00:00:02.660
+Hi there in this video I'm going
+
+NOTE Confidence: 0.865153092
+
+528553bf-635d-4062-a3f4-2fe650fc5df6
+00:00:02.660 --> 00:00:05.115
+to explain how to interpret
+
+NOTE Confidence: 0.865153092
+
+c6f2c53a-fa65-4b7a-a63d-eecd6d408fa4
+00:00:05.115 --> 00:00:06.960
+FitBenchmarking results. 
+
+NOTE Confidence: 0.865153092
+
+073cea3c-b2a8-42d1-9723-9ead1f868e7a
+00:00:06.960 --> 00:00:08.640
+ The output of FitBenchmarking is 
+
+NOTE Confidence: 0.865153092
+
+d7d8008a-ca84-49f3-a266-359c17537d0f
+00:00:08.640 --> 00:00:10.749
+displayed to the user by a four
+
+NOTE Confidence: 0.865153092
+
+57e60723-e18e-4021-8b29-c7152496acf7
+00:00:10.749 --> 00:00:12.299
+tables and two performance profiles.
+
+NOTE Confidence: 0.865153092
+
+05bf134c-1f06-4ebb-a783-58c0a9a35a41
+00:00:12.300 --> 00:00:13.640
+These are the accuracy table,
+
+NOTE Confidence: 0.865153092
+
+700398d4-d6af-455e-b0b0-180ad292d6f4
+00:00:13.640 --> 00:00:16.178
+the runtime table, the comparison table,
+
+NOTE Confidence: 0.865153092
+
+7973f872-78d2-4c36-851e-314928d85f57
+00:00:16.180 --> 00:00:18.180
+the local minimizer table, a
+
+NOTE Confidence: 0.865153092
+
+333a60a5-eecb-4115-a059-c301b60e2778
+00:00:18.180 --> 00:00:19.780
+performance profile for accuracy,
+
+NOTE Confidence: 0.865153092
+
+9fcca7a2-3c53-45d9-bf74-4291ab2742d9
+00:00:19.780 --> 00:00:21.808
+and a performance profile for runtime.
+
+NOTE Confidence: 0.916393613
+
+9db2c1ad-32de-443c-8bb6-15c03d99cd9d
+00:00:24.280 --> 00:00:26.450
+Now I'm going to explain how to
+
+NOTE Confidence: 0.916393613
+
+bd412053-4d50-454c-9c88-be392ac3818e
+00:00:26.450 --> 00:00:27.824
+ interpret the tables. By clicking 
+
+NOTE Confidence: 0.916393613
+
+2b18e398-eaf0-466c-9b4f-5edbe8eaa246
+00:00:27.824 --> 00:00:29.234
+ on the cell such as here,
+
+NOTE Confidence: 0.916393613
+
+262eef35-bab7-4ec5-b420-c540cfff8858
+00:00:29.234 --> 00:00:31.292
+you'll be taken to the relevant results 
+
+NOTE Confidence: 0.916393613
+
+dfe478de-2c9a-436f-b443-55fc2821672b
+00:00:31.292 --> 00:00:34.710
+page for that minimizer and problem.
+
+NOTE Confidence: 0.916393613
+
+869a8827-2a4d-4bd2-bf97-4ef906c9aed9
+00:00:34.710 --> 00:00:36.020
+The minimizers are listed along
+
+NOTE Confidence: 0.916393613
+
+4178048c-90d1-4003-be87-31f766993dc3
+00:00:36.020 --> 00:00:38.266
+the top of the table, along with
+
+NOTE Confidence: 0.916393613
+
+ab927aab-5431-4ec9-9e7b-8f86a32a8640
+00:00:38.266 --> 00:00:41.074
+the software and the cost function.
+
+NOTE Confidence: 0.916393613
+
+4a740f19-471d-4dba-b874-a6008e11541c
+00:00:41.080 --> 00:00:42.550
+The problems in your problem
+
+NOTE Confidence: 0.916393613
+
+4a821db0-6655-475b-910e-5fa95b670ea1
+00:00:42.550 --> 00:00:44.322
+set are displayed down the left
+
+NOTE Confidence: 0.916393613
+
+4bc2d1a4-b906-48f6-a1c1-332856e26f39
+00:00:44.322 --> 00:00:45.567
+hand side of the table.
+
+NOTE Confidence: 0.916393613
+
+f9837c8b-9879-4cb0-abd4-2673c7e991a6
+00:00:45.570 --> 00:00:46.820
+To identify the best minimizer
+
+NOTE Confidence: 0.916393613
+
+6aefb45c-bb19-43cc-98e4-aaaed43f9f48
+00:00:46.820 --> 00:00:47.820
+for your problem set, 
+
+NOTE Confidence: 0.916393613
+
+30e8fa1e-f3dc-423b-b9d1-305aa2cfc5e2
+00:00:47.820 --> 00:00:49.700
+you must identify the best
+
+NOTE Confidence: 0.916393613
+
+e1c1dfee-095a-4f4d-b32c-2860cceede75
+00:00:49.700 --> 00:00:51.204
+column in this table.
+
+NOTE Confidence: 0.916393613
+
+4f710130-cd26-4d9a-8e87-7971dd314f39
+00:00:51.210 --> 00:00:52.765
+ Peach, or the lighter colour,
+
+NOTE Confidence: 0.916393613
+
+f5006529-2332-40cb-9165-12fa75562e8d
+00:00:52.765 --> 00:00:54.320
+indicates the best and dark
+
+NOTE Confidence: 0.916393613
+
+0f9c5c6d-443e-4ba3-b139-07cd640faf2d
+00:00:54.381 --> 00:00:55.909
+purple indicates the worst.
+
+NOTE Confidence: 0.85151618
+
+e63c762a-089b-497b-b0a3-f62be36ba4ec
+00:00:58.200 --> 00:00:59.540
+The lower the absolute and
+
+NOTE Confidence: 0.85151618
+
+499499c5-e1db-4665-84a9-7d0046bc2021
+00:00:59.540 --> 00:01:00.770
+relative values, the better.
+
+NOTE Confidence: 0.85151618
+
+4c4d1a75-8713-4dcd-ae04-12a7a97b2f99
+00:01:00.770 --> 00:01:03.185
+ The best relative value is 1, and 
+
+NOTE Confidence: 0.85151618
+
+7af79db2-f384-4656-810f-11164dc53aba
+00:01:03.185 --> 00:01:05.404
+by default the tables display
+
+NOTE Confidence: 0.85151618
+
+3fe139c5-5df1-4336-9e1f-ccf8e20ee586
+00:01:05.404 --> 00:01:07.644
+the absolute value followed by
+
+NOTE Confidence: 0.85151618
+
+5004bc4f-a7e0-4d30-bcf3-b56aa66bceaa
+00:01:07.644 --> 00:01:10.157
+the relative value in brackets.
+
+NOTE Confidence: 0.85151618
+
+5adcf536-83bc-4bf1-a4fb-7a64bac4d9e5
+00:01:10.160 --> 00:01:11.537
+ Accuracy & runtime. 
+
+NOTE Confidence: 0.85151618
+
+51ba9f15-f180-40db-a0b6-0a475f7735b4
+00:01:11.537 --> 00:01:13.832
+The accuracy results are calculated
+
+NOTE Confidence: 0.85151618
+
+cc0f0517-78d3-4482-bf7d-874f3f3b2287
+00:01:13.832 --> 00:01:16.090
+by evaluating the cost function
+
+NOTE Confidence: 0.85151618
+
+161103f3-67db-4c07-8786-d696d87b08de
+00:01:16.090 --> 00:01:17.778
+with the fitted parameters.
+
+NOTE Confidence: 0.85151618
+
+10347b74-432b-4aff-bfcb-c99258635ebe
+00:01:17.780 --> 00:01:20.944
+These are shown in the accuracy table.
+
+NOTE Confidence: 0.85151618
+
+ab8b75b6-cb22-48d2-8857-e34b38637d9e
+00:01:20.950 --> 00:01:23.337
+The timing results are calculated from an
+
+NOTE Confidence: 0.85151618
+
+ae578fbc-dd4e-4cac-8bd7-35f37d6ab48c
+00:01:23.337 --> 00:01:25.759
+ average using the timeit module in Python. 
+
+NOTE Confidence: 0.85151618
+
+f1324d33-820f-4821-8448-b4c71809f89b
+00:01:25.760 --> 00:01:28.014
+These are shown in the runtime table.
+
+NOTE Confidence: 0.85151618
+
+0721403c-6dd7-446a-a51e-5e480feaab95
+00:01:28.020 --> 00:01:29.800
+The superscripts in the tables
+
+NOTE Confidence: 0.85151618
+
+4c54680f-e49f-41f3-9503-33f4d02d8c9c
+00:01:29.800 --> 00:01:31.984
+ denote the error for which a 
+
+NOTE Confidence: 0.85151618
+
+47ca1cbd-0310-4221-b0c5-144a5d4024e1
+00:01:31.984 --> 00:01:34.018
+key is displayed below the table.
+
+NOTE Confidence: 0.85151618
+
+d060044f-8ea1-4d57-ad3e-b201b57078b0
+00:01:34.020 --> 00:01:36.024
+The comparison table is an amalgamation
+
+NOTE Confidence: 0.85151618
+
+e1e520c8-1374-4881-9b8b-806b18d24769
+00:01:36.024 --> 00:01:38.480
+of both the accuracy and runtime tables.
+
+NOTE Confidence: 0.85151618
+
+a5daf56d-5d78-4480-9e38-cb1ed1d44954
+00:01:38.480 --> 00:01:40.216
+The top half of each cell displays
+
+NOTE Confidence: 0.85151618
+
+cd1287a4-81bd-469b-bd8f-f8648c579d50
+00:01:40.216 --> 00:01:41.610
+the accuracy and the bottom
+
+NOTE Confidence: 0.85151618
+
+e7a26786-2987-432c-be53-3f8da9ec677c
+00:01:41.610 --> 00:01:42.810
+half displays the runtime.
+
+NOTE Confidence: 0.8705663
+
+0726511e-41b7-45bd-b17d-6eedeb2a7ef1
+00:01:44.930 --> 00:01:47.090
+Performance profiles.
+
+NOTE Confidence: 0.8705663
+
+b6b80192-4974-429b-9847-68a326d38ea0
+00:01:47.090 --> 00:01:48.842
+There are performance profiles
+
+NOTE Confidence: 0.8705663
+
+1f998589-7fa6-435e-b9f9-0da7a7d6b583
+00:01:48.842 --> 00:01:52.490
+ for both accuracy and runtime. 
+
+NOTE Confidence: 0.8705663
+
+e7ab470f-f388-4485-a560-cd2aefacd7b9
+00:01:52.490 --> 00:01:54.555
+The best minimizers are found
+
+NOTE Confidence: 0.8705663
+
+a2345535-6657-4736-8d52-1afd98404424
+00:01:54.555 --> 00:01:57.569
+in the top left of the graph.
+
+NOTE Confidence: 0.8705663
+
+84287251-8508-4c5b-9739-46d042773a49
+00:01:57.570 --> 00:01:58.890
+All cost functions are shown
+
+NOTE Confidence: 0.8705663
+
+c576b272-72ca-48e0-b638-a09bbe758904
+00:01:58.890 --> 00:02:00.210
+together on the same diagram,
+
+NOTE Confidence: 0.8705663
+
+407b0a61-0e3b-44f3-bfab-abf662144633
+00:02:00.210 --> 00:02:02.016
+and a key for these is
+
+NOTE Confidence: 0.8705663
+
+b6c1a7ea-dff5-4575-afc8-a62fabe467ae
+00:02:02.016 --> 00:02:03.680
+on the right hand side.
+
+NOTE Confidence: 0.8705663
+
+66243a22-52cf-42e7-8f5c-252fde21f291
+00:02:03.680 --> 00:02:05.618
+Fits are taken from all benchmarks, 
+
+NOTE Confidence: 0.8705663
+
+8f6e884a-2009-4572-8a52-c8302215dc1a
+00:02:05.620 --> 00:02:07.622
+ so if FitBenchmarking is run with 
+
+NOTE Confidence: 0.8705663
+
+80ba30a4-2034-4c28-b9d7-f7de6d31c322
+00:02:07.622 --> 00:02:09.480
+n problems and m cost functions,
+
+NOTE Confidence: 0.8705663
+
+32791602-0475-42b2-bbfc-ac3388d7b763
+00:02:09.480 --> 00:02:11.040
+the resulting profile plots will
+
+NOTE Confidence: 0.8705663
+
+4739cbd5-75a1-498b-95b2-653c5e1bddbe
+00:02:11.040 --> 00:02:13.498
+have n * m steps on the y-axis.
+
+NOTE Confidence: 0.844760653913043
+
+59198fb9-f925-4d5d-9659-421850251686
+00:02:16.210 --> 00:02:17.566
+The local minimizer table.
+
+NOTE Confidence: 0.844760653913043
+
+706a434a-09d7-419a-bdae-7d1b8811885d
+00:02:17.566 --> 00:02:19.992
+This table can be used to check
+
+NOTE Confidence: 0.844760653913043
+
+6040f2a5-75a6-465c-b025-301dd8c4bb15
+00:02:19.992 --> 00:02:22.232
+if a local minimum has been found
+
+NOTE Confidence: 0.844760653913043
+
+179dc215-7740-4517-b2fb-4ee4be2c5f52
+00:02:22.232 --> 00:02:24.309
+using the criteria shown below.
+
+NOTE Confidence: 0.844760653913043
+
+fa571636-f75b-4dc1-bee2-d7cd17659076
+00:02:24.310 --> 00:02:26.142
+It can indicate that it might be worth
+
+NOTE Confidence: 0.844760653913043
+
+0d181408-95fd-4a8d-a99a-61e2485a7d5c
+00:02:26.142 --> 00:02:27.309
+trying different starting values.
+
+NOTE Confidence: 0.841810742857143
+
+7fd531a5-6af6-4650-8449-4fd663dfcc72
+00:02:29.920 --> 00:02:31.968
+However, be careful when
+
+NOTE Confidence: 0.841810742857143
+
+ddf6f7bc-4c86-4939-b489-88bf03de8a1b
+00:02:31.968 --> 00:02:33.504
+interpreting this table.
+
+NOTE Confidence: 0.841810742857143
+
+65acaff1-3f9f-4e03-b93c-57c63e6fa3f5
+00:02:33.510 --> 00:02:35.028
+True means that a local minimum
+
+NOTE Confidence: 0.841810742857143
+
+6833915d-c2f3-4183-9f50-958f26b5fe34
+00:02:35.028 --> 00:02:36.690
+has been found, but this does not
+
+NOTE Confidence: 0.841810742857143
+
+958b4f74-caa7-47ec-b579-d043afad045d
+00:02:36.690 --> 00:02:38.640
+mean that it is the best minimizer.
+
+NOTE Confidence: 0.841810742857143
+
+a7c0938f-c108-4f17-94f0-e62ed021c942
+00:02:38.640 --> 00:02:40.926
+As displayed in the example below.
+
+NOTE Confidence: 0.841810742857143
+
+896bb063-bed3-4053-a405-3778e4ced9df
+00:02:40.930 --> 00:02:43.490
+Here you can see we have a result of true,
+
+NOTE Confidence: 0.841810742857143
+
+107c2ef1-1c35-4a57-b551-60db7161847c
+00:02:43.490 --> 00:02:45.660
+but the green line does not look
+
+NOTE Confidence: 0.841810742857143
+
+6a9f279e-7d20-46ab-97de-2bbbe23d4d6a
+00:02:45.660 --> 00:02:47.869
+like a good fit for the data,
+
+NOTE Confidence: 0.841810742857143
+
+2c425876-3bf2-4cab-a2cd-2415b19ec62e
+00:02:47.870 --> 00:02:49.020
+which is the black crosses.
+
+NOTE Confidence: 0.814643368695652
+
+08520e51-412b-4f01-8b11-cac5a5af4f97
+00:02:51.390 --> 00:02:53.165
+Likewise, false does not necessarily
+
+NOTE Confidence: 0.814643368695652
+
+f606d205-2bd0-4e03-b51f-9644e4a2e085
+00:02:53.165 --> 00:02:55.682
+mean that there is no local minimum
+
+NOTE Confidence: 0.814643368695652
+
+5fd8daaf-92aa-478b-ac6c-8c759df8106c
+00:02:55.682 --> 00:02:57.704
+or that the process of finding
+
+NOTE Confidence: 0.814643368695652
+
+bb920ea0-50e5-4294-b135-1e8fc864dfa9
+00:02:57.704 --> 00:02:59.729
+a suitable minimizer has failed.
+
+NOTE Confidence: 0.814643368695652
+
+1fddd8f9-f538-4bf5-94bd-9fa8ff4d182e
+00:02:59.730 --> 00:03:02.196
+This is because the criteria described
+
+NOTE Confidence: 0.814643368695652
+
+79a3fce6-1a2a-44b9-b443-693fd98110c5
+00:03:02.196 --> 00:03:04.684
+in the previous slide also relies
+
+NOTE Confidence: 0.814643368695652
+
+c2c93db1-b0c7-4fae-9516-97db95f83201
+00:03:04.684 --> 00:03:06.994
+on the Jacobians used being good.
+

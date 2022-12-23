@@ -1,0 +1,314 @@
+WEBVTT
+
+NOTE duration:"00:02:00.7200000"
+
+NOTE recognizability:0.828
+
+NOTE language:en-us
+
+NOTE Confidence: 0.8681587
+
+0c5909f1-4582-4952-82c6-a05eb6a9102b
+00:00:02.220 --> 00:00:04.218
+Hi there I'm going to explain
+
+NOTE Confidence: 0.8681587
+
+da6a7287-aa74-47cf-961c-3868a95eb62c
+00:00:04.218 --> 00:00:06.610
+ how to run FitBenchmarking. 
+
+NOTE Confidence: 0.8681587
+
+c4cecb60-7bba-4170-b8ac-deb2e7352ba4
+00:00:06.610 --> 00:00:08.908
+Firstly, you need to install Python
+
+NOTE Confidence: 0.8681587
+
+91078f41-589b-431d-be59-cf8fe87fa450
+00:00:08.908 --> 00:00:11.190
+ version 3.7.1 or higher. 
+
+NOTE Confidence: 0.8681587
+
+6690992c-61c6-4381-a943-24963049ac9b
+00:00:11.190 --> 00:00:12.670
+This could be downloaded
+
+NOTE Confidence: 0.8681587
+
+f13cc17c-bed9-4811-ac80-c9511329c8ec
+00:00:12.670 --> 00:00:14.150
+from the Python website.
+
+NOTE Confidence: 0.8681587
+
+45f77157-5af4-41f2-9262-369d06c80a91
+00:00:14.150 --> 00:00:15.600
+Python is used for installing
+
+NOTE Confidence: 0.8681587
+
+67a89d29-4762-4ac8-852e-e1ae73da5efe
+00:00:15.600 --> 00:00:16.760
+ and running FitBenchmarking. 
+
+NOTE Confidence: 0.7096516
+
+22388fb6-7977-405c-85b7-ba9c4723b8b1
+00:00:19.730 --> 00:00:22.620
+ Step 2. Installing FitBenchmarking. 
+
+NOTE Confidence: 0.7096516
+
+1fd18a44-04eb-46f1-8c94-af95381ae54c
+00:00:22.620 --> 00:00:23.536
+ FitBenchmarking can be 
+
+NOTE Confidence: 0.7096516
+
+a1dd5c5c-3138-42a1-9ebf-5ba946d92dbe
+00:00:23.536 --> 00:00:24.910
+ installed via the command line by 
+
+NOTE Confidence: 0.7096516
+
+49816956-6964-40ce-98a9-4de2002a0c90
+00:00:24.952 --> 00:00:26.220
+entering the following command.
+
+NOTE Confidence: 0.7863286
+
+daa0b874-713e-4cb4-967f-80066860625d
+00:00:29.580 --> 00:00:32.660
+ Step 3. Running FitBenchmarking. 
+
+NOTE Confidence: 0.7863286
+
+f40aa708-ab35-4a1f-93b2-dfd8495ceb97
+00:00:32.660 --> 00:00:35.400
+Enter the command FitBenchmarking.
+
+NOTE Confidence: 0.7863286
+
+95226ebb-8e80-4092-94b5-82d4a4980aa7
+00:00:35.400 --> 00:00:37.318
+This will run the NIST average difficulty
+
+NOTE Confidence: 0.7863286
+
+c0f9cf94-3951-4270-a094-f6fc0715a2bd
+00:00:37.318 --> 00:00:38.949
+problem set on SciPy minimizers
+
+NOTE Confidence: 0.7748946
+
+914a60d1-b73b-4b9c-a09b-4fc6f9f9c76c
+00:00:41.380 --> 00:00:43.390
+ It is likely that you will wish 
+
+NOTE Confidence: 0.7748946
+
+1c90ad81-9970-4fde-9423-df5b79711090
+00:00:43.390 --> 00:00:44.730
+to run alternative problems.
+
+NOTE Confidence: 0.7748946
+
+475cfb1f-55e6-4b0e-9871-529af0aaf08e
+00:00:44.730 --> 00:00:47.578
+ To do this, use the -p argument. 
+
+NOTE Confidence: 0.8447185
+
+df0c27cd-6845-460d-8213-d72bea720020
+00:00:50.460 --> 00:00:51.668
+ FitBenchmarking will automatically 
+
+NOTE Confidence: 0.8447185
+
+0c13ba78-0139-4847-9181-b5300a9c7122
+00:00:51.668 --> 00:00:53.178
+run with the default options.
+
+NOTE Confidence: 0.8447185
+
+0f825705-a5cb-4f55-bb68-dbd9195ed050
+00:00:53.180 --> 00:00:55.100
+However, it is also possible to
+
+NOTE Confidence: 0.8447185
+
+f6b2280c-4a53-436d-9db5-62a69dd399dc
+00:00:55.100 --> 00:00:56.800
+ change the options via a .ini
+
+NOTE Confidence: 0.8447185
+
+d16f15ce-d5a6-42a8-8a67-1543738ecb9b
+00:00:56.800 --> 00:00:58.914
+file or via the command line. 
+
+NOTE Confidence: 0.8447185
+
+9ce2888b-963c-4492-8070-ace907b484df
+00:00:58.920 --> 00:01:01.060
+However, this is only
+
+NOTE Confidence: 0.8447185
+
+15c2d1e1-76df-4abe-9994-931667ed78de
+00:01:01.060 --> 00:01:03.200
+available for certain options.
+
+NOTE Confidence: 0.8447185
+
+455af7ea-114d-4aba-a60d-eb8af368348a
+00:01:03.200 --> 00:01:05.608
+ To change the options via .ini file, 
+
+NOTE Confidence: 0.8447185
+
+e686a41b-0d0f-4809-882f-dd5090edd970
+00:01:05.610 --> 00:01:08.600
+ use the -o argument. 
+
+NOTE Confidence: 0.8447185
+
+0a8f6dd6-7d5a-4922-90e3-63f3f7051a85
+00:01:08.600 --> 00:01:09.760
+You must ensure that your
+
+NOTE Confidence: 0.8447185
+
+ae231bed-39d6-47b5-9282-0e47ab78181f
+00:01:09.760 --> 00:01:11.238
+options file is of the format
+
+NOTE Confidence: 0.8447185
+
+4718c739-9506-44fc-9115-7e63088e14ec
+00:01:11.238 --> 00:01:12.568
+as displayed on the right,
+
+NOTE Confidence: 0.8447185
+
+c0c585fc-7a56-453c-b687-53bf44b9ba75
+00:01:12.570 --> 00:01:13.810
+otherwise this will not work.
+
+NOTE Confidence: 0.8331351
+
+5cdfb81e-0297-4592-80f8-7b18aadc9a6f
+00:01:16.140 --> 00:01:18.300
+To change the options via the command line,
+
+NOTE Confidence: 0.8331351
+
+0d41d4e2-0aab-48a1-b5eb-2f864c9123c9
+00:01:18.300 --> 00:01:21.079
+for example to change the results directory.
+
+NOTE Confidence: 0.8331351
+
+cbc029fe-d32b-408f-9bf7-8a41a2f20489
+00:01:21.080 --> 00:01:25.808
+ Use the -r argument as shown below. 
+
+NOTE Confidence: 0.8331351
+
+f4d3101a-f5f1-4185-9142-c699b89e431f
+00:01:25.810 --> 00:01:28.564
+For an option for which you wish to make
+
+NOTE Confidence: 0.8331351
+
+992b13d8-3f37-4191-afcc-10df7fb8527e
+00:01:28.564 --> 00:01:30.710
+several choices, for example table type,
+
+NOTE Confidence: 0.8331351
+
+4362e094-eb53-41c0-9ce2-4bc8bfa67d7b
+00:01:30.710 --> 00:01:33.419
+simply use a space to separate your choices.
+
+NOTE Confidence: 0.8331351
+
+c4528d72-2ece-44d0-8952-c27e335d906f
+00:01:33.420 --> 00:01:36.480
+So here we have accuracy and
+
+NOTE Confidence: 0.8331351
+
+e34c64b8-8cd9-46ce-974a-1f2ebb781509
+00:01:36.480 --> 00:01:38.520
+runtime separated by space.
+
+NOTE Confidence: 0.8331351
+
+b606f138-2778-4ee7-acaa-bad1fcf21d6c
+00:01:38.520 --> 00:01:40.800
+If you wish to change
+
+NOTE Confidence: 0.8331351
+
+b69b1cb8-e056-45fd-a632-9876b2559381
+00:01:40.800 --> 00:01:42.168
+ several different options,
+
+NOTE Confidence: 0.8331351
+
+0933542a-a54a-4080-8e43-837bd0207923
+00:01:42.170 --> 00:01:44.165
+use the space to separate the arguments. 
+
+NOTE Confidence: 0.8331351
+
+bc3bd71a-8eb1-4053-9bf4-82cec1a9b97b
+00:01:44.170 --> 00:01:46.172
+So here we have table type and
+
+NOTE Confidence: 0.8331351
+
+6e5aa17d-d4f7-45fe-a0cc-893aaf09c46d
+00:01:46.172 --> 00:01:47.590
+ logging level separated by space. 
+
+NOTE Confidence: 0.85795796
+
+f46688a0-26cc-40a0-8483-3a58643b6636
+00:01:49.760 --> 00:01:51.482
+And here we have a handy table
+
+NOTE Confidence: 0.85795796
+
+3812d354-7a83-40be-85ae-848331c60928
+00:01:51.482 --> 00:01:52.821
+which outlines the options which
+
+NOTE Confidence: 0.85795796
+
+4bf6fb22-f76f-49e3-9258-af0512291d5f
+00:01:52.821 --> 00:01:54.732
+ can be changed via the command line, 
+
+NOTE Confidence: 0.85795796
+
+d7040e67-e660-47ab-af15-2c1bd6204ba3
+00:01:54.740 --> 00:01:56.730
+the argument and some help.
+
+NOTE Confidence: 0.85795796
+
+028157b1-e16a-4057-aebb-3f3e0b670198
+00:01:56.730 --> 00:01:58.900
+ This is available on the FitBenchmarking. 
+
+NOTE Confidence: 0.85795796
+
+88b7c578-d7e6-4b1b-ac71-f63d18e8836f
+00:01:58.900 --> 00:02:00.720
+read the docs website. 
+
