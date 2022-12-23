@@ -37,6 +37,8 @@ FitBenchmarking currently supports the Bumps minimizers:
 
 * `scipy's leastsq <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#fit-lm>`__ (:code:`scipy-leastsq`)  This calls scipy's Levenberg-Marquardt method. Note that this was the default method for `lm` prior to Bumps v0.8.2.
 
+* `DiffeRential Evolution Adaptive Metropolis <https://bumps.readthedocs.io/en/latest/guide/optimizer.html#dream>`__ (:code:`dream`)
+
 **Licence** The main licence file for Bumps is `here <https://github.com/bumps/bumps/blob/master/LICENSE.txt>`__.  Individual files have their own copyright and licence
 -- if you plan to incorporate this in your own software you should first check that the
 licences used are compatible.
@@ -53,6 +55,7 @@ The Bumps minimizers are set as follows:
            newton
            de
            scipy-leastsq
+           dream
 
 .. warning::
    The additional dependency Bumps must be installed for this to be available;
