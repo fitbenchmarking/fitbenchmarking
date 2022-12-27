@@ -35,6 +35,7 @@ class ParamonteController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
+        self.support_for_bounds = True
         self.result = None
         self.pmpd = pm.ParaDRAM()
         self.logY = np.log(self.data_y)
@@ -80,24 +81,28 @@ class ParamonteController(Controller):
         Setup problem ready to be run with Paramonte
         """
         par_names = self.problem.param_names + ["logSigma"]
-        par_ini_p = self.initial_params + [2.0]
+        par_ini_p = self.initial_params + [-2.0]
         param_dict = dict(zip(par_names, par_ini_p))
 
         # overwrite the existing output files just in case they already exist.
         self.pmpd.spec.overwriteRequested = True
         # specify the output file prefixes.
-        self.pmpd.spec.outputFileName = "./out/temp1"
+        self.pmpd.spec.outputFileName = "./out/temp"
         # set the random seed for the sake of reproducibity.
         self.pmpd.spec.randomSeed = 12345
         # set the output names of the parameters.
         self.pmpd.spec.variableNameList = par_names
         # set the number of uniquely sampled points from the likelihood 
         # function.
-        self.pmpd.spec.chainSize = 100
+        self.pmpd.spec.chainSize = 10000
         self.pmpd.spec.variableNameList = list(param_dict.keys())
         self.pmpd.spec.startPointVec = list(param_dict.values())
-        self.pmpd.spec.sampleSize = 2000
         self.pmpd.mpiEnabled = True
+
+        if self.value_ranges is not None:
+            value_ranges_lb, value_ranges_ub = zip(*self.value_ranges)
+            self.pmpd.spec.domainLowerLimitVec = value_ranges_lb
+            self.pmpd.spec.domainUpperLimitVec = value_ranges_ub
 
     def fit(self):
         """
@@ -113,7 +118,7 @@ class ParamonteController(Controller):
         will be read from
         """
 
-        sample = self.pmpd.readSample("./out/temp1", renabled=True)[0]
+        sample = self.pmpd.readSample("./out/temp", renabled=True)[0]
 
         param = sample.df.mean()[1:-1]
 
