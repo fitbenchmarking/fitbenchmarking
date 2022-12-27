@@ -90,30 +90,28 @@ class LmfitController(Controller):
         self.bound_minimizers = ['dual_annealing', 'differential_evolution']
         self.lmfit_out = None
         self.lmfit_params = Parameters()
-        self.params_names = self.problem.param_names
-        self.value_ranges_ub = None
-        self.value_ranges_lb = None
 
     def lmfit_resdiuals(self, params):
         """
         lmfit resdiuals
         """
         return self.cost_func.eval_r(list(map(lambda name: params[name].value,
-                                     self.params_names)))
+                                     self.problem.param_names)))
 
     def lmfit_jacobians(self, params):
         """
         lmfit jacobians
         """
         return self.cost_func.jac_cost(list(map(lambda name:
-                                       params[name].value, self.params_names)))
+                                       params[name].value,
+                                       self.problem.param_names)))
 
     def setup(self):
         """
         Setup problem ready to be run with lmfit
         """
         if self.value_ranges is not None:
-            self.value_ranges_lb, self.value_ranges_ub =  \
+            value_ranges_lb, value_ranges_ub =  \
                 zip(*self.value_ranges)
 
         if (self.value_ranges is None or np.any(np.isinf(self.value_ranges))) \
@@ -122,13 +120,13 @@ class LmfitController(Controller):
                     "Differential evolution requires finite bounds on all"
                     " parameters")
 
-        for i, name in enumerate(self.params_names):
+        for i, name in enumerate(self.problem.param_names):
             kwargs = {"name": name,
                       "value": self.initial_params[i]}
-            if self.value_ranges_lb is not None \
-               and self.value_ranges_ub is not None:
-                kwargs["max"] = self.value_ranges_ub[i]
-                kwargs["min"] = self.value_ranges_lb[i]
+            if value_ranges_lb is not None \
+               and value_ranges_ub is not None:
+                kwargs["max"] = value_ranges_ub[i]
+                kwargs["min"] = value_ranges_lb[i]
             self.lmfit_params.add(**kwargs)
 
     def fit(self):
