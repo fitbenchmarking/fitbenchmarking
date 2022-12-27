@@ -102,9 +102,9 @@ class CeresController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
+        self.support_for_bounds = True
         self.result = None
         self._status = None
-        self._popt = None
         self.ceres_problem = PyCeres.Problem()
         self.ceres_options = PyCeres.SolverOptions()
         self.ceres_summary = PyCeres.Summary()
@@ -120,6 +120,12 @@ class CeresController(Controller):
                                             self.result)
 
         self.ceres_options.max_num_iterations = 10000
+
+        if self.value_ranges is not None:
+            value_ranges_lb, value_ranges_ub = zip(*self.value_ranges)
+            for i, (l, u) in enumerate(zip(value_ranges_lb, value_ranges_ub)):
+                self.ceres_problem.SetParameterLowerBound(self.result, i, l)
+                self.ceres_problem.SetParameterUpperBound(self.result, i, u)
 
         self.ceres_options.linear_solver_type = \
             PyCeres.LinearSolverType.DENSE_QR
@@ -150,7 +156,7 @@ class CeresController(Controller):
                 PyCeres.NonlinearConjugateGradientType.HESTENES_STIEFEL
         else:
             raise UnknownMinimizerError(
-                "No {} minimizer for Ceres solver".format(self.minimizer))
+                f"No {self.minimizer} minimizer for Ceres solver")
 
     def fit(self):
         """
