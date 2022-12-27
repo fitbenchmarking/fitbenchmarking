@@ -107,6 +107,7 @@ class NLoptController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
+        self.support_for_bounds = True
         self.result = None
         self.opt = None
         self.value_ranges_ub = None

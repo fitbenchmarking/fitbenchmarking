@@ -26,7 +26,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Installing
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,minuit,SAS,numdifftools]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,minuit,SAS,numdifftools,nlopt]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
     - name: 'Running Tests'
       run: |
@@ -47,7 +47,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Installing
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,levmar,minuit,SAS,numdifftools]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,levmar,minuit,SAS,numdifftools,nlopt]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
@@ -70,7 +70,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Installing
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,nlopt]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
     - name: 'Running Tests'
       run: |
@@ -91,7 +91,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Installing
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,levmar,minuit,SAS,numdifftools]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,levmar,minuit,SAS,numdifftools,nlopt]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
@@ -123,7 +123,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip==20.0.2
         python -m pip install --upgrade wheel
-        pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools]
+        pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,nlopt]
         pip install -r requirements.txt
         sudo apt-get install libgsl-dev
         pip install pygsl
@@ -147,7 +147,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install wheel
-        python -m pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools]
+        python -m pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,nlopt]
         python -m pip install -r requirements.txt
     - name: 'Running Tests'
       run: |
