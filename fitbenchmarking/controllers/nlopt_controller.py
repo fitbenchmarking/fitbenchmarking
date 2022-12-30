@@ -160,9 +160,7 @@ class NLoptController(Controller):
             self.opt.set_local_optimizer(local_opt)
 
         self.opt.set_min_objective(self.objective_master_nlopt)
-        self.opt.set_xtol_rel(1e-5)
-        self.opt.set_ftol_rel(1e-8)
-        self.opt.set_maxeval(100000)
+        self.opt.set_maxeval(10000)
 
     def fit(self):
         """
