@@ -9,7 +9,7 @@ from unittest.mock import patch
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 
 from conftest import run_for_test_types
-from fitbenchmarking import mock_problems
+from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.core.fitting_benchmarking import loop_over_hessians
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
@@ -85,7 +85,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None,
     if max_runtime:
         options.max_runtime = max_runtime
 
-    bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
+    bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
     fname = os.path.join(bench_prob_dir, file_name)
 
     fitting_problem = parse_problem_file(fname, options)
