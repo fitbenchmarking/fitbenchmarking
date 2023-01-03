@@ -60,10 +60,13 @@ class KmpfitController(Controller):
         """
         Setup problem ready to be run with Kmpfit solver
         """
-        self.kmpfit_object = kmpfit.Fitter(residuals=self.kmpfit_residuals,
-                                           deriv=self.kmpfit_jacobians,
-                                           data=(self.data_x, self.data_y)
-                                           )
+        kwargs = {'residuals': self.kmpfit_residuals,
+                  'data': (self.data_x, self.data_y)}
+
+        if self.cost_func.jacobian:
+            kwargs['deriv'] = self.kmpfit_jacobians
+
+        self.kmpfit_object = kmpfit.Fitter(**kwargs)
 
     def fit(self):
         """

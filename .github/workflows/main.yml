@@ -72,6 +72,7 @@ jobs:
       run: |
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install https://www.astro.rug.nl/software/kapteyn/kapteyn-3.0.tar.gz
     - name: 'Running Tests'
       run: |
         ci/unit_tests_default.sh
@@ -129,6 +130,7 @@ jobs:
         pip install pygsl
         pip install pycutest
         pip install dill
+        pip install https://www.astro.rug.nl/software/kapteyn/kapteyn-3.0.tar.gz
     - name: 'Run Linting'
       run: |
         ci/linting_tests.sh
