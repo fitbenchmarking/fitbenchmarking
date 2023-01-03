@@ -1,8 +1,0 @@
-# FitBenchmark Problem
-software = 'mantid'
-name = 'cubic-fba'
-description = 'This is a simple test problem where we interpolate points that lie exactly on a cubic polynomial.'
-input_file = 'cubic.txt'
-function ='name=UserFunction, Formula=A1+A2*x+A3*x^2+A4*x^3, A1=8, A2=2.98, A3=4, A4=1.02'
-# fit_parameters = {'StartX': 0, 'EndX': 0}
-parameter_ranges = {'A1': (6,10)}

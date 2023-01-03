@@ -37,7 +37,7 @@ autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfogn', 'dfols',
                         'dill', 'gofit', 'matlab', 'pygsl', 'iminuit', 'bumps',
                         'bumps.fitters', 'tempfile', 'backports',
                         'backports.tempfile', 'gradient_free_optimizers',
-                        'levmar','PyCeres','kmpfit','kapteyn']
+                        'levmar', 'PyCeres', 'kmpfit', 'kapteyn']
 
 
 # -- General configuration ------------------------------------------------
@@ -118,7 +118,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+html_static_path = ['_static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -200,7 +200,7 @@ def run_apidoc(_):
     code_path = os.path.join(file_dir, os.pardir, os.pardir, 'fitbenchmarking')
     ignore_paths = [
         os.path.join(code_path, '*', 'tests'),
-        os.path.join(code_path, 'mock_problems'),
+        os.path.join(code_path, 'test_files'),
         os.path.join(code_path, 'systests')
     ]
 

@@ -1,6 +1,7 @@
 '''
 This file will handle all interaction with the options configuration file.
 '''
+# pylint: disable=too-many-branches
 
 import configparser
 import os
@@ -93,8 +94,10 @@ class Options:
          'append': [True, False],
          'external_output': ['debug', 'display', 'log_only'],
          'make_plots': [True, False],
+         'pbar': [True, False],
          'comparison_mode': ['abs', 'rel', 'both'],
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
+         'results_browser': [True, False],
          'colour_map': plt.colormaps()}
     VALID_LOGGING = \
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
@@ -168,10 +171,12 @@ class Options:
     DEFAULT_OUTPUT = \
         {'results_dir': 'fitbenchmarking_results',
          'make_plots': True,
+         'pbar': True,
          'colour_map': 'magma_r',
          'colour_ulim': 100,
          'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
+         'results_browser': True,
          'table_type': ['acc', 'runtime', 'compare', 'local_min']}
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
@@ -291,6 +296,18 @@ class Options:
         else:
             self.make_plots = self.read_value(
                 output.getboolean, 'make_plots', additional_options)
+
+        if 'results_browser' in additional_options:
+            self.results_browser = additional_options['results_browser']
+        else:
+            self.results_browser = self.read_value(
+                output.getboolean, 'results_browser', additional_options)
+
+        if 'pbar' in additional_options:
+            self.pbar = additional_options['pbar']
+        else:
+            self.pbar = self.read_value(
+                output.getboolean, 'pbar', additional_options)
 
         self.colour_map = self.read_value(
             output.getstr, 'colour_map', additional_options)
@@ -428,6 +445,8 @@ class Options:
                             'colour_ulim': self.colour_ulim,
                             'comparison_mode': self.comparison_mode,
                             'make_plots': self.make_plots,
+                            'results_browser': self.results_browser,
+                            'pbar': self.pbar,
                             'table_type': list_to_string(self.table_type)}
 
         config['LOGGING'] = {'file_name': self.log_file,

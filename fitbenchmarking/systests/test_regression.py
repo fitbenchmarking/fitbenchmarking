@@ -43,7 +43,7 @@ class TestRegressionAll(TestCase):
 
         run_benchmark(self.results_dir, problem_sub_directory)
 
-        diff, msg = compare_results(problem_sub_directory, "all_parsers.txt")
+        diff, msg = compare_results(problem_sub_directory, "all_parsers.csv")
         self.assertListEqual([], diff, msg)
 
     def test_multifit_consistent(self):
@@ -57,7 +57,7 @@ class TestRegressionAll(TestCase):
                       override_software=["mantid"],
                       jac_num_method={"scipy": ["2-point", "3-point"]})
 
-        diff, msg = compare_results(problem_sub_directory, "multifit.txt")
+        diff, msg = compare_results(problem_sub_directory, "multifit.csv")
         self.assertListEqual([], diff, msg)
 
 
@@ -86,7 +86,7 @@ class TestRegressionMatlab(TestCase):
 
         run_benchmark(self.results_dir, problem_sub_directory)
 
-        diff, msg = compare_results(problem_sub_directory, "matlab.txt")
+        diff, msg = compare_results(problem_sub_directory, "matlab.csv")
         self.assertListEqual([], diff, msg)
 
 
@@ -111,12 +111,12 @@ class TestRegressionDefault(TestCase):
         containing all problem types against a single minimizer from each of
         the supported softwares
         """
-        problem_sub_directory = "default_parsers"
+        problem_sub_directory = "default_parsers_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
 
         diff, msg = compare_results(problem_sub_directory,
-                                    "default_parsers.txt")
+                                    "default_parsers_set.csv")
         self.assertListEqual([], diff, msg)
 
 
@@ -176,7 +176,7 @@ def compare_results(problem_sub_directory: str, result_filename: str) -> list:
     actual_file = os.path.join(os.path.dirname(__file__),
                                'fitbenchmarking_results',
                                problem_sub_directory,
-                               'acc_table.txt')
+                               'acc_table.csv')
 
     with open(expected_file, 'r') as f:
         expected = f.readlines()
@@ -280,7 +280,7 @@ def run_benchmark(results_dir: str, problem_sub_directory: str,
     opt_file_name = create_options_file(override_software, jac_num_method)
     problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                            os.pardir,
-                                           "mock_problems",
+                                           "test_files",
                                            problem_sub_directory))
     run([problem], additional_options={'results_dir': results_dir},
         options_file=opt_file_name,
