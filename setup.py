@@ -22,7 +22,7 @@ setup(
     packages=find_packages(exclude=('*mock*', '*test*')),
     install_requires=['docutils',
                       'tqdm>=4.60',
-                      'numpy~=1.22.1',
+                      'numpy<1.24',
                       'matplotlib>=2.0',
                       'scipy>=0.18',
                       'lxml',
