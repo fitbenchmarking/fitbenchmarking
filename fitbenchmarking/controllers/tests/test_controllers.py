@@ -463,7 +463,7 @@ class DefaultControllerTests(TestCase):
         NLoptController: Test for output shape
         """
         controller = NLoptController(self.cost_func)
-        controller.minimizer = 'LN_BOBYQA'
+        controller.minimizer = 'LD_VAR2'
 
         self.shared_tests.controller_run_test(controller)
 
