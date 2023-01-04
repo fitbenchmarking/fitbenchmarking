@@ -110,9 +110,6 @@ class LmfitController(Controller):
         """
         Setup problem ready to be run with lmfit
         """
-        if self.value_ranges is not None:
-            value_ranges_lb, value_ranges_ub =  \
-                zip(*self.value_ranges)
 
         if (self.value_ranges is None or np.any(np.isinf(self.value_ranges))) \
            and self.minimizer in self.bound_minimizers:
@@ -123,8 +120,9 @@ class LmfitController(Controller):
         for i, name in enumerate(self.problem.param_names):
             kwargs = {"name": name,
                       "value": self.initial_params[i]}
-            if value_ranges_lb is not None \
-               and value_ranges_ub is not None:
+            if self.value_ranges is not None:
+                value_ranges_lb, value_ranges_ub =  \
+                    zip(*self.value_ranges)
                 kwargs["max"] = value_ranges_ub[i]
                 kwargs["min"] = value_ranges_lb[i]
             self.lmfit_params.add(**kwargs)
