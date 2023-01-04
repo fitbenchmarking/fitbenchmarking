@@ -590,7 +590,7 @@ class ControllerBoundsTests(TestCase):
         """
 
         controller = LmfitController(self.cost_func)
-        controller.minimizer = 'dual_annealing'
+        controller.minimizer = 'least_squares'
 
         self.check_bounds(controller)
 
