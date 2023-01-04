@@ -598,7 +598,7 @@ class ControllerBoundsTests(TestCase):
         """
 
         controller = NLoptController(self.cost_func)
-        controller.minimizer = 'GN_DIRECT'
+        controller.minimizer = 'LD_LBFGS'
 
         self.check_bounds(controller)
 
