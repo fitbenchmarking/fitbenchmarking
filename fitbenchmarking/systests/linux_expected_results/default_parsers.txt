@@ -1,0 +1,5 @@
+                        bumps                     scipy                  scipy_ls
+                     lm-bumps               Nelder-Mead lm-scipy: j:scipy 2-point
+cubic, Start 1  3.861e-22 (1)  6.267e-05 (1.623e+17)[1]             3.861e-22 (1)
+cubic, Start 2  3.861e-22 (1)     7.176e-11 (1.859e+11)             3.861e-22 (1)
+Problem Def 1     0.04303 (1)              inf (inf)[4]              inf (inf)[4]

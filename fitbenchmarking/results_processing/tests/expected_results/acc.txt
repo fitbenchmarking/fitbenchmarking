@@ -1,0 +1,4 @@
+            scipy_ls                     
+              dogbox   lm-scipy       trf
+prob_0      2 (2)[2]   1 (1)[1]     5 (5)
+prob_1  5 (1.667)[3]  7 (2.333)  3 (1)[1]

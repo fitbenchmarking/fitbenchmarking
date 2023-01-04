@@ -8,7 +8,7 @@ import shutil
 import time
 import unittest
 
-from fitbenchmarking import test_files
+from fitbenchmarking import mock_problems
 from fitbenchmarking.utils.misc import get_problem_files
 from fitbenchmarking.utils.misc import get_css, get_js
 from fitbenchmarking.utils.options import Options
@@ -23,7 +23,7 @@ class CreateDirsTests(unittest.TestCase):
         """
         Create some datafiles to look for.
         """
-        base_path = os.path.dirname(inspect.getfile(test_files))
+        base_path = os.path.dirname(inspect.getfile(mock_problems))
         self.dirname = os.path.join(base_path,
                                     f"mock_datasets_{time.time()}")
         os.mkdir(self.dirname)

@@ -10,7 +10,7 @@ import unittest
 
 import numpy as np
 
-from fitbenchmarking import test_files
+from fitbenchmarking import mock_problems
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.hessian.analytic_hessian import \
     Analytic as AnalyticHessian
@@ -30,8 +30,8 @@ class FitbmResultTests(unittest.TestCase):
         Setting up FitBenchmarking results object
         """
         self.options = Options()
-        test_files_dir = os.path.dirname(inspect.getfile(test_files))
-        problem_dir = os.path.join(test_files_dir, "cubic.dat")
+        mock_problems_dir = os.path.dirname(inspect.getfile(mock_problems))
+        problem_dir = os.path.join(mock_problems_dir, "cubic.dat")
         self.problem = parse_problem_file(problem_dir, self.options)
         self.problem.correct_data()
 

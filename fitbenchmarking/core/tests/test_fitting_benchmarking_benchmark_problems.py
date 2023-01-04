@@ -6,7 +6,7 @@ import inspect
 import os
 import unittest
 
-from fitbenchmarking import test_files
+from fitbenchmarking import mock_problems
 from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_benchmark_problems
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
@@ -30,7 +30,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     if minimizers:
         options.minimizers = minimizers
 
-    bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
+    bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
     fname = os.path.join(bench_prob_dir, file_name)
 
     fitting_problem = parse_problem_file(fname, options)
@@ -67,9 +67,9 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         self.options = Options()
         self.options.software = ["scipy"]
         self.scipy_len = len(self.options.minimizers["scipy"])
-        bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
+        bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
         self.default_parsers_dir = os.path.join(bench_prob_dir,
-                                                "default_parsers_set")
+                                                "default_parsers")
         self.count = 0
         self.result_args = {'options': self.options,
                             'cost_func': self.cost_func,

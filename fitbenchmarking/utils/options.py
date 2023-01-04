@@ -1,7 +1,6 @@
 '''
 This file will handle all interaction with the options configuration file.
 '''
-# pylint: disable=too-many-branches
 
 import configparser
 import os
@@ -43,6 +42,29 @@ class Options:
                  'vector_bfgs2', 'steepest_descent'],
          'horace': ['lm-lsqr'],
          'levmar': ['levmar'],
+         'lmfit': ['differential_evolution',
+                   'brute',
+                   'basinhopping',
+                   'powell',
+                   'cobyla',
+                   'slsqp',
+                   'emcee',
+                   'nelder',
+                   'least_squares',
+                   'trust-ncg',
+                   'trust-exact',
+                   'trust-krylov',
+                   'trust-constr',
+                   'dogleg',
+                   'leastsq',
+                   'newton',
+                   'tnc',
+                   'lbfgsb',
+                   'bfgs',
+                   'cg',
+                   'ampgo',
+                   'shgo',
+                   'dual_annealing'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
@@ -65,9 +87,9 @@ class Options:
                             'gauss_newton', 'bfgs', 'conjugate_gradient',
                             'steepest_descent', 'global_optimization'],
          'software': ['bumps', 'ceres', 'dfo', 'gofit', 'gradient_free', 'gsl',
-                      'horace', 'levmar', 'mantid', 'matlab', 'matlab_curve',
-                      'matlab_opt', 'matlab_stats', 'minuit', 'ralfit',
-                      'scipy', 'scipy_ls', 'scipy_go'],
+                      'horace', 'levmar', 'lmfit', 'mantid', 'matlab', 
+                      'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
+                      'ralfit', 'scipy', 'scipy_ls', 'scipy_go'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
@@ -92,10 +114,8 @@ class Options:
          'append': [True, False],
          'external_output': ['debug', 'display', 'log_only'],
          'make_plots': [True, False],
-         'pbar': [True, False],
          'comparison_mode': ['abs', 'rel', 'both'],
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
-         'results_browser': [True, False],
          'colour_map': plt.colormaps()}
     VALID_LOGGING = \
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
@@ -131,6 +151,26 @@ class Options:
                  'vector_bfgs2', 'steepest_descent'],
          'horace': ['lm-lsqr'],
          'levmar': ['levmar'],
+         'lmfit': ['differential_evolution',
+                   'powell',
+                   'cobyla',
+                   'slsqp',
+                   'emcee',
+                   'nelder',
+                   'least_squares',
+                   'trust-ncg',
+                   'trust-exact',
+                   'trust-krylov',
+                   'trust-constr',
+                   'dogleg',
+                   'leastsq',
+                   'newton',
+                   'tnc',
+                   'lbfgsb',
+                   'bfgs',
+                   'cg',
+                   'ampgo',
+                   'dual_annealing'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
@@ -168,12 +208,10 @@ class Options:
     DEFAULT_OUTPUT = \
         {'results_dir': 'fitbenchmarking_results',
          'make_plots': True,
-         'pbar': True,
          'colour_map': 'magma_r',
          'colour_ulim': 100,
          'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
-         'results_browser': True,
          'table_type': ['acc', 'runtime', 'compare', 'local_min']}
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
@@ -293,18 +331,6 @@ class Options:
         else:
             self.make_plots = self.read_value(
                 output.getboolean, 'make_plots', additional_options)
-
-        if 'results_browser' in additional_options:
-            self.results_browser = additional_options['results_browser']
-        else:
-            self.results_browser = self.read_value(
-                output.getboolean, 'results_browser', additional_options)
-
-        if 'pbar' in additional_options:
-            self.pbar = additional_options['pbar']
-        else:
-            self.pbar = self.read_value(
-                output.getboolean, 'pbar', additional_options)
 
         self.colour_map = self.read_value(
             output.getstr, 'colour_map', additional_options)
@@ -442,8 +468,6 @@ class Options:
                             'colour_ulim': self.colour_ulim,
                             'comparison_mode': self.comparison_mode,
                             'make_plots': self.make_plots,
-                            'results_browser': self.results_browser,
-                            'pbar': self.pbar,
                             'table_type': list_to_string(self.table_type)}
 
         config['LOGGING'] = {'file_name': self.log_file,

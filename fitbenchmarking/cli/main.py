@@ -126,31 +126,13 @@ of the Fitbenchmarking docs. '''
                         help="Set the cost functions to be used"
                         "for the given data.")
 
-    group1 = parser.add_mutually_exclusive_group()
-    group1.add_argument('--make_plots', action='store_true',
-                        help="Use this option if you have decided to"
-                        "create plots during runtime.")
-    group1.add_argument('--dont_make_plots', action='store_true',
-                        help="Use this option if you have decided not to"
-                        "create plots during runtime.")
-
-    group2 = parser.add_mutually_exclusive_group()
-    group2.add_argument('--results_browser', action='store_true',
-                        help="Use this option if you have decided to"
-                        "open a browser window to show the results"
-                        "of a fit benchmark.")
-    group2.add_argument('--no_results_browser', action='store_true',
-                        help="Use this option if you have decided not to"
-                        "open a browser window to show the results"
-                        "of a fit benchmark.")
-
-    group3 = parser.add_mutually_exclusive_group()
-    group3.add_argument('--pbar', action='store_true',
-                        help="Use this option if you would like to"
-                        "see the progress bar during runtime.")
-    group3.add_argument('--no_pbar', action='store_true',
-                        help="Use this option if you do not want to"
-                        "see the progress bar during runtime.")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--make_plots', action='store_true',
+                       help="Use this option if you have decided to"
+                       "create plots during runtime.")
+    group.add_argument('--dont_make_plots', action='store_true',
+                       help="Use this option if you have decided not to"
+                       "create plots during runtime.")
 
     parser.add_argument('-m', '--comparison_mode',
                         metavar='COMPARISON_MODE',
@@ -269,7 +251,7 @@ def _create_index_page(options: Options, groups: "list[str]",
     return output_file
 
 
-def _open_browser(output_file: str, options) -> None:
+def _open_browser(output_file: str) -> None:
     """
     Opens a browser window to show the results of a fit benchmark.
 
@@ -281,17 +263,14 @@ def _open_browser(output_file: str, options) -> None:
     # Constructs a url that can be pasted into a browser
     is_mac = platform.system() == "Darwin"
     url = "file://" + output_file if is_mac else output_file
-    if options.results_browser:
-        if webbrowser.open_new(url if is_mac else relative_path):
-            LOGGER.info("\nINFO:\nThe FitBenchmarking results have been opened"
-                        " in your browser from this url:\n\n   %s", url)
-        else:
-            LOGGER.warning("\nWARNING:\nThe browser failed to open "
-                           "automatically. Copy and paste the following url "
-                           "into your browser:\n\n   %s", url)
+
+    if webbrowser.open_new(url if is_mac else relative_path):
+        LOGGER.info("\nINFO:\nThe FitBenchmarking results have been opened "
+                    "in your browser from this url:\n\n   %s", url)
     else:
-        LOGGER.info("\nINFO:\nYou have chosen not to open FitBenchmarking "
-                    "results in your browser\n\n   %s",)
+        LOGGER.warning("\nWARNING:\nThe browser failed to open "
+                       "automatically. Copy and paste the following url "
+                       "into your browser:\n\n   %s", url)
 
 
 @exception_handler
@@ -415,7 +394,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
                     options.results_dir)
 
     index_page = _create_index_page(options, groups, result_dir)
-    _open_browser(index_page, options)
+    _open_browser(index_page)
 
 
 def main():
@@ -452,20 +431,6 @@ def main():
         options_dictionary['make_plots'] = True
     elif args.dont_make_plots:
         options_dictionary['make_plots'] = False
-
-    # Check if results_browser in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.results_browser:
-        options_dictionary['results_browser'] = True
-    elif args.no_results_browser:
-        options_dictionary['results_browser'] = False
-
-    # Check if benchmark in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.pbar:
-        options_dictionary['pbar'] = True
-    elif args.no_pbar:
-        options_dictionary['pbar'] = False
 
     # Check if log_append in options.py should be overridden, and if so,
     # add to options_dictionary

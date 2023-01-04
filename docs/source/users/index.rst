@@ -20,5 +20,4 @@ the FitBenchmarking software.
     problem_definition_files/index
     tests
     notes
-    tutorials
 

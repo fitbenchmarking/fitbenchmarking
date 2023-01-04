@@ -160,7 +160,7 @@ class Table:
         """
         Generate a dictionary of results lists with rows and columns as the key
         and list elements respectively.
-        This is used to create HTML and csv tables.
+        This is used to create HTML and txt tables.
         This is stored in self.sorted_results
         """
         self.sorted_results = {k: [r for cat in row.values() for r in cat]
@@ -363,7 +363,7 @@ class Table:
 
         return table_style.to_html(table_uuid='table')
 
-    def to_csv_file(self):
+    def to_txt(self):
         """
         Generate a plain text version of the table
 
@@ -371,7 +371,7 @@ class Table:
         :rtype: str
         """
         table = self.create_pandas_data_frame(html=False)
-        return table.to_csv()
+        return table.to_string()
 
     def get_description(self, html_description):
         """
