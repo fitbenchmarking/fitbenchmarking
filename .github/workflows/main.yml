@@ -126,11 +126,6 @@ jobs:
         python -m pip install --upgrade wheel
         pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools]
         pip install -r requirements.txt
-        sudo apt-get install libgsl-dev
-        pip install pygsl
-        pip install pycutest
-        pip install dill
-        pip install https://www.astro.rug.nl/software/kapteyn/kapteyn-3.0.tar.gz
     - name: 'Run Linting'
       run: |
         ci/linting_tests.sh
