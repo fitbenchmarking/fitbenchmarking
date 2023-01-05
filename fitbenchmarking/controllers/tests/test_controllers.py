@@ -568,7 +568,17 @@ class ControllerBoundsTests(TestCase):
         controller.minimizer = 'Levenberg-Marquardt'
 
         self.check_bounds(controller)
+    
+    def test_ceres(self):
+        """
+        CeresController: Test that parameter bounds are
+        respected for bounded problems
+        """
 
+        controller = CeresController(self.cost_func)
+        controller.minimizer = 'Levenberg_Marquardt'
+
+        self.check_bounds(controller)
 
 @run_for_test_types(TEST_TYPE, 'all')
 class ControllerValidateTests(TestCase):
