@@ -572,7 +572,7 @@ Hessian information as inputs.
 * `Constrained Optimization BY Linear Approximations <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-cobyla.html>`__ (:code:`COBYLA`)
 * `Newton-CG trust-region <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustncg.html>`__  (:code:`trust-ncg`)
 * `Nearly exact trust-region <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustexact.html>`__  (:code:`trust-exact`)
-* `Newton GLTR trust-region <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustkrylov.html>`__  (:code:`trust-krylov`)
+* `Newton Generalized Lanczos Trust Region <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustkrylov.html>`__  (:code:`trust-krylov`)
 * `Trust-region for constrained optimization <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustconstr.html>`__  (:code:`trust-constr`)
 * `Dog-leg trust-region <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-dogleg.html>`__ (:code:`dogleg`)
 
