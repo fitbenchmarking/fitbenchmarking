@@ -580,6 +580,7 @@ class ControllerBoundsTests(TestCase):
 
         self.check_bounds(controller)
 
+
 @run_for_test_types(TEST_TYPE, 'all')
 class ControllerValidateTests(TestCase):
     """
