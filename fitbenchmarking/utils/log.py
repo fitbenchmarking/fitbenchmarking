@@ -23,7 +23,7 @@ def setup_logger(log_file='./fitbenchmarking.log', name='fitbenchmarking',
     :type level: str, optional
     """
     FORMAT = '[%(asctime)s]  %(levelname)s %(filename)s: %(message)s'
-    formatter = logging.Formatter(FORMAT, "%H:%M:%S")
+    formatter = logging.Formatter(FORMAT, "%Y-%m-%d %H:%M:%S")
 
     handler = logging.FileHandler(log_file, mode='a' if append else 'w')
     handler.setFormatter(formatter)
