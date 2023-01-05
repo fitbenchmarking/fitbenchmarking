@@ -63,7 +63,7 @@ class KmpfitController(Controller):
         kwargs = {'residuals': self.kmpfit_residuals,
                   'data': (self.data_x, self.data_y)}
 
-        if self.cost_func.jacobian:
+        if not self.cost_func.jacobian.use_default_jac:
             kwargs['deriv'] = self.kmpfit_jacobians
 
         self.kmpfit_object = kmpfit.Fitter(**kwargs)
