@@ -122,9 +122,14 @@ class CeresController(Controller):
         self.ceres_options.max_num_iterations = 10000
 
         if self.value_ranges is not None:
-            for i, (l, u) in enumerate(self.value_ranges):
-                self.ceres_problem.SetParameterLowerBound(self.result, i, l)
-                self.ceres_problem.SetParameterUpperBound(self.result, i, u)
+            for i, (value_ranges_lb, value_ranges_ub) in \
+              enumerate(self.value_ranges):
+                self.ceres_problem.SetParameterLowerBound(self.result,
+                                                          i,
+                                                          value_ranges_lb)
+                self.ceres_problem.SetParameterUpperBound(self.result,
+                                                          i,
+                                                          value_ranges_ub)
 
         self.ceres_options.linear_solver_type = \
             PyCeres.LinearSolverType.DENSE_QR
