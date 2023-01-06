@@ -635,6 +635,12 @@ Hessian information as inputs.
 * `L-BFGS-B algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-lbfgsb.html>`__ (:code:`L-BFGS-B`)
 * `Truncated Newton (TNC) algorithm <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-tnc.html>`__ (:code:`TNC`)
 * `Sequential Least SQuares Programming <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html>`__ (:code:`SLSQP`)
+* `Constrained Optimization BY Linear Approximations <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-cobyla.html>`__ (:code:`COBYLA`)
+* `Newton-CG trust-region <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustncg.html>`__  (:code:`trust-ncg`)
+* `Nearly exact trust-region <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustexact.html>`__  (:code:`trust-exact`)
+* `Newton Generalized Lanczos Trust Region <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustkrylov.html>`__  (:code:`trust-krylov`)
+* `Trust-region for constrained optimization <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustconstr.html>`__  (:code:`trust-constr`)
+* `Dog-leg trust-region <https://docs.scipy.org/doc/scipy/reference/optimize.minimize-dogleg.html>`__ (:code:`dogleg`)
 
 **Links** `Github - SciPy minimize <https://github.com/scipy/scipy/blob/master/scipy/optimize/_minimize.py>`__
 
@@ -653,6 +659,12 @@ The SciPy minimizers are set as follows:
            L-BFGS-B
            TNC
            SLSQP
+           COBYLA
+           trust-ncg
+           trust-exact
+           trust-krylov
+           trust-constr
+           dogleg
 
 .. _scipy-ls:
 

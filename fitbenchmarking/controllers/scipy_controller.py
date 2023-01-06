@@ -15,14 +15,30 @@ class ScipyController(Controller):
     """
 
     algorithm_check = {
-            'all': ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
-                    'L-BFGS-B', 'TNC', 'SLSQP'],
+            'all': ['Nelder-Mead',
+                    'Powell',
+                    'CG',
+                    'BFGS',
+                    'Newton-CG',
+                    'L-BFGS-B',
+                    'TNC',
+                    'SLSQP',
+                    'COBYLA',
+                    'trust-ncg',
+                    'trust-exact',
+                    'trust-krylov',
+                    'trust-constr',
+                    'dogleg'],
             'ls': [None],
-            'deriv_free': ['Nelder-Mead', 'Powell'],
+            'deriv_free': ['Nelder-Mead', 'Powell', 'COBYLA'],
             'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
                         'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
             'simplex': ['Nelder-Mead'],
-            'trust_region': [],
+            'trust_region': ['trust-ncg',
+                             'trust-exact',
+                             'trust-krylov',
+                             'trust-constr',
+                             'dogleg'],
             'levenberg-marquardt': [],
             'gauss_newton': [],
             'bfgs': ['BFGS', 'L-BFGS-B'],
@@ -30,10 +46,24 @@ class ScipyController(Controller):
             'steepest_descent': [],
             'global_optimization': []}
 
-    jacobian_enabled_solvers = ['CG', 'BFGS', 'Newton-CG',
-                                'L-BFGS-B', 'TNC', 'SLSQP']
+    jacobian_enabled_solvers = ['CG',
+                                'BFGS',
+                                'Newton-CG',
+                                'L-BFGS-B',
+                                'TNC',
+                                'SLSQP',
+                                'trust-ncg',
+                                'trust-exact',
+                                'trust-krylov',
+                                'trust-constr',
+                                'dogleg']
 
-    hessian_enabled_solvers = ['Newton-CG']
+    hessian_enabled_solvers = ['Newton-CG',
+                               'trust-ncg',
+                               'trust-exact',
+                               'trust-krylov',
+                               'trust-constr',
+                               'dogleg']
 
     def __init__(self, cost_func):
         """
