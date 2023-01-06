@@ -122,8 +122,7 @@ class CeresController(Controller):
         self.ceres_options.max_num_iterations = 10000
 
         if self.value_ranges is not None:
-            value_ranges_lb, value_ranges_ub = zip(*self.value_ranges)
-            for i, (l, u) in enumerate(zip(value_ranges_lb, value_ranges_ub)):
+            for i, (l, u) in enumerate(self.value_ranges):
                 self.ceres_problem.SetParameterLowerBound(self.result, i, l)
                 self.ceres_problem.SetParameterUpperBound(self.result, i, u)
 
