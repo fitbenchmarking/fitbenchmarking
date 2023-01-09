@@ -1,5 +1,5 @@
 """
-Implements a controller for the Ceres fitting software.
+Implements a controller for the lmfit fitting software.
 """
 import numpy as np
 from lmfit import Minimizer, Parameters
