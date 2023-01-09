@@ -114,7 +114,7 @@ class LmfitController(Controller):
         if (self.value_ranges is None or np.any(np.isinf(self.value_ranges))) \
            and self.minimizer in self.bound_minimizers:
             raise MissingBoundsError(
-                    "Differential evolution requires finite bounds on all"
+                    f"{self.minimizer} requires finite bounds on all"
                     " parameters")
 
         for i, name in enumerate(self.problem.param_names):
