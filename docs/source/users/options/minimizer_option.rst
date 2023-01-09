@@ -430,6 +430,7 @@ optimization and curve fitting problems for Python. It builds on and extends man
 The `lmfit` minimizer is set as follows:
 
 .. code-block:: rst
+
    [MINIMIZERS]
    lmfit: differential_evolution
           powell
