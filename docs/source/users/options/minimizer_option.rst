@@ -458,6 +458,8 @@ The `lmfit` minimizer is set as follows:
    not run by default when `lmfit` software is selected. In order to run this minimizer, you must explicitly
    set it as above.
 
+.. warning::
+   emcee uses a Markov Chain Monte Carlo package and assumes that the prior is Uniform. This may not perform well for certain fitting problems.
 
 .. _matlab:
 

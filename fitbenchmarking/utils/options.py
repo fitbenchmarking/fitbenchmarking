@@ -167,7 +167,6 @@ class Options:
                    'powell',
                    'cobyla',
                    'slsqp',
-                   'emcee',
                    'nelder',
                    'least_squares',
                    'trust-ncg',
