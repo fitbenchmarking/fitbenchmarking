@@ -80,7 +80,7 @@ class BumpsController(Controller):
                                         x=self.data_x,
                                         y=self.data_y,
                                         **param_dict)
-        else: # nlls cost functions
+        else:  # nlls cost functions
             # Send in the residual as the model, with zero
             # y data.  This allows all our supported nlls
             # cost fucntions to be used.
