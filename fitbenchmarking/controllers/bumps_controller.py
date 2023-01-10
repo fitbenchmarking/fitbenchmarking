@@ -9,7 +9,7 @@ import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
-from fitbenchmarking.utils.exceptions import CostFuncError, MaxRuntimeError
+from fitbenchmarking.utils.exceptions import MaxRuntimeError
 
 
 class BumpsController(Controller):
@@ -92,7 +92,7 @@ class BumpsController(Controller):
                                  x=self.data_x,
                                  y=zero_y,
                                  **param_dict)
-            
+
         # Set a range for each parameter
         for ind, name in enumerate(self._param_names):
             if self.value_ranges is not None:
