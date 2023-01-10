@@ -65,37 +65,34 @@ class BumpsController(Controller):
         wrapper = "def fitFunction(x, {}):\n".format(param_name_str)
         wrapper += "    return func([{}], x=x)".format(param_name_str)
 
-        exec_dict = {'func': self.problem.eval_model}
-        exec(wrapper, exec_dict)
-
-        model = exec_dict['fitFunction']
-
         # Remove any function attribute. BinWidth is the only attribute in all
         # FitBenchmark (Mantid) problems.
         param_dict = dict(zip(self._param_names, self.initial_params))
 
         # Create a Function Wrapper for the problem function. The type of the
         # Function Wrapper is acceptable by Bumps.
-        if isinstance(self.cost_func, create_cost_func('nlls')):
-            func_wrapper = Curve(fn=model,
-                                 x=self.data_x,
-                                 y=self.data_y,
-                                 **param_dict)
-        elif isinstance(self.cost_func, create_cost_func('weighted_nlls')):
-            func_wrapper = Curve(fn=model,
-                                 x=self.data_x,
-                                 y=self.data_y,
-                                 dy=self.data_e,
-                                 **param_dict)
-        elif isinstance(self.cost_func, create_cost_func('poisson')):
+        if isinstance(self.cost_func, create_cost_func('poisson')):
+            # Bumps has a built in poisson cost fucntion, so use that.
+            exec_dict = {'func': self.problem.eval_model}
+            exec(wrapper, exec_dict)
+            model = exec_dict['fitFunction']
             func_wrapper = PoissonCurve(fn=model,
                                         x=self.data_x,
                                         y=self.data_y,
                                         **param_dict)
-        else:
-            raise CostFuncError('Bumps controller is not compatible with the '
-                                'chosen cost function.')
-
+        else: # nlls cost functions
+            # Send in the residual as the model, with zero
+            # y data.  This allows all our supported nlls
+            # cost fucntions to be used.
+            exec_dict = {'func': self.cost_func.eval_r}
+            exec(wrapper, exec_dict)
+            model = exec_dict['fitFunction']
+            zero_y = np.zeros(len(self.data_y))
+            func_wrapper = Curve(fn=model,
+                                 x=self.data_x,
+                                 y=zero_y,
+                                 **param_dict)
+            
         # Set a range for each parameter
         for ind, name in enumerate(self._param_names):
             if self.value_ranges is not None:
