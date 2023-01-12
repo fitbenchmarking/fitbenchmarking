@@ -47,32 +47,66 @@ class SpinWParser(FitbenchmarkParser):
         :rtype: dict<str, np.ndarray>
         """
         proj = self._parse_proj()
-        eng.workspace['sqw_cut'] = self._parse_cut(data_file_path, proj)
-        # Add sample
-        eng.workspace['sample'] = self._parse_sample()
-        if 'angdeg'  in self._entries:
-            eng.evalc(f'sample.angdeg = {self._entries["angdeg"]}')
-        if 'alatt' in self._entries:
-            eng.evalc(f'sample.alatt = {self._entries["alatt"]}')
-        eng.evalc('w1 = sqw_cut.set_sample(sample);')
-        # Add instrument
-        eng.workspace['instrument'] = self._parse_instrument()
-        eng.evalc('w1 = w1.set_instrument(instrument);')
-        # Reduce size of problem if set
-        if "random_fraction_pixels" in self._entries:
-            eng.evalc('w1 = w1.mask_random_fraction_pixels('
-                      f'{self._entries["random_fraction_pixels"]});')
-        # Create tbf
-        eng.evalc('tbf = tobyfit(w1);')
-        # Set mc points if defined
-        if "mc_points" in self._entries:
-            eng.evalc(f'tbf = tbf.set_mc_points({self._entries["mc_points"]})')
-        add_persistent_matlab_var('tbf')       
-        bins = [np.array(v) for v in eng.eval('w1.data.p')]
-        x = np.array([[a/2, b/2, c/2]
-                      for a in bins[0][0][1:]+bins[0][0][:-1]
-                      for b in bins[1][0][1:]+bins[1][0][:-1]
-                      for c in bins[2][0][1:]+bins[2][0][:-1]])
+        eng.workspace['w1'] = self._parse_cut(data_file_path, proj)
+
+        if self._entries['problem_type'] == 'tobyfit':
+            # Add sample
+            eng.workspace['sample'] = self._parse_sample()
+            
+            if 'angdeg'  in self._entries:
+                eng.evalc(f'sample.angdeg = {self._entries["angdeg"]}')
+            if 'alatt' in self._entries:
+                eng.evalc(f'sample.alatt = {self._entries["alatt"]}')
+            eng.evalc('w1 = set_sample(w1,sample);')
+            # Add instrument
+            eng.workspace['instrument'] = self._parse_instrument()
+            eng.evalc('w1 = w1.set_instrument(instrument);')
+            # Reduce size of problem if set
+            if "random_fraction_pixels" in self._entries:
+                eng.evalc('w1 = w1.mask_random_fraction_pixels('
+                        f'{self._entries["random_fraction_pixels"]});')
+            # Create tbf
+            eng.evalc('fobj = tobyfit(w1);')
+            # Set mc points if defined
+            if "mc_points" in self._entries:
+                eng.evalc(f'fobj = fobj.set_mc_points({self._entries["mc_points"]})')
+            add_persistent_matlab_var('fobj')       
+            bins = [np.array(v) for v in eng.eval('w1.data.p')]
+            x = np.array([[a/2, b/2, c/2]
+                        for a in bins[0][0][1:]+bins[0][0][:-1]
+                        for b in bins[1][0][1:]+bins[1][0][:-1]
+                        for c in bins[2][0][1:]+bins[2][0][:-1]])
+        if self._entries['problem_type'] == 'IX_dataset_1d':
+            
+            eng.evalc("IX_1D = IX_dataset_1d(w1.p{1},w1.s,sqrt(w1.e))")
+            eng.evalc('fobj = mfclass(IX_1D);')  
+            add_persistent_matlab_var('fobj')
+
+            bins = [np.array(v) for v in eng.eval('w1.p')]
+            x = np.array([[a/2]
+                        for a in bins[0][0][1:]+bins[0][0][:-1]])
+
+        if self._entries['problem_type'] == 'IX_dataset_2d':
+            eng.evalc("IX_2D = IX_dataset_2d(w1.p{1},w1.p{2},w1.s,sqrt(w1.e))")
+            eng.evalc('fobj = mfclass(IX_2D);')  
+            add_persistent_matlab_var('fobj')
+
+            bins = [np.array(v) for v in eng.eval('w1.p')]
+            x = np.array([[a/2,b/2]
+                        for a in bins[0][0][1:]+bins[0][0][:-1]
+                        for b in bins[1][0][1:]+bins[1][0][:-1]])
+        
+        if self._entries['problem_type'] == 'IX_dataset_3d':
+            eng.evalc("IX_3D = IX_dataset_3d(w1.p{1},w1.p{2},w1.p{3},w1.s,sqrt(w1.e))")
+            eng.evalc('fobj = mfclass(IX_3D);')  
+            add_persistent_matlab_var('fobj')
+
+            bins = [np.array(v) for v in eng.eval('w1.p')]
+            x = np.array([[a/2, b/2, c/2]
+                        for a in bins[0][0][1:]+bins[0][0][:-1]
+                        for b in bins[1][0][1:]+bins[1][0][:-1]
+                        for c in bins[2][0][1:]+bins[2][0][:-1]])
+
         eng.evalc('[spinw_y, spinw_e, msk] = sigvar_get(w1)')
         signal = np.array(eng.workspace['spinw_y'])
         error = np.array(eng.workspace['spinw_e'])
@@ -90,6 +124,10 @@ class SpinWParser(FitbenchmarkParser):
         :return: The projection axes
         :rtype: eng.proj_axes
         """
+
+        if 'projection' not in self._entries:
+            return None 
+        
         proj_sec = self._entries['projection']
         proj_args = self._parse_single_function(proj_sec)
 
@@ -137,13 +175,21 @@ class SpinWParser(FitbenchmarkParser):
         :rtype: matlab sqw object
         """
         cut_sec = self._entries['cut']
-        cut_args = self._parse_single_function(cut_sec)
 
-        if len(cut_args) != 4:
-            raise ParsingError('cut must contain 4 vectors')
+        if 'cut_type' not in self._entries:
+            cut_type = None
+        else:
+            cut_type = self._entries['cut_type']
+
+        cut_args = self._parse_single_function(cut_sec)
+        print(len(cut_args))
+        if len(cut_args) > 4 or len(cut_args) == 0:
+            raise ParsingError('cut must contain 4 vectors or less')
 
         args = []
-        for i in range(1, 5):
+        if proj is not None:
+            args.append(proj)
+        for i in range(1, len(cut_args) + 1):
             k = f'p{i}_bin'
             if k not in cut_args:
                 raise ParsingError('cut must have parameters names p1_bin, '
@@ -158,7 +204,11 @@ class SpinWParser(FitbenchmarkParser):
                     f'to parse {vec}')
             args.append(matlab.double(vec))
 
-        return eng.cut_sqw(data_file_path, proj, *args)
+        if cut_type is not None:
+            args.append(cut_type)
+
+        print(data_file_path, *args)
+        return eng.cut_sqw(data_file_path, *args)
 
     def _parse_sample(self):
         """
@@ -174,7 +224,7 @@ class SpinWParser(FitbenchmarkParser):
             sample_sec = self._entries['sample']
             sample_args = self._parse_single_function(sample_sec)
             if sample_args['class'] != 'IX_sample':
-                raise ParsingError('This parser only works for IX_sample')
+                 raise ParsingError('This parser only works for IX_sample')
             args = []
             if 'name' in sample_args:
                 args.append(sample_args['name'])
@@ -261,18 +311,24 @@ class SpinWParser(FitbenchmarkParser):
 
         p_names = [k for k in pf if k != 'matlab_script']
 
+        IX = ['IX_dataset_1d','IX_dataset_2d','IX_dataset_3d']
+
+        problem_types = IX + ['tobyfit']
+
         self._starting_values = [{n: pf[n] for n in p_names}]
 
-        try:
-            intrinsic_energy_width = float(self._entries['intrinsic_energy_width'])
-            self._starting_values[0]['intrinsic_enegry_width'] = intrinsic_energy_width
-        except KeyError as e:
-            raise ParsingError('SpinW requires an "intrinsic_energy_width". '
-                               'Please check the problem file') from e
+        if self._entries['problem_type'] == 'tobyfit':
+            try:
+                intrinsic_energy_width = float(self._entries['intrinsic_energy_width'])
+                self._starting_values[0]['intrinsic_enegry_width'] = intrinsic_energy_width
+            except KeyError as e:
+                raise ParsingError('SpinW requires an "intrinsic_energy_width". '
+                                'Please check the problem file') from e
+
         cpars = list(self._starting_values[0].values())
 
         eng.workspace['cpars'] = matlab.double(cpars)
-        cpars_kwargs = '{cpars'
+        cpars_kwargs = '{cpars '
         for key, value in self._entries.items():
             if key.startswith('spinwpars_'):
                 try:
@@ -280,27 +336,40 @@ class SpinWParser(FitbenchmarkParser):
                 except:
                     eng.evalc(f"{key}='{value}';")
                 add_persistent_matlab_var(key)
-                #print(key, eng.evalc(f"disp({key})"))
-                cpars_kwargs += f" '{key[10:]}' {key}"
-        cpars_kwargs += "}"
-        eng.workspace['spinw_args'] = matlab.double([pf[n] for n in p_names])
-        eng.evalc('spinw_args = num2cell(spinw_args);')
-        eng.evalc(f'sw_obj = {func_name}(spinw_args{{:}})')
-        #print(cpars_kwargs)
-        print(eng.evalc(f'tbf = tbf.set_fun(@sw_obj.horace_sqw, {cpars_kwargs})'))
+                if self._entries['problem_type'] in IX:
+                    cpars_kwargs += f"{key} "
+                else:
+                    cpars_kwargs += f" '{key[10:]}' {key}"
+    
+        cpars_kwargs += '}'
 
-        def fit_function(x, *p):
-            # Assume, for efficiency, matching shape => matching values
-            # print(*p)
-            if x.shape != self._spinw_x.shape:
-                return np.ones(x.shape)
-            eng.workspace['cpars'] = matlab.double(p)
-            eng.evalc(f'tbf = tbf.set_pin({cpars_kwargs});')
-            eng.eval('[wsim, calcdata] = tbf.simulate();', nargout=0)
-            eng.evalc('[spinw_y, e, msk] = sigvar_get(wsim)')
-            return np.array(eng.workspace['spinw_y']).flatten()
+        if self._entries['problem_type'] in problem_types:
+            if self._entries['problem_type'] in IX:
+                eng.evalc(f'fobj = fobj.set_fun(@{func_name})')
+            elif self._entries['problem_type'] == 'tobyfit':
+                eng.workspace['spinw_args'] = matlab.double([pf[n] for n in p_names])
+                eng.evalc('spinw_args = num2cell(spinw_args);')
+                eng.evalc(f'sw_obj = {func_name}(spinw_args{{:}})')
+                print(eng.evalc(f'fobj = fobj.set_fun(@sw_obj.horace_sqw, {cpars_kwargs})'))
+            else:
+                raise ParsingError(f'SpinW requires {problem_types}'
+                                    'Please check the problem file')
 
-        return fit_function
+            def fit_function(x, *p):
+                # Assume, for efficiency, matching shape => matching values
+                # print(*p)
+                if x.shape != self._spinw_x.shape:
+                    return np.ones(x.shape)
+                eng.workspace['cpars'] = matlab.double(p)
+                eng.evalc(f'fobj = fobj.set_pin({cpars_kwargs})')
+                if 'set_free' in self._entries:
+                    eng.evalc(f'fobj = fobj.set_free({self._entries["set_free"]})')
+                eng.eval('[wsim, calcdata] = fobj.simulate();', nargout=0)
+                eng.evalc('[spinw_y, e, msk] = sigvar_get(wsim)')
+                return np.array(eng.workspace['spinw_y']).flatten()
+                    
+
+            return fit_function
 
     def _get_equation(self) -> str:
         """

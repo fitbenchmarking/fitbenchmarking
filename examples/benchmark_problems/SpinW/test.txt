@@ -1,6 +1,7 @@
 # FitBenchmark Problem
 software = 'SpinW'
 name = 'Simple Test'
+problem_type = 'tobyfit'
 description = 'Testing the format using PCSMO'
 input_file = 'pcsmo_ei70_base_bkd.sqw'
 projection = 'u=[1,0,0],v=[0,1,0],type=rrr'

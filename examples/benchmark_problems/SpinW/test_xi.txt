@@ -1,0 +1,18 @@
+# FitBenchmark Problem
+software = 'SpinW'
+name = 'Simple Test'
+problem_type = IX_dataset_1d 
+function_call = None 
+description = 'Testing the format using PCSMO'
+input_file = 'MnF2.sqw'
+cut = 'p1_bin=[1,2],p2_bin=[0.7,0.12,8]'
+cut_type = '-nopix'
+IX = 'class=IX_dataset_1d'
+function = 'matlab_script=m_scripts/spinw_mnf2_1dfit.m,scalefac=9,J1=-0.06,J2=0.32,D=0,bg=0.6'
+spinwpars_Qrange = '[1,2]'
+spinwpars_ok = '~isnan(IX_1D.signal)'
+spinwpars_Ei = 12
+spinwpars_dE = 0.36
+spinwpars_dQ = 0.05
+spinwpars_s = 'rng(0)'
+set_free = '[1,1,1,0,0]'
