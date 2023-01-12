@@ -38,7 +38,6 @@ class LmfitController(Controller):
                'leastsq'],
         'deriv_free': ['powell',
                        'cobyla',
-                       'slsqp',
                        'emcee',
                        'nelder',
                        'differential_evolution'],
