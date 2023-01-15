@@ -1,0 +1,8 @@
+# FitBenchmark Problem
+software = 'SpinW'
+name = 'Simple Test tobyfit'
+problem_type = 'tf_mock_data'
+description = 'Testing the format tobyfit '
+input_file = 'wdata1.mat'
+function = 'matlab_script=m_scripts/testfunc_nb_sqw.m,amp=6000,fwhh=0.2'
+mc_points = 2
