@@ -36,6 +36,7 @@ setup(
                     'bumps': ['bumps>=0.9.0'],
                     'numdifftools': ['numdifftools'],
                     'levmar': ['levmar'],
+                    'lmfit': ['lmfit', 'emcee>=3.1.0'],
                     'mantid': ['h5py>=2.10.0,<3', 'pyyaml>=5.4.1'],
                     'matlab': ['dill'],
                     'gofit': ['gofit'],
