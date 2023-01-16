@@ -1,8 +1,6 @@
-function [spinw_y, e, msk] = fb_simulate_tobyfit_test(w)
-amp=6000;    fwhh=0.2;
-fitpars = [amp,fwhh];
-cpars = {fitpars};
+function [spinw_y, e, msk, fitpars] = fb_simulate_tobyfit_test(w,fitpars)
 
+cpars = {fitpars};
 kk = tobyfit(w);
 kk = kk.set_local_foreground;
 kk = kk.set_fun(@testfunc_nb_sqw);

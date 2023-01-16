@@ -12,6 +12,6 @@ for i = 1:length(a1) - 1
     a = a1(1,2:end) + a1(1,1:end-1);
 end
 
-x = a/2;
+x = reshape(a/2,[],1);
 
 

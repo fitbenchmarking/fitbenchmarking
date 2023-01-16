@@ -46,10 +46,10 @@ class SpinWParser(FitbenchmarkParser):
         :return: data
         :rtype: dict<str, np.ndarray>
         """
-        pf = self._parse_function(self._entries['wxye_function'])
-        print(pf[0]['matlab_script'])
+        wxye_data_f = self._parse_function(self._entries['wxye_function'])
+        #print(wxye_data_f[0]['matlab_script'])
         path = os.path.join(os.path.dirname(self._filename),
-                        pf[0]['matlab_script'])
+                        wxye_data_f[0]['matlab_script'])
         eng.addpath(os.path.dirname(path))
         func_name = os.path.basename(path).split('.', 1)[0]
         
@@ -57,6 +57,9 @@ class SpinWParser(FitbenchmarkParser):
         x = np.array(eng.workspace['x'])
         signal = np.array(eng.workspace['y'])
         error = np.array(eng.workspace['e'])
+
+        #print(f'{x=}')
+
         add_persistent_matlab_var('w')
 
         y = signal.flatten()
@@ -78,6 +81,7 @@ class SpinWParser(FitbenchmarkParser):
         :return: A callable function
         :rtype: callable
         """
+        
         if len(self._parsed_func) > 1:
             raise ParsingError('Could not parse SpinW problem. Please ensure '
                                'only 1 function definition is present')
@@ -95,42 +99,21 @@ class SpinWParser(FitbenchmarkParser):
         p_names = [k for k in pf if k != 'matlab_script']
 
         self._starting_values = [{n: pf[n] for n in p_names}]
-
-        try:
-            intrinsic_energy_width = float(self._entries['intrinsic_energy_width'])
-            self._starting_values[0]['intrinsic_enegry_width'] = intrinsic_energy_width
-        except KeyError as e:
-            raise ParsingError('SpinW requires an "intrinsic_energy_width". '
-                               'Please check the problem file') from e
-        cpars = list(self._starting_values[0].values())
-
-        eng.workspace['cpars'] = matlab.double(cpars)
-        cpars_kwargs = '{cpars'
-        for key, value in self._entries.items():
-            if key.startswith('spinwpars_'):
-                try:
-                    eng.evalc(f'{key}={value};')
-                except:
-                    eng.evalc(f"{key}='{value}';")
-                add_persistent_matlab_var(key)
-                #print(key, eng.evalc(f"disp({key})"))
-                cpars_kwargs += f" '{key[10:]}' {key}"
-        cpars_kwargs += "}"
-        eng.workspace['spinw_args'] = matlab.double([pf[n] for n in p_names])
-        eng.evalc('spinw_args = num2cell(spinw_args);')
-        eng.evalc(f'sw_obj = {func_name}(spinw_args{{:}})')
-        #print(cpars_kwargs)
-        print(eng.evalc(f'tbf = tbf.set_fun(@sw_obj.horace_sqw, {cpars_kwargs})'))
+        
+        simulate_f = self._parse_function(self._entries['simulate_function'])
+        print(simulate_f[0]['matlab_script'])
+        path = os.path.join(os.path.dirname(self._filename),
+                        simulate_f[0]['matlab_script'])
+        eng.addpath(os.path.dirname(path))
+        simulate_func_name = os.path.basename(path).split('.', 1)[0]
 
         def fit_function(x, *p):
             # Assume, for efficiency, matching shape => matching values
             # print(*p)
             if x.shape != self._spinw_x.shape:
                 return np.ones(x.shape)
-            eng.workspace['cpars'] = matlab.double(p)
-            eng.evalc(f'tbf = tbf.set_pin({cpars_kwargs});')
-            eng.eval('[wsim, calcdata] = tbf.simulate();', nargout=0)
-            eng.evalc('[spinw_y, e, msk] = sigvar_get(wsim)')
+            eng.workspace['fitpars'] = matlab.double(p)
+            eng.evalc(f'[spinw_y, e, msk] = {simulate_func_name}(w,fitpars)')
             return np.array(eng.workspace['spinw_y']).flatten()
 
         return fit_function
