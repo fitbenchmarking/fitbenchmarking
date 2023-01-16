@@ -8,26 +8,22 @@ docs.fitbenchmarking.com.
 from __future__ import absolute_import, division, print_function
 
 import argparse
-from shutil import copytree
 import glob
 import inspect
 import os
-import platform
 import sys
-import webbrowser
-
 from tempfile import NamedTemporaryFile
-from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
-from fitbenchmarking.cli.exception_handler import exception_handler
 from fitbenchmarking.cli.checkpoint_handler import generate_report
+from fitbenchmarking.cli.exception_handler import exception_handler
 from fitbenchmarking.core.fitting_benchmarking import benchmark
-from fitbenchmarking.core.results_output import save_results
+from fitbenchmarking.core.results_output import (create_index_page,
+                                                 open_browser, save_results)
+from fitbenchmarking.utils.checkpoint import get_checkpoint
 from fitbenchmarking.utils.exceptions import NoResultsError
 from fitbenchmarking.utils.log import get_logger, setup_logger
-from fitbenchmarking.utils.misc import get_css
-from fitbenchmarking.utils.options import Options, find_options_file
+from fitbenchmarking.utils.options import find_options_file
 
 LOGGER = get_logger()
 
@@ -192,87 +188,12 @@ of the Fitbenchmarking docs. '''
                         help="Select the amount of information displayed"
                         "from third-parties.")
 
-    parser.add_argument('--load-checkpoint',
-                        metavar='FROM_CHECKPOINT',
+    parser.add_argument('--load_checkpoint',
                         default=False,
                         action='store_true',
                         help='Load results from the checkpoint and generate'
                              'reports. Will not run any new tests.')
     return parser
-
-
-def _create_index_page(options: Options, groups: "list[str]",
-                       result_directories: "list[str]") -> str:
-    """
-    Creates the results index page for the benchmark, and copies
-    the fonts and js directories to the correct location.
-
-    :param options: The user options for the benchmark.
-    :type options: fitbenchmarking.utils.options.Options
-    :param groups: Names for each of the problem set groups.
-    :type groups: A list of strings.
-    :param result_directories: Result directory paths for each
-    problem set group.
-    :type result_directories: A list of strings.
-    :return: The filepath of the `results_index.html` file.
-    :rtype: str
-    """
-    root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    template_dir = os.path.join(root, "templates")
-    env = Environment(loader=FileSystemLoader(template_dir))
-    css = get_css(options, options.results_dir)
-    template = env.get_template("index_page.html")
-    group_links = [os.path.join(d, f"{g}_index.html")
-                   for g, d in zip(groups, result_directories)]
-    output_file = os.path.join(options.results_dir, 'results_index.html')
-
-    # Copying fonts directory into results directory
-    copytree(os.path.join(root, "fonts"),
-             os.path.join(options.results_dir, "fonts"),
-             dirs_exist_ok=True)
-    # Copying js directory into results directory
-    copytree(os.path.join(template_dir, "js"),
-             os.path.join(options.results_dir, "js"),
-             dirs_exist_ok=True)
-    # Copying css directory into results directory
-    copytree(os.path.join(template_dir, "css"),
-             os.path.join(options.results_dir, "css"),
-             dirs_exist_ok=True)
-
-    with open(output_file, "w") as fh:
-        fh.write(template.render(
-            css_style_sheet=css["main"],
-            custom_style=css["custom"],
-            groups=groups,
-            group_link=group_links,
-            zip=zip))
-
-    return output_file
-
-
-def _open_browser(output_file: str, options) -> None:
-    """
-    Opens a browser window to show the results of a fit benchmark.
-
-    :param output_file: The absolute path to the results index file.
-    :type output_file: str
-    """
-    # Uses the relative path so that the browser can open on Mac and WSL
-    relative_path = os.path.relpath(output_file)
-    # Constructs a url that can be pasted into a browser
-    is_mac = platform.system() == "Darwin"
-    url = "file://" + output_file if is_mac else output_file
-    if options.results_browser:
-        if webbrowser.open_new(url if is_mac else relative_path):
-            LOGGER.info("\nINFO:\nThe FitBenchmarking results have been opened"
-                        " in your browser from this url:\n\n   %s", url)
-        else:
-            LOGGER.warning("\nWARNING:\nThe browser failed to open "
-                           "automatically. Copy and paste the following url "
-                           "into your browser:\n\n   %s", url)
-    else:
-        LOGGER.info("\nINFO:\nYou have chosen not to open FitBenchmarking "
-                    "results in your browser\n\n   %s",)
 
 
 @exception_handler
@@ -379,6 +300,9 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
             result_dir.append(group_results_dir)
             groups.append(label)
 
+    cp = get_checkpoint(options)
+    cp.finalise()
+
     # Check result_dir is non empty before producing output
     if not result_dir:
         message = "The user chosen options and/or problem setup resulted in " \
@@ -395,8 +319,8 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
                     "You can also set 'results_dir' in an options file.",
                     options.results_dir)
 
-    index_page = _create_index_page(options, groups, result_dir)
-    _open_browser(index_page, options)
+    index_page = create_index_page(options, groups, result_dir)
+    open_browser(index_page, options)
 
 
 def main():
@@ -455,7 +379,7 @@ def main():
     elif args.overwrite_log:
         options_dictionary['append'] = False
 
-    if args.from_checkpoint:
+    if args.load_checkpoint:
         generate_report(options_file=args.options_file,
                         additional_options=options_dictionary)
     else:

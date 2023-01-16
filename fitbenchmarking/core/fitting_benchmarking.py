@@ -69,7 +69,7 @@ def benchmark(options, data_dir, label='benchmark'):
     # Extract problem definitions
     problem_group = misc.get_problem_files(data_dir)
 
-    cp = checkpoint.Checkpoint(options=options)
+    cp = checkpoint.get_checkpoint(options=options)
 
     #################################
     # Loops over benchmark problems #
@@ -77,7 +77,7 @@ def benchmark(options, data_dir, label='benchmark'):
     results, failed_problems, unselected_minimizers = \
         loop_over_benchmark_problems(problem_group, options)
 
-    cp.finalise(label=label,
+    cp.finalise_group(label=label,
                 failed_problems=failed_problems,
                 unselected_minimizers=unselected_minimizers)
 
@@ -203,7 +203,7 @@ def loop_over_starting_values(problem, options, grabbed_output):
 
         # Checks to see if all of the minimizers from every software raised an
         # exception and record the problem name if that is the case
-        software_check = [np.isinf(v.chi_sq)
+        software_check = [np.isinf(v.accuracy)
                           for v in individual_problem_results]
         if all(software_check):
             problem_fails.append(problem.name)
@@ -335,7 +335,7 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
     """
     problem = controller.problem
     algorithm_type = options.algorithm_type
-    cp = checkpoint.Checkpoint(options=options)
+    cp = checkpoint.get_checkpoint(options=options)
 
     results_problem = []
     minimizer_failed = []
@@ -454,7 +454,7 @@ def loop_over_hessians(controller, options, grabbed_output):
     :return: a FittingResult for each run
     :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
     """
-    cp = checkpoint.Checkpoint(options=options)
+    cp = checkpoint.get_checkpoint(options=options)
     minimizer = controller.minimizer
     cost_func = controller.cost_func
     problem = controller.problem
@@ -494,7 +494,7 @@ def loop_over_hessians(controller, options, grabbed_output):
                            'accuracy': accuracy,
                            'runtime': runtime,}
             if problem.multifit:
-                # for multifit problems, multiple chi_sq values are stored
+                # for multifit problems, multiple accuracy values are stored
                 # in a list i.e. we have multiple results
                 for i in range(len(accuracy)):
                     result_args.update(
@@ -561,17 +561,16 @@ def perform_fit(controller, options, grabbed_output):
 
         # Avoid deleting results (max runtime exception) if gotten this far
         controller.timer.reset()
-        chi_sq = controller.eval_chisq(params=controller.final_params,
+        accuracy = controller.eval_chisq(params=controller.final_params,
                                        x=controller.data_x,
                                        y=controller.data_y,
                                        e=controller.data_e)
 
-        chi_sq_check = any(np.isnan(n) for n in chi_sq) \
-            if controller.problem.multifit else np.isnan(chi_sq)
-        if np.isnan(runtime) or chi_sq_check:
+        accuracy_check = any(np.isnan(n) for n in accuracy) \
+            if controller.problem.multifit else np.isnan(accuracy)
+        if np.isnan(runtime) or accuracy_check:
             raise ControllerAttributeError(
-                "Either the computed runtime or chi_sq values "
-                "was a NaN.")
+                "Either the computed runtime or accuracy values were a NaN.")
     except ValidationException as ex:
         LOGGER.warning(str(ex))
         controller.flag = 7
@@ -604,11 +603,11 @@ def perform_fit(controller, options, grabbed_output):
             None if not multi_fit \
             else [None] * len(controller.data_x)
 
-        chi_sq = np.inf if not multi_fit \
+        accuracy = np.inf if not multi_fit \
             else [np.inf] * len(controller.data_x)
     elif controller.problem.value_ranges is not None:
         # If bounds have been set, check that they have
         # been respected by the minimizer and set error
         # flag if not
         controller.check_bounds_respected()
-    return chi_sq, runtime
+    return accuracy, runtime

@@ -16,7 +16,8 @@ setup(
     python_requires='>=3.7.1',
     entry_points={
         "console_scripts": [
-            'fitbenchmarking = fitbenchmarking.cli.main:main'
+            'fitbenchmarking = fitbenchmarking.cli.main:main',
+            'fitbenchmarking-cp = fitbenchmarking.cli.checkpoint_handler:main'
         ]
     },
     packages=find_packages(exclude=('*mock*', '*test*')),

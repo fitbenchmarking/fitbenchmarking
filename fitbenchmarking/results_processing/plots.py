@@ -52,14 +52,13 @@ class Plot:
                             "alpha": 0.5, }
 
     def __init__(self, best_result, options, figures_dir):
-        self.cost_func = best_result.cost_func
-        self.problem = self.cost_func.problem
-        if self.problem.multivariate:
+        self.result = best_result
+
+        if self.result.multivariate:
             raise PlottingError(
                 'Plots cannot be generated for multivariate problems')
-        self.options = options
 
-        self.result = best_result
+        self.options = options
 
         self.figures_dir = figures_dir
 
@@ -89,7 +88,7 @@ class Plot:
         """
         Close the matplotlib figure
         """
-        if not self.problem.multivariate:
+        if not self.result.multivariate:
             plt.close(self.fig)
 
     def format_plot(self):
@@ -97,7 +96,7 @@ class Plot:
         Performs post plot processing to annotate the plot correctly
         """
         # log scale plot if problem is a SASView problem
-        if self.problem.format == "sasview":
+        if self.result.problem_format == "sasview":
             self.ax.set_xscale("log", nonpositive='clip')
             self.ax.set_yscale("log", nonpositive='clip')
         # linear scale if otherwise
@@ -142,7 +141,7 @@ class Plot:
                 # Update style
                 for k, v in plot_options.items():
                     try:
-                        getattr(self.line_plot, 'set_{}'.format(k))(v)
+                        getattr(self.line_plot, f'set_{k}')(v)
                     except AttributeError:
                         pass
 
@@ -155,25 +154,10 @@ class Plot:
         :return: path to the saved file
         :rtype: str
         """
-
-        # Parse which starting values to use from result name
-        start_index = self.result.name.partition('Start')[2].split(',')[0]
-        if start_index:
-            start_index = int(start_index.strip())
-        else:
-            start_index = 1
-
-        # gracefully handle occasions where problem definition file does not
-        # include all sets of starting values
-        try:
-            ini_guess = self.problem.starting_values[start_index - 1].values()
-        except IndexError:
-            ini_guess = self.problem.starting_values[0].values()
-
         self.plot_data(errors=False,
                        plot_options=self.ini_guess_plot_options,
                        x=self.x,
-                       y=self.problem.eval_model(list(ini_guess), x=self.x))
+                       y=self.result.ini_y[self.result.sorted_index])
         self.format_plot()
         file = "start_for_{0}.png".format(self.result.sanitised_name)
         file_name = os.path.join(self.figures_dir, file)
@@ -202,7 +186,7 @@ class Plot:
         plot_options_dict['label'] = label
         plot_options_dict['color'] = self.best_fit_plot_options['color']
 
-        y = self.problem.eval_model(result.params, x=self.x)
+        y = result.fin_y[result.sorted_index]
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
                        y=y)
@@ -242,7 +226,7 @@ class Plot:
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
                        x=self.x,
-                       y=self.problem.eval_model(result.params, x=self.x))
+                       y=result.fin_y[result.sorted_index])
         self.format_plot()
         file = f"{result.sanitised_min_name(True)}_fit_for_"\
                f"{self.result.costfun_tag}_{self.result.sanitised_name}.png"
@@ -277,7 +261,6 @@ class Plot:
         colours = iter(cmap(col_vals))
 
         first_result = next(iter(categories.values()))[0]
-        problem = first_result.cost_func.problem
 
         # Plot data
         if "weighted_nlls" in options.cost_func_type:
@@ -292,14 +275,13 @@ class Plot:
 
         # Setup x for rest of plots
         x = first_result.data_x
-        x = np.linspace(x.min(), x.max(), 50)
+        x = first_result.data_x[first_result.sorted_index]
 
         for (key, results), colour in zip(categories.items(), colours):
             # Plot category
             for result in results:
                 if result.params is not None:
-                    params = result.params
-                    y = result.problem.eval_model(params, x=x)
+                    y = result.fin_y[result.sorted_index]
                     plot_options = cls.summary_best_plot_options \
                         if result.is_best_fit else cls.summary_plot_options
                     plot_options['color'] = colour
@@ -307,7 +289,7 @@ class Plot:
 
                     ax.plot(x, y, **plot_options)
                     # log scale plot if problem is a SASView problem
-                    if problem.format == "sasview":
+                    if result.problem_format == "sasview":
                         ax.set_xscale("log", nonpositive='clip')
                         ax.set_yscale("log", nonpositive='clip')
                     ax.set_xlabel("X")

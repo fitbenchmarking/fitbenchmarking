@@ -6,12 +6,14 @@ or for more general information, see the online docs at
 docs.fitbenchmarking.com.
 """
 
+import os
 import sys
 import textwrap
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
-from fitbenchmarking.core.results_output import save_results
-from fitbenchmarking.utils.checkpoint import Checkpoint
+from fitbenchmarking.core.results_output import (create_index_page,
+                                                 open_browser, save_results)
+from fitbenchmarking.utils.checkpoint import get_checkpoint
 from fitbenchmarking.utils.options import find_options_file
 
 
@@ -24,7 +26,7 @@ def get_parser() -> ArgumentParser:
     """
 
     description = (
-        'This is a tool for working with checkpoint files generated during a'
+        'This is a tool for working with checkpoint files generated during a '
         'FitBenchmarking run.'
     )
 
@@ -49,7 +51,9 @@ def get_parser() -> ArgumentParser:
     report.add_argument('-f', '--filename',
                         metavar='CHECKPOINT_FILE',
                         default='',
-                        help='The path to a fitbenchmarking checkpoint file')
+                        help='The path to a fitbenchmarking checkpoint file. '
+                             'If omitted, this will be taken from the options '
+                             'file.')
     report.add_argument('-o', '--options-file',
                         metavar='OPTIONS_FILE',
                         default='',
@@ -69,20 +73,28 @@ def generate_report(options_file='', additional_options=None):
                                    filename (str): The checkpoint file to use.
     :type additional_options: dict, optional
     """
-    if additional_options is not None:
+    if additional_options is None:
         additional_options = {}
 
     options = find_options_file(options_file=options_file,
-                                         additional_options=additional_options)
+                                additional_options=additional_options)
 
-    checkpoint = Checkpoint(options=options)
-    label, results, unselected_minimizers, failed_problems = checkpoint.load()
+    checkpoint = get_checkpoint(options=options)
+    results, unselected_minimizers, failed_problems = checkpoint.load()
 
-    save_results(group_name=label,
-                 results=results,
-                 options=options,
-                 failed_problems=failed_problems,
-                 unselected_minimizers=unselected_minimizers)
+    all_dirs = []
+    for label in results:  # pylint: disable=consider-using-dict-items
+        directory = save_results(group_name=label,
+                                 results=results[label],
+                                 options=options,
+                                 failed_problems=failed_problems[label],
+                                 unselected_minimizers=unselected_minimizers[label])
+
+        directory = os.path.relpath(path=directory, start=options.results_dir)
+        all_dirs.append(directory)
+
+    index_page = create_index_page(options, results.keys(), all_dirs)
+    open_browser(index_page, options)
 
 
 def main():

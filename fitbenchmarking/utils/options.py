@@ -240,7 +240,7 @@ class Options:
          'comparison_mode': 'both',
          'results_browser': True,
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
-         'checkpoint_filename': 'checkpoint'}
+         'checkpoint_filename': 'checkpoint.json'}
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
          'append': False,
@@ -605,6 +605,6 @@ def find_options_file(options_file: str, additional_options: dict) -> Options:
         if not options_file.endswith(".ini"):
             raise OptionsError('Options file must be a ".ini" file')
 
-        return Options(file_name=glob_options_file,,
+        return Options(file_name=glob_options_file,
                        additional_options=additional_options)
     return Options(additional_options=additional_options)

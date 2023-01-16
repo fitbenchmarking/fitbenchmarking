@@ -4,8 +4,8 @@ FitBenchmarking results object
 from typing import TYPE_CHECKING
 
 import numpy as np
-from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 
+from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.debug import get_printable_table
 
 if TYPE_CHECKING:
@@ -53,7 +53,9 @@ class FittingResult:
         self.name: 'str' = problem.name
         self.multivariate: 'bool' = problem.multivariate
         self.problem_format: 'str' = problem.format
+        self.problem_desc: 'str' = problem.description
         self.initial_params: 'list[float]' = controller.initial_params
+        self.equation = problem.equation
 
         if dataset is None:
             self.data_x = problem.data_x
@@ -116,6 +118,10 @@ class FittingResult:
 
         self.min_accuracy = np.inf
         self.min_runtime = np.inf
+        self._norm_acc = None
+        self._norm_runtime = None
+
+        self.is_best_fit = False
 
         # Attributes for table creation
         self.costfun_tag: str = cost_func.__class__.__name__
