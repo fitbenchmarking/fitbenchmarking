@@ -14,6 +14,7 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
@@ -62,24 +63,25 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         """
         Setting up problem for tests
         """
-        self.cost_func = make_cost_function()
-        self.problem = self.cost_func.problem
+        cost_func = make_cost_function()
         self.options = Options()
         self.options.software = ["scipy"]
-        self.scipy_len = len(self.options.minimizers["scipy"])
+        scipy_len = len(self.options.minimizers["scipy"])
         bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
         self.default_parsers_dir = os.path.join(bench_prob_dir,
                                                 "default_parsers_set")
         self.count = 0
-        self.result_args = {'options': self.options,
-                            'cost_func': self.cost_func,
-                            'jac': 'jac',
-                            'hess': 'hess',
-                            'initial_params': self.problem.starting_values[0],
-                            'params': [],
-                            'chi_sq': 1}
-        self.list_results = [fitbm_result.FittingResult(**self.result_args)
-                             for i in range(self.scipy_len)]
+
+        controllers = [ScipyController(cost_func) for _ in range(scipy_len)]
+
+        self.list_results = [
+            fitbm_result.FittingResult(
+                options=self.options,
+                controller=controllers[i],
+                accuracy=1,
+                runtime=1)
+            for i in range(scipy_len)
+        ]
         self.individual_problem_results = [
             self.list_results, self.list_results]
 
@@ -87,13 +89,12 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         """
         Mock function to be used instead of loop_over_starting_values
         """
-        individual_problem_results = \
-            self.individual_problem_results[self.count]
+        individual_problem_results =
+        self.individual_problem_results[self.count]
         problem_fails = self.problem_fails
         unselected_minimizers = {"scipy": []}
         self.count += 1
-        return individual_problem_results, problem_fails, \
-            unselected_minimizers
+        return individual_problem_results, problem_fails, unselected_minimizers
 
     def shared_tests(self, list_len, expected_problem_fails):
         """
@@ -104,13 +105,13 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         :param expected_problem_fails: list of problems which fail
         :type expected_problem_fails: list
         """
-        results, failed_problems, unselected_minimizers = \
-            loop_over_benchmark_problems(self.problem_group, self.options)
+        results, failed_problems, unselected_minimizers =
+        loop_over_benchmark_problems(self.problem_group, self.options)
         assert len(results) == list_len
         assert failed_problems == expected_problem_fails
         dict_test(unselected_minimizers, {"scipy": []})
 
-    @unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
+    @ unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
     def test_run_multiple_benchmark_problems(self, loop_over_starting_values):
         """
         Checks that all benchmark problems run with no failures
@@ -126,7 +127,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         expected_list_length = len(self.list_results) * 2
         self.shared_tests(expected_list_length, expected_problem_fails)
 
-    @unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
+    @ unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
     def test_run_multiple_failed_problems(self, loop_over_starting_values):
         """
         Checks that multiple failed problems are reported correctly

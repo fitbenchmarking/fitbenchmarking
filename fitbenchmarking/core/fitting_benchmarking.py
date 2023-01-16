@@ -78,8 +78,8 @@ def benchmark(options, data_dir, label='benchmark'):
         loop_over_benchmark_problems(problem_group, options)
 
     cp.finalise_group(label=label,
-                failed_problems=failed_problems,
-                unselected_minimizers=unselected_minimizers)
+                      failed_problems=failed_problems,
+                      unselected_minimizers=unselected_minimizers)
 
     return results, failed_problems, unselected_minimizers
 
@@ -179,6 +179,7 @@ def loop_over_starting_values(problem, options, grabbed_output):
     name = problem.name
     num_start_vals = len(problem.starting_values)
     problem_results = []
+    unselected_minimizers = {}
 
     if num_start_vals >= 2 and options.pbar:
         num_start_vals_pbar = trange(num_start_vals, colour='blue',
@@ -212,8 +213,7 @@ def loop_over_starting_values(problem, options, grabbed_output):
         # Reset name for next loop
         problem.name = name
 
-    return (problem_results, problem_fails,
-            unselected_minimizers)
+    return problem_results, problem_fails, unselected_minimizers
 
 
 def loop_over_cost_function(problem, options, start_values_index,
@@ -236,6 +236,7 @@ def loop_over_cost_function(problem, options, start_values_index,
     :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
             dict[str, list[str]]
     """
+    unselected_minimizers = {}
     problem_results = []
     for cf in options.cost_func_type:
         cost_func_cls = create_cost_func(cf)
@@ -333,7 +334,6 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
     :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
             list[str])
     """
-    problem = controller.problem
     algorithm_type = options.algorithm_type
     cp = checkpoint.get_checkpoint(options=options)
 
@@ -488,11 +488,12 @@ def loop_over_hessians(controller, options, grabbed_output):
                             hess_name)
 
             # Perform the fit a number of times specified by num_runs
-            accuracy, runtime = perform_fit(controller, options, grabbed_output)
+            accuracy, runtime = perform_fit(
+                controller, options, grabbed_output)
             result_args = {'options': options,
                            'controller': controller,
                            'accuracy': accuracy,
-                           'runtime': runtime,}
+                           'runtime': runtime, }
             if problem.multifit:
                 # for multifit problems, multiple accuracy values are stored
                 # in a list i.e. we have multiple results
@@ -562,9 +563,9 @@ def perform_fit(controller, options, grabbed_output):
         # Avoid deleting results (max runtime exception) if gotten this far
         controller.timer.reset()
         accuracy = controller.eval_chisq(params=controller.final_params,
-                                       x=controller.data_x,
-                                       y=controller.data_y,
-                                       e=controller.data_e)
+                                         x=controller.data_x,
+                                         y=controller.data_y,
+                                         e=controller.data_e)
 
         accuracy_check = any(np.isnan(n) for n in accuracy) \
             if controller.problem.multifit else np.isnan(accuracy)

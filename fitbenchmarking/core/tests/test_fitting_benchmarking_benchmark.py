@@ -13,6 +13,7 @@ from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
@@ -99,16 +100,17 @@ class BenchmarkTests(unittest.TestCase):
         problem_names = ["random_1", "random_3", "random_2"]
         results = []
         for name in problem_names:
-            result_args = {'options': self.options,
-                           'cost_func': self.cost_func,
-                           'jac': 'jac',
-                           'hess': 'hess',
-                           'initial_params': self.problem.starting_values[0],
-                           'params': [],
-                           'chi_sq': 1,
-                           'name': name}
-            list_results = [fitbm_result.FittingResult(**result_args)
-                            for j in range(self.scipy_len)]
+            self.cost_func.problem.name = name
+            controller = ScipyController(self.cost_func)
+            list_results = [
+                fitbm_result.FittingResult(
+                    options=self.options,
+                    controller=controller,
+                    accuracy=1,
+                    runtime=1
+                )
+                for _ in range(self.scipy_len)
+            ]
             results.extend(list_results)
         problem_fails = []
         expected_problem_names = sorted(problem_names)
@@ -132,16 +134,16 @@ class BenchmarkTests(unittest.TestCase):
         expected_names = sorted(problem_names)
         results = []
         for name in problem_names:
-            result_args = {'options': self.options,
-                           'cost_func': self.cost_func,
-                           'jac': 'jac',
-                           'hess': 'hess',
-                           'initial_params': self.problem.starting_values[0],
-                           'params': [],
-                           'chi_sq': 1,
-                           'name': name}
-            list_results = [fitbm_result.FittingResult(**result_args)
-                            for j in range(self.scipy_len)]
+            self.problem.name = name
+            controller = ScipyController(self.cost_func)
+            list_results = [
+                fitbm_result.FittingResult(
+                    options=self.options,
+                    controller=controller,
+                    accuracy=1,
+                    runtime=1)
+                for _ in range(self.scipy_len)
+            ]
             results.extend(list_results)
 
         problem_fails = []

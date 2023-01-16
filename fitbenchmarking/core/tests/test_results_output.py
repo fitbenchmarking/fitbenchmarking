@@ -26,6 +26,7 @@ from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 
 def fitting_function_1(data, x1, x2):
@@ -123,27 +124,23 @@ def generate_mock_results(additional_options):
     results = []
     for i, _ in enumerate(problems):
         for j, cf in enumerate(cost_funcs[i]):
+            controller = ScipyController(cf)
             for k, software in enumerate(softwares):
+                controller.software = software
                 for m, minim in enumerate(minimizers[k]):
+                    controller.minimizer = minim
                     jacs = jacobians[i] if minim != 's1m2' else [None]
                     for n, jac in enumerate(jacs):
+                        controller.flag = None if jac is not None else 4
                         cf.jacobian = jac
                         minim_name = f'{minim}, Jac: {n}'
                         options.minimizer_alg_type[minim_name] = 'test'
+                        controller.final_params = params[i][j][k][m][n],
                         results.append(FittingResult(
                             options=options,
-                            cost_func=cf,
-                            jac=jac,
-                            hess=None,
-                            initial_params=list(
-                                cf.problem.starting_values[0].values()),
-                            params=params[i][j][k][m][n],
-                            chi_sq=acc[i][j][k][m][n],
-                            runtime=runtime[i][j][k][m][n],
-                            software=software,
-                            minimizer=minim_name,
-                            error_flag=None if jac is not None else 4
-                        ))
+                            controller=controller,
+                            accuracy=acc[i][j][k][m][n],
+                            runtime=runtime[i][j][k][m][n]))
 
     return results, options
 
@@ -521,10 +518,10 @@ class ProcessBestResultsTests(unittest.TestCase):
             self.results_dir = os.path.join(directory, 'figures_dir')
             results, self.options = generate_mock_results(self.results_dir)
             self.results = results[:5]
-            for r, chisq, runtime in zip(self.results,
+            for r, accuracy, runtime in zip(self.results,
                                          [2, 1, 5, 3, 4],
                                          [5, 4, 1, 2, 3]):
-                r.chi_sq = chisq
+                r.accuracy = accuracy
                 r.runtime = runtime
             self.best = _process_best_results(self.results)
 
@@ -549,15 +546,15 @@ class ProcessBestResultsTests(unittest.TestCase):
         self.assertFalse(self.results[3].is_best_fit)
         self.assertFalse(self.results[4].is_best_fit)
 
-    def test_minimum_chi_sq_set(self):
+    def test_minimum_accuracy_set(self):
         """
-        Test that min_chi_sq is set correctly.
+        Test that min_accuracy is set correctly.
         """
-        self.assertEqual(self.results[0].min_chi_sq, self.best.chi_sq)
-        self.assertEqual(self.results[1].min_chi_sq, self.best.chi_sq)
-        self.assertEqual(self.results[2].min_chi_sq, self.best.chi_sq)
-        self.assertEqual(self.results[3].min_chi_sq, self.best.chi_sq)
-        self.assertEqual(self.results[4].min_chi_sq, self.best.chi_sq)
+        self.assertEqual(self.results[0].min_accuracy, self.best.accuracy)
+        self.assertEqual(self.results[1].min_accuracy, self.best.accuracy)
+        self.assertEqual(self.results[2].min_accuracy, self.best.accuracy)
+        self.assertEqual(self.results[3].min_accuracy, self.best.accuracy)
+        self.assertEqual(self.results[4].min_accuracy, self.best.accuracy)
 
     def test_minimum_runtime_set(self):
         """

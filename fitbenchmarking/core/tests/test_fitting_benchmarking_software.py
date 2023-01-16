@@ -1,21 +1,23 @@
 """
 Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_fitting_software
 """
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
 import inspect
 import os
 import unittest
+
 import numpy as np
 
-
 from fitbenchmarking import test_files
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.utils import fitbm_result, output_grabber
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_fitting_software
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils import fitbm_result, output_grabber
 from fitbenchmarking.utils.exceptions import UnsupportedMinimizerError
+from fitbenchmarking.utils.options import Options
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
@@ -65,22 +67,18 @@ class LoopOverSoftwareTests(unittest.TestCase):
         Setting up problem for tests
         """
         self.cost_func = make_cost_function()
-        self.problem = self.cost_func.problem
-        self.options = self.problem.options
+        problem = self.cost_func.problem
+        self.options = problem.options
         self.options.software = ["scipy", "dfo", "scipy_ls"]
-        self.minimizers = self.options.minimizers
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.start_values_index = 0
         self.scipy_len = len(self.options.minimizers["scipy"])
         self.dfo_len = len(self.options.minimizers["dfo"])
         self.scipy_ls_len = len(self.options.minimizers["scipy_ls"])
         self.result_args = {'options': self.options,
-                            'cost_func': self.cost_func,
-                            'jac': 'jac',
-                            'hess': 'hess',
-                            'initial_params': self.problem.starting_values[0],
-                            'params': [],
-                            'chi_sq': 1}
+                            'controller': ScipyController(self.cost_func),
+                            'accuracy': 1,
+                            'runtime': 1}
 
     def mock_func_call(self, *args, **kwargs):
         """

@@ -91,17 +91,18 @@ class LoopOverMinimizersTests(unittest.TestCase):
         Setting up problem for tests
         """
         self.minimizers = ["deriv_free_algorithm", "general"]
-        self.cost_func = make_cost_function(minimizers=self.minimizers)
-        self.problem = self.cost_func.problem
-        self.controller = DummyController(cost_func=self.cost_func)
-        self.options = self.problem.options
+        cost_func = make_cost_function(minimizers=self.minimizers)
+        problem = cost_func.problem
+        self.controller = DummyController(cost_func=cost_func)
+        self.options = problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
         self.count = 0
         self.result = fitbm_result.FittingResult(
-            options=self.options, cost_func=self.cost_func, jac="jac",
-            hess="hess", initial_params=self.problem.starting_values[0],
-            params=[], chi_sq=1)
+            options=self.options,
+            controller=self.controller,
+            accuracy=1,
+            runtime=1)
 
     def mock_func_call(self, *args, **kwargs):
         """
