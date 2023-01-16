@@ -51,6 +51,18 @@ class FitbenchmarkParser(Parser):
         self.fitting_problem.function = self._create_function()
         self.fitting_problem.format = self._entries['software'].lower()
 
+        plot_scale_options = ['loglog', 'logy', 'logx', 'default']
+
+        if 'plot_scale' in self._entries:
+            if self._entries['plot_scale'].lower() in plot_scale_options:
+                self.fitting_problem.plot_scale =  \
+                    self._entries['plot_scale'].lower()
+            else:
+                raise ParsingError('The plot scale should be one of these '
+                                   f'options {plot_scale_options}')
+        else:
+            self.fitting_problem.plot_scale = 'default'
+
         # If using a multivariate function wrap the call to take a single
         # argument
         if len(data_points[0]['x'].shape) > 1:

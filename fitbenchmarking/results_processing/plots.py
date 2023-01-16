@@ -96,10 +96,18 @@ class Plot:
         """
         Performs post plot processing to annotate the plot correctly
         """
-        # log scale plot if problem is a SASView problem
-        if self.problem.format == "sasview":
+        # log scale plots
+        if self.problem.plot_scale == "loglog":
+            print(self.problem.plot_scale)
             self.ax.set_xscale("log", nonpositive='clip')
             self.ax.set_yscale("log", nonpositive='clip')
+        elif self.problem.plot_scale == "logy":
+            print(self.problem.plot_scale)
+            self.ax.set_yscale("log", nonpositive='clip')
+        elif self.problem.plot_scale == "logx":
+            print(self.problem.plot_scale)
+            self.ax.set_xscale("log", nonpositive='clip')
+
         # linear scale if otherwise
         self.ax.set_xlabel("X")
         self.ax.set_ylabel("Y")
@@ -307,9 +315,19 @@ class Plot:
 
                     ax.plot(x, y, **plot_options)
                     # log scale plot if problem is a SASView problem
-                    if problem.format == "sasview":
+                    if problem.plot_scale == "loglog":
+                        print(problem.plot_scale)
+                        
                         ax.set_xscale("log", nonpositive='clip')
                         ax.set_yscale("log", nonpositive='clip')
+                    elif problem.plot_scale == "logy":
+                        print(problem.plot_scale)
+                        ax.set_yscale("log", nonpositive='clip')
+                    elif problem.plot_scale == "logx":
+                        print(problem.plot_scale)
+                        ax.set_xscale("log", nonpositive='clip')
+                    print(problem.format)
+                    print(problem.plot_scale)
                     ax.set_xlabel("X")
                     ax.set_ylabel("Y")
                     ax.set_title(title,

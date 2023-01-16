@@ -58,6 +58,8 @@ class NISTParser(Parser):
             nist_func_definition(function=fitting_problem.equation,
                                  param_names=starting_values[0].keys())
         fitting_problem.format = "nist"
+        plot_scale_options = ['loglog', 'logy', 'logx', 'default']
+        fitting_problem.plot_scale = plot_scale_options[1]
         try:
             jacobian = self._parse_jacobian(name)
             fitting_problem.jacobian = \
@@ -157,6 +159,7 @@ class NISTParser(Parser):
                 name = name.strip()
             elif line.startswith("Description:"):
                 description, idx = self._get_description(lines, idx)
+            elif line.startswith("Plot scale:")
             else:
                 ignored_lines += 1
 

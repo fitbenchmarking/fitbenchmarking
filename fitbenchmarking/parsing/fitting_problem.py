@@ -44,6 +44,10 @@ class FittingProblem:
         #: *string* Name of the problem definition type (e.g., 'cutest')
         self.format = None
 
+        #: *string* The plot scale for the y and x data
+
+        self.plot_scale = None
+
         #: *string* Equation (function or model) to fit against data
         self.equation = None
 
@@ -115,6 +119,7 @@ class FittingProblem:
     def __str__(self):
         info = {"Name": self.name,
                 "Format": self.format,
+                "Plot scale": self.plot_scale,
                 "Equation": self.equation,
                 "Params": self._param_names,
                 "Start X": self.start_x,
