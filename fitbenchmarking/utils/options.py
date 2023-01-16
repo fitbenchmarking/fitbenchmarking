@@ -168,7 +168,6 @@ class Options:
                    'slsqp',
                    'nelder',
                    'least_squares',
-
                    'leastsq',
                    'newton',
                    'tnc',
