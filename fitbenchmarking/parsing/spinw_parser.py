@@ -47,10 +47,11 @@ class SpinWParser(FitbenchmarkParser):
         :rtype: dict<str, np.ndarray>
         """
         proj = self._parse_proj()
+        eng.workspace['w1'] = self._parse_cut(data_file_path, proj)
         
 
         if self._entries['problem_type'] == 'tobyfit':
-            eng.workspace['w1'] = self._parse_cut(data_file_path, proj)
+            
             # Add sample
             eng.workspace['sample'] = self._parse_sample()
             
@@ -79,10 +80,8 @@ class SpinWParser(FitbenchmarkParser):
                         for c in bins[2][0][1:]+bins[2][0][:-1]])
 
         if self._entries['problem_type'] == 'tf_mock_data':
-             #print(f'load({self._parse_cut(data_file_path, proj)})')
-             #print(eng.evalc(f'load({self._parse_cut(data_file_path, proj)})'))
              eng.evalc(f'load("{self._parse_cut(data_file_path, proj)}","w1a","w1b")')
-             eng.evalc(f'w1= [w1a]')
+             eng.evalc(f'w1 = [w1a]')
              eng.evalc(f'fobj = tobyfit(w1);')
              eng.evalc(f'fobj = fobj.set_local_foreground;')
         if "mc_points" in self._entries:
@@ -91,8 +90,7 @@ class SpinWParser(FitbenchmarkParser):
         x = np.array([[a/2]
                     for a in bins[0][0][1:]+bins[0][0][:-1]])
 
-        if self._entries['problem_type'] == 'IX_dataset_1d':
-            eng.workspace['w1'] = self._parse_cut(data_file_path, proj)
+        if self._entries['problem_type'] == 'IX_dataset_1d':            
             
             eng.evalc("IX_1D = IX_dataset_1d(w1.p{1},w1.s,sqrt(w1.e))")
             eng.evalc('fobj = mfclass(IX_1D);')  
@@ -103,7 +101,7 @@ class SpinWParser(FitbenchmarkParser):
                         for a in bins[0][0][1:]+bins[0][0][:-1]])
 
         if self._entries['problem_type'] == 'IX_dataset_2d':
-            eng.workspace['w1'] = self._parse_cut(data_file_path, proj)
+            
             eng.evalc("IX_2D = IX_dataset_2d(w1.p{1},w1.p{2},w1.s,sqrt(w1.e))")
             eng.evalc('fobj = mfclass(IX_2D);')  
             add_persistent_matlab_var('fobj')
@@ -114,7 +112,7 @@ class SpinWParser(FitbenchmarkParser):
                         for b in bins[1][0][1:]+bins[1][0][:-1]])
         
         if self._entries['problem_type'] == 'IX_dataset_3d':
-            eng.workspace['w1'] = self._parse_cut(data_file_path, proj)
+            
             eng.evalc("IX_3D = IX_dataset_3d(w1.p{1},w1.p{2},w1.p{3},w1.s,sqrt(w1.e))")
             eng.evalc('fobj = mfclass(IX_3D);')  
             add_persistent_matlab_var('fobj')
@@ -385,15 +383,12 @@ class SpinWParser(FitbenchmarkParser):
                 if x.shape != self._spinw_x.shape:
                     return np.ones(x.shape)
                 eng.workspace['cpars'] = matlab.double(p)
-                print(p)
-                print(eng.evalc('cpars'))
                 eng.evalc(f'fobj = fobj.set_pin({cpars_kwargs})')
                 if 'set_free' in self._entries:
                     eng.evalc(f'fobj = fobj.set_free({self._entries["set_free"]})')
                 eng.eval('[wsim, calcdata] = fobj.simulate();', nargout=0)
                 eng.evalc('[spinw_y, e, msk] = sigvar_get(wsim)')
-                return np.array(eng.workspace['spinw_y']).flatten()
-                    
+                return np.array(eng.workspace['spinw_y'],dtype = np.float64).flatten()
 
             return fit_function
 
