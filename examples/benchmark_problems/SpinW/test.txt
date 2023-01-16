@@ -1,23 +1,7 @@
 # FitBenchmark Problem
 software = 'SpinW'
 name = 'Simple Test'
-description = 'Testing the format using PCSMO'
-input_file = 'pcsmo_ei70_base_bkd.sqw'
-projection = 'u=[1,0,0],v=[0,1,0],type=rrr'
-cut = 'p1_bin=[-1,0.5,1],p2_bin=[-1,0.5,1],p3_bin=[-10,10],p4_bin=[7, 2.8, 49]'
-sample = 'class=IX_sample,single_crystal=True,xgeom=[0,0,1],ygeom=[0,1,0],shape=cuboid,ps=[0.01,0.05,0.01]'
-angdeg = [90,90,90]
-alatt = [4.3,4.3,4.3]
-instrument = 'class=maps_instrument,ei=70,hz=250,chopper=S'
-function = 'matlab_script=m_scripts/pcsmo_model.m,JF1=-11.39,JA=1.5,JF2=-1.35,JF3=1.5,Jperp=0.88,D=0.074'
-spinwpars_mat = {'JF1' 'JA' 'JF2' 'JF3' 'Jperp' 'D(3,3)'}
-spinwpars_hermit = false
-spinwpars_optmem = 0
-spinwpars_useFast = false
-spinwpars_formfact = true
-spinwpars_resfun = gauss
-spinwpars_coordtrans = 'diag([2. 2. 1. 1.])'
-spinwpars_fid = 1
-intrinsic_energy_width = 0.1
-mc_points = 5
-random_fraction_pixels = 0.01
+description = 'Testing the format using tobyfit test'
+input_file = 'wdata1.mat'
+function = 'matlab_script=m_scripts/functions/pcsmo_model.m'
+wxye_function = 'matlab_script=m_scripts/wxye_functions/fb_wxye_tobyfit_test.m'

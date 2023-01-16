@@ -46,194 +46,27 @@ class SpinWParser(FitbenchmarkParser):
         :return: data
         :rtype: dict<str, np.ndarray>
         """
-        proj = self._parse_proj()
-        eng.workspace['sqw_cut'] = self._parse_cut(data_file_path, proj)
-        # Add sample
-        eng.workspace['sample'] = self._parse_sample()
-        if 'angdeg'  in self._entries:
-            eng.evalc(f'sample.angdeg = {self._entries["angdeg"]}')
-        if 'alatt' in self._entries:
-            eng.evalc(f'sample.alatt = {self._entries["alatt"]}')
-        eng.evalc('w1 = sqw_cut.set_sample(sample);')
-        # Add instrument
-        eng.workspace['instrument'] = self._parse_instrument()
-        eng.evalc('w1 = w1.set_instrument(instrument);')
-        # Reduce size of problem if set
-        if "random_fraction_pixels" in self._entries:
-            eng.evalc('w1 = w1.mask_random_fraction_pixels('
-                      f'{self._entries["random_fraction_pixels"]});')
-        # Create tbf
-        eng.evalc('tbf = tobyfit(w1);')
-        # Set mc points if defined
-        if "mc_points" in self._entries:
-            eng.evalc(f'tbf = tbf.set_mc_points({self._entries["mc_points"]})')
-        add_persistent_matlab_var('tbf')       
-        bins = [np.array(v) for v in eng.eval('w1.data.p')]
-        x = np.array([[a/2, b/2, c/2]
-                      for a in bins[0][0][1:]+bins[0][0][:-1]
-                      for b in bins[1][0][1:]+bins[1][0][:-1]
-                      for c in bins[2][0][1:]+bins[2][0][:-1]])
-        eng.evalc('[spinw_y, spinw_e, msk] = sigvar_get(w1)')
-        signal = np.array(eng.workspace['spinw_y'])
-        error = np.array(eng.workspace['spinw_e'])
+        pf = self._parse_function(self._entries['wxye_function'])
+        print(pf[0]['matlab_script'])
+        path = os.path.join(os.path.dirname(self._filename),
+                        pf[0]['matlab_script'])
+        eng.addpath(os.path.dirname(path))
+        func_name = os.path.basename(path).split('.', 1)[0]
+        
+        eng.evalc(f'[w, x ,y ,e] = {func_name}("{data_file_path}")')
+        x = np.array(eng.workspace['x'])
+        signal = np.array(eng.workspace['y'])
+        error = np.array(eng.workspace['e'])
+        add_persistent_matlab_var('w')
+
         y = signal.flatten()
         e = error.flatten()
+
         self._spinw_x = x
 
         return {'x': x, 'y': y, 'e': e}
 
-    def _parse_proj(self):
-        """
-        Create a projection axes object for use with the SpinW cut.
-
-        :raises ParsingError: If arguments are not properly defined.
-        :return: The projection axes
-        :rtype: eng.proj_axes
-        """
-        proj_sec = self._entries['projection']
-        proj_args = self._parse_single_function(proj_sec)
-
-        args = []
-        for k in ['u', 'v', 'w']:
-            if k not in proj_args:
-                if k == 'w':
-                    continue
-                raise ParsingError('SpinW cuts must contain both u and v. '
-                                   f'{k} is missing.')
-
-            vector = proj_args[k]
-            if len(vector) != 3:
-                raise ParsingError(f'{k} must be a 1x3 vector, not '
-                                   f'1x{len(vector)}')
-
-            args.append(matlab.double(vector))
-
-        kwargs = ['nonorthogonal', True]
-        if 'type' in proj_args:
-            if len(proj_args['type']) != 3 or \
-                    any(c not in 'apr' for c in proj_args['type']):
-                raise ParsingError('type must be a string of 3 characters '
-                                   'chosen from a, p, and r')
-            kwargs.extend(['type', proj_args['type']])
-        if 'uoffset' in proj_args:
-            vector = proj_args['uoffset']
-            if len(vector) != 4:
-                raise ParsingError('uoffset must be a 1x4 vector, not '
-                                   f'1x{len(vector)}.')
-            kwargs.extend(['uoffset', matlab.double(vector)])
-
-        return eng.ortho_proj(*args + kwargs)
-
-    def _parse_cut(self, data_file_path, proj):
-        """
-        Parse the cut entry and take a cut of the data.
-
-        :param data_file_path: The path to the data file
-        :type data_file_path: str
-        :param proj: A projection to view the data from
-        :type proj: matlab.projaxes
-        :raises ParsingError: If unexpected characters are encountered
-        :return: The sqw object which contains the data
-        :rtype: matlab sqw object
-        """
-        cut_sec = self._entries['cut']
-        cut_args = self._parse_single_function(cut_sec)
-
-        if len(cut_args) != 4:
-            raise ParsingError('cut must contain 4 vectors')
-
-        args = []
-        for i in range(1, 5):
-            k = f'p{i}_bin'
-            if k not in cut_args:
-                raise ParsingError('cut must have parameters names p1_bin, '
-                                   'p2_bin, ...')
-            vec = cut_args[k]
-            if not isinstance(vec, list):
-                raise ParsingError('cut parameters must be vectors, not '
-                                   f'{vec}')
-            if len(vec) > 4:
-                raise ParsingError(
-                    'cut parameters should have 4 or fewer elements. Unable '
-                    f'to parse {vec}')
-            args.append(matlab.double(vec))
-
-        return eng.cut_sqw(data_file_path, proj, *args)
-
-    def _parse_sample(self):
-        """
-        Parse the sample section of the input file
-        Currently only supports IX_sample. Others will be added as required.
-
-        :raises ParsingError: If a non IX_sample is used or arguments are
-                              missing
-        :return: The sample matlab object
-        :rtype: IX_sample
-        """
-        try:
-            sample_sec = self._entries['sample']
-            sample_args = self._parse_single_function(sample_sec)
-            if sample_args['class'] != 'IX_sample':
-                raise ParsingError('This parser only works for IX_sample')
-            args = []
-            if 'name' in sample_args:
-                args.append(sample_args['name'])
-            args.append(sample_args['single_crystal'])
-            if 'xgeom' in sample_args:
-                args.append(matlab.double(sample_args['xgeom']))
-                args.append(matlab.double(sample_args['ygeom']))
-                if 'shape' in sample_args:
-                    args.append(sample_args['shape'])
-                    args.append(matlab.double(sample_args['ps']))
-            if 'eta' in sample_args:
-                args.append(sample_args['eta'])
-            if 'temperature' in sample_args:
-                args.append(sample_args['temperature'])
-        except KeyError as ex:
-            raise ParsingError('Missing expected key') from ex
-        return eng.IX_sample(*args)
-
-    def _parse_instrument(self):
-        """
-        Parse the 'instrument' entry
-
-        :raises ParsingError: If the class is unrecognised or arguments are
-                              missing
-        """
-        try:
-            instrument_sec = self._entries['instrument']
-            instrument_args = self._parse_single_function(instrument_sec)
-
-            args = []
-            if instrument_args['class'] == 'maps_instrument':
-                args.append(float(instrument_args['ei']))
-                args.append(float(instrument_args['hz']))
-                args.append(instrument_args['chopper'])
-                if 'version' in instrument_args:
-                    args.extend(['-version', instrument_args['version']])
-                if 'moderator' in instrument_args:
-                    args.extend(['-moderator', instrument_args['moderator']])
-                return eng.maps_instrument(*args)
-            elif instrument_args['class'] == 'melin_instrument':
-                args.append(float(instrument_args['ei']))
-                args.append(float(instrument_args['hz']))
-                args.append(instrument_args['chopper'])
-                return eng.merlin_instrument(*args)
-            elif instrument_args['class'] == 'let_instrument':
-                args.append(float(instrument_args['ei']))
-                args.append(instrument_args['hz5'])
-                args.append(instrument_args['hz3'])
-                args.append(instrument_args['slot_mm'])
-                args.append(instrument_args['mode'])
-                if 'version' in instrument_args:
-                    args.extend(['-version', instrument_args['version']])
-                return eng.let_instrument(*args)
-            else:
-                raise ParsingError('This parser only works for '
-                                   'maps, merlin, and let instruments')
-
-        except KeyError as ex:
-            raise ParsingError('Missing expected key') from ex
+    
 
     def _create_function(self) -> typing.Callable:
         """
