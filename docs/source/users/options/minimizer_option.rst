@@ -395,6 +395,75 @@ The `levmar` minimizer is set as follows:
    See :ref:`extra_dependencies`. This package also requires the BLAS and LAPACK
    libraries to be present on the system.
 
+
+.. _lmfit:
+
+LMFIT (``lmfit``)
+===================
+
+The `lmfit <https://lmfit.github.io/lmfit-py/index.html>`__ package provides simple tools to help you build complex fitting models 
+for non-linear least-squares problems and apply these models to real data. Lmfit provides a high-level interface to non-linear 
+optimization and curve fitting problems for Python. It builds on and extends many of the optimization methods of 
+`scipy.optimize <https://docs.scipy.org/doc/scipy/reference/optimize.html>`__.
+
+* Levenberg-Marquardt (:code:`leastsq`)
+* Least-Squares minimization, using Trust Region Reflective method (:code:`least_squares`)
+* Differential evolution (:code:`differential_evolution`)
+* Adaptive Memory Programming for Global Optimization (:code:`ampgo`)
+* Nelder-Mead (:code:`nelder`)
+* L-BFGS-B (:code:`lbfgsb`)
+* Powell (:code:`powell`)
+* Conjugate-Gradient (:code:`cg`)
+* Newton-CG (:code:`newton`)
+* Cobyla (:code:`cobyla`)
+* BFGS (:code:`bfgs`)
+* Truncated Newton (:code:`tnc`)
+* Newton-CG trust-region (:code:`trust-ncg`)
+* Nearly exact trust-region (:code:`trust-exact`)
+* Newton GLTR trust-region (:code:`trust-krylov`)
+* Trust-region for constrained optimization (:code:`trust-constr`)
+* Dog-leg trust-region (:code:`dogleg`)
+* Sequential Linear Squares Programming (:code:`slsqp`)
+* `Maximum likelihood via Monte-Carlo Markov Chain <https://emcee.readthedocs.io/en/stable/>`__ (:code:`emcee`)
+* Simplicial Homology Global Optimization (:code:`shgo`)
+* Dual Annealing optimization (:code:`dual_annealing`)
+
+**Licence** LMFIT is available the new BSD-3 licence -- details can be found `here <https://lmfit.github.io/lmfit-py/installation.html#copyright-licensing-and-re-distribution>`__
+
+The `lmfit` minimizer is set as follows:
+
+.. code-block:: rst
+
+   [MINIMIZERS]
+   lmfit: differential_evolution
+          powell
+          cobyla
+          slsqp
+          emcee
+          nelder
+          least_squares
+          trust-ncg
+          trust-exact
+          trust-krylov
+          trust-constr
+          dogleg
+          leastsq
+          newton
+          tnc
+          lbfgsb
+          bfgs
+          cg
+          ampgo
+          shgo
+          dual_annealing
+.. note::
+   The shgo solver is particularly slow running and should generally be avoided. As a result, this solver is
+   not run by default when `lmfit` software is selected. In order to run this minimizer, you must explicitly
+   set it as above.
+
+.. warning::
+   emcee uses a Markov Chain Monte Carlo package and assumes that the prior is Uniform. This may not perform well for certain fitting problems.
+
 .. _matlab:
 
 Matlab (``matlab``)
