@@ -135,7 +135,7 @@ def generate_mock_results(additional_options):
                         cf.jacobian = jac
                         minim_name = f'{minim}, Jac: {n}'
                         options.minimizer_alg_type[minim_name] = 'test'
-                        controller.final_params = params[i][j][k][m][n],
+                        controller.final_params = params[i][j][k][m][n]
                         results.append(FittingResult(
                             options=options,
                             controller=controller,

@@ -63,7 +63,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         Setting up problem for tests
         """
         cost_func = make_cost_function()
-        self.problem = self.cost_func.problem
+        self.problem = cost_func.problem
         self.options = self.problem.options
         self.options.cost_func_type = ['weighted_nlls']
         self.options.software = ["scipy"]

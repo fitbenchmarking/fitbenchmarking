@@ -89,8 +89,8 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         """
         Mock function to be used instead of loop_over_starting_values
         """
-        individual_problem_results =
-        self.individual_problem_results[self.count]
+        individual_problem_results = \
+            self.individual_problem_results[self.count]
         problem_fails = self.problem_fails
         unselected_minimizers = {"scipy": []}
         self.count += 1

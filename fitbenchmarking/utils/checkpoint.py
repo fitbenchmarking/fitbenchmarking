@@ -82,13 +82,10 @@ class Checkpoint:
                 with open(self.cp_file, 'w', encoding='utf-8') as f:
                     f.write('{\n')
 
-            self.problems_file = '/home/alister/fitbenchmarking/pf.json'
-            self.results_file = '/home/alister/fitbenchmarking/rf.json'
-
-            # self.dir = TemporaryDirectory()
-            # self.problems_file = os.path.join(
-            #     self.dir.name, 'problems_tmp.txt')
-            # self.results_file = os.path.join(self.dir.name, 'results_tmp.txt')
+            self.dir = TemporaryDirectory()
+            self.problems_file = os.path.join(
+                self.dir.name, 'problems_tmp.txt')
+            self.results_file = os.path.join(self.dir.name, 'results_tmp.txt')
             with open(self.results_file, 'w', encoding='utf-8') as f:
                 f.write('[\n')
             with open(self.problems_file, 'w', encoding='utf-8') as f:
@@ -208,7 +205,7 @@ class Checkpoint:
         Load fitting results from a checkpoint file along with
         failed problems and unselected minimizers.
 
-        :return: Dataset name, Instantiated fitting results,
+        :return: Instantiated fitting results,
                  unselected minimisers, failed problems
         :rtype: Tuple[ dict[str, list[FittingResult]],
                        dict,
