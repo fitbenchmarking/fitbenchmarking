@@ -53,7 +53,7 @@ class SpinWParser(FitbenchmarkParser):
         eng.addpath(os.path.dirname(path))
         func_name = os.path.basename(path).split('.', 1)[0]
         
-        eng.evalc(f'[w, x ,y ,e] = {func_name}("{data_file_path}")')
+        eng.evalc(f'[w, x ,y ,e] = {func_name}()')
         x = np.array(eng.workspace['x'])
         signal = np.array(eng.workspace['y'])
         error = np.array(eng.workspace['e'])
@@ -112,8 +112,10 @@ class SpinWParser(FitbenchmarkParser):
             # print(*p)
             if x.shape != self._spinw_x.shape:
                 return np.ones(x.shape)
+            #print(p)
             eng.workspace['fitpars'] = matlab.double(p)
-            eng.evalc(f'[spinw_y, e, msk] = {simulate_func_name}(w,fitpars)')
+            eng.evalc(f'[spinw_y, e, msk, fitpars] = {simulate_func_name}(w,fitpars)')
+            #print(eng.evalc('fitpars'))
             return np.array(eng.workspace['spinw_y']).flatten()
 
         return fit_function
