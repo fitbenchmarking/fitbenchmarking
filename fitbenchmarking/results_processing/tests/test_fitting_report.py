@@ -1,22 +1,40 @@
 '''
 Test fitting_report
 '''
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
 
 import inspect
 import os
+
 try:
     from tempfile import TemporaryDirectory
 except ImportError:
     from backports.tempfile import TemporaryDirectory
+
 import unittest
 
 import fitbenchmarking
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking import test_files
 from fitbenchmarking.results_processing import fitting_report
-from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.checkpoint import get_checkpoint
 from fitbenchmarking.utils.options import Options
+
+
+def load_mock_results():
+    """
+    Load a predictable set of results.
+
+    :return: Set of manually generated results
+    :rtype: list[FittingResult]
+    """
+    options = Options()
+    cp_dir = os.path.dirname(inspect.getfile(test_files))
+    options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
+
+    cp = get_checkpoint(options)
+    results, _, _ = cp.load()
+
+    return results['prob_0']
 
 
 class CreateTests(unittest.TestCase):
@@ -25,26 +43,8 @@ class CreateTests(unittest.TestCase):
     '''
 
     def setUp(self):
+        self.results = load_mock_results()
         self.options = Options()
-        cost_func = []
-        for i in range(5):
-            problem = FittingProblem(self.options)
-            problem.name = 'prob {}'.format(i)
-            problem.starting_values = [{'x': 1}]
-            cost_func.append(NLLSCostFunc(problem))
-
-        minimizers = ['min_a', 'min_b', 'min_c']
-        self.results = [FittingResult(options=self.options,
-                                      cost_func=c,
-                                      jac='j1',
-                                      hess=None,
-                                      initial_params=[],
-                                      params=[],
-                                      minimizer=m,
-                                      chi_sq=1.0001,
-                                      runtime=2.0002)
-                        for m in minimizers
-                        for c in cost_func]
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         self.dir = TemporaryDirectory(dir=root)
@@ -73,24 +73,7 @@ class CreateProbGroupTests(unittest.TestCase):
 
     def setUp(self):
         self.options = Options()
-        problem = FittingProblem(self.options)
-        problem.name = 'prob a'
-        problem.equation = 'equation!'
-        problem.starting_values = [{'x': 1}]
-
-        minimizer = 'min_a'
-        cost_func = NLLSCostFunc(problem)
-        jac = 'j1'
-        self.result = FittingResult(options=self.options,
-                                    cost_func=cost_func,
-                                    jac=jac,
-                                    hess=None,
-                                    initial_params=[],
-                                    params=[],
-                                    software='s1',
-                                    minimizer=minimizer,
-                                    chi_sq=1.0001,
-                                    runtime=2.0002)
+        self.result = load_mock_results()[0]
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
         self.dir = TemporaryDirectory(dir=root)
@@ -113,7 +96,7 @@ class CreateProbGroupTests(unittest.TestCase):
                                          options=self.options)
         file_name = self.result.fitting_report_link
         expected = os.path.join(os.path.relpath(self.dir.name),
-                                'prob_a_nllscostfunc_min_a_[s1]_jj1.html')
+                                'prob_0_cf1_m10_[s1]_jj0.html')
 
         self.assertEqual(file_name, expected)
 
@@ -125,19 +108,7 @@ class GetFigurePathsTests(unittest.TestCase):
 
     def setUp(self):
         self.options = Options()
-        problem = FittingProblem(self.options)
-        problem.name = 'prob a'
-        problem.equation = 'equation!'
-        problem.starting_values = [{'x': 1}]
-        cost_func = NLLSCostFunc(problem)
-        jac = 'j1'
-        self.result = FittingResult(options=self.options,
-                                    cost_func=cost_func,
-                                    jac=jac,
-                                    hess=None,
-                                    initial_params=[],
-                                    params=[],
-                                    minimizer='test')
+        self.result = load_mock_results()[0]
 
     def test_with_links(self):
         """

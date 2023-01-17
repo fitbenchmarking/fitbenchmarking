@@ -7,6 +7,7 @@ import os
 import unittest
 
 from fitbenchmarking import test_files
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_benchmark_problems
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
@@ -14,7 +15,6 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
@@ -105,8 +105,8 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         :param expected_problem_fails: list of problems which fail
         :type expected_problem_fails: list
         """
-        results, failed_problems, unselected_minimizers =
-        loop_over_benchmark_problems(self.problem_group, self.options)
+        results, failed_problems, unselected_minimizers = \
+            loop_over_benchmark_problems(self.problem_group, self.options)
         assert len(results) == list_len
         assert failed_problems == expected_problem_fails
         dict_test(unselected_minimizers, {"scipy": []})
