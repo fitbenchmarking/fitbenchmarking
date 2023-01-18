@@ -53,18 +53,19 @@ class SpinWParser(FitbenchmarkParser):
         eng.addpath(os.path.dirname(path))
         func_name = os.path.basename(path).split('.', 1)[0]
         
-        eng.evalc(f'[w, x ,y ,e] = {func_name}()')
-        x = np.array(eng.workspace['x'])
-        signal = np.array(eng.workspace['y'])
-        error = np.array(eng.workspace['e'])
+        eng.evalc(f'[w, x ,y ,e, msk] = {func_name}()')
+        x = np.array(eng.workspace['x'], dtype= np.float64)
+        signal = np.array(eng.workspace['y'], dtype= np.float64)
+        error = np.array(eng.workspace['e'], dtype= np.float64)
 
         #print(f'{x=}')
 
         add_persistent_matlab_var('w')
+        add_persistent_matlab_var('msk')
 
         y = signal.flatten()
         e = error.flatten()
-
+        x = np.ones(len(y))
         self._spinw_x = x
 
         return {'x': x, 'y': y, 'e': e}
@@ -87,10 +88,6 @@ class SpinWParser(FitbenchmarkParser):
                                'only 1 function definition is present')
 
         pf = self._parsed_func[0]
-        path = os.path.join(os.path.dirname(self._filename),
-                            pf['matlab_script'])
-        eng.addpath(os.path.dirname(path))
-        func_name = os.path.basename(path).split('.', 1)[0]
 
         # pylint: disable=attribute-defined-outside-init
         self._equation = os.path.splitext(
@@ -114,9 +111,9 @@ class SpinWParser(FitbenchmarkParser):
                 return np.ones(x.shape)
             #print(p)
             eng.workspace['fitpars'] = matlab.double(p)
-            eng.evalc(f'[spinw_y, e, msk, fitpars] = {simulate_func_name}(w,fitpars)')
+            eng.evalc(f'[spinw_y, e, msk, fitpars] = {simulate_func_name}(w,fitpars,msk)')
             #print(eng.evalc('fitpars'))
-            return np.array(eng.workspace['spinw_y']).flatten()
+            return np.array(eng.workspace['spinw_y'], dtype= np.float64).flatten()
 
         return fit_function
 
