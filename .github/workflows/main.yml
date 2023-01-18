@@ -47,11 +47,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Installing
       run: |
-<<<<<<< HEAD
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,levmar,minuit,SAS,numdifftools,nlopt]
-=======
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,levmar,minuit,SAS,numdifftools,lmfit]
->>>>>>> master
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,levmar,minuit,SAS,numdifftools,lmfit,nlopt]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
@@ -74,11 +70,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Installing
       run: |
-<<<<<<< HEAD
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,nlopt]
-=======
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,lmfit]
->>>>>>> master
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
     - name: 'Running Tests'
       run: |
@@ -99,11 +91,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Installing
       run: |
-<<<<<<< HEAD
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,levmar,minuit,SAS,numdifftools,nlopt]
-=======
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,levmar,minuit,SAS,numdifftools,lmfit]
->>>>>>> master
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,levmar,minuit,SAS,numdifftools,lmfit,nlopt]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
@@ -135,11 +123,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip==20.0.2
         python -m pip install --upgrade wheel
-<<<<<<< HEAD
-        pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,nlopt]
-=======
-        pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,lmfit]
->>>>>>> master
+        pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt]
         pip install -r requirements.txt
     - name: 'Run Linting'
       run: |

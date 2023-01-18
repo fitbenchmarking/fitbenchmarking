@@ -16,11 +16,7 @@ FitBenchmarking can be installed via the command line by entering:
 
 .. code-block:: bash
 
-<<<<<<< HEAD
-      python -m pip install fitbenchmarking[bumps,DFO,gradient_free,minuit,SAS,numdifftools,nlopt]
-=======
-      python -m pip install fitbenchmarking[bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit]
->>>>>>> master
+      python -m pip install fitbenchmarking[bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt]
 
 
 This will install the latest stable version of FitBenchmarking.
@@ -54,11 +50,7 @@ of the code that is still in development.
 
    .. code-block:: bash
 
-<<<<<<< HEAD
-      python -m pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools,nlopt]
-=======
-      python -m pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit]
->>>>>>> master
+      python -m pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt]
 
 4. Additional software that cannot be installed via pip can also be used
    with FitBenchmarking.  Follow the instructions at
@@ -95,12 +87,9 @@ where valid strings ``option-x`` are:
 * ``minuit`` -- installs the `Minuit <http://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/>`_ fitting package.
 * ``SAS`` -- installs the `Sasmodels <https://github.com/SasView/sasmodels>`_ fitting package and the `tinycc <https://pypi.org/project/tinycc/>`_ module.
 * ``numdifftools`` -- installs the `numdifftools <https://numdifftools.readthedocs.io/en/latest/index.html>`_ numerical differentiation package.
-<<<<<<< HEAD
 * ``nlopt``-- installs the `NLopt <https://github.com/DanielBok/nlopt-python#installation>`_ fitting package.
-=======
 * ``lmfit``-- installs the `LMFIT <https://lmfit.github.io/lmfit-py/installation.html>`_ and `emcee <https://emcee.readthedocs.io/en/stable/user/install/>`__ fitting package.
 
->>>>>>> master
 
 .. |Python 3.7.1+| image:: https://img.shields.io/badge/python-3.7.1+-blue.svg
    :alt: Python 3.7.1+
