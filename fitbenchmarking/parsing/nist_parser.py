@@ -58,6 +58,14 @@ class NISTParser(Parser):
             nist_func_definition(function=fitting_problem.equation,
                                  param_names=starting_values[0].keys())
         fitting_problem.format = "nist"
+        try:
+            jacobian = self._parse_jacobian(name)
+            fitting_problem.jacobian = \
+                nist_jacobian_definition(jacobian=jacobian,
+                                         param_names=starting_values[0].keys())
+        except NoJacobianError:
+            LOGGER.warning("Could not find analytic Jacobian "
+                           "information for %s problem", name)
 
         try:
             hessian = self._parse_hessian(name)
@@ -149,7 +157,6 @@ class NISTParser(Parser):
                 name = name.strip()
             elif line.startswith("Description:"):
                 description, idx = self._get_description(lines, idx)
-            elif line.startswith("Plot scale:")
             else:
                 ignored_lines += 1
 
