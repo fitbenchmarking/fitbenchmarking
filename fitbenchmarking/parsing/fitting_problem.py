@@ -119,7 +119,6 @@ class FittingProblem:
     def __str__(self):
         info = {"Name": self.name,
                 "Format": self.format,
-                "Plot scale": self.plot_scale,
                 "Equation": self.equation,
                 "Params": self._param_names,
                 "Start X": self.start_x,
