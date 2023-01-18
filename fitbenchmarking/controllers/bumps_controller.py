@@ -21,10 +21,15 @@ class BumpsController(Controller):
     """
 
     algorithm_check = {
-            'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq'],
+            'all': ['amoeba',
+                    'lm-bumps',
+                    'newton',
+                    'de',
+                    'scipy-leastsq',
+                    'dream'],
             'ls': ['lm-bumps', 'scipy-leastsq'],
-            'deriv_free': ['amoeba', 'de'],
-            'general': ['amoeba', 'newton', 'de'],
+            'deriv_free': ['amoeba', 'de', 'dream'],
+            'general': ['amoeba', 'newton', 'de', 'dream'],
             'simplex': ['amoeba'],
             'trust_region': ['lm-bumps', 'scipy-leastsq'],
             'levenberg-marquardt': ['lm-bumps', 'scipy-leastsq'],
@@ -32,7 +37,7 @@ class BumpsController(Controller):
             'bfgs': ['newton'],
             'conjugate_gradient': [],
             'steepest_descent': [],
-            'global_optimization': ['de']}
+            'global_optimization': ['de', 'dream']}
 
     def __init__(self, cost_func):
         """
