@@ -58,16 +58,6 @@ class NISTParser(Parser):
             nist_func_definition(function=fitting_problem.equation,
                                  param_names=starting_values[0].keys())
         fitting_problem.format = "nist"
-        plot_scale_options = ['loglog', 'logy', 'logx', 'default']
-        fitting_problem.plot_scale = plot_scale_options[1]
-        try:
-            jacobian = self._parse_jacobian(name)
-            fitting_problem.jacobian = \
-                nist_jacobian_definition(jacobian=jacobian,
-                                         param_names=starting_values[0].keys())
-        except NoJacobianError:
-            LOGGER.warning("Could not find analytic Jacobian "
-                           "information for %s problem", name)
 
         try:
             hessian = self._parse_hessian(name)
