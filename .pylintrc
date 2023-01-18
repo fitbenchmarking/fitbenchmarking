@@ -49,7 +49,11 @@ ignored-modules=levmar,
                 pycutest,
                 ral_nlls,
                 PyCeres,
+<<<<<<< HEAD
                 nlopt
+=======
+                lmfit
+>>>>>>> master
 
 [DESIGN]
 
