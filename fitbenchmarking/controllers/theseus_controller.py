@@ -2,9 +2,11 @@
 Implements a controller for the Theseus fitting software.
 """
 
-from typing import List, Optional, Tuple, Sequence, Union
+from typing import List, Optional, Tuple, Sequence
 import theseus as th
+# pylint: disable=import-error
 import torch
+# pylint: enable=import-error
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
