@@ -14,13 +14,15 @@ class Options:
     """
     An options class to store and handle all options for fitbenchmarking
     """
-
-    DEFAULTS = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                            'default_options.ini'))
     VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN', 'HESSIAN',
                       'OUTPUT', 'LOGGING']
     VALID_MINIMIZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq'],
+        {'bumps': ['amoeba',
+                   'lm-bumps',
+                   'newton',
+                   'de',
+                   'scipy-leastsq',
+                   'dream'],
          'ceres': ['Levenberg_Marquardt', 'Dogleg', 'BFGS', 'LBFGS',
                    'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
                    'Hestenes_Stiefel'],
@@ -43,6 +45,29 @@ class Options:
                  'vector_bfgs2', 'steepest_descent'],
          'horace': ['lm-lsqr'],
          'levmar': ['levmar'],
+         'lmfit': ['differential_evolution',
+                   'brute',
+                   'basinhopping',
+                   'powell',
+                   'cobyla',
+                   'slsqp',
+                   'emcee',
+                   'nelder',
+                   'least_squares',
+                   'trust-ncg',
+                   'trust-exact',
+                   'trust-krylov',
+                   'trust-constr',
+                   'dogleg',
+                   'leastsq',
+                   'newton',
+                   'tnc',
+                   'lbfgsb',
+                   'bfgs',
+                   'cg',
+                   'ampgo',
+                   'shgo',
+                   'dual_annealing'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
@@ -56,8 +81,20 @@ class Options:
          'minuit': ['minuit'],
          'paramonte': ['paraDram_sampler'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
-         'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                   'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
+         'scipy': ['Nelder-Mead',
+                   'Powell',
+                   'CG',
+                   'BFGS',
+                   'Newton-CG',
+                   'L-BFGS-B',
+                   'TNC',
+                   'SLSQP',
+                   'COBYLA',
+                   'trust-ncg',
+                   'trust-exact',
+                   'trust-krylov',
+                   'trust-constr',
+                   'dogleg'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing']}
     VALID_FITTING = \
@@ -66,9 +103,9 @@ class Options:
                             'gauss_newton', 'bfgs', 'conjugate_gradient',
                             'steepest_descent', 'global_optimization'],
          'software': ['bumps', 'ceres', 'dfo', 'gofit', 'gradient_free', 'gsl',
-                      'horace', 'levmar', 'mantid', 'matlab', 'matlab_curve',
-                      'matlab_opt', 'matlab_stats', 'minuit', 'paramonte',
-                      'ralfit', 'scipy', 'scipy_ls', 'scipy_go'],
+                      'horace', 'levmar', 'lmfit', 'mantid', 'matlab',
+                      'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
+                      'paramonte', 'ralfit', 'scipy', 'scipy_ls', 'scipy_go'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
@@ -112,7 +149,10 @@ class Options:
              'LOGGING': VALID_LOGGING}
 
     DEFAULT_MINIMZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq'],
+        {'bumps': ['amoeba',
+                   'lm-bumps',
+                   'newton',
+                   'scipy-leastsq'],
          'ceres': ['Levenberg_Marquardt', 'Dogleg', 'BFGS', 'LBFGS',
                    'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
                    'Hestenes_Stiefel'],
@@ -132,6 +172,18 @@ class Options:
                  'vector_bfgs2', 'steepest_descent'],
          'horace': ['lm-lsqr'],
          'levmar': ['levmar'],
+         'lmfit': ['powell',
+                   'cobyla',
+                   'slsqp',
+                   'nelder',
+                   'least_squares',
+                   'leastsq',
+                   'newton',
+                   'tnc',
+                   'lbfgsb',
+                   'bfgs',
+                   'cg',
+                   'ampgo'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
@@ -145,8 +197,20 @@ class Options:
          'minuit': ['minuit'],
          'paramonte': ['paraDram_sampler'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
-         'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                   'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
+         'scipy': ['Nelder-Mead',
+                   'Powell',
+                   'CG',
+                   'BFGS',
+                   'Newton-CG',
+                   'L-BFGS-B',
+                   'TNC',
+                   'SLSQP',
+                   'COBYLA',
+                   'trust-ncg',
+                   'trust-exact',
+                   'trust-krylov',
+                   'trust-constr',
+                   'dogleg'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'dual_annealing']}
     DEFAULT_FITTING = \
@@ -189,6 +253,7 @@ class Options:
                 'OUTPUT': DEFAULT_OUTPUT,
                 'LOGGING': DEFAULT_LOGGING}
 
+    # pylint: disable=too-many-statements
     def __init__(self, file_name=None, additional_options=None):
         """
         Initialise the options from a file if file is given.
@@ -226,8 +291,8 @@ class Options:
             # Checks that the user defined sections are valid
             if config.sections() != self.VALID_SECTIONS:
                 raise OptionsError(
-                    "Invalid options sections set, {0}, the valid sections "
-                    "are {1}".format(config.sections(), self.VALID_SECTIONS))
+                    f"Invalid options sections set, {config.sections()}, "
+                    f"the valid sections are {self.VALID_SECTIONS}")
             config.sections()
 
             # Checks that the options within the sections are valid
@@ -236,11 +301,9 @@ class Options:
                 user_options_list = [option[0] for option in config.items(key)]
                 if not set(user_options_list) <= set(default_options_list):
                     raise OptionsError(
-                        "Invalid options key set in the {2} Section: \n{0}, \n"
-                        " the valid keys are: \n{1}".format(
-                            user_options_list,
-                            default_options_list,
-                            key))
+                        f"Invalid options key set in the {key} Section: \n"
+                        f"{user_options_list}, \n "
+                        f"the valid keys are: \n{default_options_list}")
 
         minimizers = config['MINIMIZERS']
         self._minimizers = {}
@@ -340,8 +403,10 @@ class Options:
                                                'external_output',
                                                additional_options)
 
-        if self.error_message != []:
+        if self.error_message:
             raise OptionsError('\n'.join(self.error_message))
+
+    # pylint: enable=too-many-statements
 
     def read_value(self, func, option, additional_options):
         """

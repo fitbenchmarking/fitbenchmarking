@@ -9,7 +9,7 @@ import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
-from fitbenchmarking.utils.exceptions import CostFuncError, MaxRuntimeError
+from fitbenchmarking.utils.exceptions import MaxRuntimeError
 
 
 class BumpsController(Controller):
@@ -21,10 +21,15 @@ class BumpsController(Controller):
     """
 
     algorithm_check = {
-            'all': ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq'],
+            'all': ['amoeba',
+                    'lm-bumps',
+                    'newton',
+                    'de',
+                    'scipy-leastsq',
+                    'dream'],
             'ls': ['lm-bumps', 'scipy-leastsq'],
-            'deriv_free': ['amoeba', 'de'],
-            'general': ['amoeba', 'newton', 'de'],
+            'deriv_free': ['amoeba', 'de', 'dream'],
+            'general': ['amoeba', 'newton', 'de', 'dream'],
             'simplex': ['amoeba'],
             'trust_region': ['lm-bumps', 'scipy-leastsq'],
             'levenberg-marquardt': ['lm-bumps', 'scipy-leastsq'],
@@ -32,7 +37,7 @@ class BumpsController(Controller):
             'bfgs': ['newton'],
             'conjugate_gradient': [],
             'steepest_descent': [],
-            'global_optimization': ['de']}
+            'global_optimization': ['de', 'dream']}
 
     def __init__(self, cost_func):
         """
@@ -65,36 +70,33 @@ class BumpsController(Controller):
         wrapper = "def fitFunction(x, {}):\n".format(param_name_str)
         wrapper += "    return func([{}], x=x)".format(param_name_str)
 
-        exec_dict = {'func': self.problem.eval_model}
-        exec(wrapper, exec_dict)
-
-        model = exec_dict['fitFunction']
-
         # Remove any function attribute. BinWidth is the only attribute in all
         # FitBenchmark (Mantid) problems.
         param_dict = dict(zip(self._param_names, self.initial_params))
 
         # Create a Function Wrapper for the problem function. The type of the
         # Function Wrapper is acceptable by Bumps.
-        if isinstance(self.cost_func, create_cost_func('nlls')):
-            func_wrapper = Curve(fn=model,
-                                 x=self.data_x,
-                                 y=self.data_y,
-                                 **param_dict)
-        elif isinstance(self.cost_func, create_cost_func('weighted_nlls')):
-            func_wrapper = Curve(fn=model,
-                                 x=self.data_x,
-                                 y=self.data_y,
-                                 dy=self.data_e,
-                                 **param_dict)
-        elif isinstance(self.cost_func, create_cost_func('poisson')):
+        if isinstance(self.cost_func, create_cost_func('poisson')):
+            # Bumps has a built in poisson cost fucntion, so use that.
+            exec_dict = {'func': self.problem.eval_model}
+            exec(wrapper, exec_dict)
+            model = exec_dict['fitFunction']
             func_wrapper = PoissonCurve(fn=model,
                                         x=self.data_x,
                                         y=self.data_y,
                                         **param_dict)
-        else:
-            raise CostFuncError('Bumps controller is not compatible with the '
-                                'chosen cost function.')
+        else:  # nlls cost functions
+            # Send in the residual as the model, with zero
+            # y data.  This allows all our supported nlls
+            # cost fucntions to be used.
+            exec_dict = {'func': self.cost_func.eval_r}
+            exec(wrapper, exec_dict)
+            model = exec_dict['fitFunction']
+            zero_y = np.zeros(len(self.data_y))
+            func_wrapper = Curve(fn=model,
+                                 x=self.data_x,
+                                 y=zero_y,
+                                 **param_dict)
 
         # Set a range for each parameter
         for ind, name in enumerate(self._param_names):
