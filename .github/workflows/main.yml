@@ -143,11 +143,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install wheel
-<<<<<<< HEAD
-        python -m pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,nlopt]
-=======
-        python -m pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,lmfit]
->>>>>>> master
+        python -m pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt]
         python -m pip install -r requirements.txt
     - name: 'Running Tests'
       run: |
