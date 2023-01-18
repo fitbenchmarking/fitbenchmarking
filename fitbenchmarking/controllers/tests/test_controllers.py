@@ -32,12 +32,9 @@ if TEST_TYPE in ['default', 'all']:
         ScipyGOController
     from fitbenchmarking.controllers.scipy_ls_controller import \
         ScipyLSController
-<<<<<<< HEAD
     from fitbenchmarking.controllers.nlopt_controller import \
         NLoptController, nlopt
-=======
     from fitbenchmarking.controllers.lmfit_controller import LmfitController
->>>>>>> master
 
 if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.gsl_controller import GSLController
