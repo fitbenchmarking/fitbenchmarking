@@ -7,7 +7,7 @@ import os
 import unittest
 from unittest import mock
 
-from fitbenchmarking import mock_problems
+from fitbenchmarking import test_files
 from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
@@ -26,7 +26,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     if minimizers:
         options.minimizers = minimizers
 
-    bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
+    bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
     fname = os.path.join(bench_prob_dir, file_name)
 
     fitting_problem = parse_problem_file(fname, options)
@@ -63,9 +63,9 @@ class BenchmarkTests(unittest.TestCase):
         self.options = Options()
         self.options.software = ["scipy"]
         self.scipy_len = len(self.options.minimizers["scipy"])
-        bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
+        bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
         self.default_parsers_dir = os.path.join(bench_prob_dir,
-                                                "default_parsers")
+                                                "default_parsers_set")
         self.all_minimizers = copy.copy(self.options.minimizers)
 
     def shared_tests(self, expected_names, expected_unselected_minimizers,

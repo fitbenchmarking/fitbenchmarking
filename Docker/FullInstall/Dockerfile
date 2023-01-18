@@ -81,13 +81,13 @@ ENV PYTHONPATH="${PYCUTEST_CACHE}:${PYTHONPATH}"
 # Install sifdecode
 
 WORKDIR $SIFDECODE
-RUN printf "6\n2\n6\n" > sifdecode.input && \
+RUN printf "6\n2\n2\n" > sifdecode.input && \
     printf "nny" >> sifdecode.input && \
     ./install_sifdecode  < sifdecode.input
 
 # Install cutest
 WORKDIR $CUTEST
-RUN printf "6\n2\n6\n2\n9\n" > cutest.input && \
+RUN printf "6\n2\n2\n2\n4\n" > cutest.input && \
     printf "nnydn" >> cutest.input && \
     ./install_cutest < cutest.input
 
