@@ -46,7 +46,7 @@ The versions on Docker Hub can be updated from a connected account by issuing th
 
 .. code-block:: bash
 		
-		docker build --tag fitbenchmarking-<type>:<tag>
+		docker build --tag fitbenchmarking-<type>:<tag> .
 		docker tag fitbenchmarking-<type>:<tag> fitbenchmarking/fitbenchmarking-<type>:<tag>
 		docker push fitbenchmarking/fitbenchmarking-<type>:<tag>
 
@@ -82,7 +82,7 @@ FitBenchmarking Package (:py:mod:`fitbenchmarking`)
 The main FitBenchmarking package is split across several directories
 with the intention that it is easily extensible.
 The majority of these directories are source code, with exceptions being
-Templates, Mock Problems, and System Tests.
+Templates, Test Files, and System Tests.
 
 Each file that contains source code will have a directory inside it called
 ``tests``, which contains all of the tests for that section of the code.
@@ -144,10 +144,10 @@ numerical Jacobians can be added by following the instructions in
 :ref:`jacobian_extend`.
 
 
-Mock Problems (``mock_problems``)
+Test Files (``test_files``)
 =================================
 
-The mock problems are used in some tests where full problem files are required.
+The test files are used in some tests where full problem files are required.
 These are here so that the examples can be moved without breaking the tests.
 
 
@@ -177,7 +177,7 @@ System Tests (``systests``)
 FitBenchmarking runs regression tests to check that the
 accuracy results do not change with updates to the code.
 These tests run fitbenchmarking against a subset of problems
-(in subdirectories of `/fitbenchmarking/mock_problems/`),
+(in subdirectories of `/fitbenchmarking/test_files/`),
 and compares the text output with that stored in
 `/fitbenchmarking/systests/expected_results/`.
 

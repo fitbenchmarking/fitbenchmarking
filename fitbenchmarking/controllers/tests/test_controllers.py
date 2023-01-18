@@ -10,7 +10,7 @@ import numpy as np
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 
 from conftest import run_for_test_types
-from fitbenchmarking import mock_problems
+from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
@@ -32,6 +32,7 @@ if TEST_TYPE in ['default', 'all']:
         ScipyGOController
     from fitbenchmarking.controllers.scipy_ls_controller import \
         ScipyLSController
+    from fitbenchmarking.controllers.lmfit_controller import LmfitController
 
 if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.gsl_controller import GSLController
@@ -63,7 +64,7 @@ def make_cost_func(file_name='cubic.dat'):
 
     options = Options()
 
-    bench_prob_dir = os.path.dirname(inspect.getfile(mock_problems))
+    bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
     fname = os.path.join(bench_prob_dir, file_name)
 
     fitting_problem = parse_problem_file(fname, options)
@@ -456,6 +457,19 @@ class DefaultControllerTests(TestCase):
         controller._status = -1
         self.shared_tests.check_diverged(controller)
 
+    def test_lmfit(self):
+        """
+        LmfitController: Test for output shape
+        """
+        controller = LmfitController(self.cost_func)
+        controller.minimizer = 'leastsq'
+        self.shared_tests.controller_run_test(controller)
+
+        controller.lmfit_out.success = True
+        self.shared_tests.check_converged(controller)
+        controller.lmfit_out.success = False
+        self.shared_tests.check_diverged(controller)
+
 
 @run_for_test_types(TEST_TYPE, 'all')
 class ControllerBoundsTests(TestCase):
@@ -566,6 +580,28 @@ class ControllerBoundsTests(TestCase):
 
         controller = MantidController(self.cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
+
+        self.check_bounds(controller)
+
+    def test_ceres(self):
+        """
+        CeresController: Test that parameter bounds are
+        respected for bounded problems
+        """
+
+        controller = CeresController(self.cost_func)
+        controller.minimizer = 'Levenberg_Marquardt'
+
+        self.check_bounds(controller)
+
+    def test_lmfit(self):
+        """
+        LmfitController: Test that parameter bounds are
+        respected for bounded problems
+        """
+
+        controller = LmfitController(self.cost_func)
+        controller.minimizer = 'least_squares'
 
         self.check_bounds(controller)
 
