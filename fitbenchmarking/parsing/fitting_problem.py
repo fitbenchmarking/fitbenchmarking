@@ -45,7 +45,6 @@ class FittingProblem:
         self.format = None
 
         #: *string* The plot scale for the y and x data
-
         self.plot_scale = None
 
         #: *string* Equation (function or model) to fit against data
