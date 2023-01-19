@@ -96,7 +96,7 @@ class Plot:
         """
         Performs post plot processing to annotate the plot correctly
         """
-        # log scale plots
+        # log scale
         if self.problem.plot_scale == "loglog":
             self.ax.set_xscale("log", nonpositive='clip')
             self.ax.set_yscale("log", nonpositive='clip')
@@ -311,7 +311,7 @@ class Plot:
                     plot_options['label'] = key if result.is_best_fit else ''
 
                     ax.plot(x, y, **plot_options)
-                    # log scale plot
+                    # log scale
                     if problem.plot_scale == "loglog":
                         ax.set_xscale("log", nonpositive='clip')
                         ax.set_yscale("log", nonpositive='clip')
