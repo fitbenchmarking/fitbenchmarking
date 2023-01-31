@@ -143,7 +143,7 @@ class MantidParser(FitbenchmarkParser):
         """
         return []
 
-    def _get_equation(*args, **kwargs):
+    def _get_equation(self, *args, **kwargs):
         """
         Override the default function parsing as this is offloaded to mantid.
         """
