@@ -41,6 +41,10 @@ class MantidParser(FitbenchmarkParser):
         params = {name: value
                   for name, value, fixed in all_params
                   if not fixed}
+
+        # Extract function name
+        self._equation = ifun.name()
+
         # pylint: disable=attribute-defined-outside-init
         self._starting_values = [OrderedDict(params)]
 
@@ -134,7 +138,13 @@ class MantidParser(FitbenchmarkParser):
         return ties
 
     def _parse_function(*args, **kwargs):
+        """
+        Override the default function parsing as this is offloaded to mantid.
+        """
         return []
 
     def _get_equation(*args, **kwargs):
-        return 'Mantid function'
+        """
+        Override the default function parsing as this is offloaded to mantid.
+        """
+        return self._equation
