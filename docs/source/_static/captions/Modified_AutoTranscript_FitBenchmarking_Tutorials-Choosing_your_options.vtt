@@ -1,0 +1,1148 @@
+WEBVTT
+
+NOTE duration:"00:07:55"
+
+NOTE recognizability:0.806
+
+NOTE language:en-us
+
+NOTE Confidence: 0.841925866
+
+b38a153c-9d51-4042-bbfe-55ab7f6023ae
+00:00:00.000 --> 00:00:02.504
+Hi there in this video I'm going to explain
+
+NOTE Confidence: 0.841925866
+
+d4b32187-2841-4b4b-b114-4ddcfb8c3a5e
+00:00:02.504 --> 00:00:05.439
+ how to choose the best cost function,
+
+NOTE Confidence: 0.841925866
+
+f34c6045-5431-4d73-ab5e-41e821758f00
+00:00:05.440 --> 00:00:07.102
+software, minimizer, Jacobian, 
+
+NOTE Confidence: 0.841925866
+
+df42cbc1-48ab-42f2-b607-e5e90e494da4
+00:00:07.102 --> 00:00:10.426
+and Hessian for your data set.
+
+NOTE Confidence: 0.851849950769231
+
+2d995f1c-bb1d-493f-b6bc-2ebcf2fcd3fc
+00:00:12.980 --> 00:00:15.420
+ I'm just going to run through the
+
+NOTE Confidence: 0.851849950769231
+
+e0858d13-9b67-4c4d-a129-f2258ffb9640
+00:00:15.420 --> 00:00:16.979
+FitBenchmarking options available to you. 
+
+NOTE Confidence: 0.851849950769231
+
+253e9818-51f0-4b0e-878f-6234d7942454
+00:00:16.980 --> 00:00:19.320
+ There are four cost functions,
+
+NOTE Confidence: 0.851849950769231
+
+4a60c42e-13ea-415a-ab37-48b546eec3b6
+00:00:19.320 --> 00:00:21.770
+18 software options, three of
+
+NOTE Confidence: 0.851849950769231
+
+e6fed37a-390d-45af-a3ac-5f1e9a06f0f1
+00:00:21.770 --> 00:00:23.730
+ which are automatically installed,
+
+NOTE Confidence: 0.851849950769231
+
+6c128d05-d057-4891-8dd6-7345354f0c2f
+00:00:23.730 --> 00:00:25.389
+and two of which are default options. 
+
+NOTE Confidence: 0.785879183333333
+
+e2bdf6ab-d6cc-4fcb-8813-fd6f1f2e81d3
+00:00:27.660 --> 00:00:29.640
+The minimizers available to you will
+
+NOTE Confidence: 0.785879183333333
+
+d5e91110-e1a5-408a-8e76-b8b5c01971f9
+00:00:29.640 --> 00:00:31.799
+depend on the software you've chosen.
+
+NOTE Confidence: 0.785879183333333
+
+564f9707-6be7-4cdb-90c5-3e00cc633131
+00:00:31.800 --> 00:00:33.150
+The default set of minimizers
+
+NOTE Confidence: 0.785879183333333
+
+e57cbe7a-6c68-4248-bf1f-984085132c50
+00:00:33.150 --> 00:00:34.760
+for that solver will be run,
+
+NOTE Confidence: 0.785879183333333
+
+60e0f8b6-11fd-4589-b1f8-96353a94d005
+00:00:34.760 --> 00:00:36.812
+ unless alternative minimizer 
+
+NOTE Confidence: 0.785879183333333
+
+66b3e4f9-7672-49c3-a590-e0da5c867ae0
+00:00:36.812 --> 00:00:38.864
+options have been set.
+
+NOTE Confidence: 0.785879183333333
+
+7c9ee8c9-a295-45f2-86db-ffe382bba893
+00:00:38.870 --> 00:00:40.265
+4 categories Jacobian.
+
+NOTE Confidence: 0.785879183333333
+
+46fd7787-fec0-4460-98fb-3082661d859a
+00:00:40.265 --> 00:00:42.590
+And four categories of Hessian.
+
+NOTE Confidence: 0.819111945833333
+
+ef4b6b59-8522-47ad-9117-b85205bcb40f
+00:00:45.580 --> 00:00:47.918
+Here are some general hints and tips
+
+NOTE Confidence: 0.819111945833333
+
+281288e0-d7dd-43fe-a260-bd6dc4000ab3
+00:00:47.918 --> 00:00:49.850
+for choosing your cost function.
+
+NOTE Confidence: 0.819111945833333
+
+13fe2585-b3dc-4237-9294-aa58c9546e1a
+00:00:49.850 --> 00:00:51.116
+ The Hellinger non linear least
+
+NOTE Confidence: 0.819111945833333
+
+90dd32f7-4053-4f93-945f-e9b2b45cf6ef
+00:00:51.116 --> 00:00:53.226
+squares and Poisson cost functions
+
+NOTE Confidence: 0.819111945833333
+
+c8f35a6d-da62-4318-bea6-06e8d5546f30
+00:00:53.226 --> 00:00:55.129
+assume all data is positive,
+
+NOTE Confidence: 0.819111945833333
+
+6e8d49bb-8530-4e84-b683-230adfa51979
+00:00:55.130 --> 00:00:57.826
+so do not use these cost functions if
+
+NOTE Confidence: 0.819111945833333
+
+87f44de1-2b08-4bc8-806c-b59a120459ee
+00:00:57.826 --> 00:01:00.369
+your data contains negative values.
+
+NOTE Confidence: 0.819111945833333
+
+7dfb10f3-c5a2-42c4-863b-d2bc90806847
+00:01:00.370 --> 00:01:01.945
+The weighted nonlinear least squares
+
+NOTE Confidence: 0.819111945833333
+
+fb86a7c1-97d8-4f21-b921-3ff08d5603e4
+00:01:01.945 --> 00:01:03.911
+cost function is useful when the
+
+NOTE Confidence: 0.819111945833333
+
+2fdf301c-cb2a-4273-a941-3642540f4714
+00:01:03.911 --> 00:01:05.606
+observations are not equally reliable.
+
+NOTE Confidence: 0.849822347
+
+612f4586-c1d2-4231-9d40-85f8f53c2624
+00:01:09.350 --> 00:01:11.468
+Here are some hints and tips
+
+NOTE Confidence: 0.849822347
+
+57456949-765f-472d-a1d8-768a9b0dc7f7
+00:01:11.468 --> 00:01:12.880
+for choosing your software.
+
+NOTE Confidence: 0.849822347
+
+e446342d-cc94-4860-929b-9df505f672fb
+00:01:12.880 --> 00:01:14.878
+Do not use the global optimization
+
+NOTE Confidence: 0.849822347
+
+8caadeeb-b52d-489f-9824-63a9e6134075
+00:01:14.878 --> 00:01:16.580
+software without specifying a range.
+
+NOTE Confidence: 0.712971652857143
+
+8ddbe288-b7ed-4ff4-9ab5-67d6a7be9445
+00:01:18.620 --> 00:01:21.364
+Least squares software e.g. scipy_ls does
+
+NOTE Confidence: 0.712971652857143
+
+d596d917-c97d-48a8-a517-991bf703e32a
+00:01:21.364 --> 00:01:24.400
+not work with the poison cost function.
+
+NOTE Confidence: 0.712971652857143
+
+1ed96eb2-c0b9-4146-85fc-e1b8641d81e4
+00:01:24.400 --> 00:01:26.068
+This is because Poisson is not
+
+NOTE Confidence: 0.712971652857143
+
+32ed970f-1a39-46ce-8c51-27da0e467df6
+00:01:26.068 --> 00:01:27.740
+a least squares cost function.
+
+NOTE Confidence: 0.712971652857143
+
+d1e0383e-014e-4a5f-975a-e7f848012d1d
+00:01:27.740 --> 00:01:29.553
+ So solvers which rely on the ls
+
+NOTE Confidence: 0.712971652857143
+
+1c57ee3f-d03d-42ef-b050-3efd5477e1db
+00:01:29.553 --> 00:01:30.860
+formulation won't work with them.
+
+NOTE Confidence: 0.835045259166667
+
+305b8a80-56cb-4fc5-990c-4fc3248a44fa
+00:01:34.380 --> 00:01:36.480
+I'm now going to outline a possible
+
+NOTE Confidence: 0.835045259166667
+
+603739d0-aa7c-40d6-804f-52ce17a450c2
+00:01:36.480 --> 00:01:38.150
+method for choosing your options.
+
+NOTE Confidence: 0.835045259166667
+
+8b683960-c87c-4ea5-bae2-5842e9121150
+00:01:38.150 --> 00:01:39.934
+This is by no means the only method.
+
+NOTE Confidence: 0.83084448125
+
+8f4d264b-3b00-45e6-a1da-9777053956a8
+00:01:42.870 --> 00:01:44.910
+ If you have not already chosen your cost function, 
+
+NOTE Confidence: 0.83084448125
+
+297ab76f-f295-41bb-a88e-17418e365696
+00:01:44.910 --> 00:01:47.798
+run your problem set with several of the
+
+NOTE Confidence: 0.83084448125
+
+a415ca9b-8105-4950-ba5a-0c5b0b8c1574
+00:01:47.798 --> 00:01:50.559
+cost functions and the other default options.
+
+NOTE Confidence: 0.83084448125
+
+d9337e4a-42f0-43cf-a4c8-7a71881b022a
+00:01:50.560 --> 00:01:53.136
+ If you've already chosen your cost function,
+
+NOTE Confidence: 0.83084448125
+
+a1a08e20-e350-4eb4-98df-dbd86c14c937
+00:01:53.140 --> 00:01:54.995
+run your problem set with the 
+
+NOTE Confidence: 0.83084448125
+
+c82cedde-f82e-4672-bf19-56ce6047a29a
+00:01:54.995 --> 00:01:56.778
+default options and this cost function.
+
+NOTE Confidence: 0.83476801
+
+a4659966-68e4-48ab-9735-04f6e37d7c1e
+00:01:59.140 --> 00:02:00.103
+ Based on this,
+
+NOTE Confidence: 0.83476801
+
+c96f794d-a52b-4c95-a681-71bdb43ea16a
+00:02:00.103 --> 00:02:03.180
+try the best one or two cost functions,
+
+NOTE Confidence: 0.83476801
+
+2076c48c-0c47-49cc-a5fd-eb7ca59eb492
+00:02:03.180 --> 00:02:05.940
+the best one or two softwares,
+
+NOTE Confidence: 0.83476801
+
+ce8cc548-8f90-4982-a244-a8e3aa5b61fa
+00:02:05.940 --> 00:02:08.054
+with the best minimizer for each software, 
+
+NOTE Confidence: 0.83476801
+
+85870520-b65f-4fd8-b2ea-0e8922e6a804
+00:02:08.060 --> 00:02:10.820
+up to a maximum of five in total,
+
+NOTE Confidence: 0.83476801
+
+e2b74c87-515c-4433-8a99-1d5778614764
+00:02:10.820 --> 00:02:14.816
+all Jacobians and all Hessians.
+
+NOTE Confidence: 0.83476801
+
+531dcf5f-5394-4c51-98cb-02a48d510e1f
+00:02:14.820 --> 00:02:17.095
+From the results of this you can
+
+NOTE Confidence: 0.83476801
+
+724f76df-5f09-4e1a-a9cf-e00a74dbcf7b
+00:02:17.095 --> 00:02:19.300
+then choose the best combination.
+
+NOTE Confidence: 0.83476801
+
+bbef1fcc-994c-4cd3-b503-df806f90fdc2
+00:02:19.300 --> 00:02:21.076
+You might then like to compare
+
+NOTE Confidence: 0.83476801
+
+18ef2fd9-8069-4e7f-90c5-eef36053172e
+00:02:21.076 --> 00:02:23.159
+this to the Poisson cost function.
+
+NOTE Confidence: 0.83476801
+
+646fab6d-67f5-4f44-82a2-780be96a633a
+00:02:23.160 --> 00:02:24.500
+And you could then compare
+
+NOTE Confidence: 0.83476801
+
+9acd5d1d-b022-425a-bd8c-254e166a439d
+00:02:24.500 --> 00:02:26.430
+minimizers of the same type as the
+
+NOTE Confidence: 0.83476801
+
+d87dc80d-e13d-4466-9483-fd5902f078e1
+00:02:26.430 --> 00:02:27.775
+best minimizer you have chosen,
+
+NOTE Confidence: 0.83476801
+
+b773c08c-f701-4afe-a699-c4462dc02e75
+00:02:27.780 --> 00:02:28.840
+but for different software.
+
+NOTE Confidence: 0.783562888125
+
+7939bc45-126b-413c-81c6-74373593092f
+00:02:32.250 --> 00:02:34.995
+I'm now going to go through a case study of 
+
+NOTE Confidence: 0.783562888125
+
+90152477-a675-477a-a0e7-e34142fcea1a
+00:02:34.995 --> 00:02:37.787
+ the SASView simple shapes 1D problem set. 
+
+NOTE Confidence: 0.783562888125
+
+e246c2f6-7e6d-4f84-8011-fc0e818ce2ac
+00:02:37.790 --> 00:02:39.869
+Based on the preliminary run with bumps,
+
+NOTE Confidence: 0.783562888125
+
+64e6b3cc-e9f7-4aba-8433-9986a604b37a
+00:02:39.870 --> 00:02:41.686
+ scipy and scipy_ls software, 
+
+NOTE Confidence: 0.783562888125
+
+8f553103-890b-49da-bc79-79aa667e4bb2
+00:02:41.686 --> 00:02:45.380
+ and three of the four cost functions,
+
+NOTE Confidence: 0.783562888125
+
+2a9d721b-b047-4a26-8b6d-3ee540ee7190
+00:02:45.380 --> 00:02:49.475
+we can see, from the table here, 
+
+NOTE Confidence: 0.783562888125
+
+cf301f7e-3994-4fb9-809b-01961c88de78
+00:02:49.480 --> 00:02:54.484
+that it looks like the cost functions nlls
+
+NOTE Confidence: 0.783562888125
+
+2bbabebe-b0cd-410f-9e20-724dc0f781be
+00:02:54.490 --> 00:02:58.410
+and weighted nlls are the best. 
+
+NOTE Confidence: 0.783562888125
+
+cb21f521-b607-4ce5-9557-211026db16b9
+00:02:58.410 --> 00:02:59.904
+In this diagram, the cost functions
+
+NOTE Confidence: 0.783562888125
+
+f7a645f7-d043-4dda-ae2a-c4e10c983aa9
+00:02:59.904 --> 00:03:01.440
+ are separated by the green lines. 
+
+NOTE Confidence: 0.813914381
+
+740e15ac-53ec-41d9-ab2a-788739ee8dea
+00:03:03.750 --> 00:03:05.840
+And the softwares are separated
+
+NOTE Confidence: 0.813914381
+
+58e6e324-3c2b-46a3-89fe-76e6a2f9749e
+00:03:05.840 --> 00:03:07.930
+ by the black lines. 
+
+NOTE Confidence: 0.813914381
+
+83c0a452-a6b4-4d35-b3ef-ad482e262e6b
+00:03:07.930 --> 00:03:09.580
+As you can see, the Hellinger
+
+NOTE Confidence: 0.813914381
+
+ca92418c-78f6-4d2f-bae2-a9fd68f27a80
+00:03:09.580 --> 00:03:11.270
+cost function has lots of purple,
+
+NOTE Confidence: 0.813914381
+
+ddf03684-950f-48bf-9c0e-26f2ba1dcca0
+00:03:11.270 --> 00:03:12.356
+so it is not the best.
+
+NOTE Confidence: 0.809264058
+
+9157af9b-9a6c-4aff-be69-dcca5ab32ab2
+00:03:15.440 --> 00:03:16.905
+We could choose our cost
+
+NOTE Confidence: 0.809264058
+
+25b20861-4694-4d5b-9e06-b9a217d372f2
+00:03:16.905 --> 00:03:18.370
+function from this graph here,
+
+NOTE Confidence: 0.809264058
+
+aaea975b-9ce4-486c-8269-f74af57f65a2
+00:03:18.370 --> 00:03:20.322
+which shows different cost
+
+NOTE Confidence: 0.809264058
+
+9c27173f-7767-408a-babc-b1f3a2a19ce1
+00:03:20.322 --> 00:03:22.274
+functions in different colours.
+
+NOTE Confidence: 0.809264058
+
+f8d40cf9-b522-44a0-9e10-58ca6648d8fb
+00:03:22.280 --> 00:03:23.972
+The strongest line for
+
+NOTE Confidence: 0.809264058
+
+252c166a-9bd3-4007-bfb4-a35ec31d50b7
+00:03:23.972 --> 00:03:26.087
+each colour is the best
+
+NOTE Confidence: 0.809264058
+
+c272b1f5-b523-4420-ab13-56b69b9a93a4
+00:03:26.090 --> 00:03:28.100
+minimizer for that cost function.
+
+NOTE Confidence: 0.847628473
+
+d97784e2-3a6b-458d-a8df-56697f74bac7
+00:03:32.680 --> 00:03:35.644
+We will also try our problem
+
+NOTE Confidence: 0.847628473
+
+923044a7-f76b-4db5-8f1a-bbd17403fa65
+00:03:35.644 --> 00:03:37.620
+set with the software bumps
+
+NOTE Confidence: 0.847628473
+
+8369a203-cdf2-4c3b-aa29-45f47c70103a
+00:03:37.620 --> 00:03:39.580
+and scipy_ls, as scipy has
+
+NOTE Confidence: 0.847628473
+
+31c317b8-6715-47d5-a783-8ebceb857055
+00:03:39.580 --> 00:03:41.119
+more purple than the others.
+
+NOTE Confidence: 0.685620352
+
+6179e7a1-a489-4317-a017-5136aacd3a68
+00:03:43.590 --> 00:03:45.870
+We will choose to try two of the
+
+NOTE Confidence: 0.685620352
+
+226e81e8-cb77-461c-a6e4-f985394edf37
+00:03:45.870 --> 00:03:47.479
+three minimizers for scipy_ls,
+
+NOTE Confidence: 0.685620352
+
+4644e7dc-2e74-4d33-932e-9158aec1ee6f
+00:03:47.480 --> 00:03:50.696
+and two of the four minimizers for bumps.
+
+NOTE Confidence: 0.685620352
+
+7c8cbc93-5ca8-463e-8419-2c4585462356
+00:03:50.700 --> 00:03:53.580
+Try it with all Jacobians and all Hessians.
+
+NOTE Confidence: 0.871726038888889
+
+3c1a4182-d46e-4063-a911-93861145626c
+00:03:56.440 --> 00:03:58.105
+Our initial conclusion based on
+
+NOTE Confidence: 0.871726038888889
+
+4c6ec7ad-71ad-476a-bf03-7a990066d81f
+00:03:58.105 --> 00:04:00.533
+the table here and the options we
+
+NOTE Confidence: 0.871726038888889
+
+a5e52809-9f58-4b98-b7f5-8e3851e6c224
+00:04:00.533 --> 00:04:02.615
+ chose based on the previous slide,
+
+NOTE Confidence: 0.871726038888889
+
+a635cadc-f909-44fa-803b-f9077296bf4a
+00:04:02.620 --> 00:04:04.420
+is that weighted nlls
+
+NOTE Confidence: 0.871726038888889
+
+c462b223-f699-45ef-800d-1c83d48e1569
+00:04:04.420 --> 00:04:06.672
+is better than the nlls cost
+
+NOTE Confidence: 0.871726038888889
+
+36076cc4-622d-4d70-8c32-ef19b8d154d8
+00:04:06.672 --> 00:04:08.940
+ function based on this top row.
+
+NOTE Confidence: 0.871726038888889
+
+986bd5a3-5a1f-427f-aa03-a0ea32febca1
+00:04:08.940 --> 00:04:10.518
+We must be careful when comparing
+
+NOTE Confidence: 0.871726038888889
+
+c86287c2-cd44-4b1e-9fa2-e069851a307f
+00:04:10.518 --> 00:04:11.893
+between cost functions as the
+
+NOTE Confidence: 0.871726038888889
+
+b90b017c-3eba-4553-82b0-e613afa42684
+00:04:11.893 --> 00:04:12.997
+colours are not comparable.
+
+NOTE Confidence: 0.872696142352941
+
+32272e62-db8f-4503-9fd1-ed2a0a4959ad
+00:04:15.240 --> 00:04:17.720
+We may wish to look at the graphs on the
+
+NOTE Confidence: 0.872696142352941
+
+81a34a73-28ef-45f7-bd43-648149162c08
+00:04:17.782 --> 00:04:20.197
+left to help us compare cost functions.
+
+NOTE Confidence: 0.872696142352941
+
+edd33841-c043-4940-9045-17bfe66344e6
+00:04:20.200 --> 00:04:21.616
+The different cost functions
+
+NOTE Confidence: 0.872696142352941
+
+47cf073a-f6e6-493f-b35e-fb79de7dce22
+00:04:21.616 --> 00:04:23.386
+again are in different colours.
+
+NOTE Confidence: 0.872696142352941
+
+bf635728-be8f-4ca6-9920-5d64bef220b1
+00:04:23.390 --> 00:04:24.608
+In the graph on the left,
+
+NOTE Confidence: 0.872696142352941
+
+5cfeec56-b05f-491f-9a7c-aea83541bf1a
+00:04:24.610 --> 00:04:26.482
+you might think that the purple
+
+NOTE Confidence: 0.872696142352941
+
+d5fe2c00-3d1b-4513-a2ca-7e2e798d8bd4
+00:04:26.482 --> 00:04:28.090
+cost function is the best.
+
+NOTE Confidence: 0.872696142352941
+
+50e30b4d-6dbd-4527-a32c-d2bf2463602b
+00:04:28.090 --> 00:04:30.148
+However, in the graph on the
+
+NOTE Confidence: 0.872696142352941
+
+63921d79-be10-4db0-a836-916f4e88eb12
+00:04:30.148 --> 00:04:32.140
+ right, for a different problem,
+
+NOTE Confidence: 0.872696142352941
+
+e5a87ea9-6139-48ac-bb4b-147229f51d2f
+00:04:32.140 --> 00:04:35.434
+the red cost function looks to be the best.
+
+NOTE Confidence: 0.872696142352941
+
+fe921196-f698-45b4-b185-0630b0869f8d
+00:04:35.440 --> 00:04:37.600
+Hence it is not always a clear choice.
+
+NOTE Confidence: 0.82820079875
+
+1b1b4cf1-d1dd-4244-931c-c73b91c7a389
+00:04:40.210 --> 00:04:41.802
+We can see from the table that the
+
+NOTE Confidence: 0.82820079875
+
+3fc44a15-fe06-4d56-93fc-f5d616151249
+00:04:41.802 --> 00:04:43.517
+ numdifftools Jacobian is not a good 
+
+NOTE Confidence: 0.82820079875
+
+6257632e-2447-4ecc-b207-7f5ce378bcc7
+00:04:43.517 --> 00:04:45.320
+choice as there is lots of purple here.
+
+NOTE Confidence: 0.836524758
+
+670fac65-3ef6-403a-9733-307f28033ff6
+00:04:47.660 --> 00:04:49.784
+ So you might decide 
+
+NOTE Confidence: 0.836524758
+
+3ea95fdf-a8de-466c-8906-45e371d582f2
+00:04:49.784 --> 00:04:52.181
+that the best combination is the
+
+NOTE Confidence: 0.836524758
+
+57e679f0-9428-43bd-9ff6-a043c3617c7d
+00:04:52.181 --> 00:04:53.993
+ weighted non linear least squares 
+
+NOTE Confidence: 0.836524758
+
+fbcf1ad4-ce43-4b2e-841d-909a5d0259d8
+00:04:53.993 --> 00:04:55.805
+ cost function, with the bumps software, 
+
+NOTE Confidence: 0.836524758
+
+e5dae937-abc3-4dc5-aceb-887a398d8b15
+00:04:55.810 --> 00:04:57.910
+with the scipy least squares minimizer
+
+NOTE Confidence: 0.836524758
+
+d3fc824c-dc18-465a-807b-232384bc1017
+00:04:57.910 --> 00:05:00.437
+and the default Jacobian which is
+
+NOTE Confidence: 0.836524758
+
+16a868a8-93ee-439b-afb3-bec927bc60b3
+00:05:00.437 --> 00:05:02.615
+indicated in this turquoise box here.
+
+NOTE Confidence: 0.77265103
+
+b238c04f-c0d0-40db-9e51-4e9db142e6e0
+00:05:06.070 --> 00:05:08.656
+You might then compare it to
+
+NOTE Confidence: 0.77265103
+
+602f6335-4fb1-41da-b7ca-22e6f4a9c370
+00:05:08.656 --> 00:05:10.380
+ the Poisson cost function. 
+
+NOTE Confidence: 0.77265103
+
+5fd365fb-253d-48f6-a682-afe44c5839b6
+00:05:10.380 --> 00:05:11.520
+Unfortunately we have
+
+NOTE Confidence: 0.77265103
+
+6111c71d-4acf-47ab-97f5-02da584ea2d7
+00:05:11.520 --> 00:05:12.660
+to use different minimizers,
+
+NOTE Confidence: 0.77265103
+
+037599c2-80a6-4f35-ba5b-d5cf53f43f0e
+00:05:12.660 --> 00:05:14.196
+ as the least squares
+
+NOTE Confidence: 0.77265103
+
+d492ec50-8767-4b99-945c-ec1e972e8891
+00:05:14.196 --> 00:05:15.732
+minimizers don't work with 
+
+NOTE Confidence: 0.77265103
+
+4c090e65-3305-4955-8db6-f72fed4f94fb
+00:05:15.732 --> 00:05:17.858
+ the Poisson cost function. 
+
+NOTE Confidence: 0.77265103
+
+c1e095bb-af90-4b78-b4b1-c55e030ba8b9
+00:05:17.860 --> 00:05:19.876
+ As you can see, all minimizers here 
+
+NOTE Confidence: 0.77265103
+
+6f4f8c29-72c6-45af-ab55-1c7961144bfc
+00:05:19.876 --> 00:05:21.940
+have at least one purple problem.
+
+NOTE Confidence: 0.77265103
+
+419fc751-003b-4f1c-a5be-f5f25131bb8e
+00:05:21.940 --> 00:05:23.910
+ Therefore nlls is still 
+
+NOTE Confidence: 0.77265103
+
+9fec8c5d-18cb-408b-a1ae-7f3ed047fa1d
+00:05:23.910 --> 00:05:25.486
+the best cost function.
+
+NOTE Confidence: 0.829277206
+
+25dee1d0-d628-41a0-ba09-9b6afc81d31b
+00:05:27.950 --> 00:05:29.580
+We could then compare minimizers
+
+NOTE Confidence: 0.829277206
+
+1b263867-0bc2-4abe-b6e9-b7338407b395
+00:05:29.580 --> 00:05:31.210
+of the same algorithm type,
+
+NOTE Confidence: 0.829277206
+
+29796a43-cbeb-49a0-a36f-3f99b64267ae
+00:05:31.210 --> 00:05:32.354
+but for different software.
+
+NOTE Confidence: 0.829277206
+
+62ef7528-dfbe-45fc-affe-980e6782b63c
+00:05:32.354 --> 00:05:34.070
+So here we have minimizers of
+
+NOTE Confidence: 0.829277206
+
+9333b87a-d0d9-4451-8eeb-3e8c37243e6b
+00:05:34.125 --> 00:05:35.721
+the same algorithm type as the
+
+NOTE Confidence: 0.829277206
+
+2f89bad9-28de-4ef4-a76f-09036e847f22
+00:05:35.721 --> 00:05:37.190
+one we have previously chosen,
+
+NOTE Confidence: 0.829277206
+
+9362f975-c7ca-4688-96cd-783d17c80f7d
+00:05:37.190 --> 00:05:39.860
+which is in bold here.
+
+NOTE Confidence: 0.829277206
+
+807b4419-3473-4084-b98a-4ae33bfcaf15
+00:05:39.860 --> 00:05:40.766
+The best combination,
+
+NOTE Confidence: 0.829277206
+
+93301103-4939-45c1-98aa-464ccdb3b322
+00:05:40.766 --> 00:05:42.880
+as you can see outlined in the
+
+NOTE Confidence: 0.829277206
+
+d43a0e19-2fa8-45c4-9051-bf76f0c58e63
+00:05:42.945 --> 00:05:44.678
+turquoise box, remains the same.
+
+NOTE Confidence: 0.786970559285714
+
+19d82884-b298-4935-ba43-78300f12d5a7
+00:05:48.790 --> 00:05:51.334
+ I will now go through another case study, on 
+
+NOTE Confidence: 0.786970559285714
+
+7920880a-d870-4b03-a56b-2c2d6c54f4c6
+00:05:51.334 --> 00:05:54.019
+the NIST average difficulty problem set.
+
+NOTE Confidence: 0.786970559285714
+
+f04914a8-0b06-4f18-843d-414114e5a6e4
+00:05:54.020 --> 00:05:56.316
+So based on a preliminary run with bumps,
+
+NOTE Confidence: 0.786970559285714
+
+a8389b1f-193c-4484-a735-2c1e1033b7d2
+00:05:56.320 --> 00:05:58.244
+ scipy, scipy_ls software,
+
+NOTE Confidence: 0.786970559285714
+
+7a33fd16-6f54-4d20-8330-4306c085adcc
+00:05:58.244 --> 00:06:02.290
+and three of the four cost functions,
+
+NOTE Confidence: 0.786970559285714
+
+c6b2d8c2-1769-4e11-a78d-3c5c351f03b4
+00:06:02.290 --> 00:06:03.960
+based on the table below, 
+
+NOTE Confidence: 0.786970559285714
+
+311be364-0531-4f91-ac9f-1b04bb8ab1df
+00:06:03.960 --> 00:06:06.767
+ we might choose to try nlls and 
+
+NOTE Confidence: 0.786970559285714
+
+3b43f628-a0fd-447f-a2dd-8bed57dff7af
+00:06:06.767 --> 00:06:08.900
+ weighted nlls cost functions, 
+
+NOTE Confidence: 0.786970559285714
+
+3b54ed79-69db-4e22-b7a8-f411920875e9
+00:06:08.900 --> 00:06:10.935
+ as again the Hellinger cost 
+
+NOTE Confidence: 0.786970559285714
+
+d3bfe802-6be3-464d-ae1c-e390a24f8f8b
+00:06:10.935 --> 00:06:12.970
+function has lots of purple.
+
+NOTE Confidence: 0.786970559285714
+
+72faa5c3-a351-4ead-b010-d8d88d46f2d6
+00:06:12.970 --> 00:06:15.290
+ We could also look at the graph here,
+
+NOTE Confidence: 0.786970559285714
+
+f05d6720-b337-4af4-8c5d-fccfdf7ba4a9
+00:06:15.290 --> 00:06:17.765
+however, as you can see, it is a judgment 
+
+NOTE Confidence: 0.786970559285714
+
+20c07f53-1209-4844-a7e0-cbad9090d39c
+00:06:17.765 --> 00:06:20.186
+call as to which cost function is best,
+
+NOTE Confidence: 0.786970559285714
+
+66b5b392-dd98-4225-90a5-b14d35be605c
+00:06:20.190 --> 00:06:21.688
+and as you know your data best,
+
+NOTE Confidence: 0.786970559285714
+
+7ecc6c2c-2536-4e07-ae6b-23a360194c03
+00:06:21.690 --> 00:06:23.130
+you might know which cost
+
+NOTE Confidence: 0.786970559285714
+
+7be3fe71-894f-4e54-947f-ec4af2343ede
+00:06:23.130 --> 00:06:24.282
+ function you would prefer,
+
+NOTE Confidence: 0.786970559285714
+
+4cf747b6-7950-4152-9058-f55f0b21f487
+00:06:24.290 --> 00:06:26.270
+however, it is not necessarily clear.
+
+NOTE Confidence: 0.654462781428571
+
+fd01c83e-8b4d-4ab8-9b59-80d99a49cdd1
+00:06:29.670 --> 00:06:32.918
+ You could then try software scipy_ls
+
+NOTE Confidence: 0.654462781428571
+
+4413e024-f13f-4e3a-b96f-09e1a1d5a62c
+00:06:32.920 --> 00:06:36.072
+and bumps, as again there is lots of
+
+NOTE Confidence: 0.654462781428571
+
+f7f5c33d-df4b-40af-844a-9dc03400b56b
+00:06:36.072 --> 00:06:38.968
+ purple here in the middle with scipy.
+
+NOTE Confidence: 0.654462781428571
+
+dc838c30-ebff-4fb9-bd2a-6ef36077744e
+00:06:38.970 --> 00:06:40.890
+Try three or three minimizers
+
+NOTE Confidence: 0.654462781428571
+
+1d177153-ff7d-4356-b2c6-99099aa9bc00
+00:06:40.890 --> 00:06:42.426
+ for the scipy_ls software, 
+
+NOTE Confidence: 0.654462781428571
+
+805a754c-a3fc-434f-a1cc-008c6e7d2aa9
+00:06:42.430 --> 00:06:45.730
+and one of the four for bumps.
+
+NOTE Confidence: 0.654462781428571
+
+e690e1d1-7f69-4df0-9656-1888b1a942d2
+00:06:45.730 --> 00:06:48.298
+Try all Jacobians and all Hessians.
+
+NOTE Confidence: 0.785037616363636
+
+7bd45d14-3899-4b9b-80ca-25eec89f3695
+00:06:51.120 --> 00:06:52.920
+Our initial conclusion is that both
+
+NOTE Confidence: 0.785037616363636
+
+3adf4d96-2b84-4eba-9682-198f077e4a42
+00:06:52.920 --> 00:06:54.550
+cost functions give similar results.
+
+NOTE Confidence: 0.927435926666667
+
+0e5705da-ea9f-4659-bef7-c353847d9d8a
+00:06:57.330 --> 00:06:59.024
+As you can see from the table
+
+NOTE Confidence: 0.927435926666667
+
+8df31f1d-e79e-4380-8935-26f9f4ebc7d8
+00:06:59.024 --> 00:07:00.534
+here, again, it is hard to tell
+
+NOTE Confidence: 0.927435926666667
+
+4bd935be-e74a-492b-9cff-ad4782a06988
+00:07:00.534 --> 00:07:01.814
+which cost function is best.
+
+NOTE Confidence: 0.798850881764706
+
+f3e837ac-7810-4ea5-90d0-d90f18b434c3
+00:07:03.830 --> 00:07:05.646
+ Clearly numdifftools Jacobian is not a 
+
+NOTE Confidence: 0.798850881764706
+
+e666f58e-5d2a-4b80-a933-54232415ef99
+00:07:05.646 --> 00:07:07.519
+good choice as there is lots of purple here.
+
+NOTE Confidence: 0.919333601666667
+
+58e9a989-4108-4230-ac99-1586401debec
+00:07:09.700 --> 00:07:13.006
+ In the end, we might choose
+
+NOTE Confidence: 0.919333601666667
+
+cc68d856-7cab-4aed-852a-6d0a37d9a62b
+00:07:13.010 --> 00:07:17.189
+ nlls cost function, scipy_ls software,
+
+NOTE Confidence: 0.919333601666667
+
+33d61a97-a339-49a8-bbbf-6de9688b0992
+00:07:17.190 --> 00:07:20.088
+ lm-scipy minimizer and the analytic Jacobian, 
+
+NOTE Confidence: 0.919333601666667
+
+ab0f6db7-7e3b-434a-8343-2d8215171244
+00:07:20.090 --> 00:07:21.962
+which is outlined here in the
+
+NOTE Confidence: 0.919333601666667
+
+ea7728e8-e195-426f-a607-605d7b2e4c41
+00:07:21.962 --> 00:07:23.720
+ turquoise box as our first choice. 
+
+NOTE Confidence: 0.712768797777778
+
+cc2527a3-798b-4ba4-9763-6f730f912f96
+00:07:26.610 --> 00:07:28.992
+We could then compare to the
+
+NOTE Confidence: 0.712768797777778
+
+d36ab4f8-823d-41d6-9a73-ae52440270e9
+00:07:28.992 --> 00:07:31.066
+ Poisson cost function. However, again,
+
+NOTE Confidence: 0.712768797777778
+
+291b5dcc-eda3-449a-b097-f39a505bb8a7
+00:07:31.066 --> 00:07:33.256
+all Poisson minimizers had at 
+
+NOTE Confidence: 0.712768797777778
+
+3d927347-f920-4f6d-ba6e-77772dfa1d27
+00:07:33.256 --> 00:07:35.832
+ least one purple problem, so nlls
+
+NOTE Confidence: 0.712768797777778
+
+b82b6677-6063-49d5-83b7-de53e51362be
+00:07:35.832 --> 00:07:37.548
+is still the best cost function.
+
+NOTE Confidence: 0.737348540769231
+
+e2ebf58c-536e-4ee3-85cb-69c7f6d689e5
+00:07:40.850 --> 00:07:42.656
+ We could then compare minimizers of the 
+
+NOTE Confidence: 0.737348540769231
+
+297d403e-a2bd-46dd-80f9-66d6ee5f533a
+00:07:42.656 --> 00:07:44.629
+same type but for different software.
+
+NOTE Confidence: 0.737348540769231
+
+ee62b83d-1d5c-4064-88c0-c97d74f40fd9
+00:07:44.630 --> 00:07:47.708
+So here we have the minimizers of the same type
+
+NOTE Confidence: 0.737348540769231
+
+47913a72-29a4-4fe2-a1e2-8f2a6de130a9
+00:07:47.710 --> 00:07:50.218
+as the lm-scipy which 
+
+NOTE Confidence: 0.737348540769231
+
+1bb7994c-2852-48e8-a091-7dadeb1d8d9c
+00:07:50.218 --> 00:07:51.890
+we had already chosen.
+
+NOTE Confidence: 0.737348540769231
+
+cc487540-fcf1-4aea-ad60-8db9f6b28c72
+00:07:51.890 --> 00:07:53.294
+Again, the best combination is here
+
+NOTE Confidence: 0.737348540769231
+
+59c0f3d2-02e2-4170-afe7-05edd7335b45
+00:07:53.294 --> 00:07:54.999
+in turquoise and it remains the same.
+

@@ -33,7 +33,8 @@ class OptionsWriteTests(unittest.TestCase):
             [JACOBIAN]
             scipy: cs
 
-            [PLOTTING]
+            [OUTPUT]
+            results_dir: new_results/
             make_plots: no
             colour_map: viridis
             cmap_range: [0, 0.5]
@@ -41,9 +42,6 @@ class OptionsWriteTests(unittest.TestCase):
             comparison_mode: abs
             table_type: acc
                         runtime
-
-            [OUTPUT]
-            results_dir: new_results/
 
             [LOGGING]
             file_name: THE_LOG.log

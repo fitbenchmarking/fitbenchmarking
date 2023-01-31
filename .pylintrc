@@ -3,7 +3,7 @@
 # Files or directories to be skipped. They should be base names, not paths.
 ignore=benchmark_problems,
        fonts,
-       mock_problems,
+       test_files,
        templates
 
 # Files or directories matching the regex patterns are skipped. The regex
@@ -46,7 +46,10 @@ ignored-modules=levmar,
                 mantid,
                 matlab,
                 pygsl,
-                ral_nlls
+                pycutest,
+                ral_nlls,
+                PyCeres,
+                lmfit
 
 [DESIGN]
 

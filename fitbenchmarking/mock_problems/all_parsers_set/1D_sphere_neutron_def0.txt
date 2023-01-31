@@ -1,6 +1,0 @@
-# FitBenchmark Problem
-software = 'SASView'
-name = '1D sphere (synthetic neutron) IV0'
-description = 'A first iteration synthetic dataset generated for the 1D sphere SASView model in the fashion of neutron small angle scattering experiments. Generated on Fri May 28 10:31:19 2021.'
-input_file = '1D_sphere_50_nosmearing_neutron_synth.txt'
-function = 'name=sphere,scale=1.0,background=0.0,sld=4.0,sld_solvent=1.0,radius=35.0'
