@@ -35,6 +35,8 @@ class SpinWParser(FitbenchmarkParser):
         # A container for improving efficiency in function call if calling
         # with full input data
         self._spinw_x: typing.Optional[np.ndarray] = None
+        self._spinw_w: typing.Optional[np.ndarray] = None
+        self._spinw_msk: typing.Optional[np.ndarray] = None
 
     def _get_data_points(self, data_file_path):
         """
@@ -47,27 +49,28 @@ class SpinWParser(FitbenchmarkParser):
         :rtype: dict<str, np.ndarray>
         """
         wxye_data_f = self._parse_function(self._entries['wxye_function'])
-        #print(wxye_data_f[0]['matlab_script'])
         path = os.path.join(os.path.dirname(self._filename),
                         wxye_data_f[0]['matlab_script'])
         eng.addpath(os.path.dirname(path))
         func_name = os.path.basename(path).split('.', 1)[0]
-        
-        eng.evalc(f'[w, x ,y ,e, msk] = {func_name}()')
-        x = np.array(eng.workspace['x'], dtype= np.float64)
+        self._spinw_w = f'w_{self._entries["name"]}' 
+        self._spinw_msk = f'msk_{self._entries["name"]}'
+
+        eng.evalc(f'[{self._spinw_w}, x ,y ,e, {self._spinw_msk}] = {func_name}()')
+        x_list = np.array(eng.workspace['x'], dtype= np.float64)
         signal = np.array(eng.workspace['y'], dtype= np.float64)
         error = np.array(eng.workspace['e'], dtype= np.float64)
-
-        #print(f'{x=}')
-
-        add_persistent_matlab_var('w')
-        add_persistent_matlab_var('msk')
+        
+        add_persistent_matlab_var(self._spinw_msk)
+        add_persistent_matlab_var(self._spinw_w)
+        eng.evalc(f'global {self._spinw_msk}')
+        eng.evalc(f'global {self._spinw_w}')
 
         y = signal.flatten()
         e = error.flatten()
-        x = np.ones(len(y))
-        self._spinw_x = x
-
+        x = x_list
+        x = np.zeros(len(y))
+        self._spinw_x = x   
         return {'x': x, 'y': y, 'e': e}
 
     
@@ -98,11 +101,11 @@ class SpinWParser(FitbenchmarkParser):
         self._starting_values = [{n: pf[n] for n in p_names}]
         
         simulate_f = self._parse_function(self._entries['simulate_function'])
-        print(simulate_f[0]['matlab_script'])
         path = os.path.join(os.path.dirname(self._filename),
                         simulate_f[0]['matlab_script'])
         eng.addpath(os.path.dirname(path))
         simulate_func_name = os.path.basename(path).split('.', 1)[0]
+        eng.evalc('horace_on')
 
         def fit_function(x, *p):
             # Assume, for efficiency, matching shape => matching values
@@ -110,9 +113,11 @@ class SpinWParser(FitbenchmarkParser):
             if x.shape != self._spinw_x.shape:
                 return np.ones(x.shape)
             #print(p)
+            eng.evalc(r"addpath(genpath('C:\Users\vrs42921\Documents\CM\fitbenchmarking\examples\benchmark_problems\SpinW'))")
+            eng.evalc(f'global {self._spinw_msk}')
+            eng.evalc(f'global {self._spinw_w}')            
             eng.workspace['fitpars'] = matlab.double(p)
-            eng.evalc(f'[spinw_y, e, msk, fitpars] = {simulate_func_name}(w,fitpars,msk)')
-            #print(eng.evalc('fitpars'))
+            eng.evalc(f'[spinw_y, e, msk, fitpars] = {simulate_func_name}({self._spinw_w},fitpars,{self._spinw_msk})')
             return np.array(eng.workspace['spinw_y'], dtype= np.float64).flatten()
 
         return fit_function
