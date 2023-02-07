@@ -3,18 +3,37 @@ Tests for the performance profiler file.
 """
 from __future__ import absolute_import, division, print_function
 
+import inspect
 import os
 import unittest
 from collections import OrderedDict
 
 import numpy as np
 
+from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing import performance_profiler
-from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.checkpoint import get_checkpoint
 from fitbenchmarking.utils.options import Options
+
+
+def load_mock_results():
+    """
+    Load a predictable results set.
+
+    :return: Manually generated results
+    :rtype: list[FittingResult]
+    """
+    options = Options()
+    cp_dir = os.path.dirname(inspect.getfile(test_files))
+    options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
+
+    cp = get_checkpoint(options)
+    results, _, _ = cp.load()
+
+    return [v
+            for lst in results.values()
+            for v in lst]
 
 
 class PerformanceProfilerTests(unittest.TestCase):
@@ -26,9 +45,13 @@ class PerformanceProfilerTests(unittest.TestCase):
         """
         Sets up acc runtime profile names
         """
-        self.results, self.acc_expected, self.runtime_expected = \
-            self.generate_mock_results()
-        _, self.results = preprocess_data(self.results)
+        results = load_mock_results()
+        _, self.results = preprocess_data(results)
+
+        self.accuracy_expected = np.array(
+            [[0.2, 0.3, 0.4, np.inf, 0.6, 0.7, 0.8],
+             [1.0, 1.0, 2.0, np.inf, 3.0, 3.0, 0.2, np.inf]])
+
         self.fig_dir = ''
         self.acc_name = "acc_profile.png"
         self.runtime_name = "runtime_profile.png"
@@ -41,66 +64,11 @@ class PerformanceProfilerTests(unittest.TestCase):
             if os.path.isfile(name):
                 os.remove(name)
 
-    def generate_mock_results(self):
-        """
-        Generates results to test against
-
-        :return: A list of results objects along with expected values for
-                 normallised accuracy and runtimes
-        :rtype: tuple(list of FittingResults,
-                      list of list of float,
-                      list of list of float)
-        """
-        self.num_problems = 4
-        self.num_minimizers = 2
-        results = []
-        options = Options()
-        problem = FittingProblem(options)
-        problem.starting_values = [{'a': 1, 'b': 2, 'c': 3}]
-
-        acc_in = [[1, 5],
-                  [7, 3],
-                  [10, 8],
-                  [2, 3]]
-
-        runtime_in = [[float('Inf'), 2.2e-3],
-                      [3.0e-10, 5.0e-14],
-                      [6.9e-7, 4.3e-5],
-                      [1.6e-13, 1.8e-13]]
-
-        acc_expected = []
-        runtime_expected = []
-        for i in range(self.num_problems):
-            problem.name = f'problem {i}'
-            acc_results = acc_in[i][:]
-            acc_expected.append(list(acc_results) / np.min(acc_results))
-
-            runtime_results = runtime_in[i][:]
-            runtime_expected.append(
-                list(runtime_results) / np.min(runtime_results))
-            prob_results = []
-            cost_func = NLLSCostFunc(problem)
-            jac = 'j1'
-            hess = None
-            for j in range(self.num_minimizers):
-                minimizer = 'min_{}'.format(j)
-                prob_results.append(FittingResult(options=options,
-                                                  cost_func=cost_func,
-                                                  jac=jac,
-                                                  hess=hess,
-                                                  initial_params=[1, 2, 3],
-                                                  params=[1, 2, 3],
-                                                  chi_sq=acc_results[j],
-                                                  runtime=runtime_results[j],
-                                                  software='s1',
-                                                  minimizer=minimizer))
-            results.extend(prob_results)
-        return results, acc_expected, runtime_expected
-
     def test_correct_prepare_profile_data(self):
         """
         Test that prepare profile data gives the correct result
         """
+
         list(list(self.results.values())[0].values())[0][0].jacobian_tag = ''
         acc, runtime = performance_profiler.prepare_profile_data(self.results)
         acc_expected = np.array(self.acc_expected).T
