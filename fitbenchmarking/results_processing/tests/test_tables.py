@@ -2,132 +2,41 @@
 Table tests
 """
 
+import inspect
 import os
 import shutil
 import unittest
 from inspect import getfile
 
-import numpy as np
-
 import fitbenchmarking
+from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
-from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
-    WeightedNLLSCostFunc
-from fitbenchmarking.jacobian.default_jacobian import Default as DefaultJac
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing.tables import (SORTED_TABLE_NAMES,
                                                        create_results_tables,
                                                        generate_table)
-from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.checkpoint import get_checkpoint
 from fitbenchmarking.utils.options import Options
 
 
-# By design both fitting_function_1 and fitting_function_2 need data as an
-# argument
-# pylint: disable=unused-argument
-def fitting_function_1(data, x1, x2):
+def load_mock_results():
     """
-    Fitting function evaluator
+    Load a predictable results set.
 
-    :param data: x data
-    :type data: numpy array
-    :param x1: fitting parameter
-    :type x1: float
-    :param x2: fitting parameter
-    :type x2: float
-
-    :return: y data values evaluated from the function of the problem
-    :rtype: numpy array
+    :return: Manually generated results
+    :rtype: list[FittingResult]
     """
-    return x1 * np.sin(x2)
-
-
-def fitting_function_2(data, x1, x2):
-    """
-    Fitting function evaluator
-
-    :param data: x data
-    :type data: numpy array
-    :param x1: fitting parameter
-    :type x1: float
-    :param x2: fitting parameter
-    :type x2: float
-
-    :return: y data values evaluated from the function of the problem
-    :rtype: numpy array
-    """
-    return x1 * x2
-
-# pylint: enable=unused-argument
-
-
-def generate_mock_results():
-    """
-    Generates results to test against
-
-    :return: best results calculated using the chi_sq value, list of results
-             and the options
-    :rtype: tuple(list of best results,
-                  list of list fitting results,
-                  Options object)
-    """
-    software = 'scipy_ls'
     options = Options()
-    options.software = [software]
-    num_min = len(options.minimizers[options.software[0]])
-    data_x = np.array([[1, 4, 5], [2, 1, 5]])
-    data_y = np.array([[1, 2, 1], [2, 2, 2]])
-    data_e = np.array([[1, 1, 1], [1, 2, 1]])
-    func = [fitting_function_1, fitting_function_2]
-    problems = [FittingProblem(options), FittingProblem(options)]
+    cp_dir = os.path.dirname(inspect.getfile(test_files))
+    options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
 
-    params_in = [[[.3, .11], [.04, 2], [3, 1], [5, 0]],
-                 [[4, 2], [3, .006], [.3, 10], [9, 0]]]
+    cp = get_checkpoint(options)
+    results, _, _ = cp.load()
+    results = results['Fake_Test_Data']
+    for i, r in enumerate(results):
+        r.fitting_report_link = f'link{i}'
+        r.problem_summary_page_link = 'link0'
 
-    starting_values = [{"a": .3, "b": .11}, {"a": 0, "b": 0}]
-    error_in = [[1, 0, 2, 0],
-                [0, 1, 3, 1]]
-    link_in = [['link1', 'link2', 'link3', 'link4'],
-               ['link5', 'link6', 'link7', 'link8']]
-    acc_in = [[1, 5, 2, 1.54],
-              [7, 3, 5, 1]]
-    runtime_in = [[1e-2, 2.2e-3, 4.2e-5, 9.8e-1],
-                  [3.0e-10, 5.0e-14, 1e-7, 4.3e-12]]
-
-    results_out = []
-    for i, p in enumerate(problems):
-        p.data_x = data_x[i]
-        p.data_y = data_y[i]
-        p.data_e = data_e[i]
-        p.function = func[i]
-        p.name = "prob_{}".format(i)
-        results = []
-        for j in range(num_min):
-            p.starting_values = starting_values
-            cost_func = WeightedNLLSCostFunc(p)
-            jac = DefaultJac(p)
-            cost_func.jacobian = jac
-            hess = None
-            r = FittingResult(options=options,
-                              cost_func=cost_func,
-                              jac=jac.name(),
-                              hess=hess,
-                              initial_params=starting_values,
-                              params=params_in[i][j],
-                              name=p.name,
-                              chi_sq=acc_in[i][j],
-                              runtime=runtime_in[i][j],
-                              software=software,
-                              minimizer=options.minimizers[software][j],
-                              error_flag=error_in[i][j],
-                              algorithm_type='all, ls',
-                              )
-            r.fitting_report_link = link_in[i][j]
-            r.problem_summary_page_link = 'link0'
-            results.append(r)
-        results_out.extend(results)
-    best_results, results_out = preprocess_data(results_out)
-    return best_results, results_out, options
+    return results
 
 
 class GenerateTableTests(unittest.TestCase):
@@ -140,7 +49,10 @@ class GenerateTableTests(unittest.TestCase):
         """
         Setup up method for test
         """
-        self.best_results, self.results, self.options = generate_mock_results()
+        results = load_mock_results()
+        self.best_results, self.results = preprocess_data(results)
+
+        self.options = Options()
         root = os.path.dirname(getfile(fitbenchmarking))
 
         self.expected_results_dir = os.path.join(root, 'results_processing',
@@ -217,7 +129,7 @@ class GenerateTableTests(unittest.TestCase):
                          fitbenchmarking.results_processing.tables
         :type achieved: str
         """
-        with open(expected, 'r') as f:
+        with open(expected, 'r', encoding='utf-8') as f:
             exp_lines = f.readlines()
 
         diff = []
@@ -253,7 +165,10 @@ class CreateResultsTableTests(unittest.TestCase):
         """
         Setup up method for test
         """
-        self.best_results, self.results, self.options = generate_mock_results()
+        results = load_mock_results()
+        self.best_results, self.results = preprocess_data(results)
+
+        self.options = Options()
         root = os.path.dirname(getfile(fitbenchmarking))
 
         self.group_dir = os.path.join(root, 'results_processing',
