@@ -51,6 +51,9 @@ class PerformanceProfilerTests(unittest.TestCase):
         self.accuracy_expected = np.array(
             [[0.2, 0.3, 0.4, np.inf, 0.6, 0.7, 0.8],
              [1.0, 1.0, 2.0, np.inf, 3.0, 3.0, 0.2, np.inf]])
+        self.runtime_expected = np.array(
+            [[15.0, 14.0, 13.0, np.inf, 11.0, 10.0, 9.0],
+             [1.0, 1.0, 2.0, np.inf, 3.0, 3.0, 15.0, np.inf]])
 
         self.fig_dir = ''
         self.acc_name = "acc_profile.png"
@@ -71,11 +74,11 @@ class PerformanceProfilerTests(unittest.TestCase):
 
         list(list(self.results.values())[0].values())[0][0].jacobian_tag = ''
         acc, runtime = performance_profiler.prepare_profile_data(self.results)
-        acc_expected = np.array(self.acc_expected).T
+        acc_expected = np.array(self.accuracy_expected).T
         runtime_expected = np.array(self.runtime_expected).T
         acc_dict = OrderedDict()
         runtime_dict = OrderedDict()
-        for j in range(self.num_minimizers):
+        for j in range(len(acc_expected)):
             acc_dict['min_{} [s1]: j:j1'.format(j)] = acc_expected[j]
             runtime_dict['min_{} [s1]: j:j1'.format(j)] = runtime_expected[j]
         for k, v in acc_dict.items():
