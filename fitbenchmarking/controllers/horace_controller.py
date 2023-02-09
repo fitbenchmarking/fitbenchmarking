@@ -86,9 +86,10 @@ class HoraceController(MatlabMixin, Controller):
         else:
             self.flag = 0
 
-        self.final_params = np.array(self._fit_params['p'][0], dtype= np.float64).flatten()
+        self.final_params = np.array(self._fit_params['p'][0],
+                                     dtype=np.float64).flatten()
 
-        # Allow repeat calls to cleanup without falling over
+        # # Allow repeat calls to cleanup without falling over
         # try:
         #     self.eng.evalc(
         #         'if not(any(cellfun(@(x) x=="horace", persistent_vars)));'

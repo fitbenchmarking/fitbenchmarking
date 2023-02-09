@@ -1,0 +1,9 @@
+# FitBenchmark Problem
+software = 'SpinW'
+name = 'test7'
+description = 'Testing the format using sqw test7'
+input_file = 'w1data_7.sqw'
+function = 'matlab_script=m_scripts/functions/sqw_bcc_hfm.m ,p1=5,p2=5,p3=1.2,p4=3,p5=0'
+wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_sqw_test7.m'
+simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_sqw_test7.m'
+spinw_path = 'C:\Users\vrs42921\Documents\CM\fitbenchmarking\examples\benchmark_problems\SpinW'

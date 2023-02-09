@@ -1,0 +1,9 @@
+# FitBenchmark Problem
+software = 'SpinW'
+name = 'test4'
+description = 'Testing the format using IX dataset 1D'
+input_file = 'dumby.txt'
+function = 'matlab_script=m_scripts/functions/mftest_gauss_bkgd.m ,p1=1100,p2=66 ,p3=13,p4=15'
+wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_IX_1D_test4.m'
+simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_IX_1D_test4.m'
+spinw_path = 'C:\Users\vrs42921\Documents\CM\fitbenchmarking\examples\benchmark_problems\SpinW'
