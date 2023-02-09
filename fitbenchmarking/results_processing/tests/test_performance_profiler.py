@@ -78,9 +78,9 @@ class PerformanceProfilerTests(unittest.TestCase):
         runtime_expected = np.array(self.runtime_expected).T
         acc_dict = OrderedDict()
         runtime_dict = OrderedDict()
-        for j in range(len(acc_expected)):
-            acc_dict['min_{} [s1]: j:j1'.format(j)] = acc_expected[j]
-            runtime_dict['min_{} [s1]: j:j1'.format(j)] = runtime_expected[j]
+        for j, (a, r) in enumerate(zip(acc_expected, runtime_expected)):
+            acc_dict['min_{} [s1]: j:j1'.format(j)] = a
+            runtime_dict['min_{} [s1]: j:j1'.format(j)] = r
         for k, v in acc_dict.items():
             assert np.allclose(v, acc[k])
         for k, v in runtime_dict.items():

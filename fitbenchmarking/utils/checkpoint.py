@@ -82,6 +82,7 @@ class Checkpoint:
                 with open(self.cp_file, 'w', encoding='utf-8') as f:
                     f.write('{\n')
 
+            # pylint: disable=consider-using-with
             self.dir = TemporaryDirectory()
             self.problems_file = os.path.join(
                 self.dir.name, 'problems_tmp.txt')
@@ -184,9 +185,10 @@ class Checkpoint:
             with open(self.results_file, 'r', encoding='utf-8') as tmp:
                 f.write(tmp.read())
             f.write('\n    ],\n    ')
-            f.write(json.dumps({
-                'failed_problems': failed_problems,
-                'unselected_minimizers': unselected_minimizers}, indent=4)[6:-1])
+            f.write(json.dumps(
+                {'failed_problems': failed_problems,
+                 'unselected_minimizers': unselected_minimizers},
+                indent=4)[6:-1])
             f.write('  }\n')
 
         self.finalised_labels.append(label)
@@ -200,7 +202,7 @@ class Checkpoint:
             f.write('}')
         self.finalised = True
 
-    def load(self) -> 'Tuple[dict[str,list[FittingResult]], dict, dict[str, list[str]]]':
+    def load(self):
         """
         Load fitting results from a checkpoint file along with
         failed problems and unselected minimizers.
@@ -235,8 +237,8 @@ class Checkpoint:
             unselected_minimizers[label] = group['unselected_minimizers']
             failed_problems[label] = group['failed_problems']
 
-            # Unpickle problems so that we use 1 shared object for all results per
-            # array
+            # Unpickle problems so that we use 1 shared object for all results
+            # per array
             for p in problems.values():
                 p['ini_y'] = _decompress(p['ini_y'])
                 p['x'] = _decompress(p['x'])

@@ -10,15 +10,12 @@ from unittest import TestCase, main
 
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing import problem_summary_page
 from fitbenchmarking.utils.checkpoint import get_checkpoint
-from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
 
-def load_mock_results(additional_options = None):
+def load_mock_results(additional_options=None):
     """
     Load a predictable results set.
 

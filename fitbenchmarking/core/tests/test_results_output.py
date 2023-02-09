@@ -519,8 +519,8 @@ class ProcessBestResultsTests(unittest.TestCase):
             results, self.options = generate_mock_results(self.results_dir)
             self.results = results[:5]
             for r, accuracy, runtime in zip(self.results,
-                                         [2, 1, 5, 3, 4],
-                                         [5, 4, 1, 2, 3]):
+                                            [2, 1, 5, 3, 4],
+                                            [5, 4, 1, 2, 3]):
                 r.accuracy = accuracy
                 r.runtime = runtime
             self.best = _process_best_results(self.results)

@@ -7,6 +7,7 @@ import inspect
 import os
 import textwrap
 import unittest
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -19,8 +20,6 @@ from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from fitbenchmarking.parsing.fitting_problem import FittingProblem

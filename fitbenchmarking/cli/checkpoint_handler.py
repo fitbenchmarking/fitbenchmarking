@@ -84,11 +84,12 @@ def generate_report(options_file='', additional_options=None):
 
     all_dirs = []
     for label in results:  # pylint: disable=consider-using-dict-items
-        directory = save_results(group_name=label,
-                                 results=results[label],
-                                 options=options,
-                                 failed_problems=failed_problems[label],
-                                 unselected_minimizers=unselected_minimizers[label])
+        directory = save_results(
+            group_name=label,
+            results=results[label],
+            options=options,
+            failed_problems=failed_problems[label],
+            unselected_minimizers=unselected_minimizers[label])
 
         directory = os.path.relpath(path=directory, start=options.results_dir)
         all_dirs.append(directory)

@@ -10,16 +10,17 @@ import os
 import timeit
 import warnings
 
-from tqdm import (tqdm, trange)
+import numpy as np
+from tqdm import tqdm, trange
 from tqdm.contrib.logging import logging_redirect_tqdm
 
-import numpy as np
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.hessian.hessian_factory import create_hessian
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.utils import fitbm_result, misc, output_grabber, checkpoint
+from fitbenchmarking.utils import (checkpoint, fitbm_result, misc,
+                                   output_grabber)
 from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               FitBenchmarkException,
                                               IncompatibleMinimizerError,
@@ -28,7 +29,6 @@ from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               UnknownMinimizerError,
                                               UnsupportedMinimizerError,
                                               ValidationException)
-
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
