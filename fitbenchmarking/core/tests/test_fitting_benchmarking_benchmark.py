@@ -102,6 +102,7 @@ class BenchmarkTests(unittest.TestCase):
         for name in problem_names:
             self.cost_func.problem.name = name
             controller = ScipyController(self.cost_func)
+            controller.parameter_set = 0
             list_results = [
                 fitbm_result.FittingResult(
                     options=self.options,
@@ -136,6 +137,7 @@ class BenchmarkTests(unittest.TestCase):
         for name in problem_names:
             self.problem.name = name
             controller = ScipyController(self.cost_func)
+            controller.parameter_set = 0
             list_results = [
                 fitbm_result.FittingResult(
                     options=self.options,

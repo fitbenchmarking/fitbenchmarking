@@ -73,6 +73,8 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         self.count = 0
 
         controllers = [ScipyController(cost_func) for _ in range(scipy_len)]
+        for c in controllers:
+            c.parameter_set = 0
 
         self.list_results = [
             fitbm_result.FittingResult(

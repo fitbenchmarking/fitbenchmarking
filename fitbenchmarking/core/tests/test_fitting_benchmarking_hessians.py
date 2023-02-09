@@ -107,6 +107,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.cost_func = make_cost_function(minimizers=self.minimizers)
         self.problem = self.cost_func.problem
         self.cost_func.jacobian = Scipy(self.problem)
+        self.cost_func.jacobian.method = '2-point'
         self.controller = DummyController(cost_func=self.cost_func)
         self.options = self.problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
@@ -163,6 +164,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         cost_func = make_cost_function(minimizers=self.minimizers,
                                        max_runtime=0.1)
         cost_func.jacobian = Scipy(cost_func.problem)
+        cost_func.jacobian.method = '2-point'
         cost_func.problem.timer.total_elapsed_time = 5
         controller = DummyController(cost_func=cost_func)
         options = cost_func.problem.options
@@ -183,6 +185,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         cost_func = make_cost_function('multifit_set/multifit.txt')
         problem = cost_func.problem
         cost_func.jacobian = Scipy(problem)
+        cost_func.jacobian.method = '2-point'
         controller = DummyController(cost_func=cost_func)
         options = problem.options
         grabbed_output = output_grabber.OutputGrabber(options)
