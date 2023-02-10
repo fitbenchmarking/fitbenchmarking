@@ -9,7 +9,12 @@ demonstrate where the format differs.
 
 .. note::
 The SpinW file format requires you to have ran the benchmark problem in Horace 
-using :code:`fit()` and :code:`simulate()` successfully. 
+using :code:`fit()` and :code:`simulate()` successfully. Here are some relevant links on 
+how to run `multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html/>`__ ,
+`advanced multifit <https://pace-neutrons.github.io/Horace/unstable/manual
+/Advanced_Multifit.html/>`__ 
+and `tobyfit <https://pace-neutrons.github.io/Horace/unstable/manual/Tobyfit.html/>`__ problems and 
+`Running Horace in Parallel <https://pace-neutrons.github.io/Horace/unstable/manual/Parallel.html/>`__.
 
 As in the native format, an input file must start with a comment indicating
 that it is a FitBenchmarking problem followed by a number of key value pairs.
@@ -94,6 +99,14 @@ e.g.::
 .. note:: 
   If the benchmark problem is `tobyfit` or using monte carlo. A persisent seed needs to be set before simulate is ran.
   This make sure that it uses the same seed everytime :code:`simulate()`  is ran.  
+
+.. note:: 
+  If the SpinW benchmark problem is run in parallel make sure to turn off hpc after :code:`simulate()` in the simulate_function 
+  matlab script. 
+
+  .. code-block:: rst
+    hpc('off')
+
 
   .. code-block:: rst
 

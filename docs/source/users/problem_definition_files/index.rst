@@ -19,6 +19,7 @@ More information on the supported formats can be found on the following pages.
     native
     multifit
     nist
+    spinw
 
 Detecting problem file type
 ===========================
