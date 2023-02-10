@@ -11,6 +11,10 @@ Examples of spinw problems are:
 
 .. literalinclude:: ../../../../examples/benchmark_problems/SpinW/test1.txt
 
+.. literalinclude:: ../../../../examples/benchmark_problems/SpinW/test6.txt
+
+.. literalinclude:: ../../../../examples/benchmark_problems/SpinW/test10.txt
+
 .. note::
 The SpinW file format requires you to have ran the benchmark problem in Horace 
 using :code:`fit()` and :code:`simulate()` successfully. Here are some relevant links on 
