@@ -46,7 +46,7 @@ wye_function
   e (standard deviation) and the msk (This is a n dimensional array which is the same shape as y and e of the pixels used for the fitting).
   This matlab file takes in the path of the datafile and the path of where the matlab functions are located.
 
-  Example of the wye_function:
+  Explained example of the wye_function:
 
   The first three lines adds the path to matlab functions need for fitting and loads the w object.
 
@@ -82,13 +82,16 @@ wye_function
     y = spinw_y(msk);
     e = sqrt(spinw_e(msk));
 
+  Example of the wye_function:
+
+  .. literalinclude:: ../../../../examples/benchmark_problems/SpinW/m_scripts/wye_functions/fb_wye_IX_1D_test1.m
 
 simulate_function
   The simulate_function is defined by a matlab file which returns the y values for the fitting function.
   This matlab file takes in the w, fitpars (fitting parameters) and msk. The w and msk are the same as the 
   wye_function. The fitpars are are determined by the current minimizer.  
 
-Example of the simulate_function:
+Explained Example of the simulate_function:
 
 .. code-block:: rst
   
@@ -122,6 +125,10 @@ Example of the simulate_function:
 
     hpc('off')
 
+
+ Example of thw simulate_function:
+
+  .. literalinclude:: ../../../../examples/benchmark_problems/SpinW/matlab_script=m_scripts/simulate_functions/fb_simulate_IX_1D_test1.m
 
 spinw_path
   The spinw_path is the path where all matlab functions used in the fitting are located 
