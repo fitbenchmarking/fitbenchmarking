@@ -1,4 +1,4 @@
-function [spinw_y, e, msk, fitpars] = fb_simulate_IX_1D_test6(w,fitpars,msk)
+function spinw_y = fb_simulate_IX_1D_test6(w,fitpars,msk)
 % simulate loop to solve for the parameters 
 
 pf0 = fitpars(1:10);

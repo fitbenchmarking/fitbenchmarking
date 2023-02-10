@@ -2,6 +2,7 @@
 Implements a controller to the lm implementation in Herbert/Horace
 """
 
+import os
 import matlab
 import numpy as np
 
@@ -41,12 +42,27 @@ class HoraceController(MatlabMixin, Controller):
         super().__init__(cost_func)
         self._fit_params = None
 
+    def horace_on(self):
+        """
+        Turning Horace and SpinW on in matlab
+        """
+        if "HORACE_LOCATION" in os.environ and "SPINW_LOCATION" in os.environ:
+            horace_location = os.environ["HORACE_LOCATION"]
+            spinw_location = os.environ["SPINW_LOCATION"]
+            self.eng.evalc("restoredefaultpath")
+            self.eng.evalc(f"addpath('{horace_location}')")
+            self.eng.evalc("horace_on")
+            self.eng.evalc(f"addpath('{spinw_location}')")
+            self.eng.evalc("spinw_on")
+        else:
+            self.eng.evalc("horace_on")
+
     def setup(self):
         """
         Setup for Matlab fitting
         """
         # Initialize Horace in the Matlab engine
-        self.eng.evalc('horace_on')
+        self.horace_on()
 
         # Convert initial params into matlab array
         self.eng.workspace['x_mat'] = matlab.double(

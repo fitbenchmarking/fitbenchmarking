@@ -13,15 +13,26 @@ from fitbenchmarking.utils.exceptions import ParsingError
 from fitbenchmarking.utils.matlab_engine import ENG as eng
 from fitbenchmarking.utils.matlab_engine import add_persistent_matlab_var
 
-# horace_location = os.environ["HORACE_LOCATION"]
-# sys.path.insert(0, horace_location)
 
-# eng.evalc(f"addpath('{horace_location}')")
+def horace_on():
+    """
+    Turning Horace and SpinW on in matlab
+    """
+    if "HORACE_LOCATION" and "SPINW_LOCATION" in os.environ:
+        horace_location = os.environ["HORACE_LOCATION"]
+        spinw_location = os.environ["SPINW_LOCATION"]
+        eng.evalc("restoredefaultpath")
+        eng.evalc(f"addpath('{horace_location}')")
+        eng.evalc("horace_on")
+        eng.evalc(f"addpath('{spinw_location}')")
+        eng.evalc("spinw_on")
+    else:
+        eng.evalc("horace_on")
 
-# Keep horace active - even after cleanup of horace controller..
+
 eng.evalc('horace = 1;')
 add_persistent_matlab_var('horace')
-eng.evalc('horace_on')
+horace_on()
 
 
 class SpinWParser(FitbenchmarkParser):
@@ -105,7 +116,7 @@ class SpinWParser(FitbenchmarkParser):
                             simulate_f[0]['matlab_script'])
         eng.addpath(os.path.dirname(path))
         simulate_func_name = os.path.basename(path).split('.', 1)[0]
-        eng.evalc('horace_on')
+        horace_on()
 
         def fit_function(x, *p):
             # Assume, for efficiency, matching shape => matching values
@@ -116,7 +127,7 @@ class SpinWParser(FitbenchmarkParser):
             eng.evalc(f'global {self._spinw_msk}')
             eng.evalc(f'global {self._spinw_w}')
             eng.workspace['fitpars'] = matlab.double(p)
-            eng.evalc(f'[spinw_y, e, msk, fitpars] = {simulate_func_name}'
+            eng.evalc(f'spinw_y = {simulate_func_name}'
                       f'({self._spinw_w},fitpars,{self._spinw_msk})')
             return np.array(eng.workspace['spinw_y'],
                             dtype=np.float64).flatten()
@@ -152,7 +163,7 @@ class SpinWParser(FitbenchmarkParser):
             :param path: The file to update from
             :type path: str
             """
-            eng.evalc('horace_on;')
+            horace_on()
             print(eng.evalc(f"load('{path}')"))
         self.fitting_problem.set_persistent_vars = set_persistent_vars
         return super()._set_additional_info()

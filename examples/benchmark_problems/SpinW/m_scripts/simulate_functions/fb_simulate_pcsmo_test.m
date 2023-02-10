@@ -1,4 +1,4 @@
-function [spinw_y, e, msk,fitpars] = fb_simulate_pcsmo_test(w,fitpars,msk)
+function spinw_y = fb_simulate_pcsmo_test(w,fitpars,msk)
 %simulate loop to solve for the parameters 
 
 persistent seed
