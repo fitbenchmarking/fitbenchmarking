@@ -9,7 +9,7 @@ demonstrate where the format differs.
 
 Examples of spinw problems are:
 
-.. literalinclude:: ../../../../examples/benchmark_problems/SpinW/test1
+.. literalinclude:: ../../../../examples/benchmark_problems/SpinW/test1.txt
 
 .. note::
 The SpinW file format requires you to have ran the benchmark problem in Horace 
@@ -40,7 +40,7 @@ function
 wye_function
   The wye_function is defined by a matlab file which returns the w (This could be a sqw ,d1d, d2d, d3d and d4d object), y (signal),
   e (standard deviation) and the msk (This is a n dimensional array which is the same shape as y and e of the pixels used for the fitting).
-  This matlab file takes in the path of the datafile and the path of where the matlab function are located.
+  This matlab file takes in the path of the datafile and the path of where the matlab functions are located.
 
   Example of the wye_function:
 
