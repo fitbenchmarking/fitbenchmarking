@@ -7,13 +7,17 @@ SpinW File Format
 The SpinW file format is based on :ref:`native`, this page is intended to
 demonstrate where the format differs.
 
+Examples of spinw problems are:
+
+.. literalinclude:: ../../../../examples/benchmark_problems/SpinW/test1
+
 .. note::
 The SpinW file format requires you to have ran the benchmark problem in Horace 
 using :code:`fit()` and :code:`simulate()` successfully. Here are some relevant links on 
-how to run `multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html/>`__ ,
-`advanced multifit <https://pace-neutrons.github.io/Horace/unstable/manual
+how to run `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html/>`__ ,
+`Advanced Multifit <https://pace-neutrons.github.io/Horace/unstable/manual
 /Advanced_Multifit.html/>`__ 
-and `tobyfit <https://pace-neutrons.github.io/Horace/unstable/manual/Tobyfit.html/>`__ problems and 
+and `Tobyfit <https://pace-neutrons.github.io/Horace/unstable/manual/Tobyfit.html/>`__ problems and 
 `Running Horace in Parallel <https://pace-neutrons.github.io/Horace/unstable/manual/Parallel.html/>`__.
 
 As in the native format, an input file must start with a comment indicating
@@ -33,16 +37,12 @@ function
   defined by the variable "matlab_script" and the remaining pairs defining starting
   values as in the native parser.
 
-  e.g.::
-    function = 'matlab_script=pcsmo_model.m,J=35,D=0,gam=30,temp=10,amp=300'
-
 wye_function
   The wye_function is defined by a matlab file which returns the w (This could be a sqw ,d1d, d2d, d3d and d4d object), y (signal),
   e (standard deviation) and the msk (This is a n dimensional array which is the same shape as y and e of the pixels used for the fitting).
   This matlab file takes in the path of the datafile and the path of where the matlab function are located.
 
-  e.g.::
-    wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_pcsmo_test.m'
+  Example of the wye_function:
 
   The first three lines adds the path to matlab functions need for fitting and loads the w object.
 
@@ -61,6 +61,7 @@ wye_function
   The next block of run :code:`simulate()` once for the sole purpose of getting the msk array 
   
   .. code-block:: rst
+    
     pin=[100,50,7,0,0];
     forefunc = @mftest_gauss_bkgd;
     mf = multifit(w);
@@ -72,7 +73,7 @@ wye_function
   The last two lines of the wye_function applies the msk on the y and e data. As the e from Horace is the
   variance we have squared root the value to get the standard deviation.
 
-   .. code-block:: rst
+  .. code-block:: rst
 
     y = spinw_y(msk);
     e = sqrt(spinw_e(msk));
@@ -83,8 +84,7 @@ simulate_function
   This matlab file takes in the w, fitpars (fitting parameters) and msk. The w and msk are the same as the 
   wye_function. The fitpars are are determined by the current minimizer.  
 
-e.g.::
-  simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_IX_1D_test1.m'
+Example of the simulate_function:
 
 .. code-block:: rst
   
@@ -99,15 +99,7 @@ e.g.::
 .. note:: 
   If the benchmark problem is `tobyfit` or using monte carlo. A persisent seed needs to be set before simulate is ran.
   This make sure that it uses the same seed everytime :code:`simulate()`  is ran.  
-
-.. note:: 
-  If the SpinW benchmark problem is run in parallel make sure to turn off hpc after :code:`simulate()` in the simulate_function 
-  matlab script. 
-
-  .. code-block:: rst
-    hpc('off')
-
-
+    
   .. code-block:: rst
 
     persistent seed
@@ -118,14 +110,19 @@ e.g.::
         rng(seed);
     end
 
+.. note:: 
+  If the SpinW benchmark problem is run in parallel make sure to turn off hpc after :code:`simulate()` in the simulate_function 
+  matlab script. 
+
+  .. code-block:: rst
+
+    hpc('off')
+
 
 spinw_path
   The spinw_path is the path where all matlab functions used in the fitting are located 
   (i.e simulate_function, wye_function,mftest_gauss_bkgd etc).
 
-e.g.::
-   spinw_path = '~\fitbenchmarking\examples\benchmark_problems\SpinW'
-
 .. note:: 
   If you have a non standard installation of Horace please set the `HORACE_LOCATION` and the `SPINW_LOCATION`
-  (i.e on IDAaaS).  
+  as environment variables(i.e on IDAaaS).  
