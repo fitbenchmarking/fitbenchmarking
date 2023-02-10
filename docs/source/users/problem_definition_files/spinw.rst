@@ -7,6 +7,10 @@ SpinW File Format
 The SpinW file format is based on :ref:`native`, this page is intended to
 demonstrate where the format differs.
 
+.. note::
+The SpinW file format requires you to have ran the benchmark problem in Horace 
+using :code:`fit()` and :code:`simulate()` successfully. 
+
 As in the native format, an input file must start with a comment indicating
 that it is a FitBenchmarking problem followed by a number of key value pairs.
 Available keys can be seen in :ref:`native` and below:
@@ -16,58 +20,6 @@ software, name, description
 
 input_file
   For SpinW we require an SQW file containing the data from Horace.
-
-projection
-  The projection defines the axis that the data is projected onto for the fit.
-
-  This follows a similar pattern to the function in that it is a comma
-  seperated list of key-value pairs and has several parameters.
-  Usually only u, v, and type are used.
-  - u, v, and w: 3D vectors used to define the viewing coordinate system.
-                 w will be defined as normal to the plane spanned by u and v
-                 if not given.
-  - type: 3 chars (a, r, or p) to define the type of axes.
-          a - The axis is measured in angstroms,
-          r - The axis is measured in rlu (scaled so the 1-norm == 1),
-          p - The axis is not altered (preserve values)
-  - uoffset: 4D vector, if the data needs recentreing this can be used
-  
-  Vectors can be defined as comma seperated values in square brackets
-  `[val1, val2, ...]`
-
-  e.g.::
-    projection = 'u=[1,0,0],v=[0,1,0],type=rrr'
-
-cut
-  The cut defines the extent of the data and consists of 4 ranges for binning
-  boundaries along u, v, w, and energy axes defined in projection.
-  Each range can be defined by:
-  - no value: Keep the data as stored in the file
-  - single value: Sets a bin width, the data is rebinned into this width
-  - 3 values => lower bound, bin width, upper bound. The data is truncated and rebinned.
-  - 2 values => lower and upper bound. The data is truncated into a single bin.
-
-  e.g.::
-    cut = 'p1_bin=[-1,0.05,1],p2_bin=[-1,0.05,1],p3_bin=[-10,10],p4_bin=[10,20]'
-
-sample
-  The sample defines the target of the experiment and has several parameters.
-
-  This must have a class as "IX_Sample", the remaining arguments are passed
-  through to the IX_Sample class constructor.
-  Full details can be found `here <https://pace-neutrons.github.io/Horace/v3.6.2/user_guide/Resolution_convolution.html#the-tobyfit-class>`__.
-  
-  e.g.::
-    sample = 'class=IX_sample,xgeom=[0,0,1],ygeom=[0,1,0],shape='cuboid',ps=[0.01,0.05,0.01])
-
-instrument
-  The instrument defines where the measurements were taken and again requires
-  a ``class`` followed by the correct arguments for the class.
-
-  As with sample, details can be found `here <https://pace-neutrons.github.io/Horace/v3.6.2/user_guide/Resolution_convolution.html#the-tobyfit-class>`__.
-  
-  e.g.::
-    instrument = 'class=maps_instrument,ei=70,hz=250,chopper=S'
 
 function
   The function is defined by a matlab file which returns a SpinW model.
@@ -79,41 +31,88 @@ function
   e.g.::
     function = 'matlab_script=pcsmo_model.m,J=35,D=0,gam=30,temp=10,amp=300'
 
-random_fraction_pixels
-  SpinW problems can be very large. This option will mask out a proportion of
-  pixels to reduce the problem size.
-
-  The following example retains only 1% of the data.
-
-  e.g.::
-    random_fraction_pixels = 0.01
-
-mc_points
-  SpinW used Monte Carlo sampling during it's calculation. This controls the
-  number of samples taken. It is left to the experienced SpinW user to tune
-  this.
+wye_function
+  The wye_function is defined by a matlab file which returns the w (This could be a sqw ,d1d, d2d, d3d and d4d object), y (signal),
+  e (standard deviation) and the msk (This is a n dimensional array which is the same shape as y and e of the pixels used for the fitting).
+  This matlab file takes in the path of the datafile and the path of where the matlab function are located.
 
   e.g.::
-    mc_points = 5
+    wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_pcsmo_test.m'
 
-intrinsic_energy_width
-  Each call to SpinW also requires an energy width. This parameter is not
-  fitted.
+  The first three lines adds the path to matlab functions need for fitting and loads the w object.
 
-  e.g.::
-    intrinsic_energy_width = 0.1
+  .. code-block:: rst
 
-spinwpars
-  SpinW models have some additional parameters which are passed to TobyFit.
-  These can be set for the model by adding them to the file as a new value
-  prefixed with "spinwpars_".
+    addpath(genpath(path));
+    source_data = load(datafile);
+    w = source_data.w1 ;
 
-  It is left to the experienced SpinW user to know what their problem requires
-  in this regard.
+  The next line gets the y and e from the w object. These are the true y and e values from the experiment.    
 
-  Some examples might be:
-  - spinwpars_mat = ['JF1', 'JA', 'JF2', 'JF3', 'Jperp', 'D(3,3)']
-  - spinwpars_hermit = False
-  - spinwpars_optmem = 1
-  - spinwpars_useFast = False
-  - spinwpars_... = ...
+  .. code-block:: rst
+    
+    [spinw_y, spinw_e] = sigvar_get(w);
+
+  The next block of run :code:`simulate()` once for the sole purpose of getting the msk array 
+  
+  .. code-block:: rst
+    pin=[100,50,7,0,0];
+    forefunc = @mftest_gauss_bkgd;
+    mf = multifit(w);
+    mf = mf.set_fun(forefunc);
+    mf = mf.set_pin (pin);
+    [wout,fitpar] = mf.simulate();
+    [ ~, ~, msk] = sigvar_get(wout);
+  
+  The last two lines of the wye_function applies the msk on the y and e data. As the e from Horace is the
+  variance we have squared root the value to get the standard deviation.
+
+   .. code-block:: rst
+
+    y = spinw_y(msk);
+    e = sqrt(spinw_e(msk));
+
+
+simulate_function
+  The simulate_function is defined by a matlab file which returns the y values for the fitting function.
+  This matlab file takes in the w, fitpars (fitting parameters) and msk. The w and msk are the same as the 
+  wye_function. The fitpars are are determined by the current minimizer.  
+
+e.g.::
+  simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_IX_1D_test1.m'
+
+.. code-block:: rst
+  
+  forefunc = @mftest_gauss_bkgd;
+  mf = multifit(w);
+  mf = mf.set_fun(forefunc);
+  mf = mf.set_pin(fitpars);
+  [wout,fitpar] = mf.simulate();
+  [spinw_y, e] = sigvar_get(wout);
+  spinw_y=spinw_y(msk);
+
+.. note:: 
+  If the benchmark problem is `tobyfit` or using monte carlo. A persisent seed needs to be set before simulate is ran.
+  This make sure that it uses the same seed everytime :code:`simulate()`  is ran.  
+
+  .. code-block:: rst
+
+    persistent seed
+    if isempty (seed)
+        rng(3,"twister");
+        seed = rng();
+    else 
+        rng(seed);
+    end
+
+
+spinw_path
+  The spinw_path is the path where all matlab functions used in the fitting are located 
+  (i.e simulate_function, wye_function,mftest_gauss_bkgd etc).
+
+e.g.::
+   spinw_path = '~\fitbenchmarking\examples\benchmark_problems\SpinW'
+
+.. note:: 
+  If you have a non standard installation of Horace please set the `HORACE_LOCATION` and the `SPINW_LOCATION`
+  (i.e on IDAaaS).  
