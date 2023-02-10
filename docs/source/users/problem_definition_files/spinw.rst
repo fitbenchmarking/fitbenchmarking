@@ -128,7 +128,7 @@ Explained Example of the simulate_function:
 
 Example of thw simulate_function:
   
-.. literalinclude:: ../../../../examples/benchmark_problems/SpinW/matlab_script=m_scripts/simulate_functions/fb_simulate_IX_1D_test1.m
+.. literalinclude:: ../../../../examples/benchmark_problems/SpinW/m_scripts/simulate_functions/fb_simulate_IX_1D_test1.m
 
 spinw_path
   The spinw_path is the path where all matlab functions used in the fitting are located 
