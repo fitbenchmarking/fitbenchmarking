@@ -37,5 +37,5 @@ tbf = tbf.set_mc_points(5);
 [~, ~, msk] = sigvar_get(w_fit);
 [spinw_y, spinw_e, ~] = sigvar_get(w1);
 y = spinw_y(msk);
-e = spinw_e(msk);
+e = sqrt(spinw_e(msk));
 w = w1; 

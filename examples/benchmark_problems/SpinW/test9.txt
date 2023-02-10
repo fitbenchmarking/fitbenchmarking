@@ -1,9 +1,9 @@
 # FitBenchmark Problem
 software = 'SpinW'
 name = 'test9'
-description = 'Testing the format using tobyfit test9'
+description = 'Tobyfit test problem'
 input_file = 'wdata1.mat'
 function = 'matlab_script=m_scripts/functions/testfunc_nb_sqw.m ,amp=6000,fwhh=0.2,p1=0,p2=0'
 wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_tobyfit_test.m'
 simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_tobyfit_test.m'
-spinw_path = 'C:\Users\vrs42921\Documents\CM\fitbenchmarking\examples\benchmark_problems\SpinW'
+spinw_path = 'home\fitbenchmarking\examples\benchmark_problems\SpinW'

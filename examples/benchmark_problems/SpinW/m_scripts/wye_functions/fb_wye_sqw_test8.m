@@ -16,7 +16,7 @@ mss = mss.set_bfun(@linear_bkgd, [0,0]); % set background function(s)
 [ ~, ~, msk] = sigvar_get(wfit_1);
 
 y = spinw_y(msk);
-e = spinw_e(msk);
+e = sqrt(spinw_e(msk));
 
 end
 

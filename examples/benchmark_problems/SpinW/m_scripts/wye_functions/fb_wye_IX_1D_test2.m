@@ -15,7 +15,7 @@ mf = mf.set_pin (pin);
 [ ~, ~, msk] = sigvar_get(wout);
 
 y = spinw_y(msk);
-e = spinw_e(msk);
+e = sqrt(spinw_e(msk));
 
 end
 

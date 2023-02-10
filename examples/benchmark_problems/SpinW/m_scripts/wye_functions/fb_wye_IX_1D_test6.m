@@ -35,7 +35,7 @@ kk = kk.set_bfree ([1,0,0,0]);
 [ ~, ~, msk] = sigvar_get(wfit);
 
 y = spinw_y(msk);
-e = spinw_e(msk);
+e = sqrt(spinw_e(msk));
 
 end
 

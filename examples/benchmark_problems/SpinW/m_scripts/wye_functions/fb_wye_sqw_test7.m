@@ -18,7 +18,7 @@ mss = mss.set_bbind({1,[1,-1],1},{2,[2,-1],1});
 [ ~, ~, msk] = sigvar_get(wfit_1);
 
 y = spinw_y(msk);
-e = spinw_e(msk);
+e = sqrt(spinw_e(msk));
 
 end
 

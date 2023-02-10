@@ -1,9 +1,9 @@
 # FitBenchmark Problem
 software = 'SpinW'
 name = 'test1'
-description = 'Testing the format using IX dataset 1D'
+description = '1D Gaussian'
 input_file = 'testdata_multifit_1.mat'
 function = 'matlab_script=m_scripts/functions/mftest_gauss_bkgd.m ,p1=100,p2=50 ,p3=7,p4=0,p5=0'
 wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_IX_1D_test1.m'
 simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_IX_1D_test1.m'
-spinw_path = 'C:\Users\vrs42921\Documents\CM\fitbenchmarking\examples\benchmark_problems\SpinW'
+spinw_path = 'home\fitbenchmarking\examples\benchmark_problems\SpinW'
