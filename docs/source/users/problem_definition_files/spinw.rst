@@ -126,8 +126,8 @@ Explained Example of the simulate_function:
     hpc('off')
 
 
- Example of thw simulate_function:
-
+  Example of thw simulate_function:
+  
   .. literalinclude:: ../../../../examples/benchmark_problems/SpinW/matlab_script=m_scripts/simulate_functions/fb_simulate_IX_1D_test1.m
 
 spinw_path
