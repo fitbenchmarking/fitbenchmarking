@@ -122,6 +122,7 @@ class TheseusController(Controller):
         self.th_cost_func = None
         self._param_names = self.problem.param_names
         self.th_inputs = None
+        self.result = None
 
     def setup(self):
         """
@@ -178,6 +179,7 @@ class TheseusController(Controller):
                 self.th_inputs, optimizer_kwargs={"track_best_solution": True,
                                                   "verbose": False})
         self._status = str(self.th_info.status[0])
+        self.result = list(map(float, self.th_info.best_solution.values()))
 
     def cleanup(self):
         """
@@ -192,5 +194,4 @@ class TheseusController(Controller):
         else:
             self.flag = 2
 
-        self.final_params = list(map(float,
-                                     self.th_info.best_solution.values()))
+        self.final_params = self.result
