@@ -34,7 +34,7 @@ software, name, description
 input_file
   For SpinW we require an SQW file or a MAT file containing the data from Horace. 
   
-  .. note::
+.. note::
   The MAT file should be used if you are loading in multiple objects. Make sure 
   to load the data in appropriately in the `wye_function`. 
 
@@ -86,7 +86,7 @@ wye_function
     y = spinw_y(msk);
     e = sqrt(spinw_e(msk));
 
-  Example of the wye_function:
+  Examples of the wye_function:
 
   .. literalinclude:: ../../../../examples/benchmark_problems/SpinW/m_scripts/wye_functions/fb_wye_IX_1D_test1.m
   
@@ -132,7 +132,7 @@ Explained Example of the simulate_function:
     hpc('off')
 
 
-Example of thw simulate_function:
+Examples of the simulate_function:
   
 .. literalinclude:: ../../../../examples/benchmark_problems/SpinW/m_scripts/simulate_functions/fb_simulate_IX_1D_test1.m
 
