@@ -29,13 +29,13 @@ def horace_on():
     elif "HORACE_LOCATION" not in os.environ and \
          "SPINW_LOCATION" in os.environ:
         raise ParsingError('Could not parse SpinW problem. Please ensure '
-                           'that HORACE_LOCATION is specfied as environment '
+                           'that HORACE_LOCATION is specfied as a environment '
                            'variable')
     elif "HORACE_LOCATION" in os.environ and \
          "SPINW_LOCATION" not in os.environ:
 
         raise ParsingError('Could not parse SpinW problem. Please ensure '
-                           'that SPINW_LOCATION is specfied as environment '
+                           'that SPINW_LOCATION is specfied as a environment '
                            'variable')
     else:
         eng.evalc("horace_on")

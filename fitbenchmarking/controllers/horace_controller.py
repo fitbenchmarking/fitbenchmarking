@@ -58,15 +58,15 @@ class HoraceController(MatlabMixin, Controller):
         elif "HORACE_LOCATION" not in os.environ and \
              "SPINW_LOCATION" in os.environ:
 
-            raise MissingSoftwareError('Could run Horace controller. '
+            raise MissingSoftwareError('Could not run Horace controller. '
                                        'Please ensure that HORACE_LOCATION is '
-                                       'specfied as environment variable')
+                                       'specfied as a environment variable')
         elif "HORACE_LOCATION" in os.environ and \
              "SPINW_LOCATION" not in os.environ:
 
-            raise MissingSoftwareError('Could run Horace controller. '
+            raise MissingSoftwareError('Could not run Horace controller. '
                                        'Please ensure that HORACE_LOCATION is '
-                                       'specfied as environment variable')
+                                       'specfied as a environment variable')
         else:
             self.eng.evalc("horace_on")
 
