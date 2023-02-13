@@ -174,10 +174,11 @@ class TheseusController(Controller):
         Run problem with Theseus
         """
 
-        with torch.no_grad():
-            _, self.th_info = self.th_optim.forward(
-                self.th_inputs, optimizer_kwargs={"track_best_solution": True,
-                                                  "verbose": False})
+        # with torch.no_grad():
+        _, self.th_info = self.th_optim.forward(self.th_inputs,
+                                                optimizer_kwargs={
+                                                 "track_best_solution": True,
+                                                 "verbose": False})
         self._status = str(self.th_info.status[0])
         self.result = list(map(float, self.th_info.best_solution.values()))
 
