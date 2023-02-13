@@ -797,7 +797,7 @@ class ExternalControllerTests(TestCase):
         minimizers = ['Levenberg_Marquardt', 'Gauss-Newton']
         for minimizer in minimizers:
             controller.minimizer = minimizer
-            #self.shared_tests.controller_run_test(controller)
+            self.shared_tests.controller_run_test(controller)
 
             controller._status = "NonlinearOptimizerStatus.CONVERGED"
             self.shared_tests.check_converged(controller)
