@@ -1,0 +1,9 @@
+# FitBenchmark Problem
+software = 'SpinW'
+name = '1D_Gaussian_4'
+description = '1D Gaussian (Horace\documentation\herbert\example_codes). The data in this example is generated in the wye_function'
+input_file = 'dumby.txt'
+function = 'matlab_script=m_scripts/functions/gauss.m ,height=1100,centre=66 ,stdev=13,bkgd_const=15'
+wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_IX_1D_test4.m'
+simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_IX_1D_test4.m'
+spinw_path = '~/fitbenchmarking/examples/benchmark_problems/SpinW'

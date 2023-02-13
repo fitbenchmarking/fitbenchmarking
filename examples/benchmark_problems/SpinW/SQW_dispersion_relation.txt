@@ -1,9 +1,9 @@
 # FitBenchmark Problem
 software = 'SpinW'
-name = 'test8'
-description = 'SQW_ linearbkgd:dispersion relation to return spectral weight'
+name = 'SQW_dispersion_relation'
+description = 'Spin wave dispersion relation for a Heisenberg ferromagnet with nearest neighbour exchange only. This problem has a linear background and returns spectral weight'
 input_file = 'w2data_8.sqw'
 function = 'matlab_script=m_scripts/functions/sqw_bcc_hfm.m ,p1=5,p2=1,p3=10,p4=0,p5=0,p6=0'
 wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_sqw_test8.m'
 simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_sqw_test8.m'
-spinw_path = 'home\fitbenchmarking\examples\benchmark_problems\SpinW'
+spinw_path = '~/fitbenchmarking/examples/benchmark_problems/SpinW'
