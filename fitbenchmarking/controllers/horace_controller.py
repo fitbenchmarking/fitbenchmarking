@@ -8,6 +8,7 @@ import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
+from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
 class HoraceController(MatlabMixin, Controller):
@@ -54,6 +55,18 @@ class HoraceController(MatlabMixin, Controller):
             self.eng.evalc("horace_on")
             self.eng.evalc(f"addpath('{spinw_location}')")
             self.eng.evalc("spinw_on")
+        elif "HORACE_LOCATION" not in os.environ and \
+             "SPINW_LOCATION" in os.environ:
+
+            raise MissingSoftwareError('Could run Horace controller. '
+                                       'Please ensure that HORACE_LOCATION is '
+                                       'specfied as environment variable')
+        elif "HORACE_LOCATION" in os.environ and \
+             "SPINW_LOCATION" not in os.environ:
+
+            raise MissingSoftwareError('Could run Horace controller. '
+                                       'Please ensure that HORACE_LOCATION is '
+                                       'specfied as environment variable')
         else:
             self.eng.evalc("horace_on")
 

@@ -18,7 +18,7 @@ def horace_on():
     """
     Turning Horace and SpinW on in matlab
     """
-    if "HORACE_LOCATION" and "SPINW_LOCATION" in os.environ:
+    if "HORACE_LOCATION" in os.environ and "SPINW_LOCATION" in os.environ:
         horace_location = os.environ["HORACE_LOCATION"]
         spinw_location = os.environ["SPINW_LOCATION"]
         eng.evalc("restoredefaultpath")
@@ -26,6 +26,17 @@ def horace_on():
         eng.evalc("horace_on")
         eng.evalc(f"addpath('{spinw_location}')")
         eng.evalc("spinw_on")
+    elif "HORACE_LOCATION" not in os.environ and \
+         "SPINW_LOCATION" in os.environ:
+        raise ParsingError('Could not parse SpinW problem. Please ensure '
+                           'that HORACE_LOCATION is specfied as environment '
+                           'variable')
+    elif "HORACE_LOCATION" in os.environ and \
+         "SPINW_LOCATION" not in os.environ:
+
+        raise ParsingError('Could not parse SpinW problem. Please ensure '
+                           'that SPINW_LOCATION is specfied as environment '
+                           'variable')
     else:
         eng.evalc("horace_on")
 
