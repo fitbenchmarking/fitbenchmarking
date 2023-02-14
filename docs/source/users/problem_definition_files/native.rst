@@ -75,6 +75,10 @@ function
   Inside FitBenchmarking, this is passed on to the specified software and, as
   such, the format is specific to the package we wish to use, as described below.
 
+plot_scale
+  The scale of the y and x axis for the plots. The options are 'loglog', 'logy', 'logx' and 'default'. If this 
+   not set if will default back to default.
+
   **IVP**
 
   The IVP parser allows a user to define ``f`` in the following equation:
