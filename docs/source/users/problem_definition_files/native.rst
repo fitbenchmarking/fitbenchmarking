@@ -77,7 +77,7 @@ function
 
 plot_scale
   The scale of the y and x axis for the plots. The options are 'loglog', 'logy', 'logx' and 'default'. If this 
-   not set if will default back to default.
+  is not set it will default back to default.
 
   **IVP**
 
