@@ -315,6 +315,7 @@ spectrometers.*  We currently support:
 Horace is made available under the the `GPL-3 licence <https://www.gnu.org/licenses/gpl-3.0.html>`__.
 
 .. code-block:: rst
+
     [MINIMIZERS]
     horace: lm-lsqr
 
