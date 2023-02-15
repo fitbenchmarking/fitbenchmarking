@@ -54,15 +54,16 @@ class MatlabMixin:
                 add_persistent_matlab_var('cf')
                 self.eng.evalc('cf_f.close()')
 
-                matlab_dump = os.path.join(temp_dir, 'dump.mat')
-                to_transfer = list_persistent_matlab_vars()
-                to_transfer_str = "', '".join(
-                    v for v in to_transfer if v != 'cf')
-                to_transfer_str = f"'{to_transfer_str}'"
-                self.eng.evalc(f"save('{matlab_dump}', {to_transfer_str});"
-                               )
-                print(self.eng.evalc(
-                    f"cf.problem.set_persistent_vars('{matlab_dump}')"))
+                if cost_func.problem.format == 'spinw':
+                    matlab_dump = os.path.join(temp_dir, 'dump.mat')
+                    to_transfer = list_persistent_matlab_vars()
+                    to_transfer_str = "', '".join(
+                        v for v in to_transfer if v != 'cf')
+                    to_transfer_str = f"'{to_transfer_str}'"
+                    self.eng.evalc(f"save('{matlab_dump}', {to_transfer_str});"
+                                )
+                    print(self.eng.evalc(
+                        f"cf.problem.set_persistent_vars('{matlab_dump}')"))
 
         except RuntimeError as e:
             self.pickle_error = e
