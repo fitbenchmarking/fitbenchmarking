@@ -48,12 +48,10 @@ function
 
   Examples:
     Only foreground: 
-    .. eg:: 
-      
+
       function = 'foreground=m_scripts/functions/mftest_gauss_bkgd.m ,height=100,centre=50,sigma=7,const=0,grad=0'
 
     Foreground and background:
-    .. eg:: 
 
       function = 'foreground=m_scripts/functions/gauss.m ,height=1100,centre=66 ,stdev=13; background=m_scripts/functions/linear_bg.m ,bkgd_const=15'
 
