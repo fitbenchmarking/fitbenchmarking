@@ -18,11 +18,11 @@ Examples of spinw problems are:
 .. note::
 The SpinW file format requires you to have ran the benchmark problem in Horace 
 using :code:`fit()` and :code:`simulate()` successfully. Here are some relevant links on 
-how to run `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html/>`__ ,
+how to run `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html />`__ ,
 `Advanced Multifit <https://pace-neutrons.github.io/Horace/unstable/manual
-/Advanced_Multifit.html/>`__ 
-and `Tobyfit <https://pace-neutrons.github.io/Horace/unstable/manual/Tobyfit.html/>`__ problems as well as 
-`Running Horace in Parallel <https://pace-neutrons.github.io/Horace/unstable/manual/Parallel.html/>`__.
+/Advanced_Multifit.html />`__ 
+and `Tobyfit <https://pace-neutrons.github.io/Horace/unstable/manual/Tobyfit.html />`__ problems as well as 
+`Running Horace in Parallel <https://pace-neutrons.github.io/Horace/unstable/manual/Parallel.html />`__.
 
 As in the native format, an input file must start with a comment indicating
 that it is a FitBenchmarking problem followed by a number of key value pairs.
@@ -39,16 +39,26 @@ input_file
   to load the data in appropriately in the `wye_function`. 
 
 function
-  The function is defined by a matlab file which returns a SpinW model.
+  The function is defined by one or two matlab files which returns a SpinW model of the foreground or foreground and background
+  repectively.
 
-  The format is again comma seperated key-value pairs, with the matlab file
-  defined by the variable "matlab_script" and the remaining pairs defining starting
+  The format is again comma seperated key-value pairs, with the matlab files 
+  defined by the variable "foreground" and "background" and the remaining pairs defining starting
   values as in the native parser.
 
+  Examples:
+    Only foreground: 
+    .. eg:: function = 'foreground=m_scripts/functions/mftest_gauss_bkgd.m ,height=100,centre=50,sigma=7,const=0,grad=0'
+
+    Foreground and background:
+    .. eg:: function = 'foreground=m_scripts/functions/gauss.m ,height=1100,centre=66 ,stdev=13; background=m_scripts/functions/linear_bg.m ,bkgd_const=15'
+
+  
 wye_function
-  The wye_function is defined by a matlab file which returns the `w` (This could be a sqw ,d1d, d2d, d3d and d4d object), `y` (signal),
-  `e` (standard deviation) and the `msk` (This is a n dimensional array which is the same shape as y and e values of the pixels used for the fitting).
-  This matlab file takes in the path of the datafile and the path of where the matlab functions are located.
+  The wye_function is defined by a matlab file which returns the `w` (this could be a sqw ,d1d, d2d, d3d and d4d object), 
+  `e` (this is the standard deviation arrays from the objects), `y` (intensity arrays from the objects), along with a  
+  mask array (`msk`) that indicates which elements are to be retained (where elements of msk are true, the corresponding elements of 
+  y and e are retained). This matlab file takes in the path of the datafile and the path of where the matlab functions are located.
 
   Explained example of the wye_function:
 
