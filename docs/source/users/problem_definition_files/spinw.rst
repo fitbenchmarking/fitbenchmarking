@@ -43,12 +43,13 @@ function
   The function is defined by one or more matlab script (``.m``) files which return a model of the foreground or foreground and background
   respectively.
 
-  The format is again comma seperated key-value pairs, with the matlab script files 
-  defined by the variable "foreground" and "background". The remaining pairs define the starting
-  values of each of the models respectively. These pairs must be defined after their respective models.
-  If both the foreground and background model are defined it should be given as a semicolon-separated list.
-  Where there are two comma seperated key-value pairs list for the foreground and foreground parameters 
-  and the background and background parameters separated by a semicolon.    
+  The format for defining the function is based on comma-separated key-value pairs, where the Matlab script files 
+  are defined by the variables "foreground" and "background". The remaining pairs define the starting values for 
+  each of the models, respectively. It's important to note that these pairs must be defined after their respective models.
+
+  If both the foreground and background models are defined, they should be given as a semicolon-separated list. In this 
+  case, there would be two comma-separated key-value pairs, one for the foreground and foreground parameters, and 
+  another for the background and background parameters, separated by a semicolon.    
 
   Examples:
 
