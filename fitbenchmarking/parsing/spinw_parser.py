@@ -57,8 +57,9 @@ class SpinWParser(FitbenchmarkParser):
         # A container for improving efficiency in function call if calling
         # with full input data
         self._spinw_x: typing.Optional[np.ndarray] = None
-        self._spinw_w: typing.Optional[np.ndarray] = None
-        self._spinw_msk: typing.Optional[np.ndarray] = None
+        self._spinw_w: typing.Optional[str] = None
+        self._spinw_msk: typing.Optional[str] = None
+        self._spinw_path: typing.Optional[str] = None
 
     def _get_data_points(self, data_file_path):
         """
@@ -75,11 +76,16 @@ class SpinWParser(FitbenchmarkParser):
                             wye_data_f[0]['matlab_script'])
         eng.addpath(os.path.dirname(path))
         func_name = os.path.basename(path).split('.', 1)[0]
-        self._spinw_w = f'w_{self._entries["name"]}'
-        self._spinw_msk = f'msk_{self._entries["name"]}'
+
+        self._spinw_path = os.path.abspath(os.path.dirname(self._filename))
+
+        name = self._entries["name"].replace(' ', '_')
+
+        self._spinw_w = f'w_{name}'
+        self._spinw_msk = f'msk_{name}'
 
         data_file_path_mat = f"char('{data_file_path}')"
-        spinw_path_mat = f"char('{self._entries['spinw_path']}')"
+        spinw_path_mat = f"char('{self._spinw_path}')"
         eng.evalc(f'[{self._spinw_w}, y, e, {self._spinw_msk}] ='
                   f'{func_name}({data_file_path_mat},{spinw_path_mat})')
 
@@ -108,19 +114,31 @@ class SpinWParser(FitbenchmarkParser):
         :return: A callable function
         :rtype: callable
         """
-        if len(self._parsed_func) > 1:
-            raise ParsingError('Could not parse SpinW problem. Please ensure '
-                               'only 1 function definition is present')
-
-        pf = self._parsed_func[0]
-
         # pylint: disable=attribute-defined-outside-init
-        self._equation = os.path.splitext(
-            os.path.basename(pf['matlab_script']))[0]
+        if len(self._parsed_func) == 1:
+            pfg = self._parsed_func[0]
+            p_names = [k for k in pfg if k != 'foreground']
+            equations = "foreground: " + \
+                os.path.splitext(os.path.basename(pfg['foreground']))[0] +\
+                "<br>" + 'parameters: ' + ', '.join(p_names)
+            start_values = [{n: pfg[n] for n in p_names}]
+        else:
+            pfg = self._parsed_func[0]
+            pbg = self._parsed_func[1]
+            p_names = [k for k in pfg if k != 'foreground']
+            bp_names = [k for k in pbg if k != 'background']
+            equations = "foreground: " + \
+                os.path.splitext(os.path.basename(pfg['foreground']))[0] +\
+                "<br>" + 'parameters: ' + ', '.join(p_names) +\
+                "<br>" + "background: " +\
+                os.path.splitext(os.path.basename(pbg['background']))[0] \
+                + '<br>' + 'parameters: ' + ', '.join(bp_names)
+            fg_starting_vals = {n: pfg[n] for n in p_names}
+            bg_starting_vals = {n: pbg[n] for n in bp_names}
+            start_values = [{**fg_starting_vals, **bg_starting_vals}]
 
-        p_names = [k for k in pf if k != 'matlab_script']
-
-        self._starting_values = [{n: pf[n] for n in p_names}]
+        self._equation = equations
+        self._starting_values = start_values
 
         simulate_f = self._parse_function(self._entries['simulate_function'])
         path = os.path.join(os.path.dirname(self._filename),
@@ -134,7 +152,7 @@ class SpinWParser(FitbenchmarkParser):
             # print(*p)
             if x.shape != self._spinw_x.shape:
                 return np.ones(x.shape)
-            eng.evalc(f"addpath(genpath('{self._entries['spinw_path']}'))")
+            eng.evalc(f"addpath(genpath('{self._spinw_path}'))")
             eng.evalc(f'global {self._spinw_msk}')
             eng.evalc(f'global {self._spinw_w}')
             eng.workspace['fitpars'] = matlab.double(p)
