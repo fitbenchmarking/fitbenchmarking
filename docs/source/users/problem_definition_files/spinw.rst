@@ -18,11 +18,11 @@ Examples of spinw problems are:
 .. note::
 The SpinW file format requires you to have run the benchmark problem in Horace 
 using :code:`fit()` and :code:`simulate()` successfully. Relevant links on 
-how to run this are: `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html />`__ ,
+how to run this are: `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html>`__ ,
 `Advanced Multifit <https://pace-neutrons.github.io/Horace/unstable/manual
-/Advanced_Multifit.html />`__ 
-and `Tobyfit <https://pace-neutrons.github.io/Horace/unstable/manual/Tobyfit.html />`__ problems as well as 
-`Running Horace in Parallel <https://pace-neutrons.github.io/Horace/unstable/manual/Parallel.html />`__.
+/Advanced_Multifit.html>`__ 
+and `Tobyfit <https://pace-neutrons.github.io/Horace/unstable/manual/Tobyfit.html>`__ problems as well as 
+`Running Horace in Parallel <https://pace-neutrons.github.io/Horace/unstable/manual/Parallel.html>`__.
 
 As in the native format, an input file must start with a comment indicating
 that it is a FitBenchmarking problem followed by a number of key value pairs.
@@ -70,7 +70,7 @@ wye_function
     The wye_function is defined by a matlab file which returns the: 
 
     `w` 
-        an ``sqw`` , ``dnd``, ``ix_dataset`` object or ``xye`` struct. (see `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html />`__)
+        an ``sqw`` , ``dnd``, ``ix_dataset`` object or ``xye`` struct. (see `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html>`__)
     `e` 
         standard deviation data
     `y` 
