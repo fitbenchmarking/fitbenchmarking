@@ -16,9 +16,9 @@ Examples of spinw problems are:
 .. literalinclude:: ../../../../examples/benchmark_problems/SpinW/PCSMO_at_001_data.txt
 
 .. note::
-The SpinW file format requires you to have ran the benchmark problem in Horace 
-using :code:`fit()` and :code:`simulate()` successfully. Here are some relevant links on 
-how to run `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html />`__ ,
+The SpinW file format requires you to have run the benchmark problem in Horace 
+using :code:`fit()` and :code:`simulate()` successfully. Relevant links on 
+how to run this are: `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html />`__ ,
 `Advanced Multifit <https://pace-neutrons.github.io/Horace/unstable/manual
 /Advanced_Multifit.html />`__ 
 and `Tobyfit <https://pace-neutrons.github.io/Horace/unstable/manual/Tobyfit.html />`__ problems as well as 
@@ -32,19 +32,23 @@ software, name, description
   As described in the native format.
 
 input_file
-  For SpinW we require an SQW file or a MAT file containing the data from Horace. 
+  For SpinW we require a ``.sqw`` or ``.mat`` file containing preprocessed, Horace-compatible data. 
   
 .. note::
-  The MAT file should be used if you are loading in multiple objects. Make sure 
+  The ``.mat`` file is the result of using `save(file, sqw_objects) <https://uk.mathworks.com/help/matlab/ref/save.html>`__ 
+  and should be used if you are loading in multiple ``sqw`` objects. Make sure 
   to load the data in appropriately in the `wye_function`. 
 
 function
-  The function is defined by one or two matlab files which returns a SpinW model of the foreground or the foreground and background
-  repectively separated by a semicolon.
+  The function is defined by one or more matlab script (``.m``) files which return a model of the foreground or foreground and background
+  respectively.
 
-  The format is again comma seperated key-value pairs, with the matlab files 
-  defined by the variable "foreground" and "background" and the remaining pairs defining starting
-  values as in the native parser.
+  The format is again comma seperated key-value pairs, with the matlab script files 
+  defined by the variable "foreground" and "background". The remaining pairs define the starting
+  values of each of the models respectively. These pairs must be defined after their respective models.
+  If both the foreground and background model are defined it should be given as a semicolon-separated list.
+  Where there are two comma seperated key-value pairs list for the foreground and foreground parameters 
+  and the background and background parameters separated by a semicolon.    
 
   Examples:
 
@@ -62,16 +66,24 @@ function
 
   
 wye_function
-  The wye_function is defined by a matlab file which returns the `w` (this could be a sqw ,d1d, d2d, d3d and d4d object), 
-  `e` (this is the standard deviation arrays from the objects), `y` (intensity arrays from the objects), along with a  
-  mask array (`msk`) that indicates which elements are to be retained (where elements of msk are true, the corresponding elements of 
-  y and e are retained). This matlab file takes in the path of the datafile and the path of where the matlab functions are located.
+    The wye_function is defined by a matlab file which returns the: 
+    `w` 
+        an ``sqw`` ,``dnd``, ``ix_dataset`` object or ``xye`` struct. (see `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html />`__)
+    `e` 
+        standard deviation data
+    `y` 
+        intensity data
+        
+    `msk`
+        logical mask array of which elements are to be retained
+    
+This function takes the path to the datafile and the path to the matlab functions as arguments.
 
   Explained example of the wye_function:
 
-  The first three lines adds the path to matlab functions need for fitting and loads the `w` object.
+   The first three lines add the path to matlab functions needed for fitting and loads the `w` object.
 
-  .. code-block:: rst
+  .. code-block:: matlab
 
     addpath(genpath(path));
     source_data = load(datafile);
@@ -79,13 +91,13 @@ wye_function
 
   The next line gets the y and e from the `w` object. These are the true `y` and `e` values from the experiment.    
 
-  .. code-block:: rst
+  .. code-block:: matlab
     
     [spinw_y, spinw_e] = sigvar_get(w);
 
   The next block of code runs :code:`simulate()` once for the sole purpose of getting the msk array 
   
-  .. code-block:: rst
+  .. code-block:: matlab
     
     pin=[100,50,7,0,0];
     forefunc = @mftest_gauss_bkgd;
@@ -95,10 +107,10 @@ wye_function
     [wout,fitpar] = mf.simulate();
     [ ~, ~, msk] = sigvar_get(wout);
   
-  The last two lines of the wye_function applies the `msk` on the `y` and `e` data. As the `e` from retrieved above is the
-  variance we have squared root the value to get the standard deviation.
+  The last two lines of the wye_function applies the `msk` to the `y` and `e` data. As the `e` from retrieved above is the
+  variance we have taken the square root of the value to get the standard deviation.
 
-  .. code-block:: rst
+  .. code-block:: matlab
 
     y = spinw_y(msk);
     e = sqrt(spinw_e(msk));
@@ -116,7 +128,7 @@ simulate_function
 
 Explained Example of the simulate_function:
 
-.. code-block:: rst
+.. code-block:: matlab
   
   forefunc = @mftest_gauss_bkgd;
   mf = multifit(w);
@@ -127,10 +139,11 @@ Explained Example of the simulate_function:
   spinw_y=spinw_y(msk);
 
 .. note:: 
-  If the benchmark problem is `tobyfit` or uses monte carlo. A persisent seed needs to be set before simulate is ran.
+  If the benchmark problem uses random numbers in any way (e.g. `tobyfit`).
+  A persisent seed needs to be set before simulate is run.  
   This make sure that it uses the same seed everytime :code:`simulate()` is ran.  
     
-  .. code-block:: rst
+  .. code-block:: matlab
 
     persistent seed
     if isempty (seed)
@@ -144,7 +157,7 @@ Explained Example of the simulate_function:
   If the SpinW benchmark problem is run in parallel make sure to turn off hpc after :code:`simulate()` in the simulate_function 
   matlab script. 
 
-  .. code-block:: rst
+  .. code-block:: matlab
 
     hpc('off')
 
@@ -160,4 +173,4 @@ Examples of the simulate_function:
 
 .. note:: 
   If you have a non standard installation of Horace please set the `HORACE_LOCATION` and the `SPINW_LOCATION`
-  as environment variables(i.e on IDAaaS).  
+  as environment variables(e.g on IDAaaS).  
