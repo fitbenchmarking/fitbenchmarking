@@ -47,11 +47,16 @@ function
   values as in the native parser.
 
   Examples:
+  
     Only foreground: 
+    
+    .. code-block:: rst
 
       function = 'foreground=m_scripts/functions/mftest_gauss_bkgd.m ,height=100,centre=50,sigma=7,const=0,grad=0'
 
     Foreground and background:
+
+    .. code-block:: rst
 
       function = 'foreground=m_scripts/functions/gauss.m ,height=1100,centre=66 ,stdev=13; background=m_scripts/functions/linear_bg.m ,bkgd_const=15'
 
