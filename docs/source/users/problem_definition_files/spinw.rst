@@ -96,7 +96,8 @@ This function takes the path to the datafile and the path to the matlab function
     
     [spinw_y, spinw_e, msk] = sigvar_get(w);
 
-  The next line of code converts elements that have null values of `y` from the msk array from 1 to 0.  
+  Any elements in msk that have a corresponding element in spinw_y that is equal to zero will be set to zero.
+  The purpose of this is to exclude these elements from subsequent calculations, since they are not informative.  
   
   .. code-block:: matlab
     
