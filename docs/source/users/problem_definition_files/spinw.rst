@@ -100,7 +100,7 @@ This function takes the path to the datafile and the path to the matlab function
   
   .. code-block:: matlab
     
-  msk(spinw_y==0) = 0;
+    msk(spinw_y==0) = 0;
   
   The last two lines of the wye_function applies the `msk` to the `y` and `e` data. As the `e` from retrieved above is the
   variance we have taken the square root of the value to get the standard deviation.
