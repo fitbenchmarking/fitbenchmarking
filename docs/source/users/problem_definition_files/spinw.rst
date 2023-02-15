@@ -67,8 +67,9 @@ function
   
 wye_function
     The wye_function is defined by a matlab file which returns the: 
+
     `w` 
-        an ``sqw`` ,``dnd``, ``ix_dataset`` object or ``xye`` struct. (see `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html />`__)
+        an ``sqw`` , ``dnd``, ``ix_dataset`` object or ``xye`` struct. (see `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html />`__)
     `e` 
         standard deviation data
     `y` 
