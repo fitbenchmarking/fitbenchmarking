@@ -39,15 +39,15 @@ input_file
   to load the data in appropriately in the `wye_function`. 
 
 function
-  The function is defined by one or two matlab files which returns a SpinW model of the foreground or foreground and background
-  repectively.
+  The function is defined by one or two matlab files which returns a SpinW model of the foreground or the foreground and background
+  repectively separated by a semicolon.
 
   The format is again comma seperated key-value pairs, with the matlab files 
   defined by the variable "foreground" and "background" and the remaining pairs defining starting
   values as in the native parser.
 
   Examples:
-  
+
     Only foreground: 
     
     .. code-block:: rst
@@ -155,9 +155,8 @@ Examples of the simulate_function:
 
 .. literalinclude:: ../../../../examples/benchmark_problems/SpinW/m_scripts/simulate_functions/fb_simulate_pcsmo_test.m
 
-spinw_path
-  The spinw_path is the path where all matlab functions used in the fitting are located 
-  (i.e simulate_function, wye_function,mftest_gauss_bkgd etc).
+.. note::
+   All the functions needed in the fitting must be in the subdirectory of the benchmark problem.
 
 .. note:: 
   If you have a non standard installation of Horace please set the `HORACE_LOCATION` and the `SPINW_LOCATION`

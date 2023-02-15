@@ -117,6 +117,10 @@ function
 
   SASView functions can be any of
   `these <http://www.sasview.org/docs/user/qtgui/Perspectives/Fitting/models/index.html>`__.
+  
+  **SpinW**
+
+  The SpinW functions are defined here :ref:`spinw_format`
 
 fit_ranges
   This specifies the region to be fit.
