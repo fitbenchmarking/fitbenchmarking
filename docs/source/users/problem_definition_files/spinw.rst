@@ -90,23 +90,17 @@ This function takes the path to the datafile and the path to the matlab function
     source_data = load(datafile);
     w = source_data.w1 ;
 
-  The next line gets the y and e from the `w` object. These are the true `y` and `e` values from the experiment.    
+  The next line gets the y and e from the `w` object. These are the true `y`, `e` and `msk` values from the experiment.    
 
   .. code-block:: matlab
     
-    [spinw_y, spinw_e] = sigvar_get(w);
+    [spinw_y, spinw_e, msk] = sigvar_get(w);
 
-  The next block of code runs :code:`simulate()` once for the sole purpose of getting the msk array 
+  The next line of code converts elements that have null values of `y` from the msk array from 1 to 0.  
   
   .. code-block:: matlab
     
-    pin=[100,50,7,0,0];
-    forefunc = @mftest_gauss_bkgd;
-    mf = multifit(w);
-    mf = mf.set_fun(forefunc);
-    mf = mf.set_pin (pin);
-    [wout,fitpar] = mf.simulate();
-    [ ~, ~, msk] = sigvar_get(wout);
+  msk(spinw_y==0) = 0;
   
   The last two lines of the wye_function applies the `msk` to the `y` and `e` data. As the `e` from retrieved above is the
   variance we have taken the square root of the value to get the standard deviation.

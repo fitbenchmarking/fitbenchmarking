@@ -5,15 +5,9 @@ addpath(genpath(path));
 source_data = load(datafile);
 w = source_data.w1 ;
 
-[spinw_y, spinw_e] = sigvar_get(w);
+[spinw_y, spinw_e, msk] = sigvar_get(w);
 
-pin=[100,50,7,0,0];
-forefunc = @mftest_gauss_bkgd;
-mf = multifit(w);
-mf = mf.set_fun(forefunc);
-mf = mf.set_pin (pin);
-[wout,fitpar] = mf.simulate();
-[ ~, ~, msk] = sigvar_get(wout);
+msk(spinw_y==0) = 0;
 
 y = spinw_y(msk);
 e = sqrt(spinw_e(msk));

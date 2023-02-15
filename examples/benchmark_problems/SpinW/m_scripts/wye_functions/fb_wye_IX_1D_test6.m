@@ -21,18 +21,9 @@ w = w + func_eval(w, @linear3D_bg, pb);   % add 'background' model
 win = noisify (w, 'poisson');           % noisify with poisson noise      
 
 w = win;
-[spinw_y, spinw_e] = sigvar_get(w);
+[spinw_y, spinw_e, msk] = sigvar_get(w);
 
-nslow = 1;    % each function evaluation of the 2D Gaussian will take
-                % the same time as ~2500 exponentiations
-kk = multifit (win);
-pf0 = [1100, 66, 1055, 117, 15, 3, 5, 30, -3, 20];   % starting parameters different from initial parameters
-kk = kk.set_fun (@slow_func, {pf0, @gauss3d, nslow});
-pb0 = [15,0,0,0];
-kk = kk.set_bfun (@slow_func, {pb0, @linear3D_bg, nslow});
-kk = kk.set_bfree ([1,0,0,0]);
-[wfit, ffit] = kk.simulate();
-[ ~, ~, msk] = sigvar_get(wfit);
+msk(spinw_y==0) = 0;
 
 y = spinw_y(msk);
 e = sqrt(spinw_e(msk));

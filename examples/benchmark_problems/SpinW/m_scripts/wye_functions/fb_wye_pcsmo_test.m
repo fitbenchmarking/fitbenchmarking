@@ -21,21 +21,10 @@ w1 = set_sample(w1,sample);
 w1 = set_instrument(w1,maps);
 w1 = mask_random_fraction_pixels(w1, 0.00001);
 
-JF1 = -11.39; JA = 1.5; JF2 = -1.35; JF3 = 1.5; Jperp = 0.88; D = 0.074; en_width = 0.1;
-fitpars = [JF1 JA JF2 JF3 Jperp D en_width];
-sw_obj = pcsmo(JF1, JA, JF2, JF3, Jperp, D);
-cpars = {fitpars 'mat', {'JF1', 'JA', 'JF2', 'JF3', 'Jperp', 'D(3,3)'}, ...
-    'hermit', false, 'optmem', 0, 'useFast', false, 'formfact', ...
-    true,'resfun', 'gauss', 'coordtrans', diag([2 2 1 1]), ...
-    'use_brille', true, 'node_volume_fraction', frac, ...
-    'use_vectors', false, 'Qtrans', diag([1./4 1./4 1.])};
+[spinw_y, spinw_e, msk] = sigvar_get(w1);
 
-tbf = tobyfit(w1);
-tbf = tbf.set_fun(@sw_obj.horace_sqw, {cpars{:}});
-tbf = tbf.set_mc_points(5);
-[w_fit , fit_pars] = tbf.simulate();
-[~, ~, msk] = sigvar_get(w_fit);
-[spinw_y, spinw_e, ~] = sigvar_get(w1);
+msk(spinw_y==0) = 0;
+
 y = spinw_y(msk);
 e = sqrt(spinw_e(msk));
 w = w1; 
