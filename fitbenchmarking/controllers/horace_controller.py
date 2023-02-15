@@ -47,26 +47,11 @@ class HoraceController(MatlabMixin, Controller):
         """
         Turning Horace and SpinW on in matlab
         """
-        if "HORACE_LOCATION" in os.environ and "SPINW_LOCATION" in os.environ:
+        if "HORACE_LOCATION" in os.environ:
             horace_location = os.environ["HORACE_LOCATION"]
-            spinw_location = os.environ["SPINW_LOCATION"]
             self.eng.evalc("restoredefaultpath")
             self.eng.evalc(f"addpath('{horace_location}')")
             self.eng.evalc("horace_on")
-            self.eng.evalc(f"addpath('{spinw_location}')")
-            self.eng.evalc("spinw_on")
-        elif "HORACE_LOCATION" not in os.environ and \
-             "SPINW_LOCATION" in os.environ:
-
-            raise MissingSoftwareError('Could not run Horace controller. '
-                                       'Please ensure that HORACE_LOCATION is '
-                                       'specfied as a environment variable')
-        elif "HORACE_LOCATION" in os.environ and \
-             "SPINW_LOCATION" not in os.environ:
-
-            raise MissingSoftwareError('Could not run Horace controller. '
-                                       'Please ensure that HORACE_LOCATION is '
-                                       'specfied as a environment variable')
         else:
             self.eng.evalc("horace_on")
 
