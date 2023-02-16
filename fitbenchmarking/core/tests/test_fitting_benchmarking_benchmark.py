@@ -8,12 +8,13 @@ import unittest
 from unittest import mock
 
 from fitbenchmarking import test_files
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result
+from fitbenchmarking.utils.checkpoint import destroy_checkpoint
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
@@ -61,13 +62,22 @@ class BenchmarkTests(unittest.TestCase):
         """
         self.cost_func = make_cost_function()
         self.problem = self.cost_func.problem
-        self.options = Options()
+        results_dir = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'fitbenchmarking_results')
+        self.options = Options(additional_options={'results_dir': results_dir})
         self.options.software = ["scipy"]
         self.scipy_len = len(self.options.minimizers["scipy"])
         bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
         self.default_parsers_dir = os.path.join(bench_prob_dir,
                                                 "default_parsers_set")
         self.all_minimizers = copy.copy(self.options.minimizers)
+
+    def tearDown(self) -> None:
+        """
+        Remove persistent effects
+        """
+        destroy_checkpoint()
 
     def shared_tests(self, expected_names, expected_unselected_minimizers,
                      expected_minimizers):

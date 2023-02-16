@@ -12,6 +12,7 @@ from fitbenchmarking.core.fitting_benchmarking import loop_over_jacobians
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import output_grabber
+from fitbenchmarking.utils.checkpoint import destroy_checkpoint
 from fitbenchmarking.utils.options import Options
 
 # Due to construction of the controllers two folder functions
@@ -98,6 +99,12 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller = DummyController(cost_func=self.cost_func)
         self.options = self.problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
+
+    def tearDown(self) -> None:
+        """
+        Remove persistent effects
+        """
+        destroy_checkpoint()
 
     @staticmethod
     def mock_func_call(*args):

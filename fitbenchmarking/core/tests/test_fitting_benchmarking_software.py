@@ -16,6 +16,7 @@ from fitbenchmarking.core.fitting_benchmarking import \
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result, output_grabber
+from fitbenchmarking.utils.checkpoint import destroy_checkpoint
 from fitbenchmarking.utils.exceptions import UnsupportedMinimizerError
 from fitbenchmarking.utils.options import Options
 
@@ -30,7 +31,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
-    options = Options()
+    options = Options(additional_options={'external_output': 'debug'})
     if minimizers:
         options.minimizers = minimizers
 
@@ -75,10 +76,18 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.scipy_len = len(self.options.minimizers["scipy"])
         self.dfo_len = len(self.options.minimizers["dfo"])
         self.scipy_ls_len = len(self.options.minimizers["scipy_ls"])
+        controller = ScipyController(self.cost_func)
+        controller.parameter_set = 0
         self.result_args = {'options': self.options,
-                            'controller': ScipyController(self.cost_func),
+                            'controller': controller,
                             'accuracy': 1,
                             'runtime': 1}
+
+    def tearDown(self) -> None:
+        """
+        Remove persistent effects
+        """
+        destroy_checkpoint()
 
     def mock_func_call(self, *args, **kwargs):
         """
@@ -181,7 +190,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.minimizer_failed = {s: self.options.minimizers[s]
                                  for s in self.options.software}
 
-        self.result_args['chi_sq'] = np.inf
+        self.result_args['accuracy'] = np.inf
         self.results_problem = [[fitbm_result.FittingResult(**self.result_args)
                                  for i in range(self.scipy_len)],
                                 [fitbm_result.FittingResult(**self.result_args)

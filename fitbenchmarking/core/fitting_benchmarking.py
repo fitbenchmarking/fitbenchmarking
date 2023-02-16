@@ -498,9 +498,7 @@ def loop_over_hessians(controller, options, grabbed_output):
                 # for multifit problems, multiple accuracy values are stored
                 # in a list i.e. we have multiple results
                 for i in range(len(accuracy)):
-                    result_args.update(
-                        {'dataset_id': i,
-                         'name': f'{problem.name}, Dataset {i + 1}'})
+                    result_args['dataset'] = i
                     result = fitbm_result.FittingResult(**result_args)
                     new_result.append(result)
                     cp.add_result(result)
@@ -536,8 +534,7 @@ def perform_fit(controller, options, grabbed_output):
     try:
         with grabbed_output:
             controller.validate()
-            # Calls timeit repeat with repeat = num_runs and
-            # number = 1
+            # Calls timeit repeat with repeat = num_runs and number = 1
             runtime_list = timeit.Timer(
                 setup=controller.prepare,
                 stmt=controller.execute

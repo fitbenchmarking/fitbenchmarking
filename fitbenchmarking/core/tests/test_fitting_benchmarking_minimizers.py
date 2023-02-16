@@ -12,6 +12,7 @@ from fitbenchmarking.core.fitting_benchmarking import loop_over_minimizers
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result, output_grabber
+from fitbenchmarking.utils.checkpoint import destroy_checkpoint
 from fitbenchmarking.utils.options import Options
 
 # Defines the module which we mock out certain function calls for
@@ -103,6 +104,12 @@ class LoopOverMinimizersTests(unittest.TestCase):
             controller=self.controller,
             accuracy=1,
             runtime=1)
+
+    def tearDown(self) -> None:
+        """
+        Remove persistent effects
+        """
+        destroy_checkpoint()
 
     def mock_func_call(self, *args, **kwargs):
         """

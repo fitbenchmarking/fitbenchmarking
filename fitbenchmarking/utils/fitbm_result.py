@@ -45,6 +45,8 @@ class FittingResult:
                         defaults to None
         :type dataset: int, optional
         """
+        self.init_blank()
+
         self.options: 'Options' = options
         cost_func: 'CostFunc' = controller.cost_func
         problem: 'FittingProblem' = controller.problem
@@ -95,6 +97,7 @@ class FittingResult:
         self.ini_y = problem.ini_y(controller.parameter_set)
         self.fin_y = None
         if self.params is not None:
+            cost_func.problem.timer.reset()
             if isinstance(cost_func, BaseNLLSCostFunc):
                 self.r_x = cost_func.eval_r(self.params,
                                             x=self.data_x,
@@ -116,13 +119,6 @@ class FittingResult:
         # Controller error handling
         self.error_flag = controller.flag
 
-        self.min_accuracy = np.inf
-        self.min_runtime = np.inf
-        self._norm_acc = None
-        self._norm_runtime = None
-
-        self.is_best_fit = False
-
         # Attributes for table creation
         self.costfun_tag: str = cost_func.__class__.__name__
         self.problem_tag: str = self.name
@@ -132,6 +128,24 @@ class FittingResult:
             if self.minimizer is not None else ""
         self.jacobian_tag: str = self.jac if self.jac is not None else ""
         self.hessian_tag: str = self.hess if self.hess is not None else ""
+
+    def init_blank(self):
+        """
+        Initialise a new blank version of the class with the required
+        placeholder values not set during standard initialisation.
+        """
+        # Variable for calculating best result
+        self._norm_acc = None
+        self._norm_runtime = None
+        self.min_accuracy = np.inf
+        self.min_runtime = np.inf
+        self.is_best_fit = False
+
+        # Paths to various output files
+        self.problem_summary_page_link = ''
+        self.fitting_report_link = ''
+        self.start_figure_link = ''
+        self.figure_link = ''
 
     def __str__(self):
         info = {"Cost Function": self.costfun_tag,

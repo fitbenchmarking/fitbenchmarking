@@ -21,7 +21,10 @@ if TYPE_CHECKING:
 
 def get_checkpoint(options: 'Options'):
     """
-    Get the singleton checkpoint instance
+    Get the singleton checkpoint instance.
+    Note: If the checkpoint has already been created the new options will not
+          be applied. Use `destroy_checkpoint` to before calling if that's
+          required.
 
     :param options: The options to build the checkpoint with
     :type options: Options
@@ -34,6 +37,14 @@ def get_checkpoint(options: 'Options'):
     cp = Checkpoint(options)
     Checkpoint.instance = cp
     return cp
+
+
+def destroy_checkpoint():
+    """
+    Reset the checkpointing singleton so that the next call to `get_checkpoint`
+    creates a new one.
+    """
+    Checkpoint.instance = None
 
 
 class Checkpoint:
@@ -60,9 +71,6 @@ class Checkpoint:
         self.results_file: 'str | None' = None
         self.problem_names: 'list[str]' = []
 
-        if not os.path.exists(self.options.results_dir):
-            os.makedirs(self.options.results_dir)
-
         self.cp_file: str = os.path.join(self.options.results_dir,
                                          self.options.checkpoint_filename)
 
@@ -79,6 +87,8 @@ class Checkpoint:
 
         if self.first_result:
             if not self.finalised_labels:
+                if not os.path.exists(self.options.results_dir):
+                    os.makedirs(self.options.results_dir)
                 with open(self.cp_file, 'w', encoding='utf-8') as f:
                     f.write('{\n')
 
@@ -169,7 +179,7 @@ class Checkpoint:
         """
         Combine the problem and results file into the main checkpoint file.
         """
-        if label in self.finalised_labels:
+        if label in self.finalised_labels or self.first_result:
             return
 
         if failed_problems is None:
@@ -179,11 +189,17 @@ class Checkpoint:
 
         with open(self.cp_file, 'a', encoding='utf-8') as f:
             f.write(f'  "{label}": {{\n    "problems": ')
-            with open(self.problems_file, 'r', encoding='utf-8') as tmp:
-                f.write(tmp.read())
+            if self.problems_file is not None:
+                with open(self.problems_file, 'r', encoding='utf-8') as tmp:
+                    f.write(tmp.read())
+            else:
+                f.write('    {')
             f.write('\n    },\n    "results": ')
-            with open(self.results_file, 'r', encoding='utf-8') as tmp:
-                f.write(tmp.read())
+            if self.results_file is not None:
+                with open(self.results_file, 'r', encoding='utf-8') as tmp:
+                    f.write(tmp.read())
+            else:
+                f.write('    [')
             f.write('\n    ],\n    ')
             f.write(json.dumps(
                 {'failed_problems': failed_problems,
@@ -198,6 +214,18 @@ class Checkpoint:
         """
         Add the trailing bracket to validate the json.
         """
+        # Has the file already been finalised?
+        if self.finalised:
+            return
+
+        # Has the file been started?
+        if not self.finalised_labels and self.first_result:
+            return
+
+        # Has the last group been finalised?
+        if not self.first_result:
+            self.finalise_group(label='incomplete_group')
+
         with open(self.cp_file, 'a', encoding='utf-8') as f:
             f.write('}')
         self.finalised = True
@@ -249,6 +277,7 @@ class Checkpoint:
 
             for r in results:
                 new_result = FittingResult.__new__(FittingResult)
+                new_result.init_blank()
 
                 new_result.params = _decompress(r['fin_params'])
                 new_result.fin_function_params = r['fin_params_str']
@@ -283,10 +312,6 @@ class Checkpoint:
                 new_result.problem_tag = p['problem_tag']
                 new_result.problem_desc = p['problem_desc']
                 new_result.equation = p['equation']
-
-                new_result._norm_acc = None
-                new_result._norm_runtime = None
-                new_result.is_best_fit = False
 
                 output[label].append(new_result)
 
