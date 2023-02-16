@@ -33,7 +33,7 @@ def load_mock_result():
     cp = get_checkpoint(options)
     results, _, _ = cp.load()
 
-    return results['prob_0'][0]
+    return results['Fake_Test_Data'][0]
 
 
 class PlotTests(unittest.TestCase):

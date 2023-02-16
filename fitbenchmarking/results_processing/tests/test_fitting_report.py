@@ -34,7 +34,7 @@ def load_mock_results():
     cp = get_checkpoint(options)
     results, _, _ = cp.load()
 
-    return results['prob_0']
+    return [r for r in results['Fake_Test_Data'] if r.problem_tag == 'prob_0']
 
 
 class CreateTests(unittest.TestCase):

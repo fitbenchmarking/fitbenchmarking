@@ -27,10 +27,14 @@ def load_mock_results():
 
     cp = get_checkpoint(options)
     results, _, _ = cp.load()
+    results = results['Fake_Test_Data']
 
-    grouped_results = {k: {'cf1': v} for k, v in results.items()}
-    best_results = {'prob_0': {'cf1': results['prob_0'][0]},
-                    'prob_1': {'cf1': results['prob_1'][0]}}
+    grouped_results = {'prob_0': {'cf1': []}, 'prob_1': {'cf1': []}}
+    for r in results:
+        grouped_results[r.problem_tag][r.costfun_tag].append(r)
+
+    best_results = {'prob_0': {'cf1': grouped_results['prob_0']['cf1'][0]},
+                    'prob_1': {'cf1': grouped_results['prob_1']['cf1'][0]}}
     return grouped_results, best_results
 
 

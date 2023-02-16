@@ -31,7 +31,7 @@ def load_mock_results(additional_options=None):
     cp = get_checkpoint(options)
     results, _, _ = cp.load()
 
-    return list(results.values())[0], options
+    return results['Fake_Test_Data'], options
 
 
 class CreateTests(TestCase):

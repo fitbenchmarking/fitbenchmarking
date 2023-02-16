@@ -146,6 +146,7 @@ class FittingResult:
         self.fitting_report_link = ''
         self.start_figure_link = ''
         self.figure_link = ''
+        self.figure_error = ''
 
     def __str__(self):
         info = {"Cost Function": self.costfun_tag,

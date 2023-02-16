@@ -7,6 +7,7 @@ import inspect
 import os
 import unittest
 from collections import OrderedDict
+from pprint import pprint
 
 import numpy as np
 
@@ -48,12 +49,35 @@ class PerformanceProfilerTests(unittest.TestCase):
         results = load_mock_results()
         _, self.results = preprocess_data(results)
 
-        self.accuracy_expected = np.array(
-            [[0.2, 0.3, 0.4, np.inf, 0.6, 0.7, 0.8],
-             [1.0, 1.0, 2.0, np.inf, 3.0, 3.0, 0.2, np.inf]])
-        self.runtime_expected = np.array(
-            [[15.0, 14.0, 13.0, np.inf, 11.0, 10.0, 9.0],
-             [1.0, 1.0, 2.0, np.inf, 3.0, 3.0, 15.0, np.inf]])
+        min_acc = 0.2
+        self.accuracy_expected = {
+            'm00 [s0]: j:j0': [np.inf, np.inf],
+            'm00 [s0]: j:j1': [np.inf, np.inf],
+            'm01 [s0]: j:j0': [0.4, 2.0],
+            'm01 [s0]: j:j1': [0.8, 0.2],
+            'm10 [s1]: j:j0': [0.2, 1.0],
+            'm10 [s1]: j:j1': [0.6, 3.0],
+            'm11 [s1]: j:j0': [0.3, 1.0],
+            'm11 [s1]: j:j1': [0.7, 3.0],
+        }
+        for k in self.accuracy_expected:
+            self.accuracy_expected[k] = [
+                v/min_acc for v in self.accuracy_expected[k]]
+
+        min_runtime = 1.0
+        self.runtime_expected = {
+            'm00 [s0]: j:j0': [np.inf, np.inf],
+            'm00 [s0]: j:j1': [np.inf, np.inf],
+            'm01 [s0]: j:j0': [13.0, 2.0],
+            'm01 [s0]: j:j1': [1.0, 15.0],
+            'm10 [s1]: j:j0': [15.0, 1.0],
+            'm10 [s1]: j:j1': [11.0, 3.0],
+            'm11 [s1]: j:j0': [14.0, 1.0],
+            'm11 [s1]: j:j1': [10.0, 3.0],
+        }
+        for k in self.runtime_expected:
+            self.runtime_expected[k] = [
+                v/min_runtime for v in self.runtime_expected[k]]
 
         self.fig_dir = ''
         self.acc_name = "acc_profile.png"
@@ -71,19 +95,11 @@ class PerformanceProfilerTests(unittest.TestCase):
         """
         Test that prepare profile data gives the correct result
         """
-
-        list(list(self.results.values())[0].values())[0][0].jacobian_tag = ''
         acc, runtime = performance_profiler.prepare_profile_data(self.results)
-        acc_expected = np.array(self.accuracy_expected).T
-        runtime_expected = np.array(self.runtime_expected).T
-        acc_dict = OrderedDict()
-        runtime_dict = OrderedDict()
-        for j, (a, r) in enumerate(zip(acc_expected, runtime_expected)):
-            acc_dict['min_{} [s1]: j:j1'.format(j)] = a
-            runtime_dict['min_{} [s1]: j:j1'.format(j)] = r
-        for k, v in acc_dict.items():
+
+        for k, v in self.accuracy_expected.items():
             assert np.allclose(v, acc[k])
-        for k, v in runtime_dict.items():
+        for k, v in self.runtime_expected.items():
             assert np.allclose(v, runtime[k])
 
     # pylint: disable=W0632
@@ -96,6 +112,7 @@ class PerformanceProfilerTests(unittest.TestCase):
 
         assert acc == "acc_profile.png"
         assert runtime == "runtime_profile.png"
+
     # pylint: enable=W0632
 
 
