@@ -69,6 +69,10 @@ input_file
   a number. An example of this can be seen in
   ``examples/benchmark_problems/Data_Assimilation/data_files/lorentz.txt``
 
+plot_scale
+  The scale of the x and y axis for the plots. The options are 'loglog', 'logy', 'logx' and 'linear'. If this 
+  is not set it will default to 'linear'.
+
 function
   This defines the function that will be used as a model for the fitting.
 
