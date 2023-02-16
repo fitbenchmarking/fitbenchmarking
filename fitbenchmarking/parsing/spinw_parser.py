@@ -83,10 +83,8 @@ class SpinWParser(FitbenchmarkParser):
         self._spinw_w = f'w_{name}'
         self._spinw_msk = f'msk_{name}'
 
-        data_file_path_mat = f"char('{data_file_path}')"
-        spinw_path_mat = f"char('{self._spinw_path}')"
         eng.evalc(f'[{self._spinw_w}, y, e, {self._spinw_msk}] ='
-                  f'{func_name}({data_file_path_mat},{spinw_path_mat})')
+                  f'{func_name}("{data_file_path}","{self._spinw_path}")')
 
         signal = np.array(eng.workspace['y'], dtype=np.float64)
         error = np.array(eng.workspace['e'], dtype=np.float64)
@@ -108,7 +106,9 @@ class SpinWParser(FitbenchmarkParser):
         Process the SpinW formatted function into a callable.
 
         Expected function format:
-        function='matlab_script=filename,p0=...'
+        function='foreground=filename,p0=...'
+        or
+        function='foreground=filename,p0=... ; background=filename,q0=...'
 
         :return: A callable function
         :rtype: callable
@@ -150,7 +150,6 @@ class SpinWParser(FitbenchmarkParser):
             # print(*p)
             if x.shape != self._spinw_x.shape:
                 return np.ones(x.shape)
-            eng.evalc(f"addpath(genpath('{self._spinw_path}'))")
             eng.evalc(f'global {self._spinw_msk}')
             eng.evalc(f'global {self._spinw_w}')
             eng.workspace['fitpars'] = matlab.double(p)
@@ -191,6 +190,7 @@ class SpinWParser(FitbenchmarkParser):
             :type path: str
             """
             horace_on()
+            eng.evalc(f"addpath(genpath('{self._spinw_path}'))")
             print(eng.evalc(f"load('{path}')"))
         self.fitting_problem.set_persistent_vars = set_persistent_vars
         return super()._set_additional_info()
