@@ -191,7 +191,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
                                 [fitbm_result.FittingResult(**self.result_args)
                                  for i in range(self.scipy_ls_len)]]
         loop_over_minimizers.side_effect = self.mock_func_call
-        expected_list_len = 19
+        expected_list_len = 14
         expected_minimizer_failed = self.minimizer_failed
         self.shared_test(expected_list_len, expected_minimizer_failed)
 

@@ -683,6 +683,10 @@ The SciPy minimizers are set as follows:
            trust-constr
            dogleg
 
+.. note::
+   The Hessian enabled solvers are not run by default when `scipy` software is selected. In order to run these minimizers, you must explicitly
+   set them as above.
+
 .. _scipy-ls:
 
 SciPy LS (``scipy_ls``)
