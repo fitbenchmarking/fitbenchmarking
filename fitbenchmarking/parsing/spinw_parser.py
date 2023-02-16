@@ -144,7 +144,6 @@ class SpinWParser(FitbenchmarkParser):
                             simulate_f[0]['matlab_script'])
         eng.addpath(os.path.dirname(path))
         simulate_func_name = os.path.basename(path).split('.', 1)[0]
-        horace_on()
 
         def fit_function(x, *p):
             # Assume, for efficiency, matching shape => matching values
