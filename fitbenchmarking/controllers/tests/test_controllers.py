@@ -583,7 +583,6 @@ class ControllerBoundsTests(TestCase):
 
         self.check_bounds(controller)
 
-
     def test_ceres(self):
         """
         CeresController: Test that parameter bounds are
