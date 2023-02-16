@@ -5,3 +5,4 @@ description = 'An example of tube calibration for the WISH instrument'
 input_file = 'WISH17701_calibration_panel103_tube3.txt'
 function = 'name=LinearBackground,A0=6234,A1=0;name=Gaussian,Height=27750,PeakCentre=301.352,Sigma=1'
 fit_ranges = {'x': [286.35178822, 316.35178822]}
+plot_scale = 'logx'

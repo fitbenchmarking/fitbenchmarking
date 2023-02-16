@@ -5,3 +5,4 @@ description = 'An example of INS spectrum fitting - LHS'
 input_file = 'NdOs2Al10_5K35meV_Ecut_0to3ang_bp15V1.txt'
 function = 'name=CrystalFieldSpectrum, Ion=Nd, Symmetry=C2v, Temperature=5., FWHM=1., PeakShape=Lorentzian, IntensityScaling=2., B20=-4.76099890e-03 , B22=-4.02176771e-01 , B40=-3.55748400e-04 , B42=1.26920682e-02 , B44=-2.30567866e-02 , B60=1.04568413e-04 , B62=9.44615057e-04 , B64=-8.47088521e-04 , B66=-1.18861995e-05 , ties = (BmolX=0, BmolY=0, BmolZ=0, BextX=0, BextY=0, BextZ=0)'
 parameter_ranges = {'B20': (-0.3013,0.3013), 'B22': (-0.5219,0.5219), 'B40': (-0.004624,0.004624), 'B42': (-0.02068,0.02068), 'B44': (-0.02736,0.02736), 'B60': (-0.0001604,0.0001604), 'B62': (-0.001162,0.001162), 'B64': (-0.001273,0.001273), 'B66': (-0.001724,0.001724), 'IntensityScaling': (0.,10.), 'f0.FWHM': (0.1,5.0), 'f1.FWHM': (0.1,5.0), 'f2.FWHM': (0.1,5.0), 'f3.FWHM': (0.1,5.0), 'f4.FWHM': (0.1,7.0)}
+plot_scale = 'loglog'
