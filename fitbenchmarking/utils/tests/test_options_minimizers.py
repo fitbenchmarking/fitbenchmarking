@@ -91,12 +91,7 @@ class MininimizerOptionTests(unittest.TestCase):
                     'L-BFGS-B',
                     'TNC',
                     'SLSQP',
-                    'COBYLA',
-                    'trust-ncg',
-                    'trust-exact',
-                    'trust-krylov',
-                    'trust-constr',
-                    'dogleg']
+                    'COBYLA']
         actual = self.options.minimizers['scipy']
         self.assertEqual(expected, actual)
 
