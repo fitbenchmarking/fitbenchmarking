@@ -8,7 +8,6 @@ import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
-from fitbenchmarking.utils.exceptions import MissingSoftwareError
 
 
 class HoraceController(MatlabMixin, Controller):

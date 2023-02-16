@@ -267,6 +267,7 @@ class FitbenchmarkParser(Parser):
         :return: The function as a dict of name, value pairs.
         :rtype: dict
         """
+        # pylint: disable=too-many-branches
         lhs, rhs = func.strip().split('=', 1)
         name = lhs
         if not re.match(r'^[A-Za-z0-9_]+$', name):

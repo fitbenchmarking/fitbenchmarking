@@ -3,7 +3,6 @@ This file implements a parser for SpinW data.
 """
 import os
 import typing
-import sys
 
 import matlab
 import numpy as np

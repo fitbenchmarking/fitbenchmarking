@@ -3,7 +3,7 @@ Implements mixin class for the matlab fitting software controllers.
 """
 
 import os
-from tempfile import NamedTemporaryFile, TemporaryDirectory
+from tempfile import TemporaryDirectory
 
 from fitbenchmarking.utils.exceptions import (IncompatibleProblemError,
                                               MissingSoftwareError)
