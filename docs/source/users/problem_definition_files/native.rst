@@ -71,7 +71,7 @@ input_file
 
 plot_scale
   The scale of the x and y axis for the plots. The options are 'loglog', 'logy', 'logx' and 'linear'. If this 
-  is not set it will default back to default.
+  is not set it will default to 'linear'.
 
 function
   This defines the function that will be used as a model for the fitting.
