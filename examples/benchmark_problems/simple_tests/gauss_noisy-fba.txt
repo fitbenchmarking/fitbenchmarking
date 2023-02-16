@@ -5,4 +5,4 @@ name = 'gauss-noisy-fba'
 input_file = 'gauss-noisy.txt'
 function = 'name=UserFunction, Formula=A1*exp( -( (A2-x)^2 / (2* (A3^2) ) ) ), A1=1.01, A2=3.98, A3=3.01'
 # fit_parameters = {'StartX': 0, 'EndX': 0}
-plot_scale = 'loglog'
+plot_scale = 'linear'

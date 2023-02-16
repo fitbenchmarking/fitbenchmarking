@@ -5,4 +5,4 @@ description = 'An example of (full) detector calibration for the HIFI instrument
 input_file = 'HIFIgrouped_116891.txt'
 function = 'name=FlatBackground,A0=0;name=DynamicKuboToyabe,BinWidth=0.050000000000000003,Asym=0.2,Delta=0.2,Field=0,Nu=0.1'
 fit_ranges = {'x': [0.1, 16]}
-plot_scale = 'logx'
+plot_scale = 'linear'

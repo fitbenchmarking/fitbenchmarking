@@ -69,15 +69,15 @@ input_file
   a number. An example of this can be seen in
   ``examples/benchmark_problems/Data_Assimilation/data_files/lorentz.txt``
 
+plot_scale
+  The scale of the x and y axis for the plots. The options are 'loglog', 'logy', 'logx' and 'linear'. If this 
+  is not set it will default back to default.
+
 function
   This defines the function that will be used as a model for the fitting.
 
   Inside FitBenchmarking, this is passed on to the specified software and, as
   such, the format is specific to the package we wish to use, as described below.
-
-plot_scale
-  The scale of the y and x axis for the plots. The options are 'loglog', 'logy', 'logx' and 'default'. If this 
-  is not set it will default back to default.
 
   **IVP**
 

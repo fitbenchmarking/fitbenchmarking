@@ -51,7 +51,7 @@ class FitbenchmarkParser(Parser):
         self.fitting_problem.function = self._create_function()
         self.fitting_problem.format = self._entries['software'].lower()
 
-        plot_scale_options = ['loglog', 'logy', 'logx', 'default']
+        plot_scale_options = ['loglog', 'logy', 'logx', 'linear']
 
         if 'plot_scale' in self._entries:
             if self._entries['plot_scale'].lower() in plot_scale_options:
@@ -61,7 +61,7 @@ class FitbenchmarkParser(Parser):
                 raise ParsingError('The plot scale should be one of these '
                                    f'options {plot_scale_options}')
         else:
-            self.fitting_problem.plot_scale = 'default'
+            self.fitting_problem.plot_scale = 'linear'
 
         # If using a multivariate function wrap the call to take a single
         # argument
