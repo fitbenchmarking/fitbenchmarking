@@ -155,7 +155,7 @@ class FittingResult:
                 "Minimizer": self.minimizer_tag,
                 "Jacobian": self.jacobian_tag,
                 "Hessian": self.hessian_tag,
-                "Chi Squared": self.accuracy,
+                "Accuracy": self.accuracy,
                 "Runtime": self.runtime}
 
         return get_printable_table("FittingResult", info)

@@ -42,20 +42,21 @@ class FitbmResultTests(unittest.TestCase):
             problem_dir, self.options)
         problem.correct_data()
 
-        jac = Scipy(problem=problem)
-        jac.method = "2-point"
-
-        hess = AnalyticHessian(problem, jac)
-
         cost_func = NLLSCostFunc(problem)
-        cost_func.jacobian = jac
-        cost_func.hessian = hess
 
         controller = ScipyController(cost_func=cost_func)
         controller.flag = 0
-        controller.minimizer = "test_minimizer"
+        controller.minimizer = "Newton-CG"
         controller.initial_params = np.array([0, 0, 0, 0])
         controller.final_params = np.array([1, 3, 4, 4])
+        controller.parameter_set = 0
+
+        jac = Scipy(problem=problem)
+        jac.method = "2-point"
+        cost_func.jacobian = jac
+
+        hess = AnalyticHessian(problem, jac)
+        cost_func.hessian = hess
         self.controller = controller
 
         self.accuracy = 10
@@ -76,30 +77,30 @@ class FitbmResultTests(unittest.TestCase):
         Test that the fitting result can be printed as a readable string.
         """
         expected = textwrap.dedent('''\
-            +================================+
-            | FittingResult                  |
-            +================================+
-            | Cost Function | NLLSCostFunc   |
-            +--------------------------------+
-            | Problem       | cubic          |
-            +--------------------------------+
-            | Software      | s1             |
-            +--------------------------------+
-            | Minimizer     | test_minimizer |
-            +--------------------------------+
-            | Jacobian      | jac1           |
-            +--------------------------------+
-            | Hessian       | hess1          |
-            +--------------------------------+
-            | Chi Squared   | 10             |
-            +--------------------------------+
-            | Runtime       | 0.01           |
-            +--------------------------------+''')
+            +===============================+
+            | FittingResult                 |
+            +===============================+
+            | Cost Function | NLLSCostFunc  |
+            +-------------------------------+
+            | Problem       | cubic         |
+            +-------------------------------+
+            | Software      | scipy         |
+            +-------------------------------+
+            | Minimizer     | Newton-CG     |
+            +-------------------------------+
+            | Jacobian      | scipy 2-point |
+            +-------------------------------+
+            | Hessian       | analytic      |
+            +-------------------------------+
+            | Accuracy      | 10            |
+            +-------------------------------+
+            | Runtime       | 0.01          |
+            +-------------------------------+''')
 
         for i, (r, e) in enumerate(zip(str(self.result).splitlines(),
                                        expected.splitlines())):
             if r != e:
-                print(f'Issue on line {i}:\n> {r}\n<{e}')
+                print(f'Issue on line {i}:\n>{r}\n<{e}')
         self.assertEqual(str(self.result), expected)
 
     def test_init_with_dataset_id(self):
