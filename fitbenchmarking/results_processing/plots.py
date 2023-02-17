@@ -57,6 +57,11 @@ class Plot:
         if self.problem.multivariate:
             raise PlottingError(
                 'Plots cannot be generated for multivariate problems')
+
+        if self.problem.format == 'spinw':
+            raise PlottingError(
+                'Plots cannot be generated for SpinW problems')
+
         self.options = options
 
         self.result = best_result
