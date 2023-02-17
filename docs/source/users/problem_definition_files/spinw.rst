@@ -176,3 +176,6 @@ Examples of the simulate_function:
 .. note:: 
   If you have a non standard installation of Horace please set the `HORACE_LOCATION` and the `SPINW_LOCATION`
   as environment variables(e.g on IDAaaS).  
+
+.. note:: 
+  SpinW Problems currently does not support plotting. Please set ``make_plots: no`` in the options file.    
