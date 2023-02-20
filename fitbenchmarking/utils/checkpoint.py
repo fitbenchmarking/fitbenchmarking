@@ -1,5 +1,5 @@
 """
-This file implements a singleton class to checkpoint results as they are
+This file implements a checkpointclass to save results as they are
 generated.
 This is also used to read in checkpointed data.
 """
@@ -14,37 +14,7 @@ from typing import TYPE_CHECKING
 from fitbenchmarking.utils.fitbm_result import FittingResult
 
 if TYPE_CHECKING:
-    from typing import Tuple
-
     from fitbenchmarking.utils.options import Options
-
-
-def get_checkpoint(options: 'Options'):
-    """
-    Get the singleton checkpoint instance.
-    Note: If the checkpoint has already been created the new options will not
-          be applied. Use `destroy_checkpoint` to before calling if that's
-          required.
-
-    :param options: The options to build the checkpoint with
-    :type options: Options
-    :return: The checkpoint instance
-    :rtype: Checkpoint
-    """
-    if Checkpoint.instance is not None:
-        return Checkpoint.instance
-
-    cp = Checkpoint(options)
-    Checkpoint.instance = cp
-    return cp
-
-
-def destroy_checkpoint():
-    """
-    Reset the checkpointing singleton so that the next call to `get_checkpoint`
-    creates a new one.
-    """
-    Checkpoint.instance = None
 
 
 class Checkpoint:
@@ -53,8 +23,6 @@ class Checkpoint:
     Each run can be added to the file as they finish.
     This class must be finalised to create the checkpoint.
     """
-    # The single instance of Checkpoint
-    instance = None
 
     def __init__(self, options: 'Options'):
         """
@@ -164,6 +132,7 @@ class Checkpoint:
             'problem_tag': result.problem_tag,
             'problem_desc': result.problem_desc,
             'equation': result.equation,
+            'plot_scale': result.plot_scale,
         }
 
         with open(self.problems_file, 'a', encoding='utf-8') as f:
@@ -312,6 +281,7 @@ class Checkpoint:
                 new_result.problem_tag = p['problem_tag']
                 new_result.problem_desc = p['problem_desc']
                 new_result.equation = p['equation']
+                new_result.plot_scale = p['plot_scale']
 
                 output[label].append(new_result)
 

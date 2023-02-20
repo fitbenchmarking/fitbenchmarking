@@ -14,7 +14,8 @@
         "sorted_idx": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bjWYM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6Poe'z!!!$\"z!!!'#z!!&7*P[Z6",
         "problem_tag": "prob_0",
         "problem_desc": "Mock data for testing - x=[1,4,5], y=[1,2,1], e=[1,1,1]",
-        "equation": "x1*sin(x2)"
+        "equation": "x1*sin(x2)",
+        "plot_scale": "linear"
       },
       "prob_1": {
         "name": "prob_1",
@@ -29,7 +30,8 @@
         "sorted_idx": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bjWYM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6Poh(zzz!!!'#z!!&7*P[Z6",
         "problem_tag": "prob_1",
         "problem_desc": "Mock data for testing - x=[2,1,5], y=[2,2,2], e=[1,2,1]",
-        "equation": "x1*x2"
+        "equation": "x1*x2",
+        "plot_scale": "logx"
       }
     },
     "results": [

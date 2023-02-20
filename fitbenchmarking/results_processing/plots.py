@@ -96,12 +96,12 @@ class Plot:
         Performs post plot processing to annotate the plot correctly
         """
         # log scale
-        if self.problem.plot_scale == "loglog":
+        if self.result.plot_scale == "loglog":
             self.ax.set_xscale("log", nonpositive='clip')
             self.ax.set_yscale("log", nonpositive='clip')
-        elif self.problem.plot_scale == "logy":
+        elif self.result.plot_scale == "logy":
             self.ax.set_yscale("log", nonpositive='clip')
-        elif self.problem.plot_scale == "logx":
+        elif self.result.plot_scale == "logx":
             self.ax.set_xscale("log", nonpositive='clip')
 
         # linear scale if otherwise
@@ -294,12 +294,12 @@ class Plot:
 
                     ax.plot(x, y, **plot_options)
                     # log scale
-                    if problem.plot_scale == "loglog":
+                    if result.plot_scale == "loglog":
                         ax.set_xscale("log", nonpositive='clip')
                         ax.set_yscale("log", nonpositive='clip')
-                    elif problem.plot_scale == "logy":
+                    elif result.plot_scale == "logy":
                         ax.set_yscale("log", nonpositive='clip')
-                    elif problem.plot_scale == "logx":
+                    elif result.plot_scale == "logx":
                         ax.set_xscale("log", nonpositive='clip')
                     ax.set_xlabel("X")
                     ax.set_ylabel("Y")
