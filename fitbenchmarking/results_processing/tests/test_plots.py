@@ -14,7 +14,7 @@ except ImportError:
 
 from fitbenchmarking import test_files
 from fitbenchmarking.results_processing import plots
-from fitbenchmarking.utils.checkpoint import get_checkpoint
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
 
@@ -30,7 +30,7 @@ def load_mock_result():
     cp_dir = os.path.dirname(inspect.getfile(test_files))
     options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
 
-    cp = get_checkpoint(options)
+    cp = Checkpoint(options)
     results, _, _ = cp.load()
 
     return results['Fake_Test_Data'][0]

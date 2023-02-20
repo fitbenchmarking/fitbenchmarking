@@ -13,7 +13,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 from fitbenchmarking.core.results_output import (create_index_page,
                                                  open_browser, save_results)
-from fitbenchmarking.utils.checkpoint import get_checkpoint
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import find_options_file
 
 
@@ -79,7 +79,7 @@ def generate_report(options_file='', additional_options=None):
     options = find_options_file(options_file=options_file,
                                 additional_options=additional_options)
 
-    checkpoint = get_checkpoint(options=options)
+    checkpoint = Checkpoint(options=options)
     results, unselected_minimizers, failed_problems = checkpoint.load()
 
     all_dirs = []

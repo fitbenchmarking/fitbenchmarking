@@ -19,8 +19,7 @@ from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.hessian.hessian_factory import create_hessian
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.utils import (checkpoint, fitbm_result, misc,
-                                   output_grabber)
+from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               FitBenchmarkException,
                                               IncompatibleMinimizerError,
@@ -34,7 +33,7 @@ from fitbenchmarking.utils.log import get_logger
 LOGGER = get_logger()
 
 
-def benchmark(options, data_dir, label='benchmark'):
+def benchmark(options, data_dir, checkpointer, label='benchmark'):
     """
     Gather the user input and list of paths. Call benchmarking on these.
     The benchmarking structure is:
@@ -55,6 +54,8 @@ def benchmark(options, data_dir, label='benchmark'):
     :param data_dir: full path of a directory that holds a group of problem
                      definition files
     :type date_dir: str
+    :param checkpointer: The object to use to save results as they're generated
+    :type checkpointer: Checkpoint
     :param label: The name for the dataset in the checkpoint
     :type label: str
 
@@ -69,22 +70,22 @@ def benchmark(options, data_dir, label='benchmark'):
     # Extract problem definitions
     problem_group = misc.get_problem_files(data_dir)
 
-    cp = checkpoint.get_checkpoint(options=options)
-
     #################################
     # Loops over benchmark problems #
     #################################
     results, failed_problems, unselected_minimizers = \
-        loop_over_benchmark_problems(problem_group, options)
+        loop_over_benchmark_problems(problem_group,
+                                     options=options,
+                                     checkpointer=checkpointer)
 
-    cp.finalise_group(label=label,
-                      failed_problems=failed_problems,
-                      unselected_minimizers=unselected_minimizers)
+    checkpointer.finalise_group(label=label,
+                                failed_problems=failed_problems,
+                                unselected_minimizers=unselected_minimizers)
 
     return results, failed_problems, unselected_minimizers
 
 
-def loop_over_benchmark_problems(problem_group, options):
+def loop_over_benchmark_problems(problem_group, options, checkpointer):
     """
     Loops over benchmark problems
 
@@ -92,6 +93,8 @@ def loop_over_benchmark_problems(problem_group, options):
     :type problem_group: list
     :param options: FitBenchmarking options for current run
     :type options: fitbenchmarking.utils.options.Options
+    :param checkpointer: The object to use to save results as they're generated
+    :type checkpointer: Checkpoint
 
     :return: all results,
              problems where all fitting failed, and
@@ -149,15 +152,17 @@ def loop_over_benchmark_problems(problem_group, options):
             ##############################
             problem_results, problem_fails, \
                 unselected_minimizers = \
-                loop_over_starting_values(
-                    problem, options, grabbed_output)
+                loop_over_starting_values(problem,
+                                          options=options,
+                                          grabbed_output=grabbed_output,
+                                          checkpointer=checkpointer)
             results.extend(problem_results)
             failed_problems.extend(problem_fails)
 
     return results, failed_problems, unselected_minimizers
 
 
-def loop_over_starting_values(problem, options, grabbed_output):
+def loop_over_starting_values(problem, options, grabbed_output, checkpointer):
     """
     Loops over starting values from the fitting problem.
 
@@ -167,6 +172,8 @@ def loop_over_starting_values(problem, options, grabbed_output):
     :type options: fitbenchmarking.utils.options.Options
     :param grabbed_output: Object that removes third party output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
+    :param checkpointer: The object to use to save results as they're generated
+    :type checkpointer: Checkpoint
 
     :return: all results,
              problems where all fitting failed, and
@@ -200,7 +207,8 @@ def loop_over_starting_values(problem, options, grabbed_output):
             loop_over_cost_function(problem=problem,
                                     options=options,
                                     start_values_index=index,
-                                    grabbed_output=grabbed_output)
+                                    grabbed_output=grabbed_output,
+                                    checkpointer=checkpointer)
 
         # Checks to see if all of the minimizers from every software raised an
         # exception and record the problem name if that is the case
@@ -217,7 +225,7 @@ def loop_over_starting_values(problem, options, grabbed_output):
 
 
 def loop_over_cost_function(problem, options, start_values_index,
-                            grabbed_output):
+                            grabbed_output, checkpointer):
     """
     Run benchmarking for each cost function given in options.
 
@@ -230,6 +238,8 @@ def loop_over_cost_function(problem, options, start_values_index,
     :type start_values_index: int
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
+    :param checkpointer: The object to use to save results as they're generated
+    :type checkpointer: Checkpoint
 
     :return: all results, and
              minimizers that were unselected due to algorithm_type
@@ -248,14 +258,15 @@ def loop_over_cost_function(problem, options, start_values_index,
             loop_over_fitting_software(cost_func=cost_func,
                                        options=options,
                                        start_values_index=start_values_index,
-                                       grabbed_output=grabbed_output)
+                                       grabbed_output=grabbed_output,
+                                       checkpointer=checkpointer)
         problem_results.extend(individual_problem_results)
 
     return problem_results, unselected_minimizers
 
 
 def loop_over_fitting_software(cost_func, options, start_values_index,
-                               grabbed_output):
+                               grabbed_output, checkpointer):
     """
     Loops over fitting software selected in the options
 
@@ -268,6 +279,8 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
     :type start_values_index: int
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
+    :param checkpointer: The object to use to save results as they're generated
+    :type checkpointer: Checkpoint
 
     :return: all results, and
              minimizers that were unselected due to algorithm_type
@@ -309,14 +322,16 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
             loop_over_minimizers(controller=controller,
                                  minimizers=minimizers,
                                  options=options,
-                                 grabbed_output=grabbed_output)
+                                 grabbed_output=grabbed_output,
+                                 checkpointer=checkpointer)
 
         unselected_minimizers[s] = minimizer_failed
         results.extend(problem_result)
     return results, unselected_minimizers
 
 
-def loop_over_minimizers(controller, minimizers, options, grabbed_output):
+def loop_over_minimizers(controller, minimizers, options, grabbed_output,
+                         checkpointer):
     """
     Loops over minimizers in fitting software
 
@@ -328,6 +343,8 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
     :type options: fitbenchmarking.utils.options.Options
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
+    :param checkpointer: The object to use to save results as they're generated
+    :type checkpointer: Checkpoint
 
     :return: all results, and
              minimizers that were unselected due to algorithm_type
@@ -335,7 +352,6 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
             list[str])
     """
     algorithm_type = options.algorithm_type
-    cp = checkpoint.get_checkpoint(options=options)
 
     results_problem = []
     minimizer_failed = []
@@ -368,7 +384,7 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                     dummy_result = fitbm_result.FittingResult(
                         options=options,
                         controller=controller)
-                    cp.add_result(dummy_result)
+                    checkpointer.add_result(dummy_result)
                     results_problem.append(dummy_result)
                     LOGGER.warning(str(excp))
 
@@ -376,13 +392,16 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
             ########################
             # Loops over Jacobians #
             ########################
-            results = loop_over_jacobians(controller, options, grabbed_output)
+            results = loop_over_jacobians(controller,
+                                          options=options,
+                                          grabbed_output=grabbed_output,
+                                          checkpointer=checkpointer)
             results_problem.extend(results)
 
     return results_problem, minimizer_failed
 
 
-def loop_over_jacobians(controller, options, grabbed_output):
+def loop_over_jacobians(controller, options, grabbed_output, checkpointer):
     """
     Loops over Jacobians set from the options file
 
@@ -392,6 +411,8 @@ def loop_over_jacobians(controller, options, grabbed_output):
     :type options: fitbenchmarking.utils.options.Options
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
+    :param checkpointer: The object to use to save results as they're generated
+    :type checkpointer: Checkpoint
 
     :return: a FittingResult for each run.
     :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult]
@@ -425,8 +446,9 @@ def loop_over_jacobians(controller, options, grabbed_output):
                 # Loops over Hessians #
                 #######################
                 new_result = loop_over_hessians(controller,
-                                                options,
-                                                grabbed_output)
+                                                options=options,
+                                                grabbed_output=grabbed_output,
+                                                checkpointer=checkpointer)
 
                 results.extend(new_result)
                 # For minimizers that do not accept jacobians we raise an
@@ -440,7 +462,7 @@ def loop_over_jacobians(controller, options, grabbed_output):
     return results
 
 
-def loop_over_hessians(controller, options, grabbed_output):
+def loop_over_hessians(controller, options, grabbed_output, checkpointer):
     """
     Loops over Hessians set from the options file
 
@@ -450,11 +472,12 @@ def loop_over_hessians(controller, options, grabbed_output):
     :type options: fitbenchmarking.utils.options.Options
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
+    :param checkpointer: The object to use to save results as they're generated
+    :type checkpointer: Checkpoint
 
     :return: a FittingResult for each run
     :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
     """
-    cp = checkpoint.get_checkpoint(options=options)
     minimizer = controller.minimizer
     cost_func = controller.cost_func
     problem = controller.problem
@@ -501,11 +524,11 @@ def loop_over_hessians(controller, options, grabbed_output):
                     result_args['dataset'] = i
                     result = fitbm_result.FittingResult(**result_args)
                     new_result.append(result)
-                    cp.add_result(result)
+                    checkpointer.add_result(result)
             else:
                 result = fitbm_result.FittingResult(**result_args)
                 new_result.append(result)
-                cp.add_result(result)
+                checkpointer.add_result(result)
 
             # For minimizers that do not accept hessians we raise an
             # StopIteration exception to exit the loop through the

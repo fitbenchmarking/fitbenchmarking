@@ -16,7 +16,7 @@ import unittest
 import fitbenchmarking
 from fitbenchmarking import test_files
 from fitbenchmarking.results_processing import fitting_report
-from fitbenchmarking.utils.checkpoint import get_checkpoint
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
 
@@ -31,7 +31,7 @@ def load_mock_results():
     cp_dir = os.path.dirname(inspect.getfile(test_files))
     options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
 
-    cp = get_checkpoint(options)
+    cp = Checkpoint(options)
     results, _, _ = cp.load()
 
     return [r for r in results['Fake_Test_Data'] if r.problem_tag == 'prob_0']

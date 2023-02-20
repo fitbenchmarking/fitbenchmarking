@@ -14,8 +14,8 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result
-from fitbenchmarking.utils.checkpoint import destroy_checkpoint
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.checkpoint import Checkpoint
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
@@ -72,6 +72,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         self.default_parsers_dir = os.path.join(bench_prob_dir,
                                                 "default_parsers_set")
         self.count = 0
+        self.cp = Checkpoint(self.options)
 
         controllers = [ScipyController(cost_func) for _ in range(scipy_len)]
         for c in controllers:
@@ -87,12 +88,6 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         ]
         self.individual_problem_results = [
             self.list_results, self.list_results]
-
-    def tearDown(self) -> None:
-        """
-        Remove persistent effects
-        """
-        destroy_checkpoint()
 
     def mock_func_call(self, *args, **kwargs):
         """
@@ -115,7 +110,9 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         :type expected_problem_fails: list
         """
         results, failed_problems, unselected_minimizers = \
-            loop_over_benchmark_problems(self.problem_group, self.options)
+            loop_over_benchmark_problems(self.problem_group,
+                                         options=self.options,
+                                         checkpointer=self.cp)
         assert len(results) == list_len
         assert failed_problems == expected_problem_fails
         dict_test(unselected_minimizers, {"scipy": []})

@@ -12,7 +12,7 @@ from fitbenchmarking.core.fitting_benchmarking import loop_over_minimizers
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result, output_grabber
-from fitbenchmarking.utils.checkpoint import destroy_checkpoint
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
 # Defines the module which we mock out certain function calls for
@@ -104,12 +104,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
             controller=self.controller,
             accuracy=1,
             runtime=1)
-
-    def tearDown(self) -> None:
-        """
-        Remove persistent effects
-        """
-        destroy_checkpoint()
+        self.cp = Checkpoint(self.options)
 
     def mock_func_call(self, *args, **kwargs):
         """
@@ -125,8 +120,11 @@ class LoopOverMinimizersTests(unittest.TestCase):
         """
         self.options.algorithm_type = ["ls"]
         results_problem, minimizer_failed = \
-            loop_over_minimizers(self.controller, self.minimizers,
-                                 self.options, self.grabbed_output)
+            loop_over_minimizers(self.controller,
+                                 self.minimizers,
+                                 options=self.options,
+                                 grabbed_output=self.grabbed_output,
+                                 checkpointer=self.cp)
         assert results_problem == []
         assert minimizer_failed == self.minimizers
 
@@ -141,8 +139,11 @@ class LoopOverMinimizersTests(unittest.TestCase):
         loop_over_hessians.side_effect = self.mock_func_call
 
         results_problem, minimizer_failed = \
-            loop_over_minimizers(self.controller, self.minimizers,
-                                 self.options, self.grabbed_output)
+            loop_over_minimizers(self.controller,
+                                 self.minimizers,
+                                 options=self.options,
+                                 grabbed_output=self.grabbed_output,
+                                 checkpointer=self.cp)
         assert all(isinstance(x, fitbm_result.FittingResult)
                    for x in results_problem)
         assert minimizer_failed == ["deriv_free_algorithm"]
@@ -157,8 +158,11 @@ class LoopOverMinimizersTests(unittest.TestCase):
         loop_over_hessians.side_effect = self.mock_func_call
 
         results_problem, minimizer_failed = \
-            loop_over_minimizers(self.controller, self.minimizers,
-                                 self.options, self.grabbed_output)
+            loop_over_minimizers(self.controller,
+                                 self.minimizers,
+                                 options=self.options,
+                                 grabbed_output=self.grabbed_output,
+                                 checkpointer=self.cp)
         assert all(isinstance(x, fitbm_result.FittingResult)
                    for x in results_problem)
         assert minimizer_failed == []
@@ -173,8 +177,11 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.minimizers = ["general"]
 
         results_problem, minimizer_failed = \
-            loop_over_minimizers(self.controller, self.minimizers,
-                                 self.options, self.grabbed_output)
+            loop_over_minimizers(self.controller,
+                                 self.minimizers,
+                                 options=self.options,
+                                 grabbed_output=self.grabbed_output,
+                                 checkpointer=self.cp)
 
         assert results_problem[0].error_flag == 4
         assert minimizer_failed == []

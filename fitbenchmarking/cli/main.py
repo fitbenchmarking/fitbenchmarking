@@ -20,7 +20,7 @@ from fitbenchmarking.cli.exception_handler import exception_handler
 from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.core.results_output import (create_index_page,
                                                  open_browser, save_results)
-from fitbenchmarking.utils.checkpoint import get_checkpoint
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import NoResultsError
 from fitbenchmarking.utils.log import get_logger, setup_logger
 from fitbenchmarking.utils.options import find_options_file
@@ -238,6 +238,8 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
 
     groups = []
     result_dir = []
+    cp = Checkpoint(options=options)
+
     for sub_dir in problem_sets:
 
         # Create full path for the directory that holds a group of
@@ -262,7 +264,8 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
         results, failed_problems, unselected_minimizers = \
             benchmark(options=options,
                       data_dir=data_dir,
-                      label=label)
+                      label=label,
+                      checkpointer=cp)
 
         # If a result has error flag 4 then the result contains dummy values,
         # if this is the case for all results then output should not be
@@ -300,7 +303,6 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
             result_dir.append(group_results_dir)
             groups.append(label)
 
-    cp = get_checkpoint(options)
     cp.finalise()
 
     # Check result_dir is non empty before producing output

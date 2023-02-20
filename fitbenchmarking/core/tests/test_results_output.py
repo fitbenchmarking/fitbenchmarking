@@ -19,7 +19,7 @@ from fitbenchmarking.core.results_output import (_extract_tags,
                                                  create_plots,
                                                  create_problem_level_index,
                                                  preprocess_data, save_results)
-from fitbenchmarking.utils.checkpoint import get_checkpoint, destroy_checkpoint
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
 
@@ -40,7 +40,7 @@ def load_mock_results(additional_options=None):
         'checkpoint_filename': os.path.join(cp_dir, 'checkpoint.json'),
         'external_output': 'debug'})
     options = Options(additional_options=additional_options)
-    cp = get_checkpoint(options)
+    cp = Checkpoint(options)
     results, _, _ = cp.load()
 
     return results['Fake_Test_Data'], options
@@ -67,7 +67,6 @@ class SaveResultsTests(unittest.TestCase):
         Clean up created folders.
         """
         shutil.rmtree(self.results_dir)
-        destroy_checkpoint()
 
     def test_save_results_correct(self):
         """

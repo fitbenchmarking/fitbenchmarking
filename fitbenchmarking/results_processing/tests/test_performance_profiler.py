@@ -14,7 +14,7 @@ import numpy as np
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.results_processing import performance_profiler
-from fitbenchmarking.utils.checkpoint import get_checkpoint
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
 
@@ -29,7 +29,7 @@ def load_mock_results():
     cp_dir = os.path.dirname(inspect.getfile(test_files))
     options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
 
-    cp = get_checkpoint(options)
+    cp = Checkpoint(options)
     results, _, _ = cp.load()
 
     return [v

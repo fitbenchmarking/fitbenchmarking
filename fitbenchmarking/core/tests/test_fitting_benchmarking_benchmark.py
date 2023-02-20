@@ -13,7 +13,7 @@ from fitbenchmarking.core.fitting_benchmarking import benchmark
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result
-from fitbenchmarking.utils.checkpoint import destroy_checkpoint
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
 # Defines the module which we mock out certain function calls for
@@ -72,12 +72,7 @@ class BenchmarkTests(unittest.TestCase):
         self.default_parsers_dir = os.path.join(bench_prob_dir,
                                                 "default_parsers_set")
         self.all_minimizers = copy.copy(self.options.minimizers)
-
-    def tearDown(self) -> None:
-        """
-        Remove persistent effects
-        """
-        destroy_checkpoint()
+        self.cp = Checkpoint(self.options)
 
     def shared_tests(self, expected_names, expected_unselected_minimizers,
                      expected_minimizers):
@@ -92,7 +87,9 @@ class BenchmarkTests(unittest.TestCase):
         :type expected_minimizers: dict
         """
         results, failed_problems, unselected_minimizers = benchmark(
-            self.options, self.default_parsers_dir)
+            options=self.options,
+            data_dir=self.default_parsers_dir,
+            checkpointer=self.cp)
         num_results = len(expected_names) * (sum(
             [len(v) for v in expected_minimizers.values()]))
         assert len(results) == num_results

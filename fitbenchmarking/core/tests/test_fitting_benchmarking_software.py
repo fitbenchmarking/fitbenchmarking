@@ -16,7 +16,7 @@ from fitbenchmarking.core.fitting_benchmarking import \
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result, output_grabber
-from fitbenchmarking.utils.checkpoint import destroy_checkpoint
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import UnsupportedMinimizerError
 from fitbenchmarking.utils.options import Options
 
@@ -82,12 +82,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
                             'controller': controller,
                             'accuracy': 1,
                             'runtime': 1}
-
-    def tearDown(self) -> None:
-        """
-        Remove persistent effects
-        """
-        destroy_checkpoint()
+        self.cp = Checkpoint(self.options)
 
     def mock_func_call(self, *args, **kwargs):
         """
@@ -108,10 +103,12 @@ class LoopOverSoftwareTests(unittest.TestCase):
         :type expected_minimizer_failed: dict
         """
         results, unselected_minimzers = \
-            loop_over_fitting_software(self.cost_func,
-                                       self.options,
-                                       self.start_values_index,
-                                       self.grabbed_output)
+            loop_over_fitting_software(
+                self.cost_func,
+                options=self.options,
+                start_values_index=self.start_values_index,
+                grabbed_output=self.grabbed_output,
+                checkpointer=self.cp)
         assert len(results) == expected_list_len
 
         dict_test(unselected_minimzers, expected_minimizer_failed)
@@ -208,10 +205,12 @@ class LoopOverSoftwareTests(unittest.TestCase):
         """
         self.options.software = ['incorrect_software']
         with self.assertRaises(UnsupportedMinimizerError):
-            _ = loop_over_fitting_software(self.cost_func,
-                                           self.options,
-                                           self.start_values_index,
-                                           self.grabbed_output)
+            _ = loop_over_fitting_software(
+                self.cost_func,
+                options=self.options,
+                start_values_index=self.start_values_index,
+                grabbed_output=self.grabbed_output,
+                checkpointer=self.cp)
 
 
 if __name__ == "__main__":

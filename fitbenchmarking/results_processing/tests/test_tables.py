@@ -14,7 +14,7 @@ from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.results_processing.tables import (SORTED_TABLE_NAMES,
                                                        create_results_tables,
                                                        generate_table)
-from fitbenchmarking.utils.checkpoint import get_checkpoint
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
 
@@ -29,7 +29,7 @@ def load_mock_results():
     cp_dir = os.path.dirname(inspect.getfile(test_files))
     options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
 
-    cp = get_checkpoint(options)
+    cp = Checkpoint(options)
     results, _, _ = cp.load()
     results = results['Fake_Test_Data']
     for i, r in enumerate(results):

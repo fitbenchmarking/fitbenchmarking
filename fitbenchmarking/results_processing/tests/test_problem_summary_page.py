@@ -11,7 +11,7 @@ from unittest import TestCase, main
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.results_processing import problem_summary_page
-from fitbenchmarking.utils.checkpoint import get_checkpoint
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
 
@@ -28,7 +28,7 @@ def load_mock_results(additional_options=None):
     cp_dir = os.path.dirname(inspect.getfile(test_files))
     options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
 
-    cp = get_checkpoint(options)
+    cp = Checkpoint(options)
     results, _, _ = cp.load()
 
     return results['Fake_Test_Data'], options

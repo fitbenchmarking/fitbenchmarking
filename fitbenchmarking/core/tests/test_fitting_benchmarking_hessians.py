@@ -16,7 +16,7 @@ from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import output_grabber
-from fitbenchmarking.utils.checkpoint import destroy_checkpoint
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
 # Due to construction of the controllers two folder functions
@@ -116,13 +116,13 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.options: Options = self.problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
+        self.cp = Checkpoint(self.options)
 
     def tearDown(self) -> None:
         """
         Clean up after the test
         """
         rmtree(self.options.results_dir)
-        destroy_checkpoint()
 
     def test_single_hessian(self):
         """
@@ -131,8 +131,9 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.options.hes_method = ["analytic"]
         self.controller.minimizer = "general"
         _ = loop_over_hessians(self.controller,
-                               self.options,
-                               self.grabbed_output)
+                               options=self.options,
+                               grabbed_output=self.grabbed_output,
+                               checkpointer=self.cp)
         self.assertEqual(self.controller.count, 1)
 
     @patch.object(DummyController, "check_bounds_respected")
@@ -147,8 +148,9 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.minimizer = "deriv_free_algorithm"
 
         _ = loop_over_hessians(self.controller,
-                               self.options,
-                               self.grabbed_output)
+                               options=self.options,
+                               grabbed_output=self.grabbed_output,
+                               checkpointer=self.cp)
         check_bounds_respected.assert_called()
 
     @patch.object(DummyController, "check_bounds_respected")
@@ -163,8 +165,9 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.flag_expected = [3]
 
         _ = loop_over_hessians(self.controller,
-                               self.options,
-                               self.grabbed_output)
+                               options=self.options,
+                               grabbed_output=self.grabbed_output,
+                               checkpointer=self.cp)
         check_bounds_respected.assert_not_called()
 
     def test_max_runtime_exceeded(self):
@@ -182,8 +185,10 @@ class LoopOverHessiansTests(unittest.TestCase):
         controller.parameter_set = 0
 
         controller.minimizer = "deriv_free_algorithm"
-        results = loop_over_hessians(controller, options,
-                                     grabbed_output)
+        results = loop_over_hessians(controller,
+                                     options=options,
+                                     grabbed_output=grabbed_output,
+                                     checkpointer=self.cp)
         self.assertEqual(results[0].error_flag, 6)
 
     @run_for_test_types(TEST_TYPE, 'all')
@@ -204,7 +209,8 @@ class LoopOverHessiansTests(unittest.TestCase):
         perform_fit.return_value = ([0.1, 0.2], [0.1, 0.01])
         results = loop_over_hessians(controller=controller,
                                      options=options,
-                                     grabbed_output=grabbed_output)
+                                     grabbed_output=grabbed_output,
+                                     checkpointer=self.cp)
         self.assertTrue(len(results) == 2)
 
 
