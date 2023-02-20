@@ -57,6 +57,7 @@ class BumpsController(Controller):
         self.fit_order = None
         self._status = None
         self._bumps_result = None
+        self._minimizer = ''
 
     def setup(self):
         # pylint: disable=exec-used,protected-access
@@ -121,9 +122,11 @@ class BumpsController(Controller):
         self.fit_order = param_order
 
         if self.minimizer == "lm-bumps":
-            self.minimizer = "lm"
+            self._minimizer = "lm"
         elif self.minimizer == "scipy-leastsq":
-            self.minimizer = "scipy.leastsq"
+            self._minimizer = "scipy.leastsq"
+        else:
+            self._minimizer = self.minimizer
 
     def _check_timer_abort_test(self):
         """
@@ -143,7 +146,7 @@ class BumpsController(Controller):
         Run problem with Bumps.
         """
         result = bumpsFit(self._fit_problem,
-                          method=self.minimizer,
+                          method=self._minimizer,
                           abort_test=self._check_timer_abort_test)
 
         self._bumps_result = result
