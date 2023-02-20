@@ -65,7 +65,7 @@ The Bumps minimizers are set as follows:
    `de` is not included in the default list of minimizers for bumps. To run this solver, you must
    explicitly set the minimizer as seen above.
 
-.. _dfo:
+.. _ceres:
 
 Ceres Solver (``ceres``)
 =============
@@ -110,6 +110,8 @@ The Ceres Solver minimizers are set as follows:
 
 .. note::
    The PyCeres currently only works with Ceres Solver versions 2.0.0 
+
+.. _dfo:
 
 DFO (``dfo``)
 =============
@@ -311,6 +313,11 @@ spectrometers.*  We currently support:
 **Licence** Matlab must be installed to use Horace within FitBenchmarking, which is a
 `proprietary product <https://www.mathworks.com/pricing-licensing.html>`__.
 Horace is made available under the the `GPL-3 licence <https://www.gnu.org/licenses/gpl-3.0.html>`__.
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    horace: lm-lsqr
 
 .. warning::
    The Horace Toolbox and MATLAB must be installed for this to be available; see :ref:`external-instructions`.
@@ -671,6 +678,10 @@ The SciPy minimizers are set as follows:
            trust-krylov
            trust-constr
            dogleg
+
+.. note::
+   The Hessian enabled solvers are not run by default when `scipy` software is selected. In order to run these minimizers, you must explicitly
+   set them as above.
 
 .. _scipy-ls:
 
