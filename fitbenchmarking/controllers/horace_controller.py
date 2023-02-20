@@ -105,10 +105,6 @@ class HoraceController(MatlabMixin, Controller):
         # Allow repeat calls to cleanup without falling over
         if self.cost_func.problem.format != 'spinw':
             try:
-                self.eng.evalc(
-                    'if not(any(cellfun(@(x) x=="horace", persistent_vars)));'
-                    ' horace_off;'
-                    'end;'
-                )
+                self.eng.evalc('horace_off;')
             except matlab.engine.MatlabExecutionError:
                 pass

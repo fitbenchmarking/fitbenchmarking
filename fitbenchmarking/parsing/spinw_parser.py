@@ -40,8 +40,6 @@ def horace_on():
         eng.evalc("horace_on")
 
 
-eng.evalc('horace = 1;')
-add_persistent_matlab_var('horace')
 horace_on()
 
 
