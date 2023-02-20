@@ -83,8 +83,8 @@ class SpinWParser(FitbenchmarkParser):
         self._spinw_w = f'w_{name}'
         self._spinw_msk = f'msk_{name}'
 
-        eng.evalc(f'[{self._spinw_w}, y, e, {self._spinw_msk}] ='
-                  f'{func_name}("{data_file_path}","{self._spinw_path}")')
+        eng.evalc(f"[{self._spinw_w}, y, e, {self._spinw_msk}] ="
+                  f"{func_name}('{data_file_path}','{self._spinw_path}')")
 
         signal = np.array(eng.workspace['y'], dtype=np.float64)
         error = np.array(eng.workspace['e'], dtype=np.float64)
