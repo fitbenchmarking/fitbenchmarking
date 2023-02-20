@@ -2,7 +2,7 @@
 software = 'SpinW'
 name = '2D_Gaussian'
 description = '2D Gaussian (Horace\documentation\herbert\example_codes). The data in this example is generated in the wye_function'
-input_file = 'dumby.txt'
+input_file = 'dummy.txt'
 function = 'foreground=m_scripts/functions/gauss2d.m ,height=1100,centre_p1=66 ,centre_p2=1055,covmat_p1=12,covmat_p2=3,covmat_p3=25; background=m_scripts/functions/linear2D_bg.m ,bkgd_const=15'
 wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_IX_1D_test5.m'
 simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_IX_1D_test5.m'

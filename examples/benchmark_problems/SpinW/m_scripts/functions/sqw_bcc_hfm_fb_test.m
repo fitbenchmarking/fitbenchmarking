@@ -1,4 +1,4 @@
-function weight = sqw_bcc_hfm (qh,qk,ql,en,p)
+function weight = sqw_bcc_hfm_fb_test (qh,qk,ql,en,p)
 % Wrapper function around dispersion relation to return spectral weight
 %
 %   >> weight = sqw_bcc_hfm (qh,qk,ql,en,p)
@@ -18,4 +18,4 @@ function weight = sqw_bcc_hfm (qh,qk,ql,en,p)
 % =======
 %   weight          Spectral weight at (qh,qk,ql,en)
 
-weight = p(3)*disp2sqw(qh,qk,ql,en,@disp_bcc_hfm,p(1:2),p(4)) + p(5);
+weight = p(3)*disp2sqw(qh,qk,ql,en,@disp_bcc_hfm_fb_test,p(1:2),p(4)) + p(5);

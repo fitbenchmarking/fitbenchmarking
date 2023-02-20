@@ -1,4 +1,4 @@
-function [wdisp,sf] = disp_bcc_hfm (qh,qk,ql,p)
+function [wdisp,sf] = disp_bcc_hfm_fb_test (qh,qk,ql,p)
 % Spin wave dispersion relation for a Heisenberg ferromagnet with nearest
 % neighbour exchange only.
 %
