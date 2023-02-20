@@ -1,5 +1,5 @@
 # FitBenchmark Problem
-software = 'SpinW'
+software = 'Horace'
 name = 'Tobyfit_test'
 description = 'S(Q,w) for Nb phonons for purposes of testing Tobyfit only'
 input_file = 'wdata1.mat'

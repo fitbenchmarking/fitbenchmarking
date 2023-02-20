@@ -1,5 +1,5 @@
 """
-This file implements a parser for SpinW data.
+This file implements a parser for Horace problem sets.
 """
 import os
 import typing
@@ -43,9 +43,9 @@ def horace_on():
 horace_on()
 
 
-class SpinWParser(FitbenchmarkParser):
+class HoraceParser(FitbenchmarkParser):
     """
-    Parser for a SpinW problem definition file.
+    Parser for a Horace problem definition file.
     """
 
     def __init__(self, *args, **kwargs):
@@ -53,10 +53,10 @@ class SpinWParser(FitbenchmarkParser):
 
         # A container for improving efficiency in function call if calling
         # with full input data
-        self._spinw_x: typing.Optional[np.ndarray] = None
-        self._spinw_w: typing.Optional[str] = None
-        self._spinw_msk: typing.Optional[str] = None
-        self._spinw_path: typing.Optional[str] = None
+        self._horace_x: typing.Optional[np.ndarray] = None
+        self._horace_w: typing.Optional[str] = None
+        self._horace_msk: typing.Optional[str] = None
+        self._horace_path: typing.Optional[str] = None
 
     def _get_data_points(self, data_file_path):
         """
@@ -74,34 +74,34 @@ class SpinWParser(FitbenchmarkParser):
         eng.addpath(os.path.dirname(path))
         func_name = os.path.basename(path).split('.', 1)[0]
 
-        self._spinw_path = os.path.abspath(os.path.dirname(self._filename))
+        self._horace_path = os.path.abspath(os.path.dirname(self._filename))
 
         name = self._entries["name"].replace(' ', '_')
 
-        self._spinw_w = f'w_{name}'
-        self._spinw_msk = f'msk_{name}'
+        self._horace_w = f'w_{name}'
+        self._horace_msk = f'msk_{name}'
 
-        eng.evalc(f"[{self._spinw_w}, y, e, {self._spinw_msk}] ="
-                  f"{func_name}('{data_file_path}','{self._spinw_path}')")
+        eng.evalc(f"[{self._horace_w}, y, e, {self._horace_msk}] ="
+                  f"{func_name}('{data_file_path}','{self._horace_path}')")
 
         signal = np.array(eng.workspace['y'], dtype=np.float64)
         error = np.array(eng.workspace['e'], dtype=np.float64)
 
-        add_persistent_matlab_var(self._spinw_msk)
-        add_persistent_matlab_var(self._spinw_w)
-        eng.evalc(f'global {self._spinw_msk}')
-        eng.evalc(f'global {self._spinw_w}')
+        add_persistent_matlab_var(self._horace_msk)
+        add_persistent_matlab_var(self._horace_w)
+        eng.evalc(f'global {self._horace_msk}')
+        eng.evalc(f'global {self._horace_w}')
 
         y = signal.flatten()
         e = error.flatten()
         x = np.ones(len(y))
 
-        self._spinw_x = x
+        self._horace_x = x
         return {'x': x, 'y': y, 'e': e}
 
     def _create_function(self) -> typing.Callable:
         """
-        Process the SpinW formatted function into a callable.
+        Process the Horace formatted function into a callable.
 
         Expected function format:
         function='foreground=filename,p0=...'
@@ -146,14 +146,14 @@ class SpinWParser(FitbenchmarkParser):
         def fit_function(x, *p):
             # Assume, for efficiency, matching shape => matching values
             # print(*p)
-            if x.shape != self._spinw_x.shape:
+            if x.shape != self._horace_x.shape:
                 return np.ones(x.shape)
-            eng.evalc(f'global {self._spinw_msk}')
-            eng.evalc(f'global {self._spinw_w}')
+            eng.evalc(f'global {self._horace_msk}')
+            eng.evalc(f'global {self._horace_w}')
             eng.workspace['fitpars'] = matlab.double(p)
-            eng.evalc(f'spinw_y = {simulate_func_name}'
-                      f'({self._spinw_w},fitpars,{self._spinw_msk})')
-            return np.array(eng.workspace['spinw_y'],
+            eng.evalc(f'horace_y = {simulate_func_name}'
+                      f'({self._horace_w},fitpars,{self._horace_msk})')
+            return np.array(eng.workspace['horace_y'],
                             dtype=np.float64).flatten()
 
         return fit_function
@@ -188,7 +188,7 @@ class SpinWParser(FitbenchmarkParser):
             :type path: str
             """
             horace_on()
-            eng.evalc(f"addpath(genpath('{self._spinw_path}'))")
+            eng.evalc(f"addpath(genpath('{self._horace_path}'))")
             print(eng.evalc(f"load('{path}')"))
         self.fitting_problem.set_persistent_vars = set_persistent_vars
         return super()._set_additional_info()

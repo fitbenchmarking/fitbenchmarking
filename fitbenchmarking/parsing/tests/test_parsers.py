@@ -61,7 +61,7 @@ def generate_test_cases():
     elif TEST_TYPE == "default":
         formats = ['nist']
     else:
-        formats = ['nist', 'spinw']
+        formats = ['nist', 'horace']
 
     # create list of test_cases
     expected_dir = os.listdir(os.path.join(test_dir, 'expected'))

@@ -1,22 +1,22 @@
-.. _spinw_format:
+.. _horace_format:
 
 *****************
-SpinW File Format
+Horace File Format
 *****************
 
-The SpinW file format is based on :ref:`native`, this page is intended to
+The Horace file format is based on :ref:`native`, this page is intended to
 demonstrate where the format differs.
 
-Examples of spinw problems are:
+Examples of horace problems are:
 
-.. literalinclude:: ../../../../examples/benchmark_problems/SpinW/1D_Gaussian_1.txt
+.. literalinclude:: ../../../../examples/benchmark_problems/Horace/1D_Gaussian_1.txt
 
-.. literalinclude:: ../../../../examples/benchmark_problems/SpinW/3D_Gaussian.txt
+.. literalinclude:: ../../../../examples/benchmark_problems/Horace/3D_Gaussian.txt
 
-.. literalinclude:: ../../../../examples/benchmark_problems/SpinW/PCSMO_at_001_data.txt
+.. literalinclude:: ../../../../examples/benchmark_problems/Horace/PCSMO_at_001_data.txt
 
 .. note::
-The SpinW file format requires you to have run the benchmark problem in Horace 
+The Horace file format requires you to have run the benchmark problem in Horace 
 using :code:`fit()` and :code:`simulate()` successfully. Relevant links on 
 how to run this are: `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html>`__ ,
 `Advanced Multifit <https://pace-neutrons.github.io/Horace/unstable/manual
@@ -32,7 +32,7 @@ software, name, description
   As described in the native format.
 
 input_file
-  For SpinW we require a ``.sqw`` or ``.mat`` file containing preprocessed, Horace-compatible data. 
+  For Horace we require a ``.sqw`` or ``.mat`` file containing preprocessed, Horace-compatible data. 
   
 .. note::
   The ``.mat`` file is the result of using `save(file, sqw_objects) <https://uk.mathworks.com/help/matlab/ref/save.html>`__ 
@@ -100,28 +100,28 @@ This function takes the path to the datafile and the path to the matlab function
 
   .. code-block:: matlab
     
-    [spinw_y, spinw_e, msk] = sigvar_get(w);
+    [y, e, msk] = sigvar_get(w);
 
-  Any elements in msk that have a corresponding element in spinw_y that is equal to zero will be set to zero.
+  Any elements in msk that have a corresponding element in y that is equal to zero will be set to zero.
   The purpose of this is to exclude these elements from subsequent calculations, since they are not informative.  
   
   .. code-block:: matlab
     
-    msk(spinw_y==0) = 0;
+    msk(y==0) = 0;
   
   The last two lines of the wye_function applies the `msk` to the `y` and `e` data. As the `e` from retrieved above is the
   variance we have taken the square root of the value to get the standard deviation.
 
   .. code-block:: matlab
 
-    y = spinw_y(msk);
-    e = sqrt(spinw_e(msk));
+    y = y(msk);
+    e = sqrt(e(msk));
 
   Examples of the wye_function:
 
-  .. literalinclude:: ../../../../examples/benchmark_problems/SpinW/m_scripts/wye_functions/fb_wye_IX_1D_test1.m
+  .. literalinclude:: ../../../../examples/benchmark_problems/Horace/m_scripts/wye_functions/fb_wye_IX_1D_test1.m
   
-  .. literalinclude:: ../../../../examples/benchmark_problems/SpinW/m_scripts/wye_functions/fb_wye_pcsmo_test.m
+  .. literalinclude:: ../../../../examples/benchmark_problems/Horace/m_scripts/wye_functions/fb_wye_pcsmo_test.m
 
 simulate_function
   The simulate_function is defined by a matlab file which returns the derived y values from `simulate()` for the fitting function.
@@ -137,8 +137,8 @@ Explained Example of the simulate_function:
   mf = mf.set_fun(forefunc);
   mf = mf.set_pin(fitpars);
   [wout,fitpar] = mf.simulate();
-  [spinw_y, e] = sigvar_get(wout);
-  spinw_y=spinw_y(msk);
+  [y, e] = sigvar_get(wout);
+  y=y(msk);
 
 .. note:: 
   If the benchmark problem uses random numbers in any way (e.g. `tobyfit`).
@@ -156,7 +156,7 @@ Explained Example of the simulate_function:
     end
 
 .. note:: 
-  If the SpinW benchmark problem is run in parallel make sure to turn off hpc after :code:`simulate()` in the simulate_function 
+  If the Horace benchmark problem is run in parallel make sure to turn off hpc after :code:`simulate()` in the simulate_function 
   matlab script. 
 
   .. code-block:: matlab
@@ -166,9 +166,9 @@ Explained Example of the simulate_function:
 
 Examples of the simulate_function:
   
-.. literalinclude:: ../../../../examples/benchmark_problems/SpinW/m_scripts/simulate_functions/fb_simulate_IX_1D_test1.m
+.. literalinclude:: ../../../../examples/benchmark_problems/Horace/m_scripts/simulate_functions/fb_simulate_IX_1D_test1.m
 
-.. literalinclude:: ../../../../examples/benchmark_problems/SpinW/m_scripts/simulate_functions/fb_simulate_pcsmo_test.m
+.. literalinclude:: ../../../../examples/benchmark_problems/Horace/m_scripts/simulate_functions/fb_simulate_pcsmo_test.m
 
 .. note::
    All the functions needed in the fitting must be in the subdirectory of the benchmark problem.
@@ -178,4 +178,4 @@ Examples of the simulate_function:
   as environment variables(e.g on IDAaaS).  
 
 .. note:: 
-  SpinW Problems currently does not support plotting. Please set ``make_plots: no`` in the options file.    
+  Horace Problems currently does not support plotting. Please set ``make_plots: no`` in the options file.    

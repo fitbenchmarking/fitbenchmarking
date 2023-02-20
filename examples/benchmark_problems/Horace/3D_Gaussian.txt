@@ -1,5 +1,5 @@
 # FitBenchmark Problem
-software = 'SpinW'
+software = 'Horace'
 name = '3D_Gaussian'
 description = '3D Gaussian (Horace\documentation\herbert\example_codes). The data in this example is generated in the wye_function'
 input_file = 'dummy.txt'

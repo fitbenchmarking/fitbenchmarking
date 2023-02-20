@@ -1,5 +1,5 @@
 # FitBenchmark Problem
-software = 'SpinW'
+software = 'Horace'
 name = '1D Gaussian 1'
 description = '1D Gaussian (Test example from test_multifit_herbert)'
 input_file = 'testdata_multifit_1.mat'

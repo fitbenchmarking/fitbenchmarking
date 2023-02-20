@@ -54,7 +54,7 @@ class MatlabMixin:
                 add_persistent_matlab_var('cf')
                 self.eng.evalc('cf_f.close()')
 
-                if cost_func.problem.format == 'spinw':
+                if cost_func.problem.format == 'horace':
                     matlab_dump = os.path.join(temp_dir, 'dump.mat')
                     to_transfer = list_persistent_matlab_vars()
                     to_transfer_str = "', '".join(

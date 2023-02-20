@@ -4,7 +4,7 @@ function pcsmo = pcsmo_model(JF1, JA, JF2, JF3, Jperp, D)
 %JF1 = str2num(JF1); JA = str2num(JA); JF2 = str2num(JF2); JF3 = str2num(JF3); Jperp = str2num(Jperp); D = str2num(D);
 disp(sprintf('Parameters: JF1=%f, JA=%f, JF2=%f, JF3=%f, Jperp=%f, D=%f', JF1, JA, JF2, JF3, Jperp, D));
 
-% Define the SpinW model - same as the file prcasrmn2o7.m
+% Define the Horace model - same as the file prcasrmn2o7.m
 % From the "real world" systems tutorial.
 lat = [5.408 5.4599 19.266];
 alf = [90 90 90];

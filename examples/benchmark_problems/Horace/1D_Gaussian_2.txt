@@ -1,8 +1,8 @@
 # FitBenchmark Problem
-software = 'SpinW'
-name = '1D_Gaussian_3'
+software = 'Horace'
+name = '1D_Gaussian_2'
 description = '1D Gaussian (Test example from test_multifit_herbert)'
 input_file = 'testdata_multifit_1.mat'
 function = 'foreground=m_scripts/functions/mftest_gauss_bkgd.m ,height=100,centre=50,sigma=7,const=0,grad=0'
-wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_IX_1D_test3.m'
-simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_IX_1D_test3.m'
+wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_IX_1D_test2.m'
+simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_IX_1D_test2.m'

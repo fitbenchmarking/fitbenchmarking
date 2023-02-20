@@ -103,7 +103,7 @@ class HoraceController(MatlabMixin, Controller):
                                      dtype=np.float64).flatten()
 
         # Allow repeat calls to cleanup without falling over
-        if self.cost_func.problem.format != 'spinw':
+        if self.cost_func.problem.format != 'horace':
             try:
                 self.eng.evalc('horace_off;')
             except matlab.engine.MatlabExecutionError:

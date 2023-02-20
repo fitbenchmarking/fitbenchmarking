@@ -1,5 +1,5 @@
 # FitBenchmark Problem
-software = 'SpinW'
+software = 'Horace'
 name = 'SQW_SQW_dispersion_relation'
 description = 'Spin wave dispersion relation for a Heisenberg ferromagnet with nearest neighbour exchange only. This problem has a background defined by sqw_bcc_hfm and returns spectral weight'
 input_file = 'w1data_7.sqw'

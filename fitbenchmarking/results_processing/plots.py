@@ -58,9 +58,9 @@ class Plot:
             raise PlottingError(
                 'Plots cannot be generated for multivariate problems')
 
-        if self.problem.format == 'spinw':
+        if self.problem.format == 'horace':
             raise PlottingError(
-                'Plots cannot be generated for SpinW problems')
+                'Plots cannot be generated for Horace problems')
 
         self.options = options
 
