@@ -271,12 +271,7 @@ class Options:
                    'L-BFGS-B',
                    'TNC',
                    'SLSQP',
-                   'COBYLA',
-                   'trust-ncg',
-                   'trust-exact',
-                   'trust-krylov',
-                   'trust-constr',
-                   'dogleg'],
+                   'COBYLA'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'dual_annealing']}
     DEFAULT_FITTING = \

@@ -5,3 +5,4 @@ name = 'trig_noisy-fb'
 input_file = 'trig_noisy.txt'
 function = 'name=UserFunction, Formula=A1*cos(2*3.141592*x) + A2*sin(2*3.141592*x) + A3*x, A1=0.0, A2=0.0, A3=0.0'
 # fit_parameters = {'StartX': 0, 'EndX': 0}
+plot_scale = 'linear'
