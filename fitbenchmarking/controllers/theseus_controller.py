@@ -54,14 +54,16 @@ class TheseusCostFunction(th.CostFunction):
                            self.optim_vars]
         res = self.fb_cf.eval_r(optim_vars_list)
         th_res = torch.Tensor(np.array([res]))
-        return th_res, optim_vars_list
+        return th_res
 
     def jacobians(self) -> Tuple[List[torch.Tensor], torch.Tensor]:
         """
         Jacobians in pytorch tensor form for Theseus ai
         """
 
-        err, optim_vars_list = self.error()
+        err = self.error()
+        optim_vars_list = [float(optim_vars1[0]) for optim_vars1 in
+                           self.optim_vars]
         jacs = self.fb_cf.jac_res(optim_vars_list)
         th_jac = [torch.Tensor([[[item] for item in jacs[:, index]]])
                   for index in range(len(optim_vars_list))]
