@@ -70,6 +70,7 @@ function
     All parameters must have unique names e.g.
     
     .. code-block:: rst
+      
       function = 'foreground=gauss.m ,height=100,centre=50,sigma=7' ; background=gauss.m ,height_bkgd=100,centre_bkgd=50,sigma_bkgd=7'
 
 
