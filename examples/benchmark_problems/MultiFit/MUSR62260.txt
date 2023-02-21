@@ -6,3 +6,4 @@ input_file = ['MUSR62260_bkwd.txt','MUSR62260_bottom.txt','MUSR62260_fwd.txt','M
 function = 'name=FlatBackground,A0=0; name=GausOsc,A=0.2,Sigma=0.2,Frequency=1,Phi=0'
 ties = ['f1.Sigma', 'f1.Frequency']
 fit_ranges = [{'x': [0.1, 15.0]}, {'x': [0.1, 15.0]}, {'x': [0.1, 15.0]}, {'x': [0.1, 15.0]}]
+plot_scale = 'linear'

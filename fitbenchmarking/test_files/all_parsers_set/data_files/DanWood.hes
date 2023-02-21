@@ -1,0 +1,6 @@
+# Hessian for NIST problem DanWood
+# Computed using script in
+# examples/scripts/hessians/NIST_low_difficulty_hessians.py
+
+H = [[0, x**b2*log(x)],
+    [x**b2*log(x), b1*x**b2*log(x)**2]]

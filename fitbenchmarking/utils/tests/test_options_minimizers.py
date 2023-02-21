@@ -84,8 +84,15 @@ class MininimizerOptionTests(unittest.TestCase):
         """
         Checks valid scipy minimizers are set correctly
         """
-        expected = ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP']
+        expected = ['Nelder-Mead',
+                    'Powell',
+                    'CG',
+                    'BFGS',
+                    'Newton-CG',
+                    'L-BFGS-B',
+                    'TNC',
+                    'SLSQP',
+                    'COBYLA']
         actual = self.options.minimizers['scipy']
         self.assertEqual(expected, actual)
 

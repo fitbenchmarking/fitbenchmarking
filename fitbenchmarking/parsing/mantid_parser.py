@@ -41,8 +41,11 @@ class MantidParser(FitbenchmarkParser):
         params = {name: value
                   for name, value, fixed in all_params
                   if not fixed}
+
         # pylint: disable=attribute-defined-outside-init
+        self._equation = ifun.name()
         self._starting_values = [OrderedDict(params)]
+        # pylint: enable=attribute-defined-outside-init
 
         # Convert to callable
         fit_function = msapi.FunctionWrapper(ifun)
@@ -132,3 +135,15 @@ class MantidParser(FitbenchmarkParser):
         except KeyError:
             ties = []
         return ties
+
+    def _parse_function(self, *args, **kwargs):
+        """
+        Override the default function parsing as this is offloaded to mantid.
+        """
+        return []
+
+    def _get_equation(self, *args, **kwargs):
+        """
+        Override the default function parsing as this is offloaded to mantid.
+        """
+        return self._equation

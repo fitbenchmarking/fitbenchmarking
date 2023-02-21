@@ -1,6 +1,7 @@
 '''
 This file will handle all interaction with the options configuration file.
 '''
+# pylint: disable=too-many-branches
 
 import configparser
 import os
@@ -13,13 +14,15 @@ class Options:
     """
     An options class to store and handle all options for fitbenchmarking
     """
-
-    DEFAULTS = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                            'default_options.ini'))
     VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN', 'HESSIAN',
                       'OUTPUT', 'LOGGING']
     VALID_MINIMIZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq'],
+        {'bumps': ['amoeba',
+                   'lm-bumps',
+                   'newton',
+                   'de',
+                   'scipy-leastsq',
+                   'dream'],
          'ceres': ['Levenberg_Marquardt', 'Dogleg', 'BFGS', 'LBFGS',
                    'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
                    'Hestenes_Stiefel'],
@@ -42,6 +45,29 @@ class Options:
                  'vector_bfgs2', 'steepest_descent'],
          'horace': ['lm-lsqr'],
          'levmar': ['levmar'],
+         'lmfit': ['differential_evolution',
+                   'brute',
+                   'basinhopping',
+                   'powell',
+                   'cobyla',
+                   'slsqp',
+                   'emcee',
+                   'nelder',
+                   'least_squares',
+                   'trust-ncg',
+                   'trust-exact',
+                   'trust-krylov',
+                   'trust-constr',
+                   'dogleg',
+                   'leastsq',
+                   'newton',
+                   'tnc',
+                   'lbfgsb',
+                   'bfgs',
+                   'cg',
+                   'ampgo',
+                   'shgo',
+                   'dual_annealing'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
@@ -56,8 +82,20 @@ class Options:
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg',
                     'newton', 'newton_reg',
                     'newton-tensor', 'newton-tensor_reg'],
-         'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                   'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
+         'scipy': ['Nelder-Mead',
+                   'Powell',
+                   'CG',
+                   'BFGS',
+                   'Newton-CG',
+                   'L-BFGS-B',
+                   'TNC',
+                   'SLSQP',
+                   'COBYLA',
+                   'trust-ncg',
+                   'trust-exact',
+                   'trust-krylov',
+                   'trust-constr',
+                   'dogleg'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing']}
     VALID_FITTING = \
@@ -66,9 +104,9 @@ class Options:
                             'gauss_newton', 'bfgs', 'conjugate_gradient',
                             'steepest_descent', 'global_optimization'],
          'software': ['bumps', 'ceres', 'dfo', 'gofit', 'gradient_free', 'gsl',
-                      'horace', 'levmar', 'mantid', 'matlab', 'matlab_curve',
-                      'matlab_opt', 'matlab_stats', 'minuit', 'ralfit',
-                      'scipy', 'scipy_ls', 'scipy_go'],
+                      'horace', 'levmar', 'lmfit', 'mantid', 'matlab',
+                      'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
+                      'ralfit', 'scipy', 'scipy_ls', 'scipy_go'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
@@ -93,8 +131,10 @@ class Options:
          'append': [True, False],
          'external_output': ['debug', 'display', 'log_only'],
          'make_plots': [True, False],
+         'pbar': [True, False],
          'comparison_mode': ['abs', 'rel', 'both'],
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
+         'results_browser': [True, False],
          'colour_map': plt.colormaps()}
     VALID_LOGGING = \
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
@@ -110,7 +150,10 @@ class Options:
              'LOGGING': VALID_LOGGING}
 
     DEFAULT_MINIMZERS = \
-        {'bumps': ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq'],
+        {'bumps': ['amoeba',
+                   'lm-bumps',
+                   'newton',
+                   'scipy-leastsq'],
          'ceres': ['Levenberg_Marquardt', 'Dogleg', 'BFGS', 'LBFGS',
                    'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
                    'Hestenes_Stiefel'],
@@ -130,6 +173,18 @@ class Options:
                  'vector_bfgs2', 'steepest_descent'],
          'horace': ['lm-lsqr'],
          'levmar': ['levmar'],
+         'lmfit': ['powell',
+                   'cobyla',
+                   'slsqp',
+                   'nelder',
+                   'least_squares',
+                   'leastsq',
+                   'newton',
+                   'tnc',
+                   'lbfgsb',
+                   'bfgs',
+                   'cg',
+                   'ampgo'],
          'mantid': ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
@@ -143,8 +198,15 @@ class Options:
          'minuit': ['minuit'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg',
                     'newton', 'newton_reg'],
-         'scipy': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                   'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
+         'scipy': ['Nelder-Mead',
+                   'Powell',
+                   'CG',
+                   'BFGS',
+                   'Newton-CG',
+                   'L-BFGS-B',
+                   'TNC',
+                   'SLSQP',
+                   'COBYLA'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'dual_annealing']}
     DEFAULT_FITTING = \
@@ -168,10 +230,12 @@ class Options:
     DEFAULT_OUTPUT = \
         {'results_dir': 'fitbenchmarking_results',
          'make_plots': True,
+         'pbar': True,
          'colour_map': 'magma_r',
          'colour_ulim': 100,
          'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
+         'results_browser': True,
          'table_type': ['acc', 'runtime', 'compare', 'local_min']}
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
@@ -185,6 +249,7 @@ class Options:
                 'OUTPUT': DEFAULT_OUTPUT,
                 'LOGGING': DEFAULT_LOGGING}
 
+    # pylint: disable=too-many-statements
     def __init__(self, file_name=None, additional_options=None):
         """
         Initialise the options from a file if file is given.
@@ -222,8 +287,8 @@ class Options:
             # Checks that the user defined sections are valid
             if config.sections() != self.VALID_SECTIONS:
                 raise OptionsError(
-                    "Invalid options sections set, {0}, the valid sections "
-                    "are {1}".format(config.sections(), self.VALID_SECTIONS))
+                    f"Invalid options sections set, {config.sections()}, "
+                    f"the valid sections are {self.VALID_SECTIONS}")
             config.sections()
 
             # Checks that the options within the sections are valid
@@ -232,11 +297,9 @@ class Options:
                 user_options_list = [option[0] for option in config.items(key)]
                 if not set(user_options_list) <= set(default_options_list):
                     raise OptionsError(
-                        "Invalid options key set in the {2} Section: \n{0}, \n"
-                        " the valid keys are: \n{1}".format(
-                            user_options_list,
-                            default_options_list,
-                            key))
+                        f"Invalid options key set in the {key} Section: \n"
+                        f"{user_options_list}, \n "
+                        f"the valid keys are: \n{default_options_list}")
 
         minimizers = config['MINIMIZERS']
         self._minimizers = {}
@@ -292,6 +355,18 @@ class Options:
             self.make_plots = self.read_value(
                 output.getboolean, 'make_plots', additional_options)
 
+        if 'results_browser' in additional_options:
+            self.results_browser = additional_options['results_browser']
+        else:
+            self.results_browser = self.read_value(
+                output.getboolean, 'results_browser', additional_options)
+
+        if 'pbar' in additional_options:
+            self.pbar = additional_options['pbar']
+        else:
+            self.pbar = self.read_value(
+                output.getboolean, 'pbar', additional_options)
+
         self.colour_map = self.read_value(
             output.getstr, 'colour_map', additional_options)
         self.colour_ulim = self.read_value(
@@ -324,8 +399,10 @@ class Options:
                                                'external_output',
                                                additional_options)
 
-        if self.error_message != []:
+        if self.error_message:
             raise OptionsError('\n'.join(self.error_message))
+
+    # pylint: enable=too-many-statements
 
     def read_value(self, func, option, additional_options):
         """
@@ -428,6 +505,8 @@ class Options:
                             'colour_ulim': self.colour_ulim,
                             'comparison_mode': self.comparison_mode,
                             'make_plots': self.make_plots,
+                            'results_browser': self.results_browser,
+                            'pbar': self.pbar,
                             'table_type': list_to_string(self.table_type)}
 
         config['LOGGING'] = {'file_name': self.log_file,

@@ -5,3 +5,4 @@ description = 'An example of INS spectrum fitting'
 input_file = 'NdOs2Al10_5K35meV_Ecut_0to3ang_bp15V1.txt'
 function = 'name=CrystalFieldSpectrum, Ion=Nd, Symmetry=C2v, Temperature=5., FWHM=1., PeakShape=Lorentzian, IntensityScaling=2., B20=0.19, B22=0.11, B40=-0.0004, B42=-0.002, B44=-0.012, B60=0.00005, B62=0.00054, B64=-0.0006, B66=0.0008, ties = (BmolX=0, BmolY=0, BmolZ=0, BextX=0, BextY=0, BextZ=0)'
 parameter_ranges = {'B20': (-0.3013,0.3013), 'B22': (-0.5219,0.5219), 'B40': (-0.004624,0.004624), 'B42': (-0.02068,0.02068), 'B44': (-0.02736,0.02736), 'B60': (-0.0001604,0.0001604), 'B62': (-0.001162,0.001162), 'B64': (-0.001273,0.001273), 'B66': (-0.001724,0.001724), 'IntensityScaling': (0.,10.), 'f0.FWHM': (0.1,5.0), 'f1.FWHM': (0.1,5.0), 'f2.FWHM': (0.1,5.0), 'f3.FWHM': (0.1,5.0), 'f4.FWHM': (0.1,7.0)}
+plot_scale = 'linear'
