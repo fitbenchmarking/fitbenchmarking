@@ -230,7 +230,7 @@ class Controller:
                  given parameters
         :rtype: numpy array
         """
-        kwargs = {k:v for k, v in zip('xye', [x,y,e]) if v is not None}
+        kwargs = {k: v for k, v in zip('xye', [x, y, e]) if v is not None}
         out = self.cost_func.eval_cost(params=params, **kwargs)
         return out
 

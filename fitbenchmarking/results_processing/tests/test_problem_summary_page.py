@@ -127,6 +127,7 @@ class CreateSummaryPageTests(TestCase):
         self.best_results = best_results[self.prob_name]
         cat_results = [(cf, r, 'Some text')
                        for cf, r in self.best_results.items()]
+        # pylint: disable=protected-access
         problem_summary_page._create_summary_page(
             categorised_best_results=cat_results,
             summary_plot_path='plot_path',

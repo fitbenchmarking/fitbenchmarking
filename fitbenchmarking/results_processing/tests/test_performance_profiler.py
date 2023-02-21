@@ -6,8 +6,6 @@ from __future__ import absolute_import, division, print_function
 import inspect
 import os
 import unittest
-from collections import OrderedDict
-from pprint import pprint
 
 import numpy as np
 
