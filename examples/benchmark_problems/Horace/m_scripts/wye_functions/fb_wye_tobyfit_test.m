@@ -6,12 +6,12 @@ load(datafile, 'w1a', 'w1b');
 addpath(genpath(path));
 
 
-[spinw_y, spinw_e, msk] = sigvar_get(w1a);
+[y, e, msk] = sigvar_get(w1a);
 
-msk(spinw_y==0) = 0;
+msk(y==0) = 0;
 
-y = spinw_y(msk);
-e = sqrt(spinw_e(msk));
+y = y(msk);
+e = sqrt(e(msk));
 w = w1a; 
 
 end

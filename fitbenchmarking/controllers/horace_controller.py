@@ -44,7 +44,7 @@ class HoraceController(MatlabMixin, Controller):
 
     def horace_on(self):
         """
-        Turning Horace and SpinW on in matlab
+        Turning Horace on in matlab
         """
         if "HORACE_LOCATION" in os.environ:
             horace_location = os.environ["HORACE_LOCATION"]

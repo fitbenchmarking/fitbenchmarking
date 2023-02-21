@@ -1,4 +1,4 @@
-function spinw_y = fb_simulate_pcsmo_test(w,fitpars,msk)
+function y = fb_simulate_pcsmo_test(w,fitpars,msk)
 %simulate loop to solve for the parameters 
 
 persistent seed
@@ -25,6 +25,6 @@ tbf = tbf.set_fun(@sw_obj.horace_sqw, {cpars{:}});
 tbf = tbf.set_mc_points(5);
 [fit_data , fit_pars] = tbf.simulate();
 
-[spinw_y, e, ~] = sigvar_get(fit_data);
+[y, e, ~] = sigvar_get(fit_data);
 
-spinw_y=spinw_y(msk);
+y=y(msk);

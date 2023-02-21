@@ -21,10 +21,10 @@ w1 = set_sample(w1,sample);
 w1 = set_instrument(w1,maps);
 w1 = mask_random_fraction_pixels(w1, 0.00001);
 
-[spinw_y, spinw_e, msk] = sigvar_get(w1);
+[y, e, msk] = sigvar_get(w1);
 
-msk(spinw_y==0) = 0;
+msk(y==0) = 0;
 
-y = spinw_y(msk);
-e = sqrt(spinw_e(msk));
+y = y(msk);
+e = sqrt(e(msk));
 w = w1; 

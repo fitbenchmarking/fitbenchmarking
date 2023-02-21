@@ -1,4 +1,4 @@
-function spinw_y = fb_simulate_IX_1D_test4(w,fitpars,msk)
+function y = fb_simulate_IX_1D_test4(w,fitpars,msk)
 % simulate loop to solve for the parameters 
 
 pf0 = fitpars(1:3);
@@ -10,8 +10,8 @@ kk = kk.set_fun (@slow_func, {pf0, @gauss, nslow});
 kk = kk.set_bfun (@slow_func, {pb0, @linear_bg, nslow});
 kk = kk.set_bfree ([1,0]);
 [wfit, ffit] = kk.simulate();
-[spinw_y, e] = sigvar_get(wfit);
-spinw_y=spinw_y(msk);
+[y, e] = sigvar_get(wfit);
+y=y(msk);
 
 end
 

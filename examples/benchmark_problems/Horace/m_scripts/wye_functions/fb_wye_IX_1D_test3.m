@@ -4,12 +4,12 @@ function [w, y, e, msk] = fb_wye_IX_1D_test3(datafile, path)
 source_data = load(datafile);
 addpath(genpath(path));
 w = source_data.w3 ;
-[spinw_y, spinw_e, msk] = sigvar_get(w);
+[y, e, msk] = sigvar_get(w);
 
-msk(spinw_y==0) = 0;
+msk(y==0) = 0;
 
-y = spinw_y(msk);
-e = sqrt(spinw_e(msk));
+y = y(msk);
+e = sqrt(e(msk));
 
 end
 

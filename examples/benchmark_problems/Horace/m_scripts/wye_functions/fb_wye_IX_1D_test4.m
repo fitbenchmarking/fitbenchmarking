@@ -20,12 +20,12 @@ w = w + func_eval(w, @linear_bg, pb);   % add 'background' model
 win = noisify (w, 'poisson');           % noisify with poisson noise
 w = win;
 
-[spinw_y, spinw_e, msk] = sigvar_get(w);
+[y, e, msk] = sigvar_get(w);
 
-msk(spinw_y==0) = 0;
+msk(y==0) = 0;
 
-y = spinw_y(msk);
-e = sqrt(spinw_e(msk));
+y = y(msk);
+e = sqrt(e(msk));
 
 end
 

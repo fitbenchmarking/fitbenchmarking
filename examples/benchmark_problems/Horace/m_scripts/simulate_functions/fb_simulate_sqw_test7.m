@@ -1,4 +1,4 @@
-function spinw_y = fb_simulate_sqw_test7(w,fitpars,msk)
+function y = fb_simulate_sqw_test7(w,fitpars,msk)
 %simulate loop to solve for the parameters 
 
 cpars = [fitpars(1:2) 0 10 0];
@@ -13,8 +13,8 @@ mss = mss.set_bpin(bcpars)
 mss = mss.set_bfree([1,1,1,1,1]);    % set which parameters are floating
 mss = mss.set_bbind({1,[1,-1],1},{2,[2,-1],1});
 [wfit_1, fitpar_1]  = mss.simulate();
-[spinw_y, e] = sigvar_get(wfit_1);
-spinw_y=spinw_y(msk==1);
+[y, e] = sigvar_get(wfit_1);
+y=y(msk==1);
 
 
 
