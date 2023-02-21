@@ -344,7 +344,7 @@ class Table:
                         result.modified_minimizer_name()))
                 if len(minimizers_list) == i:
                     minimizers_list.append(formatted)
-                elif len(minimizers_list[2]) < len(formatted[2]):
+                elif len(minimizers_list[i][2]) < len(formatted[2]):
                     minimizers_list[i] = formatted
 
         columns = pd.MultiIndex.from_tuples(minimizers_list)
