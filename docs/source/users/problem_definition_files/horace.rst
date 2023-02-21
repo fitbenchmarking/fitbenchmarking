@@ -65,9 +65,12 @@ function
 
       function = 'foreground=m_scripts/functions/gauss.m ,height=1100,centre=66 ,stdev=13; background=m_scripts/functions/linear_bg.m ,bkgd_const=15'
 
-  .. note::
-    All parameters must have unique names e.g. 
-    ``function = 'foreground=gauss.m ,height=100,centre=50,sigma=7' ; background=gauss.m ,height_bkgd=100,centre_bkgd=50,sigma_bkgd=7' ``
+.. note::
+  
+    All parameters must have unique names e.g.
+    
+    .. code-block:: rst
+      function = 'foreground=gauss.m ,height=100,centre=50,sigma=7' ; background=gauss.m ,height_bkgd=100,centre_bkgd=50,sigma_bkgd=7'
 
 
 
