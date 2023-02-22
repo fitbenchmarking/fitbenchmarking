@@ -758,7 +758,7 @@ differentiable architectures.
 
 **Licence** Theseus is available under a `MIT licence <https://github.com/facebookresearch/theseus/blob/main/LICENSE>`__.
 
-The SciPy global optimization minimizers are set as follows:
+The theseus minimizers are set as follows:
 
 .. code-block:: rst
 
