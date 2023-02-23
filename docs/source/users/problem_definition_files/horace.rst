@@ -159,14 +159,6 @@ Explained Example of the simulate_function:
         rng(seed);
     end
 
-.. note:: 
-  If the Horace benchmark problem is run in parallel make sure to turn off hpc after :code:`simulate()` in the simulate_function 
-  matlab script. 
-
-  .. code-block:: matlab
-
-    hpc('off')
-
 
 Examples of the simulate_function:
   
