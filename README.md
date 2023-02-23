@@ -1,5 +1,5 @@
-[![Build Status](https://img.shields.io/github/workflow/status/fitbenchmarking/fitbenchmarking/Build%20and%20Publish?style=flat-square)](https://github.com/fitbenchmarking/fitbenchmarking/actions/workflows/release.yml)
-[![Tests Status](https://img.shields.io/github/workflow/status/fitbenchmarking/fitbenchmarking/Tests?label=tests&style=flat-square)](https://github.com/fitbenchmarking/fitbenchmarking/actions/workflows/main.yml)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/fitbenchmarking/fitbenchmarking/release.yml?style=flat-square)](https://github.com/fitbenchmarking/fitbenchmarking/actions/workflows/release.yml)
+[![Tests Status](https://img.shields.io/github/actions/workflow/status/fitbenchmarking/fitbenchmarking/main.yml?label=tests&style=flat-square)](https://github.com/fitbenchmarking/fitbenchmarking/actions/workflows/main.yml)
 [![Documentation Status](https://img.shields.io/readthedocs/fitbenchmarking?style=flat-square)](https://fitbenchmarking.readthedocs.io/en/latest)
 [![Coverage Status](https://img.shields.io/coveralls/github/fitbenchmarking/fitbenchmarking.svg?style=flat-square)](https://coveralls.io/github/fitbenchmarking/fitbenchmarking)
 ![Windows Supported](https://img.shields.io/badge/win10-support-blue.svg?style=flat-square&logo=windows)
