@@ -46,13 +46,14 @@ class HoraceController(MatlabMixin, Controller):
         """
         Turning Horace on in matlab
         """
-        if "HORACE_LOCATION" in os.environ:
-            horace_location = os.environ["HORACE_LOCATION"]
-            self.eng.evalc("restoredefaultpath")
-            self.eng.evalc(f"addpath('{horace_location}')")
-            self.eng.evalc("horace_on")
-        else:
-            self.eng.evalc("horace_on")
+        if self.cost_func.problem.format != 'horace':
+            if "HORACE_LOCATION" in os.environ:
+                horace_location = os.environ["HORACE_LOCATION"]
+                self.eng.evalc("restoredefaultpath")
+                self.eng.evalc(f"addpath('{horace_location}')")
+                self.eng.evalc("horace_on")
+            else:
+                self.eng.evalc("horace_on")
 
     def setup(self):
         """
