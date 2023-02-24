@@ -24,7 +24,6 @@ def horace_on():
         eng.evalc(f"addpath('{horace_location}')")
         eng.evalc("horace_on")
         eng.evalc(f"addpath('{spinw_location}')")
-        eng.evalc("spinw_on")
     elif "HORACE_LOCATION" not in os.environ and \
          "SPINW_LOCATION" in os.environ:
         raise ParsingError('Could not parse SpinW problem. Please ensure '
@@ -112,27 +111,39 @@ class HoraceParser(FitbenchmarkParser):
         :rtype: callable
         """
         # pylint: disable=attribute-defined-outside-init
+        function_string = "{loc}: {f_name}<br>parameters: {p_names}"
+        foreground_func = self._parsed_func[0]
+        foreground_params = [k for k in foreground_func if k != 'foreground']
+        foreground_params_string = ', '.join(foreground_params)
+        foreground_func_name = os.path.splitext(
+            os.path.basename(foreground_func['foreground']))[0]
+        frgd_eq = function_string.format(loc="foreground",
+                                         f_name=foreground_func_name,
+                                         p_names=foreground_params_string
+                                         )
+        foreground_starting_vals = {n: foreground_func[n]
+                                    for n in foreground_params}
+
         if len(self._parsed_func) == 1:
-            pfg = self._parsed_func[0]
-            p_names = [k for k in pfg if k != 'foreground']
-            equations = "foreground: " + \
-                os.path.splitext(os.path.basename(pfg['foreground']))[0] +\
-                "<br>" + 'parameters: ' + ', '.join(p_names)
-            start_values = [{n: pfg[n] for n in p_names}]
+            equations = frgd_eq
+            start_values = [foreground_starting_vals]
         else:
-            pfg = self._parsed_func[0]
-            pbg = self._parsed_func[1]
-            p_names = [k for k in pfg if k != 'foreground']
-            bp_names = [k for k in pbg if k != 'background']
-            equations = "foreground: " + \
-                os.path.splitext(os.path.basename(pfg['foreground']))[0] +\
-                "<br>" + 'parameters: ' + ', '.join(p_names) +\
-                "<br>" + "background: " +\
-                os.path.splitext(os.path.basename(pbg['background']))[0] \
-                + '<br>' + 'parameters: ' + ', '.join(bp_names)
-            fg_starting_vals = {n: pfg[n] for n in p_names}
-            bg_starting_vals = {n: pbg[n] for n in bp_names}
-            start_values = [{**fg_starting_vals, **bg_starting_vals}]
+            background_func = self._parsed_func[1]
+            background_params = [k for k in background_func
+                                 if k != 'background']
+            background_params_string = ', '.join(background_params)
+            background_func_name = os.path.splitext(
+                os.path.basename(background_func['background']))[0]
+            bkgd_eq = function_string.format(loc="background",
+                                             f_name=background_func_name,
+                                             p_names=background_params_string
+                                             )
+            equations = frgd_eq + "<br>" + bkgd_eq
+
+            background_starting_vals = {n: background_func[n]
+                                        for n in background_params}
+            start_values = [{**foreground_starting_vals,
+                             **background_starting_vals}]
 
         self._equation = equations
         self._starting_values = start_values
