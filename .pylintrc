@@ -49,9 +49,9 @@ ignored-modules=levmar,
                 pycutest,
                 ral_nlls,
                 PyCeres,
-                nlopt
+                nlopt,
                 theseus,
-                lmfit
+                lmfit,
 
 [DESIGN]
 
