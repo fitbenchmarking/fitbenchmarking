@@ -2,7 +2,7 @@ function pcsmo = pcsmo_model(JF1, JA, JF2, JF3, Jperp, D)
 
 %JF1 = -11.39; JA = 1.5; JF2 = -1.35; JF3 = 1.5; Jperp = 0.88; D = 0.074;
 %JF1 = str2num(JF1); JA = str2num(JA); JF2 = str2num(JF2); JF3 = str2num(JF3); Jperp = str2num(Jperp); D = str2num(D);
-disp(sprintf('Parameters: JF1=%f, JA=%f, JF2=%f, JF3=%f, Jperp=%f, D=%f', JF1, JA, JF2, JF3, Jperp, D));
+fprintf('Parameters: JF1=%f, JA=%f, JF2=%f, JF3=%f, Jperp=%f, D=%f', JF1, JA, JF2, JF3, Jperp, D);
 
 % Define the Horace model - same as the file prcasrmn2o7.m
 % From the "real world" systems tutorial.

@@ -19,7 +19,7 @@ ebin = [lower_e, ei(4)/25, upper_e];
 w1 = cut_sqw(sqw_file, proj, [-1, 2/39, 1], [-1, 2/39, 1], [-10, 10], ebin);
 w1 = set_sample(w1,sample);
 w1 = set_instrument(w1,maps);
-w1 = mask_random_fraction_pixels(w1, 0.00001);
+w1 = mask_random_fraction_pixels(w1, 0.1);
 
 [y, e, msk] = sigvar_get(w1);
 
