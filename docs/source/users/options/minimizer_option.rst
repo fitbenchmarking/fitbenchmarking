@@ -741,3 +741,30 @@ The SciPy global optimization minimizers are set as follows:
    The shgo solver is particularly slow running and should generally be avoided. As a result, this solver is
    not run by default when `scipy_go` software is selected. In order to run this minimizer, you must explicitly
    set it as above.
+
+.. _theseus:
+
+Theseus (``theseus``)
+=======================
+
+`Theseus <https://sites.google.com/view/theseus-ai/>`__ is an efficient application-agnostic library for building custom nonlinear optimization
+layers in PyTorch to support constructing various problems in robotics and vision as end-to-end
+differentiable architectures.
+
+* Levenberg Marquardt (:code:`Levenberg_Marquardt`)
+* Gauss Newton (:code:`Gauss-Newton`)
+
+**Links** `Paper- Theseus optimization <https://arxiv.org/pdf/2207.09442.pdf/>`__
+
+**Licence** Theseus is available under a `MIT licence <https://github.com/facebookresearch/theseus/blob/main/LICENSE>`__.
+
+The theseus minimizers are set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    theseus: Levenberg_Marquardt
+             Gauss-Newton
+
+.. note::
+   We strongly recommend you install Theseus in a venv or conda environment with Python 3.7-3.9

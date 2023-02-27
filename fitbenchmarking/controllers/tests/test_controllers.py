@@ -43,6 +43,8 @@ if TEST_TYPE == 'all':
         GradientFreeController
     from fitbenchmarking.controllers.gofit_controller import GOFitController
     from fitbenchmarking.controllers.ceres_controller import CeresController
+    from fitbenchmarking.controllers.theseus_controller import\
+        TheseusController
 
 if TEST_TYPE == 'matlab':
     from fitbenchmarking.controllers.matlab_controller import MatlabController
@@ -784,6 +786,25 @@ class ExternalControllerTests(TestCase):
         self.shared_tests.check_max_iterations(controller)
         controller._info = (0, 1, 2, "diverged", 4, 5, 6)
         self.shared_tests.check_diverged(controller)
+
+    def test_theseus(self):
+        """
+        TheseusController: Tests for output shape
+        """
+        controller = TheseusController(self.cost_func)
+
+        # test one from each class
+        minimizers = ['Levenberg_Marquardt', 'Gauss-Newton']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._status = "NonlinearOptimizerStatus.CONVERGED"
+            self.shared_tests.check_converged(controller)
+            controller._status = "NonlinearOptimizerStatus.MAX_ITERATIONS"
+            self.shared_tests.check_max_iterations(controller)
+            controller._status = ""
+            self.shared_tests.check_diverged(controller)
 
     def test_ceres(self):
         """
