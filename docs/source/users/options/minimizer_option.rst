@@ -609,8 +609,17 @@ order derivatives are currently utilized in FitBenchmarking.
 
 * Gauss-Newton, trust region method (:code:`gn`)
 * Hybrid Newton/Gauss-Newton, trust region method (:code:`hybrid`)
+* Newton, trust region method (:code:`newton`)
+* Newton-tensor, trust region method (:code:`newton-tensor`)
 * Gauss-Newton, regularization (:code:`gn_reg`)
 * Hybrid Newton/Gauss-Newton, regularization (:code:`hybrid_reg`)
+* Newton, regularization (:code:`newton_reg`)
+* Newton-tensor, regularization (:code:`newton-tensor_reg`)
+
+Note that the Newton-tensor methods take significantly longer than the other
+options to run (but may give a better solution in some cases).  For this
+reason, they are not included in the default minimizers for RALFit, but
+must be turned on in the options file.
 
 **Links** `Github - RALFit <https://github.com/ralna/ralfit/>`__. RALFit's Documentation on: `Gauss-Newton/Hybrid models <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-models>`__,  `the trust region method <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-trust-region-method>`__ and  `The regularization method <https://ralfit.readthedocs.io/projects/C/en/latest/method.html#regularization>`__
 
