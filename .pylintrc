@@ -50,6 +50,7 @@ ignored-modules=levmar,
                 ral_nlls,
                 PyCeres,
                 nlopt
+                theseus,
                 lmfit
 
 [DESIGN]
