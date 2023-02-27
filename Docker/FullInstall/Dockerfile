@@ -183,6 +183,24 @@ RUN make install
 ENV PYCERES_LOCATION=/ceres/ceres-bin/lib
 
 WORKDIR /
+
+
+###########
+# Theseus #
+###########
+
+WORKDIR /
+
+RUN apt-get install libsuitesparse-dev
+
+# Install pytorch
+RUN pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+
+# Install theseus
+RUN pip install theseus-ai
+
+WORKDIR /
+
 ###########
 # Tidy up #
 ###########
