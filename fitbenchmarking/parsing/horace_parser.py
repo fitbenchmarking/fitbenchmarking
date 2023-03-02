@@ -71,12 +71,12 @@ class HoraceParser(FitbenchmarkParser):
         :return: data
         :rtype: dict<str, np.ndarray>
         """
-        path = pathlib.Path(self._filename).parent
-        eng.addpath(str(path))
-
         wye_data_f = self._parse_function(self._entries['wye_function'])
         script = pathlib.Path(wye_data_f[0]['matlab_script'])
         func_name = script.stem
+
+        path = pathlib.Path(self._filename).parent / script.parent
+        eng.addpath(str(path))
 
         self._horace_path = str(path.resolve())
 
@@ -151,9 +151,10 @@ class HoraceParser(FitbenchmarkParser):
         self._starting_values = start_values
 
         simulate_f = self._parse_function(self._entries['simulate_function'])
-        path = pathlib.Path(self._filename).parent
+        script = pathlib.Path(simulate_f[0]['matlab_script'])
+        path = pathlib.Path(self._filename).parent / script.parent
         eng.addpath(str(path))
-        simulate_func_name = pathlib.Path(simulate_f[0]['matlab_script']).stem
+        simulate_func_name = script.stem
 
         def fit_function(x, *p):
             # Assume, for efficiency, matching shape => matching values
