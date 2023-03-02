@@ -103,9 +103,11 @@ class HoraceController(MatlabMixin, Controller):
         self.final_params = np.array(self._fit_params['p'][0],
                                      dtype=np.float64).flatten()
 
+        self.clear_matlab()
+
         # Allow repeat calls to cleanup without falling over
         if self.cost_func.problem.format != 'horace':
             try:
-                self.eng.evalc('horace_off;')
+                self.eng.evalc('horace_off; herbert_off;')
             except matlab.engine.MatlabExecutionError:
                 pass
