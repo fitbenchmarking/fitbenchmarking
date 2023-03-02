@@ -2,6 +2,7 @@
 This file implements a parser for Horace problem sets.
 """
 import os
+import pathlib
 import typing
 
 import matlab
@@ -50,6 +51,9 @@ class HoraceParser(FitbenchmarkParser):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self._equation = None
+        self._starting_values = None
+
         # A container for improving efficiency in function call if calling
         # with full input data
         self._horace_x: typing.Optional[np.ndarray] = None
@@ -67,16 +71,16 @@ class HoraceParser(FitbenchmarkParser):
         :return: data
         :rtype: dict<str, np.ndarray>
         """
-        wye_data_f = self._parse_function(self._entries['wye_function'])
-        path = os.path.join(os.path.dirname(self._filename),
-                            wye_data_f[0]['matlab_script'])
-        eng.addpath(os.path.dirname(path))
-        func_name = os.path.basename(path).split('.', 1)[0]
+        path = pathlib.Path(self._filename).parent
+        eng.addpath(str(path))
 
-        self._horace_path = os.path.abspath(os.path.dirname(self._filename))
+        wye_data_f = self._parse_function(self._entries['wye_function'])
+        script = pathlib.Path(wye_data_f[0]['matlab_script'])
+        func_name = script.stem
+
+        self._horace_path = str(path.resolve())
 
         name = self._entries["name"].replace(' ', '_')
-
         self._horace_w = f'w_{name}'
         self._horace_msk = f'msk_{name}'
 
@@ -110,13 +114,11 @@ class HoraceParser(FitbenchmarkParser):
         :return: A callable function
         :rtype: callable
         """
-        # pylint: disable=attribute-defined-outside-init
         function_string = "{loc}: {f_name}<br>parameters: {p_names}"
         foreground_func = self._parsed_func[0]
         foreground_params = [k for k in foreground_func if k != 'foreground']
         foreground_params_string = ', '.join(foreground_params)
-        foreground_func_name = os.path.splitext(
-            os.path.basename(foreground_func['foreground']))[0]
+        foreground_func_name = pathlib.Path(foreground_func['foreground']).stem
         frgd_eq = function_string.format(loc="foreground",
                                          f_name=foreground_func_name,
                                          p_names=foreground_params_string
@@ -132,8 +134,8 @@ class HoraceParser(FitbenchmarkParser):
             background_params = [k for k in background_func
                                  if k != 'background']
             background_params_string = ', '.join(background_params)
-            background_func_name = os.path.splitext(
-                os.path.basename(background_func['background']))[0]
+            background_func_name = \
+                pathlib.Path(background_func['background']).stem
             bkgd_eq = function_string.format(loc="background",
                                              f_name=background_func_name,
                                              p_names=background_params_string
@@ -149,10 +151,9 @@ class HoraceParser(FitbenchmarkParser):
         self._starting_values = start_values
 
         simulate_f = self._parse_function(self._entries['simulate_function'])
-        path = os.path.join(os.path.dirname(self._filename),
-                            simulate_f[0]['matlab_script'])
-        eng.addpath(os.path.dirname(path))
-        simulate_func_name = os.path.basename(path).split('.', 1)[0]
+        path = pathlib.Path(self._filename).parent
+        eng.addpath(str(path))
+        simulate_func_name = pathlib.Path(simulate_f[0]['matlab_script']).stem
 
         def fit_function(x, *p):
             # Assume, for efficiency, matching shape => matching values
@@ -201,5 +202,6 @@ class HoraceParser(FitbenchmarkParser):
             horace_on()
             eng.evalc(f"addpath(genpath('{self._horace_path}'))")
             print(eng.evalc(f"load('{path}')"))
+
         self.fitting_problem.set_persistent_vars = set_persistent_vars
         return super()._set_additional_info()

@@ -14,14 +14,14 @@ def add_persistent_matlab_var(name: str) -> None:
     :type name: str
     """
     ENG.evalc(
-        r'if not(exist("persistent_vars"));'
-        r' persistent_vars = {"persistent_vars"};'
-        r'end;'
+        'if ~exist("persistent_vars");'
+        ' persistent_vars = {"persistent_vars"};'
+        'end;'
     )
     ENG.evalc(
-        f'if not(any(cellfun(@(x) x=="{name}", persistent_vars)));'
+        f'if ~ismember("{name}", persistent_vars);'
         f' persistent_vars{{end+1}} = "{name}";'
-        r'end;'
+        'end;'
     )
 
 

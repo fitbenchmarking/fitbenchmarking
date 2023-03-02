@@ -2,9 +2,9 @@
 This file implements a parser for the Fitbenchmark data format.
 """
 import os
+import re
 import typing
 from collections import OrderedDict
-import re
 
 import numpy as np
 
@@ -260,7 +260,8 @@ class FitbenchmarkParser(Parser):
 
         return function_def
 
-    def _parse_single_function(self, func: str) -> dict:
+    @classmethod
+    def _parse_single_function(cls, func: str) -> dict:
         """
         Convert a string defining a single list of parameters into a
         dictionary with parsed values.
@@ -270,7 +271,11 @@ class FitbenchmarkParser(Parser):
           - vectors of float
           - int
           - float
+          - bool ('true', 'false')
           - strings (not containing '[](),=' )
+
+        Example:
+          a=1,b=3.2,c='foo',d=(e=true,f='bar'),h=[1.0,1.0,1.0]
 
         :param func: The definition to parse
         :type func: str
@@ -287,40 +292,60 @@ class FitbenchmarkParser(Parser):
                 f'Unexpected character in parameter name: {name}')
 
         if rhs[0] in '([':
-            count = 0
-            if rhs[0] == '[':
-                delim = '[]'
-            else:  # '('
-                delim = '()'
-
-            for i, c in enumerate(rhs):
-                if c == delim[0]:
-                    count += 1
-                elif c == delim[1]:
-                    count -= 1
-                if count == 0:
-                    value = rhs[:i]
-                    rem = rhs[i+1:].strip(',')
-                    break
-            else:
-                raise ParsingError('Not all brackets are closed in function.')
-
-            if delim == '()':
-                value = self._parse_single_function(value[1:])
-            else:  # []
-                value = [self._parse_function_value(v.strip())
-                         for v in value[1:].split(',') if v != '']
+            value, rem = cls._parse_parens(rhs)
         else:
             value, _, rem = rhs.partition(',')
-            value = self._parse_function_value(value)
+            value = cls._parse_function_value(value)
 
         func_dict = {name: value}
         if rem:
-            func_dict.update(self._parse_single_function(rem))
+            func_dict.update(cls._parse_single_function(rem))
         return func_dict
 
+    @classmethod
+    def _parse_parens(cls, string: str):
+        """
+        Parse a string starting with an opening bracket into the parsed
+        contents of the brackets and the remainder after the brackets.
+
+        If the string starts with '(' a dictionary is returned.
+        If the string starts with '[' a list is returned.
+
+        :param string: The string to parse
+        :type string: str
+        :raises ParsingError: If brackets remain unclosed
+
+        :return: The parsed value, the remainder of the string
+        :rtype: Union[dict, list], str
+        """
+        count = 0
+        if string[0] == '[':
+            delim = '[]'
+        else:  # '('
+            delim = '()'
+
+        for i, c in enumerate(string):
+            if c == delim[0]:
+                count += 1
+            elif c == delim[1]:
+                count -= 1
+            if count == 0:
+                value = string[:i]
+                rem = string[i+1:].strip(',')
+                break
+        else:
+            raise ParsingError('Not all brackets are closed in function.')
+
+        if delim == '()':
+            value = cls._parse_single_function(value[1:])
+        else:  # []
+            value = [cls._parse_function_value(v.strip())
+                     for v in value[1:].split(',') if v != '']
+
+        return value, rem
+
     @staticmethod
-    def _parse_function_value(value: str) -> typing.Union[int,float,str,bool]:
+    def _parse_function_value(value: str) -> 'int | float | bool | str':
         """
         Parse a value from a string into a numerical type if possible.
 
@@ -328,13 +353,13 @@ class FitbenchmarkParser(Parser):
         :type value: str
         :raises ParsingError: If the value has any unexpected characters
         :return: The parsed value
-        :rtype: int, float, or str
+        :rtype: bool, int, float, or str
         """
         if value.lower() == 'true':
             return True
         if value.lower() == 'false':
             return False
-        for convert in [int, float, str]:
+        for convert in [int, float]:
             try:
                 return convert(value)
             except (ValueError, TypeError):
