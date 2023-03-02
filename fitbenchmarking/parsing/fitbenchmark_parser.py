@@ -282,7 +282,7 @@ class FitbenchmarkParser(Parser):
         # pylint: disable=too-many-branches
         lhs, rhs = func.strip().split('=', 1)
         name = lhs
-        if not re.match(r'^[A-Za-z0-9_]+$', name):
+        if not re.match(r'^\w+$', name):
             raise ParsingError(
                 f'Unexpected character in parameter name: {name}')
 
@@ -306,16 +306,12 @@ class FitbenchmarkParser(Parser):
                 raise ParsingError('Not all brackets are closed in function.')
 
             if delim == '()':
-                value = self._parse_single_function(value[1:].strip())
+                value = self._parse_single_function(value[1:])
             else:  # []
                 value = [self._parse_function_value(v.strip())
                          for v in value[1:].split(',') if v != '']
         else:
-            if ',' in rhs:
-                value, rem = rhs.split(',', 1)
-            else:
-                value = rhs
-                rem = ''
+            value, _, rem = rhs.partition(',')
             value = self._parse_function_value(value)
 
         func_dict = {name: value}
@@ -324,7 +320,7 @@ class FitbenchmarkParser(Parser):
         return func_dict
 
     @staticmethod
-    def _parse_function_value(value: str):
+    def _parse_function_value(value: str) -> typing.Union[int,float,str,bool]:
         """
         Parse a value from a string into a numerical type if possible.
 
@@ -346,7 +342,7 @@ class FitbenchmarkParser(Parser):
         return value
 
     @staticmethod
-    def _get_data_points(data_file_path):
+    def _get_data_points(data_file_path: str):
         """
         Get the data points of the problem from the data file.
 
@@ -354,7 +350,7 @@ class FitbenchmarkParser(Parser):
         :type data_file_path: str
 
         :return: data
-        :rtype: dict<str, np.ndarray>
+        :rtype: dict[str, np.ndarray]
         """
 
         with open(data_file_path, 'r') as f:
