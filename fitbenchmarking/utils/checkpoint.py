@@ -28,17 +28,25 @@ class Checkpoint:
         """
         Set up a new Checkpoint class
         """
-        self.writing: bool = False
+        # Labels for all finalised groups
         self.finalised_labels: 'list[str]' = []
+        # Flag for if the file has been locked post writing
         self.finalised: bool = False
-        self.options = options
-        self.first_result = True
 
+        # True if next result is the first in a group
+        self.first_result = True
+        # Problems that have been written already in the current group
+        self.problem_names: 'list[str]' = []
+
+        # Options to define behavior
+        self.options = options
+
+        # File paths for temp files
         self.dir: 'TemporaryDirectory[str] | None' = None
         self.problems_file: 'str | None' = None
         self.results_file: 'str | None' = None
-        self.problem_names: 'list[str]' = []
 
+        # The persistent checkpoint file
         self.cp_file: str = os.path.join(self.options.results_dir,
                                          self.options.checkpoint_filename)
 
@@ -157,6 +165,8 @@ class Checkpoint:
             unselected_minimizers = {}
 
         with open(self.cp_file, 'a', encoding='utf-8') as f:
+            if self.finalised_labels:
+                f.write(',\n')
             f.write(f'  "{label}": {{\n    "problems": ')
             if self.problems_file is not None:
                 with open(self.problems_file, 'r', encoding='utf-8') as tmp:
@@ -174,10 +184,11 @@ class Checkpoint:
                 {'failed_problems': failed_problems,
                  'unselected_minimizers': unselected_minimizers},
                 indent=4)[6:-1])
-            f.write('  }\n')
+            f.write('  }')
 
         self.finalised_labels.append(label)
         self.first_result = True
+        self.problem_names = []
 
     def finalise(self):
         """
@@ -196,7 +207,7 @@ class Checkpoint:
             self.finalise_group(label='incomplete_group')
 
         with open(self.cp_file, 'a', encoding='utf-8') as f:
-            f.write('}')
+            f.write('\n}')
         self.finalised = True
 
     def load(self):
