@@ -34,7 +34,9 @@ def get_parser() -> ArgumentParser:
         prog='fitbenchmarking-cp', add_help=True, description=description,
         formatter_class=RawDescriptionHelpFormatter)
 
-    subparsers = parser.add_subparsers(dest='subprog')
+    subparsers = parser.add_subparsers(metavar='ACTION',
+                                       dest='subprog',
+                                       help='Which action should be performed')
 
     report_epilog = textwrap.dedent('''
     Usage Examples:
@@ -46,8 +48,8 @@ def get_parser() -> ArgumentParser:
     report = subparsers.add_parser(
         'report',
         description='Generate a report from a checkpoint file',
-        epilog=report_epilog,
-        add_help=True)
+        help='Generate a report from a checkpoint file',
+        epilog=report_epilog)
     report.add_argument('-f', '--filename',
                         metavar='CHECKPOINT_FILE',
                         default='',
