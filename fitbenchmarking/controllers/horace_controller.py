@@ -96,14 +96,12 @@ class HoraceController(MatlabMixin, Controller):
         will be read from.
         """
         if int(self._fit_params['converged']) == 0:
-            self.flag = 2
+            self.flag = 2F
         else:
             self.flag = 0
 
         self.final_params = np.array(self._fit_params['p'][0],
                                      dtype=np.float64).flatten()
-
-        self.clear_matlab()
 
         # Allow repeat calls to cleanup without falling over
         if self.cost_func.problem.format != 'horace':

@@ -75,8 +75,8 @@ class HoraceParser(FitbenchmarkParser):
         script = pathlib.Path(wye_data_f[0]['matlab_script'])
         func_name = script.stem
 
-        path = pathlib.Path(self._filename).parent / script.parent
-        eng.addpath(str(path))
+        path = pathlib.Path(self._filename).parent
+        eng.addpath(str(path / script.parent))
 
         self._horace_path = str(path.resolve())
 
@@ -90,6 +90,7 @@ class HoraceParser(FitbenchmarkParser):
         except Exception as e:
             raise ParsingError(f'Failed to evaluate wye_function: {script}') \
                 from e
+
         signal = np.array(eng.workspace['y'], dtype=np.float64)
         error = np.array(eng.workspace['e'], dtype=np.float64)
 
@@ -118,7 +119,7 @@ class HoraceParser(FitbenchmarkParser):
         :rtype: callable
         """
         path = pathlib.Path(self._filename).parent
-        
+
         function_string = "{loc}: {f_name}<br>parameters: {p_names}"
         foreground_func = self._parsed_func[0]
         foreground_params = [k for k in foreground_func if k != 'foreground']
