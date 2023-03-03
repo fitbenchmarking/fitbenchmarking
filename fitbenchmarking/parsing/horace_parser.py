@@ -84,9 +84,12 @@ class HoraceParser(FitbenchmarkParser):
         self._horace_w = f'w_{name}'
         self._horace_msk = f'msk_{name}'
 
-        eng.evalc(f"[{self._horace_w}, y, e, {self._horace_msk}] ="
-                  f"{func_name}('{data_file_path}','{self._horace_path}')")
-
+        try:
+            eng.evalc(f"[{self._horace_w}, y, e, {self._horace_msk}] ="
+                      f"{func_name}('{data_file_path}','{self._horace_path}')")
+        except Exception as e:
+            raise ParsingError(f'Failed to evaluate wye_function: {script}') \
+                from e
         signal = np.array(eng.workspace['y'], dtype=np.float64)
         error = np.array(eng.workspace['e'], dtype=np.float64)
 
@@ -114,11 +117,15 @@ class HoraceParser(FitbenchmarkParser):
         :return: A callable function
         :rtype: callable
         """
+        path = pathlib.Path(self._filename).parent
+        
         function_string = "{loc}: {f_name}<br>parameters: {p_names}"
         foreground_func = self._parsed_func[0]
         foreground_params = [k for k in foreground_func if k != 'foreground']
         foreground_params_string = ', '.join(foreground_params)
-        foreground_func_name = pathlib.Path(foreground_func['foreground']).stem
+        script = pathlib.Path(foreground_func['foreground'])
+        eng.addpath(str(path / script.parent))
+        foreground_func_name = script.stem
         frgd_eq = function_string.format(loc="foreground",
                                          f_name=foreground_func_name,
                                          p_names=foreground_params_string
@@ -134,8 +141,9 @@ class HoraceParser(FitbenchmarkParser):
             background_params = [k for k in background_func
                                  if k != 'background']
             background_params_string = ', '.join(background_params)
-            background_func_name = \
-                pathlib.Path(background_func['background']).stem
+            script = pathlib.Path(background_func['background'])
+            eng.addpath(str(path / script.parent))
+            background_func_name = script.stem
             bkgd_eq = function_string.format(loc="background",
                                              f_name=background_func_name,
                                              p_names=background_params_string
@@ -152,8 +160,7 @@ class HoraceParser(FitbenchmarkParser):
 
         simulate_f = self._parse_function(self._entries['simulate_function'])
         script = pathlib.Path(simulate_f[0]['matlab_script'])
-        path = pathlib.Path(self._filename).parent / script.parent
-        eng.addpath(str(path))
+        eng.addpath(str(path / script.parent))
         simulate_func_name = script.stem
 
         def fit_function(x, *p):
