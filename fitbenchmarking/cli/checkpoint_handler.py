@@ -11,6 +11,7 @@ import sys
 import textwrap
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
+from fitbenchmarking.cli.exception_handler import exception_handler
 from fitbenchmarking.core.results_output import (create_index_page,
                                                  open_browser, save_results)
 from fitbenchmarking.utils.checkpoint import Checkpoint
@@ -33,6 +34,10 @@ def get_parser() -> ArgumentParser:
     parser = ArgumentParser(
         prog='fitbenchmarking-cp', add_help=True, description=description,
         formatter_class=RawDescriptionHelpFormatter)
+    parser.add_argument('-d', '--debug-mode',
+                        default=False,
+                        action='store_true',
+                        help='Enable debug mode (prints traceback).',)
 
     subparsers = parser.add_subparsers(
         metavar='ACTION',
@@ -67,7 +72,8 @@ def get_parser() -> ArgumentParser:
     return parser
 
 
-def generate_report(options_file='', additional_options=None):
+@exception_handler
+def generate_report(options_file='', additional_options=None, debug=False):
     """
     Generate the fitting reports and tables for a checkpoint file.
 
@@ -99,7 +105,7 @@ def generate_report(options_file='', additional_options=None):
         directory = os.path.relpath(path=directory, start=options.results_dir)
         all_dirs.append(directory)
 
-    index_page = create_index_page(options, results.keys(), all_dirs)
+    index_page = create_index_page(options, list(results), all_dirs)
     open_browser(index_page, options)
 
 
@@ -116,7 +122,9 @@ def main():
     if args.subprog == 'report':
         if args.filename:
             additional_options['checkpoint_filename'] = args.filename
-        generate_report(args.options_file, additional_options)
+        generate_report(args.options_file,
+                        additional_options,
+                        debug=args.debug_mode)
 
 
 if __name__ == '__main__':
