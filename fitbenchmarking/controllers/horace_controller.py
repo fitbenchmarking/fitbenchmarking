@@ -96,7 +96,7 @@ class HoraceController(MatlabMixin, Controller):
         will be read from.
         """
         if int(self._fit_params['converged']) == 0:
-            self.flag = 2F
+            self.flag = 2
         else:
             self.flag = 0
 
