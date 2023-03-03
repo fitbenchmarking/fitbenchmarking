@@ -57,6 +57,8 @@ class BumpsController(Controller):
         self.fit_order = None
         self._status = None
         self._bumps_result = None
+        # Need to map the minimizer to an internal one to avoid changing the
+        # minimizer in results
         self._minimizer = ''
 
     def setup(self):
