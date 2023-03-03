@@ -293,7 +293,6 @@ class Table:
         for row in self.sorted_results.values():
             for i, r in enumerate(row):
                 formatted = (r.software, r.modified_minimizer_name(False))
-                print(formatted)
                 if len(minimizers_list) == i:
                     minimizers_list.append(formatted)
                 elif len(minimizers_list[i][1]) < len(formatted[1]):
