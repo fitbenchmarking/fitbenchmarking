@@ -34,9 +34,12 @@ def get_parser() -> ArgumentParser:
         prog='fitbenchmarking-cp', add_help=True, description=description,
         formatter_class=RawDescriptionHelpFormatter)
 
-    subparsers = parser.add_subparsers(metavar='ACTION',
-                                       dest='subprog',
-                                       help='Which action should be performed')
+    subparsers = parser.add_subparsers(
+        metavar='ACTION',
+        dest='subprog',
+        help='Which action should be performed? '
+             'For more information on options use '
+             '`fitbenchmarking-cp ACTION -h`')
 
     report_epilog = textwrap.dedent('''
     Usage Examples:
