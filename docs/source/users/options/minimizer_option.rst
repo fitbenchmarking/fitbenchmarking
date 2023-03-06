@@ -319,6 +319,10 @@ Horace is made available under the the `GPL-3 licence <https://www.gnu.org/licen
     [MINIMIZERS]
     horace: lm-lsqr
 
+
+.. note:: 
+   If you have a non standard installation of Horace please set the `HORACE_LOCATION` (e.g on IDAaaS). 
+
 .. warning::
    The Horace Toolbox and MATLAB must be installed for this to be available; see :ref:`external-instructions`.
 

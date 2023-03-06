@@ -2,6 +2,7 @@
 Implements a controller for MATLAB
 """
 import matlab
+import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.matlab_mixin import MatlabMixin
@@ -73,4 +74,5 @@ class MatlabController(MatlabMixin, Controller):
         else:
             self.flag = 2
 
-        self.final_params = self.result[0]
+        self.final_params = np.array(self.result[0],
+                                     dtype=np.float64).flatten()
