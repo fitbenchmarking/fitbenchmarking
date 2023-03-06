@@ -61,7 +61,7 @@ def generate_test_cases():
     elif TEST_TYPE == "default":
         formats = ['nist']
     else:
-        formats = ['nist']
+        formats = ['nist', 'horace']
 
     # create list of test_cases
     expected_dir = os.listdir(os.path.join(test_dir, 'expected'))
@@ -272,9 +272,14 @@ class TestParsers:
                 fitting_problem = p.parse()
 
             for r in tests:
-                x = np.array(r[0])
-                actual = fitting_problem.eval_model(x=x, params=r[1])
-                assert np.isclose(actual, r[2]).all()
+                if r[0] == 'NA':
+                    actual = fitting_problem.eval_model(params=r[1])
+                else:
+                    x = np.array(r[0])
+                    actual = fitting_problem.eval_model(x=x, params=r[1])
+
+                assert np.isclose(actual, r[2]).all(),\
+                    print(f'Expected: {r[2]}\nReceived: {actual}')
 
     def test_jacobian_evaluation(self, file_format, evaluations_file):
         """

@@ -1,0 +1,8 @@
+# FitBenchmark Problem
+software = 'Horace'
+name = '3D_Gaussian'
+description = '3D Gaussian (Horace\documentation\herbert\example_codes). The data in this example is generated in the wye_function'
+input_file = 'dummy.txt'
+function = 'foreground=m_scripts/functions/gauss3d_fb_test.m ,height=1100,centre_p1=66 ,centre_p2=1055,centre_p3=117,covmat_p1=15,covmat_p2=3,covmat_p3=5,covmat_p4=30,covmat_p5=-3,covmat_p6=20; background=m_scripts/functions/linear3D_bg_fb_test.m,bkgd_const=15'
+wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_IX_1D_test6.m'
+simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_IX_1D_test6.m'
