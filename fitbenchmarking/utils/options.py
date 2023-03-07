@@ -80,7 +80,9 @@ class Options:
          'matlab_opt': ['levenberg-marquardt', 'trust-region-reflective'],
          'matlab_stats': ['Levenberg-Marquardt'],
          'minuit': ['minuit'],
-         'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
+         'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg',
+                    'newton', 'newton_reg',
+                    'newton-tensor', 'newton-tensor_reg'],
          'scipy': ['Nelder-Mead',
                    'Powell',
                    'CG',
@@ -96,7 +98,8 @@ class Options:
                    'trust-constr',
                    'dogleg'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
-         'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing']}
+         'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing'],
+         'theseus': ['Levenberg_Marquardt', 'Gauss-Newton']}
     VALID_FITTING = \
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general', 'simplex',
                             'trust_region', 'levenberg-marquardt',
@@ -105,7 +108,7 @@ class Options:
          'software': ['bumps', 'ceres', 'dfo', 'gofit', 'gradient_free', 'gsl',
                       'horace', 'levmar', 'lmfit', 'mantid', 'matlab',
                       'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
-                      'ralfit', 'scipy', 'scipy_ls', 'scipy_go'],
+                      'ralfit', 'scipy', 'scipy_ls', 'scipy_go', 'theseus'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
@@ -195,7 +198,8 @@ class Options:
          'matlab_opt': ['levenberg-marquardt', 'trust-region-reflective'],
          'matlab_stats': ['Levenberg-Marquardt'],
          'minuit': ['minuit'],
-         'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg'],
+         'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg',
+                    'newton', 'newton_reg'],
          'scipy': ['Nelder-Mead',
                    'Powell',
                    'CG',
@@ -206,7 +210,8 @@ class Options:
                    'SLSQP',
                    'COBYLA'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
-         'scipy_go': ['differential_evolution', 'dual_annealing']}
+         'scipy_go': ['differential_evolution', 'dual_annealing'],
+         'theseus': ['Levenberg_Marquardt', 'Gauss-Newton']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': ['all'],

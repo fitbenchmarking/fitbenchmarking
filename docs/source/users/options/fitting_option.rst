@@ -33,6 +33,7 @@ a newline-separated list. Available options are:
 * ``scipy`` (default software)
 * ``scipy_ls`` (default software)
 * ``scipy_go``
+* ``theseus`` (external software -- see :ref:`external-instructions`)
 
 
 Default software options are ``scipy`` and ``scipy_ls``

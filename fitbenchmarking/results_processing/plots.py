@@ -52,11 +52,17 @@ class Plot:
                             "alpha": 0.5, }
 
     def __init__(self, best_result, options, figures_dir):
+        self.plots_failed = True
         self.result = best_result
 
         if self.result.multivariate:
             raise PlottingError(
                 'Plots cannot be generated for multivariate problems')
+
+        if self.result.format == 'horace':
+            raise PlottingError(
+                'Plots cannot be generated for Horace problems')
+        self.plots_failed = False
 
         self.options = options
 
@@ -88,7 +94,7 @@ class Plot:
         """
         Close the matplotlib figure
         """
-        if not self.result.multivariate:
+        if not self.plots_failed:
             plt.close(self.fig)
 
     def format_plot(self):

@@ -319,6 +319,10 @@ Horace is made available under the the `GPL-3 licence <https://www.gnu.org/licen
     [MINIMIZERS]
     horace: lm-lsqr
 
+
+.. note:: 
+   If you have a non standard installation of Horace please set the `HORACE_LOCATION` (e.g on IDAaaS). 
+
 .. warning::
    The Horace Toolbox and MATLAB must be installed for this to be available; see :ref:`external-instructions`.
 
@@ -609,8 +613,17 @@ order derivatives are currently utilized in FitBenchmarking.
 
 * Gauss-Newton, trust region method (:code:`gn`)
 * Hybrid Newton/Gauss-Newton, trust region method (:code:`hybrid`)
+* Newton, trust region method (:code:`newton`)
+* Newton-tensor, trust region method (:code:`newton-tensor`)
 * Gauss-Newton, regularization (:code:`gn_reg`)
 * Hybrid Newton/Gauss-Newton, regularization (:code:`hybrid_reg`)
+* Newton, regularization (:code:`newton_reg`)
+* Newton-tensor, regularization (:code:`newton-tensor_reg`)
+
+Note that the Newton-tensor methods take significantly longer than the other
+options to run (but may give a better solution in some cases).  For this
+reason, they are not included in the default minimizers for RALFit, but
+must be turned on in the options file.
 
 **Links** `Github - RALFit <https://github.com/ralna/ralfit/>`__. RALFit's Documentation on: `Gauss-Newton/Hybrid models <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-models>`__,  `the trust region method <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-trust-region-method>`__ and  `The regularization method <https://ralfit.readthedocs.io/projects/C/en/latest/method.html#regularization>`__
 
@@ -741,3 +754,30 @@ The SciPy global optimization minimizers are set as follows:
    The shgo solver is particularly slow running and should generally be avoided. As a result, this solver is
    not run by default when `scipy_go` software is selected. In order to run this minimizer, you must explicitly
    set it as above.
+
+.. _theseus:
+
+Theseus (``theseus``)
+=======================
+
+`Theseus <https://sites.google.com/view/theseus-ai/>`__ is an efficient application-agnostic library for building custom nonlinear optimization
+layers in PyTorch to support constructing various problems in robotics and vision as end-to-end
+differentiable architectures.
+
+* Levenberg Marquardt (:code:`Levenberg_Marquardt`)
+* Gauss Newton (:code:`Gauss-Newton`)
+
+**Links** `Paper- Theseus optimization <https://arxiv.org/pdf/2207.09442.pdf/>`__
+
+**Licence** Theseus is available under a `MIT licence <https://github.com/facebookresearch/theseus/blob/main/LICENSE>`__.
+
+The theseus minimizers are set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    theseus: Levenberg_Marquardt
+             Gauss-Newton
+
+.. note::
+   We strongly recommend you install Theseus in a venv or conda environment with Python 3.7-3.9

@@ -1,0 +1,8 @@
+# FitBenchmark Problem
+software = 'Horace'
+name = 'Tobyfit_test'
+description = 'S(Q,w) for Nb phonons for purposes of testing Tobyfit only'
+input_file = 'wdata1.mat'
+function = 'foreground=m_scripts/functions/testfunc_nb_sqw_fb_test.m ,amp=6000,fwhh=0.2;background=m_scripts/functions/testfunc_bkgd_fb_test.m,const=0,grad=0'
+wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_tobyfit_test.m'
+simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_tobyfit_test.m'

@@ -5,22 +5,18 @@ Implements mixin class for the matlab fitting software controllers.
 import os
 from tempfile import TemporaryDirectory
 
-import matlab.engine
-
 from fitbenchmarking.utils.exceptions import (IncompatibleProblemError,
                                               MissingSoftwareError)
+from fitbenchmarking.utils.matlab_engine import ENG as eng
+from fitbenchmarking.utils.matlab_engine import (
+    add_persistent_matlab_var, clear_non_persistent_matlab_vars,
+    list_persistent_matlab_vars)
 
 try:
     import dill
     import_success = True
 except ImportError:
     import_success = False
-
-try:
-    eng = matlab.engine.connect_matlab(name='FITBENCHMARKING_MATLAB')
-except matlab.engine.EngineError:
-    eng = matlab.engine.start_matlab()
-    eng.matlab.engine.shareEngine('FITBENCHMARKING_MATLAB', nargout=0)
 
 
 # If we re-implement caching, make sure the cache is cleared by the
@@ -35,7 +31,6 @@ class MatlabMixin:
         Initialise anything that is needed specifically for matlab
         fitting software
         """
-
         super().__init__(cost_func)
 
         if not import_success:
@@ -56,10 +51,24 @@ class MatlabMixin:
                 self.eng.evalc('cf_f = py.open(temp_file,"rb")')
                 self.eng.evalc('global cf')
                 self.eng.evalc('cf = py.dill.load(cf_f)')
+                add_persistent_matlab_var('cf')
                 self.eng.evalc('cf_f.close()')
-            self.setup_timer()
+
+                if cost_func.problem.format == 'horace':
+                    matlab_dump = os.path.join(temp_dir, 'dump.mat')
+                    to_transfer = list_persistent_matlab_vars()
+                    to_transfer_str = "', '".join(
+                        v for v in to_transfer if v != 'cf')
+                    to_transfer_str = f"'{to_transfer_str}'"
+                    self.eng.evalc(f"save('{matlab_dump}', {to_transfer_str});"
+                                   )
+                    print(self.eng.evalc(
+                        f"cf.problem.set_persistent_vars('{matlab_dump}')"))
+
         except RuntimeError as e:
             self.pickle_error = e
+
+        self.setup_timer()
 
     def _validate_problem_format(self):
         super()._validate_problem_format()
@@ -71,7 +80,7 @@ class MatlabMixin:
         """
         Clear the matlab instance, ready for the next setup.
         """
-        self.eng.clear('variables', nargout=0)
+        clear_non_persistent_matlab_vars()
         self.eng.evalc('global cf')
         self.eng.evalc('global timer')
 
@@ -87,6 +96,7 @@ class MatlabMixin:
         """
         self.eng.evalc('global timer')
         self.eng.evalc('timer = cf.problem.timer')
+        add_persistent_matlab_var('timer')
         if self.original_timer is None:
             self.original_timer = self.timer
         self.timer = MatlabTimerInterface('timer')
