@@ -59,7 +59,7 @@ class Plot:
             raise PlottingError(
                 'Plots cannot be generated for multivariate problems')
 
-        if self.result.format == 'horace':
+        if self.result.problem_format == 'horace':
             raise PlottingError(
                 'Plots cannot be generated for Horace problems')
         self.plots_failed = False
