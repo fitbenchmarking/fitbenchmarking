@@ -684,6 +684,22 @@ The Nlopt minimizers are set as follows:
            GN_AGS
            GN_ISRES
 
+.. note::
+   The global optimization solvers are not run by default when `nlopt` software is selected. In order to run these minimizers, you must explicitly
+   set them as above.
+
+.. note::
+   The following 4 minimizers need a local optimizer selected to run. This has been set to use `LD_LBFGS`.
+
+   .. code-block:: rst
+
+    [MINIMIZERS]
+    nlopt: AUGLAG
+           AUGLAG_EQ
+           G_MLSL_LDS
+           G_MLSL
+
+
 
 .. _ralfit:
 

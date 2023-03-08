@@ -116,8 +116,6 @@ class NLoptController(Controller):
                                                     ['LN_NEWUOA_BOUND']
         self.local_optimizer_minimizers = ['G_MLSL',
                                            'G_MLSL_LDS',
-                                           'GD_MLSL',
-                                           'GD_MLSL_LDS',
                                            'AUGLAG',
                                            'AUGLAG_EQ']
         self._status = None
