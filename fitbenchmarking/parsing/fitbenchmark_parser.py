@@ -1,10 +1,11 @@
 """
 This file implements a parser for the Fitbenchmark data format.
 """
+import os
+import re
+import typing
 from collections import OrderedDict
 
-import os
-import typing
 import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
@@ -46,7 +47,7 @@ class FitbenchmarkParser(Parser):
         self.fitting_problem.name = self._entries['name']
         self.fitting_problem.description = self._entries['description']
 
-        data_points = [_get_data_points(p) for p in self._get_data_file()]
+        data_points = [self._get_data_points(p) for p in self._get_data_file()]
 
         self.fitting_problem.function = self._create_function()
         self.fitting_problem.format = self._entries['software'].lower()
@@ -235,11 +236,14 @@ class FitbenchmarkParser(Parser):
 
         return entries
 
-    def _parse_function(self):
+    def _parse_function(self, func: typing.Optional[str] = None):
         """
         Get the params from the function as a list of dicts from the data
         file.
 
+        :param func: The function to parse. Optional, defaults to
+                     self._entries['function']
+        :type func: str
         :return: Function definition in format:
                  [{name1: value1, name2: value2, ...}, ...]
         :rtype: list of dict
@@ -247,88 +251,171 @@ class FitbenchmarkParser(Parser):
         # pylint: disable=too-many-branches, too-many-statements
         function_def = []
 
-        for f in self._entries['function'].split(';'):
-            params_dict = OrderedDict()
-            pop_stack = 0
+        if func is None:
+            func = self._entries['function']
 
-            stack = [params_dict]
-            for p in f.split(','):
-                name, val = p.split('=', 1)
-                name = name.strip()
-                val = val.strip()
-
-                l_count = val.count('(')
-                r_count = val.count(')')
-                if l_count > r_count:
-                    # in brackets
-                    # should be of the form 'varname=(othervar=3, ...)'
-
-                    # Allow for nested brackets e.g. 'a=(b=(c=(d=1,e=2)))'
-                    for _ in range(l_count - r_count):
-                        # Cover case where formula mistyped
-                        if '=' not in val:
-                            raise ParsingError('Unbalanced brackets in '
-                                               'function value: {}'.format(p))
-                        # Must start with brackets
-                        if val[0] != '(':
-                            raise ParsingError('Bad placement of opening '
-                                               'bracket in function: '
-                                               '{}'.format(p))
-                        # Create new dict for this entry and put at top of
-                        # working stack
-                        new_dict = OrderedDict()
-                        stack[-1][name] = new_dict
-                        stack.append(new_dict)
-                        # Update name and val
-                        name, val = val[1:].split('=', 1)
-                elif l_count == r_count:
-                    # Check if single item in brackets
-                    while '=' in val:
-                        if val[0] == '(' and val[-1] == ')':
-                            val = val[1:-1]
-                            new_dict = OrderedDict()
-                            stack[-1][name] = new_dict
-                            stack.append(new_dict)
-                            name, val = val.split('=', 1)
-                            pop_stack += 1
-                        else:
-                            raise ParsingError('Function value contains '
-                                               'unexpected "=": {}'.format(p))
-                elif l_count < r_count:
-                    # exiting brackets
-                    pop_stack = r_count - l_count
-                    # must end with brackets
-                    if val[-pop_stack:] != ')' * pop_stack:
-                        raise ParsingError('Bad placement of closing bracket '
-                                           'in function: {}'.format(p))
-                    val = val[:-pop_stack]
-
-                # Parse to an int/float if possible else assume string
-                tmp_val = None
-                for t in [int, float]:
-                    if tmp_val is None:
-                        try:
-                            tmp_val = t(val)
-                        except (ValueError, TypeError):
-                            pass
-
-                if tmp_val is not None:
-                    val = tmp_val
-
-                stack[-1][name] = val
-
-                if pop_stack > 0:
-                    if len(stack) <= pop_stack:
-                        raise ParsingError('Too many closing brackets in '
-                                           'function: {}'.format(p))
-                    stack = stack[:-pop_stack]
-                    pop_stack = 0
-
-            if len(stack) != 1:
-                raise ParsingError('Not all brackets are closed in function.')
-            function_def.append(params_dict)
+        for f in func.split(';'):
+            func_dict = self._parse_single_function(f)
+            function_def.append(func_dict)
 
         return function_def
+
+    @classmethod
+    def _parse_single_function(cls, func: str) -> dict:
+        """
+        Convert a string defining a single list of parameters into a
+        dictionary with parsed values.
+
+        Parameter values may be:
+          - nested parameter dictionary
+          - vectors of float
+          - int
+          - float
+          - bool ('true', 'false')
+          - strings (not containing '[](),=' )
+
+        Example:
+          a=1,b=3.2,c='foo',d=(e=true,f='bar'),h=[1.0,1.0,1.0]
+
+        :param func: The definition to parse
+        :type func: str
+        :raises ParsingError: If unexpected characters are encoutered or
+                              parentheses do not match
+        :return: The function as a dict of name, value pairs.
+        :rtype: dict
+        """
+        # pylint: disable=too-many-branches
+        lhs, rhs = func.strip().split('=', 1)
+        name = lhs
+        if not re.match(r'^\w+$', name):
+            raise ParsingError(
+                f'Unexpected character in parameter name: {name}')
+
+        if rhs[0] in '([':
+            value, rem = cls._parse_parens(rhs)
+        else:
+            value, _, rem = rhs.partition(',')
+            value = cls._parse_function_value(value)
+
+        func_dict = {name: value}
+        if rem:
+            func_dict.update(cls._parse_single_function(rem))
+        return func_dict
+
+    @classmethod
+    def _parse_parens(cls, string: str):
+        """
+        Parse a string starting with an opening bracket into the parsed
+        contents of the brackets and the remainder after the brackets.
+
+        If the string starts with '(' a dictionary is returned.
+        If the string starts with '[' a list is returned.
+
+        :param string: The string to parse
+        :type string: str
+        :raises ParsingError: If brackets remain unclosed
+
+        :return: The parsed value, the remainder of the string
+        :rtype: Union[dict, list], str
+        """
+        count = 0
+        if string[0] == '[':
+            delim = '[]'
+        else:  # '('
+            delim = '()'
+
+        for i, c in enumerate(string):
+            if c == delim[0]:
+                count += 1
+            elif c == delim[1]:
+                count -= 1
+            if count == 0:
+                value = string[:i]
+                rem = string[i+1:].strip(',')
+                break
+        else:
+            raise ParsingError('Not all brackets are closed in function.')
+
+        if delim == '()':
+            value = cls._parse_single_function(value[1:])
+        else:  # []
+            value = [cls._parse_function_value(v.strip())
+                     for v in value[1:].split(',') if v != '']
+
+        return value, rem
+
+    @staticmethod
+    def _parse_function_value(value: str) -> 'int | float | bool | str':
+        """
+        Parse a value from a string into a numerical type if possible.
+
+        :param value: The value to parse
+        :type value: str
+        :raises ParsingError: If the value has any unexpected characters
+        :return: The parsed value
+        :rtype: bool, int, float, or str
+        """
+        if value.lower() == 'true':
+            return True
+        if value.lower() == 'false':
+            return False
+        for convert in [int, float]:
+            try:
+                return convert(value)
+            except (ValueError, TypeError):
+                continue
+        return value
+
+    @staticmethod
+    def _get_data_points(data_file_path: str):
+        """
+        Get the data points of the problem from the data file.
+
+        :param data_file_path: The path to the file to load the points from
+        :type data_file_path: str
+
+        :return: data
+        :rtype: dict[str, np.ndarray]
+        """
+
+        with open(data_file_path, 'r') as f:
+            data_text = f.readlines()
+
+        first_row = _find_first_line(data_text)
+        dim = len(data_text[first_row].split())
+        cols = _get_column_data(data_text, first_row, dim)
+
+        if not cols['x'] or not cols['y']:
+            raise ParsingError('Input files need both X and Y values.')
+        if cols['e'] and len(cols['y']) != len(cols['e']):
+            raise ParsingError('Error must be of the same dimension as Y.')
+
+        data_points = np.zeros((len(data_text) - first_row, dim))
+
+        for idx, line in enumerate(data_text[first_row:]):
+            point_text = line.split()
+            # Skip any values that can't be represented
+            try:
+                point = [float(val) for val in point_text]
+            except ValueError:
+                point = [np.nan for _ in point_text]
+            data_points[idx, :] = point
+
+        # Strip all np.nan entries
+        data_points = data_points[~np.isnan(data_points[:, 0]), :]
+
+        # Split into x, y, and e
+        data = {key: data_points[:, cols[key]]
+                for key in ['x', 'y']}
+        if cols['e']:
+            data['e'] = data_points[:, cols['e']]
+
+        # Flatten if the columns are 1D
+        for key, col in cols.items():
+            if len(col) == 1:
+                data[key] = data[key].flatten()
+
+        return data
 
 
 def _parse_range(range_str):
@@ -386,57 +473,6 @@ def _parse_range(range_str):
         output_ranges[name] = pair
 
     return output_ranges
-
-
-def _get_data_points(data_file_path):
-    """
-    Get the data points of the problem from the data file.
-
-    :param data_file_path: The path to the file to load the points from
-    :type data_file_path: str
-
-    :return: data
-    :rtype: dict<str, np.ndarray>
-    """
-
-    with open(data_file_path, 'r') as f:
-        data_text = f.readlines()
-
-    first_row = _find_first_line(data_text)
-    dim = len(data_text[first_row].split())
-    cols = _get_column_data(data_text, first_row, dim)
-
-    if not cols['x'] or not cols['y']:
-        raise ParsingError('Input files need both X and Y values.')
-    if cols['e'] and len(cols['y']) != len(cols['e']):
-        raise ParsingError('Error must be of the same dimension as Y.')
-
-    data_points = np.zeros((len(data_text) - first_row, dim))
-
-    for idx, line in enumerate(data_text[first_row:]):
-        point_text = line.split()
-        # Skip any values that can't be represented
-        try:
-            point = [float(val) for val in point_text]
-        except ValueError:
-            point = [np.nan for _ in point_text]
-        data_points[idx, :] = point
-
-    # Strip all np.nan entries
-    data_points = data_points[~np.isnan(data_points[:, 0]), :]
-
-    # Split into x, y, and e
-    data = {key: data_points[:, cols[key]]
-            for key in ['x', 'y']}
-    if cols['e']:
-        data['e'] = data_points[:, cols['e']]
-
-    # Flatten if the columns are 1D
-    for key, col in cols.items():
-        if len(col) == 1:
-            data[key] = data[key].flatten()
-
-    return data
 
 
 def _find_first_line(file_lines: "list[str]") -> int:

@@ -28,7 +28,7 @@ class MatlabCurveController(MatlabMixin, Controller):
         'global_optimization': [],
     }
 
-    incompatible_problems = ['mantid']
+    incompatible_problems = ['mantid', 'horace']
     controller_name = 'matlab_curve'
 
     def __init__(self, cost_func):
