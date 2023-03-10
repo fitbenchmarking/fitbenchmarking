@@ -112,7 +112,6 @@ class BenchmarkTests(unittest.TestCase):
             controller.parameter_set = 0
             list_results = [
                 fitbm_result.FittingResult(
-                    options=self.options,
                     controller=controller,
                     accuracy=1,
                     runtime=1
@@ -147,7 +146,6 @@ class BenchmarkTests(unittest.TestCase):
             controller.parameter_set = 0
             list_results = [
                 fitbm_result.FittingResult(
-                    options=self.options,
                     controller=controller,
                     accuracy=1,
                     runtime=1)

@@ -62,7 +62,6 @@ class FitbmResultTests(unittest.TestCase):
         self.accuracy = 10
         self.runtime = 0.01
         self.result = FittingResult(
-            options=self.options,
             controller=controller,
             accuracy=self.accuracy,
             runtime=self.runtime)
@@ -130,7 +129,6 @@ class FitbmResultTests(unittest.TestCase):
                                 np.array([3, 0, 1, 2])]
 
         result = FittingResult(
-            options=self.options,
             controller=controller,
             accuracy=chi_sq,
             runtime=runtime,

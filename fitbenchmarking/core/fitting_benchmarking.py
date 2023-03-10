@@ -382,7 +382,6 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output,
                     minimizer_check = False
                     controller.flag = 4
                     dummy_result = fitbm_result.FittingResult(
-                        options=options,
                         controller=controller)
                     checkpointer.add_result(dummy_result)
                     results_problem.append(dummy_result)
@@ -513,8 +512,7 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
             # Perform the fit a number of times specified by num_runs
             accuracy, runtime = perform_fit(
                 controller, options, grabbed_output)
-            result_args = {'options': options,
-                           'controller': controller,
+            result_args = {'controller': controller,
                            'accuracy': accuracy,
                            'runtime': runtime, }
             if problem.multifit:

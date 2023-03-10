@@ -80,7 +80,6 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
 
         self.list_results = [
             fitbm_result.FittingResult(
-                options=self.options,
                 controller=controllers[i],
                 accuracy=1,
                 runtime=1)

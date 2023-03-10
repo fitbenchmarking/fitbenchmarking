@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from fitbenchmarking.controllers.base_controller import Controller
     from fitbenchmarking.cost_func.base_cost_func import CostFunc
     from fitbenchmarking.parsing.fitting_problem import FittingProblem
-    from fitbenchmarking.utils.options import Options
 
 
 # pylint: disable=too-many-arguments, no-self-use
@@ -25,7 +24,6 @@ class FittingResult:
     """
 
     def __init__(self,
-                 options: 'Options',
                  controller: 'Controller',
                  accuracy: 'float | list[float]' = np.inf,
                  runtime: 'float' = np.inf,
@@ -33,8 +31,6 @@ class FittingResult:
         """
         Initialise the Fitting Result
 
-        :param options: Options used in fitting
-        :type options: utils.options.Options
         :param controller: Controller used to fit
         :type controller: controller.base_controller.Controller
         :param accuracy: The score for the fitting, defaults to np.inf
@@ -47,7 +43,6 @@ class FittingResult:
         """
         self.init_blank()
 
-        self.options: 'Options' = options
         cost_func: 'CostFunc' = controller.cost_func
         problem: 'FittingProblem' = controller.problem
 
@@ -160,6 +155,20 @@ class FittingResult:
                 "Runtime": self.runtime}
 
         return get_printable_table("FittingResult", info)
+
+    def __eq__(self, other):
+        for key in self.__dict__:
+            if hasattr(other, key):
+                match = getattr(other, key) != getattr(self, key)
+                if not isinstance(match, bool):
+                    match = (getattr(other, key) != getattr(self, key)).all()
+                if match:
+                    print(f'{key} not equal!')
+                    return False
+            else:
+                print(f'No attr {key}')
+                return False
+        return True
 
     def modified_minimizer_name(self, with_software: bool = False) -> str:
         """

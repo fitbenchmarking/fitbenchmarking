@@ -45,9 +45,7 @@ def mock_func_call(*args, **kwargs):
     results: 'list[fitbm_result.FittingResult]' = []
     controller.flag = 4
     controller.parameter_set = 0
-    result = fitbm_result.FittingResult(
-        options=options,
-        controller=controller)
+    result = fitbm_result.FittingResult(controller=controller)
     results.append(result)
 
     failed_problems: 'list[str]' = []

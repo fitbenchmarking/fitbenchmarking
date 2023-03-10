@@ -100,7 +100,6 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.controller.parameter_set = 0
         self.count = 0
         self.result = fitbm_result.FittingResult(
-            options=self.options,
             controller=self.controller,
             accuracy=1,
             runtime=1)

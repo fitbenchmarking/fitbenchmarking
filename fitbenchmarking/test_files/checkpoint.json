@@ -353,7 +353,7 @@
     ],
     "failed_problems": [],
     "unselected_minimizers": {
-      "scipy_ls": []
+        "scipy_ls": []
     }
   }
 }

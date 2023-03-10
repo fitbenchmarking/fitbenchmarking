@@ -74,8 +74,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         self.scipy_len = len(self.options.minimizers["scipy"])
         controller = ScipyController(cost_func)
         controller.parameter_set = 0
-        self.result_args = {'options': self.options,
-                            'controller': controller,
+        self.result_args = {'controller': controller,
                             'accuracy': 1,
                             'runtime': 1}
         self.cp = Checkpoint(self.options)
