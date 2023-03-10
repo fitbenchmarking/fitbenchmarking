@@ -67,7 +67,7 @@ class MininimizerOptionTests(unittest.TestCase):
         """
         Checks valid minuit minimizers are set correctly
         """
-        expected = ['minuit']
+        expected = ['migrad', 'simplex']
         actual = self.options.minimizers['minuit']
         self.assertEqual(expected, actual)
 
