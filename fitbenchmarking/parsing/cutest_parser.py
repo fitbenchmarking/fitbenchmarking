@@ -5,8 +5,6 @@ This file calls the pycutest interface for SIF data
 
 import os
 import time
-from collections import OrderedDict
-
 import numpy as np
 import pycutest
 
@@ -159,10 +157,10 @@ class CutestParser(Parser):
     def _get_starting_values(self):
 
         starting_values = [
-            OrderedDict([
+            {[
                 ('f{}'.format(i), self._p.x0[i])
                 for i in range(self._num_params)
-            ])
+            ]}
         ]
 
         return starting_values

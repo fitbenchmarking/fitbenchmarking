@@ -4,8 +4,6 @@ Tests for the performance profiler file.
 
 import os
 import unittest
-from collections import OrderedDict
-
 import numpy as np
 
 from fitbenchmarking.core.results_output import preprocess_data
@@ -104,8 +102,8 @@ class PerformanceProfilerTests(unittest.TestCase):
         acc, runtime = performance_profiler.prepare_profile_data(self.results)
         acc_expected = np.array(self.acc_expected).T
         runtime_expected = np.array(self.runtime_expected).T
-        acc_dict = OrderedDict()
-        runtime_dict = OrderedDict()
+        acc_dict = {}
+        runtime_dict = {}
         for j in range(self.num_minimizers):
             acc_dict['min_{} [s1]: j:j1'.format(j)] = acc_expected[j]
             runtime_dict['min_{} [s1]: j:j1'.format(j)] = runtime_expected[j]
