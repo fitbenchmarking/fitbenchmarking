@@ -4,10 +4,7 @@ Test fitting_report
 
 import inspect
 import os
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory
 import unittest
 
 import fitbenchmarking

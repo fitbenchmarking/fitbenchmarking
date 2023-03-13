@@ -5,10 +5,8 @@ Test plots
 import os
 import unittest
 import numpy as np
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
+
+from tempfile import TemporaryDirectory
 
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
