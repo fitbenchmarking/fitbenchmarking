@@ -3,10 +3,8 @@ Tests for the log file.
 
 Note: As get_logger is effectively an alias, it is not tested here.
 """
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
+
+from tempfile import TemporaryDirectory
 import os
 from unittest import TestCase
 
