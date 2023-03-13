@@ -210,7 +210,7 @@ def setup_options(override_software: list = None,
     # - 'gradient_free' and 'scipy_go' are left out as they require bounds.
     software = {"all": ["bumps", "dfo", "ceres", "gofit", "gsl", "levmar",
                         "lmfit", "mantid", "minuit", "ralfit", "scipy",
-                        "scipy_ls"],
+                        "scipy_ls", "theseus"],
                 "default": ["bumps", "scipy", "scipy_ls"],
                 "matlab": ["horace", "matlab", "matlab_curve", "matlab_opt",
                            "matlab_stats"]}
@@ -232,7 +232,8 @@ def setup_options(override_software: list = None,
                   "minuit": "minuit",
                   "ralfit": "gn",
                   "scipy": "Nelder-Mead",
-                  "scipy_ls": "lm-scipy"}
+                  "scipy_ls": "lm-scipy",
+                  "theseus": "Levenberg_Marquardt"}
 
     opts.software = software.get(TEST_TYPE) if override_software is None \
         else override_software
