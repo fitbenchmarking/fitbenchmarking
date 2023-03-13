@@ -4,8 +4,6 @@ This file implements a parser for the Fitbenchmark data format.
 import os
 import re
 import typing
-from collections import OrderedDict
-
 import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
@@ -151,9 +149,9 @@ class FitbenchmarkParser(Parser):
         ignore = ['name']
 
         starting_values = [
-            OrderedDict([(name, val)
-                         for name, val in self._parsed_func[0].items()
-                         if name not in ignore])]
+            {[(name, val)
+                for name, val in self._parsed_func[0].items()
+                if name not in ignore]}]
 
         return starting_values
 
