@@ -4,7 +4,6 @@ lower level functions to fit and benchmark a set of problems
 for a certain fitting software.
 """
 
-from __future__ import absolute_import, division, print_function
 
 import os
 import timeit

@@ -5,8 +5,6 @@ or for more general information, see the online docs at
 docs.fitbenchmarking.com.
 """
 
-from __future__ import absolute_import, division, print_function
-
 import argparse
 from shutil import copytree
 import glob

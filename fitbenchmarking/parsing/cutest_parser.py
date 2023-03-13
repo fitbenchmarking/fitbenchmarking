@@ -2,7 +2,6 @@
 This file calls the pycutest interface for SIF data
 """
 
-from __future__ import print_function
 
 import os
 import time

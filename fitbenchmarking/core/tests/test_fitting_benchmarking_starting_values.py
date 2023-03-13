@@ -1,7 +1,6 @@
 """
 Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_starting_values
 """
-from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 import unittest
