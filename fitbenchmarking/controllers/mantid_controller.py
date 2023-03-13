@@ -146,7 +146,8 @@ class MantidController(Controller):
 
                 constraints = ','.join(f'{self.value_ranges[i][0]} < {p} <'
                                        f'{self.value_ranges[i][1]}'
-                                       for i, p in enumerate(self._param_names))
+                                       for i, p in enumerate(self._param_names)
+                                       )
                 function_def += f'; constraints=({constraints})'
 
             self._mantid_equation = function_def
