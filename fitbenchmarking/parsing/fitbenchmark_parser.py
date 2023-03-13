@@ -445,7 +445,7 @@ def _parse_range(range_str):
                 balanced = False
             elif cur_str.count(lb) < cur_str.count(rb):
                 raise ParsingError(
-                    'Unbalanced brackets in range: {}'.format(r))
+                    f'Unbalanced brackets in range: {r}')
         if balanced:
             ranges.append(cur_str)
             cur_str = ''
@@ -462,11 +462,11 @@ def _parse_range(range_str):
         try:
             pair = [float(val[0]), float(val[1])]
         except ValueError as e:
-            raise ParsingError('Expected floats in range: {}'.format(r)) from e
+            raise ParsingError(f'Expected floats in range: {r}') from e
 
         if pair[0] >= pair[1]:
             raise ParsingError('Min value must be smaller than max value '
-                               'in range: {}'.format(r))
+                               f'in range: {r}')
 
         output_ranges[name] = pair
 

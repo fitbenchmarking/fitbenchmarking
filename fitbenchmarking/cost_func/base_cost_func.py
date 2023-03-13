@@ -125,6 +125,6 @@ class CostFunc:
         for k, v in algorithm_check.items():
             if minimizer in v and k in self.invalid_algorithm_types:
                 message = 'The algorithm type of the selected ' \
-                          'minimizer, {}, is not compatible with ' \
-                          'the selected cost function'.format(minimizer)
+                          f'minimizer, {minimizer}, is not compatible with ' \
+                          'the selected cost function'
                 raise IncompatibleMinimizerError(message)

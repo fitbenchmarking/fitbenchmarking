@@ -25,7 +25,7 @@ class CreateTests(unittest.TestCase):
         cost_func = []
         for i in range(5):
             problem = FittingProblem(self.options)
-            problem.name = 'prob {}'.format(i)
+            problem.name = f'prob {i}'
             problem.starting_values = [{'x': 1}]
             cost_func.append(NLLSCostFunc(problem))
 

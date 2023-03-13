@@ -209,7 +209,7 @@ def _find_options_file(options_file: str, additional_options: dict) -> Options:
         glob_options_file = glob.glob(options_file)
 
         if not glob_options_file:
-            raise OptionsError('Could not find file {}'.format(options_file))
+            raise OptionsError(f'Could not find file {options_file}')
         if not options_file.endswith(".ini"):
             raise OptionsError('Options file must be a ".ini" file')
 
@@ -376,9 +376,9 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
             message = "\nWARNING: \nThe user chosen options and/or problem " \
                       " setup resulted in all minimizers and/or parsers " \
                       "raising an exception. Because of this, results for " \
-                      "the {} problem set will not be displayed. " \
+                      f"the {label} problem set will not be displayed. " \
                       "Please see the logs for more detail on why this is " \
-                      "the case.".format(label)
+                      "the case."
             LOGGER.warning(message)
         else:
             LOGGER.info('Producing output for the %s problem set', label)

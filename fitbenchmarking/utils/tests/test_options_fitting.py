@@ -111,7 +111,7 @@ class UserFittingOptionTests(unittest.TestCase):
         :rtype: str
         """
         opts_file = os.path.join(self.test_files_dir,
-                                 'test_{}_valid.ini'.format(opt_name))
+                                 f'test_{opt_name}_valid.ini')
         with open(opts_file, 'w') as f:
             f.write(config_str)
         return opts_file

@@ -54,7 +54,7 @@ class ParserFactory:
                         break
                     parser_name += char
 
-        module_name = '{}_parser'.format(parser_name.lower())
+        module_name = f'{parser_name.lower()}_parser'
 
         try:
             module = import_module('.' + module_name, __package__)
@@ -63,12 +63,12 @@ class ParserFactory:
                                                      module_name + '.py'))
             if os.path.exists(full_path):
                 raise MissingSoftwareError('Requirements are missing for the '
-                                           '{} parser: {}'.format(
-                                               parser_name, str(e))) from e
+                                           f'{parser_name} parser: {str(e)}') \
+                                            from e
 
-            raise NoParserError('Could not find parser for {}. '
+            raise NoParserError(f'Could not find parser for {filename}. '
                                 'Check the input is correct and try '
-                                'again.'.format(filename)) from e
+                                'again.') from e
 
         classes = getmembers(module, lambda m: (isclass(m)
                                                 and not isabstract(m)

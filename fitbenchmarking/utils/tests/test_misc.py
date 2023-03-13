@@ -29,7 +29,7 @@ class CreateDirsTests(unittest.TestCase):
 
         expected = []
         for i in range(10):
-            filename = 'file_{}.txt'.format(i)
+            filename = f'file_{i}.txt'
             filepath = os.path.join(self.dirname, filename)
             expected.append(filepath)
 

@@ -163,8 +163,8 @@ class Controller:
 
         if value not in self.VALID_FLAGS:
             raise ControllerAttributeError(
-                'controller.flag must be one of {}. Got: {}.'.format(
-                    list(self.VALID_FLAGS), value))
+                'controller.flag must be one of '
+                f'{list(self.VALID_FLAGS)}. Got: {value}.')
         self._flag = int(value)
 
     @property
@@ -303,10 +303,10 @@ class Controller:
             raise UnknownMinimizerError(message)
 
         if not result:
-            message = 'The algorithm type(s) of the minimizer selected, {0}, '\
-                      'does not match the algorithm type(s) selected in the '\
-                      'options file. For this software, available minimizers '\
-                      'are: {1}'.format(minimizer, minimzer_selection)
+            message = f'The algorithm type(s) of the minimizer selected,'\
+                      f'{minimizer}, does not match the algorithm type(s)'\
+                      'selected in the options file. For this software, '\
+                      f'available minimizers are: {minimzer_selection}'
             raise UnknownMinimizerError(message)
 
     def record_alg_type(self, minimizer, algorithm_type):
@@ -364,9 +364,9 @@ class Controller:
             if attr_type != numpy.ndarray:
                 if not isinstance(attr, attr_type):
                     raise ControllerAttributeError(
-                        'Attribute "{}" in the controller is not the expected '
-                        'type. Expected "{}", got {}.'.format(
-                            attr_name, attr_type, type(attr)))
+                        f'Attribute "{attr_name}" in the controller is not the'
+                        f'expected type. Expected "{attr_type}", got '
+                        f'{type(attr)}.')
             else:
                 # Mantid multifit produces final params as a list of final
                 # params.
@@ -375,10 +375,10 @@ class Controller:
                 for a in attr:
                     if any(numpy.isnan(n) or numpy.isinf(n) for n in a):
                         raise ControllerAttributeError(
-                            'Attribute "{}" in the controller is not the '
-                            'expected numpy ndarray of floats. Expected a '
-                            'list or numpy ndarray of floats, got '
-                            '{}'.format(attr_name, attr))
+                            f'Attribute "{attr_name}" in the controller is '
+                            'not the expected numpy ndarray of floats. '
+                            'Expected a list or numpy ndarray of floats, got '
+                            f'{attr}')
 
     @abstractmethod
     def setup(self):

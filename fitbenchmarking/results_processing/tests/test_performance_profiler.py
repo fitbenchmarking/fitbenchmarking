@@ -80,7 +80,7 @@ class PerformanceProfilerTests(unittest.TestCase):
             jac = 'j1'
             hess = None
             for j in range(self.num_minimizers):
-                minimizer = 'min_{}'.format(j)
+                minimizer = f'min_{j}'
                 prob_results.append(FittingResult(options=options,
                                                   cost_func=cost_func,
                                                   jac=jac,
@@ -105,8 +105,8 @@ class PerformanceProfilerTests(unittest.TestCase):
         acc_dict = {}
         runtime_dict = {}
         for j in range(self.num_minimizers):
-            acc_dict['min_{} [s1]: j:j1'.format(j)] = acc_expected[j]
-            runtime_dict['min_{} [s1]: j:j1'.format(j)] = runtime_expected[j]
+            acc_dict[f'min_{j} [s1]: j:j1'] = acc_expected[j]
+            runtime_dict[f'min_{j} [s1]: j:j1'] = runtime_expected[j]
         for k, v in acc_dict.items():
             assert np.allclose(v, acc[k])
         for k, v in runtime_dict.items():

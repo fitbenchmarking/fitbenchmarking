@@ -100,7 +100,7 @@ def generate_mock_results():
         p.data_y = data_y[i]
         p.data_e = data_e[i]
         p.function = func[i]
-        p.name = "prob_{}".format(i)
+        p.name = f"prob_{i}"
         results = []
         for j in range(num_min):
             p.starting_values = starting_values
