@@ -583,7 +583,8 @@ uncertainties.
 We interface via the python interface `iminuit <https://iminuit.readthedocs.io>`__ with
 support for the 2.x series.
 
-* `Minuit's MIGRAD <https://root.cern.ch/root/htmldoc/guides/minuit2/Minuit2.pdf>`__ (:code:`minuit`)
+* `Minuit's MIGRAD <https://root.cern.ch/root/htmldoc/guides/minuit2/Minuit2.pdf>`__ (:code:`migrad`)
+* `Minuit's SIMPLEX <https://root.cern.ch/root/htmldoc/guides/minuit2/Minuit2.pdf>`__ (:code:`simplex`)
 
 **Links** `Github - iminuit <https://github.com/scikit-hep/iminuit>`__
 
@@ -594,7 +595,8 @@ The Minuit minimizers are set as follows:
 .. code-block:: rst
 
     [MINIMIZERS]
-    minuit: minuit
+    minuit: migrad
+            simplex
 
 .. warning::
    The additional dependency Minuit must be installed for this to be available;
