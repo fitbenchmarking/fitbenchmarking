@@ -43,7 +43,9 @@ class CreateTests(unittest.TestCase):
                         for c in cost_func]
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
+        # pylint: disable=consider-using-with
         self.dir = TemporaryDirectory(dir=root)
+        # pylint: enable=consider-using-with
 
     def test_create_unique_files(self):
         """
@@ -89,7 +91,9 @@ class CreateProbGroupTests(unittest.TestCase):
                                     runtime=2.0002)
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
+        # pylint: disable=consider-using-with
         self.dir = TemporaryDirectory(dir=root)
+        # pylint: enable=consider-using-with
 
     def test_create_files(self):
         """

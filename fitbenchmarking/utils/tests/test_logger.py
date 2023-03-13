@@ -17,7 +17,9 @@ class TestSetupLogger(TestCase):
     """
 
     def setUp(self):
+        # pylint: disable=consider-using-with
         self.temp_dir = TemporaryDirectory()
+        # pylint: enable=consider-using-with
         self.log_file = os.path.join(self.temp_dir.name, 'some_log.txt')
 
     def test_file_creation_correct(self):
@@ -73,7 +75,9 @@ def test_level(capsys):
     Test that setting the level limits the output from the logger.
     Note: This relies on a pytest fixture (capsys)
     """
+    # pylint: disable=consider-using-with
     temp_dir = TemporaryDirectory()
+    # pylint: enable=consider-using-with
     log_file = os.path.join(temp_dir.name, 'some_log.txt')
     setup_logger(log_file=log_file, level='WARNING', append=True, name='test4')
     logger = get_logger('test4')
