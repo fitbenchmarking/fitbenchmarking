@@ -2,7 +2,6 @@
 Miscellaneous functions and utilities used in fitting benchmarking.
 """
 
-from __future__ import absolute_import, division, print_function
 
 import glob
 import os

@@ -3,7 +3,6 @@ Functions that prepare the function specified in NIST problem definition file
 into the right format for SciPy.
 """
 
-from __future__ import (absolute_import, division, print_function)
 
 # This import is needed for dynamic scipy function def
 import numpy as np
