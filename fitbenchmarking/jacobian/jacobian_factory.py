@@ -21,13 +21,13 @@ def create_jacobian(jac_method):
     :rtype: fitbenchmarking.jacobian.base_controller.Jacobian subclass
     """
 
-    module_name = '{}_jacobian'.format(jac_method)
+    module_name = f'{jac_method}_jacobian'
 
     try:
         module = import_module('.' + module_name, __package__)
     except ImportError as e:
         raise NoJacobianError('Could not find Jacobian class with type as '
-                              '{}.'.format(jac_method)) from e
+                              f'{jac_method}.') from e
 
     classes = getmembers(module, lambda m: (isclass(m)
                                             and not isabstract(m)

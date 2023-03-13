@@ -68,12 +68,12 @@ def nist_jacobian_definition(jacobian, param_names):
         if is_int(jacobian_scipy_format):
             jacobian_scipy_format += "*(np.ones(x.shape[0]))"
         scipy_jacobian.append(jacobian_scipy_format)
-    jacobian_format = "np.array([{}]).T".format(",".join(scipy_jacobian))
+    jacobian_format = f'np.array([{",".join(scipy_jacobian)}]).T'
 
     new_param_name = "params"
     for i, name in enumerate(param_names):
         jacobian_format = jacobian_format.replace(
-            name, "{0}[{1}]".format(new_param_name, i))
+            name, f"{new_param_name}[{i}]")
 
     # Sanitizing of jacobian_scipy_format is done so exec use is valid
     # Param_names is sanitized in get_nist_param_names_and_values
@@ -115,7 +115,7 @@ def nist_hessian_definition(hessian, param_names):
         new_param_name = "params"
         for i, name in enumerate(param_names):
             hessian_scipy_format = hessian_scipy_format.replace(
-                name, "{0}[{1}]".format(new_param_name, i))
+                name, f"{new_param_name}[{i}]")
         scipy_hessian.append(hessian_scipy_format)
 
     dim = len(param_names)
@@ -126,7 +126,7 @@ def nist_hessian_definition(hessian, param_names):
     for i in range(dim):
         hess_row = ",".join(scipy_hessian[:, i])
         hessian_matrix += '[' + hess_row + '],'
-    hessian_format = "np.array([{}])".format(hessian_matrix)
+    hessian_format = f"np.array([{hessian_matrix}])"
 
     # Sanitizing of hessian_scipy_format is done so exec use is valid
     # param_names is sanitized in get_nist_param_names_and_values

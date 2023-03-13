@@ -21,13 +21,13 @@ def create_hessian(hes_method):
     :rtype: fitbenchmarking.hessian.base_controller.Hessian subclass
     """
 
-    module_name = '{}_hessian'.format(hes_method)
+    module_name = f'{hes_method}_hessian'
 
     try:
         module = import_module('.' + module_name, __package__)
     except ImportError as e:
         raise NoHessianError('Could not find Hessian class with type as '
-                             '{}.'.format(hes_method)) from e
+                             f'{hes_method}.') from e
 
     classes = getmembers(module, lambda m: (isclass(m)
                                             and not isabstract(m)

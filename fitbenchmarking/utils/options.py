@@ -431,7 +431,7 @@ class Options:
 
         except ValueError as e:
             self.error_message.append(
-                "Incorrect options type for {}.\n{}".format(option, e))
+                f"Incorrect options type for {option}.\n{e}")
             value = None
 
         if option in self.VALID[section]:

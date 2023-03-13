@@ -83,13 +83,13 @@ class NISTParser(Parser):
         :type name: str
         """
         file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
-        jac_file = os.path.join(file_dir, "data_files", "{}.jac".format(name))
+        jac_file = os.path.join(file_dir, "data_files", f"{name}.jac")
         try:
             with open(jac_file, "r") as jac_data:
                 jac_lines = jac_data.readlines()
         except FileNotFoundError as e:
             raise NoJacobianError('Could not find data for NIST Jacobian '
-                                  'file, {}'.format(jac_file)) from e
+                                  f'file, {jac_file}') from e
         jac_str = ""
         for line in jac_lines:
             if not line.lstrip().startswith("#"):
@@ -107,13 +107,13 @@ class NISTParser(Parser):
         :type name: str
         """
         file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
-        hes_file = os.path.join(file_dir, "data_files", "{}.hes".format(name))
+        hes_file = os.path.join(file_dir, "data_files", f"{name}.hes")
         try:
             with open(hes_file, "r") as hes_data:
                 hes_lines = hes_data.readlines()
         except FileNotFoundError as e:
             raise NoHessianError('Could not find data for NIST Hessian '
-                                 'file, {}'.format(hes_file)) from e
+                                 f'file, {hes_file}') from e
         hes_str = ""
         for line in hes_lines:
             if not line.lstrip().startswith("#"):
@@ -424,6 +424,6 @@ class NISTParser(Parser):
         # In the NIST format this can only contain 5 or 6 columns
         else:
             raise ParsingError("Failed to parse this line as starting "
-                               "values information: {0}".format(startval_str))
+                               f"values information: {startval_str}")
 
         return alt_values

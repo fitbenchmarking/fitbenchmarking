@@ -181,7 +181,7 @@ def loop_over_starting_values(problem, options, grabbed_output):
     for index in num_start_vals_pbar:
         LOGGER.info("    Starting value: %i/%i", index + 1, num_start_vals)
         if num_start_vals > 1:
-            problem.name = name + ', Start {}'.format(index + 1)
+            problem.name = name + f', Start {index + 1}'
 
         #############################
         # Loops over cost functions #
@@ -284,7 +284,7 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
             minimizers = options.minimizers[s]
         except KeyError as e:
             raise UnsupportedMinimizerError(
-                'No minimizer given for software: {}'.format(s)) from e
+                f'No minimizer given for software: {s}') from e
         with grabbed_output:
             controller_cls = ControllerFactory.create_controller(
                 software=s)
@@ -564,14 +564,14 @@ def perform_fit(controller, options, grabbed_output):
         tol = 4
         if ratio > tol:
             warnings.warn(
-                'The ratio of the max time to the min is {0},'
-                ' which is larger than the tolerance of {1}.'
-                ' The min time is {2}. This can indicate that'
+                f'The ratio of the max time to the min is {ratio},'
+                f' which is larger than the tolerance of {tol}.'
+                f' The min time is {min_time}. This can indicate that'
                 ' the fitting engine is caching results. If the'
                 ' min time is small this may just indicate that'
                 ' other non-FitBenchmarking CPU activities are'
                 ' taking place that affects the timing'
-                ' results'.format(ratio, tol, min_time))
+                ' results')
 
         # Avoid deleting results (max runtime exception) if gotten this far
         controller.timer.reset()
