@@ -5,15 +5,13 @@ This file calls the pycutest interface for SIF data
 
 import os
 import time
+from tempfile import TemporaryDirectory
 import numpy as np
 import pycutest
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import ParsingError
-
-from tempfile import TemporaryDirectory
-
 
 if os.path.isdir(os.environ["PYCUTEST_CACHE"]+"/pycutest_cache_holder"):
     # clear problems from cache that are older than 1 hour, do not clear
@@ -60,7 +58,9 @@ class CutestParser(Parser):
         :return: The fully parsed fitting problem
         :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
         """
+        # pylint: disable=consider-using-with
         self.mastsif_dir = TemporaryDirectory()
+        # pylint: enable=consider-using-with
 
         # set the MASTSIF environment variable so that pycutest
         # can find the sif files
@@ -155,10 +155,8 @@ class CutestParser(Parser):
     def _get_starting_values(self):
 
         starting_values = [
-            dict([
-                (f'f{i}', self._p.x0[i])
-                for i in range(self._num_params)
-            ])
+            {(f'f{i}', self._p.x0[i])
+                for i in range(self._num_params)}
         ]
 
         return starting_values
