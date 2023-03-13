@@ -102,8 +102,8 @@ class PerformanceProfilerTests(unittest.TestCase):
         acc, runtime = performance_profiler.prepare_profile_data(self.results)
         acc_expected = np.array(self.acc_expected).T
         runtime_expected = np.array(self.runtime_expected).T
-        acc_dict = {}
-        runtime_dict = {}
+        acc_dict = dict()
+        runtime_dict = dict()
         for j in range(self.num_minimizers):
             acc_dict[f'min_{j} [s1]: j:j1'] = acc_expected[j]
             runtime_dict[f'min_{j} [s1]: j:j1'] = runtime_expected[j]
