@@ -232,8 +232,7 @@ def setup_options(override_software: list = None,
                   "minuit": "minuit",
                   "ralfit": "gn",
                   "scipy": "Nelder-Mead",
-                  "scipy_ls": "lm-scipy",
-                  "theseus": "Levenberg_Marquardt"}
+                  "scipy_ls": "lm-scipy"}
 
     opts.software = software.get(TEST_TYPE) if override_software is None \
         else override_software
