@@ -149,9 +149,9 @@ class FitbenchmarkParser(Parser):
         ignore = ['name']
 
         starting_values = [
-            {[(name, val)
-                for name, val in self._parsed_func[0].items()
-                if name not in ignore]}]
+            dict([(name, val)
+                  for name, val in self._parsed_func[0].items()
+                  if name not in ignore])]
 
         return starting_values
 

@@ -155,10 +155,10 @@ class CutestParser(Parser):
     def _get_starting_values(self):
 
         starting_values = [
-            {[
+            dict([
                 (f'f{i}', self._p.x0[i])
                 for i in range(self._num_params)
-            ]}
+            ])
         ]
 
         return starting_values

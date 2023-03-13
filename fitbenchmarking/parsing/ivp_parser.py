@@ -48,7 +48,7 @@ class IVPParser(FitbenchmarkParser):
 
         # pylint: disable=attribute-defined-outside-init
         self._equation = fun.__name__
-        self._starting_values = [{[(n, pf[n]) for n in p_names]}]
+        self._starting_values = [dict([(n, pf[n]) for n in p_names])]
 
         def fitFunction(x, *p):
             if len(x.shape) == 1:
