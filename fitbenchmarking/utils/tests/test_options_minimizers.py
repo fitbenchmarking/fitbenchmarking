@@ -21,7 +21,7 @@ class MininimizerOptionTests(unittest.TestCase):
         """
         self.options = Options()
         software = ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
-                    'ralfit', 'scipy', 'scipy_ls']
+                    'nlopt', 'ralfit', 'scipy', 'scipy_ls']
         self.options.software = software
 
     def test_minimizer_bumps(self):
