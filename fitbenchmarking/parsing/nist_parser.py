@@ -397,7 +397,7 @@ class NISTParser(Parser):
             alt_values = self._get_startvals_floats(startval_str)
 
             if not starting_vals:
-                starting_vals = [dict() for _ in alt_values]
+                starting_vals = [{} for _ in alt_values]
             for i, a in enumerate(alt_values):
                 starting_vals[i][startval_str[0]] = a
 
