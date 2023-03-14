@@ -12,7 +12,7 @@ from fitbenchmarking.utils.options import Options
 
 class MininimizerOptionTests(unittest.TestCase):
     """
-    Checks that the valid minimizers in the options file are set correctly
+    Checks that the default minimizers in the options file are set correctly
     """
 
     def setUp(self):
@@ -28,7 +28,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_bumps(self):
         """
-        Checks valid bumps minimizers are set correctly
+        Checks default bumps minimizers are set correctly
         """
         expected = ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq']
         actual = self.options.minimizers['bumps']
@@ -36,7 +36,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_dfo(self):
         """
-        Checks valid dfo minimizers are set correctly
+        Checks default dfo minimizers are set correctly
         """
         expected = ['dfogn', 'dfols']
         actual = self.options.minimizers['dfo']
@@ -44,7 +44,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_gsl(self):
         """
-        Checks valid gsl minimizers are set correctly
+        Checks default gsl minimizers are set correctly
         """
         expected = ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                     'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
@@ -54,7 +54,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_mantid(self):
         """
-        Checks valid mantid minimizers are set correctly
+        Checks default mantid minimizers are set correctly
         """
         expected = ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
@@ -67,7 +67,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_minuit(self):
         """
-        Checks valid minuit minimizers are set correctly
+        Checks default minuit minimizers are set correctly
         """
         expected = ['minuit']
         actual = self.options.minimizers['minuit']
@@ -75,7 +75,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_ralfit(self):
         """
-        Checks valid ralfit minimizers are set correctly
+        Checks default ralfit minimizers are set correctly
         """
         expected = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg',
                     'newton', 'newton_reg']
@@ -84,7 +84,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_scipy(self):
         """
-        Checks valid scipy minimizers are set correctly
+        Checks default scipy minimizers are set correctly
         """
         expected = ['Nelder-Mead',
                     'Powell',
@@ -100,7 +100,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_scipy_ls(self):
         """
-        Checks valid scipy_ls minimizers are set correctly
+        Checks default scipy_ls minimizers are set correctly
         """
         expected = ['lm-scipy', 'trf', 'dogbox']
         actual = self.options.minimizers['scipy_ls']
@@ -108,7 +108,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_ceres(self):
         """
-        Checks valid ceres minimizers are set correctly
+        Checks default ceres minimizers are set correctly
         """
         expected = ['Levenberg_Marquardt', 'Dogleg', 'BFGS', 'LBFGS',
                     'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
@@ -118,7 +118,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_gradient_free(self):
         """
-        Checks valid gradient free minimizers are set correctly
+        Checks default gradient free minimizers are set correctly
         """
         expected = ['HillClimbingOptimizer',
                     'RepulsingHillClimbingOptimizer',
@@ -134,7 +134,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_horace(self):
         """
-        Checks valid horace minimizers are set correctly
+        Checks default horace minimizers are set correctly
         """
         expected = ['lm-lsqr']
         actual = self.options.minimizers['horace']
@@ -142,7 +142,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_levmar(self):
         """
-        Checks valid levmar minimizers are set correctly
+        Checks default levmar minimizers are set correctly
         """
         expected = ['levmar']
         actual = self.options.minimizers['levmar']
@@ -150,7 +150,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_lmfit(self):
         """
-        Checks valid lmfit minimizers are set correctly
+        Checks default lmfit minimizers are set correctly
         """
         expected = ['powell',
                     'cobyla',
@@ -169,7 +169,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_matlab(self):
         """
-        Checks valid matlab minimizers are set correctly
+        Checks default matlab minimizers are set correctly
         """
         expected = ['Nelder-Mead Simplex']
         actual = self.options.minimizers['matlab']
@@ -177,7 +177,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_matlab_curve(self):
         """
-        Checks valid matlab curve minimizers are set correctly
+        Checks default matlab curve minimizers are set correctly
         """
         expected = ['Levenberg-Marquardt', 'Trust-Region']
         actual = self.options.minimizers['matlab_curve']
@@ -185,7 +185,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_matlab_opt(self):
         """
-        Checks valid matlab opt minimizers are set correctly
+        Checks default matlab opt minimizers are set correctly
         """
         expected = ['levenberg-marquardt', 'trust-region-reflective']
         actual = self.options.minimizers['matlab_opt']
@@ -193,7 +193,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_matlab_stats(self):
         """
-        Checks valid matlab stats minimizers are set correctly
+        Checks default matlab stats minimizers are set correctly
         """
         expected = ['Levenberg-Marquardt']
         actual = self.options.minimizers['matlab_stats']
@@ -201,7 +201,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_theseus(self):
         """
-        Checks valid theseus minimizers are set correctly
+        Checks default theseus minimizers are set correctly
         """
         expected = ['Levenberg_Marquardt', 'Gauss-Newton']
         actual = self.options.minimizers['theseus']
@@ -209,7 +209,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_scipy_go(self):
         """
-        Checks valid scipy go minimizers are set correctly
+        Checks default scipy go minimizers are set correctly
         """
         expected = ['differential_evolution', 'dual_annealing']
         actual = self.options.minimizers['scipy_go']
