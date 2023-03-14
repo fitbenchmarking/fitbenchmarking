@@ -181,7 +181,7 @@ def loop_over_starting_values(problem, options, grabbed_output):
     for index in num_start_vals_pbar:
         LOGGER.info("    Starting value: %i/%i", index + 1, num_start_vals)
         if num_start_vals > 1:
-            problem.name = name + f', Start {index + 1}'
+            problem.name = f'{name}, Start {index + 1}'
 
         #############################
         # Loops over cost functions #

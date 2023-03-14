@@ -42,7 +42,7 @@ class MantidParser(FitbenchmarkParser):
 
         # pylint: disable=attribute-defined-outside-init
         self._equation = ifun.name()
-        self._starting_values = [dict(params)]
+        self._starting_values = [params]
         # pylint: enable=attribute-defined-outside-init
 
         # Convert to callable
