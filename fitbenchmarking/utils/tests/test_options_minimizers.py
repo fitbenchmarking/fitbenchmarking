@@ -104,6 +104,32 @@ class MininimizerOptionTests(unittest.TestCase):
         actual = self.options.minimizers['scipy_ls']
         self.assertEqual(expected, actual)
 
+    def test_minimizer_nlopt(self):
+        """
+        Checks default nlopt minimizers are set correctly
+        """
+        expected = ['LN_BOBYQA',
+                    'LN_NEWUOA',
+                    'LN_NEWUOA_BOUND',
+                    'LN_PRAXIS',
+                    'LD_SLSQP',
+                    'LD_VAR2',
+                    'LD_VAR1',
+                    'AUGLAG',
+                    'AUGLAG_EQ',
+                    'LN_NELDERMEAD',
+                    'LN_SBPLX',
+                    'LN_COBYLA',
+                    'LD_CCSAQ',
+                    'LD_MMA',
+                    'LD_TNEWTON_PRECOND_RESTART',
+                    'LD_TNEWTON_PRECOND',
+                    'LD_TNEWTON_RESTART',
+                    'LD_TNEWTON',
+                    'LD_LBFGS']
+        actual = self.options.minimizers['nlopt']
+        self.assertEqual(expected, actual)
+
 
 # pylint: disable=too-many-public-methods
 class UserMininimizerOptionTests(unittest.TestCase):
@@ -297,3 +323,17 @@ class UserMininimizerOptionTests(unittest.TestCase):
         """
         set_option = ['lm-minpack-jac', 'trf']
         self.shared_invalid(set_option, 'scipy_ls')
+
+    def test_minimizer_nlopt_valid(self):
+        """
+        Checks user set nlopt minimizers is valid
+        """
+        set_option = ['LD_TNEWTON', 'LD_LBFGS']
+        self.shared_valid(set_option, 'nlopt')
+
+    def test_minimizer_nlopt_invalid(self):
+        """
+        Checks user set nlopt minimizers is invalid
+        """
+        set_option = ['newton', 'lbfgs']
+        self.shared_invalid(set_option, 'nlopt')
