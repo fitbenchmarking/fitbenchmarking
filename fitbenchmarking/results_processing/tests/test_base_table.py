@@ -16,6 +16,9 @@ from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing.base_table import Table
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.results_processing.base_table import (calculate_luminance,
+                                                           calculate_contrast,
+                                                           background_to_text)
 
 
 def generate_results():
@@ -261,3 +264,74 @@ class SaveColourbarTests(TestCase):
                          relative_path)
 
         savefig_mock.assert_called_once()
+
+
+class TestContrastRatio(TestCase):
+    """
+    Tests the functions used for calculating the contrast ratio
+    """
+    def test_calculate_luminance(self):
+        luminance_test = (
+             {'case': 'black', 'rgb': [0, 0, 0], 'output': 0},
+             {'case': 'white', 'rgb': [1, 1, 1], 'output': 1},
+             {'case': 'red', 'rgb': [1, 0, 0], 'output': 0.2126},
+             {'case': 'green', 'rgb': [0, 1, 0], 'output': 0.7152},
+             {'case': 'blue', 'rgb': [0, 0, 1], 'output': 0.0722},
+             {'case': 'purple', 'rgb': [1, 0, 1], 'output': 0.2848}
+        )
+        for test in luminance_test:
+            with self.subTest(test['case']):
+                self.assertAlmostEqual(calculate_luminance(test['rgb']),
+                                       test['output'])
+
+    def test_calculate_contrast(self):
+        contrast_test = (
+             {'case': '1', 'background': [0, 0, 0],
+              'foreground': [1, 1, 1], 'output': 21.00},
+             {'case': '2', 'background': [1, 0, 0],
+              'foreground': [0, 0, 0], 'output': 5.25},
+             {'case': '3', 'background': [0, 1, 0],
+              'foreground': [0, 0, 0], 'output': 15.30},
+             {'case': '4', 'background': [0, 1, 0],
+              'foreground': [1, 1, 1], 'output': 1.37},
+             {'case': '5', 'background': [0, 0, 1],
+              'foreground': [1, 1, 1], 'output': 8.59},
+             {'case': '6', 'background': [0, 0, 1],
+              'foreground': [0, 0, 0], 'output': 2.44}
+        )
+        for test in contrast_test:
+            with self.subTest(test['case']):
+                self.assertAlmostEqual(calculate_contrast(test['background'],
+                                                          test['foreground']),
+                                       test['output'], places=2)
+
+    def test_background_to_text(self):
+        test_cases = (
+             {'case': '1',
+              'background': [[0, 0, 0]],
+              'output': ['rgb(255,255,255)']},
+             {'case': '2',
+              'background': [[1, 1, 1]],
+              'output': ['rgb(0,0,0)']},
+             {'case': '3',
+              'background': [[1, 0, 0]],
+              'output': ['rgb(0,0,0)']},
+             {'case': '4',
+              'background': [[0, 1, 0]],
+              'output': ['rgb(0,0,0)']},
+             {'case': '4',
+              'background': [[0, 0, 1]],
+              'output': ['rgb(255,255,255)']},
+             {'case': '5',
+              'background': [[0, 0, 1],
+                             [0, 1, 0],
+                             [0, 0, 0]],
+              'output': ['rgb(255,255,255)',
+                         'rgb(0,0,0)',
+                         'rgb(255,255,255)']}
+        )
+        for test in test_cases:
+            with self.subTest(test['case']):
+                self.assertCountEqual(background_to_text(test['background'],
+                                                         7),
+                                      test['output'])

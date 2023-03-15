@@ -638,8 +638,8 @@ def background_to_text(background_col, contrast_threshold):
     """
     text_str = []
     for rgb in background_col:
-        w = calculate_contrast_ratio(rgb, [1, 1, 1])  # white (default)
-        b = calculate_contrast_ratio(rgb, [0, 0, 0])  # black
+        w = calculate_contrast(rgb, [1, 1, 1])  # white (default)
+        b = calculate_contrast(rgb, [0, 0, 0])  # black
         contrast = {'rgb(255,255,255)': w, 'rgb(0,0,0)': b}
         if w <= contrast_threshold:
             text_str.append(max(contrast, key=contrast.get))
@@ -648,7 +648,7 @@ def background_to_text(background_col, contrast_threshold):
     return text_str
 
 
-def calculate_contrast_ratio(background, foreground):
+def calculate_contrast(background, foreground):
     """
     Calculates the contrast ratio between the background and foreground
     colors. See link for more info:

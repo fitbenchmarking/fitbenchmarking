@@ -10,8 +10,8 @@ from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.results_processing.base_table import Table
 from fitbenchmarking.utils.exceptions import IncompatibleTableError
-from fitbenchmarking.results_processing.base_table import CONTRAST_RATIO_AAA
-from fitbenchmarking.results_processing.base_table import background_to_text
+from fitbenchmarking.results_processing.base_table import (CONTRAST_RATIO_AAA,
+                                                           background_to_text)
 
 GRAD_TOL = 1e-1
 RES_TOL = 1e-8
