@@ -268,9 +268,12 @@ class SaveColourbarTests(TestCase):
 
 class TestContrastRatio(TestCase):
     """
-    Tests the functions used for calculating the contrast ratio
+    Tests the three functions used for calculating the contrast ratio
     """
     def test_calculate_luminance(self):
+        """
+        Tests the luminance calculation using 6 subtests
+        """
         luminance_test = (
              {'case': 'black', 'rgb': [0, 0, 0], 'output': 0},
              {'case': 'white', 'rgb': [1, 1, 1], 'output': 1},
@@ -285,6 +288,9 @@ class TestContrastRatio(TestCase):
                                        test['output'])
 
     def test_calculate_contrast(self):
+        """
+        Tests the contrast ratio calculation using 6 subtests
+        """
         contrast_test = (
              {'case': '1', 'background': [0, 0, 0],
               'foreground': [1, 1, 1], 'output': 21.00},
@@ -306,6 +312,9 @@ class TestContrastRatio(TestCase):
                                        test['output'], places=2)
 
     def test_background_to_text(self):
+        """
+        Tests the function that determines the text colour
+        """
         test_cases = (
              {'case': '1',
               'background': [[0, 0, 0]],
