@@ -97,6 +97,10 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             template = env.get_template("table_template.html")
             html_output_file = file_path + 'html'
             csv_output_file = file_path + 'csv'
+            if options.run_name != '':
+                run_name = f"{options.run_name}: "
+            else:
+                run_name = ""
 
             with open(csv_output_file, "w") as f:
                 f.write(csv_table)
@@ -121,6 +125,7 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                                     has_pp=table.has_pp,
                                     pp_filenames=table.pp_filenames,
                                     cbar=cbar,
+                                    run_name=run_name,
                                     error_message=ERROR_OPTIONS,
                                     failed_problems=failed_problems,
                                     unselected_minimzers=unselected_minimzers,

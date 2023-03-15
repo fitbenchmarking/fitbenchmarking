@@ -152,6 +152,13 @@ of the Fitbenchmarking docs. '''
                         help="Use this option if you do not want to"
                         "see the progress bar during runtime.")
 
+    group4 = parser.add_mutually_exclusive_group()
+    group4.add_argument('--run_name',
+                        metavar='RUN_NAME',
+                        default='',
+                        help="Use this option if you would like to"
+                        "prefix the html title of results pages.")
+
     parser.add_argument('-m', '--comparison_mode',
                         metavar='COMPARISON_MODE',
                         default='',
@@ -257,13 +264,17 @@ def _create_index_page(options: Options, groups: "list[str]",
     copytree(os.path.join(template_dir, "css"),
              os.path.join(options.results_dir, "css"),
              dirs_exist_ok=True)
-
+    if options.run_name != '':
+        run_name = f"{options.run_name}: "
+    else:
+        run_name = ""
     with open(output_file, "w") as fh:
         fh.write(template.render(
             css_style_sheet=css["main"],
             custom_style=css["custom"],
             groups=groups,
             group_link=group_links,
+            run_name=run_name,
             zip=zip))
 
     return output_file
@@ -443,7 +454,8 @@ def main():
         'table_type': args.table_type,
         'file_name': args.logging_file_name,
         'level': args.level,
-        'external_output': args.external_output
+        'external_output': args.external_output,
+        'run_name': args.run_name
     }
 
     # Check if make_plots in options.py should be overridden, and if so,

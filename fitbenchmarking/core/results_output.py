@@ -371,6 +371,10 @@ def create_problem_level_index(options, table_names, group_name,
     names = table_names.keys()
     description = [table_descriptions[n] for n in names]
     index = table_descriptions[options.comparison_mode]
+    if options.run_name != '':
+        run_name = f"{options.run_name}: "
+    else:
+        run_name = ""
     with open(output_file, 'w', encoding="utf-8") as fh:
         fh.write(template.render(
             css_style_sheet=css['main'],
@@ -381,4 +385,5 @@ def create_problem_level_index(options, table_names, group_name,
             table_type=names,
             links=links,
             description=description,
+            run_name=run_name,
             zip=zip))
