@@ -10,7 +10,8 @@ from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.results_processing.base_table import Table
 from fitbenchmarking.utils.exceptions import IncompatibleTableError
-from fitbenchmarking.results_processing.base_table import background_to_text_color, CONTRAST_RATIO_THRESHOLD
+from fitbenchmarking.results_processing.base_table import CONTRAST_RATIO_AAA
+from fitbenchmarking.results_processing.base_table import background_to_text
 
 GRAD_TOL = 1e-1
 RES_TOL = 1e-8
@@ -145,7 +146,7 @@ class LocalMinTable(Table):
 
         :return hex_strs: colours as hex strings for each input value
         :rtype hex_strs: list[str]
-        :return text_strs: a list of 'rgb(255, 255, 255)' or 'rgb(0,0,0)' 
+        :return text_strs: a list of 'rgb(255, 255, 255)' or 'rgb(0,0,0)'
                            strings defining the foreground text colours.
         :rtype text_strs: list[str]
         """
@@ -153,7 +154,7 @@ class LocalMinTable(Table):
                      for local_min in vals])
         hex_strs = [clrs.rgb2hex(colour) for colour in rgba]
         rgb_list = [list(colour[:3]) for colour in rgba]
-        text_str = background_to_text_color(rgb_list, CONTRAST_RATIO_THRESHOLD)
+        text_str = background_to_text(rgb_list, CONTRAST_RATIO_AAA)
         return hex_strs, text_str
 
     def display_str(self, value):

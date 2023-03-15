@@ -4,7 +4,6 @@ compare table
 import os
 
 from fitbenchmarking.results_processing.base_table import Table
-from fitbenchmarking.results_processing.base_table import background_to_text_color, CONTRAST_RATIO_THRESHOLD
 
 
 class CompareTable(Table):

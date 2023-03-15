@@ -17,7 +17,7 @@ FORMAT_DESCRIPTION = \
      'rel': 'Relative values are displayed in the table.',
      'both': 'Absolute and relative values are displayed in '
              'the table in the format ``abs (rel)``'}
-CONTRAST_RATIO_THRESHOLD = 7.0
+CONTRAST_RATIO_AAA = 7.0
 
 
 class Table:
@@ -177,8 +177,8 @@ class Table:
         str_dict = {}
         for k, results in self.sorted_results.items():
             _, text_arrs = self.get_colours_for_row(results)
-            if len(text_arrs)==2 and isinstance(text_arrs, tuple):
-                text_arrs=zip(text_arrs[0], text_arrs[1])
+            if len(text_arrs) == 2 and isinstance(text_arrs, tuple):
+                text_arrs = zip(text_arrs[0], text_arrs[1])
             str_dict[k] = [self.get_str_result(r, t, html)
                            for r, t in zip(results, text_arrs)]
         return str_dict
@@ -230,7 +230,7 @@ class Table:
 
         :param result: The result to generate a string for
         :type result: fitbenchmarking.utils.ftibm_result.FittingResult
-        :param text_col: a list of 'rgb(255, 255, 255)' or 'rgb(0,0,0)' 
+        :param text_col: a list of 'rgb(255, 255, 255)' or 'rgb(0,0,0)'
                          strings defining the foreground text colours.
         :type text_col: list[str]
         :param html: Flag to control whether to generate a html string or plain
@@ -245,13 +245,21 @@ class Table:
             val_str = self.display_str(val)
             val_str += self.get_error_str(result,
                                           error_template="<sup>{}</sup>")
-            text_class = {'rgb(0,0,0)': 'class="dark"', 'rgb(255,255,255)': 'class="light"'}
+            text_class = {'rgb(0,0,0)': 'class="dark"',
+                          'rgb(255,255,255)': 'class="light"'}
             if isinstance(text_col, tuple):
                 ftext, stext = text_col
                 val_str = val_str.split('<br>')
-                val_str = f'<a {text_class[ftext]} href="{self.get_link_str(result)}">{val_str[0]}</a><a {text_class[stext]} href="{self.get_link_str(result)}">{val_str[1]}</a>' 
+                val_str = (f'<a {text_class[ftext]} '
+                           f'href="{self.get_link_str(result)}">'
+                           f'{val_str[0]}</a>'
+                           f'<a {text_class[stext]} '
+                           f'href="{self.get_link_str(result)}">'
+                           f'{val_str[1]}</a>')
             else:
-                val_str = f'<a {text_class[text_col]} href="{self.get_link_str(result)}">{val_str}</a>'
+                val_str = (f'<a {text_class[text_col]} '
+                           f'href="{self.get_link_str(result)}">'
+                           f'{val_str}</a>')
         else:
             val_str = self.display_str(self.get_value(result))
             val_str += self.get_error_str(result, error_template='[{}]')
@@ -270,7 +278,7 @@ class Table:
 
         :return: The colour to use for each cell in the list
         :rtype: list[str]
-        :return text_strs: a list of 'rgb(255, 255, 255)' or 'rgb(0,0,0)' 
+        :return text_strs: a list of 'rgb(255, 255, 255)' or 'rgb(0,0,0)'
                            strings defining the foreground text colours.
         :rtype text_strs: list[str]
         """
@@ -284,7 +292,8 @@ class Table:
 
         col_strs = ["background-colour: #ffffff" for _ in results]
 
-        colours, text_str = self.vals_to_colour(values, cmap, cmap_range, log_ulim)
+        colours, text_str = self.vals_to_colour(values, cmap,
+                                                cmap_range, log_ulim)
         for i, c in enumerate(colours):
             try:
                 col_strs[i] = self.colour_template.format(c)
@@ -479,7 +488,7 @@ class Table:
 
         :return hex_strs: colours as hex strings for each input value
         :rtype hex_strs: list[str]
-        :return text_strs: a list of 'rgb(255, 255, 255)' or 'rgb(0,0,0)' 
+        :return text_strs: a list of 'rgb(255, 255, 255)' or 'rgb(0,0,0)'
                            strings defining the foreground text colours.
         :rtype text_strs: list[str]
         """
@@ -496,8 +505,8 @@ class Table:
         hex_strs = [mpl.colors.rgb2hex(colour) for colour in rgba]
         # selecting the rgb values
         rgb_list = [list(colour[:3]) for colour in rgba]
-        
-        text_str = background_to_text_color(rgb_list, CONTRAST_RATIO_THRESHOLD)
+
+        text_str = background_to_text(rgb_list, CONTRAST_RATIO_AAA)
 
         return hex_strs, text_str
 
@@ -610,27 +619,27 @@ class Table:
         return html
 
 
-def background_to_text_color(background_col, contrast_threshold):
+def background_to_text(background_col, contrast_threshold):
     """
-    Determines the foreground color for the table elements. The optimum 
-    color is selected from two options - white and black. White is selected 
-    if its contrast ratio is greater than the contrast threshold. However, 
-    If the contrast ratio of white text does not meet the requirement, then 
+    Determines the foreground color for the table elements. The optimum
+    color is selected from two options - white and black. White is selected
+    if its contrast ratio is greater than the contrast threshold. However,
+    If the contrast ratio of white text does not meet the requirement, then
     the text color which provides the greatest contrast ratio is selected.
 
-    :param background_col: a list containing r, g, b values ranging from 0 to 255
+    :param background_col: a list containing r,g,b values ranging from 0 to 255
     :type vals: list[list[int]]
     :param contrast_threshold: a threshold value between 0 and 21
     :type contrast_threshold: float
 
-    :return: a list of 'rgb(255, 255, 255)' or 'rgb(0,0,0)' strings defining 
+    :return: a list of 'rgb(255, 255, 255)' or 'rgb(0,0,0)' strings defining
              the foreground text colours.
     :rtype: list[str]
     """
     text_str = []
     for rgb in background_col:
-        w = calculate_contrast_ratio(rgb, [1, 1, 1]) # white (default)
-        b = calculate_contrast_ratio(rgb, [0, 0, 0]) # black
+        w = calculate_contrast_ratio(rgb, [1, 1, 1])  # white (default)
+        b = calculate_contrast_ratio(rgb, [0, 0, 0])  # black
         contrast = {'rgb(255,255,255)': w, 'rgb(0,0,0)': b}
         if w <= contrast_threshold:
             text_str.append(max(contrast, key=contrast.get))
@@ -671,5 +680,7 @@ def calculate_luminance(rgb):
     :return: a float value between 0 and 1
     :rtype: float
     """
-    a = list(map(lambda color: color/12.92 if color<=0.03928 else (((color+0.055)/1.055)**2.4), rgb))
+    a = list(map(lambda color: color/12.92
+             if color <= 0.03928
+             else (((color+0.055)/1.055)**2.4), rgb))
     return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722
