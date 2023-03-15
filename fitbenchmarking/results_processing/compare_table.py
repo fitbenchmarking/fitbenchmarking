@@ -4,6 +4,7 @@ compare table
 import os
 
 from fitbenchmarking.results_processing.base_table import Table
+from fitbenchmarking.results_processing.base_table import background_to_text_color, CONTRAST_RATIO_THRESHOLD
 
 
 class CompareTable(Table):
@@ -109,10 +110,14 @@ class CompareTable(Table):
         :param vals: The relative values to get the colours for
         :type vals: list[list[float, float]]
 
-        :return: The colours for the values
-        :rtype: list[list[str]]
+        :return background_col: The colours for the values
+        :rtype background_col: list[list[str]]
+        :return foreground_text: The colours for the text
+        :rtype foreground_text: tuple[list[str]]
         """
         acc, runtime = zip(*vals)
-        acc_colours = super().vals_to_colour(acc, *args)
-        runtime_colours = super().vals_to_colour(runtime, *args)
-        return zip(acc_colours, runtime_colours)
+        acc_colours, acc_text = super().vals_to_colour(acc, *args)
+        runtime_colours, runtime_text = super().vals_to_colour(runtime, *args)
+        background_col = zip(acc_colours, runtime_colours)
+        foreground_text = (acc_text, runtime_text)
+        return background_col, foreground_text
