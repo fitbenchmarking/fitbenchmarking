@@ -583,8 +583,8 @@ uncertainties.
 We interface via the python interface `iminuit <https://iminuit.readthedocs.io>`__ with
 support for the 2.x series.
 
-* `Minuit's MIGRAD <https://root.cern.ch/root/htmldoc/guides/minuit2/Minuit2.pdf>`__ (:code:`migrad`)
-* `Minuit's SIMPLEX <https://root.cern.ch/root/htmldoc/guides/minuit2/Minuit2.pdf>`__ (:code:`simplex`)
+* `Minuit's MIGRAD <https://iminuit.readthedocs.io/en/stable/reference.html#iminuit.Minuit.migrad>`__ (:code:`migrad`)
+* `Minuit's SIMPLEX <https://iminuit.readthedocs.io/en/stable/reference.html#iminuit.Minuit.simplex>`__ (:code:`simplex`)
 
 **Links** `Github - iminuit <https://github.com/scikit-hep/iminuit>`__
 
