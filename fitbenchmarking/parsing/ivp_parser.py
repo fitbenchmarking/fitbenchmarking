@@ -1,7 +1,6 @@
 """
 This file implements a parser for the IVP data format.
 """
-from collections import OrderedDict
 
 import importlib
 import inspect
@@ -49,7 +48,7 @@ class IVPParser(FitbenchmarkParser):
 
         # pylint: disable=attribute-defined-outside-init
         self._equation = fun.__name__
-        self._starting_values = [OrderedDict([(n, pf[n]) for n in p_names])]
+        self._starting_values = [{n: pf[n] for n in p_names}]
 
         def fitFunction(x, *p):
             if len(x.shape) == 1:

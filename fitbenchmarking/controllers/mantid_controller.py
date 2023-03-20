@@ -91,7 +91,7 @@ class MantidController(Controller):
                                              OutputWorkspace='ws0')
             other_inputs = [
                 msapi.CreateWorkspace(DataX=x, DataY=y, DataE=e,
-                                      OutputWorkspace='ws{}'.format(i + 1))
+                                      OutputWorkspace=f'ws{i + 1}')
                 for i, (x, y, e) in enumerate(zip(self.data_x[1:],
                                                   self.data_y[1:],
                                                   self.data_e[1:]))]
@@ -117,7 +117,7 @@ class MantidController(Controller):
                 if ';' in function_def:
                     function_def = ' (composite=CompositeFunction, '\
                                    + 'NumDeriv=false, $domains=i; '\
-                                   + '{});'.format(function_def)
+                                   + f'{function_def});'
                 else:
                     function_def += ', $domains=i; '
 
@@ -125,29 +125,30 @@ class MantidController(Controller):
                 # first function.
                 composite_str = 'composite=MultiDomainFunction, NumDeriv=1;'
                 function_def = composite_str + function_def * self._multi_fit
-                ties = ','.join('f{0}.{1}=f0.{1}'.format(i, p)
+                ties = ','.join(f'f{i}.{p}=f0.{p}'
                                 for p in self.problem.additional_info[
                                     'mantid_ties']
                                 for i in range(1, self._multi_fit))
-                function_def += 'ties=({})'.format(ties)
+                function_def += f'ties=({ties})'
 
             # Add constraints if parameter bounds are set
             if self.value_ranges is not None and self._multi_fit:
-                constraints = ','.join('{0} < f{1}.{2} < {3}'.format(
-                    self.value_ranges[i][0], j, p, self.value_ranges[i][1])
-                    for i, p in enumerate(self._param_names)
-                    for j in range(0, self._multi_fit))
-                function_def += '; constraints=({})'.format(constraints)
+                constraints = ','.join(f'{self.value_ranges[i][0]} < f{j}.{p}'
+                                       f' < {self.value_ranges[i][1]}'
+                                       for i, p in enumerate(self._param_names)
+                                       for j in range(0, self._multi_fit))
+                function_def += f'; constraints=({constraints})'
             elif self.value_ranges is not None:
 
                 if ';' not in function_def:
                     self._param_names = [
                         'f0.'+name for name in self._param_names]
 
-                constraints = ','.join('{0} < {1} < {2}'.format(
-                    self.value_ranges[i][0], p, self.value_ranges[i][1])
-                    for i, p in enumerate(self._param_names))
-                function_def += '; constraints=({})'.format(constraints)
+                constraints = ','.join(f'{self.value_ranges[i][0]} < {p} <'
+                                       f'{self.value_ranges[i][1]}'
+                                       for i, p in enumerate(self._param_names)
+                                       )
+                function_def += f'; constraints=({constraints})'
 
             self._mantid_equation = function_def
         except KeyError:
@@ -155,7 +156,7 @@ class MantidController(Controller):
             self._mantid_equation = None
 
         # Arguments will change if multi-data
-        self._added_args = {'InputWorkspace_{}'.format(i + 1): v
+        self._added_args = {f'InputWorkspace_{i + 1}': v
                             for i, v in enumerate(other_inputs)}
 
     def setup(self):
@@ -166,7 +167,7 @@ class MantidController(Controller):
         """
 
         if self._mantid_equation is None:
-            start_val_list = ['{0}={1}'.format(name, value)
+            start_val_list = [f'{name}={value}'
                               for name, value
                               in zip(self._param_names, self.initial_params)]
 
@@ -193,9 +194,10 @@ class MantidController(Controller):
                     for i, p in enumerate(self._param_names):
                         ff_self.declareParameter(p)
                         if self.value_ranges is not None:
-                            ff_self.addConstraints('{0} < {1} < {2}'.format(
-                                self.value_ranges[i][0], p,
-                                self.value_ranges[i][1]))
+                            ff_self.addConstraints(f'{self.value_ranges[i][0]}'
+                                                   f' < {p} < '
+                                                   f'{self.value_ranges[i][1]}'
+                                                   )
 
                 def function1D(ff_self, xdata):
                     """

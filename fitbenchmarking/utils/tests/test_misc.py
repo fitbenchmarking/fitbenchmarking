@@ -1,7 +1,6 @@
 """
 Tests for misc.py
 """
-from __future__ import (absolute_import, division, print_function)
 import inspect
 import os
 import shutil
@@ -30,7 +29,7 @@ class CreateDirsTests(unittest.TestCase):
 
         expected = []
         for i in range(10):
-            filename = 'file_{}.txt'.format(i)
+            filename = f'file_{i}.txt'
             filepath = os.path.join(self.dirname, filename)
             expected.append(filepath)
 

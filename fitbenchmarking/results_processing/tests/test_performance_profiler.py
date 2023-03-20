@@ -1,12 +1,9 @@
 """
 Tests for the performance profiler file.
 """
-from __future__ import absolute_import, division, print_function
 
 import os
 import unittest
-from collections import OrderedDict
-
 import numpy as np
 
 from fitbenchmarking.core.results_output import preprocess_data
@@ -83,7 +80,7 @@ class PerformanceProfilerTests(unittest.TestCase):
             jac = 'j1'
             hess = None
             for j in range(self.num_minimizers):
-                minimizer = 'min_{}'.format(j)
+                minimizer = f'min_{j}'
                 prob_results.append(FittingResult(options=options,
                                                   cost_func=cost_func,
                                                   jac=jac,
@@ -105,11 +102,11 @@ class PerformanceProfilerTests(unittest.TestCase):
         acc, runtime = performance_profiler.prepare_profile_data(self.results)
         acc_expected = np.array(self.acc_expected).T
         runtime_expected = np.array(self.runtime_expected).T
-        acc_dict = OrderedDict()
-        runtime_dict = OrderedDict()
+        acc_dict = {}
+        runtime_dict = {}
         for j in range(self.num_minimizers):
-            acc_dict['min_{} [s1]: j:j1'.format(j)] = acc_expected[j]
-            runtime_dict['min_{} [s1]: j:j1'.format(j)] = runtime_expected[j]
+            acc_dict[f'min_{j} [s1]: j:j1'] = acc_expected[j]
+            runtime_dict[f'min_{j} [s1]: j:j1'] = runtime_expected[j]
         for k, v in acc_dict.items():
             assert np.allclose(v, acc[k])
         for k, v in runtime_dict.items():
