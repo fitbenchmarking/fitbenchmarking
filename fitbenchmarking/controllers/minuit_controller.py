@@ -43,9 +43,9 @@ class MinuitController(Controller):
         """
 
         if int(iminuit_version[:1]) < 2:
-            raise MissingSoftwareError('iminuit version {} is not supported, '
-                                       'please upgrade to at least version '
-                                       '2.0.0'.format(iminuit_version))
+            raise MissingSoftwareError(f'iminuit version {iminuit_version} is'
+                                       'not supported, please upgrade to at '
+                                       'least version 2.0.0')
 
         super().__init__(cost_func)
 

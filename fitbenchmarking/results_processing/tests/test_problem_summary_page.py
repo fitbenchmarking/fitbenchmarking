@@ -78,7 +78,7 @@ def generate_mock_results(additional_options):
         p.data_y = data_y[i]
         p.data_e = data_e[i]
         p.function = func[i]
-        p.name = "prob_{}".format(i)
+        p.name = f"prob_{i}"
         p.starting_values = [starting_values[i]]
 
     softwares = ['s1', 's2']

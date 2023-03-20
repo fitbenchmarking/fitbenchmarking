@@ -116,7 +116,7 @@ class GOFitController(Controller):
                 m, n, self._p0, self.cost_func.eval_r, **self._options)
         else:
             raise UnknownMinimizerError(
-                "No {} minimizer for GOFit".format(self.minimizer))
+                f"No {self.minimizer} minimizer for GOFit")
 
         self._popt = xopt
         self._status = status

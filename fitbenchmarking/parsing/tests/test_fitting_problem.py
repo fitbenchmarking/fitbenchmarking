@@ -2,7 +2,6 @@
 Test file to test the fitting_problem file.
 """
 
-from collections import OrderedDict
 from unittest import TestCase
 
 import numpy as np
@@ -62,7 +61,7 @@ class TestFittingProblem(TestCase):
             self.fail('verify() passes when no values are set.')
 
         fitting_problem.starting_values = [
-            OrderedDict([('p1', 1), ('p2', 2)])]
+            {'p1': 1, 'p2': 2}]
         with self.assertRaises(exceptions.FittingProblemError):
             fitting_problem.verify()
             self.fail('verify() passes starting values are set.')
@@ -123,7 +122,7 @@ class TestFittingProblem(TestCase):
         fitting_problem = FittingProblem(self.options)
         expected_function_def = 'a=1, b=2.0, c=3.3, d=4.99999'
         fitting_problem.starting_values = [
-            OrderedDict([('a', 0), ('b', 0), ('c', 0), ('d', 0)])]
+            {'a': 0, 'b': 0, 'c': 0, 'd': 0}]
         params = [1, 2.0, 3.3, 4.99999]
         function_def = fitting_problem.get_function_params(params=params)
         self.assertEqual(function_def, expected_function_def)
@@ -133,8 +132,8 @@ class TestFittingProblem(TestCase):
         Tests that value_ranges are formatted correctly
         """
         fitting_problem = FittingProblem(self.options)
-        fitting_problem.starting_values = [OrderedDict(
-            [('param1', 0), ('param2', 0), ('param3', 0)])]
+        fitting_problem.starting_values = [
+            {'param1': 0, 'param2': 0, 'param3': 0}]
         value_ranges_prob_def = {'param1': (0, 5), 'param2': (5, 10)}
         expected_value_ranges = [(0, 5), (5, 10), (-np.inf, np.inf)]
         fitting_problem.set_value_ranges(value_ranges_prob_def)
@@ -146,8 +145,8 @@ class TestFittingProblem(TestCase):
         in `parameter_ranges` are incorrect
         """
         fitting_problem = FittingProblem(self.options)
-        fitting_problem.starting_values = [OrderedDict(
-            [('param1', 0), ('param2', 0), ('param3', 0)])]
+        fitting_problem.starting_values = [
+            {'param1': 0, 'param2': 0, 'param3': 0}]
         value_ranges_prob_def = {'incorrect_name': (0, 5), 'param2': (5, 10)}
         self.assertRaises(exceptions.IncorrectBoundsError,
                           fitting_problem.set_value_ranges,

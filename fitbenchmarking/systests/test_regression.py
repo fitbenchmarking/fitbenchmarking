@@ -140,11 +140,11 @@ def diff_result(actual, expected):
         if exp_line != act_line:
             diff.append([i, exp_line, act_line])
 
-    msg = '\n\nOutput has changed in {} '.format(len(diff)) \
+    msg = f'\n\nOutput has changed in {len(diff)} ' \
           + 'minimizer-problem pairs. \n' \
-          + '\n'.join(['== Line {} ==\n'
-                       'Expected :{}\n'
-                       'Actual   :{}'.format(*line_change)
+          + '\n'.join([f'== Line {line_change[0]} ==\n'
+                       f'Expected :{line_change[1]}\n'
+                       f'Actual   :{line_change[2]}'
                        for line_change in diff])
     if diff != []:
         print("\n==\n")
