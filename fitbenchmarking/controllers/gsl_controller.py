@@ -186,7 +186,7 @@ class GSLController(Controller):
             self._solver = getattr(multiminimize, self.minimizer)(mysys, p)
         else:
             raise UnknownMinimizerError(
-                "No {} minimizer for GSL".format(self.minimizer))
+                f"No {self.minimizer} minimizer for GSL")
 
         # Set up initialization parameters
         #

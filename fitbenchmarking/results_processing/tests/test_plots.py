@@ -1,15 +1,11 @@
 '''
 Test plots
 '''
-from __future__ import (absolute_import, division, print_function)
 
 import os
 import unittest
+from tempfile import TemporaryDirectory
 import numpy as np
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
 
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -59,8 +55,9 @@ class PlotTests(unittest.TestCase):
 
         self.opts = Options()
         self.opts.use_errors = True
-
+        # pylint: disable=consider-using-with
         self.dir = TemporaryDirectory()
+        # pylint: enable=consider-using-with
         self.plot = plots.Plot(best_result=self.fr,
                                options=self.opts,
                                figures_dir=self.dir.name)

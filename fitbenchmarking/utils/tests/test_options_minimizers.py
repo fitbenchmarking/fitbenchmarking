@@ -67,7 +67,7 @@ class MininimizerOptionTests(unittest.TestCase):
         """
         Checks valid minuit minimizers are set correctly
         """
-        expected = ['minuit']
+        expected = ['migrad', 'simplex']
         actual = self.options.minimizers['minuit']
         self.assertEqual(expected, actual)
 
@@ -138,12 +138,11 @@ class UserMininimizerOptionTests(unittest.TestCase):
         :return: location of temporary ini file
         :rtype: str
         """
-        new_line = '\n{}'.format(" " * (len(software) + 2))
+        new_line = f'\n{" " * (len(software) + 2)}'
         config_str = \
-            "[MINIMIZERS]\n{0}: {1}".format(software,
-                                            new_line.join(options_set))
+            f"[MINIMIZERS]\n{software}: {new_line.join(options_set)}"
         opts_file = os.path.join(self.test_files_dir,
-                                 'test_{}_valid.ini'.format(software))
+                                 f'test_{software}_valid.ini')
         with open(opts_file, 'w') as f:
             f.write(config_str)
         return opts_file
@@ -246,7 +245,7 @@ class UserMininimizerOptionTests(unittest.TestCase):
         """
         Checks user set minuit minimizers is valid
         """
-        set_option = ['minuit']
+        set_option = ['migrad', 'simplex']
         self.shared_valid(set_option, 'minuit')
 
     def test_minimizer_minuit_invalid(self):

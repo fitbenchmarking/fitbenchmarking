@@ -76,7 +76,7 @@ class Table:
 
         self.cbar_title = "No colour bar description given"
         self.cbar_left_label = "Best (1)"
-        self.cbar_right_label = "Worst (>{})".format(self.options.colour_ulim)
+        self.cbar_right_label = f"Worst (>{self.options.colour_ulim})"
 
         # Set up results as needed
         self.sorted_results = {}
@@ -340,8 +340,8 @@ class Table:
             rel_path = os.path.relpath(
                 path=b.problem_summary_page_link,
                 start=self.group_dir)
-            index.append('<a class="problem_header" href="{0}">{1}</a>'
-                         .format(rel_path, i))
+            index.append(f'<a class="problem_header" href="{rel_path}">{i}</a>'
+                         )
         table.index = index
 
         # Get columns where cost function changes
@@ -410,7 +410,7 @@ class Table:
         :rtype: str
         """
         if self._table_title is None:
-            self._table_title = "FitBenchmarking: {0} table".format(self.name)
+            self._table_title = f"FitBenchmarking: {self.name} table"
         return self._table_title
 
     @table_title.setter
@@ -492,7 +492,7 @@ class Table:
         :return: The relative path to the colourbar image.
         :rtype: str
         """
-        fig_path = os.path.join(fig_dir, "{0}_cbar.png".format(self.name))
+        fig_path = os.path.join(fig_dir, f"{self.name}_cbar.png")
 
         figh = 0.77
         fig, ax = plt.subplots(nrows=1, figsize=(6.4, figh))

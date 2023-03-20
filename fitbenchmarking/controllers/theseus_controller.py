@@ -167,7 +167,7 @@ class TheseusController(Controller):
                                        max_iterations=100000)
         else:
             raise UnknownMinimizerError(
-                "No {} minimizer for Theseus-ai ".format(self.minimizer))
+                f"No {self.minimizer} minimizer for Theseus-ai ")
 
         self.th_optim = th.TheseusLayer(optimizer)
 

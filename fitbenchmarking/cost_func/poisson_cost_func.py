@@ -48,8 +48,7 @@ class PoissonCostFunc(CostFunc):
         y = kwargs.get("y", self.problem.data_y)
         if len(x) != len(y):
             raise CostFuncError('The length of the x and y are not the same, '
-                                'len(x)={} and len(y)= {}.'.format(len(x),
-                                                                   len(y)))
+                                f'len(x)={len(x)} and len(y)= {len(y)}.')
         if (y < 0.0).any():
             raise CostFuncError('This cost function is designed for use with '
                                 'positive experimental values, try again with '
