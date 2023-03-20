@@ -78,7 +78,7 @@ def plot(acc, runtime, fig_dir):
     """
     figure_path = []
     for profile_plot, name in zip([acc, runtime], ["acc", "runtime"]):
-        this_filename = os.path.join(fig_dir, "{}_profile.png".format(name))
+        this_filename = os.path.join(fig_dir, f"{name}_profile.png")
         figure_path.append(this_filename)
 
         step_values = []
@@ -138,7 +138,7 @@ def plot(acc, runtime, fig_dir):
 
         # Common parts
         plt.ylim(0.0, 1.0)
-        fig.suptitle("Performance profile - {}".format(name))
+        fig.suptitle(f"Performance profile - {name}")
 
         # add a big axis, hide frame
         fig.add_subplot(111, frameon=False)
@@ -197,9 +197,7 @@ def create_plot(ax, step_values: 'list[np.ndarray]', solvers: 'list[str]'):
             plural_ending = "s"
             if inf_indices[0].size == 1:
                 plural_ending = ""
-            solver = "{} ({} failure{})".format(solver,
-                                                len(inf_indices[0]),
-                                                plural_ending)
+            solver = f"{solver} ({len(inf_indices[0])} failure{plural_ending})"
         solver_values = np.append(solver_values, huge)
         ax.step(solver_values,
                 plot_points,

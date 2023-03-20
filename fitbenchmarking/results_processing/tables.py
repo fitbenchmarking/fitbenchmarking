@@ -141,13 +141,13 @@ def load_table(table):
     :rtype: fitbenchmarking/results_processing/tables.Table subclass
     """
 
-    module_name = '{}_table'.format(table.lower())
+    module_name = f'{table.lower()}_table'
 
     try:
         module = import_module('.' + module_name, __package__)
     except ImportError as e:
-        raise UnknownTableError('Given table option {} '
-                                'was not found: {}'.format(table, e)) from e
+        raise UnknownTableError(f'Given table option {table} '
+                                f'was not found: {e}') from e
 
     classes = getmembers(module, lambda m: (isclass(m)
                                             and not isabstract(m)
