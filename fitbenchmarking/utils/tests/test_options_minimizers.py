@@ -67,7 +67,7 @@ class MininimizerOptionTests(unittest.TestCase):
         """
         Checks valid minuit minimizers are set correctly
         """
-        expected = ['minuit']
+        expected = ['migrad', 'simplex']
         actual = self.options.minimizers['minuit']
         self.assertEqual(expected, actual)
 
@@ -245,7 +245,7 @@ class UserMininimizerOptionTests(unittest.TestCase):
         """
         Checks user set minuit minimizers is valid
         """
-        set_option = ['minuit']
+        set_option = ['migrad', 'simplex']
         self.shared_valid(set_option, 'minuit')
 
     def test_minimizer_minuit_invalid(self):

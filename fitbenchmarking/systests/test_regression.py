@@ -226,7 +226,7 @@ def setup_options(override_software: list = None,
                   "matlab_curve": "Levenberg-Marquardt",
                   "matlab_opt": "levenberg-marquardt",
                   "matlab_stats": "Levenberg-Marquardt",
-                  "minuit": "minuit",
+                  "minuit": "migrad",
                   "ralfit": "gn",
                   "scipy": "Nelder-Mead",
                   "scipy_ls": "lm-scipy"}
