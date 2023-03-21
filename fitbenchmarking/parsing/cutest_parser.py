@@ -2,23 +2,16 @@
 This file calls the pycutest interface for SIF data
 """
 
-from __future__ import print_function
 
 import os
 import time
-from collections import OrderedDict
-
+from tempfile import TemporaryDirectory
 import numpy as np
 import pycutest
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import ParsingError
-
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
 
 if os.path.isdir(os.environ["PYCUTEST_CACHE"]+"/pycutest_cache_holder"):
     # clear problems from cache that are older than 1 hour, do not clear
@@ -65,7 +58,9 @@ class CutestParser(Parser):
         :return: The fully parsed fitting problem
         :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
         """
+        # pylint: disable=consider-using-with
         self.mastsif_dir = TemporaryDirectory()
+        # pylint: enable=consider-using-with
 
         # set the MASTSIF environment variable so that pycutest
         # can find the sif files
@@ -160,10 +155,8 @@ class CutestParser(Parser):
     def _get_starting_values(self):
 
         starting_values = [
-            OrderedDict([
-                ('f{}'.format(i), self._p.x0[i])
-                for i in range(self._num_params)
-            ])
+            {f'f{i}': self._p.x0[i]
+             for i in range(self._num_params)}
         ]
 
         return starting_values
@@ -175,7 +168,7 @@ class CutestParser(Parser):
             parameter_values = False
         else:
             parameter_values = [{
-                'f{}'.format(i): (self._p.bl[i], self._p.bu[i])
+                f'f{i}': (self._p.bl[i], self._p.bu[i])
                 for i in range(self._num_params)
             }][0]
 
@@ -216,7 +209,7 @@ class CutestParser(Parser):
             x, y, e, to_write = _write_x(lines, x)
 
         file_path = os.path.join(self.mastsif_dir.name,
-                                 '{}.SIF'.format(str(id(x))[-10:]))
+                                 f'{str(id(x))[-10:]}.SIF')
 
         with open(file_path, 'w') as f:
             f.writelines(to_write)
@@ -306,9 +299,9 @@ def _write_x(lines, x):
             for i, val in enumerate(x):
                 idx = i + 1
                 spacing = ' ' * (col_width - (5 + len(str(idx))))
-                new_lines.extend([' RE X{}{}{}'.format(idx, spacing, val),
-                                  ' RE Y{}{}0.0'.format(idx, spacing),
-                                  ' RE E{}{}1.0'.format(idx, spacing)])
+                new_lines.extend([f' RE X{idx}{spacing}{val}',
+                                  f' RE Y{idx}{spacing}0.0',
+                                  f' RE E{idx}{spacing}1.0'])
             x_idx = y_idx = e_idx = len(new_lines) / 3
             line = '\n'.join(new_lines)
             written = True
@@ -337,14 +330,14 @@ def _check_data(count, x, y, e):
     """
 
     if x != count:
-        raise ParsingError('Wrong number of x data points. Got {}, '
-                           'expected {}'.format(x, count))
+        raise ParsingError(f'Wrong number of x data points. Got {x}, '
+                           f'expected {count}')
     if y != count:
-        raise ParsingError('Wrong number of y data points. Got {}, '
-                           'expected {}'.format(y, count))
+        raise ParsingError(f'Wrong number of y data points. Got {y}, '
+                           f'expected {count}')
     if e not in (0, count):
-        raise ParsingError('Wrong number of e data points. Got {}, '
-                           'expected {}'.format(e, count))
+        raise ParsingError(f'Wrong number of e data points. Got {e}, '
+                           f'expected {count}')
 
 
 def _import_problem(file_name):

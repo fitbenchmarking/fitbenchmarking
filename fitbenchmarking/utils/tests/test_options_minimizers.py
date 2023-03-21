@@ -12,7 +12,7 @@ from fitbenchmarking.utils.options import Options
 
 class MininimizerOptionTests(unittest.TestCase):
     """
-    Checks that the valid minimizers in the options file are set correctly
+    Checks that the default minimizers in the options file are set correctly
     """
 
     def setUp(self):
@@ -20,13 +20,15 @@ class MininimizerOptionTests(unittest.TestCase):
         Initializes options class with defaults
         """
         self.options = Options()
-        software = ['bumps', 'dfo', 'gsl', 'mantid', 'minuit',
-                    'ralfit', 'scipy', 'scipy_ls']
+        software = ['bumps', 'ceres', 'dfo', 'gofit', 'gradient_free', 'gsl',
+                    'horace', 'levmar', 'lmfit', 'mantid', 'matlab',
+                    'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
+                    'ralfit', 'scipy', 'scipy_ls', 'scipy_go', 'theseus']
         self.options.software = software
 
     def test_minimizer_bumps(self):
         """
-        Checks valid bumps minimizers are set correctly
+        Checks default bumps minimizers are set correctly
         """
         expected = ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq']
         actual = self.options.minimizers['bumps']
@@ -34,7 +36,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_dfo(self):
         """
-        Checks valid dfo minimizers are set correctly
+        Checks default dfo minimizers are set correctly
         """
         expected = ['dfogn', 'dfols']
         actual = self.options.minimizers['dfo']
@@ -42,7 +44,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_gsl(self):
         """
-        Checks valid gsl minimizers are set correctly
+        Checks default gsl minimizers are set correctly
         """
         expected = ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                     'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
@@ -52,7 +54,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_mantid(self):
         """
-        Checks valid mantid minimizers are set correctly
+        Checks default mantid minimizers are set correctly
         """
         expected = ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
@@ -65,15 +67,15 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_minuit(self):
         """
-        Checks valid minuit minimizers are set correctly
+        Checks default minuit minimizers are set correctly
         """
-        expected = ['minuit']
+        expected = ['migrad', 'simplex']
         actual = self.options.minimizers['minuit']
         self.assertEqual(expected, actual)
 
     def test_minimizer_ralfit(self):
         """
-        Checks valid ralfit minimizers are set correctly
+        Checks default ralfit minimizers are set correctly
         """
         expected = ['gn', 'gn_reg', 'hybrid', 'hybrid_reg',
                     'newton', 'newton_reg']
@@ -82,7 +84,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_scipy(self):
         """
-        Checks valid scipy minimizers are set correctly
+        Checks default scipy minimizers are set correctly
         """
         expected = ['Nelder-Mead',
                     'Powell',
@@ -98,10 +100,119 @@ class MininimizerOptionTests(unittest.TestCase):
 
     def test_minimizer_scipy_ls(self):
         """
-        Checks valid scipy_ls minimizers are set correctly
+        Checks default scipy_ls minimizers are set correctly
         """
         expected = ['lm-scipy', 'trf', 'dogbox']
         actual = self.options.minimizers['scipy_ls']
+        self.assertEqual(expected, actual)
+
+    def test_minimizer_ceres(self):
+        """
+        Checks default ceres minimizers are set correctly
+        """
+        expected = ['Levenberg_Marquardt', 'Dogleg', 'BFGS', 'LBFGS',
+                    'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
+                    'Hestenes_Stiefel']
+        actual = self.options.minimizers['ceres']
+        self.assertEqual(expected, actual)
+
+    def test_minimizer_gradient_free(self):
+        """
+        Checks default gradient free minimizers are set correctly
+        """
+        expected = ['HillClimbingOptimizer',
+                    'RepulsingHillClimbingOptimizer',
+                    'SimulatedAnnealingOptimizer',
+                    'RandomSearchOptimizer',
+                    'RandomRestartHillClimbingOptimizer',
+                    'RandomAnnealingOptimizer',
+                    'ParallelTemperingOptimizer',
+                    'ParticleSwarmOptimizer',
+                    'EvolutionStrategyOptimizer']
+        actual = self.options.minimizers['gradient_free']
+        self.assertEqual(expected, actual)
+
+    def test_minimizer_horace(self):
+        """
+        Checks default horace minimizers are set correctly
+        """
+        expected = ['lm-lsqr']
+        actual = self.options.minimizers['horace']
+        self.assertEqual(expected, actual)
+
+    def test_minimizer_levmar(self):
+        """
+        Checks default levmar minimizers are set correctly
+        """
+        expected = ['levmar']
+        actual = self.options.minimizers['levmar']
+        self.assertEqual(expected, actual)
+
+    def test_minimizer_lmfit(self):
+        """
+        Checks default lmfit minimizers are set correctly
+        """
+        expected = ['powell',
+                    'cobyla',
+                    'slsqp',
+                    'nelder',
+                    'least_squares',
+                    'leastsq',
+                    'newton',
+                    'tnc',
+                    'lbfgsb',
+                    'bfgs',
+                    'cg',
+                    'ampgo']
+        actual = self.options.minimizers['lmfit']
+        self.assertEqual(expected, actual)
+
+    def test_minimizer_matlab(self):
+        """
+        Checks default matlab minimizers are set correctly
+        """
+        expected = ['Nelder-Mead Simplex']
+        actual = self.options.minimizers['matlab']
+        self.assertEqual(expected, actual)
+
+    def test_minimizer_matlab_curve(self):
+        """
+        Checks default matlab curve minimizers are set correctly
+        """
+        expected = ['Levenberg-Marquardt', 'Trust-Region']
+        actual = self.options.minimizers['matlab_curve']
+        self.assertEqual(expected, actual)
+
+    def test_minimizer_matlab_opt(self):
+        """
+        Checks default matlab opt minimizers are set correctly
+        """
+        expected = ['levenberg-marquardt', 'trust-region-reflective']
+        actual = self.options.minimizers['matlab_opt']
+        self.assertEqual(expected, actual)
+
+    def test_minimizer_matlab_stats(self):
+        """
+        Checks default matlab stats minimizers are set correctly
+        """
+        expected = ['Levenberg-Marquardt']
+        actual = self.options.minimizers['matlab_stats']
+        self.assertEqual(expected, actual)
+
+    def test_minimizer_theseus(self):
+        """
+        Checks default theseus minimizers are set correctly
+        """
+        expected = ['Levenberg_Marquardt', 'Gauss-Newton']
+        actual = self.options.minimizers['theseus']
+        self.assertEqual(expected, actual)
+
+    def test_minimizer_scipy_go(self):
+        """
+        Checks default scipy go minimizers are set correctly
+        """
+        expected = ['differential_evolution', 'dual_annealing']
+        actual = self.options.minimizers['scipy_go']
         self.assertEqual(expected, actual)
 
 
@@ -138,12 +249,11 @@ class UserMininimizerOptionTests(unittest.TestCase):
         :return: location of temporary ini file
         :rtype: str
         """
-        new_line = '\n{}'.format(" " * (len(software) + 2))
+        new_line = f'\n{" " * (len(software) + 2)}'
         config_str = \
-            "[MINIMIZERS]\n{0}: {1}".format(software,
-                                            new_line.join(options_set))
+            f"[MINIMIZERS]\n{software}: {new_line.join(options_set)}"
         opts_file = os.path.join(self.test_files_dir,
-                                 'test_{}_valid.ini'.format(software))
+                                 f'test_{software}_valid.ini')
         with open(opts_file, 'w') as f:
             f.write(config_str)
         return opts_file
@@ -246,7 +356,7 @@ class UserMininimizerOptionTests(unittest.TestCase):
         """
         Checks user set minuit minimizers is valid
         """
-        set_option = ['minuit']
+        set_option = ['migrad', 'simplex']
         self.shared_valid(set_option, 'minuit')
 
     def test_minimizer_minuit_invalid(self):
@@ -297,3 +407,160 @@ class UserMininimizerOptionTests(unittest.TestCase):
         """
         set_option = ['lm-minpack-jac', 'trf']
         self.shared_invalid(set_option, 'scipy_ls')
+
+    def test_minimizer_ceres_valid(self):
+        """
+        Checks user set ceres minimizers is valid
+        """
+        set_option = ['Levenberg_Marquardt']
+        self.shared_valid(set_option, 'ceres')
+
+    def test_minimizer_ceres_invalid(self):
+        """
+        Checks user set ceres minimizers is invalid
+        """
+        set_option = ['lm']
+        self.shared_invalid(set_option, 'ceres')
+
+    def test_minimizer_theseus_valid(self):
+        """
+        Checks user set theseus minimizers is valid
+        """
+        set_option = ['Levenberg_Marquardt']
+        self.shared_valid(set_option, 'theseus')
+
+    def test_minimizer_theseus_invalid(self):
+        """
+        Checks user set theseus minimizers is invalid
+        """
+        set_option = ['lm']
+        self.shared_invalid(set_option, 'theseus')
+
+    def test_minimizer_gofit_valid(self):
+        """
+        Checks user set gofit minimizers is valid
+        """
+        set_option = ['regularisation']
+        self.shared_valid(set_option, 'gofit')
+
+    def test_minimizer_gofit_invalid(self):
+        """
+        Checks user set gofit minimizers is invalid
+        """
+        set_option = ['levenberg-marquardt']
+        self.shared_invalid(set_option, 'gofit')
+
+    def test_minimizer_horace_valid(self):
+        """
+        Checks user set horace minimizers is valid
+        """
+        set_option = ['lm-lsqr']
+        self.shared_valid(set_option, 'horace')
+
+    def test_minimizer_horace_invalid(self):
+        """
+        Checks user set horace minimizers is invalid
+        """
+        set_option = ['levenberg-marquardt']
+        self.shared_invalid(set_option, 'horace')
+
+    def test_minimizer_levmar_valid(self):
+        """
+        Checks user set levmar minimizers is valid
+        """
+        set_option = ['levmar']
+        self.shared_valid(set_option, 'levmar')
+
+    def test_minimizer_levmar_invalid(self):
+        """
+        Checks user set levmar minimizers is invalid
+        """
+        set_option = ['levenberg-marquardt']
+        self.shared_invalid(set_option, 'levmar')
+
+    def test_minimizer_matlab_valid(self):
+        """
+        Checks user set matlab minimizers is valid
+        """
+        set_option = ['Nelder-Mead Simplex']
+        self.shared_valid(set_option, 'matlab')
+
+    def test_minimizer_matlab_invalid(self):
+        """
+        Checks user set matlab minimizers is invalid
+        """
+        set_option = ['simplex']
+        self.shared_invalid(set_option, 'matlab')
+
+    def test_minimizer_matlab_curve_valid(self):
+        """
+        Checks user set matlab curve minimizers is valid
+        """
+        set_option = ['Trust-Region', 'Levenberg-Marquardt']
+        self.shared_valid(set_option, 'matlab_curve')
+
+    def test_minimizer_matlab_curve_invalid(self):
+        """
+        Checks user set matlab curve minimizers is invalid
+        """
+        set_option = ['lm', 'TR']
+        self.shared_invalid(set_option, 'matlab_curve')
+
+    def test_minimizer_matlab_opt_valid(self):
+        """
+        Checks user set matlab opt minimizers is valid
+        """
+        set_option = ['levenberg-marquardt', 'trust-region-reflective']
+        self.shared_valid(set_option, 'matlab_opt')
+
+    def test_minimizer_matlab_opt_invalid(self):
+        """
+        Checks user set matlab opt minimizers is invalid
+        """
+        set_option = ['Trust-Region', 'Levenberg-Marquardt']
+        self.shared_invalid(set_option, 'matlab_opt')
+
+    def test_minimizer_matlab_stats_valid(self):
+        """
+        Checks user set matlab stats minimizers is valid
+        """
+        set_option = ['Levenberg-Marquardt']
+        self.shared_valid(set_option, 'matlab_stats')
+
+    def test_minimizer_matlab_stats_invalid(self):
+        """
+        Checks user set matlab opt minimizers is invalid
+        """
+        set_option = ['lm']
+        self.shared_invalid(set_option, 'matlab_stats')
+
+    def test_minimizer_scipy_go_valid(self):
+        """
+        Checks user set scipy_go minimizers is valid
+        """
+        set_option = ['differential_evolution', 'shgo']
+        self.shared_valid(set_option, 'scipy_go')
+
+    def test_minimizer_scipy_go_invalid(self):
+        """
+        Checks user set scipy_go minimizers is invalid
+        """
+        set_option = ['de', 'shgo']
+        self.shared_invalid(set_option, 'scipy_go')
+
+    def test_minimizer_gradient_free_valid(self):
+        """
+        Checks user set gradient free minimizers is valid
+        """
+        set_option = ['HillClimbingOptimizer',
+                      'RepulsingHillClimbingOptimizer',
+                      'SimulatedAnnealingOptimizer']
+        self.shared_valid(set_option, 'gradient_free')
+
+    def test_minimizer_gradient_free_invalid(self):
+        """
+        Checks user set gradient free minimizers is invalid
+        """
+        set_option = ['random_minimizer_1', 'random_minimizer_2',
+                      'random_minimizer_3']
+        self.shared_invalid(set_option, 'gradient_free')

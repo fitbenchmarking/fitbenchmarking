@@ -80,8 +80,8 @@ def generate_test_cases():
                                          test_name_with_ext[0])
             else:
                 raise RuntimeError(
-                    'Too many "{}" files found for "{}" test'.format(
-                        file_format, test_name))
+                    f'Too many "{file_format}" files found for "{test_name}"'
+                    ' test')
 
             test_parsers = {}
             test_parsers['file_format'] = file_format
@@ -165,7 +165,7 @@ class TestParsers:
         :type test_file: string
         """
         assert (test_file is not None), \
-            'No test file for {}'.format(file_format)
+            f'No test file for {file_format}'
 
         with open(test_file) as f:
             if f.readline() == 'NA':
@@ -173,7 +173,7 @@ class TestParsers:
                 return
 
         # Test import
-        module = import_module(name='.{}_parser'.format(file_format),
+        module = import_module(name=f'.{file_format}_parser',
                                package='fitbenchmarking.parsing')
 
         parser = getmembers(module, lambda m: (isclass(m)
@@ -206,8 +206,8 @@ class TestParsers:
             equal = (parsed_attr == expected_attr)
             if isinstance(equal, np.ndarray):
                 equal = equal.all()
-            assert (equal), '{} was parsed incorrectly.'.format(attr) \
-                + '{} != {}'.format(parsed_attr, expected_attr)
+            assert (equal), f'{attr} was parsed incorrectly.' \
+                + f'{parsed_attr} != {expected_attr}'
 
         # Check starting_values
         for a, e in zip(fitting_problem.starting_values,
@@ -256,8 +256,8 @@ class TestParsers:
         """
 
         assert (evaluations_file is not None), \
-            'No function evaluations provided to test against for {}'.format(
-                file_format)
+            f'No function evaluations provided to test against for'\
+            f' {file_format}'
 
         with open(evaluations_file, 'r') as ef:
             results = load(ef)
@@ -302,7 +302,7 @@ class TestParsers:
         # is added to the JACOBIAN_ENABLED_PARSERS list.
         if file_format in JACOBIAN_ENABLED_PARSERS:
             message = 'No function evaluations provided to test ' \
-                'against for {}'.format(file_format)
+                f'against for {file_format}'
             assert (evaluations_file is not None), message
 
             with open(evaluations_file, 'r') as ef:
@@ -343,7 +343,7 @@ class TestParsers:
         # is added to the HESSIAN_ENABLED_PARSERS list.
         if file_format in HESSIAN_ENABLED_PARSERS:
             message = 'No function evaluations provided to test ' \
-                'against for {}'.format(file_format)
+                f'against for {file_format}'
             assert (evaluations_file is not None), message
 
             with open(evaluations_file, 'r') as ef:
@@ -379,9 +379,9 @@ class TestParsers:
 
         parser = ParserFactory.create_parser(test_file)
         assert (parser.__name__.lower().startswith(file_format.lower())), \
-            'Factory failed to get associated parser for {0}: got {1},' \
-            'required starting with {1}'.format(test_file,
-                                                parser.__name__.lower())
+            f'Factory failed to get associated parser for {test_file}: got '\
+            f'{parser.__name__.lower()}, required starting with'\
+            f' {parser.__name__.lower()}'
 
 
 class TestParserFactory(TestCase):

@@ -40,8 +40,7 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         y = kwargs.get("y", self.problem.data_y)
         if len(x) != len(y):
             raise CostFuncError('The length of the x and y are not the same, '
-                                'len(x)={} and len(y)= {}.'.format(len(x),
-                                                                   len(y)))
+                                f'len(x)={len(x)} and len(y)= {len(y)}.')
         result = sqrt(y) - sqrt(self.problem.eval_model(params=params, x=x))
 
         # Flatten in case of a vector function

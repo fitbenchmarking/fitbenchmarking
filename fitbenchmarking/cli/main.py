@@ -5,8 +5,6 @@ or for more general information, see the online docs at
 docs.fitbenchmarking.com.
 """
 
-from __future__ import absolute_import, division, print_function
-
 import argparse
 from shutil import copytree
 import glob
@@ -97,14 +95,14 @@ of the Fitbenchmarking docs. '''
                         metavar='NUM_RUNS',
                         type=int,
                         default=0,
-                        help="Set the number of runs to average"
+                        help="Set the number of runs to average "
                         "each fit over.")
     parser.add_argument('-a', '--algorithm_type',
                         metavar='ALGORITHM_TYPE',
                         nargs='+',
                         type=str,
                         default=[],
-                        help="Select what type of algorithm is used within a"
+                        help="Select what type of algorithm is used within a "
                         "specific software.")
     parser.add_argument('-s', '--software',
                         metavar='SOFTWARE',
@@ -123,33 +121,33 @@ of the Fitbenchmarking docs. '''
                         nargs='+',
                         type=str,
                         default=[],
-                        help="Set the cost functions to be used"
+                        help="Set the cost functions to be used "
                         "for the given data.")
 
     group1 = parser.add_mutually_exclusive_group()
     group1.add_argument('--make_plots', action='store_true',
-                        help="Use this option if you have decided to"
+                        help="Use this option if you have decided to "
                         "create plots during runtime.")
     group1.add_argument('--dont_make_plots', action='store_true',
-                        help="Use this option if you have decided not to"
+                        help="Use this option if you have decided not to "
                         "create plots during runtime.")
 
     group2 = parser.add_mutually_exclusive_group()
     group2.add_argument('--results_browser', action='store_true',
-                        help="Use this option if you have decided to"
-                        "open a browser window to show the results"
+                        help="Use this option if you have decided to "
+                        "open a browser window to show the results "
                         "of a fit benchmark.")
     group2.add_argument('--no_results_browser', action='store_true',
-                        help="Use this option if you have decided not to"
-                        "open a browser window to show the results"
+                        help="Use this option if you have decided not to "
+                        "open a browser window to show the results "
                         "of a fit benchmark.")
 
     group3 = parser.add_mutually_exclusive_group()
     group3.add_argument('--pbar', action='store_true',
-                        help="Use this option if you would like to"
+                        help="Use this option if you would like to "
                         "see the progress bar during runtime.")
     group3.add_argument('--no_pbar', action='store_true',
-                        help="Use this option if you do not want to"
+                        help="Use this option if you do not want to "
                         "see the progress bar during runtime.")
 
     parser.add_argument('--run_name',
@@ -161,14 +159,14 @@ of the Fitbenchmarking docs. '''
     parser.add_argument('-m', '--comparison_mode',
                         metavar='COMPARISON_MODE',
                         default='',
-                        help="Select the mode for displaying values in"
+                        help="Select the mode for displaying values in "
                         "the resulting table.")
     parser.add_argument('-t', '--table_type',
                         metavar='TABLE_TYPE',
                         nargs='+',
                         type=str,
                         default=[],
-                        help="Select the type of table to be produced"
+                        help="Select the type of table to be produced "
                         "in FitBenchmarking.")
     parser.add_argument('-f', '--logging_file_name',
                         metavar='LOGGING_FILE_NAME',
@@ -177,24 +175,24 @@ of the Fitbenchmarking docs. '''
 
     group2 = parser.add_mutually_exclusive_group()
     group2.add_argument('--append_log', action='store_true',
-                        help="Use this option if you have decided to"
-                        "log in append mode. If append mode is active,"
-                        "the log file will be extended with each"
+                        help="Use this option if you have decided to "
+                        "log in append mode. If append mode is active, "
+                        "the log file will be extended with each "
                         "subsequent run.")
     group2.add_argument('--overwrite_log', action='store_true',
-                        help="Use this option if you have decided not to"
-                        "log in append mode. If append mode is not active,"
+                        help="Use this option if you have decided not to "
+                        "log in append mode. If append mode is not active, "
                         "the log will be cleared after each run.")
 
     parser.add_argument('-l', '--level',
                         metavar='LEVEL',
                         default='',
-                        help="Specify the minimum level of logging to display"
+                        help="Specify the minimum level of logging to display "
                         "on console during runtime.")
     parser.add_argument('-e', '--external_output',
                         metavar='EXTERNAL_OUTPUT',
                         default='',
-                        help="Select the amount of information displayed"
+                        help="Select the amount of information displayed "
                         "from third-parties.")
     return parser
 
@@ -217,7 +215,7 @@ def _find_options_file(options_file: str, additional_options: dict) -> Options:
         glob_options_file = glob.glob(options_file)
 
         if not glob_options_file:
-            raise OptionsError('Could not find file {}'.format(options_file))
+            raise OptionsError(f'Could not find file {options_file}')
         if not options_file.endswith(".ini"):
             raise OptionsError('Options file must be a ".ini" file')
 
@@ -388,9 +386,9 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
             message = "\nWARNING: \nThe user chosen options and/or problem " \
                       " setup resulted in all minimizers and/or parsers " \
                       "raising an exception. Because of this, results for " \
-                      "the {} problem set will not be displayed. " \
+                      f"the {label} problem set will not be displayed. " \
                       "Please see the logs for more detail on why this is " \
-                      "the case.".format(label)
+                      "the case."
             LOGGER.warning(message)
         else:
             LOGGER.info('Producing output for the %s problem set', label)

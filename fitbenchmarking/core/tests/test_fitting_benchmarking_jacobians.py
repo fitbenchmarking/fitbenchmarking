@@ -106,7 +106,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         """
         return []
 
-    @patch('{}.loop_over_hessians'.format(FITTING_DIR))
+    @patch(f'{FITTING_DIR}.loop_over_hessians')
     def test_single_jacobian(self, loop_over_hessians):
         """
         Test to check that only one Jacobian option has been added
@@ -120,7 +120,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
                                 self.grabbed_output)
         loop_over_hessians.assert_called_once()
 
-    @patch('{}.loop_over_hessians'.format(FITTING_DIR))
+    @patch(f'{FITTING_DIR}.loop_over_hessians')
     def test_multiple_jacobian(self, loop_over_hessians):
         """
         Test to check multiple Jacobian options are set correctly

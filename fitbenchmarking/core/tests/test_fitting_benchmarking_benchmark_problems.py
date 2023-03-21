@@ -110,7 +110,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         assert failed_problems == expected_problem_fails
         dict_test(unselected_minimizers, {"scipy": []})
 
-    @unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
+    @unittest.mock.patch(f'{FITTING_DIR}.loop_over_starting_values')
     def test_run_multiple_benchmark_problems(self, loop_over_starting_values):
         """
         Checks that all benchmark problems run with no failures
@@ -126,7 +126,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         expected_list_length = len(self.list_results) * 2
         self.shared_tests(expected_list_length, expected_problem_fails)
 
-    @unittest.mock.patch('{}.loop_over_starting_values'.format(FITTING_DIR))
+    @unittest.mock.patch(f'{FITTING_DIR}.loop_over_starting_values')
     def test_run_multiple_failed_problems(self, loop_over_starting_values):
         """
         Checks that multiple failed problems are reported correctly

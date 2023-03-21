@@ -78,7 +78,7 @@ class Options:
          'matlab_curve': ['Levenberg-Marquardt', 'Trust-Region'],
          'matlab_opt': ['levenberg-marquardt', 'trust-region-reflective'],
          'matlab_stats': ['Levenberg-Marquardt'],
-         'minuit': ['minuit'],
+         'minuit': ['migrad', 'simplex'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg',
                     'newton', 'newton_reg',
                     'newton-tensor', 'newton-tensor_reg'],
@@ -196,7 +196,7 @@ class Options:
          'matlab_curve': ['Levenberg-Marquardt', 'Trust-Region'],
          'matlab_opt': ['levenberg-marquardt', 'trust-region-reflective'],
          'matlab_stats': ['Levenberg-Marquardt'],
-         'minuit': ['minuit'],
+         'minuit': ['migrad', 'simplex'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg',
                     'newton', 'newton_reg'],
          'scipy': ['Nelder-Mead',
@@ -436,7 +436,7 @@ class Options:
 
         except ValueError as e:
             self.error_message.append(
-                "Incorrect options type for {}.\n{}".format(option, e))
+                f"Incorrect options type for {option}.\n{e}")
             value = None
 
         if option in self.VALID[section]:

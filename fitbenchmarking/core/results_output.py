@@ -366,7 +366,7 @@ def create_problem_level_index(options, table_names, group_name,
     env = Environment(loader=FileSystemLoader(template_dir))
     css = get_css(options, group_dir)
     template = env.get_template("problem_index_page.html")
-    output_file = os.path.join(group_dir, '{}_index.html'.format(group_name))
+    output_file = os.path.join(group_dir, f'{group_name}_index.html')
     links = [v + "html" for v in table_names.values()]
     names = table_names.keys()
     description = [table_descriptions[n] for n in names]

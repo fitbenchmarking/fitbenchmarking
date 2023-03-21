@@ -66,7 +66,7 @@ class OptionsWriteTests(unittest.TestCase):
         Test that the options writer works.
         """
         options = Options(file_name=self.options_file)
-        new_file_name = 'copy_of_{}'.format(self.options_file)
+        new_file_name = f'copy_of_{self.options_file}'
 
         options.write(new_file_name)
         new_options = Options(new_file_name)
@@ -87,7 +87,7 @@ class OptionsWriteTests(unittest.TestCase):
         Test that the stream options writer works.
         """
         options = Options(file_name=self.options_file)
-        new_file_name = 'copy_of_{}'.format(self.options_file)
+        new_file_name = f'copy_of_{self.options_file}'
 
         with open(new_file_name, 'w') as f:
             options.write_to_stream(f)
