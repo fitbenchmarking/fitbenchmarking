@@ -13,12 +13,12 @@ from fitbenchmarking.jacobian.default_jacobian import \
     Default as DefaultJacobian
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy as ScipyJacobian
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.results_processing.base_table import Table
-from fitbenchmarking.utils.fitbm_result import FittingResult
-from fitbenchmarking.utils.options import Options
-from fitbenchmarking.results_processing.base_table import (calculate_luminance,
+from fitbenchmarking.results_processing.base_table import (Table,
+                                                           calculate_luminance,
                                                            calculate_contrast,
                                                            background_to_text)
+from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.options import Options
 
 
 def generate_results():
@@ -317,27 +317,20 @@ class TestContrastRatio(TestCase):
         """
         test_cases = (
              {'case': '1',
-              'background': [[0, 0, 0]],
-              'output': ['rgb(255,255,255)']},
+              'background': [0, 0, 0],
+              'output': 'rgb(255,255,255)'},
              {'case': '2',
-              'background': [[1, 1, 1]],
-              'output': ['rgb(0,0,0)']},
+              'background': [1, 1, 1],
+              'output': 'rgb(0,0,0)'},
              {'case': '3',
-              'background': [[1, 0, 0]],
-              'output': ['rgb(0,0,0)']},
+              'background': [1, 0, 0],
+              'output': 'rgb(0,0,0)'},
              {'case': '4',
-              'background': [[0, 1, 0]],
-              'output': ['rgb(0,0,0)']},
+              'background': [0, 1, 0],
+              'output': 'rgb(0,0,0)'},
              {'case': '4',
-              'background': [[0, 0, 1]],
-              'output': ['rgb(255,255,255)']},
-             {'case': '5',
-              'background': [[0, 0, 1],
-                             [0, 1, 0],
-                             [0, 0, 0]],
-              'output': ['rgb(255,255,255)',
-                         'rgb(0,0,0)',
-                         'rgb(255,255,255)']}
+              'background': [0, 0, 1],
+              'output': 'rgb(255,255,255)'},
         )
         for test in test_cases:
             with self.subTest(test['case']):

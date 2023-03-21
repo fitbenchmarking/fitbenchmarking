@@ -109,14 +109,40 @@ class CompareTable(Table):
         :param vals: The relative values to get the colours for
         :type vals: list[list[float, float]]
 
-        :return background_col: The colours for the values
-        :rtype background_col: list[list[str]]
-        :return foreground_text: The colours for the text
-        :rtype foreground_text: tuple[list[str]]
+        :return: The background colours for the acc and runtime values and
+                 The text colours for the acc and runtime values
+        :rtype: tuple[zip[list[str], list[str]], zip[list[str], list[str]]]
         """
         acc, runtime = zip(*vals)
         acc_colours, acc_text = super().vals_to_colour(acc, *args)
         runtime_colours, runtime_text = super().vals_to_colour(runtime, *args)
         background_col = zip(acc_colours, runtime_colours)
-        foreground_text = (acc_text, runtime_text)
+        foreground_text = zip(acc_text, runtime_text)
         return background_col, foreground_text
+
+    def get_hyperlink(self, result, val_str, text_col):
+        """
+        Generates the hyperlink for a given result
+
+        :param result: The result to generate a string for
+        :type result: fitbenchmarking.utils.ftibm_result.FittingResult
+        :param val_str: Preprocessed val_str to display
+        :type val_str: str
+        :param text_col: Foreground colour for the text as html rgb strings
+                         e.g. 'rgb(255, 255, 255)'
+        :type text_col: str
+
+        :return: The hyperlink representation.
+        :rtype: str
+        """
+        color_to_class = {'rgb(0,0,0)': 'class="dark"',
+                          'rgb(255,255,255)': 'class="light"'}
+        ftext, stext = text_col
+        val_str = val_str.split('<br>')
+        val_str = (f'<a {color_to_class[ftext]} '
+                   f'href="{self.get_link_str(result)}">'
+                   f'{val_str[0]}</a>'
+                   f'<a {color_to_class[stext]} '
+                   f'href="{self.get_link_str(result)}">'
+                   f'{val_str[1]}</a>')
+        return val_str
