@@ -97,7 +97,7 @@ class BenchmarkTests(unittest.TestCase):
         assert failed_problems == []
         dict_test(expected_unselected_minimizers, unselected_minimizers)
 
-    @mock.patch('{}.loop_over_benchmark_problems'.format(FITTING_DIR))
+    @mock.patch(f'{FITTING_DIR}.loop_over_benchmark_problems')
     def test_check_no_unselected_minimizers(self,
                                             loop_over_benchmark_problems):
         """
@@ -131,7 +131,7 @@ class BenchmarkTests(unittest.TestCase):
                           expected_unselected_minimizers,
                           expected_minimizers)
 
-    @mock.patch('{}.loop_over_benchmark_problems'.format(FITTING_DIR))
+    @mock.patch(f'{FITTING_DIR}.loop_over_benchmark_problems')
     def test_check_unselected_minimizers(self, loop_over_benchmark_problems):
         """
         Checks benchmarking runs with a few unselected minimizers

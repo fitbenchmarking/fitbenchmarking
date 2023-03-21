@@ -170,7 +170,7 @@ class Plot:
                        x=self.x,
                        y=self.result.ini_y[self.result.sorted_index])
         self.format_plot()
-        file = "start_for_{0}.png".format(self.result.sanitised_name)
+        file = f"start_for_{self.result.sanitised_name}.png"
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
         return file

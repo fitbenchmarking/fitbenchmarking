@@ -1,8 +1,6 @@
 """
 This file implements a parser for the Mantid data format.
 """
-from collections import OrderedDict
-
 import typing
 
 import mantid.simpleapi as msapi
@@ -44,7 +42,7 @@ class MantidParser(FitbenchmarkParser):
 
         # pylint: disable=attribute-defined-outside-init
         self._equation = ifun.name()
-        self._starting_values = [OrderedDict(params)]
+        self._starting_values = [params]
         # pylint: enable=attribute-defined-outside-init
 
         # Convert to callable

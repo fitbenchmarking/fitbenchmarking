@@ -9,7 +9,8 @@ from iminuit import __version__ as iminuit_version
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import MissingSoftwareError
+from fitbenchmarking.utils.exceptions import MissingSoftwareError,\
+                                             UnknownMinimizerError
 
 
 class MinuitController(Controller):
@@ -18,11 +19,11 @@ class MinuitController(Controller):
     """
 
     algorithm_check = {
-            'all': ['minuit'],
+            'all': ['migrad', 'simplex'],
             'ls': [],
-            'deriv_free': [],
-            'general': ['minuit'],
-            'simplex': [],
+            'deriv_free': ['simplex'],
+            'general': ['migrad'],
+            'simplex': ['simplex'],
             'trust_region': [],
             'levenberg-marquardt': [],
             'gauss_newton': [],
@@ -42,9 +43,9 @@ class MinuitController(Controller):
         """
 
         if int(iminuit_version[:1]) < 2:
-            raise MissingSoftwareError('iminuit version {} is not supported, '
-                                       'please upgrade to at least version '
-                                       '2.0.0'.format(iminuit_version))
+            raise MissingSoftwareError(f'iminuit version {iminuit_version} is'
+                                       'not supported, please upgrade to at '
+                                       'least version 2.0.0')
 
         super().__init__(cost_func)
 
@@ -90,7 +91,13 @@ class MinuitController(Controller):
         """
         Run problem with Minuit
         """
-        self._minuit_problem.migrad()  # run optimizer
+        if self.minimizer == 'simplex':
+            self._minuit_problem.simplex()  # run optimizer
+        elif self.minimizer == 'migrad':
+            self._minuit_problem.migrad()  # run optimizer
+        else:
+            raise UnknownMinimizerError(
+                f"No {self.minimizer} minimizer for Minuit")
         self._status = 0 if self._minuit_problem.valid else 1
 
     def cleanup(self):

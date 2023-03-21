@@ -1,16 +1,10 @@
 '''
 Test fitting_report
 '''
-from __future__ import absolute_import, division, print_function
 
 import inspect
 import os
-
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
-
+from tempfile import TemporaryDirectory
 import unittest
 
 import fitbenchmarking
@@ -47,7 +41,9 @@ class CreateTests(unittest.TestCase):
         self.options = Options()
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
+        # pylint: disable=consider-using-with
         self.dir = TemporaryDirectory(dir=root)
+        # pylint: enable=consider-using-with
 
     def test_create_unique_files(self):
         """
@@ -76,7 +72,9 @@ class CreateProbGroupTests(unittest.TestCase):
         self.result = load_mock_results()[0]
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
+        # pylint: disable=consider-using-with
         self.dir = TemporaryDirectory(dir=root)
+        # pylint: enable=consider-using-with
 
     def test_create_files(self):
         """

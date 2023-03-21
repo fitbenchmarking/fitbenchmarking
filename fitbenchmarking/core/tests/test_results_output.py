@@ -2,7 +2,6 @@
 Results output tests
 """
 
-from __future__ import absolute_import, division, print_function
 
 import inspect
 import os
@@ -321,7 +320,7 @@ class CreateProblemLevelIndex(unittest.TestCase):
                                    self.group_name, self.group_dir,
                                    self.table_descriptions)
         expected_file = os.path.join(self.group_dir,
-                                     '{}_index.html'.format(self.group_name))
+                                     f'{self.group_name}_index.html')
         self.assertTrue(os.path.isfile(expected_file))
 
 

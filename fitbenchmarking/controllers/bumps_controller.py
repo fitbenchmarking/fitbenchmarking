@@ -70,8 +70,8 @@ class BumpsController(Controller):
         """
         # Bumps fails with the *args notation
         param_name_str = ', '.join(self._param_names)
-        wrapper = "def fitFunction(x, {}):\n".format(param_name_str)
-        wrapper += "    return func([{}], x=x)".format(param_name_str)
+        wrapper = f"def fitFunction(x, {param_name_str}):\n"
+        wrapper += f"    return func([{param_name_str}], x=x)"
 
         # Remove any function attribute. BinWidth is the only attribute in all
         # FitBenchmark (Mantid) problems.

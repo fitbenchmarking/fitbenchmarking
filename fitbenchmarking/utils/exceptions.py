@@ -20,8 +20,8 @@ class FitBenchmarkException(Exception):
 
     def __str__(self):
         if self._obj_message != '':
-            self._error_string = '{}\nDetails: {}'.format(self.class_message,
-                                                          self._obj_message)
+            self._error_string = f'{self.class_message}\nDetails:'\
+                f' {self._obj_message}'
         else:
             self._error_string = self.class_message
 

@@ -1,16 +1,11 @@
 '''
 Test plots
 '''
-from __future__ import absolute_import, division, print_function
 
 import inspect
 import os
 import unittest
-
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory
 
 from fitbenchmarking import test_files
 from fitbenchmarking.results_processing import plots
@@ -42,11 +37,13 @@ class PlotTests(unittest.TestCase):
     """
 
     def setUp(self):
-        self.opts = Options()
-
         self.fr = load_mock_result()
 
+        self.opts = Options()
+        self.opts.use_errors = True
+        # pylint: disable=consider-using-with
         self.dir = TemporaryDirectory()
+        # pylint: enable=consider-using-with
         self.plot = plots.Plot(best_result=self.fr,
                                options=self.opts,
                                figures_dir=self.dir.name)

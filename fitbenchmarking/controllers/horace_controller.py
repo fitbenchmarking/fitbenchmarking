@@ -106,6 +106,6 @@ class HoraceController(MatlabMixin, Controller):
         # Allow repeat calls to cleanup without falling over
         if self.cost_func.problem.format != 'horace':
             try:
-                self.eng.evalc('horace_off; herbert_off;')
+                self.eng.evalc('horace_off;')
             except matlab.engine.MatlabExecutionError:
                 pass
