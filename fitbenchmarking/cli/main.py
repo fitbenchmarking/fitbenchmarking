@@ -152,11 +152,10 @@ of the Fitbenchmarking docs. '''
                         help="Use this option if you do not want to"
                         "see the progress bar during runtime.")
 
-    group4 = parser.add_mutually_exclusive_group()
-    group4.add_argument('--run_name',
+    parser.add_argument('--run_name',
                         metavar='RUN_NAME',
                         default='',
-                        help="Use this option if you would like to"
+                        help="Use this option if you would like to "
                         "prefix the html title of results pages.")
 
     parser.add_argument('-m', '--comparison_mode',
