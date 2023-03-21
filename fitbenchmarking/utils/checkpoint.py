@@ -11,6 +11,7 @@ from base64 import a85decode, a85encode
 from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING
 
+from fitbenchmarking.utils.exceptions import CheckpointError
 from fitbenchmarking.utils.fitbm_result import FittingResult
 
 if TYPE_CHECKING:
@@ -232,7 +233,7 @@ class Checkpoint:
                 filename: str = f
                 break
         else:
-            raise FileNotFoundError('Could not find checkpoint file.')
+            raise CheckpointError('Could not find checkpoint file.')
 
         with open(filename, 'r', encoding='utf-8') as f:
             tmp = json.load(f)

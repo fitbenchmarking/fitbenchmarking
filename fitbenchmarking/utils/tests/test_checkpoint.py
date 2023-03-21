@@ -6,6 +6,7 @@ from unittest import TestCase
 import numpy as np
 
 from fitbenchmarking import test_files
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
 from fitbenchmarking.jacobian.default_jacobian import \
@@ -13,9 +14,9 @@ from fitbenchmarking.jacobian.default_jacobian import \
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy as ScipyJacobian
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.checkpoint import Checkpoint, _compress, _decompress
+from fitbenchmarking.utils.exceptions import CheckpointError
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.controllers.scipy_controller import ScipyController
 
 
 def generate_results():
@@ -141,8 +142,8 @@ class CheckpointTests(TestCase):
         for key in expected_res:
             for a, e in zip(loaded[key], expected_res[key]):
                 self.assertEqual(a, e,
-                f'\n\nactual: {pprint.pformat(a.__dict__)}\n'
-                f'\n\nexpected: {pprint.pformat(e.__dict__)}')
+                                 f'\n\nactual: {pprint.pformat(a.__dict__)}\n'
+                                 f'\n\nexpected: {pprint.pformat(e.__dict__)}')
 
     def test_read_write(self):
         """
@@ -176,6 +177,17 @@ class CheckpointTests(TestCase):
             actual = cp_file.read_text(encoding='utf8').splitlines()
 
         self.assertListEqual(expected, actual)
+
+    def test_no_file(self):
+        """
+        Test correct exception for missing file.
+        """
+        options = Options(additional_options={
+            'checkpoint_filename': 'not_a_file'})
+        cp = Checkpoint(options=options)
+
+        with self.assertRaises(CheckpointError):
+            cp.load()
 
 
 class CompressTests(TestCase):
