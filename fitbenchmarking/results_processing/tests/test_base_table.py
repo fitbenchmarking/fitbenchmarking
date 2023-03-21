@@ -10,9 +10,6 @@ from fitbenchmarking import test_files
 from fitbenchmarking.results_processing.base_table import Table
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.results_processing.base_table import (calculate_luminance,
-                                                           calculate_contrast,
-                                                           background_to_text)
 
 
 def load_mock_results():
