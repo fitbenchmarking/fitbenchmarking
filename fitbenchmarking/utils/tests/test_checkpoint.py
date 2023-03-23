@@ -1,5 +1,9 @@
+"""
+Tests for checkpoint.py
+"""
 import inspect
 import pathlib
+import pprint
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
@@ -20,6 +24,7 @@ from fitbenchmarking.utils.options import Options
 
 
 def generate_results():
+    # pylint:disable=too-many-statements
     """
     Create a predictable set of results.
     :return: Set of manually generated results
@@ -138,9 +143,9 @@ class CheckpointTests(TestCase):
 
         self.assertDictEqual(unselected, expected_uns)
         self.assertDictEqual(failed, expected_fail)
-        import pprint
-        for key in expected_res:
-            for a, e in zip(loaded[key], expected_res[key]):
+
+        for key, expected in expected_res.items():
+            for a, e in zip(loaded[key], expected):
                 self.assertEqual(a, e,
                                  f'\n\nactual: {pprint.pformat(a.__dict__)}\n'
                                  f'\n\nexpected: {pprint.pformat(e.__dict__)}')

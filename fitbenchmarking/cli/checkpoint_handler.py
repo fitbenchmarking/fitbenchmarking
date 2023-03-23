@@ -74,6 +74,7 @@ def get_parser() -> ArgumentParser:
 
 @exception_handler
 def generate_report(options_file='', additional_options=None, debug=False):
+    # pylint: disable=unused-argument
     """
     Generate the fitting reports and tables for a checkpoint file.
 

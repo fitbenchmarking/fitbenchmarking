@@ -39,7 +39,6 @@ def mock_func_call(*args, **kwargs):
     """
     Mock function to be used instead of benchmark
     """
-    options = Options()
     controller = make_controller()
 
     results: 'list[fitbm_result.FittingResult]' = []
