@@ -2,7 +2,6 @@
 Results output tests
 """
 
-from __future__ import absolute_import, division, print_function
 
 import os
 import shutil
@@ -85,7 +84,7 @@ def generate_mock_results(additional_options):
         p.data_y = data_y[i]
         p.data_e = data_e[i]
         p.function = func[i]
-        p.name = "prob_{}".format(i)
+        p.name = f"prob_{i}"
         p.starting_values = [starting_values[i]]
 
     softwares = ['s1', 's2']
@@ -422,7 +421,7 @@ class CreateProblemLevelIndex(unittest.TestCase):
                                    self.group_name, self.group_dir,
                                    self.table_descriptions)
         expected_file = os.path.join(self.group_dir,
-                                     '{}_index.html'.format(self.group_name))
+                                     f'{self.group_name}_index.html')
         self.assertTrue(os.path.isfile(expected_file))
 
 

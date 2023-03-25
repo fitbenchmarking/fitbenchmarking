@@ -1,7 +1,6 @@
 """
 This file contains tests on the creation of directories
 """
-from __future__ import absolute_import, division, print_function
 
 import time
 import os
@@ -21,7 +20,7 @@ class CreateDirsTests(unittest.TestCase):
         """
         Sets a temporary directory in which results are stored
         """
-        path = 'r{}'.format(int(time.time()))
+        path = f'r{int(time.time())}'
         self.results_dir = os.path.join(os.getcwd(), path)
 
     def tearDown(self):

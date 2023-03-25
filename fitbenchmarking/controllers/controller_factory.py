@@ -33,7 +33,7 @@ class ControllerFactory:
         :rtype: fitbenchmarking.fitting.base_controller.Controller subclass
         """
 
-        module_name = '{}_controller'.format(software.lower())
+        module_name = f'{software.lower()}_controller'
 
         try:
             module = import_module('.' + module_name, __package__)
@@ -42,11 +42,11 @@ class ControllerFactory:
                                                      module_name+'.py'))
             if os.path.exists(full_path):
                 raise MissingSoftwareError('Requirements are missing for the '
-                                           '{} controller: {}'.format(
-                                               software, e)) from e
-            raise NoControllerError('Could not find controller for {}. '
-                                    'Check the input is correct and try '
-                                    'again.'.format(software)) from e
+                                           f'{software} controller: {e}') \
+                                            from e
+            raise NoControllerError('Could not find controller for '
+                                    f'{software}. Check the input is correct '
+                                    'and try again.') from e
 
         classes = getmembers(module,
                              lambda m: (isclass(m)

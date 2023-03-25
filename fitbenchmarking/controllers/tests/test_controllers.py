@@ -422,13 +422,16 @@ class DefaultControllerTests(TestCase):
         MinuitController: Tests for output shape
         """
         controller = MinuitController(self.cost_func)
-        controller.minimizer = 'minuit'
-        self.shared_tests.controller_run_test(controller)
+        minimisers = ['migrad', 'simplex']
 
-        controller._status = 0
-        self.shared_tests.check_converged(controller)
-        controller._status = 2
-        self.shared_tests.check_diverged(controller)
+        for minimizer in minimisers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._status = 0
+            self.shared_tests.check_converged(controller)
+            controller._status = 2
+            self.shared_tests.check_diverged(controller)
 
     def test_scipy(self):
         """
@@ -551,7 +554,7 @@ class ControllerBoundsTests(TestCase):
         respected for bounded problems
         """
         controller = MinuitController(self.cost_func)
-        controller.minimizer = 'minuit'
+        controller.minimizer = 'migrad'
 
         self.check_bounds(controller)
 

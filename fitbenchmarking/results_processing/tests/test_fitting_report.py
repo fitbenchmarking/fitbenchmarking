@@ -1,14 +1,10 @@
 '''
 Test fitting_report
 '''
-from __future__ import (absolute_import, division, print_function)
 
 import inspect
 import os
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory
 import unittest
 
 import fitbenchmarking
@@ -29,7 +25,7 @@ class CreateTests(unittest.TestCase):
         cost_func = []
         for i in range(5):
             problem = FittingProblem(self.options)
-            problem.name = 'prob {}'.format(i)
+            problem.name = f'prob {i}'
             problem.starting_values = [{'x': 1}]
             cost_func.append(NLLSCostFunc(problem))
 
@@ -47,7 +43,9 @@ class CreateTests(unittest.TestCase):
                         for c in cost_func]
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
+        # pylint: disable=consider-using-with
         self.dir = TemporaryDirectory(dir=root)
+        # pylint: enable=consider-using-with
 
     def test_create_unique_files(self):
         """
@@ -93,7 +91,9 @@ class CreateProbGroupTests(unittest.TestCase):
                                     runtime=2.0002)
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
+        # pylint: disable=consider-using-with
         self.dir = TemporaryDirectory(dir=root)
+        # pylint: enable=consider-using-with
 
     def test_create_files(self):
         """
