@@ -9,6 +9,8 @@ import unittest
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
+# pylint: disable=too-many-public-methods
+
 
 class MininimizerOptionTests(unittest.TestCase):
     """
@@ -22,8 +24,9 @@ class MininimizerOptionTests(unittest.TestCase):
         self.options = Options()
         software = ['bumps', 'ceres', 'dfo', 'gofit', 'gradient_free', 'gsl',
                     'horace', 'levmar', 'lmfit', 'mantid', 'matlab',
-                    'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit', 'nlopt',
-                    'ralfit', 'scipy', 'scipy_ls', 'scipy_go', 'theseus']
+                    'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
+                    'nlopt', 'ralfit', 'scipy', 'scipy_ls', 'scipy_go',
+                    'theseus']
         self.options.software = software
 
     def test_minimizer_bumps(self):
