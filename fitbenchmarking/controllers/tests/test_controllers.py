@@ -43,6 +43,8 @@ if TEST_TYPE == 'all':
         GradientFreeController
     from fitbenchmarking.controllers.gofit_controller import GOFitController
     from fitbenchmarking.controllers.ceres_controller import CeresController
+    from fitbenchmarking.controllers.theseus_controller import\
+        TheseusController
 
 if TEST_TYPE == 'matlab':
     from fitbenchmarking.controllers.matlab_controller import MatlabController
@@ -418,13 +420,16 @@ class DefaultControllerTests(TestCase):
         MinuitController: Tests for output shape
         """
         controller = MinuitController(self.cost_func)
-        controller.minimizer = 'minuit'
-        self.shared_tests.controller_run_test(controller)
+        minimisers = ['migrad', 'simplex']
 
-        controller._status = 0
-        self.shared_tests.check_converged(controller)
-        controller._status = 2
-        self.shared_tests.check_diverged(controller)
+        for minimizer in minimisers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._status = 0
+            self.shared_tests.check_converged(controller)
+            controller._status = 2
+            self.shared_tests.check_diverged(controller)
 
     def test_scipy(self):
         """
@@ -527,7 +532,7 @@ class ControllerBoundsTests(TestCase):
         respected for bounded problems
         """
         controller = MinuitController(self.cost_func)
-        controller.minimizer = 'minuit'
+        controller.minimizer = 'migrad'
 
         self.check_bounds(controller)
 
@@ -784,6 +789,25 @@ class ExternalControllerTests(TestCase):
         self.shared_tests.check_max_iterations(controller)
         controller._info = (0, 1, 2, "diverged", 4, 5, 6)
         self.shared_tests.check_diverged(controller)
+
+    def test_theseus(self):
+        """
+        TheseusController: Tests for output shape
+        """
+        controller = TheseusController(self.cost_func)
+
+        # test one from each class
+        minimizers = ['Levenberg_Marquardt', 'Gauss-Newton']
+        for minimizer in minimizers:
+            controller.minimizer = minimizer
+            self.shared_tests.controller_run_test(controller)
+
+            controller._status = "NonlinearOptimizerStatus.CONVERGED"
+            self.shared_tests.check_converged(controller)
+            controller._status = "NonlinearOptimizerStatus.MAX_ITERATIONS"
+            self.shared_tests.check_max_iterations(controller)
+            controller._status = ""
+            self.shared_tests.check_diverged(controller)
 
     def test_ceres(self):
         """

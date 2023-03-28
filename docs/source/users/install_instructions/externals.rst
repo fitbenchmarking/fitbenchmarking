@@ -75,7 +75,9 @@ To use this fitting software, both MATLAB and the MATLAB engine must be
 installed. Installation instructions for MATLAB are available at
 `<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_,
 and instructions for installing and setting up the MATLAB engine are
-here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`_
+here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`_.
+Furthermore, Matlab requires additional Python packages to be installed. You can find the instructions on how to install 
+these packages by following the link provided: :ref:`here <extra_dependencies>`.
 
 RALFit
 ------
@@ -84,3 +86,10 @@ RALFit is available to use as fitting software.
 
 Instructions on how to build the python interface are at `<https://ralfit.readthedocs.io/projects/Python/en/latest/install.html>`_
 
+Theseus
+------
+
+Theseus is used as a fitting software in FitBenchmarking, and is called via theseus-ai python
+module which requries pytorch
+
+Install instructions can be found on the `Theseus Github page <https://github.com/facebookresearch/theseus#getting-started/>`__

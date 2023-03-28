@@ -5,3 +5,4 @@ description = 'An example of (full) detector calibration for the ENGIN-X instrum
 input_file = 'ENGINX193749_calibration_spec651.txt'
 function = 'name=LinearBackground,A0=0,A1=0;name=BackToBackExponential,I=3527.31,A=1,B=0.05,X0=26185.9,S=29.4219'
 fit_ranges = {'x': [26047.3026604, 26393.719109]}
+plot_scale = 'linear'

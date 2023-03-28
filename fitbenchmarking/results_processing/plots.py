@@ -54,9 +54,17 @@ class Plot:
     def __init__(self, best_result, options, figures_dir):
         self.cost_func = best_result.cost_func
         self.problem = self.cost_func.problem
+
+        self.plots_failed = True
         if self.problem.multivariate:
             raise PlottingError(
                 'Plots cannot be generated for multivariate problems')
+
+        if self.problem.format == 'horace':
+            raise PlottingError(
+                'Plots cannot be generated for Horace problems')
+        self.plots_failed = False
+
         self.options = options
 
         self.result = best_result
@@ -89,17 +97,22 @@ class Plot:
         """
         Close the matplotlib figure
         """
-        if not self.problem.multivariate:
+        if not self.plots_failed:
             plt.close(self.fig)
 
     def format_plot(self):
         """
         Performs post plot processing to annotate the plot correctly
         """
-        # log scale plot if problem is a SASView problem
-        if self.problem.format == "sasview":
+        # log scale
+        if self.problem.plot_scale == "loglog":
             self.ax.set_xscale("log", nonpositive='clip')
             self.ax.set_yscale("log", nonpositive='clip')
+        elif self.problem.plot_scale == "logy":
+            self.ax.set_yscale("log", nonpositive='clip')
+        elif self.problem.plot_scale == "logx":
+            self.ax.set_xscale("log", nonpositive='clip')
+
         # linear scale if otherwise
         self.ax.set_xlabel("X")
         self.ax.set_ylabel("Y")
@@ -142,7 +155,7 @@ class Plot:
                 # Update style
                 for k, v in plot_options.items():
                     try:
-                        getattr(self.line_plot, 'set_{}'.format(k))(v)
+                        getattr(self.line_plot, f'set_{k}')(v)
                     except AttributeError:
                         pass
 
@@ -175,7 +188,7 @@ class Plot:
                        x=self.x,
                        y=self.problem.eval_model(list(ini_guess), x=self.x))
         self.format_plot()
-        file = "start_for_{0}.png".format(self.result.sanitised_name)
+        file = f"start_for_{self.result.sanitised_name}.png"
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
         return file
@@ -306,10 +319,14 @@ class Plot:
                     plot_options['label'] = key if result.is_best_fit else ''
 
                     ax.plot(x, y, **plot_options)
-                    # log scale plot if problem is a SASView problem
-                    if problem.format == "sasview":
+                    # log scale
+                    if problem.plot_scale == "loglog":
                         ax.set_xscale("log", nonpositive='clip')
                         ax.set_yscale("log", nonpositive='clip')
+                    elif problem.plot_scale == "logy":
+                        ax.set_yscale("log", nonpositive='clip')
+                    elif problem.plot_scale == "logx":
+                        ax.set_xscale("log", nonpositive='clip')
                     ax.set_xlabel("X")
                     ax.set_ylabel("Y")
                     ax.set_title(title,

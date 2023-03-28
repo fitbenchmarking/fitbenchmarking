@@ -2,6 +2,7 @@
 Implements a controller to the lm implementation in Herbert/Horace
 """
 
+import os
 import matlab
 import numpy as np
 
@@ -41,12 +42,25 @@ class HoraceController(MatlabMixin, Controller):
         super().__init__(cost_func)
         self._fit_params = None
 
+    def horace_on(self):
+        """
+        Turning Horace on in matlab
+        """
+        if self.cost_func.problem.format != 'horace':
+            if "HORACE_LOCATION" in os.environ:
+                horace_location = os.environ["HORACE_LOCATION"]
+                self.eng.evalc("restoredefaultpath")
+                self.eng.evalc(f"addpath('{horace_location}')")
+                self.eng.evalc("horace_on")
+            else:
+                self.eng.evalc("horace_on")
+
     def setup(self):
         """
         Setup for Matlab fitting
         """
         # Initialize Horace in the Matlab engine
-        self.eng.evalc('horace_on')
+        self.horace_on()
 
         # Convert initial params into matlab array
         self.eng.workspace['x_mat'] = matlab.double(
@@ -86,10 +100,12 @@ class HoraceController(MatlabMixin, Controller):
         else:
             self.flag = 0
 
-        self.final_params = self._fit_params['p'][0]
+        self.final_params = np.array(self._fit_params['p'][0],
+                                     dtype=np.float64).flatten()
 
         # Allow repeat calls to cleanup without falling over
-        try:
-            self.eng.evalc('horace_off')
-        except matlab.engine.MatlabExecutionError:
-            pass
+        if self.cost_func.problem.format != 'horace':
+            try:
+                self.eng.evalc('horace_off;')
+            except matlab.engine.MatlabExecutionError:
+                pass

@@ -65,7 +65,7 @@ The Bumps minimizers are set as follows:
    `de` is not included in the default list of minimizers for bumps. To run this solver, you must
    explicitly set the minimizer as seen above.
 
-.. _dfo:
+.. _ceres:
 
 Ceres Solver (``ceres``)
 =============
@@ -110,6 +110,8 @@ The Ceres Solver minimizers are set as follows:
 
 .. note::
    The PyCeres currently only works with Ceres Solver versions 2.0.0 
+
+.. _dfo:
 
 DFO (``dfo``)
 =============
@@ -311,6 +313,15 @@ spectrometers.*  We currently support:
 **Licence** Matlab must be installed to use Horace within FitBenchmarking, which is a
 `proprietary product <https://www.mathworks.com/pricing-licensing.html>`__.
 Horace is made available under the the `GPL-3 licence <https://www.gnu.org/licenses/gpl-3.0.html>`__.
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    horace: lm-lsqr
+
+
+.. note:: 
+   If you have a non standard installation of Horace please set the `HORACE_LOCATION` (e.g on IDAaaS). 
 
 .. warning::
    The Horace Toolbox and MATLAB must be installed for this to be available; see :ref:`external-instructions`.
@@ -572,7 +583,8 @@ uncertainties.
 We interface via the python interface `iminuit <https://iminuit.readthedocs.io>`__ with
 support for the 2.x series.
 
-* `Minuit's MIGRAD <https://root.cern.ch/root/htmldoc/guides/minuit2/Minuit2.pdf>`__ (:code:`minuit`)
+* `Minuit's MIGRAD <https://iminuit.readthedocs.io/en/stable/reference.html#iminuit.Minuit.migrad>`__ (:code:`migrad`)
+* `Minuit's SIMPLEX <https://iminuit.readthedocs.io/en/stable/reference.html#iminuit.Minuit.simplex>`__ (:code:`simplex`)
 
 **Links** `Github - iminuit <https://github.com/scikit-hep/iminuit>`__
 
@@ -583,7 +595,8 @@ The Minuit minimizers are set as follows:
 .. code-block:: rst
 
     [MINIMIZERS]
-    minuit: minuit
+    minuit: migrad
+            simplex
 
 .. warning::
    The additional dependency Minuit must be installed for this to be available;
@@ -602,8 +615,17 @@ order derivatives are currently utilized in FitBenchmarking.
 
 * Gauss-Newton, trust region method (:code:`gn`)
 * Hybrid Newton/Gauss-Newton, trust region method (:code:`hybrid`)
+* Newton, trust region method (:code:`newton`)
+* Newton-tensor, trust region method (:code:`newton-tensor`)
 * Gauss-Newton, regularization (:code:`gn_reg`)
 * Hybrid Newton/Gauss-Newton, regularization (:code:`hybrid_reg`)
+* Newton, regularization (:code:`newton_reg`)
+* Newton-tensor, regularization (:code:`newton-tensor_reg`)
+
+Note that the Newton-tensor methods take significantly longer than the other
+options to run (but may give a better solution in some cases).  For this
+reason, they are not included in the default minimizers for RALFit, but
+must be turned on in the options file.
 
 **Links** `Github - RALFit <https://github.com/ralna/ralfit/>`__. RALFit's Documentation on: `Gauss-Newton/Hybrid models <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-models>`__,  `the trust region method <https://ralfit.readthedocs.io/projects/Fortran/en/latest/method.html#the-trust-region-method>`__ and  `The regularization method <https://ralfit.readthedocs.io/projects/C/en/latest/method.html#regularization>`__
 
@@ -672,6 +694,10 @@ The SciPy minimizers are set as follows:
            trust-constr
            dogleg
 
+.. note::
+   The Hessian enabled solvers are not run by default when `scipy` software is selected. In order to run these minimizers, you must explicitly
+   set them as above.
+
 .. _scipy-ls:
 
 SciPy LS (``scipy_ls``)
@@ -730,3 +756,30 @@ The SciPy global optimization minimizers are set as follows:
    The shgo solver is particularly slow running and should generally be avoided. As a result, this solver is
    not run by default when `scipy_go` software is selected. In order to run this minimizer, you must explicitly
    set it as above.
+
+.. _theseus:
+
+Theseus (``theseus``)
+=======================
+
+`Theseus <https://sites.google.com/view/theseus-ai/>`__ is an efficient application-agnostic library for building custom nonlinear optimization
+layers in PyTorch to support constructing various problems in robotics and vision as end-to-end
+differentiable architectures.
+
+* Levenberg Marquardt (:code:`Levenberg_Marquardt`)
+* Gauss Newton (:code:`Gauss-Newton`)
+
+**Links** `Paper- Theseus optimization <https://arxiv.org/pdf/2207.09442.pdf/>`__
+
+**Licence** Theseus is available under a `MIT licence <https://github.com/facebookresearch/theseus/blob/main/LICENSE>`__.
+
+The theseus minimizers are set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    theseus: Levenberg_Marquardt
+             Gauss-Newton
+
+.. note::
+   We strongly recommend you install Theseus in a venv or conda environment with Python 3.7-3.9

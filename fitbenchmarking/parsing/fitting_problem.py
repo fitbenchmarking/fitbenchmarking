@@ -3,7 +3,6 @@ Implements the FittingProblem class, this will be the object that inputs are
 parsed into before being passed to the controllers
 """
 
-from __future__ import (absolute_import, division, print_function)
 
 try:
     from itertools import izip_longest
@@ -43,6 +42,9 @@ class FittingProblem:
 
         #: *string* Name of the problem definition type (e.g., 'cutest')
         self.format = None
+
+        #: *string* The plot scale for the y and x data
+        self.plot_scale = None
 
         #: *string* Equation (function or model) to fit against data
         self.equation = None
@@ -169,7 +171,7 @@ class FittingProblem:
                  example format: 'b1 * (b2+x) | b1=-2.0, b2=50.0'
         :rtype: string
         """
-        params = ['{}={}'.format(n, p) for n, p
+        params = [f'{n}={p}' for n, p
                   in izip_longest(self.param_names,
                                   params if params is not None else [])]
         param_string = ', '.join(params)
@@ -195,8 +197,8 @@ class FittingProblem:
                 pass
             if not type_match:
                 raise FittingProblemError(
-                    'Attribute "{}" is not the expected type. Expected "{}", '
-                    'got "{}".'.format(attr_name, attr_type, type(attr)))
+                    f'Attribute "{attr_name}" is not the expected type.'
+                    f' Expected "{attr_type}", got "{type(attr)}".')
         if self.function is None:
             raise FittingProblemError('Attribute "function" has not been set.')
 

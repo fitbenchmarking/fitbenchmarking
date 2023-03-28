@@ -24,12 +24,14 @@ indicating it is a FitBenchmark problem followed by key-value pairs. Available
 keys are described below:
 
 software
-  Either 'IVP', 'Mantid', or 'SasView' (case insensitive).
+  Either 'IVP', 'Mantid', 'SasView', or 'Horace' (case insensitive).
   
   This defines whether to use an IVP format, Mantid, or SasView to generate the model.
   The 'Mantid' software also supports Mantid's MultiFit functionality, which
   requires the parameters listed here to be defined slightly differently.
   More information can be found in :ref:`multifit`.
+
+  For information on the 'Horace' format, see :ref:`horace_format`.
 
   **Licence** Mantid is available under a
   `GPL-3 Licence <https://github.com/mantidproject/mantid/blob/master/LICENSE.txt>`_.
@@ -68,6 +70,10 @@ input_file
   in one of the above conventions with the labels as "x", "y", or "e" followed by
   a number. An example of this can be seen in
   ``examples/benchmark_problems/Data_Assimilation/data_files/lorentz.txt``
+
+plot_scale
+  The scale of the x and y axis for the plots. The options are 'loglog', 'logy', 'logx' and 'linear'. If this 
+  is not set it will default to 'linear'.
 
 function
   This defines the function that will be used as a model for the fitting.
@@ -115,6 +121,10 @@ function
 
   SASView functions can be any of
   `these <http://www.sasview.org/docs/user/qtgui/Perspectives/Fitting/models/index.html>`__.
+  
+  **Horace**
+
+  The Horace functions are defined here :ref:`horace_format`
 
 fit_ranges
   This specifies the region to be fit.
