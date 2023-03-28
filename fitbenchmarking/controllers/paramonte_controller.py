@@ -38,7 +38,6 @@ class ParamonteController(Controller):
         self.support_for_bounds = True
         self.result = None
         self.pmpd = pm.ParaDRAM()
-        self.logY = np.log(self.data_y)
 
     def getLogLike(self, param):
         """
@@ -60,28 +59,16 @@ class ParamonteController(Controller):
                 dataset  given ``param``.
         """
 
-        # Compute the expected value of y, given each value of x.
-        # This is the mean of the Normal distribution given the x values.
-        scale = param[-1]
+        loglikelihood = -1/2 * self.cost_func.eval_cost(param)
 
-        mean = np.log(self.problem.eval_model(param[:-1]))
-
-        # Compute the log-PDFs of oberserving each data point given the input 
-        # parameters.
-
-        logProbDensities = norm.logpdf(self.logY, loc=mean,
-                                       scale=np.exp(scale))
-
-        # Compute and return the log-likliehood
-
-        return np.sum(logProbDensities)
+        return loglikelihood
 
     def setup(self):
         """
         Setup problem ready to be run with Paramonte
         """
-        par_names = self.problem.param_names + ["logSigma"]
-        par_ini_p = self.initial_params + [-2.0]
+        par_names = self.problem.param_names
+        par_ini_p = self.initial_params
         param_dict = dict(zip(par_names, par_ini_p))
 
         # overwrite the existing output files just in case they already exist.
@@ -94,7 +81,9 @@ class ParamonteController(Controller):
         self.pmpd.spec.variableNameList = par_names
         # set the number of uniquely sampled points from the likelihood 
         # function.
-        self.pmpd.spec.chainSize = 10000
+        self.pmpd.spec.chainSize = 20000
+        self.pmpd.spec.adaptiveUpdateCount = 2*len(par_names)
+        self.pmpd.spec.proposalModel = 'uniform'
         self.pmpd.spec.variableNameList = list(param_dict.keys())
         self.pmpd.spec.startPointVec = list(param_dict.values())
         self.pmpd.mpiEnabled = True
@@ -109,7 +98,7 @@ class ParamonteController(Controller):
         Run problem with Paramonte
         """
 
-        self.pmpd.runSampler(ndim=len(self.initial_params) + 1,
+        self.pmpd.runSampler(ndim=len(self.initial_params),
                              getLogFunc=self.getLogLike)
 
     def cleanup(self):
@@ -120,7 +109,7 @@ class ParamonteController(Controller):
 
         sample = self.pmpd.readSample("./out/temp", renabled=True)[0]
 
-        param = sample.df.mean()[1:-1]
+        param = sample.df.mean()[1:]
 
         self.flag = 0
 
