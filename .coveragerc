@@ -19,3 +19,11 @@ omit =
     *__init__*
     */test_*
     /fitbenchmarking/cli/main.py
+    
+    # Omit results for matlab dependent code as it's not run in standard
+    # testing
+    */matlab_mixin.py
+    */matlab*_controller.py
+    */horace_controller.py
+    */horace_parser.py
+    */matlab_engine.py
