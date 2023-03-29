@@ -1,10 +1,19 @@
 """
 FitBenchmarking results object
 """
+from typing import TYPE_CHECKING
 
 import numpy as np
 
+from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.debug import get_printable_table
+
+if TYPE_CHECKING:
+    from typing import Optional
+
+    from fitbenchmarking.controllers.base_controller import Controller
+    from fitbenchmarking.cost_func.base_cost_func import CostFunc
+    from fitbenchmarking.parsing.fitting_problem import FittingProblem
 
 
 # pylint: disable=too-many-arguments, no-self-use
@@ -14,107 +23,100 @@ class FittingResult:
     fitting problem test.
     """
 
-    def __init__(self, options, cost_func, jac, hess, initial_params, params,
-                 name=None, chi_sq=None, runtime=None, software=None,
-                 minimizer=None, error_flag=None, algorithm_type=None,
-                 dataset_id=None):
+    def __init__(self,
+                 controller: 'Controller',
+                 accuracy: 'float | list[float]' = np.inf,
+                 runtime: 'float' = np.inf,
+                 dataset: 'Optional[int]' = None) -> None:
         """
         Initialise the Fitting Result
 
-        :param options: Options used in fitting
-        :type options: utils.options.Options
-        :param cost_func: Cost function object selected from options.
-        :type cost_func: subclass of
-                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
-        :param jac: The Jacobian used in the fitting
-        :type jac: str
-        :param hess: The Hessian used in the fitting
-        :type hess: str
-        :param initial_params: The starting parameters for the fit
-        :type initial_params: list of float
-        :param params: The parameters found by the fit
-        :type params: list of float or list of list of float
-        :param name: Name of the result, defaults to None
-        :type name: str, optional
-        :param chi_sq: The score for the fitting, defaults to None
-        :type chi_sq: float or list of float, optional
-        :param runtime: The average runtime of the fit, defaults to None
-        :type runtime: float or list of float, optional
-        :param software: The name of the software used, defaults to None
-        :type software: str, optional
-        :param minimizer: The name of the minimizer used, defaults to None
-        :type minimizer: str, optional
-        :param error_flag: [description], defaults to None
-        :type error_flag: [type], optional
-        :param algorithm_type: The tags associated with the minimizer,
-                               defaults to None
-        :type algorithm_type: str, optional
-        :param dataset_id: The index of the dataset (Only used for MultiFit),
-                           defaults to None
-        :type dataset_id: int, optional
+        :param controller: Controller used to fit
+        :type controller: controller.base_controller.Controller
+        :param accuracy: The score for the fitting, defaults to np.inf
+        :type accuracy: float | list[float], optional
+        :param runtime: The average runtime of the fit, defaults to np.inf
+        :type runtime: float | list[float], optional
+        :param dataset: The index of the dataset (Only used for MultiFit),
+                        defaults to None
+        :type dataset: int, optional
         """
-        self.options = options
-        self.cost_func = cost_func
-        self.problem = self.cost_func.problem
-        self.name = name if name is not None else \
-            self.problem.name
+        self.init_blank()
 
-        self.chi_sq = chi_sq
-        if dataset_id is None:
-            self.data_x = self.problem.data_x
-            self.data_y = self.problem.data_y
-            self.data_e = self.problem.data_e
-            self.sorted_index = self.problem.sorted_index
+        cost_func: 'CostFunc' = controller.cost_func
+        problem: 'FittingProblem' = controller.problem
 
-            self.params = params
-            self.chi_sq = chi_sq
+        # Problem definition + scores
+        self.name: 'str' = problem.name
+        self.multivariate: 'bool' = problem.multivariate
+        self.problem_format: 'str' = problem.format
+        self.problem_desc: 'str' = problem.description
+        self.initial_params: 'list[float]' = controller.initial_params
+        self.equation = problem.equation
+        self.plot_scale = problem.plot_scale
 
+        if dataset is None:
+            self.data_x = problem.data_x
+            self.data_y = problem.data_y
+            self.data_e = problem.data_e
+            self.sorted_index = problem.sorted_index
+            self.params = controller.final_params
+            self.accuracy = accuracy
         else:
-            self.data_x = self.problem.data_x[dataset_id]
-            self.data_y = self.problem.data_y[dataset_id]
-            self.data_e = self.problem.data_e[dataset_id]
-            self.sorted_index = self.problem.sorted_index[dataset_id]
-
-            self.params = params[dataset_id]
-            self.chi_sq = chi_sq[dataset_id]
+            self.name += f', Dataset {dataset + 1}'
+            self.data_x = problem.data_x[dataset]
+            self.data_y = problem.data_y[dataset]
+            self.data_e = problem.data_e[dataset]
+            self.sorted_index = problem.sorted_index[dataset]
+            self.params = controller.final_params[dataset]
+            self.accuracy = accuracy[dataset]
 
         self.runtime = runtime
 
-        self.min_chi_sq = None
-        self.min_runtime = None
+        # Details of options used for this run
+        self.software = controller.software
+        self.minimizer = controller.minimizer
+        self.algorithm_type = [k for k, v in controller.algorithm_check.items()
+                               if v == self.minimizer]
 
-        # Minimizer for a certain problem and its function definition
-        self.software = software
-        self.minimizer = minimizer
-        self.algorithm_type = algorithm_type
-        self.jac = jac
-        self.hess = hess
+        jac_enabled = self.minimizer in controller.jacobian_enabled_solvers
+        hess_enabled = cost_func.hessian is not None \
+            and self.minimizer in controller.hessian_enabled_solvers
+
+        self.jac = cost_func.jacobian.name() if jac_enabled else None
+        self.hess = cost_func.hessian.name() if hess_enabled else None
+
+        # Precalculate values required for plotting
+        self.r_x = None
+        self.jac_x = None
+
+        self.ini_y = problem.ini_y(controller.parameter_set)
+        self.fin_y = None
+        if self.params is not None:
+            cost_func.problem.timer.reset()
+            if isinstance(cost_func, BaseNLLSCostFunc):
+                self.r_x = cost_func.eval_r(self.params,
+                                            x=self.data_x,
+                                            y=self.data_y,
+                                            e=self.data_e)
+                self.jac_x = cost_func.jac_res(self.params,
+                                               x=self.data_x,
+                                               y=self.data_y,
+                                               e=self.data_e)
+            self.fin_y = cost_func.problem.eval_model(
+                self.params, x=self.data_x)
 
         # String interpretations of the params
-        self.ini_function_params = self.problem.get_function_params(
-            params=initial_params)
-        self.fin_function_params = self.problem.get_function_params(
-            params=self.params)
+        self.ini_function_params = problem.get_function_params(
+            params=controller.initial_params)
+        self.fin_function_params = problem.get_function_params(
+            params=controller.final_params)
 
         # Controller error handling
-        self.error_flag = error_flag
-
-        # Paths to various output files
-        self.problem_summary_page_link = ''
-        self.fitting_report_link = ''
-        self.start_figure_link = ''
-        self.figure_link = ''
-
-        # Error written to support page if plotting failed
-        # Default can be overwritten with more information
-        self.figure_error = 'Plotting Failed'
-
-        self._norm_acc = None
-        self._norm_runtime = None
-        self.is_best_fit = False
+        self.error_flag = controller.flag
 
         # Attributes for table creation
-        self.costfun_tag: str = self.cost_func.__class__.__name__
+        self.costfun_tag: str = cost_func.__class__.__name__
         self.problem_tag: str = self.name
         self.software_tag: str = self.software \
             if self.software is not None else ""
@@ -123,6 +125,25 @@ class FittingResult:
         self.jacobian_tag: str = self.jac if self.jac is not None else ""
         self.hessian_tag: str = self.hess if self.hess is not None else ""
 
+    def init_blank(self):
+        """
+        Initialise a new blank version of the class with the required
+        placeholder values not set during standard initialisation.
+        """
+        # Variable for calculating best result
+        self._norm_acc = None
+        self._norm_runtime = None
+        self.min_accuracy = np.inf
+        self.min_runtime = np.inf
+        self.is_best_fit = False
+
+        # Paths to various output files
+        self.problem_summary_page_link = ''
+        self.fitting_report_link = ''
+        self.start_figure_link = ''
+        self.figure_link = ''
+        self.figure_error = ''
+
     def __str__(self):
         info = {"Cost Function": self.costfun_tag,
                 "Problem": self.problem_tag,
@@ -130,10 +151,24 @@ class FittingResult:
                 "Minimizer": self.minimizer_tag,
                 "Jacobian": self.jacobian_tag,
                 "Hessian": self.hessian_tag,
-                "Chi Squared": self.chi_sq,
+                "Accuracy": self.accuracy,
                 "Runtime": self.runtime}
 
         return get_printable_table("FittingResult", info)
+
+    def __eq__(self, other):
+        for key in self.__dict__:
+            if hasattr(other, key):
+                match = getattr(other, key) != getattr(self, key)
+                if not isinstance(match, bool):
+                    match = (getattr(other, key) != getattr(self, key)).all()
+                if match:
+                    print(f'{key} not equal!')
+                    return False
+            else:
+                print(f'No attr {key}')
+                return False
+        return True
 
     def modified_minimizer_name(self, with_software: bool = False) -> str:
         """
@@ -177,10 +212,10 @@ class FittingResult:
         :rtype: float
         """
         if self._norm_acc is None:
-            if self.min_chi_sq in [np.nan, np.inf]:
+            if self.min_accuracy in [np.nan, np.inf]:
                 self._norm_acc = np.inf
             else:
-                self._norm_acc = self.chi_sq / self.min_chi_sq
+                self._norm_acc = self.accuracy / self.min_accuracy
         return self._norm_acc
 
     @norm_acc.setter
