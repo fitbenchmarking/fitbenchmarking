@@ -4,6 +4,7 @@ This file will handle all interaction with the options configuration file.
 # pylint: disable=too-many-branches
 
 import configparser
+import glob
 import os
 import matplotlib.pyplot as plt
 
@@ -238,7 +239,8 @@ class Options:
          'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
          'results_browser': True,
-         'table_type': ['acc', 'runtime', 'compare', 'local_min']}
+         'table_type': ['acc', 'runtime', 'compare', 'local_min'],
+         'checkpoint_filename': 'checkpoint.json'}
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
          'append': False,
@@ -385,6 +387,8 @@ class Options:
 
         self.results_dir = self.read_value(output.getstr, 'results_dir',
                                            additional_options)
+        self.checkpoint_filename = self.read_value(
+            output.getstr, 'checkpoint_filename', additional_options)
 
         logging = config['LOGGING']
 
@@ -577,3 +581,30 @@ def read_range(s):
         raise ValueError("One or more elements in range are "
                          "outside of the permitted range 0 <= a <= 1.")
     return rng
+
+
+def find_options_file(options_file: str, additional_options: dict) -> Options:
+    """
+    Attempts to find the options file and creates an Options object for it.
+    Wildcards are accepted in the parameters of this function.
+
+    :param options_file: The path or glob pattern for an options file.
+    :type options_file: str
+    :param additional_options: A dictionary of options input by the user into
+                               the command line.
+    :type additional_options: dict
+    :return: An Options object.
+    :rtype: fitbenchmarking.utils.options.Options
+    """
+    if options_file != '':
+        # Read custom minimizer options from file
+        glob_options_file = glob.glob(options_file)
+
+        if not glob_options_file:
+            raise OptionsError('Could not find file {}'.format(options_file))
+        if not options_file.endswith(".ini"):
+            raise OptionsError('Options file must be a ".ini" file')
+
+        return Options(file_name=glob_options_file,
+                       additional_options=additional_options)
+    return Options(additional_options=additional_options)

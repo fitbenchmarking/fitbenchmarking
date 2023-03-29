@@ -46,6 +46,9 @@ class ScipyLSController(Controller):
         self.result = None
         self._status = None
         self._popt = None
+        # Need to map the minimizer to an internal one to avoid changing the
+        # minimizer in results
+        self._minimizer = ''
 
     def setup(self):
         """
@@ -53,7 +56,9 @@ class ScipyLSController(Controller):
         """
 
         if self.minimizer == "lm-scipy":
-            self.minimizer = "lm"
+            self._minimizer = "lm"
+        else:
+            self._minimizer = self.minimizer
 
         # If parameter ranges have been set in problem, then set up bounds
         # option for scipy least_squares function. Here the bounds option
@@ -74,7 +79,7 @@ class ScipyLSController(Controller):
         """
         kwargs = {'fun': self.cost_func.eval_r,
                   'x0': self.initial_params,
-                  'method': self.minimizer,
+                  'method': self._minimizer,
                   'max_nfev': 500}
         if not self.cost_func.jacobian.use_default_jac:
             kwargs['jac'] = self.cost_func.jac_res
