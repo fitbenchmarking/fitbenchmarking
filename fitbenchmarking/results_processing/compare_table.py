@@ -68,7 +68,7 @@ class CompareTable(Table):
         :rtype: list[list[float]]
         """
         acc_rel = result.norm_acc
-        acc_abs = result.chi_sq
+        acc_abs = result.accuracy
 
         runtime_rel = result.norm_runtime
         runtime_abs = result.runtime

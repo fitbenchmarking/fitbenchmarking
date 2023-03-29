@@ -48,16 +48,16 @@ class AccTable(Table):
         """
         Gets the main value to be reported in the tables for a given result
 
-        Note that the first value (relative chi_sq) will be used in the default
-        colour handling.
+        Note that the first value (relative accuracy) will be used in the
+        default colour handling.
 
         :param result: The result to generate the values for.
         :type result: FittingResult
 
-        :return: The normalised chi sq with respect to the smallest chi_sq
-                 value and absolute chi_sq for the result.
+        :return: The normalised chi sq with respect to the smallest accuracy
+                 value and absolute accuracy for the result.
         :rtype: tuple(float, float)
         """
         rel_value = result.norm_acc
-        abs_value = result.chi_sq
+        abs_value = result.accuracy
         return rel_value, abs_value

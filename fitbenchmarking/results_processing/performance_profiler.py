@@ -10,6 +10,7 @@ import numpy as np
 matplotlib.use('Agg')
 # pylint: disable=wrong-import-position,ungrouped-imports
 import matplotlib.pyplot as plt  # noqa: E402
+
 # pylint: enable=wrong-import-position,ungrouped-imports
 
 
@@ -44,6 +45,8 @@ def prepare_profile_data(results):
     acc_dict = {}
     runtime_dict = {}
     minimizers = []
+    to_remove = set()
+
     for row in results.values():
         for cat in row.values():
             for i, result in enumerate(cat):
@@ -53,11 +56,16 @@ def prepare_profile_data(results):
                     acc_dict[key] = []
                     runtime_dict[key] = []
                 elif len(key) > len(minimizers[i]):
-                    acc_dict[key] = acc_dict.pop(minimizers[i])
-                    runtime_dict[key] = runtime_dict.pop(minimizers[i])
+                    to_remove.add(minimizers[i])
+                    acc_dict[key] = acc_dict[minimizers[i]].copy()
+                    runtime_dict[key] = runtime_dict[minimizers[i]].copy()
                     minimizers[i] = key
                 acc_dict[minimizers[i]].append(result.norm_acc)
                 runtime_dict[minimizers[i]].append(result.norm_runtime)
+
+    for key in to_remove:
+        del acc_dict[key]
+        del runtime_dict[key]
 
     return acc_dict, runtime_dict
 

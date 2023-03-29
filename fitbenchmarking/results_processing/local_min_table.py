@@ -99,15 +99,9 @@ class LocalMinTable(Table):
         if result.params is None:
             return False, np.inf
 
-        res = result.cost_func.eval_r(result.params,
-                                      x=result.data_x,
-                                      y=result.data_y,
-                                      e=result.data_e)
+        res = result.r_x
 
-        jac = result.cost_func.jac_res(result.params,
-                                       x=result.data_x,
-                                       y=result.data_y,
-                                       e=result.data_e)
+        jac = result.jac_x
 
         min_test = np.matmul(res, jac)
         norm_r = np.linalg.norm(res)

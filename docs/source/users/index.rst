@@ -18,6 +18,7 @@ the FitBenchmarking software.
     BenchmarkProblems
     options/index
     problem_definition_files/index
+    checkpointing
     tests
     notes
     tutorials

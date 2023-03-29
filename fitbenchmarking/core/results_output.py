@@ -3,20 +3,30 @@ Functions that create the tables, support pages, figures, and indexes.
 """
 import inspect
 import os
+import platform
 import re
-from typing import Dict, List, Optional, Set, Union
+import webbrowser
+from shutil import copytree
+from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union
 
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
-from fitbenchmarking.results_processing import (performance_profiler, plots,
-                                                problem_summary_page,
-                                                fitting_report, tables)
+from fitbenchmarking.results_processing import (fitting_report,
+                                                performance_profiler, plots,
+                                                problem_summary_page, tables)
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.misc import get_css, get_js
 from fitbenchmarking.utils.write_files import write_file
+
+if TYPE_CHECKING:
+    from fitbenchmarking.utils.options import Options
+
+
+LOGGER = get_logger()
 
 
 @write_file
@@ -235,19 +245,19 @@ def _process_best_results(results: 'List[FittingResult]') -> 'FittingResult':
     Process the best result from a list of FittingResults.
     This includes:
      - Setting the `is_best_fit` flag,
-     - Setting the `min_chi_sq` value, and
+     - Setting the `min_accuracy` value, and
      - Setting the `min_runtime` value.
 
     :param results: The results to compare and update
     :type results: List[FittingResult]
 
-    :return: The result with the lowest chi_sq
+    :return: The result with the lowest accuracy
     :rtype: FittingResult
     """
     best = results[0]
     fastest = results[0]
     for result in results[1:]:
-        if best.chi_sq > result.chi_sq:
+        if best.accuracy > result.accuracy:
             best = result
         if fastest.runtime > result.runtime:
             fastest = result
@@ -255,7 +265,7 @@ def _process_best_results(results: 'List[FittingResult]') -> 'FittingResult':
     best.is_best_fit = True
 
     for result in results:
-        result.min_chi_sq = best.chi_sq
+        result.min_accuracy = best.accuracy
         result.min_runtime = fastest.runtime
 
     return best
@@ -333,7 +343,7 @@ def create_plots(options, results, best_results, figures_dir):
                 # Don't plot best again
                 if not result.is_best_fit:
                     if result.params is not None:
-                        cf = result.cost_func.__class__.__name__
+                        cf = result.costfun_tag
                         plot_path = plot_dict[cf].plot_fit(result)
                         result.figure_link = plot_path
                     else:
@@ -382,3 +392,77 @@ def create_problem_level_index(options, table_names, group_name,
             links=links,
             description=description,
             zip=zip))
+
+
+def create_index_page(options: "Options", groups: "list[str]",
+                      result_directories: "list[str]") -> str:
+    """
+    Creates the results index page for the benchmark, and copies
+    the fonts and js directories to the correct location.
+
+    :param options: The user options for the benchmark.
+    :type options: fitbenchmarking.utils.options.Options
+    :param groups: Names for each of the problem set groups.
+    :type groups: A list of strings.
+    :param result_directories: Result directory paths for each
+    problem set group.
+    :type result_directories: A list of strings.
+    :return: The filepath of the `results_index.html` file.
+    :rtype: str
+    """
+    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    template_dir = os.path.join(root, "templates")
+    env = Environment(loader=FileSystemLoader(template_dir))
+    css = get_css(options, options.results_dir)
+    template = env.get_template("index_page.html")
+    group_links = [os.path.join(d, f"{g}_index.html")
+                   for g, d in zip(groups, result_directories)]
+    output_file = os.path.join(options.results_dir, 'results_index.html')
+
+    # Copying fonts directory into results directory
+    copytree(os.path.join(root, "fonts"),
+             os.path.join(options.results_dir, "fonts"),
+             dirs_exist_ok=True)
+    # Copying js directory into results directory
+    copytree(os.path.join(template_dir, "js"),
+             os.path.join(options.results_dir, "js"),
+             dirs_exist_ok=True)
+    # Copying css directory into results directory
+    copytree(os.path.join(template_dir, "css"),
+             os.path.join(options.results_dir, "css"),
+             dirs_exist_ok=True)
+
+    with open(output_file, "w") as fh:
+        fh.write(template.render(
+            css_style_sheet=css["main"],
+            custom_style=css["custom"],
+            groups=groups,
+            group_link=group_links,
+            zip=zip))
+
+    return output_file
+
+
+def open_browser(output_file: str, options) -> None:
+    """
+    Opens a browser window to show the results of a fit benchmark.
+
+    :param output_file: The absolute path to the results index file.
+    :type output_file: str
+    """
+    # Uses the relative path so that the browser can open on Mac and WSL
+    relative_path = os.path.relpath(output_file)
+    # Constructs a url that can be pasted into a browser
+    is_mac = platform.system() == "Darwin"
+    url = "file://" + output_file if is_mac else output_file
+    if options.results_browser:
+        if webbrowser.open_new(url if is_mac else relative_path):
+            LOGGER.info("\nINFO:\nThe FitBenchmarking results have been opened"
+                        " in your browser from this url:\n\n   %s", url)
+        else:
+            LOGGER.warning("\nWARNING:\nThe browser failed to open "
+                           "automatically. Copy and paste the following url "
+                           "into your browser:\n\n   %s", url)
+    else:
+        LOGGER.info("\nINFO:\nYou have chosen not to open FitBenchmarking "
+                    "results in your browser\n\n   %s",)

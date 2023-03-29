@@ -5,7 +5,7 @@ import inspect
 import os
 import unittest
 from unittest.mock import patch
-
+from shutil import rmtree
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 
 from conftest import run_for_test_types
@@ -16,8 +16,8 @@ from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import output_grabber
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.utils.timer import TimerWithMaxTime
 
 # Due to construction of the controllers two folder functions
 # pylint: disable=unnecessary-pass
@@ -62,7 +62,7 @@ class DummyController(Controller):
         """
         Mock controller fit function
         """
-        pass
+        self.eval_chisq([1, 1, 1, 1])
 
     def cleanup(self):
         """
@@ -79,7 +79,11 @@ def make_cost_function(file_name='cubic.dat', minimizers=None,
     """
     Helper function that returns a simple fitting problem
     """
-    options = Options()
+    results_dir = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        'fitbenchmarking_results')
+    options = Options(additional_options={'external_output': 'debug',
+                                          'results_dir': results_dir})
     if minimizers:
         options.minimizers = minimizers
     if max_runtime:
@@ -107,10 +111,18 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.cost_func = make_cost_function(minimizers=self.minimizers)
         self.problem = self.cost_func.problem
         self.cost_func.jacobian = Scipy(self.problem)
+        self.cost_func.jacobian.method = '2-point'
         self.controller = DummyController(cost_func=self.cost_func)
-        self.options = self.problem.options
+        self.options: Options = self.problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
+        self.cp = Checkpoint(self.options)
+
+    def tearDown(self) -> None:
+        """
+        Clean up after the test
+        """
+        rmtree(self.options.results_dir)
 
     def test_single_hessian(self):
         """
@@ -119,8 +131,9 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.options.hes_method = ["analytic"]
         self.controller.minimizer = "general"
         _ = loop_over_hessians(self.controller,
-                               self.options,
-                               self.grabbed_output)
+                               options=self.options,
+                               grabbed_output=self.grabbed_output,
+                               checkpointer=self.cp)
         self.assertEqual(self.controller.count, 1)
 
     @patch.object(DummyController, "check_bounds_respected")
@@ -135,8 +148,9 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.minimizer = "deriv_free_algorithm"
 
         _ = loop_over_hessians(self.controller,
-                               self.options,
-                               self.grabbed_output)
+                               options=self.options,
+                               grabbed_output=self.grabbed_output,
+                               checkpointer=self.cp)
         check_bounds_respected.assert_called()
 
     @patch.object(DummyController, "check_bounds_respected")
@@ -151,11 +165,11 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.flag_expected = [3]
 
         _ = loop_over_hessians(self.controller,
-                               self.options,
-                               self.grabbed_output)
+                               options=self.options,
+                               grabbed_output=self.grabbed_output,
+                               checkpointer=self.cp)
         check_bounds_respected.assert_not_called()
 
-    @patch.object(TimerWithMaxTime, 'reset', lambda *args: None)
     def test_max_runtime_exceeded(self):
         """
         Test that the correct flag is set when the max_runtime is exceeded.
@@ -163,6 +177,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         cost_func = make_cost_function(minimizers=self.minimizers,
                                        max_runtime=0.1)
         cost_func.jacobian = Scipy(cost_func.problem)
+        cost_func.jacobian.method = '2-point'
         cost_func.problem.timer.total_elapsed_time = 5
         controller = DummyController(cost_func=cost_func)
         options = cost_func.problem.options
@@ -170,8 +185,10 @@ class LoopOverHessiansTests(unittest.TestCase):
         controller.parameter_set = 0
 
         controller.minimizer = "deriv_free_algorithm"
-        results = loop_over_hessians(controller, options,
-                                     grabbed_output)
+        results = loop_over_hessians(controller,
+                                     options=options,
+                                     grabbed_output=grabbed_output,
+                                     checkpointer=self.cp)
         self.assertEqual(results[0].error_flag, 6)
 
     @run_for_test_types(TEST_TYPE, 'all')
@@ -183,14 +200,17 @@ class LoopOverHessiansTests(unittest.TestCase):
         cost_func = make_cost_function('multifit_set/multifit.txt')
         problem = cost_func.problem
         cost_func.jacobian = Scipy(problem)
+        cost_func.jacobian.method = '2-point'
         controller = DummyController(cost_func=cost_func)
         options = problem.options
         grabbed_output = output_grabber.OutputGrabber(options)
         controller.final_params = [[0.1, 0.1], [0.1, 0.1]]
+        controller.parameter_set = 0
         perform_fit.return_value = ([0.1, 0.2], [0.1, 0.01])
         results = loop_over_hessians(controller=controller,
                                      options=options,
-                                     grabbed_output=grabbed_output)
+                                     grabbed_output=grabbed_output,
+                                     checkpointer=self.cp)
         self.assertTrue(len(results) == 2)
 
 
