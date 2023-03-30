@@ -101,6 +101,8 @@ def _create_summary_page(categorised_best_results, summary_plot_path,
     css = get_css(options, support_pages_dir)
     template = env.get_template("problem_summary_page_template.html")
 
+    run_name = f"{options.run_name}: " if options.run_name else ""
+
     with open(file_path, 'w') as fh:
         fh.write(template.render(
             css_style_sheet=css['main'],
@@ -118,6 +120,7 @@ def _create_summary_page(categorised_best_results, summary_plot_path,
             best_results=results,
             best_plots_available=best_plot_available,
             plot_descriptions=descriptions,
+            run_name=run_name,
             best_plots=best_fits))
 
     for r in results:

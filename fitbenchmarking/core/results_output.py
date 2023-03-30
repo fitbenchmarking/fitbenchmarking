@@ -381,6 +381,8 @@ def create_problem_level_index(options, table_names, group_name,
     names = table_names.keys()
     description = [table_descriptions[n] for n in names]
     index = table_descriptions[options.comparison_mode]
+    run_name = f"{options.run_name}: " if options.run_name else ""
+
     with open(output_file, 'w', encoding="utf-8") as fh:
         fh.write(template.render(
             css_style_sheet=css['main'],
@@ -391,6 +393,7 @@ def create_problem_level_index(options, table_names, group_name,
             table_type=names,
             links=links,
             description=description,
+            run_name=run_name,
             zip=zip))
 
 
@@ -432,12 +435,15 @@ def create_index_page(options: "Options", groups: "list[str]",
              os.path.join(options.results_dir, "css"),
              dirs_exist_ok=True)
 
+    run_name = f"{options.run_name}: " if options.run_name else ""
+
     with open(output_file, "w") as fh:
         fh.write(template.render(
             css_style_sheet=css["main"],
             custom_style=css["custom"],
             groups=groups,
             group_link=group_links,
+            run_name=run_name,
             zip=zip))
 
     return output_file
