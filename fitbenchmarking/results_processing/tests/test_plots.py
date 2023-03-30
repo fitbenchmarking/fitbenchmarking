@@ -2,17 +2,33 @@
 Test plots
 '''
 
+import inspect
 import os
 import unittest
 from tempfile import TemporaryDirectory
-import numpy as np
 
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
+from fitbenchmarking import test_files
 from fitbenchmarking.results_processing import plots
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
-from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
+
+
+def load_mock_result():
+    """
+    Load a predictable result.
+
+    :return: Manually generated results
+    :rtype: FittingResult
+    """
+    options = Options()
+    cp_dir = os.path.dirname(inspect.getfile(test_files))
+    options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
+
+    cp = Checkpoint(options)
+    results, _, _ = cp.load()
+
+    return results['Fake_Test_Data'][0]
 
 
 class PlotTests(unittest.TestCase):
@@ -21,37 +37,7 @@ class PlotTests(unittest.TestCase):
     """
 
     def setUp(self):
-        self.opts = Options()
-        self.opts.use_errors = True
-
-        self.prob = FittingProblem(self.opts)
-        self.prob.data_x = np.array([1, 2, 4, 3, 5])
-        self.prob.sorted_index = np.array([0, 1, 3, 2, 4])
-        self.prob.data_y = np.array([4, 3, 5, 2, 1])
-        self.prob.data_e = np.array([0.5, 0.2, 0.3, 0.1, 0.4])
-        self.prob.starting_values = [{'p': 1.8}]
-        self.prob.name = 'full name'
-
-        def tmp(p, x=None, y=None):
-            if x is None:
-                x = self.prob.data_x
-            if y is None:
-                y = self.prob.data_y
-            return p + y * x + y
-        self.prob.eval_model = tmp
-        cost_func = NLLSCostFunc(self.prob)
-        jac = 'j1'
-        self.fr = FittingResult(options=self.opts,
-                                cost_func=cost_func,
-                                jac=jac,
-                                hess=None,
-                                chi_sq=1.0,
-                                initial_params=[1.8],
-                                params=[1.2],
-                                runtime=2.0,
-                                software='s1',
-                                minimizer='fit',
-                                error_flag=1)
+        self.fr = load_mock_result()
 
         self.opts = Options()
         self.opts.use_errors = True
@@ -100,7 +86,7 @@ class PlotTests(unittest.TestCase):
         """
         file_name = self.plot.plot_initial_guess()
 
-        self.assertEqual(file_name, 'start_for_full_name.png')
+        self.assertEqual(file_name, 'start_for_prob_0.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 
@@ -111,7 +97,7 @@ class PlotTests(unittest.TestCase):
         file_name = self.plot.plot_best(self.fr)
 
         self.assertEqual(file_name,
-                         'fit_[s1]_jj1_fit_for_NLLSCostFunc_full_name.png')
+                         'm10_[s1]_jj0_fit_for_cf1_prob_0.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 
@@ -122,7 +108,7 @@ class PlotTests(unittest.TestCase):
         file_name = self.plot.plot_fit(self.fr)
 
         self.assertEqual(file_name,
-                         'fit_[s1]_jj1_fit_for_NLLSCostFunc_full_name.png')
+                         'm10_[s1]_jj0_fit_for_cf1_prob_0.png')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 
@@ -130,7 +116,7 @@ class PlotTests(unittest.TestCase):
         """
         Test that the plotting fails gracefully for multivariate problems.
         """
-        self.fr.cost_func.problem.multivariate = True
+        self.fr.multivariate = True
 
         with self.assertRaises(PlottingError):
             self.plot = plots.Plot(best_result=self.fr,

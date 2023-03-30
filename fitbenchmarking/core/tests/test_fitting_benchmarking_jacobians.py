@@ -12,6 +12,7 @@ from fitbenchmarking.core.fitting_benchmarking import loop_over_jacobians
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import output_grabber
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
 # Due to construction of the controllers two folder functions
@@ -98,9 +99,10 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller = DummyController(cost_func=self.cost_func)
         self.options = self.problem.options
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
+        self.cp = Checkpoint(self.options)
 
     @staticmethod
-    def mock_func_call(*args):
+    def mock_func_call(*args, **kwargs):
         """
         Mock function to be used instead of loop_over_hessians
         """
@@ -116,8 +118,9 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.minimizer = "general"
         loop_over_hessians.side_effect = self.mock_func_call
         _ = loop_over_jacobians(self.controller,
-                                self.options,
-                                self.grabbed_output)
+                                options=self.options,
+                                grabbed_output=self.grabbed_output,
+                                checkpointer=self.cp)
         loop_over_hessians.assert_called_once()
 
     @patch(f'{FITTING_DIR}.loop_over_hessians')
@@ -130,8 +133,9 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.controller.minimizer = "general"
         loop_over_hessians.side_effect = self.mock_func_call
         _ = loop_over_jacobians(self.controller,
-                                self.options,
-                                self.grabbed_output)
+                                options=self.options,
+                                grabbed_output=self.grabbed_output,
+                                checkpointer=self.cp)
         self.assertEqual(loop_over_hessians.call_count, 2)
 
 

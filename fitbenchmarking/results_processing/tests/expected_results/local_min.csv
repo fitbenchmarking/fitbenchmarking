@@ -1,4 +1,4 @@
-,scipy_ls,scipy_ls,scipy_ls
-,dogbox,lm-scipy,trf
-prob_0,False (2.941)[2],False (0.5174)[1],False (1.48)
-prob_1,False (15.01)[3],False (6.708),False (4.5)[1]
+,s0,s0,s0,s0,s1,s1,s1,s1
+,m00: j:j0,m00: j:j1,m01: j:j0,m01: j:j1,m10: j:j0,m10: j:j1,m11: j:j0,m11: j:j1
+prob_0,True (0)[4],True (0)[4],True (0),True (0),True (0),True (0),True (0),True (0)
+prob_1,True (0),True (0),True (0),True (0),True (0),True (0),True (0),True (0)

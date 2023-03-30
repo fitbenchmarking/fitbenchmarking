@@ -6,11 +6,13 @@ import os
 import unittest
 
 from fitbenchmarking import test_files
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.utils import fitbm_result, output_grabber
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.core.fitting_benchmarking import loop_over_starting_values
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import fitbm_result, output_grabber
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.checkpoint import Checkpoint
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
@@ -23,7 +25,10 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
-    options = Options()
+    options = Options(additional_options={
+        'cost_func_type': ['weighted_nlls'],
+        'software': ["scipy"],
+        'external_output': 'debug'})
     if minimizers:
         options.minimizers = minimizers
 
@@ -59,22 +64,18 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         """
         Setting up problem for tests
         """
-        self.cost_func = make_cost_function()
-        self.problem = self.cost_func.problem
+        cost_func = make_cost_function()
+        self.problem = cost_func.problem
         self.options = self.problem.options
-        self.options.cost_func_type = ['weighted_nlls']
-        self.options.software = ["scipy"]
-        self.minimizers = self.options.minimizers
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.count = 0
         self.scipy_len = len(self.options.minimizers["scipy"])
-        self.result_args = {'options': self.options,
-                            'cost_func': self.cost_func,
-                            'jac': 'jac',
-                            'hess': 'hess',
-                            'initial_params': self.problem.starting_values[0],
-                            'params': [],
-                            'chi_sq': 1}
+        controller = ScipyController(cost_func)
+        controller.parameter_set = 0
+        self.result_args = {'controller': controller,
+                            'accuracy': 1,
+                            'runtime': 1}
+        self.cp = Checkpoint(self.options)
 
     def mock_func_call(self, *args, **kwargs):
         """
@@ -102,8 +103,9 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         """
         problem_results, problem_fails, unselected_minimizers \
             = loop_over_starting_values(self.problem,
-                                        self.options,
-                                        self.grabbed_output)
+                                        options=self.options,
+                                        grabbed_output=self.grabbed_output,
+                                        checkpointer=self.cp)
         assert len(problem_results) == expected_list_len
         assert problem_fails == expected_problem_fails
 

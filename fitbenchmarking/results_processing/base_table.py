@@ -288,9 +288,16 @@ class Table:
         :rtype: pandas.DataFrame
         """
         str_results = self.get_str_dict(html)
-        row = next(iter(self.sorted_results.values()))
-        minimizers_list = [(r.software, r.modified_minimizer_name(False))
-                           for r in row]
+        # Check all rows incase first row has missing information
+        minimizers_list = []
+        for row in self.sorted_results.values():
+            for i, r in enumerate(row):
+                formatted = (r.software, r.modified_minimizer_name(False))
+                if len(minimizers_list) == i:
+                    minimizers_list.append(formatted)
+                elif len(minimizers_list[i][1]) < len(formatted[1]):
+                    minimizers_list[i] = formatted
+
         columns = pd.MultiIndex.from_tuples(minimizers_list)
         table = pd.DataFrame.from_dict(str_results,
                                        orient='index',
@@ -322,14 +329,23 @@ class Table:
                              'en/latest/users/options/minimizer_option.html' \
                              '#{2}" target="_blank">{3}</a>'
 
-        row = next(iter(self.sorted_results.values()))
-        minimizers_list = [
-            (cost_func_template.format(result.costfun_tag),
-             software_template.format(result.software.replace('_', '-')),
-             minimizer_template.format(i, result.algorithm_type,
-                                       result.software.replace('_', '-'),
-                                       result.modified_minimizer_name()))
-            for i, result in enumerate(row)]
+        minimizers_list = []
+        for row in self.sorted_results.values():
+            for i, result in enumerate(row):
+                formatted = (
+                    cost_func_template.format(result.costfun_tag),
+                    software_template.format(
+                        result.software.replace('_', '-')),
+                    minimizer_template.format(
+                        i,
+                        result.algorithm_type,
+                        result.software.replace('_', '-'),
+                        result.modified_minimizer_name()))
+                if len(minimizers_list) == i:
+                    minimizers_list.append(formatted)
+                elif len(minimizers_list[i][2]) < len(formatted[2]):
+                    minimizers_list[i] = formatted
+
         columns = pd.MultiIndex.from_tuples(minimizers_list)
         table.columns = columns
 
@@ -543,9 +559,16 @@ class Table:
         :return: HTML for a dropdown checklist of minimizers.
         :rtype: str
         """
-        minimizers = [(result.software.replace('_', '-'),
-                       result.modified_minimizer_name())
-                      for result in next(iter(self.sorted_results.values()))]
+        minimizers = []
+        for row in self.sorted_results.values():
+            for i, r in enumerate(row):
+                formatted = (r.software.replace('_', '-'),
+                             r.modified_minimizer_name())
+                if len(minimizers) == i:
+                    minimizers.append(formatted)
+                elif len(minimizers[i][1]) < len(formatted[1]):
+                    minimizers[i] = formatted
+
         # Remove duplicates
         minimizers = list(dict.fromkeys(minimizers))
 
