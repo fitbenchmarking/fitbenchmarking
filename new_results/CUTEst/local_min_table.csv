@@ -1,0 +1,7 @@
+,bumps,bumps,dfo,minuit,minuit,scipy_ls
+,lm-bumps,scipy-leastsq,dfogn,migrad,simplex,lm-scipy: j:scipy 2-point
+PALMER6C,False (2.764e+07),False (2.159e+08),False (1.395e+06)[1],False (1.23e+06),False (6.459e+04)[2],False (1.068e+06)[1]
+PALMER7C,False (3.662e+12),False (3.557e+13),False (1.012e+06)[1],False (3.252e+07),False (3.144e+04),False (4.3e+06)[1]
+PALMER8C,False (1.019e+14),False (1.063e+14),False (1.307e+06)[1],False (4.315e+08),False (2.616e+04),False (1.927e+06)[1]
+VESUVIOLS,False (22.31),False (20.63),False (58.4),False (23.52),False (9388),False (1.866)
+YFITU,False (7.41e+09),True (10.06),False (1476)[1],False (302.1),False (5.674e+06),True (10.07)

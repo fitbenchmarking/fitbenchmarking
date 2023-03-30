@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="{{ css_style_sheet }}" />
+    <link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
+    <link rel="stylesheet" type="text/css" href="{{ dropdown_style }}" />
+    <link rel="stylesheet" type="text/css" href="{{ table_style }}" />
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="{{ dropdown_js }}"></script>
+    <script id="MathJax-script" async src="{{ mathjax }}"></script>
+    <script type="text/javascript" src="{{ table_js }}"></script>
+    <head>
+        <title>Fitbenchmark Results Table</title>
+    </head>
+    <body>
+        <div class="box">
+            <div class="container">
+                <div class="post-title">
+                    <h1>{{ result_name }}</h1>
+                    <hr />
+                </div>
+                {% if table_description %}
+                    <div class="content">
+                        {{ table_description }}
+                    </div>
+                {% endif %}
+                <section class="accordion">
+                    <input type="checkbox" name="collapse" id="handle2" checked="checked">
+                    <h2 class="handle">
+                    <label for="handle2">Table</label>
+                    </h2>
+                    <div class="content">
+                        {% if table_format %}
+                            <p>
+                                {{ table_format }}
+                            </p>
+                        {% endif %}
+                        <center>
+                            <div>
+                                {{ problem_dropdown }}
+                                {{ minimizer_dropdown }}
+                            </div>
+                        </center>
+
+                        <h3>
+                            Key:
+                        </h3>
+                        <center>
+                            <img alt="{{ cbar }}" src="{{ cbar }}" />
+                        </center>
+
+                        <h3>
+                            Table:
+                        </h3>
+                        <center>
+                        <div class="table">
+                            {{ table }}
+                        </div>
+                        </center>
+                        <p>
+                            Clicking a result in the tables will give more details,
+                            such as graphs of the fit against the data and the parameters that the minimizer found.
+                        </p>
+                        <p>
+                            Clicking the problem names will take you to details of the best minimizer.
+                        </p>
+                        <p>
+                            Clicking the software name will take you to FitBenchmarking Read the Docs documentation for the selected software.
+                        </p>
+                        <p>
+                            Hovering over each minimizer name will display its matching algorithm types out of those selected in options.
+                        </p>
+                        {% if report_failed_min %}
+                            <h3>Failed minimizers</h3>
+                            <p>
+                                The `algorithm_type` has been selected to be
+                                <strong>{{algorithm_type}}</strong> and not all minimizers
+                                specified in the options setup file are compatible. If this was not intended, please review
+                                current options setup and re-run FitBenchmarking.
+                            </p>
+                            <p>
+                                {% for software, minimizer in unselected_minimzers.items() %}
+                                    {% if minimizer != [] %}
+                                        Within <strong>{{software}}</strong>, the following
+                                        minimizer(s) were not run due to the choice of <strong>{{algorithm_type}}</strong> 
+                                        for the algorithm type:
+                                        <ol>
+                                            {% for m in minimizer -%}
+                                                {{ m }} <br/>
+                                                {%- endfor %}
+                                            </ol>
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {% if failed_problems != [] %}
+                                <h3>Failed problems</h3>
+                                <p>
+                                    For the following problems all the selected minimizers
+                                    and software packages raise an exception:
+                                </p>
+                                <ol>
+                                    {% for problem in failed_problems %}
+                                        {{ problem }} <br/>
+                                    {% endfor %}
+                                </ol>
+                                <p>
+                                    This is likely due to the `algorithm_type` set in the options. Please review current options setup and re-run
+                                    FitBenchmarking.
+                                </p>
+                            {% endif %}
+                            <h3>Errors</h3>
+                            <p>
+                                The superscripts in the tables denote current error handling within FitBenchmarking.
+                                Currently the errors correspond to:
+                            </p>
+                            <table style="width:60%">
+                                <tr>
+                                    <th>Error flag</th>
+                                    <th>Error message</th>
+                                </tr>
+                                {% for flag, message in error_message.items() %}
+                                    <tr>
+                                        <td>{{ flag }}</td>
+                                        <td>{{ message }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </section>
+                    {% if has_pp %}
+                        <hr>
+                        <section class="accordion">
+                            <input type="checkbox" name="collapse" id="handle3" checked="checked">
+                            <h2 class="handle">
+                            <label for="handle3">Performance profile</label>
+                            </h2>
+                            <div class="content">
+                                {% for imgfile in pp_filenames %}
+                                    <img alt="{{ imgfile }}" src="{{ imgfile }}" />
+                                {% endfor %}
+                                <p>
+                                    Fits are taken from all benchmarks, so if FitBenchmarking is run with
+                                    ``n`` problems and ``m`` cost functions, the resulting profile plots will have
+                                    ``n*m`` steps on the y-axis. <br>
+                                    This is a Dolan-Moré performance profile.
+                                    The solvers appearing in the top left corner may be considered the best
+                                    performing on this test set.
+                                    See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.
+                                </p>
+                            </div>
+                        </section>
+                    {% endif %}
+                    <center>
+                    <button class="btn default" onclick="history.go(-1)">
+                    <i class="fa fa-arrow-left"></i>
+                    </button>
+                    </center>
+                </div>
+            </div>
+        </body>
+    </html>

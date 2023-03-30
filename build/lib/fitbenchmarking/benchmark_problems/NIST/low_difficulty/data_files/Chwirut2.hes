@@ -1,0 +1,5 @@
+# Hessian
+
+H = [[x**2*exp(-b1*x)/(b2 + b3*x), x*exp(-b1*x)/(b2 + b3*x)**2, x**2*exp(-b1*x)/(b2 + b3*x)**2],
+    [x*exp(-b1*x)/(b2 + b3*x)**2, 2*exp(-b1*x)/(b2 + b3*x)**3, 2*x*exp(-b1*x)/(b2 + b3*x)**3],
+    [x**2*exp(-b1*x)/(b2 + b3*x)**2, 2*x*exp(-b1*x)/(b2 + b3*x)**3, 2*x**2*exp(-b1*x)/(b2 + b3*x)**3]]

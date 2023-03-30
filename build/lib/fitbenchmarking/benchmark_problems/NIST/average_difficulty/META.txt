@@ -1,0 +1,3 @@
+NIST_average_difficulty
+
+Files from a NIST dataset. These files should be middling in difficulty.

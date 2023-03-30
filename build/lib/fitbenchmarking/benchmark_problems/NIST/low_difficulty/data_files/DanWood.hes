@@ -1,0 +1,4 @@
+# Hessian
+
+H = [[0, x**b2*log(x)],
+    [x**b2*log(x), b1*x**b2*log(x)**2]]

@@ -1,0 +1,38 @@
+NIST/ITL StRD
+Dataset Name:  NA           (start_end_x.dat)
+
+File Format:   ASCII
+               Starting Values   (lines 29 to 29)
+               Certified Values  (lines 31 to 34)
+               Data              (lines 38 to 38)
+
+Procedure:     Nonlinear Least Squares Regression
+
+Description:   This test cannot be written in this data format.
+
+Reference:     Fitbenchmark test.
+
+
+Data:          1 Response Variable  (y = volume)
+               0 Observations
+
+Model:         Exponential Class
+               1 Parameters (p1)
+
+               y = p1 + e
+
+
+ 
+        Starting values                  Certified Values
+ 
+        Start 1       Parameter         Standard Deviation
+  p1 =  0.0           N/A               N/A
+
+Residual Sum of Squares:                    N/A
+Residual Standard Deviation:                N/A
+Degrees of Freedom:                                0
+Number of Observations:                            0
+
+
+Data:   y               x
+        0               0

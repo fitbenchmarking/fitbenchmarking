@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="../css/main_style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/custom_style.css" />
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="../js/tex-mml-chtml.js"></script>
+
+    <head>
+        <title>CUTEst results</title>
+    </head>
+    <body>
+        <div class="box">
+            <div class="container">
+                <div class="row">
+                    <h1 class="title">FitBenchmarking results: CUTEst</h1>
+                    <hr>
+                </div>
+                <div class="row">
+                    <p>FitBenchmarking is a tool for comparing different fitting software based on their accuracy and runtimes.
+                    </p>
+                </div>
+                <h4>Table formats</h4>
+                <p>Absolute and relative values are displayed in the table in the format <tt class="docutils literal">abs (rel)</tt></p>
+
+                <hr>
+                <div class="row">
+                    
+                        <h3>
+                        <a href="compare_table.html"><code>compare</code> table</a>
+                        </h3>
+                        <p>The combined results show the accuracy in the first line of the cell and
+the runtime on the second line of the cell.</blockquote>
+</p>
+                        <h3>
+                        <form>
+                            <button class="btn default" type="submit" formaction="compare_table.html">
+                            <i class="fa fa-table"></i>
+                            </button>
+                        </form>
+                        </h3>
+                        <hr>
+                    
+                        <h3>
+                        <a href="acc_table.html"><code>acc</code> table</a>
+                        </h3>
+                        <p>The accuracy results are calculated by evaluating the cost function with
+the fitted parameters.</blockquote>
+</p>
+                        <h3>
+                        <form>
+                            <button class="btn default" type="submit" formaction="acc_table.html">
+                            <i class="fa fa-table"></i>
+                            </button>
+                        </form>
+                        </h3>
+                        <hr>
+                    
+                        <h3>
+                        <a href="runtime_table.html"><code>runtime</code> table</a>
+                        </h3>
+                        <p>The timing results are calculated from an average (over num_runs) using the
+<a class="reference external" href="https://docs.python.org/2/library/timeit.html">timeit</a>  module
+in python. num_runs is set in <cite>options</cite>.</blockquote>
+</p>
+                        <h3>
+                        <form>
+                            <button class="btn default" type="submit" formaction="runtime_table.html">
+                            <i class="fa fa-table"></i>
+                            </button>
+                        </form>
+                        </h3>
+                        <hr>
+                    
+                        <h3>
+                        <a href="local_min_table.html"><code>local_min</code> table</a>
+                        </h3>
+                        <p><p>The local min results shows a <tt class="docutils literal">True</tt> or <tt class="docutils literal">False</tt> value together with
+<span class="math">\(\frac{|| J^T r||}{||r||}\)</span>. The <tt class="docutils literal">True</tt> or <tt class="docutils literal">False</tt> indicates
+whether the software finds a minimum with respect to the following
+criteria:</p>
+<ul class="simple">
+<li><span class="math">\(||r|| \leq\)</span> RES_TOL,</li>
+<li><span class="math">\(|| J^T r|| \leq\)</span> GRAD_TOL,</li>
+<li><span class="math">\(\frac{|| J^T r||}{||r||} \leq\)</span> GRAD_TOL,</li>
+</ul>
+<p>where <span class="math">\(J\)</span> and <span class="math">\(r\)</span> are the Jacobian and residual of
+<span class="math">\(f(x, p)\)</span>, respectively. The tolerances can be found in the results
+object.</p>
+</blockquote>
+</p>
+                        <h3>
+                        <form>
+                            <button class="btn default" type="submit" formaction="local_min_table.html">
+                            <i class="fa fa-table"></i>
+                            </button>
+                        </form>
+                        </h3>
+                        <hr>
+                    
+                </div>
+                <center>
+                <button class="btn default" onclick="history.go(-1)">
+                <i class="fa fa-arrow-left"></i>
+                </button>
+                </center>
+            </div>
+        </div>
+    </body>
+</html>

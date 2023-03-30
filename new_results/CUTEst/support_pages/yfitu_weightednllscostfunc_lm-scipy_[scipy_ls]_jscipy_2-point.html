@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="../../css/main_style.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/table_style.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom_style.css" />
+    <head>
+        <title>FitBenchmarking Fitting Report</title>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="content">
+                <div class="post-title">
+                    <h1>YFITU</h1>
+                    <hr>
+                </div>
+                <p>See ftp A nonlinear least-squares problem.  This problem arises in measuring angles and distances to a vibrating beam using a laser-Doppler velocimeter. </p>
+                <hr>
+                <section class="accordion">
+                    <input type="checkbox" name="collapse" id="start-accordion" checked="checked">
+                    <h2 class="handle">
+                        <label for="start-accordion">Problem Outline</label>
+                    </h2>
+                    <div class="content">
+                        <p><em>Functions</em>:</p>
+                        <table>
+                            <colgroup>
+                                <col width="45%" />
+                                <col width="55%" />
+                            </colgroup>
+                            <thead valign="bottom">
+                                <tr>
+                                    <th class="head">Form</th>
+                                    <th class="head">Parameters</th>
+                                </tr>
+                            </thead>
+                            <tbody valign="top">
+                                <tr>
+                                    <td>dist * tan( alpha * (1 - x/16) + beta*(x/16))</td>
+                                    <td>alpha=0.6, beta=-0.6, dist=20.0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            
+                                <h3>Re-run with make_plots set to yes in the ini file to generate plots.</h3>
+                            
+                        </div>
+                    </div>
+                </section>
+            <section class="accordion">
+                <input type="checkbox" name="collapse" id="fitting-results-accordion" checked="checked">
+                <h2 class="handle">
+                    <label for="fitting-results-accordion">Fitting Results</label>
+                </h2>
+                <div class="content">
+                    
+                        <p><b>This is the best fit of the minimizers used.</b></p>
+                    
+                    <p><em>Minimizer</em>: lm-scipy: j:scipy 2-point</p>
+                    <p><em>Accuracy</em>: 3.383e-14</p>
+                    <p><em>Runtime</em>: 0.001951 seconds</p>
+                    <p><em>Functions</em>:</p>
+                    <table>
+                        <colgroup>
+                            <col width="36%" />
+                            <col width="64%" />
+                        </colgroup>
+                        <thead valign="bottom">
+                            <tr><th class="head">Form</th>
+                            <th class="head">Parameters</th>
+                        </thead>
+                        <tbody valign="top">
+                            <tr>
+                                <td>dist * tan( alpha * (1 - x/16) + beta*(x/16))</td>
+                                <td>alpha=0.15000000341475705, beta=-0.25000000569126174, dist=139.9999970168865</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div align="center" class="figure align-center">
+                        
+                            <h3>Re-run with make_plots set to yes in the ini file to generate plots.</h3>
+                        
+                        <button class="btn default" onclick="history.go(-1)">
+                        <i class="fa fa-arrow-left"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </body>
+</html>

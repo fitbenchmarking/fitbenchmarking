@@ -1,0 +1,7 @@
+# Fitbenchmark Problem
+software = 'Mantid'
+name = 'start_end_x'
+description = 'This dataset has no real world application. It is used to test the parsing.'
+input_file = 'mantid_start_end_x.dat'
+function ='name=UserFunction,Formula=x+100*a1+10*a2,a1=0,a2=1'
+fit_ranges = {'x': [1.0, 3.0]}

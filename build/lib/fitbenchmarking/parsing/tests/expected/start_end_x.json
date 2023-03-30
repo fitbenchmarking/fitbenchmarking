@@ -1,0 +1,10 @@
+{"name": "start_end_x",
+ "start_x": 1.0,
+ "end_x": 3.0,
+ "data_x": [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5],
+ "data_y": [33.5, 1.0, 0.1, -2.0, 0, -1.0, 6.2],
+ "data_e": null,
+ "function": "Single_function_2_params",
+ "starting_values": [{"p1": 0.0, "p2": 1.0}],
+ "value_ranges": null
+}

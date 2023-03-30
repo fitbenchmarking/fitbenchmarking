@@ -1,0 +1,10 @@
+packaging>=20.0
+setuptools
+typing-extensions
+
+[test]
+pytest>=6.2
+virtualenv>20
+
+[toml]
+setuptools>=42

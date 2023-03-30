@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" type="text/css" href="../../css/main_style.css" />
+<link rel="stylesheet" type="text/css" href="../../css/table_style.css" />
+<link rel="stylesheet" type="text/css" href="../../css/custom_style.css" />
+
+<head>
+    <title>FitBenchmarking problem summary page</title>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="content">
+            <div class="post-title">
+                <h1>PALMER8C</h1>
+                <hr>
+            </div>
+            <p>See ftp A linear least squares problem arising from chemical kinetics. Model H-N=C=Se TZVP + MP2 </p>
+            <hr>
+            <section class="accordion">
+                <input type="checkbox" name="collapse" id="start-accordion" checked="checked">
+                <h2 class="handle">
+                    <label for="start-accordion">Problem Outline</label>
+                </h2>
+                <div class="content">
+                    <p><em>Functions</em>:</p>
+                    <table>
+                        <colgroup>
+                            <col width="45%" />
+                            <col width="55%" />
+                        </colgroup>
+                        <thead valign="bottom">
+                            <tr>
+                                <th class="head">Form</th>
+                                <th class="head">Parameters</th>
+                            </tr>
+                        </thead>
+                        <tbody valign="top">
+                            <tr>
+                                <td>A0 + A2 * x^2 + A4 * x^4 + A6 ^ x^6 + A8 * x^8 + A10 * x^10 + A12 * x^12 + A14 * x^14</td>
+                                <td>A0=1.0, A2=1.0, A4=1.0, A6=1.0, A8=1.0, A10=1.0, A12=1.0, A14=1.0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        
+                            <h3>Re-run with make_plots set to yes in the ini file to generate plots.</h3>
+                        
+                    </div>
+                </div>
+            </section>
+            <section class="accordion">
+                <input type="checkbox" name="collapse" id="comparison-accordion" checked="checked">
+                <h2 class="handle">
+                    <label for="comparison-accordion">Comparison</label>
+                </h2>
+                <div class="content">
+                    <p>
+                        
+                        This plot shows a comparison of the runs. The minimizer
+                        which produced closest fit is in bold, with the other
+                        minimizers shown as thinner lines for context.
+                        
+                        <br>Please note that this plot is intended for use as an
+                        indication of the variety of the fits that were obtained
+                        for specific details, please consult the individual support
+                        pages.
+                    </p>
+                    <div align="center" class="figure align-center">
+                        
+                            <img alt="figures/" src="figures/" />
+                        
+                    </div>
+                </div>
+            </section>
+
+            
+                <section class="accordion">
+                    <input type="checkbox" name="collapse" id="best-accordion">
+                    <h2 class="handle">
+                        <label for="best-accordion">WeightedNLLSCostFunc: lm-scipy [scipy_ls]: j:scipy 2-point</label>
+                    </h2>
+                    <div class="content">
+                        <p>This is the best fit of the minimizers used.</p>
+
+                        <p><em>Minimizer</em>: lm-scipy [scipy_ls]: j:scipy 2-point</p>
+                        <p><em>Functions</em>:</p>
+                        <table>
+                            <colgroup>
+                                <col width="36%" />
+                                <col width="64%" />
+                            </colgroup>
+                            <thead valign="bottom">
+                                <tr>
+                                    <th class="head">Form</th>
+                                    <th class="head">Parameters</th>
+                                </tr>
+                            </thead>
+                            <tbody valign="top">
+                                <tr>
+                                    <td>A0 + A2 * x^2 + A4 * x^4 + A6 ^ x^6 + A8 * x^8 + A10 * x^10 + A12 * x^12 + A14 * x^14</td>
+                                    <td>A0=1.7118694473714815, A2=-18.553460264635053, A4=31.46234405540835, A6=1.0471683528617561, A8=-0.3166747705555056, A10=-4.042900875271194, A12=2.3310901530480903, A14=-0.35158346683729674</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div align="center" class="figure align-center">
+                            
+                                <h3>Re-run with make_plots set to yes in the ini file to generate plots.</h3>
+                            
+                        </div>
+                    </div>
+                </section>
+            
+            <div align="center" class="figure align-center">
+                <button class="btn default" onclick="history.go(-1)">
+                    <i class="fa fa-arrow-left"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
