@@ -7,7 +7,10 @@ import os
 from unittest import TestCase, mock
 
 from fitbenchmarking import test_files
-from fitbenchmarking.results_processing.base_table import Table
+from fitbenchmarking.results_processing.base_table import (Table,
+                                                           calculate_luminance,
+                                                           calculate_contrast,
+                                                           background_to_text)
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
