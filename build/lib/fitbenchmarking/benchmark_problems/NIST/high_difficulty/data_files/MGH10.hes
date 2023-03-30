@@ -1,5 +1,0 @@
-# Hessian
-
-H = [[0, exp(b2/(b3 + x))/(b3 + x), -b2*exp(b2/(b3 + x))/(b3 + x)**2],
-    [exp(b2/(b3 + x))/(b3 + x), b1*exp(b2/(b3 + x))/(b3 + x)**2, -b1*b2*exp(b2/(b3 + x))/(b3 + x)**3 - b1*exp(b2/(b3 + x))/(b3 + x)**2],
-    [-b2*exp(b2/(b3 + x))/(b3 + x)**2, -b1*b2*exp(b2/(b3 + x))/(b3 + x)**3 - b1*exp(b2/(b3 + x))/(b3 + x)**2, b1*b2**2*exp(b2/(b3 + x))/(b3 + x)**4 + 2*b1*b2*exp(b2/(b3 + x))/(b3 + x)**3]]

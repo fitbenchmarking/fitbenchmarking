@@ -1,3 +1,0 @@
-default_parsers_set
-
-This dataset contains the default Fitbenchmarking data sets. It is used during testing.

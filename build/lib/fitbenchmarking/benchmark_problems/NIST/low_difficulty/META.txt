@@ -1,3 +1,0 @@
-NIST_low_difficulty
-
-Files from a NIST dataset. These files should be less difficult than average.
