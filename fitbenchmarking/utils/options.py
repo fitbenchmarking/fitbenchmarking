@@ -240,7 +240,9 @@ class Options:
          'comparison_mode': 'both',
          'results_browser': True,
          'table_type': ['acc', 'runtime', 'compare', 'local_min'],
-         'checkpoint_filename': 'checkpoint.json'}
+         'run_name': '',
+         'checkpoint_filename': 'checkpoint.json',
+         }
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
          'append': False,
@@ -390,6 +392,10 @@ class Options:
         self.checkpoint_filename = self.read_value(
             output.getstr, 'checkpoint_filename', additional_options)
 
+        self.run_name = self.read_value(output.getstr,
+                                        'run_name',
+                                        additional_options)
+
         logging = config['LOGGING']
 
         self.log_append = self.read_value(logging.getboolean, 'append',
@@ -513,7 +519,8 @@ class Options:
                             'make_plots': self.make_plots,
                             'results_browser': self.results_browser,
                             'pbar': self.pbar,
-                            'table_type': list_to_string(self.table_type)}
+                            'table_type': list_to_string(self.table_type),
+                            'run_name': self.run_name}
 
         config['LOGGING'] = {'file_name': self.log_file,
                              'level': self.log_level,
