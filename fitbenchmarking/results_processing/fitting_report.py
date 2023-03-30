@@ -67,6 +67,8 @@ def create_prob_group(result, support_pages_dir, options):
         fig_fit = fig_start = 'Re-run with make_plots set to yes in the ' \
             'ini file to generate plots.'
 
+    run_name = f"{options.run_name}: " if options.run_name else ''
+
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, "templates")
     env = Environment(loader=FileSystemLoader(template_dir))
@@ -79,6 +81,7 @@ def create_prob_group(result, support_pages_dir, options):
             table_style=css['table'],
             custom_style=css['custom'],
             title=result.name,
+            run_name=run_name,
             description=result.problem_desc,
             equation=result.equation,
             initial_guess=result.ini_function_params,

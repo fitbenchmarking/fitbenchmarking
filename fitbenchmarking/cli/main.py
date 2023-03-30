@@ -147,6 +147,12 @@ of the Fitbenchmarking docs. '''
                         help="Use this option if you do not want to "
                         "see the progress bar during runtime.")
 
+    parser.add_argument('--run_name',
+                        metavar='RUN_NAME',
+                        default='',
+                        help="Use this option if you would like to "
+                        "prefix the html title of results pages.")
+
     parser.add_argument('-m', '--comparison_mode',
                         metavar='COMPARISON_MODE',
                         default='',
@@ -348,7 +354,8 @@ def main():
         'table_type': args.table_type,
         'file_name': args.logging_file_name,
         'level': args.level,
-        'external_output': args.external_output
+        'external_output': args.external_output,
+        'run_name': args.run_name
     }
 
     # Check if make_plots in options.py should be overridden, and if so,
