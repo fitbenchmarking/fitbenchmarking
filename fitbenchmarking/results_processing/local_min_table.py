@@ -8,7 +8,9 @@ import numpy as np
 
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
-from fitbenchmarking.results_processing.base_table import Table
+from fitbenchmarking.results_processing.base_table import (Table,
+                                                           CONTRAST_RATIO_AAA,
+                                                           background_to_text)
 from fitbenchmarking.utils.exceptions import IncompatibleTableError
 
 GRAD_TOL = 1e-1
@@ -136,12 +138,17 @@ class LocalMinTable(Table):
         :param log_ulim: **Unused** log10 of worst shading cutoff value
         :type log_ulim: float
 
-        :return: colours as hex strings for each input value
-        :rtype: list[str]
+        :return: Colours as hex strings for each input value and
+                 Foreground colours for the text as html rgb strings
+                 e.g. 'rgb(255, 255, 255)'
+        :rtype: tuple[list[str], list[str]]
         """
         rgba = cmap([cmap_range[0] if local_min else cmap_range[1]
                      for local_min in vals])
-        return [clrs.rgb2hex(colour) for colour in rgba]
+        hex_strs = [clrs.rgb2hex(colour) for colour in rgba]
+        text_str = [background_to_text(colour[:3], CONTRAST_RATIO_AAA)
+                    for colour in rgba]
+        return hex_strs, text_str
 
     def display_str(self, value):
         """
