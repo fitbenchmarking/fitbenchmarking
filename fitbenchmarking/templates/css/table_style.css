@@ -38,7 +38,7 @@ th, td {
 }
 
 th a, td a {
-  display: block;
+  display: table-row;
   color: rgb(30, 30, 30);
   margin: -10em;
   padding: 10em;
@@ -52,16 +52,32 @@ div.table{
   padding: 0px;
 }
 
-td a:link {
+td a.light:link {
   color:#fff
  }
-td a:visited {
+td a.light:visited {
   color:#fff
  }
-td a:hover {
-  color:rgba(255, 255, 255, 0.5)
+td a.light:hover {
+  color:rgb(255, 255, 255);
+  font-weight: bold;
  }
-td a:active {
+td a.light:active {
   transition:color .3s;
-  color:rgba(255, 255, 255, 0.5)
+  color:rgba(255, 255, 255, 0.8)
+ }
+
+td a.dark:link {
+  color:#000
+ }
+td a.dark:visited {
+  color:#000
+ }
+td a.dark:hover {
+  color:rgb(0, 0, 0);
+  font-weight: bold;
+ }
+td a.dark:active {
+  transition:color .3s;
+  color:rgba(0, 0, 0, 0.8)
  }
