@@ -207,3 +207,17 @@ class LocalMinTable(Table):
         if result.r_x is None:
             return ''
         return super().get_error_str(result, *args, **kwargs)
+
+    def get_description(self):
+        """
+        Generates table description from class docstrings and converts them
+        into html
+
+        :return: Dictionary containing table descriptions
+        :rtype: dict
+        """
+        html = super().get_description()
+        html['local_min_mode'] = '"N/A" in the table indicates that the ' \
+            'cost function does not provide residuals.'
+
+        return html

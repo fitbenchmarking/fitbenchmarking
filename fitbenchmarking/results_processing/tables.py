@@ -61,7 +61,7 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
     """
 
     table_names = {}
-    description = {}
+    descriptions = {}
     for suffix in SORTED_TABLE_NAMES:
         if suffix in options.table_type:
 
@@ -84,10 +84,13 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
 
             file_path = table.file_path
 
-            description = table.get_description(description)
+            description = table.get_description()
+            descriptions.update(description)
 
-            table_format = None if suffix == 'local_min' \
-                else description[options.comparison_mode]
+            if suffix == 'local_min':
+                table_format = description['local_min_mode']
+            else:
+                table_format = description[options.comparison_mode]
 
             root = os.path.dirname(getfile(fitbenchmarking))
             template_dir = os.path.join(root, 'templates')
@@ -129,7 +132,7 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                                     algorithm_type=options.algorithm_type,
                                     report_failed_min=report_failed_min))
 
-    return table_names, description
+    return table_names, descriptions
 
 
 def load_table(table):
