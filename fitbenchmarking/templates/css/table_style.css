@@ -38,6 +38,7 @@ th, td {
 }
 
 th a, td a {
+  display: block;
   color: rgb(30, 30, 30);
   white-space: nowrap;
 }
