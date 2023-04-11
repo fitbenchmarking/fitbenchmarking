@@ -419,18 +419,17 @@ class Table:
         table = self.create_pandas_data_frame(html=False)
         return table.to_csv()
 
-    def get_description(self, html_description):
+    def get_description(self):
         """
         Generates table description from class docstrings and converts them
         into html
-
-        :param html_description: Dictionary containing table descriptions
-        :type html_description: dict
 
         :return: Dictionary containing table descriptions
         :rtype: dict
         """
         FORMAT_DESCRIPTION[self.name] = self.__doc__
+
+        html = {}
         for name in [self.name, self.options.comparison_mode]:
             descrip = FORMAT_DESCRIPTION[name]
             descrip = descrip.replace(':ref:', '')
@@ -442,10 +441,8 @@ class Table:
                 descrip,
                 writer_name='html',
                 settings_overrides=docsettings)
-            html_description[name] = description_page['body']
-            html_description[name] = html_description[name].replace(
-                '<blockquote>\n', '')
-        return html_description
+            html[name] = description_page['body'].replace('<blockquote>\n', '')
+        return html
 
     @property
     def table_title(self):
