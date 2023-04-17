@@ -456,13 +456,21 @@ def open_browser(output_file: str, options) -> None:
     :param output_file: The absolute path to the results index file.
     :type output_file: str
     """
-    # Uses the relative path so that the browser can open on Mac and WSL
-    relative_path = os.path.relpath(output_file)
-    # Constructs a url that can be pasted into a browser
-    is_mac = platform.system() == "Darwin"
-    url = "file://" + output_file if is_mac else output_file
+    use_url = False
+    # On Mac, need prefix for webbrowser
+    if platform.system() == 'Darwin':
+        url = "file://" + output_file
+        use_url = True
+    else:
+        url = output_file
+    # On windows can have drive clashes so need to use absolute path
+    if platform.system() == 'Windows':
+        use_url = True
+
     if options.results_browser:
-        if webbrowser.open_new(url if is_mac else relative_path):
+        # Uses the relative path so that the browser can open on WSL
+        to_open = url if use_url else os.path.relpath(output_file)
+        if webbrowser.open_new(to_open):
             LOGGER.info("\nINFO:\nThe FitBenchmarking results have been opened"
                         " in your browser from this url:\n\n   %s", url)
         else:
@@ -471,4 +479,5 @@ def open_browser(output_file: str, options) -> None:
                            "into your browser:\n\n   %s", url)
     else:
         LOGGER.info("\nINFO:\nYou have chosen not to open FitBenchmarking "
-                    "results in your browser\n\n   %s",)
+                    "results in your browser. You can use this link to see the"
+                    "results: \n\n   %s", url)

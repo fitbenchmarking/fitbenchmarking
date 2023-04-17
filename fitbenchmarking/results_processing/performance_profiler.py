@@ -195,10 +195,10 @@ def create_plot(ax, step_values: 'list[np.ndarray]', solvers: 'list[str]'):
     colors = ["C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"]
 
     huge = 1.0e20  # set a large value as a proxy for infinity
-    plot_points = np.linspace(0.0, 1.0, step_values[0].size)
-    plot_points = np.append(plot_points, 1.0)
 
     for i, (solver, solver_values) in enumerate(zip(solvers, step_values)):
+        plot_points = np.linspace(0.0, 1.0, solver_values.size)
+        plot_points = np.append(plot_points, 1.0)
         inf_indices = np.where(solver_values > huge)
         solver_values[inf_indices] = huge
         if inf_indices[0].size > 0:

@@ -95,7 +95,7 @@ def create_prob_group(result, support_pages_dir, options):
             fitted_plot_available=fit_success,
             fitted_plot=fig_fit))
 
-    result.fitting_report_link = os.path.relpath(file_path)
+    result.fitting_report_link = os.path.abspath(file_path)
 
 
 def get_figure_paths(result):
