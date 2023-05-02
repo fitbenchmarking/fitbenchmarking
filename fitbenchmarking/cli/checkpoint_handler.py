@@ -109,6 +109,22 @@ def generate_report(options_file='', additional_options=None, debug=False):
     index_page = create_index_page(options, list(results), all_dirs)
     open_browser(index_page, options)
 
+def combine_data_sets(debug: 'bool'):
+    """
+    Combine multiple checkpoint files into one following these rules:
+     1) The output will be the same as combining them one at a time in
+        sequence. i.e. A + B + C = (A + B) + C
+        The rules from here on will only reference A and B as the relation is
+        recursive.
+     2) Problems
+         2a) If problems in A and B agree on name, ini_params, ini_y, x, y,
+             and e then these problems are identical.
+         2b) If A and B share identical problems, the details not specified in
+             2a are taken from A.
+    Args:
+        debug (bool): _description_
+    """
+
 
 def main():
     """
