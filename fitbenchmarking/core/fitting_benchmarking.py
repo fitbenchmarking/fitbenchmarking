@@ -575,10 +575,15 @@ def perform_fit(controller, options, grabbed_output):
 
         # Avoid deleting results (max runtime exception) if gotten this far
         controller.timer.reset()
-        chi_sq = controller.eval_chisq(params=controller.final_params,
-                                       x=controller.data_x,
-                                       y=controller.data_y,
-                                       e=controller.data_e)
+        if controller.params_pdfs is None:
+            chi_sq = controller.eval_chisq(params=controller.final_params,
+                                        x=controller.data_x,
+                                        y=controller.data_y,
+                                        e=controller.data_e)
+        else:
+            chi_sq = controller.eval_confidence()
+
+        LOGGER.info(chi_sq)
 
         chi_sq_check = any(np.isnan(n) for n in chi_sq) \
             if controller.problem.multifit else np.isnan(chi_sq)

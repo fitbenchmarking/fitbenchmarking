@@ -144,6 +144,9 @@ class Controller:
         # The timer used to check if the 'max_runtime' is exceeded.
         self.timer = cost_func.problem.timer
 
+        # save parameter estimates from MCMC minimizers
+        self.params_pdfs = None
+
     @property
     def flag(self):
         """
@@ -232,6 +235,31 @@ class Controller:
         """
         out = self.cost_func.eval_cost(params=params, x=x, y=y, e=e)
         return out
+    
+    def eval_confidence(self):
+        """
+        Computes overall confidence in MCMC fit
+        """
+        # run scipy fit to get 'true' param values
+        from scipy.optimize import minimize
+        import matplotlib.pyplot as plt
+        res = minimize(self.cost_func.eval_cost, self.initial_params, options={'maxiter':500})
+
+        # calculate overall confidence within 10% of expected param value
+        par_names = self.problem.param_names
+        par_conf = []
+        for i, name in enumerate(par_names):
+            tol = abs(0.1*res.x[i])
+            hist, bin_edges = numpy.histogram(self.params_pdfs[name], bins=100, density=True)
+            start_bin = numpy.argmin(abs(bin_edges-(res.x[i]-tol)))
+            end_bin = numpy.argmin(abs(bin_edges-(res.x[i]+tol)))
+            par_conf.append(sum(hist[start_bin:end_bin])/sum(hist))
+
+            plt.figure()
+            plt.hist(self.params_pdfs[name], density=True)
+            plt.savefig('hist' + name + '.png')
+    
+        return numpy.prod(par_conf)
 
     def _validate_jacobian(self) -> None:
         """

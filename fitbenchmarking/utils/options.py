@@ -104,7 +104,7 @@ class Options:
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general', 'simplex',
                             'trust_region', 'levenberg-marquardt',
                             'gauss_newton', 'bfgs', 'conjugate_gradient',
-                            'steepest_descent', 'global_optimization'],
+                            'steepest_descent', 'global_optimization', 'MCMC'],
          'software': ['bumps', 'ceres', 'dfo', 'gofit', 'gradient_free', 'gsl',
                       'horace', 'levmar', 'lmfit', 'mantid', 'matlab',
                       'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',

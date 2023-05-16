@@ -2,11 +2,9 @@
 Implements a controller for the paramonte.
 """
 
+import shutil
 import paramonte as pm
-import numpy as np
-from scipy.stats import norm
 from fitbenchmarking.controllers.base_controller import Controller
-
 
 class ParamonteController(Controller):
     """
@@ -17,7 +15,7 @@ class ParamonteController(Controller):
         'all': ['paraDram_sampler'],
         'ls': [],
         'deriv_free': [],
-        'general': ['paraDram_sampler'],
+        'general': [],
         'simplex': [],
         'trust_region': [],
         'levenberg-marquardt': [],
@@ -25,7 +23,8 @@ class ParamonteController(Controller):
         'bfgs': [],
         'conjugate_gradient': [],
         'steepest_descent': [],
-        'global_optimization': []}
+        'global_optimization': [],
+        'MCMC': ['paraDram_sampler']}
 
     def __init__(self, cost_func):
         """
@@ -79,14 +78,12 @@ class ParamonteController(Controller):
         self.pmpd.spec.randomSeed = 12345
         # set the output names of the parameters.
         self.pmpd.spec.variableNameList = par_names
-        # set the number of uniquely sampled points from the likelihood 
+        # set the number of uniquely sampled points from the likelihood
         # function.
-        self.pmpd.spec.chainSize = 20000
-        self.pmpd.spec.adaptiveUpdateCount = 2*len(par_names)
+        self.pmpd.spec.chainSize = 100000
         self.pmpd.spec.proposalModel = 'uniform'
         self.pmpd.spec.variableNameList = list(param_dict.keys())
         self.pmpd.spec.startPointVec = list(param_dict.values())
-        self.pmpd.mpiEnabled = True
 
         if self.value_ranges is not None:
             value_ranges_lb, value_ranges_ub = zip(*self.value_ranges)
@@ -106,11 +103,14 @@ class ParamonteController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-
         sample = self.pmpd.readSample("./out/temp", renabled=True)[0]
 
         param = sample.df.mean()[1:]
 
+        self.params_pdfs = sample.df.to_dict(orient='list')
+
         self.flag = 0
 
         self.final_params = list(param)
+
+        shutil.rmtree("./out/")

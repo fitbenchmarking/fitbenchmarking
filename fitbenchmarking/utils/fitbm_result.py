@@ -180,6 +180,9 @@ class FittingResult:
             if self.min_chi_sq in [np.nan, np.inf]:
                 self._norm_acc = np.inf
             else:
+                with open('accuracy.txt','a') as f:
+                    print(self.chi_sq, file=f)
+                    print(self.min_chi_sq, file=f)
                 self._norm_acc = self.chi_sq / self.min_chi_sq
         return self._norm_acc
 
