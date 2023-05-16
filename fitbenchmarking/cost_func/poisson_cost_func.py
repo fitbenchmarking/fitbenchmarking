@@ -5,7 +5,8 @@ https://docs.mantidproject.org/nightly/fitting/fitcostfunctions/Poisson.html
 import numpy as np
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
-from fitbenchmarking.utils.exceptions import CostFuncError
+from fitbenchmarking.utils.exceptions import (CostFuncError,
+                                              IncompatibleCostFunctionError)
 
 
 class PoissonCostFunc(CostFunc):
