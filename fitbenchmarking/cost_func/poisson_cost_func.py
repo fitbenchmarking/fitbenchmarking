@@ -135,6 +135,20 @@ class PoissonCostFunc(CostFunc):
         H, _ = self.hes_res(params, **kwargs)
         return np.sum(H, 2)
 
+    def validate_problem(self):
+        """
+        Validate the problem for the Poisson Cost Function.
+        Poisson involves a log so will fail on negative inputs.
+
+        Raises:
+            IncompatibleCostFunctionError: When the problem has negative
+                                           values.
+        """
+        if (self.problem.data_y < 0).any():
+            raise IncompatibleCostFunctionError(
+                "Problem has a negative y value.")
+
+
 
 def _safe_a_log_b(a, b):
     """

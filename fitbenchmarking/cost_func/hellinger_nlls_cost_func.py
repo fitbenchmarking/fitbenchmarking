@@ -4,7 +4,7 @@ Implements the root non-linear least squares cost function
 from numpy import array, matmul, sqrt, ravel
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
-from fitbenchmarking.utils.exceptions import CostFuncError
+from fitbenchmarking.utils.exceptions import CostFuncError, IncompatibleCostFunctionError
 
 
 class HellingerNLLSCostFunc(BaseNLLSCostFunc):
@@ -87,3 +87,16 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
             hes[:, :, i] = matmul(jac_i.T, jac_i) / (4 * f[i] ** (3/2)) \
                 - hes[:, :, i] / (2 * f[i] ** (1/2))
         return hes, self.jac_res(params, **kwargs)
+
+    def validate_problem(self):
+        """
+        Validate the problem for the Hellinger Cost Function.
+        Hellinger involves a square root so will fail on negative inputs.
+
+        Raises:
+            IncompatibleCostFunctionError: When the problem has negative
+                                           values.
+        """
+        if (self.problem.data_y < 0).any():
+            raise IncompatibleCostFunctionError(
+                "Problem has a negative y value.")
