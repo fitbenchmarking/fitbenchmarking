@@ -17,6 +17,7 @@ FORMAT_DESCRIPTION = \
      'rel': 'Relative values are displayed in the table.',
      'both': 'Absolute and relative values are displayed in '
              'the table in the format ``abs (rel)``'}
+CONTRAST_RATIO_AAA = 7.0
 
 
 class Table:
@@ -175,8 +176,9 @@ class Table:
         """
         str_dict = {}
         for k, results in self.sorted_results.items():
-            str_dict[k] = [self.get_str_result(r, html)
-                           for r in results]
+            _, text_arrs = self.get_colours_for_row(results)
+            str_dict[k] = [self.get_str_result(r, t, html)
+                           for r, t in zip(results, text_arrs)]
         return str_dict
 
     def get_colour_df(self, like_df=None):
@@ -194,7 +196,7 @@ class Table:
         """
         col_dict = {}
         for k, results in self.sorted_results.items():
-            col_dict[k] = self.get_colours_for_row(results)
+            col_dict[k], _ = self.get_colours_for_row(results)
 
         table = pd.DataFrame.from_dict(col_dict, orient='index')
 
@@ -207,7 +209,7 @@ class Table:
             table.index = like_df.index
         return table
 
-    def get_str_result(self, result, html=False):
+    def get_str_result(self, result, text_col=None, html=False):
         """
         Given a single result, generate the string to display in this table.
         The html flag can be used to switch between a plain text and html
@@ -226,6 +228,9 @@ class Table:
 
         :param result: The result to generate a string for
         :type result: fitbenchmarking.utils.ftibm_result.FittingResult
+        :param text_col: Foreground colours for the text as html rgb strings
+                         e.g. 'rgb(255, 255, 255)'
+        :type text_col: list[str]
         :param html: Flag to control whether to generate a html string or plain
                      text. Defaults to False.
         :type html: bool
@@ -238,10 +243,32 @@ class Table:
             val_str = self.display_str(val)
             val_str += self.get_error_str(result,
                                           error_template="<sup>{}</sup>")
-            val_str = f'<a href="{self.get_link_str(result)}">{val_str}</a>'
+            val_str = self.get_hyperlink(result, val_str, text_col)
         else:
             val_str = self.display_str(self.get_value(result))
             val_str += self.get_error_str(result, error_template='[{}]')
+        return val_str
+
+    def get_hyperlink(self, result, val_str, text_col):
+        """
+        Generates the hyperlink for a given result
+
+        :param result: The result to generate a string for
+        :type result: fitbenchmarking.utils.ftibm_result.FittingResult
+        :param val_str: Preprocessed val_str to display
+        :type val_str: str
+        :param text_col: Foreground colour for the text as html rgb strings
+                         e.g. 'rgb(255, 255, 255)'
+        :type text_col: str
+
+        :return: The hyperlink representation.
+        :rtype: str
+        """
+        color_to_class = {'rgb(0,0,0)': 'class="dark"',
+                          'rgb(255,255,255)': 'class="light"'}
+        val_str = (f'<a {color_to_class[text_col]} '
+                   f'href="{self.get_link_str(result)}">'
+                   f'{val_str}</a>')
         return val_str
 
     def get_colours_for_row(self, results):
@@ -255,8 +282,10 @@ class Table:
         :param result: Results to get the colours for.
         :type result: list[fitbenchmarking.utils.fitbm_result.FittingResult]
 
-        :return: The colour to use for each cell in the list
-        :rtype: list[str]
+        :return: The colour to use for each cell in the list and
+                 Foreground colours for the text as html rgb strings
+                 e.g. 'rgb(255, 255, 255)'
+        :rtype: tuple[list[str], list[str]]
         """
         values = [self.get_value(r)[0] for r in results]
 
@@ -268,14 +297,15 @@ class Table:
 
         col_strs = ["background-colour: #ffffff" for _ in results]
 
-        colours = self.vals_to_colour(values, cmap, cmap_range, log_ulim)
+        colours, text_str = self.vals_to_colour(values, cmap,
+                                                cmap_range, log_ulim)
         for i, c in enumerate(colours):
             try:
                 col_strs[i] = self.colour_template.format(c)
             except IndexError:
                 col_strs[i] = self.colour_template.format(*c)
 
-        return col_strs
+        return col_strs, text_str
 
     def create_pandas_data_frame(self, html=False):
         """
@@ -389,18 +419,17 @@ class Table:
         table = self.create_pandas_data_frame(html=False)
         return table.to_csv()
 
-    def get_description(self, html_description):
+    def get_description(self):
         """
         Generates table description from class docstrings and converts them
         into html
-
-        :param html_description: Dictionary containing table descriptions
-        :type html_description: dict
 
         :return: Dictionary containing table descriptions
         :rtype: dict
         """
         FORMAT_DESCRIPTION[self.name] = self.__doc__
+
+        html = {}
         for name in [self.name, self.options.comparison_mode]:
             descrip = FORMAT_DESCRIPTION[name]
             descrip = descrip.replace(':ref:', '')
@@ -412,10 +441,8 @@ class Table:
                 descrip,
                 writer_name='html',
                 settings_overrides=docsettings)
-            html_description[name] = description_page['body']
-            html_description[name] = html_description[name].replace(
-                '<blockquote>\n', '')
-        return html_description
+            html[name] = description_page['body'].replace('<blockquote>\n', '')
+        return html
 
     @property
     def table_title(self):
@@ -477,8 +504,10 @@ class Table:
         :param log_ulim: log10 of worst shading cutoff value
         :type log_ulim: float
 
-        :return: colours as hex strings for each input value
-        :rtype: list[str]
+        :return: Colours as hex strings for each input value and
+                 Foreground colours for the text as html rgb strings
+                 e.g. 'rgb(255, 255, 255)'
+        :rtype: tuple[list[str], list[str]]
         """
         log_vals = np.log10(vals)
         log_llim = min(log_vals)
@@ -491,8 +520,10 @@ class Table:
             norm_vals*(cmap_range[1] - cmap_range[0])
         rgba = cmap(norm_vals)
         hex_strs = [mpl.colors.rgb2hex(colour) for colour in rgba]
+        text_str = [background_to_text(colour[:3], CONTRAST_RATIO_AAA)
+                    for colour in rgba]
 
-        return hex_strs
+        return hex_strs, text_str
 
     def save_colourbar(self, fig_dir, n_divs=100, sz_in=(3, 0.8)) -> str:
         """
@@ -608,3 +639,68 @@ class Table:
                '    </ul>\n' \
                '</div>'
         return html
+
+
+def background_to_text(background_col, contrast_threshold):
+    """
+    Determines the foreground color for the table elements. The optimum
+    color is selected from two options - white and black. White is selected
+    if its contrast ratio is greater than the contrast threshold. However,
+    If the contrast ratio of white text does not meet the requirement, then
+    the text color which provides the greatest contrast ratio is selected.
+
+    :param background_col: a list of r,g,b values [0, 255]
+    :type vals: list[int]
+    :param contrast_threshold: the threshold value [0, 21]
+    :type contrast_threshold: float
+
+    :return: Foreground colour for the text as html rgb strings
+             e.g. 'rgb(255, 255, 255)'
+    :rtype: str
+    """
+    w = calculate_contrast(background_col, [1, 1, 1])  # white (default)
+    b = calculate_contrast(background_col, [0, 0, 0])  # black
+    contrast = {'rgb(255,255,255)': w, 'rgb(0,0,0)': b}
+    if w <= contrast_threshold:
+        text_str = max(contrast, key=contrast.get)
+    else:
+        text_str = 'rgb(255,255,255)'
+    return text_str
+
+
+def calculate_contrast(background, foreground):
+    """
+    Calculates the contrast ratio between the background and foreground
+    colors. Visit link for more info:
+    https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html#dfn-contrast-ratio
+
+    :param background: list of r, g, b values representing background [0, 255]
+    :type vals: list[int]
+    :param foreground: list of r, g, b values representing foreground [0, 255]
+    :type foreground: list[int]
+
+    :return: the contrast ratio [0, 21]
+    :rtype: float
+    """
+    back_lum = calculate_luminance(background)
+    fore_lum = calculate_luminance(foreground)
+    brightest = max(back_lum, fore_lum)
+    darkest = min(back_lum, fore_lum)
+    return (brightest+0.05)/(darkest+0.05)
+
+
+def calculate_luminance(rgb):
+    """
+    Calculates the relative luminance. Visit link for more info:
+    https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html#dfn-relative-luminance
+
+    :param rgb: a list containing r, g, b values [0, 255]
+    :type vals: list[int]
+
+    :return: the luminance [0, 1]
+    :rtype: float
+    """
+    a = list(map(lambda color: color/12.92
+             if color <= 0.03928
+             else (((color+0.055)/1.055)**2.4), rgb))
+    return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722

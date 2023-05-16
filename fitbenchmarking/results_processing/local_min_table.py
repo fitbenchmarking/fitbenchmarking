@@ -8,7 +8,9 @@ import numpy as np
 
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
-from fitbenchmarking.results_processing.base_table import Table
+from fitbenchmarking.results_processing.base_table import (Table,
+                                                           CONTRAST_RATIO_AAA,
+                                                           background_to_text)
 from fitbenchmarking.utils.exceptions import IncompatibleTableError
 
 GRAD_TOL = 1e-1
@@ -84,8 +86,8 @@ class LocalMinTable(Table):
         """
         Gets the main value to be reported in the tables for a given result
 
-        Note that the first value (relative chi_sq) will be used in the default
-        colour handling.
+        Note that the first value (relative accuracy) will be used in the
+        default colour handling.
 
         :param result: The result to generate the values for.
         :type result: FittingResult
@@ -94,12 +96,16 @@ class LocalMinTable(Table):
                  specified above) and :math:`\\frac{|| J^T r||}{||r||}`
         :rtype: bool, float
         """
-        if result.params is None:
-            return False, np.inf
 
         res = result.r_x
 
         jac = result.jac_x
+
+        if res is None:
+            return None, None
+
+        if result.params is None:
+            return False, np.inf
 
         min_test = np.matmul(res, jac)
         norm_r = np.linalg.norm(res)
@@ -136,12 +142,17 @@ class LocalMinTable(Table):
         :param log_ulim: **Unused** log10 of worst shading cutoff value
         :type log_ulim: float
 
-        :return: colours as hex strings for each input value
-        :rtype: list[str]
+        :return: Colours as hex strings for each input value and
+                 Foreground colours for the text as html rgb strings
+                 e.g. 'rgb(255, 255, 255)'
+        :rtype: tuple[list[str], list[str]]
         """
         rgba = cmap([cmap_range[0] if local_min else cmap_range[1]
                      for local_min in vals])
-        return [clrs.rgb2hex(colour) for colour in rgba]
+        hex_strs = [clrs.rgb2hex(colour) for colour in rgba]
+        text_str = [background_to_text(colour[:3], CONTRAST_RATIO_AAA)
+                    for colour in rgba]
+        return hex_strs, text_str
 
     def display_str(self, value):
         """
@@ -156,6 +167,8 @@ class LocalMinTable(Table):
         :rtype: str
         """
         local_min, norm_rel = value
+        if local_min is None:
+            return 'N/A'
         template = self.output_string_type['abs']
         return f'{str(local_min)} ({template.format(norm_rel)})'
 
@@ -178,3 +191,33 @@ class LocalMinTable(Table):
         if sz_in is not None:
             return super().save_colourbar(fig_dir, n_divs=2, sz_in=sz_in)
         return super().save_colourbar(fig_dir, n_divs=2)
+
+    @classmethod
+    def get_error_str(cls, result, *args, **kwargs):
+        """
+        Get the error string for a result based on error_template
+        This can be overridden if tables require different error formatting.
+
+        :param result: The result to get the error string for
+        :type result: FittingResult
+
+        :return: A string representation of the error
+        :rtype: str
+        """
+        if result.r_x is None:
+            return ''
+        return super().get_error_str(result, *args, **kwargs)
+
+    def get_description(self):
+        """
+        Generates table description from class docstrings and converts them
+        into html
+
+        :return: Dictionary containing table descriptions
+        :rtype: dict
+        """
+        html = super().get_description()
+        html['local_min_mode'] = '"N/A" in the table indicates that the ' \
+            'cost function does not provide residuals.'
+
+        return html

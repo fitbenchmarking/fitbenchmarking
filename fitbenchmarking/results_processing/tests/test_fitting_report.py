@@ -93,8 +93,8 @@ class CreateProbGroupTests(unittest.TestCase):
                                          support_pages_dir=self.dir.name,
                                          options=self.options)
         file_name = self.result.fitting_report_link
-        expected = os.path.join(os.path.relpath(self.dir.name),
-                                'prob_0_cf1_m10_[s1]_jj0.html')
+        expected = os.path.abspath(
+            os.path.join(self.dir.name, 'prob_0_cf1_m10_[s1]_jj0.html'))
 
         self.assertEqual(file_name, expected)
 
