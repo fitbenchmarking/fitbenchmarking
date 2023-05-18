@@ -53,14 +53,7 @@ export CUTEST=${CUTEST_DIR}/cutest/
 export MYARCH="pc64.lnx.gfo" 
 export PYCUTEST_CACHE=${CUTEST_DIR}/pycutest_cache/
 export PYTHONPATH="${PYCUTEST_CACHE}:${PYTHONPATH}"
-cd $SIFDECODE
-printf "6\n2\n6\n" > sifdecode.input 
-printf "nny" >> sifdecode.input
-./install_sifdecode  < sifdecode.input
-cd $CUTEST
-printf "6\n2\n6\n2\n8\n" > cutest.input
-printf "nnydn" >> cutest.input
-./install_cutest < cutest.input
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/jfowkes/pycutest/master/.install_cutest.sh)"
 pip install pycutest
 
 # Install mantid
