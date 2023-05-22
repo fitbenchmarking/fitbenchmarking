@@ -60,10 +60,12 @@ class FitbmResultTests(unittest.TestCase):
 
         self.accuracy = 10
         self.runtime = 0.01
+        self.emissions = 0.001
         self.result = FittingResult(
             controller=controller,
             accuracy=self.accuracy,
-            runtime=self.runtime)
+            runtime=self.runtime,
+            emissions=self.emissions)
 
         self.min_accuracy = 0.1
         self.result.min_accuracy = self.min_accuracy
@@ -93,6 +95,8 @@ class FitbmResultTests(unittest.TestCase):
             | Accuracy      | 10            |
             +-------------------------------+
             | Runtime       | 0.01          |
+            +-------------------------------+
+            | Emissions     | 0.001         |
             +-------------------------------+''')
 
         for i, (r, e) in enumerate(zip(str(self.result).splitlines(),

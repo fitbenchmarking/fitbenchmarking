@@ -33,6 +33,14 @@ The timing results are calculated from an average using the `timeit <https://doc
 
 runtime: End
 
+emissions: Start
+
+The emissions (kg CO\ :sub:`2`\ eq) results are calculated from an average using the `codecarbon <https://mlco2.github.io/codecarbon/index.html>`_  module. The number of runs can be set in :ref:`options`.
+
+Configuration for codecarbon is set in ``.codecarbon.config``.
+
+emissions: End
+
 abs: Start
 
 Absolute values are displayed in the table.

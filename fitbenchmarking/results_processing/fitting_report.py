@@ -88,6 +88,7 @@ def create_prob_group(result, support_pages_dir, options):
             minimizer=result.modified_minimizer_name(),
             accuracy=f"{result.accuracy:.4g}",
             runtime=f"{result.runtime:.4g}",
+            emissions=f"{result.emissions:.4g}",
             is_best_fit=result.is_best_fit,
             initial_plot_available=init_success,
             initial_plot=fig_start,

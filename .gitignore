@@ -11,3 +11,5 @@ docs/source/_build
 docs/source/contributors/module_index
 *.log
 *.DS_Store
+venv/
+emissions_results/
