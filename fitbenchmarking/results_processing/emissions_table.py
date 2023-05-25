@@ -7,10 +7,11 @@ from fitbenchmarking.results_processing.base_table import Table
 
 
 class EmissionsTable(Table):
-    """
+    r"""
 
-    The emissions (kg CO\ :sub:`2`\ eq) results are calculated from an average (over num_runs)
-    using the `codecarbon <https://mlco2.github.io/codecarbon/index.html>`_  module. 
+    The emissions (kg CO\ :sub:`2`\ eq) results are calculated
+    from an average (over num_runs) using the
+    `codecarbon <https://mlco2.github.io/codecarbon/index.html>`_  module.
     num_runs is set in :ref:`options`.
 
     Configuration for codecarbon is set in ``.codecarbon.config``.
