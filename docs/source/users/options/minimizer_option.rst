@@ -602,6 +602,107 @@ The Minuit minimizers are set as follows:
    The additional dependency Minuit must be installed for this to be available;
    See :ref:`extra_dependencies`.
 
+.. _nlopt:
+
+NLopt (``nlopt``)
+===================
+
+`NLopt <https://nlopt.readthedocs.io/en/latest/>`__ is a free/open-source library for nonlinear optimization, providing a
+common interface for a number of different free optimization routines available
+online as well as original implementations of various other algorithms
+
+* Bound Optimization BY Quadratic Approximation (:code:`LN_BOBYQA`)
+* NEW Unconstrained Optimization Algorithm (:code:`LN_NEWUOA`)
+* NEW Unconstrained Optimization Algorithm, bound algorithm (:code:`LN_NEWUOA_BOUND`)
+* Principal-axis method (:code:`LN_PRAXIS`)
+* Sequential Least Squares Programming (:code:`LD_SLSQP`)
+* Shifted limited-memory variable-metric (rank 1) (:code:`LD_VAR1`)
+* Shifted limited-memory variable-metric (rank 2) (:code:`LD_VAR2`)
+* Augmented Lagrangian local (:code:`AUGLAG`)
+* Augmented Lagrangian local (equality constraints) (:code:`AUGLAG_EQ`)
+* Nelder-Mead Simplex (:code:`LN_NELDERMEAD`)
+* Subplex (:code:`LN_SBPLX`)
+* Constrained Optimization BY Linear Approximations (:code:`LN_COBYLA`)
+* Conservative convex separable approximation (:code:`LD_CCSAQ`)
+* Method of Moving Asymptotes (:code:`LD_MMA`)
+* Newton (:code:`LD_TNEWTON`)
+* Newton preconditioned by the low-storage BFGS algorithm (:code:`LD_TNEWTON_PRECOND`)
+* Newton with steepest-descent restarting (:code:`LD_TNEWTON_RESTART`)
+* Newton preconditioned by the low-storage BFGS algorithm with steepest-descent restarting (:code:`LD_TNEWTON_PRECOND_RESTART`)
+* LBFGS, and derivative-free algorithm (:code:`LD_LBFGS`)
+* DIviding RECTangles (:code:`GN_DIRECT`)
+* DIviding RECTangles (locally biased) (:code:`GN_DIRECT_L`)
+* DIviding RECTangles (locally biased which uses some randomization) (:code:`GN_DIRECT_L_RAND`)
+* DIviding RECTangles (unscaled variant) (:code:`GNL_DIRECT_NOSCAL`)
+* DIviding RECTangles (locally biased and unscaled variant) (:code:`GN_DIRECT_L_NOSCAL`)
+* DIviding RECTangles (locally biased, unscaled variant which uses some randomization) (:code:`GN_DIRECT_L_RAND_NOSCAL`)
+* DIviding RECTangles (based on the original Fortran code by Gablonsky et al. (1998-2001)) (:code:`GN_ORIG_DIRECT`)
+* DIviding RECTangles (based on the original Fortran code by Gablonsky et al. (1998-2001) and locally biased ) (:code:`GN_ORIG_DIRECT_L`)
+* Controlled Random Search (:code:`GN_CRS2_LM`)
+* Multi-Level Single-Linkage, low-discrepancy sequence (:code:`G_MLSL_LDS`)
+* Multi-Level Single-Linkage (:code:`G_MLSL`)
+* Stochastic Global Optimization (:code:`GD_STOGO`)
+* Stochastic Global Optimizatiom, randomized variant (:code:`GD_STOGO_RAND`)
+* AGS (:code:`GN_AGS`)
+* Improved Stochastic Ranking Evolution Strategy (:code:`GN_ISRES`)
+
+The Nlopt minimizers are set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    nlopt: LN_BOBYQA
+           LN_NEWUOA
+           LN_NEWUOA_BOUND
+           LN_PRAXIS
+           LD_SLSQP
+           LD_VAR2
+           LD_VAR1
+           AUGLAG
+           AUGLAG_EQ
+           LN_NELDERMEAD
+           LN_SBPLX
+           LN_COBYLA
+           LD_CCSAQ
+           LD_MMA
+           LD_TNEWTON_PRECOND_RESTART
+           LD_TNEWTON_PRECOND
+           LD_TNEWTON_RESTART
+           LD_TNEWTON
+           LD_LBFGS
+           GN_DIRECT
+           GN_DIRECT_L
+           GN_DIRECT_L_RAND
+           GNL_DIRECT_NOSCAL
+           GN_DIRECT_L_NOSCAL
+           GN_DIRECT_L_RAND_NOSCAL
+           GN_ORIG_DIRECT
+           GN_ORIG_DIRECT_L
+           GN_CRS2_LM
+           G_MLSL_LDS
+           G_MLSL
+           GD_STOGO
+           GD_STOGO_RAND
+           GN_AGS
+           GN_ISRES
+
+.. note::
+   The global optimization solvers are not run by default when `nlopt` software is selected. In order to run these minimizers, you must explicitly
+   set them as above.
+
+.. note::
+   The following 4 minimizers need a local optimizer selected to run. This has been set to use `LD_LBFGS`.
+
+   .. code-block:: rst
+
+    [MINIMIZERS]
+    nlopt: AUGLAG
+           AUGLAG_EQ
+           G_MLSL_LDS
+           G_MLSL
+
+
+
 .. _ralfit:
 
 RALFit (``ralfit``)
