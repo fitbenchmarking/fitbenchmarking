@@ -21,7 +21,8 @@ class EmissionsTable(Table):
     def __init__(self, results, best_results, options, group_dir, pp_locations,
                  table_name):
         """
-        Initialise the emissions table which shows the average emissions results
+        Initialise the emissions table which shows the average emissions
+        results
 
         :param results: Results grouped by row and category (for colouring)
         :type results:
@@ -59,8 +60,8 @@ class EmissionsTable(Table):
         :param result: The result to generate the values for.
         :type result: FittingResult
 
-        :return: The normalised emissions with respect to the smallest emissions
-                 value and absolute emissions for the result.
+        :return: The normalised emissions with respect to the smallest
+                 emissions value and absolute emissions for the result.
         :rtype: tuple(float, float)
         """
         rel_value = result.norm_emissions
