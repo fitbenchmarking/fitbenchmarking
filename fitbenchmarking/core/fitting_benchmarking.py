@@ -253,8 +253,8 @@ def loop_over_cost_function(problem, options, start_values_index,
         try:
             cost_func.validate_problem()
         except IncompatibleCostFunctionError:
-            LOGGER.info('Problem is not compatible with this cost function '
-                        f'({cf})')
+            LOGGER.info(
+                'Problem is not compatible with this cost function (%s)', cf)
             continue
         #######################
         # Loops over software #

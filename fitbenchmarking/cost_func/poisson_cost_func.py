@@ -150,7 +150,6 @@ class PoissonCostFunc(CostFunc):
                 "Problem has a negative y value.")
 
 
-
 def _safe_a_log_b(a, b):
     """
     Calculate y=a*log(b) such that if a==0 then y==0.

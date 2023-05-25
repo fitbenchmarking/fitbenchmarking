@@ -1,10 +1,11 @@
 """
 Implements the root non-linear least squares cost function
 """
-from numpy import array, matmul, sqrt, ravel
+from numpy import array, matmul, ravel, sqrt
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
-from fitbenchmarking.utils.exceptions import CostFuncError, IncompatibleCostFunctionError
+from fitbenchmarking.utils.exceptions import (CostFuncError,
+                                              IncompatibleCostFunctionError)
 
 
 class HellingerNLLSCostFunc(BaseNLLSCostFunc):

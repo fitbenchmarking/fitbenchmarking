@@ -136,5 +136,3 @@ class CostFunc:
 
         By default do not raise an error.
         """
-        pass
-        
