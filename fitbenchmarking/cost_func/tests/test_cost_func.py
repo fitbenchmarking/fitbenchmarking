@@ -5,6 +5,7 @@ Tests available cost function classes in FitBenchmarking.
 from unittest import TestCase
 
 import numpy as np
+
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.cost_func.hellinger_nlls_cost_func import \
     HellingerNLLSCostFunc
@@ -17,8 +18,9 @@ from fitbenchmarking.hessian.analytic_hessian import Analytic
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
-from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.exceptions import IncompatibleCostFunctionError
+from fitbenchmarking.utils.options import Options
+
 # pylint: disable=attribute-defined-outside-init
 
 
@@ -389,7 +391,7 @@ class TestHellingerNLLSCostFunc(TestCase):
                              [[-1, -15, -21],
                               [-1, -15, -21]]])
         self.assertTrue(np.allclose(H, expected))
-        
+
     def test_validate_problem_correct(self):
         """
         Test that validate_problem does not raise an error
@@ -404,10 +406,12 @@ class TestHellingerNLLSCostFunc(TestCase):
         with self.assertRaises(IncompatibleCostFunctionError):
             self.cost_function.validate_problem()
 
+
 class TestPoissonCostFunc(TestCase):
     """
     Class to test the PoissonCostFunc class
     """
+
     def setUp(self):
         """
         Setting up poisson cost function tests
@@ -501,7 +505,7 @@ class TestPoissonCostFunc(TestCase):
                              [[300, 19201, 36303],
                               [300, 19201, 36303]]])
         self.assertTrue(np.allclose(H, expected))
-        
+
     def test_validate_problem_correct(self):
         """
         Test that validate_problem does not raise an error
