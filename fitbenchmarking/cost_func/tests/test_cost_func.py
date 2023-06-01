@@ -18,7 +18,7 @@ from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.utils.exceptions import IncompatibleProblemError
+from fitbenchmarking.utils.exceptions import IncompatibleCostFunctionError
 # pylint: disable=attribute-defined-outside-init
 
 
@@ -401,7 +401,7 @@ class TestHellingerNLLSCostFunc(TestCase):
         Test that validate_problem does raise an error when y has negative vals
         """
         self.cost_function.problem.data_y[2] = -0.05
-        with self.assertRaises(IncompatibleProblemError):
+        with self.assertRaises(IncompatibleCostFunctionError):
             self.cost_function.validate_problem()
 
 class TestPoissonCostFunc(TestCase):
@@ -513,7 +513,7 @@ class TestPoissonCostFunc(TestCase):
         Test that validate_problem does raise an error when y has negative vals
         """
         self.cost_function.problem.data_y[2] = -0.05
-        with self.assertRaises(IncompatibleProblemError):
+        with self.assertRaises(IncompatibleCostFunctionError):
             self.cost_function.validate_problem()
 
 
