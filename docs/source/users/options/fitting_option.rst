@@ -29,6 +29,7 @@ a newline-separated list. Available options are:
 * ``matlab_opt`` (external software -- see :ref:`external-instructions`)
 * ``matlab_stats`` (external software -- see :ref:`external-instructions`)
 * ``minuit`` (external software -- see :ref:`extra_dependencies`)
+* ``nlopt`` (external software -- see :ref:`extra_dependencies`)
 * ``ralfit`` (external software -- see :ref:`external-instructions`)
 * ``scipy`` (default software)
 * ``scipy_ls`` (default software)
