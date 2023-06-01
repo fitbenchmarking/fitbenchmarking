@@ -18,6 +18,7 @@ from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.exceptions import IncompatibleProblemError
 # pylint: disable=attribute-defined-outside-init
 
 
@@ -55,10 +56,12 @@ class TestNLLSCostFunc(TestCase):
         """
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
-        self.cost_function = NLLSCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
         self.x_val = np.array([1, 8, 11])
         self.y_val = np.array([6, 10, 20])
+        fitting_problem.data_x = self.x_val
+        fitting_problem.data_y = self.y_val
+        self.cost_function = NLLSCostFunc(fitting_problem)
 
     def test_eval_r_raise_error(self):
         """
@@ -105,13 +108,19 @@ class TestNLLSCostFunc(TestCase):
     def test_validate_algorithm_type_correct(self):
         """
         Test that validate_algorithm_type does not raise
-        an error for compaitble options
+        an error for compatible options
         """
         self.cost_function.invalid_algorithm_types = []
         algorithm_check = {'ls': ['ls-min']}
         minimizer = 'ls-min'
 
         self.cost_function.validate_algorithm_type(algorithm_check, minimizer)
+
+    def test_validate_problem_correct(self):
+        """
+        Test that validate_problem does not raise an error
+        """
+        self.cost_function.validate_problem()
 
     def test_jac_res(self):
         """
@@ -201,11 +210,14 @@ class TestWeightedNLLSCostFunc(TestCase):
         """
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
-        self.cost_function = WeightedNLLSCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
         self.x_val = np.array([1, 8, 11])
         self.y_val = np.array([6, 10, 20])
         self.e_val = np.array([2, 4, 1])
+        fitting_problem.data_x = self.x_val
+        fitting_problem.data_y = self.y_val
+        fitting_problem.data_e = self.e_val
+        self.cost_function = WeightedNLLSCostFunc(fitting_problem)
 
     def test_eval_r_raise_error(self):
         """
@@ -280,6 +292,12 @@ class TestWeightedNLLSCostFunc(TestCase):
                               [-150, -4800, -36300]]])
         self.assertTrue(np.allclose(H, expected))
 
+    def test_validate_problem_correct(self):
+        """
+        Test that validate_problem does not raise an error
+        """
+        self.cost_function.validate_problem()
+
 
 class TestHellingerNLLSCostFunc(TestCase):
     """
@@ -292,10 +310,12 @@ class TestHellingerNLLSCostFunc(TestCase):
         """
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
-        self.cost_function = HellingerNLLSCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
         self.x_val = np.array([1, 8, 11])
         self.y_val = np.array([6, 10, 20])
+        fitting_problem.data_x = self.x_val
+        fitting_problem.data_y = self.y_val
+        self.cost_function = HellingerNLLSCostFunc(fitting_problem)
 
     def test_eval_r_raise_error(self):
         """
@@ -369,7 +389,20 @@ class TestHellingerNLLSCostFunc(TestCase):
                              [[-1, -15, -21],
                               [-1, -15, -21]]])
         self.assertTrue(np.allclose(H, expected))
+        
+    def test_validate_problem_correct(self):
+        """
+        Test that validate_problem does not raise an error
+        """
+        self.cost_function.validate_problem()
 
+    def test_validate_problem_incorrect(self):
+        """
+        Test that validate_problem does raise an error when y has negative vals
+        """
+        self.cost_function.problem.data_y[2] = -0.05
+        with self.assertRaises(IncompatibleProblemError):
+            self.cost_function.validate_problem()
 
 class TestPoissonCostFunc(TestCase):
     """
@@ -381,10 +414,12 @@ class TestPoissonCostFunc(TestCase):
         """
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
-        self.cost_function = PoissonCostFunc(fitting_problem)
         fitting_problem.function = lambda x, p1: x + p1
         self.x_val = np.array([1, 8, 11])  # 6, 13, 16
         self.y_val = np.array([6, 10, 20])
+        fitting_problem.data_x = self.x_val
+        fitting_problem.data_y = self.y_val
+        self.cost_function = PoissonCostFunc(fitting_problem)
 
     def test_eval_cost_raise_error(self):
         """
@@ -466,6 +501,20 @@ class TestPoissonCostFunc(TestCase):
                              [[300, 19201, 36303],
                               [300, 19201, 36303]]])
         self.assertTrue(np.allclose(H, expected))
+        
+    def test_validate_problem_correct(self):
+        """
+        Test that validate_problem does not raise an error
+        """
+        self.cost_function.validate_problem()
+
+    def test_validate_problem_incorrect(self):
+        """
+        Test that validate_problem does raise an error when y has negative vals
+        """
+        self.cost_function.problem.data_y[2] = -0.05
+        with self.assertRaises(IncompatibleProblemError):
+            self.cost_function.validate_problem()
 
 
 class FactoryTests(TestCase):
