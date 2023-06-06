@@ -59,8 +59,8 @@ class TestNLLSCostFunc(TestCase):
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
         fitting_problem.function = lambda x, p1: x + p1
-        self.x_val = np.array([1, 8, 11])
-        self.y_val = np.array([6, 10, 20])
+        self.x_val = np.array([1.0, 8.0, 11.0])
+        self.y_val = np.array([6.0, 10.0, 20.0])
         fitting_problem.data_x = self.x_val
         fitting_problem.data_y = self.y_val
         self.cost_function = NLLSCostFunc(fitting_problem)
@@ -172,10 +172,10 @@ class TestNLLSCostFunc(TestCase):
                                           x=self.x_val,
                                           y=self.y_val)
 
-        expected = np.array([[[-300, -19200, -36300],
-                              [-300, -19200, -36300]],
-                             [[-300, -19200, -36300],
-                              [-300, -19200, -36300]]])
+        expected = np.array([[[-300.0, -19200.0, -36300.0],
+                              [-300.0, -19200.0, -36300.0]],
+                             [[-300.0, -19200.0, -36300.0],
+                              [-300.0, -19200.0, -36300.0]]])
         self.assertTrue(np.allclose(H, expected))
 
     def test_hes_cost(self):
@@ -213,9 +213,9 @@ class TestWeightedNLLSCostFunc(TestCase):
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
         fitting_problem.function = lambda x, p1: x + p1
-        self.x_val = np.array([1, 8, 11])
-        self.y_val = np.array([6, 10, 20])
-        self.e_val = np.array([2, 4, 1])
+        self.x_val = np.array([1.0, 8.0, 11.0])
+        self.y_val = np.array([6.0, 10.0, 20.0])
+        self.e_val = np.array([2.0, 4.0, 1.0])
         fitting_problem.data_x = self.x_val
         fitting_problem.data_y = self.y_val
         fitting_problem.data_e = self.e_val
@@ -288,10 +288,10 @@ class TestWeightedNLLSCostFunc(TestCase):
                                           y=self.y_val,
                                           e=self.e_val)
 
-        expected = np.array([[[-150, -4800, -36300],
-                              [-150, -4800, -36300]],
-                             [[-150, -4800, -36300],
-                              [-150, -4800, -36300]]])
+        expected = np.array([[[-150.0, -4800.0, -36300.0],
+                              [-150.0, -4800.0, -36300.0]],
+                             [[-150.0, -4800.0, -36300.0],
+                              [-150.0, -4800.0, -36300.0]]])
         self.assertTrue(np.allclose(H, expected))
 
     def test_validate_problem_correct(self):
@@ -313,8 +313,8 @@ class TestHellingerNLLSCostFunc(TestCase):
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
         fitting_problem.function = lambda x, p1: x + p1
-        self.x_val = np.array([1, 8, 11])
-        self.y_val = np.array([6, 10, 20])
+        self.x_val = np.array([1.0, 8.0, 11.0])
+        self.y_val = np.array([6.0, 10.0, 20.0])
         fitting_problem.data_x = self.x_val
         fitting_problem.data_y = self.y_val
         self.cost_function = HellingerNLLSCostFunc(fitting_problem)
@@ -385,11 +385,11 @@ class TestHellingerNLLSCostFunc(TestCase):
         H, _ = self.cost_function.hes_res(params=[5],
                                           x=self.x_val,
                                           y=self.y_val)
-
-        expected = np.array([[[-1, -15, -21],
-                              [-1, -15, -21]],
-                             [[-1, -15, -21],
-                              [-1, -15, -21]]])
+        print(H)
+        expected = np.array([[[-2.0, -16.0, -22.0],
+                              [-2.0, -16.0, -22.0]],
+                             [[-2.0, -16.0, -22.0],
+                              [-2.0, -16.0, -22.0]]])
         self.assertTrue(np.allclose(H, expected))
 
     def test_validate_problem_correct(self):
@@ -419,8 +419,8 @@ class TestPoissonCostFunc(TestCase):
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
         fitting_problem.function = lambda x, p1: x + p1
-        self.x_val = np.array([1, 8, 11])  # 6, 13, 16
-        self.y_val = np.array([6, 10, 20])
+        self.x_val = np.array([1.0, 8.0, 11.0])
+        self.y_val = np.array([6.0, 10.0, 20.0])
         fitting_problem.data_x = self.x_val
         fitting_problem.data_y = self.y_val
         self.cost_function = PoissonCostFunc(fitting_problem)
@@ -500,10 +500,11 @@ class TestPoissonCostFunc(TestCase):
                                           x=self.x_val,
                                           y=self.y_val)
 
-        expected = np.array([[[300, 19201, 36303],
-                              [300, 19201, 36303]],
-                             [[300, 19201, 36303],
-                              [300, 19201, 36303]]])
+        expected = np.array([[[300.96, 19201.6, 36303.2],
+                              [300.96, 19201.6, 36303.2]],
+                             [[300.96, 19201.6, 36303.2],
+                              [300.96, 19201.6, 36303.2]]])
+        print(H)
         self.assertTrue(np.allclose(H, expected))
 
     def test_validate_problem_correct(self):
