@@ -561,7 +561,7 @@ def perform_fit(controller, options, grabbed_output):
                 stmt=controller.execute
             ).repeat(num_runs, 1)
             emissions_list = [controller.emissions_tracker[i].final_emissions
-                              for i in range(0,num_runs)]
+                              for i in range(0, num_runs)]
             emissions = np.mean(emissions_list)
             # reset emissions tracker
             controller.emissions_tracker = []

@@ -37,7 +37,7 @@ autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfogn', 'dfols',
                         'dill', 'gofit', 'matlab', 'pygsl', 'iminuit', 'bumps',
                         'bumps.fitters', 'tempfile', 'backports',
                         'gradient_free_optimizers', 'levmar', 'PyCeres',
-                        'theseus', 'torch', 'lmfit', 'nlopt']
+                        'theseus', 'torch', 'lmfit', 'nlopt', 'codecarbon']
 
 
 # -- General configuration ------------------------------------------------
