@@ -136,19 +136,21 @@ def preprocess_data(results: "list[FittingResult]"):
     # Additional separation for categories within columns
     col_sections = ['costfun']
 
+    # Find the repeating minimizer strings
+    all_result_tags, repeating_columns = _find_repeating_tags(results,
+                                                              sort_order,
+                                                              col_sections)
+
+    # Handle the repeating tags
+    if repeating_columns:
+        results, all_result_tags = _handle_repeating_tags(results,
+                                                          all_result_tags,
+                                                          repeating_columns)
+
     # Generate the columns, category, and row tags and sort
     rows: Union[List[str], Set[str]] = set()
     columns = {}
-    for r in results:
-        # Error 4 means none of the jacobians ran so can't infer the
-        # jacobian names from this.
-        if r.error_flag == 4:
-            continue
-        result_tags = _extract_tags(r,
-                                    row_sorting=sort_order[0],
-                                    col_sorting=sort_order[1],
-                                    cat_sorting=col_sections)
-
+    for result_tags in all_result_tags:
         rows.add(result_tags['row'])
         cat = result_tags['cat']
         if cat not in columns:
@@ -156,6 +158,7 @@ def preprocess_data(results: "list[FittingResult]"):
         columns[cat].add(result_tags['col'])
 
     rows = sorted(rows, key=str.lower)
+
     # Reorder keys and assign columns to indexes within them
     columns = {k: {col: i for i, col in enumerate(sorted(columns[k],
                                                          key=str.lower))}
@@ -172,7 +175,6 @@ def preprocess_data(results: "list[FittingResult]"):
                                     row_sorting=sort_order[0],
                                     col_sorting=sort_order[1],
                                     cat_sorting=col_sections)
-
         # Fix up cells where error flag = 4
         if r.error_flag == 4:
             match_rows = _find_matching_tags(result_tags['row'], rows)
@@ -197,6 +199,212 @@ def preprocess_data(results: "list[FittingResult]"):
             best_results[r][c] = _process_best_results(cat)
 
     return best_results, sorted_results
+
+
+def _handle_repeating_tags(results,
+                           all_result_tags,
+                           repeating_columns):
+    """
+    The function that relabels the repeating column tags that
+    appear when there is jacobian and hessian fallback for a
+    minimizer.
+
+    :param results: The list of results of benchmarking
+    :type results: list[FittingResult]
+    :param all_result_tags: A list of tags that can be used
+                            to sort the results
+    :type: list[dict[str, str]]
+    :param repeating_columns: The col tag of the repeating column
+    :type repeating_columns: list[str]
+
+    :return: all results and the results tags
+    :rtype: list[FittingResult], list[dict[str, str]]
+    """
+    column_rename = 'best_avaliable'
+
+    # Iterate over the repeating tags
+    repeating_columns = sorted(repeating_columns)
+    repeating_columns_it = iter(repeating_columns)
+    jh_checks = {}
+
+    for x in repeating_columns_it:
+
+        _, _, x_jacobian, x_hessian = x.split(':')
+
+        y = next(repeating_columns_it)
+        _, _, y_jacobian, y_hessian = y.split(':')
+
+        jacobian_check = x_jacobian != y_jacobian
+        hessian_check = x_hessian != y_hessian
+
+        jh_checks[x] = {}
+        jh_checks[y] = {}
+
+        jh_checks[x]['jacobian_check'] = \
+            jh_checks[y]['jacobian_check'] = jacobian_check
+        jh_checks[x]['hessian_check'] = \
+            jh_checks[y]['hessian_check'] = hessian_check
+
+    # Iterate over the results tags
+    for ix, tag in enumerate(all_result_tags):
+
+        # If tag is repeated
+        if tag['col'] in repeating_columns:
+            software, minimizer, jacobian, hessian = tag['col'].split(':')
+
+            result_ix = tag['result_ix']
+
+            # Update jacobian and jacobian tag
+            if jh_checks[tag['col']]['jacobian_check']:
+                jacobian = column_rename
+                results[result_ix].jacobian_tag = column_rename
+
+            # Update hessian and hessian tag
+            if jh_checks[tag['col']]['hessian_check']:
+                hessian = column_rename
+                results[result_ix].hessian_tag = column_rename
+
+            # Update results tag
+            new_col_tag = ':'. join([software, minimizer, jacobian, hessian])
+            all_result_tags[ix]['col'] = new_col_tag
+
+    return results, all_result_tags
+
+
+def _find_repeating_tags(results, sort_order, col_sorting):
+    """
+    The function finds the column tags that are repeated due to
+    jacobian and hessian fallback
+
+    :param results: The list of results to find the tags for and
+                   check for repetition
+    :type results: list[FittingResult]
+    :param sort_order: The sort order of the tags
+    :type sort_order: list[list[str]]
+    :param col_sorting: The components in order of importance that will be
+                        used to generate the col tag.
+    :type col_sorting: list[str]
+
+    :return: all results tags and the repeating column tags
+    :rtype: list[dict[str, str]], list[str]
+    """
+
+    all_result_tags = []
+    unique_problems = []
+    columns = {}
+    columns_with_errors = {}
+    error_flag_count = 0
+
+    for ix, r in enumerate(results):
+
+        # Extracting the results tags
+        result_tags = _extract_tags(r,
+                                    row_sorting=sort_order[0],
+                                    col_sorting=sort_order[1],
+                                    cat_sorting=col_sorting)
+
+        # Error 4 means none of the jacobians ran so can't infer the
+        # jacobian names from this.
+        if r.error_flag == 4:
+            error_flag_count += 1
+            software, minimizer = result_tags['col'].split(":")[:2]
+            sm_key = ":".join([software, minimizer])
+            if sm_key not in columns_with_errors:
+                columns_with_errors[sm_key] = 1
+            else:
+                columns_with_errors[sm_key] += 1
+            continue
+
+        # Saving the number of problems
+        if result_tags['row'] not in unique_problems:
+            unique_problems.append(result_tags['row'])
+
+        # Count the occurance of each column tag
+        row_key = result_tags['col']
+        if row_key not in columns:
+            columns[row_key] = 1
+        else:
+            columns[row_key] += 1
+
+        # Saving the index of the results
+        result_tags['result_ix'] = ix
+
+        # Saving all the result_tags
+        all_result_tags.append(result_tags)
+
+    # Find the expected_count (if all jacobians same)
+    expected_count = len(unique_problems)
+
+    # Error flag count check
+    if error_flag_count == 0:
+
+        # Process tags if no error
+        repeat_column_tags = _process_tags_without_errors(columns,
+                                                          expected_count)
+    else:
+
+        # Process tags if error
+        repeat_column_tags = _process_tags_with_errors(columns,
+                                                       expected_count,
+                                                       columns_with_errors)
+
+    return all_result_tags, repeat_column_tags
+
+
+def _process_tags_with_errors(columns, expected_count, columns_with_errors):
+    """
+    The function that processes the tags when results
+    list has an error_flag = 4.
+
+    :param columns: The dict of column tags and their count
+    :type columns: dict[str, str]
+    :param expected_count: The expected results count for each
+                           minimizer
+    :type expected_count: int
+    :param columns_with_errors: The column tags with errors
+    :type expected_count: dict[str, str]
+
+    :return: a list of the repeating column tags
+    :rtype: list[str]
+    """
+    repeat_column_tags = []
+
+    # Handle error_tag = 4
+    for tag, count in columns.items():
+        for error_tag in columns_with_errors:
+            if error_tag in tag:
+                columns[tag] += columns_with_errors[error_tag]
+
+    # Find mismatch columns
+    for tag, count in columns.items():
+        if count != expected_count:
+            repeat_column_tags.append(tag)
+
+    return repeat_column_tags
+
+
+def _process_tags_without_errors(columns, expected_count):
+    """
+    The function that processes the tags when results
+    list does not have an error_flag = 4.
+
+    :param columns: The dict of column tags and their count
+    :type columns: dict[str, str]
+    :param expected_count: The expected results count for each
+                           minimizer
+    :type expected_count: int
+
+    :return: a list of the repeating column tags
+    :rtype: list[str]
+    """
+    repeat_column_tags = []
+
+    # Save the repeated columns
+    for tag, count in columns.items():
+        if count != expected_count:
+            repeat_column_tags.append(tag)
+
+    return repeat_column_tags
 
 
 def _extract_tags(result: 'FittingResult', row_sorting: 'List[str]',

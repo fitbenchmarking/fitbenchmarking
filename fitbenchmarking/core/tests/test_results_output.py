@@ -36,13 +36,14 @@ def load_mock_results(additional_options=None):
         additional_options = {}
     cp_dir = os.path.dirname(inspect.getfile(test_files))
     additional_options.update({
-        'checkpoint_filename': os.path.join(cp_dir, 'checkpoint.json'),
+        'checkpoint_filename': os.path.join(cp_dir,
+                                            'checkpoint.json'),
         'external_output': 'debug'})
     options = Options(additional_options=additional_options)
     cp = Checkpoint(options)
     results, _, _ = cp.load()
 
-    return results['Fake_Test_Data'], options
+    return results["Fake_Test_Data"], options
 
 
 class SaveResultsTests(unittest.TestCase):
