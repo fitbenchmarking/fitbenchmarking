@@ -10,7 +10,7 @@ from shutil import copytree
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union
 
 from jinja2 import Environment, FileSystemLoader
-
+import pandas as pd
 import fitbenchmarking
 from fitbenchmarking.results_processing import (fitting_report,
                                                 performance_profiler, plots,
@@ -308,6 +308,39 @@ def create_plots(options, results, best_results, figures_dir):
     for best_dict, prob_result in zip(best_results.values(), results.values()):
         plot_dict = {}
         initial_guess_path = {}
+
+        # Create a dataframe for each result
+        for cf, cat_results in prob_result.items():
+            # first, load with raw data
+            datatype = {'x': cat_results[0].data_x,
+                        'y': cat_results[0].data_y,
+                        'e': cat_results[0].data_e,
+                        'minimizer': 'Data',
+                        'cost_fucntion': cf,
+                        'best': False}
+            df = pd.DataFrame(datatype)
+            # next the initial data
+            datatype = {'x': cat_results[0].data_x,
+                        'y': cat_results[0].ini_y,
+                        'e': cat_results[0].data_e,
+                        'minimizer': 'Starting Guess',
+                        'cost_fucntion': cf,
+                        'best': False}
+            df = pd.concat([df, pd.DataFrame(datatype)],
+                           axis=0,
+                           ignore_index=True)
+            # then get data for each minimizer
+            for result in cat_results:
+                datatype = {'x': result.data_x,
+                            'y': result.fin_y,
+                            'e': result.data_e,
+                            'minimizer': result.sanitised_min_name(True),
+                            'cost_fucntion': cf,
+                            'best': result.is_best_fit}
+                df = pd.concat([df, pd.DataFrame(datatype)],
+                               axis=0,
+                               ignore_index=True)
+        
         for cf, best_in_cf in best_dict.items():
             try:
                 plot = plots.Plot(best_result=best_in_cf,
@@ -319,13 +352,13 @@ def create_plots(options, results, best_results, figures_dir):
                 continue
 
             # Create a plot showing the initial guess and get filename
-            initial_guess_path[cf] = plot.plot_initial_guess()
+            initial_guess_path[cf] = plot.plot_initial_guess(df)
 
             # Setup best plot first
             # If none of the fits succeeded, params could be None
             # Otherwise, add the best fit to the plot
             if best_in_cf.params is not None:
-                plot_path = plot.plot_best(best_in_cf)
+                plot_path = plot.plot_best(best_in_cf, df)
                 best_in_cf.figure_link = plot_path
             else:
                 best_in_cf.figure_error = 'Minimizer failed to produce any ' \
@@ -333,8 +366,11 @@ def create_plots(options, results, best_results, figures_dir):
             best_in_cf.start_figure_link = initial_guess_path[cf]
             plot_dict[cf] = plot
 
+        plot_paths = plot.plotly_fit(df)
+        
+
         # For each result, if it succeeded, create a plot and add plot links to
-        # the resuts object
+        # the results object
         for cf, cat_results in prob_result.items():
             # Check if plot was successful
             if cf not in plot_dict:
@@ -344,8 +380,8 @@ def create_plots(options, results, best_results, figures_dir):
                 if not result.is_best_fit:
                     if result.params is not None:
                         cf = result.costfun_tag
-                        plot_path = plot_dict[cf].plot_fit(result)
-                        result.figure_link = plot_path
+                        img_plot_path = plot_dict[cf].plot_fit(result,df)
+                        result.figure_link = plot_paths[result.sanitised_min_name(True)]
                     else:
                         result.figure_error = 'Minimizer failed to produce ' \
                             'any parameters'

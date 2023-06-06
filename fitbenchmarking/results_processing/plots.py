@@ -6,6 +6,10 @@ import os
 
 import matplotlib
 import numpy as np
+import plotly
+import plotly.express as px
+import plotly.graph_objects as go
+import pandas as pd
 
 from fitbenchmarking.utils.exceptions import PlottingError
 
@@ -158,13 +162,13 @@ class Plot:
 
                 self.fig.canvas.draw()
 
-    def plot_initial_guess(self):
+    def plot_initial_guess(self,df):
         """
         Plots the initial guess along with the data and stores in a file
 
         :return: path to the saved file
         :rtype: str
-        """
+        """        
         self.plot_data(errors=False,
                        plot_options=self.ini_guess_plot_options,
                        x=self.x,
@@ -173,9 +177,32 @@ class Plot:
         file = f"start_for_{self.result.sanitised_name}.png"
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
-        return file
 
-    def plot_best(self, result):
+        # Plotly implementation below
+        fig = px.line(df.query("minimizer in ['Starting Guess']"),
+                      x="x",
+                      y="y",
+                      color="minimizer",
+                      title=self.result.name,
+                      markers=True)
+        # add the raw data as a scatter plot
+        fig.add_trace(go.Scatter(x=df.query("minimizer == 'Data'")["x"].to_list(),
+                                 y=df.query("minimizer == 'Data'")["y"].to_list(),
+                                 mode='markers',
+                                 name='Data',
+                                 marker=dict(symbol='x', color='black')))
+        htmlfile = f"start_for_{self.result.sanitised_name}.html"
+        html_file_name = os.path.join(self.figures_dir, htmlfile)
+        
+        plotly.offline.plot(
+            fig,
+            filename=html_file_name,
+            auto_open=False
+        )
+        
+        return htmlfile
+
+    def plot_best(self, result, df):
         """
         Plots the fit along with the data using the "best_fit" style
         and saves to a file
@@ -214,12 +241,88 @@ class Plot:
                        plot_options=plot_options_dict,
                        x=self.x,
                        y=y)
-
+        
         # Make sure line wont be replaced by resetting line_plot
         self.line_plot = None
-        return file
 
-    def plot_fit(self, result):
+        # Plotly implementation below
+        fig = px.line(df.query("best"),
+                      x="x",
+                      y="y",
+                      color="minimizer",
+                      title=self.result.name,
+                      markers=True)
+        # add the raw data as a scatter plot
+        fig.add_trace(go.Scatter(x=df.query("minimizer == 'Data'")["x"].to_list(),
+                                 y=df.query("minimizer == 'Data'")["y"].to_list(),
+                                 mode='markers',
+                                 name='Data',
+                                 marker=dict(symbol='x', color='black')))
+        htmlfile = f"{result.sanitised_min_name(True)}_fit_for_"\
+            f"{self.result.costfun_tag}_{self.result.sanitised_name}.html"
+        html_file_name = os.path.join(self.figures_dir, htmlfile)
+        plotly.offline.plot(
+            fig,
+            filename=html_file_name,
+            auto_open=False
+        )
+        
+        return htmlfile
+
+    def plotly_fit(self, df):
+        """ 
+        Uses plotly to plot the calculated fit, along with the best fit.
+        Stores the plot in a file
+
+        :param result: The result to plot
+        :type result: FittingResult
+
+        :return: path to the saved file
+        :rtype: str
+        """
+        # Plotly implementation below
+        htmlfiles = {}
+        for minimizer in df['minimizer'].unique():
+            if minimizer not in ["Data","Starting Guess"]:
+                fig = px.line(df.query(f"minimizer == '{minimizer}'"),
+                              x="x",
+                              y="y",
+                              color="minimizer",
+                              title=self.result.name,
+                              markers=True)
+                if not df.query(f"minimizer == '{minimizer}'")["best"].any():
+                    # add the best plot
+                    fig.add_trace(go.Scatter(x=df.query("best")["x"].to_list(),
+                                             y=df.query("best")["y"].to_list(),
+                                             mode='lines',
+                                             name=f'Best Fit ({df.query("best")["minimizer"].unique()})',
+                                             line=dict(dash='dash',
+                                                       color='red')))
+                # add the raw data as a scatter plot
+                fig.add_trace(go.Scatter(x=df.query("minimizer == 'Data'")["x"].to_list(),
+                                         y=df.query("minimizer == 'Data'")["y"].to_list(),
+                                         mode='markers',
+                                         name='Data',
+                                         marker=dict(symbol='x',
+                                                     color='black')))
+                htmlfile = f"{minimizer}_fit_for_{self.result.costfun_tag}" \
+                    f"_{self.result.sanitised_name}.html"
+
+                html_file_name = os.path.join(self.figures_dir, htmlfile)
+                
+                plotly.offline.plot(
+                    fig,
+                    filename=html_file_name,
+                    auto_open=False
+                )
+                htmlfiles[minimizer] = htmlfile
+                
+
+        return htmlfiles
+
+        
+    
+    def plot_fit(self, result, df):
         """
         Updates self.line to show the fit using the passed in params.
         If self.line is empty it will create a new line.
@@ -243,6 +346,29 @@ class Plot:
                f"{self.result.costfun_tag}_{self.result.sanitised_name}.png"
         file_name = os.path.join(self.figures_dir, file)
         self.fig.savefig(file_name)
+
+        # Plotly implementation below
+#        fig = px.line(df.query(f"minimizer == {result.modified_minimizer_name(True)}"),
+#                      x="x",
+#                      y="y",
+#                      color="minimizer",
+#                      title=self.result.sanitised_name,
+#                      markers=True)
+        # add the raw data as a scatter plot
+#        fig.add_trace(go.Scatter(x=df.query("minimizer == 'Data'")["x"].to_list(),#
+#                                 y=df.query("minimizer == 'Data'")["y"].to_list(),
+#                                mode='markers',
+#                                name='Data',
+#                                marker=dict(symbol='x', color='black')))
+#       htmlfile = f"{result.sanitised_min_name(True)}_fit_for_"\
+#           f"{self.result.costfun_tag}_{self.result.sanitised_name}.html"
+#       html_file_name = os.path.join(self.figures_dir, htmlfile)
+#       
+#       plotly.offline.plot(
+#           fig,
+#           filename=html_file_name
+#       )
+
         return file
 
     @classmethod
