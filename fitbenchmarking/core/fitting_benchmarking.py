@@ -12,7 +12,6 @@ import warnings
 import numpy as np
 from tqdm import tqdm, trange
 from tqdm.contrib.logging import logging_redirect_tqdm
-from codecarbon import EmissionsTracker
 
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
@@ -557,12 +556,15 @@ def perform_fit(controller, options, grabbed_output):
         with grabbed_output:
             controller.validate()
             # Calls timeit repeat with repeat = num_runs and number = 1
-            with EmissionsTracker() as tracker:
-                runtime_list = timeit.Timer(
-                    setup=controller.prepare,
-                    stmt=controller.execute
-                ).repeat(num_runs, 1)
-            emissions = tracker.final_emissions / num_runs
+            runtime_list = timeit.Timer(
+                setup=controller.prepare,
+                stmt=controller.execute
+            ).repeat(num_runs, 1)
+            emissions_list = [controller.emissions_tracker[i].final_emissions
+                              for i in range(0,num_runs)]
+            emissions = np.mean(emissions_list)
+            # reset emissions tracker
+            controller.emissions_tracker = []
 
             runtime = sum(runtime_list) / num_runs
             controller.cleanup()
