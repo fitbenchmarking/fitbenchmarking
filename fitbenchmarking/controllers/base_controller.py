@@ -217,9 +217,11 @@ class Controller:
         """
         self.emissions_tracker[-1].start()
         self.timer.start()
-        self.fit()
-        self.timer.stop()
-        self.emissions_tracker[-1].stop()
+        try:
+            self.fit()
+            self.timer.stop()
+        finally:
+            self.emissions_tracker[-1].stop()
 
     def eval_chisq(self, params, x=None, y=None, e=None):
         """

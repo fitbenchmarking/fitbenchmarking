@@ -563,8 +563,6 @@ def perform_fit(controller, options, grabbed_output):
             emissions_list = [controller.emissions_tracker[i].final_emissions
                               for i in range(0, num_runs)]
             emissions = np.mean(emissions_list)
-            # reset emissions tracker
-            controller.emissions_tracker = []
 
             runtime = sum(runtime_list) / num_runs
             controller.cleanup()
@@ -615,8 +613,10 @@ def perform_fit(controller, options, grabbed_output):
     if hasattr(controller, 'clear_matlab'):
         controller.clear_matlab()
 
-    # Reset the controller timer once exceptions have been handled
+    # Reset the controller timer and emissions tracker
+    # once exceptions have been handled
     controller.timer.reset()
+    controller.emissions_tracker.clear()
 
     if controller.flag in [3, 6, 7]:
         # If there was an exception, set the runtime and
