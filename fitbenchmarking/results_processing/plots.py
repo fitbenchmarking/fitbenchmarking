@@ -29,6 +29,8 @@ class Plot:
                          "marker": "x",
                          "linestyle": '',
                          "linewidth": 1}
+    data_marker = {"symbol": "x",
+                   "color": "black"}
     ini_guess_plot_options = {"label": "Starting Guess",
                               "zorder": 1,
                               "color": "#ff6699",
@@ -40,6 +42,13 @@ class Plot:
                              "marker": "",
                              "linestyle": ':',
                              "linewidth": 3}
+    best_fit_line = {"dash": "dot",
+                     "color": '#6699ff'}
+    legend_options = {"yanchor": "top",
+                      "y": 0.99,
+                      "xanchor": "left",
+                      "x": 0.01,
+                      "bgcolor": 'rgba(0,0,0,0.1)'}
     fit_plot_options = {"zorder": 2,
                         "color": "#99ff66",
                         "marker": "",
@@ -49,11 +58,14 @@ class Plot:
                                  "marker": "",
                                  "linestyle": '-',
                                  "linewidth": 2}
+    summary_best_plot_line = {"width": 2}
     summary_plot_options = {"zorder": 1,
                             "marker": "",
                             "linestyle": '-',
                             "linewidth": 1,
                             "alpha": 0.5, }
+    summary_plot_line = {"width": 1,}
+
 
     def __init__(self, best_result, options, figures_dir):
         self.plots_failed = True
@@ -190,7 +202,8 @@ class Plot:
                                  y=df.query("minimizer == 'Data'")["y"].to_list(),
                                  mode='markers',
                                  name='Data',
-                                 marker=dict(symbol='x', color='black')))
+                                 marker=self.data_marker))
+        fig.update_layout(legend=self.legend_options)
         htmlfile = f"start_for_{self.result.sanitised_name}.html"
         html_file_name = os.path.join(self.figures_dir, htmlfile)
         
@@ -257,7 +270,8 @@ class Plot:
                                  y=df.query("minimizer == 'Data'")["y"].to_list(),
                                  mode='markers',
                                  name='Data',
-                                 marker=dict(symbol='x', color='black')))
+                                 marker=self.data_marker))
+        fig.update_layout(legend=self.legend_options)
         htmlfile = f"{result.sanitised_min_name(True)}_fit_for_"\
             f"{self.result.costfun_tag}_{self.result.sanitised_name}.html"
         html_file_name = os.path.join(self.figures_dir, htmlfile)
@@ -296,15 +310,14 @@ class Plot:
                                              y=df.query("best")["y"].to_list(),
                                              mode='lines',
                                              name=f'Best Fit ({df.query("best")["minimizer"].unique()})',
-                                             line=dict(dash='dash',
-                                                       color='red')))
+                                             line=self.best_fit_line))
                 # add the raw data as a scatter plot
                 fig.add_trace(go.Scatter(x=df.query("minimizer == 'Data'")["x"].to_list(),
                                          y=df.query("minimizer == 'Data'")["y"].to_list(),
                                          mode='markers',
                                          name='Data',
-                                         marker=dict(symbol='x',
-                                                     color='black')))
+                                         marker=self.data_marker))
+                fig.update_layout(legend=self.legend_options)
                 htmlfile = f"{minimizer}_fit_for_{self.result.costfun_tag}" \
                     f"_{self.result.sanitised_name}.html"
 
@@ -397,33 +410,75 @@ class Plot:
         col_vals = np.linspace(0, 1, len(categories))
         colours = iter(cmap(col_vals))
 
+        plotly_colours = plotly.colors.sample_colorscale(
+            plotly.colors.sequential.Rainbow,
+            samplepoints=col_vals)
+            
         first_result = next(iter(categories.values()))[0]
 
+        plotlyfig = go.Figure()
+        
         # Plot data
         if "weighted_nlls" in options.cost_func_type:
             ax.errorbar(first_result.data_x,
                         first_result.data_y,
                         yerr=first_result.data_e,
                         **cls.data_plot_options)
+            error_y = dict(
+                type='data',
+                array=first_result.data_e,
+                color='rgb(0,0,0,0.8)',
+                thickness=1,
+                visible=True)
         else:
             ax.plot(first_result.data_x,
                     first_result.data_y,
                     **cls.data_plot_options)
-
+            error_y = None
+        plotlyfig.add_trace(go.Scatter(x=first_result.data_x,
+                                       y=first_result.data_y,
+                                       error_y=error_y,
+                                       mode='markers',
+                                       name='Data',
+                                       marker=cls.data_marker))
+        
         # Setup x for rest of plots
         x = first_result.data_x
         x = first_result.data_x[first_result.sorted_index]
 
-        for (key, results), colour in zip(categories.items(), colours):
+        for (key, results), colour in zip(categories.items(), plotly_colours):
             # Plot category
             for result in results:
                 if result.params is not None:
                     y = result.fin_y[result.sorted_index]
                     plot_options = cls.summary_best_plot_options \
                         if result.is_best_fit else cls.summary_plot_options
-                    plot_options['color'] = colour
-                    plot_options['label'] = key if result.is_best_fit else ''
+                    line = cls.summary_best_plot_line \
+                        if result.is_best_fit else cls.summary_plot_line
+                    #plot_options['color'] = colour
 
+                    line["color"] = colour
+                    plot_options['label'] = key if result.is_best_fit else ''
+                    label = key if result.is_best_fit else ''
+                    if result.is_best_fit:
+                        line = cls.summary_best_plot_line
+                        line["color"] = colour
+                        showlabel=True
+                    else:
+                        line = cls.summary_plot_line
+                        transparency = 0.5
+                        line["color"] = 'rgba' + colour[3:-1] + ', ' + str(transparency) + ')'
+                        showlabel=False
+
+
+                    plotlyfig.add_trace(go.Scatter(
+                        x=first_result.data_x[first_result.sorted_index],
+                        y=result.fin_y[result.sorted_index],
+                        mode='lines',
+                        name=label,
+                        line=line,
+                        showlegend=result.is_best_fit
+                    ))
                     ax.plot(x, y, **plot_options)
                     # log scale
                     if result.plot_scale == "loglog":
@@ -443,4 +498,11 @@ class Plot:
         fname = f'summary_plot_for_{first_result.sanitised_name}.png'
         fig.savefig(os.path.join(figures_dir, fname))
         plt.close(fig)
-        return fname
+
+        html_fname = f'summary_plot_for_{first_result.sanitised_name}.html'
+        plotly.offline.plot(
+            plotlyfig,
+            filename=os.path.join(figures_dir, html_fname),
+            auto_open=False
+        )
+        return html_fname

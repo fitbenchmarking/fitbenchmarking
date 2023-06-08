@@ -302,8 +302,8 @@ body {
  }
 }
 .wrapper {
- width:75%;
- max-width:850px;
+ width:80%;
+ max-width:max-content;
  margin:4rem auto;
  background:#fff;
  color:#383838;
