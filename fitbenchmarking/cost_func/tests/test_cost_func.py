@@ -385,7 +385,6 @@ class TestHellingerNLLSCostFunc(TestCase):
         H, _ = self.cost_function.hes_res(params=[5],
                                           x=self.x_val,
                                           y=self.y_val)
-        print(H)
         expected = np.array([[[-2.0, -16.0, -22.0],
                               [-2.0, -16.0, -22.0]],
                              [[-2.0, -16.0, -22.0],
@@ -504,7 +503,6 @@ class TestPoissonCostFunc(TestCase):
                               [300.96, 19201.6, 36303.2]],
                              [[300.96, 19201.6, 36303.2],
                               [300.96, 19201.6, 36303.2]]])
-        print(H)
         self.assertTrue(np.allclose(H, expected))
 
     def test_validate_problem_correct(self):
