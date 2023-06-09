@@ -552,17 +552,20 @@ def perform_fit(controller, options, grabbed_output):
     :rtype: tuple(float, float, float)
     """
     num_runs = options.num_runs
+    controller.emissions_tracking = 'emissions' in options.table_type
     try:
         with grabbed_output:
             controller.validate()
+            controller.prepare()
             # Calls timeit repeat with repeat = num_runs and number = 1
             runtime_list = timeit.Timer(
-                setup=controller.prepare,
                 stmt=controller.execute
             ).repeat(num_runs, 1)
-            emissions_list = [controller.emissions_tracker[i].final_emissions
-                              for i in range(0, num_runs)]
-            emissions = np.mean(emissions_list)
+            if controller.emissions_tracking:
+                #stop emissions tracking after all runs have completed
+                emissions = controller.emissions_tracker.stop() / num_runs
+            else:
+                emissions = np.inf
 
             runtime = sum(runtime_list) / num_runs
             controller.cleanup()
@@ -616,7 +619,12 @@ def perform_fit(controller, options, grabbed_output):
     # Reset the controller timer and emissions tracker
     # once exceptions have been handled
     controller.timer.reset()
-    controller.emissions_tracker.clear()
+    if controller.emissions_tracking:
+        try:
+            # ensure emissions tracker is stopped before deleting
+            controller.emissions_tracker.stop()
+        finally:
+            controller.emissions_tracker = None
 
     if controller.flag in [3, 6, 7]:
         # If there was an exception, set the runtime and

@@ -145,8 +145,12 @@ class Controller:
         # The timer used to check if the 'max_runtime' is exceeded.
         self.timer = cost_func.problem.timer
 
-        # Used to store emissions for each call to controller.execute
-        self.emissions_tracker = []
+        # Used to check whether to track emissions, dependent on
+        # selected options
+        self.track_emissions = None
+
+        # Used to store EmissionsTracker() object and emissions results
+        self.emissions_tracker = None
 
     @property
     def flag(self):
@@ -203,8 +207,10 @@ class Controller:
         if (self.minimizer is not None) and (self.parameter_set is not None):
             self.initial_params = \
                 list(self.starting_values[self.parameter_set].values())
-            self.emissions_tracker.append(EmissionsTracker())
             self.setup()
+            if self.track_emissions:
+                self.emissions_tracker = EmissionsTracker()
+                self.emissions_tracker.start()
         else:
             raise ControllerAttributeError('Either minimizer or parameter_set '
                                            'is set to None.')
@@ -215,13 +221,9 @@ class Controller:
         to check if the fit reaches the 'max_runtime'.
         In the middle, it calls self.fit().
         """
-        self.emissions_tracker[-1].start()
         self.timer.start()
-        try:
-            self.fit()
-            self.timer.stop()
-        finally:
-            self.emissions_tracker[-1].stop()
+        self.fit()
+        self.timer.stop()
 
     def eval_chisq(self, params, x=None, y=None, e=None):
         """

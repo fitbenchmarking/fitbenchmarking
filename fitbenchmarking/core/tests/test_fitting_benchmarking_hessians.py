@@ -117,6 +117,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
         self.cp = Checkpoint(self.options)
+        self.options.table_type = ['acc', 'runtime', 'compare', 'local_min']
 
     def tearDown(self) -> None:
         """
