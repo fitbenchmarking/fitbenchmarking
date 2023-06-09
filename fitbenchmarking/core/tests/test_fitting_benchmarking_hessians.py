@@ -182,6 +182,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         cost_func.problem.timer.total_elapsed_time = 5
         controller = DummyController(cost_func=cost_func)
         options = cost_func.problem.options
+        options.table_type = ['acc', 'runtime', 'compare', 'local_min']
         grabbed_output = output_grabber.OutputGrabber(options)
         controller.parameter_set = 0
 
@@ -204,6 +205,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         cost_func.jacobian.method = '2-point'
         controller = DummyController(cost_func=cost_func)
         options = problem.options
+        options.table_type = ['acc', 'runtime', 'compare', 'local_min']
         grabbed_output = output_grabber.OutputGrabber(options)
         controller.final_params = [[0.1, 0.1], [0.1, 0.1]]
         controller.parameter_set = 0
