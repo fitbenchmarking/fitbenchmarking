@@ -267,3 +267,12 @@ class CheckpointError(FitBenchmarkException):
     """
     class_message = 'An error occured during handling the checkpoint file.'
     error_code = 28
+
+
+class IncompatibleCostFunctionError(FitBenchmarkException):
+    """
+    Indicates that the cost function is not compatible with the given problem.
+    """
+    class_message = 'The selected cost function cannot be used with the ' \
+                    'given problem'
+    error_code = 29
