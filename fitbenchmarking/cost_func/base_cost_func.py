@@ -128,3 +128,11 @@ class CostFunc:
                           f'minimizer, {minimizer}, is not compatible with ' \
                           'the selected cost function'
                 raise IncompatibleMinimizerError(message)
+
+    def validate_problem(self):
+        """
+        Helper function to check if the problem definition is compatible with
+        the cost function.
+
+        By default do not raise an error.
+        """

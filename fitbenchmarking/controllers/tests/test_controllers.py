@@ -32,6 +32,8 @@ if TEST_TYPE in ['default', 'all']:
         ScipyGOController
     from fitbenchmarking.controllers.scipy_ls_controller import \
         ScipyLSController
+    from fitbenchmarking.controllers.nlopt_controller import \
+        NLoptController, nlopt
     from fitbenchmarking.controllers.lmfit_controller import LmfitController
 
 if TEST_TYPE == 'all':
@@ -462,6 +464,26 @@ class DefaultControllerTests(TestCase):
         controller._status = -1
         self.shared_tests.check_diverged(controller)
 
+    def test_nlopt(self):
+        """
+        NLoptController: Test for output shape
+        """
+        controller = NLoptController(self.cost_func)
+        controller.minimizer = 'LD_VAR2'
+
+        self.shared_tests.controller_run_test(controller)
+
+        controller._status = nlopt.SUCCESS
+        self.shared_tests.check_converged(controller)
+        controller._status = nlopt.XTOL_REACHED
+        self.shared_tests.check_converged(controller)
+        controller._status = nlopt.FTOL_REACHED
+        self.shared_tests.check_converged(controller)
+        controller._status = nlopt.MAXEVAL_REACHED
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = -1
+        self.shared_tests.check_diverged(controller)
+
     def test_lmfit(self):
         """
         LmfitController: Test for output shape
@@ -585,6 +607,17 @@ class ControllerBoundsTests(TestCase):
 
         controller = MantidController(self.cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
+
+        self.check_bounds(controller)
+
+    def test_nlopt(self):
+        """
+        NLoptController: Test that parameter bounds are
+        respected for bounded problems
+        """
+
+        controller = NLoptController(self.cost_func)
+        controller.minimizer = 'LD_LBFGS'
 
         self.check_bounds(controller)
 
