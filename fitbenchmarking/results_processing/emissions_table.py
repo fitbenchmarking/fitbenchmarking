@@ -18,8 +18,8 @@ class EmissionsTable(Table):
 
     Please note that for tracking CPU power usage on Windows or Mac,
     ``Intel Power Gadget`` shoud also be installed. For more information,
-    see the Methodology section of the
-    `codecarbon docs <https://mlco2.github.io/codecarbon/methodology.html#cpu>`_.
+    see the Methodology section of the `codecarbon docs
+    <https://mlco2.github.io/codecarbon/methodology.html#cpu>`_.
 
     """
 
