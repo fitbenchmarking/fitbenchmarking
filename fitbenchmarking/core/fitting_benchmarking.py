@@ -4,7 +4,6 @@ lower level functions to fit and benchmark a set of problems
 for a certain fitting software.
 """
 
-
 import os
 import timeit
 import warnings
@@ -21,6 +20,7 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result, misc, output_grabber
 from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               FitBenchmarkException,
+                                              IncompatibleCostFunctionError,
                                               IncompatibleMinimizerError,
                                               MaxRuntimeError, NoHessianError,
                                               NoJacobianError,
@@ -250,6 +250,12 @@ def loop_over_cost_function(problem, options, start_values_index,
     for cf in options.cost_func_type:
         cost_func_cls = create_cost_func(cf)
         cost_func = cost_func_cls(problem)
+        try:
+            cost_func.validate_problem()
+        except IncompatibleCostFunctionError:
+            LOGGER.info(
+                'Problem is not compatible with this cost function (%s)', cf)
+            continue
         #######################
         # Loops over software #
         #######################
