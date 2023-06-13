@@ -204,6 +204,7 @@ def setup_options(override_software: list = None,
     opts = Options()
     opts.num_runs = 1
     opts.make_plots = False
+    opts.table_type = ['acc','runtime','compare','local_min']
 
     # The software to test for the different test types.
     # - 'dfo' and 'minuit' are included but are unstable for other datasets.

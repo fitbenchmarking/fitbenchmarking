@@ -217,9 +217,8 @@ class Controller:
 
     def execute(self):
         """
-        Starts and stops emissions tracking, and the timer used
-        to check if the fit reaches the 'max_runtime'.
-        In the middle, it calls self.fit().
+        Starts and stops the timer used to check if the fit reaches
+        the 'max_runtime'. In the middle, it calls self.fit().
         """
         self.timer.start()
         self.fit()

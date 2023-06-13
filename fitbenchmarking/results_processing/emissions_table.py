@@ -16,6 +16,11 @@ class EmissionsTable(Table):
 
     Configuration for codecarbon is set in ``.codecarbon.config``.
 
+    Please note that for tracking CPU power usage on Windows or Mac,
+    ``Intel Power Gadget`` shoud also be installed. For more information,
+    see the Methodology section of the
+    `codecarbon docs <https://mlco2.github.io/codecarbon/methodology.html#cpu>`_.
+
     """
 
     def __init__(self, results, best_results, options, group_dir, pp_locations,
