@@ -5,7 +5,7 @@ For more information on usage type fitbenchmarking --help
 or for more general information, see the online docs at
 docs.fitbenchmarking.com.
 """
-
+import json
 import os
 import sys
 import textwrap
@@ -69,6 +69,30 @@ def get_parser() -> ArgumentParser:
                         default='',
                         help='The path to a fitbenchmarking options file')
 
+    merge_epilog = textwrap.dedent('''
+    Usage Examples:
+
+        $ fitbenchmarking-cp merge -f old_results/checkpoint.json to_add/checkpoint.json
+        $ fitbenchmarking-cp merge -f cp1 cp2 cp3 cp4 -o new_results/checkpoint.json
+    ''')
+    merge = subparsers.add_parser(
+        'merge',
+        description='Merge multiple checkpoint files into one',
+        help='Merge multiple checkpoint files into one',
+        epilog=merge_epilog)
+    merge.add_argument('-f', '--files',
+                       metavar='FILES',
+                       nargs='+',
+                       help='The checkpoint files to merge'
+                       )
+    merge.add_argument('-o', '--output-filename',
+                       metavar='OUTPUT',
+                       default='checkpoint.json',
+                       help='The name of the merged checkpoint file')
+    merge.add_argument('-s', '--strategy',
+                       metavar='STRATEGY',
+                       default='first',
+                       choices=['first', 'last'])
     return parser
 
 
@@ -109,8 +133,9 @@ def generate_report(options_file='', additional_options=None, debug=False):
     index_page = create_index_page(options, list(results), all_dirs)
     open_browser(index_page, options)
 
+
 @exception_handler
-def combine_data_sets(debug: 'bool'):
+def combine_data_sets(files: 'list[str]', output: 'str', debug: 'bool' = False):
     """
     Combine multiple checkpoint files into one following these rules:
      1) The output will be the same as combining them one at a time in
@@ -129,7 +154,7 @@ def combine_data_sets(debug: 'bool'):
          3b) If A and B share identical problems, the details not specified in
              3a are taken from A.
          3c) If problems in A and B are not identical but share a name, the name
-             of the project in B should be updated to ???
+             of the project in B should be updated to "<problem_name>*"
      4) Results
          4a) If results in A and B have identical problems and agree on name,
              software_tag, minimizer_tag, jacobian_tag, hessian_tag, and
@@ -150,9 +175,141 @@ def combine_data_sets(debug: 'bool'):
              warnings and mark the dataset in the checkpoint file.
              Note: Some datasets may be incompatible where others can be
                    successfully combined.
-    Args:
-        debug (bool): _description_
+     6) Unselected minimizers and failed problems will be discarded when
+        combining.
+
+    :param files: The files to combine.
+    :type files: list[str]
+    :param output: The name for the new checkpoint file.
+    :type output: str
+    :param debug: Enable debugging output.
+    :type debug: bool
     """
+    if len(files) < 2:
+        return
+    print(f"Loading {files[0]}...")
+    with open(files[0], 'r', encoding='utf-8') as f:
+        A = json.load(f)
+    for to_merge in files[1:]:
+        print(f"Merging {to_merge}...")
+        with open(to_merge, 'r', encoding='utf-8') as f:
+            B = json.load(f)
+        A = merge(A, B)
+    
+    print(f'Writing to {output}...')
+    with open(output, 'w', encoding='utf-8') as f:
+        json.dump(A, f)
+
+
+def merge(A, B):
+    """
+    Merge the results from A and B
+    This function can corrupt A and B, they should be discarded after calling.
+
+    :param A: The first set of results to merge
+    :type A: dict[str, list[FittingResult]]
+    :param B: Theset to merge into A
+    :type B: dict[str, list[FittingResult]]
+    """
+    for k in B:
+        if k not in A:
+            A[k] = B[k]
+            continue
+        A[k]['problems'], update_names = merge_problems(A[k]['problems'],
+                                                        B[k]['problems'])
+        for r in B[k]['results']:
+            if r['name'] in update_names:
+                r['name'] = update_names[r['name']]
+        A[k]['results'] = merge_results(A[k]['results'], B[k]['results'])
+        A[k]['failed_problems'] = []
+        softwares = set(r['software_tag'] for r in A[k]['results'])
+        A[k]['unselected_minimisers'] = {s: [] for s in softwares}
+
+    return A
+
+
+def merge_problems(A: 'dict[str, dict]', B: 'dict[str, dict]'):
+    """
+    Merge the problem sections of 2 checkpoint files.
+    If problems have matching names but different values, the problem from
+    B will be suffixed ith a "*".
+
+    In some cases this could lead to problems with several "*"s although this
+    seems unlikely for most use cases.
+
+    :param A: The first checkpoint problems dict to merge
+    :type A: dict[str, dict]
+    :param B: The second checkpoint problems dict to merge
+    :type B: dict[str, dict]
+    """
+    update_keys = {}
+    for k, prob in B.items():
+        # Handle case where A/B contains k, k*, k**, ... from previous merges
+        orig_k = k
+        k = k.rstrip('*')
+        prob['name'] = prob['name'].rstrip('*')
+        prob['problem_tag'] = prob['problem_tag'].rstrip('*')
+        while k in A:
+            A_prob = A[k]
+            # Identical - take problem from A
+            if (A_prob['ini_params'] == prob['ini_params']
+                    and A_prob['ini_y'] == prob['ini_y']
+                    and A_prob['x'] == prob['x']
+                    and A_prob['y'] == prob['y']
+                    and A_prob['e'] == prob['e']):
+                if orig_k != k:
+                    update_keys[orig_k] = k
+                break
+
+            # Agree on name but aren't identical
+            name_change = '{}*'
+            k = name_change.format(k)
+            prob['name'] = name_change.format(prob['name'])
+            prob['problem_tag'] = name_change.format(prob['problem_tag'])
+
+        else:  # k not in A (no break called)
+            A[k] = prob
+            if orig_k != k:
+                update_keys[orig_k] = k
+            continue
+    
+    return A, update_keys
+
+
+def merge_results(A: 'list[dict]', B: 'list[dict]'):
+    """
+    Merge the results sections of 2 checkpoint files.
+
+    :param A: The first checkpoint results list to merge
+    :type A: list[dict[str, any]]
+    :param B: The second checkpoint results list to merge
+    :type B: list[dict[str, any]]
+    """
+    A_key = {
+        (r['name'],
+         r['software_tag'],
+         r['minimizer_tag'],
+         r['jacobian_tag'],
+         r['hessian_tag'],
+         r['costfun_tag']): i
+        for i, r in enumerate(A)}
+
+    for res in B:
+        key = (res['name'],
+               res['software_tag'],
+               res['minimizer_tag'],
+               res['jacobian_tag'],
+               res['hessian_tag'],
+               res['costfun_tag'])
+        if key in A_key:
+            # Lowest accuracy strategy
+            if A[A_key[key]]['accuracy'] > res['accuracy']:
+                A[A_key[key]] = res
+        else:
+            A_key[key] = len(A)
+            A.append(res)
+
+    return A
 
 
 def main():
@@ -171,6 +328,10 @@ def main():
         generate_report(args.options_file,
                         additional_options,
                         debug=args.debug_mode)
+    elif args.subprog == 'merge':
+        combine_data_sets(files=args.files,
+                          output=args.output_filename,
+                          debug=args.debug_mode)
 
 
 if __name__ == '__main__':
