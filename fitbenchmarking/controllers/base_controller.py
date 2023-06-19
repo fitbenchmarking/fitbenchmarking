@@ -5,7 +5,6 @@ Implements the base class for the fitting software controllers.
 from abc import ABCMeta, abstractmethod
 
 import numpy
-from codecarbon import EmissionsTracker
 from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               IncompatibleHessianError,
                                               IncompatibleJacobianError,
@@ -145,13 +144,6 @@ class Controller:
         # The timer used to check if the 'max_runtime' is exceeded.
         self.timer = cost_func.problem.timer
 
-        # Used to check whether to track emissions, dependent on
-        # selected options
-        self.track_emissions = None
-
-        # Used to store EmissionsTracker() object and emissions results
-        self.emissions_tracker = None
-
     @property
     def flag(self):
         """
@@ -208,9 +200,6 @@ class Controller:
             self.initial_params = \
                 list(self.starting_values[self.parameter_set].values())
             self.setup()
-            if self.track_emissions:
-                self.emissions_tracker = EmissionsTracker()
-                self.emissions_tracker.start()
         else:
             raise ControllerAttributeError('Either minimizer or parameter_set '
                                            'is set to None.')
