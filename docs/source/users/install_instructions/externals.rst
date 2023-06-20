@@ -54,6 +54,24 @@ website <https://pace-neutrons.github.io/Horace/3.6.0/Download_and_setup.html>`_
 In addition, MATLAB and the MATLAB engine must be installed following the
 :ref:`instructions given below<matlab-install>`.
 
+.. _levmar-install:
+
+Levmar
+------
+
+Levmar is available on pip, however the latest release will only work up to Python 3.8.
+In order to use Levmar with newer versions of python, you are required to clone the
+repository and build it locally. This is fast and has been tested on Ubuntu 20.04.
+
+Instructions for linux are below, for other operating systems the process will be the same.
+
+```
+git clone git@github.com:bjodah/levmar.git
+cd levmar
+pip install .
+cd ..
+rm -rf levmar
+```
 
 Mantid
 ------
