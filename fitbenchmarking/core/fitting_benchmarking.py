@@ -8,9 +8,9 @@ import os
 import timeit
 import warnings
 
+from contextlib import nullcontext
 import numpy as np
 from codecarbon import EmissionsTracker
-from contextlib import nullcontext
 from tqdm import tqdm, trange
 from tqdm.contrib.logging import logging_redirect_tqdm
 
@@ -560,7 +560,7 @@ def perform_fit(controller, options, grabbed_output):
     :rtype: tuple(float, float, float)
     """
     num_runs = options.num_runs
-    
+
     track_emissions = 'emissions' in options.table_type
     if track_emissions:
         emissions_tracker = EmissionsTracker()
