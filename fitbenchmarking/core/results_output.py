@@ -379,8 +379,8 @@ def create_plots(options, results, best_results, figures_dir):
                 # Don't plot best again
                 if not result.is_best_fit:
                     if result.params is not None:
-                        cf = result.costfun_tag
-                        img_plot_path = plot_dict[cf].plot_fit(result,df)
+                        #cf = result.costfun_tag
+                        #img_plot_path = plot_dict[cf].plot_fit(result,df)
                         result.figure_link = plot_paths[result.sanitised_min_name(True)]
                     else:
                         result.figure_error = 'Minimizer failed to produce ' \
