@@ -130,8 +130,9 @@ Options are:
   The value of :math:`\frac{|| J^T r||}{||r||}` for those parameters is also returned.
   The output looks like ``{bool} (norm_value)``, and the colouring is red for false and cream for true.
   This option is only meaningful for least-squares cost functions.
+* ``emissions`` indicates that the resulting table should contain the CO\ :sub:`2` \ emissions for each of the minimizers.
 
-Default is ``acc``, ``runtime``, ``compare``, and ``local_min``.
+Default is ``acc``, ``runtime``, ``compare``, ``local_min``, and ``emissions``.
 
 .. code-block:: rst
 
@@ -140,3 +141,4 @@ Default is ``acc``, ``runtime``, ``compare``, and ``local_min``.
                 runtime
                 compare
                 local_min
+                emissions

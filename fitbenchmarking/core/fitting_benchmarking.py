@@ -8,7 +8,9 @@ import os
 import timeit
 import warnings
 
+from contextlib import nullcontext
 import numpy as np
+from codecarbon import EmissionsTracker
 from tqdm import tqdm, trange
 from tqdm.contrib.logging import logging_redirect_tqdm
 
@@ -515,11 +517,12 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
                             hess_name)
 
             # Perform the fit a number of times specified by num_runs
-            accuracy, runtime = perform_fit(
+            accuracy, runtime, emissions = perform_fit(
                 controller, options, grabbed_output)
             result_args = {'controller': controller,
                            'accuracy': accuracy,
-                           'runtime': runtime, }
+                           'runtime': runtime,
+                           'emissions': emissions}
             if problem.multifit:
                 # for multifit problems, multiple accuracy values are stored
                 # in a list i.e. we have multiple results
@@ -553,18 +556,29 @@ def perform_fit(controller, options, grabbed_output):
     :type options: fitbenchmarking.utils.options.Options
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
-    :return: The chi squared and runtime of the fit.
-    :rtype: tuple(float, float)
+    :return: The chi squared, runtime, and emissions of the fit.
+    :rtype: tuple(float, float, float)
     """
     num_runs = options.num_runs
+
+    track_emissions = 'emissions' in options.table_type
+    if track_emissions:
+        emissions_tracker = EmissionsTracker()
+    else:
+        emissions_tracker = nullcontext()
+    emissions = np.inf
     try:
         with grabbed_output:
             controller.validate()
-            # Calls timeit repeat with repeat = num_runs and number = 1
-            runtime_list = timeit.Timer(
-                setup=controller.prepare,
-                stmt=controller.execute
-            ).repeat(num_runs, 1)
+            controller.prepare()
+            with emissions_tracker:
+                # Calls timeit repeat with repeat = num_runs and number = 1
+                runtime_list = timeit.Timer(
+                    stmt=controller.execute
+                ).repeat(num_runs, 1)
+            if track_emissions:
+                # stop emissions tracking after all runs have completed
+                emissions = emissions_tracker.final_emissions / num_runs
 
             runtime = sum(runtime_list) / num_runs
             controller.cleanup()
@@ -621,6 +635,7 @@ def perform_fit(controller, options, grabbed_output):
     if controller.flag in [3, 6, 7]:
         # If there was an exception, set the runtime and
         # cost function value to be infinite
+        emissions = np.inf
         runtime = np.inf
         multi_fit = controller.problem.multifit
         controller.final_params = \
@@ -634,4 +649,4 @@ def perform_fit(controller, options, grabbed_output):
         # been respected by the minimizer and set error
         # flag if not
         controller.check_bounds_respected()
-    return accuracy, runtime
+    return accuracy, runtime, emissions
