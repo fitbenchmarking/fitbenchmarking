@@ -86,113 +86,15 @@ class Plot:
 
         self.legend_location = "upper left"
         self.title_size = 10
-
-        # Create a single reusable plot containing the problem data.
-        # We store a line here, which is updated to change the graph where we
-        # know the rest of the graph is untouched between plots.
-        # This is more efficient that the alternative of creating a new graph
-        # every time.
-        #self.plotlyfig = go.Figure()
-        #if "weighted_nlls" in options.cost_func_type:
-        #    error_y = dict(
-        #        type='data',
-        #        array=first_result.data_e,
-        #        color='rgb(0,0,0,0.8)',
-        #        thickness=1,
-        #        visible=True)
-        #else:
-        #    error_y = None
-        #self.plotlyfig.add_trace(go.Scatter(x=first_result.data_x,
-        #                                    y=first_result.data_y,
-        #                                    error_y=error_y,
-        #                                    mode='markers',
-        #                                    name='Data',
-        #                                    marker=self.data_marker))
-
-        # remove: mpl
-        #self.fig = plt.figure()
-        #self.ax = self.fig.add_subplot(1, 1, 1)
-        #self.line_plot = None
-
-        #use_errors = bool(self.options.cost_func_type == "weighted_nlls")
-        # Plot the data that functions were fitted to
-        #self.plot_data(use_errors,
-        # self.data_plot_options)
-        # reset line_plot as base data won't need updating
-        #self.line_plot = None
-        # end remove
         
         # Store sorted x values for plotting
         self.x = self.result.data_x[self.result.sorted_index]
 
 
-    def __del__(self):
-        """
-        Close the matplotlib figure
-        """
-#        if not self.plots_failed:
-#            plt.close(self.fig)
-
-    #def format_plot(self):
-     #   """
-     #   Performs post plot processing to annotate the plot correctly
-     #   """
-        # log scale
-        #if self.result.plot_scale == "loglog":
-        #    self.ax.set_xscale("log", nonpositive='clip')
-        #    self.ax.set_yscale("log", nonpositive='clip')
-        #elif self.result.plot_scale == "logy":
-        #    self.ax.set_yscale("log", nonpositive='clip')
-        #elif self.result.plot_scale == "logx":
-        #    self.ax.set_xscale("log", nonpositive='clip')
-
-        # linear scale if otherwise
-        #self.ax.set_xlabel("X")
-        #self.ax.set_ylabel("Y")
-        #self.ax.set_title(self.result.name,
-        #                  fontsize=self.title_size)
-        #self.ax.legend(loc=self.legend_location)
-        #self.fig.set_tight_layout(True)
-
-#    def plot_data(self, errors, plot_options, x=None, y=None):
+#    def __del__(self):
 #        """
-#        Plots the data given
-#
-#        :param errors: whether fit minimizer uses errors
-#        :type errors: bool
-#        :param plot_options: Values for style of the data to plot,
-#                                 for example color and zorder
-#        :type plot_options: dict
-#        :param x: x values to be plotted
-#        :type x: np.array
-#        :param y: y values to be plotted
-#        :type y: np.array
+#        Close the matplotlib figure
 #        """
-#        if x is None:
-#            x = self.result.data_x
-#        if y is None:
-#            y = self.result.data_y
-#        if errors:
-#            # Plot with errors
-#            self.ax.clear()
-#            self.ax.errorbar(x, y, yerr=self.result.data_e,
-#                             **plot_options)
-#        else:
-#            # Plot without errors
-#            if self.line_plot is None:
-#                # Create a new line and store
-#                self.line_plot = self.ax.plot(x, y, **plot_options)[0]
-#            else:
-#                # Update line instead of recreating
-#                self.line_plot.set_data(x, y)
-#                # Update style
-#                for k, v in plot_options.items():
-#                    try:
-#                        getattr(self.line_plot, f'set_{k}')(v)
-#                    except AttributeError:
-#                        pass
-#
-#                self.fig.canvas.draw()
 
     def plot_initial_guess(self,df):
         """
@@ -204,15 +106,7 @@ class Plot:
         :return: path to the saved file
         :rtype: str
         """        
-       # self.plot_data(errors=False,
-       #                plot_options=self.ini_guess_plot_options,
-       #                x=self.x,
-       #                y=self.result.ini_y[self.result.sorted_index])
-       # self.format_plot()
-       # file = f"start_for_{self.result.sanitised_name}.png"
-       # file_name = os.path.join(self.figures_dir, file)
-       # self.fig.savefig(file_name)
-
+  
         # Plotly implementation below
         fig = px.line(df.query("minimizer in ['Starting Guess']"),
                       x="x",
@@ -244,79 +138,21 @@ class Plot:
         
         return htmlfile
 
-    def plot_best(self, result, df):
+    def plot_best(self, result):
         """
-        Plots the fit along with the data using the "best_fit" style
-        and saves to a file
+        Returns the filename of the best fit plot.
 
         :param result: The result to plot
         :type result: FittingResult
-        :param df: A datafrom holding the data
-        :type df: Pandas dataframe
 
         :return: path to the saved file
         :rtype: str
         """
         label = f'Best Fit ({result.modified_minimizer_name(True)})'
-
-        # Plot line and save.
-        # This should have the style of fit plot options and the colour of
-        # best fit plot options.
-        # Then the plot should be saved and updated to use only best fit style
-        # for future plots.
-#        plot_options_dict = self.fit_plot_options.copy()
-#        plot_options_dict['label'] = label
-#        plot_options_dict['color'] = self.best_fit_plot_options['color']
-#
-#        y = result.fin_y[result.sorted_index]
-#        self.plot_data(errors=False,
-#                       plot_options=plot_options_dict,
-#                       y=y)
-#        self.format_plot()
-#        file = f"{result.sanitised_min_name(True)}_fit_for_" \
-#               f"{self.result.costfun_tag}_{self.result.sanitised_name}.png"
-#        file_name = os.path.join(self.figures_dir, file)
-#        self.fig.savefig(file_name)
-
-#        # Update to correct linestyle
-#        plot_options_dict = self.best_fit_plot_options.copy()
-#        plot_options_dict['label'] = label
-#        self.plot_data(errors=False,
-#                       plot_options=plot_options_dict,
-#                       x=self.x,
-#                       y=y)
-#        
-#        # Make sure line wont be replaced by resetting line_plot
-#        self.line_plot = None
-#
-        # Plotly implementation below
-        fig = px.line(df.query("best"),
-                      x="x",
-                      y="y",
-                      color="minimizer",
-                      title=self.result.name,
-                      markers=True)
-        # add the raw data as a scatter plot
-        fig.add_trace(go.Scatter(x=df.query("minimizer == 'Data'")["x"].to_list(),
-                                 y=df.query("minimizer == 'Data'")["y"].to_list(),
-                                 mode='markers',
-                                 name='Data',
-                                 marker=self.data_marker))
-        fig.update_layout(legend=self.legend_options)
-
-        if result.plot_scale in ["loglog","logx"]:
-            fig.update_xaxes(type="log")
-        if result.plot_scale in ["loglog", "logy"]:
-            fig.update_yaxes(type="log")
-        
+      
         htmlfile = f"{result.sanitised_min_name(True)}_fit_for_"\
             f"{self.result.costfun_tag}_{self.result.sanitised_name}.html"
         html_file_name = os.path.join(self.figures_dir, htmlfile)
-        plotly.offline.plot(
-            fig,
-            filename=html_file_name,
-            auto_open=False
-        )
         
         return htmlfile
 
@@ -374,58 +210,7 @@ class Plot:
                 htmlfiles[minimizer] = htmlfile
                 
 
-        return htmlfiles
-
-        
-    
-#    def plot_fit(self, result, df):
-#        """
-#        Updates self.line to show the fit using the passed in params.
-#        If self.line is empty it will create a new line.
-#        Stores the plot in a file
-#
-#        :param result: The result to plot
-#        :type result: FittingResult
-#
-#        :return: path to the saved file
-#        :rtype: str
-#        """
-#        plot_options_dict = self.fit_plot_options.copy()
-#        plot_options_dict['label'] = result.modified_minimizer_name(True)
-#
-#        self.plot_data(errors=False,
-#                       plot_options=plot_options_dict,
-#                       x=self.x,
-#                       y=result.fin_y[result.sorted_index])
-#        self.format_plot()
-#        file = f"{result.sanitised_min_name(True)}_fit_for_"\
-#               f"{self.result.costfun_tag}_{self.result.sanitised_name}.png"
-#        file_name = os.path.join(self.figures_dir, file)
-#        self.fig.savefig(file_name)
-
-        # Plotly implementation below
-#        fig = px.line(df.query(f"minimizer == {result.modified_minimizer_name(True)}"),
-#                      x="x",
-#                      y="y",
-#                      color="minimizer",
-#                      title=self.result.sanitised_name,
-#                      markers=True)
-        # add the raw data as a scatter plot
-#        fig.add_trace(go.Scatter(x=df.query("minimizer == 'Data'")["x"].to_list(),#
-#                                 y=df.query("minimizer == 'Data'")["y"].to_list(),
-#                                mode='markers',
-#                                name='Data',
-#                                marker=dict(symbol='x', color='black')))
-#       htmlfile = f"{result.sanitised_min_name(True)}_fit_for_"\
-#           f"{self.result.costfun_tag}_{self.result.sanitised_name}.html"
-#       html_file_name = os.path.join(self.figures_dir, htmlfile)
-#       
-#       plotly.offline.plot(
-#           fig,
-#           filename=html_file_name
-#       )
-#
-#        return file
+        return htmlfiles        
 
     @classmethod
     def plot_summary(cls, categories, title, options, figures_dir):
@@ -445,14 +230,8 @@ class Plot:
         :return: The path to the new plot
         :rtype: str
         """
-#        fig = plt.figure()
-#        ax = fig.add_subplot(1, 1, 1)
-#
-#        # Get a colour for each category
-#        cmap = plt.cm.get_cmap('rainbow')
+
         col_vals = np.linspace(0, 1, len(categories))
-#        colours = iter(cmap(col_vals))
-#
         plotly_colours = plotly.colors.sample_colorscale(
             plotly.colors.sequential.Rainbow,
             samplepoints=col_vals)
@@ -463,10 +242,6 @@ class Plot:
         
 #        # Plot data
         if "weighted_nlls" in options.cost_func_type:
-#            ax.errorbar(first_result.data_x,
-#                        first_result.data_y,
-#                        yerr=first_result.data_e,
-#                        **cls.data_plot_options)
             error_y = dict(
                 type='data',
                 array=first_result.data_e,
@@ -474,9 +249,6 @@ class Plot:
                 thickness=1,
                 visible=True)
         else:
-#            ax.plot(first_result.data_x,
-#                    first_result.data_y,
-#                    **cls.data_plot_options)
             error_y = None
         plotlyfig.add_trace(go.Scatter(x=first_result.data_x,
                                        y=first_result.data_y,
@@ -486,7 +258,6 @@ class Plot:
                                        marker=cls.data_marker))
         
 #        # Setup x for rest of plots
-#        x = first_result.data_x
         x = first_result.data_x[first_result.sorted_index]
 
         for (key, results), colour in zip(categories.items(), plotly_colours):
@@ -498,7 +269,6 @@ class Plot:
                         if result.is_best_fit else cls.summary_plot_options
                     line = cls.summary_best_plot_line \
                         if result.is_best_fit else cls.summary_plot_line
-                    #plot_options['color'] = colour
 
                     line["color"] = colour
                     plot_options['label'] = key if result.is_best_fit else ''
@@ -522,33 +292,11 @@ class Plot:
                         line=line,
                         showlegend=result.is_best_fit
                     ))
-#                    ax.plot(x, y, **plot_options)
-#                    # log scale
-#                    if result.plot_scale == "loglog":
-#                        ax.set_xscale("log", nonpositive='clip')
-#                        ax.set_yscale("log", nonpositive='clip')
-#                    elif result.plot_scale == "logy":
-#                        ax.set_yscale("log", nonpositive='clip')
-#                    elif result.plot_scale == "logx":
-#                        ax.set_xscale("log", nonpositive='clip')
-#                        
-#                    ax.set_xlabel("X")
-#                    ax.set_ylabel("Y")
-#                    ax.set_title(title,
-#                                 fontsize=10)
-#                    ax.legend(loc="upper left")
-#                    fig.set_tight_layout(True)
 
                     if result.plot_scale in ["loglog","logx"]:
                         plotlyfig.update_xaxes(type="log")
                     if result.plot_scale in ["loglog", "logy"]:
                         plotlyfig.update_yaxes(type="log")
-
-
-
- #       fname = f'summary_plot_for_{first_result.sanitised_name}.png'
- #       fig.savefig(os.path.join(figures_dir, fname))
- #       plt.close(fig)
 
         html_fname = f'summary_plot_for_{first_result.sanitised_name}.html'
         plotly.offline.plot(
