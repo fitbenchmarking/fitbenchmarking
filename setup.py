@@ -25,6 +25,7 @@ setup(
                       'tqdm>=4.60',
                       'numpy<1.24',
                       'matplotlib>=2.0',
+                      'pandas>=5.0.0',
                       'scipy>=0.18',
                       'lxml',
                       'pandas>=1.3',
