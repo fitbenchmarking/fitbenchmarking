@@ -170,7 +170,7 @@ class Options:
          'make_plots': [True, False],
          'pbar': [True, False],
          'comparison_mode': ['abs', 'rel', 'both'],
-         'table_type': ['acc', 'runtime', 'compare', 'local_min'],
+         'table_type': ['acc', 'runtime', 'compare', 'local_min', 'emissions'],
          'results_browser': [True, False],
          'colour_map': plt.colormaps()}
     VALID_LOGGING = \
@@ -293,7 +293,7 @@ class Options:
          'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
          'results_browser': True,
-         'table_type': ['acc', 'runtime', 'compare', 'local_min'],
+         'table_type': ['acc', 'runtime', 'compare', 'local_min', 'emissions'],
          'run_name': '',
          'checkpoint_filename': 'checkpoint.json',
          }

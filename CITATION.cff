@@ -1,0 +1,100 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  FitBenchmarking: an open source Python package comparing
+  data fitting software
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Anders
+    family-names: Markvardsen
+    affiliation: STFC, ISIS Neutron and Muon facility
+    orcid: 'https://orcid.org/0000-0001-8974-2868'
+  - given-names: Tyrone
+    family-names: Rees
+    affiliation: STFC, Scientific Computing Department
+    orcid: 'https://orcid.org/0000-0003-0476-2259'
+  - given-names: Michael
+    family-names: Wathen
+    affiliation: STFC, Scientific Computing Department/Plymouth Marine Laboratory
+    orcid: 'https://orcid.org/0000-0001-5603-8073'
+  - given-names: Andrew
+    family-names: Lister
+    affiliation: STFC, Scientific Computing Department
+    orcid: 'https://orcid.org/0000-0003-0861-4034'
+  - given-names: Jessica
+    family-names: Farmer
+    affiliation: STFC, Scientific Computing Department
+  - given-names: Rabiya
+    family-names: Farooq
+    affiliation: STFC, ISIS Neutron and Muon facility
+  - given-names: Joshua
+    family-names: Kitenge
+    affiliation: STFC, Scientific Computing Department
+  - given-names: Jacob
+    family-names: Wilkins
+    affiliation: STFC, Scientific Computing Department
+  - given-names: Sarah
+    family-names: Hanrahan
+    affiliation: STFC, Strategy, Planning and Communications Directorate
+  - given-names: Benjamin
+    family-names: Peters
+    affiliation: STFC, Technology Department
+  - given-names: Robert
+    family-names: Applin
+    affiliation: STFC, ISIS Neutron and Muon facility
+    orcid: 'https://orcid.org/0000-0003-3586-3992'
+  - given-names: Jaroslav
+    family-names: Fowkes
+    affiliation: STFC, Scientific Computing Department
+    orcid: 'https://orcid.org/0000-0002-8048-4572'
+  - given-names: Patrick
+    family-names: Odagiu
+    affiliation: STFC, ISIS Neutron and Muon facility
+  - given-names: Atijit
+    family-names: Anuchitanukul
+    affiliation: STFC, ISIS Neutron and Muon facility
+  - given-names: Tom
+    family-names: Farmer
+    affiliation: STFC, ISIS Neutron and Muon facility/Culham Centre for Fusion Energy
+  - given-names: Anthony
+    family-names: Lim
+    affiliation: STFC, ISIS Neutron and Muon facility
+  - given-names: Federico Montesino
+    family-names: Pouzols
+    affiliation: STFC, ISIS Neutron and Muon facility/European Southern Observatory
+    orcid: 'https://orcid.org/0000-0002-2981-5612'
+  - given-names: Tim
+    family-names: Snow
+    affiliation: Diamond Light Source
+    orcid: 'https://orcid.org/0000-0001-7146-6885'
+  - given-names: Andrew
+    family-names: McCluskey
+    affiliation: Diamond Light Source/European Spallation Source
+    orcid: 'https://orcid.org/0000-0003-3381-5911'
+identifiers:
+  - type: doi
+    value: 10.21105/joss.03127
+    description: FitBenchmarking JOSS Paper
+  - type: doi
+    value: 10.5281/zenodo.4738576
+    description: Release on Zenodo
+  - type: url
+    value: >-
+      https://github.com/fitbenchmarking/fitbenchmarking/releases/tag/v0.2.0
+    description: Release on GitHub
+repository-code: 'https://github.com/fitbenchmarking/fitbenchmarking'
+url: 'https://fitbenchmarking.github.io'
+abstract: >-
+  FitBenchmarking is an open source Python package that was
+  developed to compare how different nonlinear least squares
+  software fitting packages perform on various fitting
+  problems.
+license: BSD-3-Clause
+commit: 2081915d85d7c472fb89775f74e72a5aab7c4e09
+version: 0.2.0
+date-released: '2022-05-31'

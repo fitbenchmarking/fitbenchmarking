@@ -18,11 +18,12 @@ Tables
     acc
     runtime
     local_min
+    emissions
 
 Display modes
 -------------
 
-The tables for ``accuracy``, ``runtime`` and ``compare`` have three display
+The tables for ``accuracy``, ``runtime``, ``emissions``, and ``compare`` have three display
 modes:
 
 .. prettyprintmodulevalue::
