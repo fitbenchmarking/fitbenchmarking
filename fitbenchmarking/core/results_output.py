@@ -344,9 +344,9 @@ def create_plots(options, results, best_results, figures_dir):
                             'cost_fucntion': cf,
                             'best': result.is_best_fit}
                 df[cf] = pd.concat([df[cf], pd.DataFrame(datatype)],
-                               axis=0,
-                               ignore_index=True)
-        
+                                   axis=0,
+                                   ignore_index=True)
+
         # For each result, if it succeeded, create a plot and add plot links to
         # the results object
         for cf, cat_results in prob_result.items():
@@ -366,16 +366,16 @@ def create_plots(options, results, best_results, figures_dir):
             # If none of the fits succeeded, params could be None
             # Otherwise, add the best fit to the plot
             if best_dict[cf].params is not None:
-                plot_path = plot.plot_best(best_dict[cf])
+                plot_path = plot.best_filename(best_dict[cf])
                 best_dict[cf].figure_link = plot_path
             else:
-                best_dict[cf].figure_error = 'Minimizer failed to produce any ' \
-                    'parameters'
+                best_dict[cf].figure_error = 'Minimizer failed to produce ' \
+                    'any parameters'
             best_dict[cf].start_figure_link = initial_guess_path[cf]
-            plot_dict[cf] = plot        
+            plot_dict[cf] = plot
 
             plot_paths = plot.plotly_fit(df[cf])
-            
+
             # Check if plot was successful
             if cf not in plot_dict:
                 continue
