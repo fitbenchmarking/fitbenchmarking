@@ -62,13 +62,12 @@ class Plot:
     summary_plot_line = {"width": 1}
 
     def __init__(self, best_result, options, figures_dir):
-        self.plots_failed = True
         self.result = best_result
 
+        self.plots_failed = True
         if self.result.multivariate:
             raise PlottingError(
                 'Plots cannot be generated for multivariate problems')
-
         if self.result.problem_format == 'horace':
             raise PlottingError(
                 'Plots cannot be generated for Horace problems')
@@ -77,12 +76,6 @@ class Plot:
         self.options = options
 
         self.figures_dir = figures_dir
-
-        self.legend_location = "upper left"
-        self.title_size = 10
-
-        # Store sorted x values for plotting
-        self.x = self.result.data_x[self.result.sorted_index]
 
     def plot_initial_guess(self, df):
         """
@@ -146,7 +139,7 @@ class Plot:
         Uses plotly to plot the calculated fit, along with the best fit.
         Stores the plot in a file
 
-        :param df: A datafrom holding the data
+        :param df: A dataframe holding the data
         :type df: Pandas dataframe
 
         :return: path to the saved file
@@ -275,6 +268,10 @@ class Plot:
                         line=line,
                         showlegend=result.is_best_fit
                     ))
+
+                    plotlyfig.update_layout(
+                        title=title
+                        )
 
                     if result.plot_scale in ["loglog", "logx"]:
                         plotlyfig.update_xaxes(type="log")
