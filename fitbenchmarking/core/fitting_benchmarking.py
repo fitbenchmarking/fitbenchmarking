@@ -517,10 +517,11 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
                             hess_name)
 
             # Perform the fit a number of times specified by num_runs
-            accuracy, runtime, emissions = perform_fit(
+            accuracy, runtime_list, runtime, emissions = perform_fit(
                 controller, options, grabbed_output)
             result_args = {'controller': controller,
                            'accuracy': accuracy,
+                           'runtime_list': runtime_list,
                            'runtime': runtime,
                            'emissions': emissions}
             if problem.multifit:
@@ -556,8 +557,9 @@ def perform_fit(controller, options, grabbed_output):
     :type options: fitbenchmarking.utils.options.Options
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
-    :return: The chi squared, runtime, and emissions of the fit.
-    :rtype: tuple(float, float, float)
+    :return: The chi squared, runtime_list, (mean) runtime,
+             and emissions of the fit.
+    :rtype: tuple(float, list[float], float, float)
     """
     num_runs = options.num_runs
 
@@ -638,6 +640,7 @@ def perform_fit(controller, options, grabbed_output):
         emissions = np.inf
         runtime = np.inf
         multi_fit = controller.problem.multifit
+        runtime_list = [np.inf] * num_runs
         controller.final_params = \
             None if not multi_fit \
             else [None] * len(controller.data_x)
@@ -649,4 +652,4 @@ def perform_fit(controller, options, grabbed_output):
         # been respected by the minimizer and set error
         # flag if not
         controller.check_bounds_respected()
-    return accuracy, runtime, emissions
+    return accuracy, runtime_list, runtime, emissions

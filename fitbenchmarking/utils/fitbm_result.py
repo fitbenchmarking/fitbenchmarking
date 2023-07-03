@@ -26,6 +26,7 @@ class FittingResult:
     def __init__(self,
                  controller: 'Controller',
                  accuracy: 'float | list[float]' = np.inf,
+                 runtime_list: 'list[float]' = [np.inf],
                  runtime: 'float' = np.inf,
                  emissions: 'float' = np.inf,
                  dataset: 'Optional[int]' = None) -> None:
@@ -36,6 +37,8 @@ class FittingResult:
         :type controller: controller.base_controller.Controller
         :param accuracy: The score for the fitting, defaults to np.inf
         :type accuracy: float | list[float], optional
+        :param runtime_list: All runtimes of the fit, defaults to [np.inf]
+        :type runtime_list: list[float], optional
         :param runtime: The average runtime of the fit, defaults to np.inf
         :type runtime: float | list[float], optional
         :param emissions: The average emissions for the fit, defaults to np.inf
@@ -75,6 +78,7 @@ class FittingResult:
             self.accuracy = accuracy[dataset]
 
         self.runtime = runtime
+        self.runtime_list = runtime_list
         self.emissions = emissions
 
         # Details of options used for this run
@@ -158,7 +162,8 @@ class FittingResult:
                 "Jacobian": self.jacobian_tag,
                 "Hessian": self.hessian_tag,
                 "Accuracy": self.accuracy,
-                "Runtime": self.runtime,
+                "Mean runtime": self.runtime,
+                "All runtimes": self.runtime_list,
                 "Emissions": self.emissions}
 
         return get_printable_table("FittingResult", info)
