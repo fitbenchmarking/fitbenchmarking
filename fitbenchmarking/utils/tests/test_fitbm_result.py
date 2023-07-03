@@ -96,7 +96,7 @@ class FitbmResultTests(unittest.TestCase):
             +-------------------------------+
             | Mean runtime  | 0.01          |
             +-------------------------------+
-            | All runtimes  | [inf]         |
+            | All runtimes  | None          |
             +-------------------------------+
             | Emissions     | 0.001         |
             +-------------------------------+''')

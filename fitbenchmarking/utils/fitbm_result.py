@@ -26,7 +26,7 @@ class FittingResult:
     def __init__(self,
                  controller: 'Controller',
                  accuracy: 'float | list[float]' = np.inf,
-                 runtime_list: 'list[float]' = [np.inf],
+                 runtime_list: 'list[float]' = None,
                  runtime: 'float' = np.inf,
                  emissions: 'float' = np.inf,
                  dataset: 'Optional[int]' = None) -> None:
