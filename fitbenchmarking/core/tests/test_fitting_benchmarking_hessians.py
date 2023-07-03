@@ -123,7 +123,8 @@ class LoopOverHessiansTests(unittest.TestCase):
         """
         Clean up after the test
         """
-        rmtree(self.options.results_dir)
+        if os.path.isdir(self.options.results_dir):
+            rmtree(self.options.results_dir)
 
     def test_single_hessian(self):
         """
