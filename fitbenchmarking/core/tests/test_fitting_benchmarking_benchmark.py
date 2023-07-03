@@ -114,7 +114,7 @@ class BenchmarkTests(unittest.TestCase):
                 fitbm_result.FittingResult(
                     controller=controller,
                     accuracy=1,
-                    runtime=1
+                    mean_runtime=1
                 )
                 for _ in range(self.scipy_len)
             ]
@@ -148,7 +148,7 @@ class BenchmarkTests(unittest.TestCase):
                 fitbm_result.FittingResult(
                     controller=controller,
                     accuracy=1,
-                    runtime=1)
+                    mean_runtime=1)
                 for _ in range(self.scipy_len)
             ]
             results.extend(list_results)

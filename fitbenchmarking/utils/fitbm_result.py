@@ -26,8 +26,8 @@ class FittingResult:
     def __init__(self,
                  controller: 'Controller',
                  accuracy: 'float | list[float]' = np.inf,
-                 runtime_list: 'list[float]' = None,
-                 runtime: 'float' = np.inf,
+                 runtimes: 'list[float] | None' = None,
+                 mean_runtime: 'float' = np.inf,
                  emissions: 'float' = np.inf,
                  dataset: 'Optional[int]' = None) -> None:
         """
@@ -37,10 +37,10 @@ class FittingResult:
         :type controller: controller.base_controller.Controller
         :param accuracy: The score for the fitting, defaults to np.inf
         :type accuracy: float | list[float], optional
-        :param runtime_list: All runtimes of the fit, defaults to [np.inf]
-        :type runtime_list: list[float], optional
-        :param runtime: The average runtime of the fit, defaults to np.inf
-        :type runtime: float | list[float], optional
+        :param runtimes: All runtimes of the fit, defaults to None
+        :type runtimes: None | list[float], optional
+        :param mean_runtime: The average runtime of the fit, defaults to np.inf
+        :type mean_runtime: float | list[float], optional
         :param emissions: The average emissions for the fit, defaults to np.inf
         :type emissions: float | list[float], optional
         :param dataset: The index of the dataset (Only used for MultiFit),
@@ -77,8 +77,8 @@ class FittingResult:
             self.params = controller.final_params[dataset]
             self.accuracy = accuracy[dataset]
 
-        self.runtime = runtime
-        self.runtime_list = runtime_list
+        self.mean_runtime = mean_runtime
+        self.runtimes = runtimes
         self.emissions = emissions
 
         # Details of options used for this run
@@ -162,8 +162,8 @@ class FittingResult:
                 "Jacobian": self.jacobian_tag,
                 "Hessian": self.hessian_tag,
                 "Accuracy": self.accuracy,
-                "Mean runtime": self.runtime,
-                "All runtimes": self.runtime_list,
+                "Mean Runtime": self.mean_runtime,
+                "Runtimes": self.runtimes,
                 "Emissions": self.emissions}
 
         return get_printable_table("FittingResult", info)
@@ -252,7 +252,7 @@ class FittingResult:
             if self.min_runtime in [np.nan, np.inf]:
                 self._norm_runtime = np.inf
             else:
-                self._norm_runtime = self.runtime / self.min_runtime
+                self._norm_runtime = self.mean_runtime / self.min_runtime
         return self._norm_runtime
 
     @norm_runtime.setter

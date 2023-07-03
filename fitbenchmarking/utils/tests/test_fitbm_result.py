@@ -59,12 +59,12 @@ class FitbmResultTests(unittest.TestCase):
         self.controller = controller
 
         self.accuracy = 10
-        self.runtime = 0.01
+        self.mean_runtime = 0.01
         self.emissions = 0.001
         self.result = FittingResult(
             controller=controller,
             accuracy=self.accuracy,
-            runtime=self.runtime,
+            mean_runtime=self.mean_runtime,
             emissions=self.emissions)
 
         self.min_accuracy = 0.1
@@ -94,9 +94,9 @@ class FitbmResultTests(unittest.TestCase):
             +-------------------------------+
             | Accuracy      | 10            |
             +-------------------------------+
-            | Mean runtime  | 0.01          |
+            | Mean Runtime  | 0.01          |
             +-------------------------------+
-            | All runtimes  | None          |
+            | Runtimes      | None          |
             +-------------------------------+
             | Emissions     | 0.001         |
             +-------------------------------+''')
@@ -115,7 +115,7 @@ class FitbmResultTests(unittest.TestCase):
         problem = self.controller.problem
 
         chi_sq = [10, 5, 1]
-        runtime = 0.01
+        mean_runtime = 0.01
         controller.final_params = [np.array([1, 3, 4, 4]),
                                    np.array([2, 3, 57, 8]),
                                    np.array([4, 2, 5, 1])]
@@ -136,7 +136,7 @@ class FitbmResultTests(unittest.TestCase):
         result = FittingResult(
             controller=controller,
             accuracy=chi_sq,
-            runtime=runtime,
+            mean_runtime=mean_runtime,
             dataset=1)
 
         self.assertTrue(
@@ -173,7 +173,7 @@ class FitbmResultTests(unittest.TestCase):
         """
         Test that sanitised names are correct when min_runtime is finite.
         """
-        expected = self.runtime / self.min_runtime
+        expected = self.mean_runtime / self.min_runtime
         self.assertEqual(self.result.norm_runtime, expected)
 
     def test_norm_runtime_infinite_min(self):

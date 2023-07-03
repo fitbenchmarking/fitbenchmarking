@@ -40,7 +40,12 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.2,
-        "runtime": 15.0,
+        "mean_runtime": 15.0,
+        "runtimes": [
+                14.0,
+                15.0,
+                16.0
+        ],
         "emissions": 0.001,
         "flag": 0,
         "software": "s1",
@@ -62,7 +67,12 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.3,
-        "runtime": 14.0,
+        "mean_runtime": 14.0,
+        "runtimes": [
+                13.0,
+                14.0,
+                15.0
+        ],
         "emissions": 0.0001,
         "flag": 0,
         "software": "s1",
@@ -84,7 +94,12 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.4,
-        "runtime": 13.0,
+        "mean_runtime": 13.0,
+        "runtimes": [
+                12.0,
+                13.0,
+                14.0
+        ],
         "emissions": 0.001,
         "flag": 0,
         "software": "s0",
@@ -106,7 +121,10 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": Infinity,
-        "runtime": Infinity,
+        "mean_runtime": Infinity,
+        "runtimes": [
+                Infinity
+        ],
         "emissions": Infinity,
         "flag": 4,
         "software": "s0",
@@ -128,7 +146,12 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.6,
-        "runtime": 11.0,
+        "mean_runtime": 11.0,
+        "runtimes": [
+                10.0,
+                11.0,
+                12.0
+        ],
         "emissions": 1e-05,
         "flag": 0,
         "software": "s1",
@@ -150,7 +173,12 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.7,
-        "runtime": 10.0,
+        "mean_runtime": 10.0,
+        "runtimes": [
+                9.0,
+                10.0,
+                11.0
+        ],
         "emissions": 1e-05,
         "flag": 0,
         "software": "s1",
@@ -172,7 +200,10 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.8,
-        "runtime": 1.0,
+        "mean_runtime": 1.0,
+        "runtimes": [
+                1.0
+        ],
         "emissions": 1e-07,
         "flag": 0,
         "software": "s0",
@@ -194,7 +225,10 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 1.0,
-        "runtime": 1.0,
+        "mean_runtime": 1.0,
+        "runtimes": [
+                1.0
+        ],
         "emissions": 1e-07,
         "flag": 0,
         "software": "s1",
@@ -216,7 +250,10 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 1.0,
-        "runtime": 1.0,
+        "mean_runtime": 1.0,
+        "runtimes": [
+                1.0
+        ],
         "emissions": 1e-07,
         "flag": 0,
         "software": "s1",
@@ -238,7 +275,11 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 2.0,
-        "runtime": 2.0,
+        "mean_runtime": 2.0,
+        "runtimes": [
+                1.0,
+                3.0
+        ],
         "emissions": 1e-06,
         "flag": 0,
         "software": "s0",
@@ -260,7 +301,10 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": Infinity,
-        "runtime": Infinity,
+        "mean_runtime": Infinity,
+        "runtimes": [
+                Infinity
+        ],
         "emissions": Infinity,
         "flag": 0,
         "software": "s0",
@@ -282,7 +326,12 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 3.0,
-        "runtime": 3.0,
+        "mean_runtime": 3.0,
+        "runtimes": [
+                6.0,
+                1.5,
+                1.5
+        ],
         "emissions": 1e-05,
         "flag": 0,
         "software": "s1",
@@ -304,7 +353,12 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 3.0,
-        "runtime": 3.0,
+        "mean_runtime": 3.0,
+        "runtimes": [
+                2.0,
+                3.0,
+                1.0
+        ],
         "emissions": 1e-05,
         "flag": 0,
         "software": "s1",
@@ -326,7 +380,12 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.2,
-        "runtime": 15.0,
+        "mean_runtime": 15.0,
+        "runtimes": [
+                10.0,
+                15.0,
+                20.0
+        ],
         "emissions": 0.001,
         "flag": 0,
         "software": "s0",
@@ -348,7 +407,10 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": Infinity,
-        "runtime": Infinity,
+        "mean_runtime": Infinity,
+        "runtimes": [
+                Infinity
+        ],
         "emissions": Infinity,
         "flag": 0,
         "software": "s0",

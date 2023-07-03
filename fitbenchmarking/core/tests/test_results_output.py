@@ -421,11 +421,11 @@ class ProcessBestResultsTests(unittest.TestCase):
             results, self.options = load_mock_results(
                 {'results_dir': self.results_dir})
             self.results = results[:5]
-            for r, accuracy, runtime in zip(self.results,
-                                            [2, 1, 5, 3, 4],
-                                            [5, 4, 1, 2, 3]):
+            for r, accuracy, mean_runtime in zip(self.results,
+                                                 [2, 1, 5, 3, 4],
+                                                 [5, 4, 1, 2, 3]):
                 r.accuracy = accuracy
-                r.runtime = runtime
+                r.mean_runtime = mean_runtime
             self.best = _process_best_results(self.results)
 
     def test_returns_best_result(self):
@@ -464,11 +464,11 @@ class ProcessBestResultsTests(unittest.TestCase):
         Test that min_runtime is set correctly.
         """
         fastest = self.results[2]
-        self.assertEqual(self.results[0].min_runtime, fastest.runtime)
-        self.assertEqual(self.results[1].min_runtime, fastest.runtime)
-        self.assertEqual(self.results[2].min_runtime, fastest.runtime)
-        self.assertEqual(self.results[3].min_runtime, fastest.runtime)
-        self.assertEqual(self.results[4].min_runtime, fastest.runtime)
+        self.assertEqual(self.results[0].min_runtime, fastest.mean_runtime)
+        self.assertEqual(self.results[1].min_runtime, fastest.mean_runtime)
+        self.assertEqual(self.results[2].min_runtime, fastest.mean_runtime)
+        self.assertEqual(self.results[3].min_runtime, fastest.mean_runtime)
+        self.assertEqual(self.results[4].min_runtime, fastest.mean_runtime)
 
 
 if __name__ == "__main__":
