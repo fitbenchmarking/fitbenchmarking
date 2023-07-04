@@ -25,7 +25,7 @@ ERROR_OPTIONS = {0: "Successfully converged",
                  6: "Solver has exceeded maximum allowed runtime",
                  7: "Validation of the provided options failed"}
 
-SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
+SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min", 'emissions']
 
 
 def create_results_tables(options, results, best_results, group_dir, fig_dir,

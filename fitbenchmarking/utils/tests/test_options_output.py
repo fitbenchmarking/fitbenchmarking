@@ -74,7 +74,7 @@ class OutputOptionTests(unittest.TestCase):
         """
         Checks table_type default
         """
-        expected = ['acc', 'runtime', 'compare', 'local_min']
+        expected = ['acc', 'runtime', 'compare', 'local_min', 'emissions']
         actual = self.options.table_type
         self.assertEqual(expected, actual)
 
