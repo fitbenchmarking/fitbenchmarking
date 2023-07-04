@@ -36,8 +36,8 @@ class FittingResult:
         :type controller: controller.base_controller.Controller
         :param accuracy: The score for the fitting, defaults to np.inf
         :type accuracy: float | list[float], optional
-        :param runtimes: All runtimes of the fit, defaults to None
-        :type runtimes: None | list[float], optional
+        :param runtimes: All runtimes of the fit, defaults to np.inf
+        :type runtimes: float | list[float], optional
         :param emissions: The average emissions for the fit, defaults to np.inf
         :type emissions: float | list[float], optional
         :param dataset: The index of the dataset (Only used for MultiFit),

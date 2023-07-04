@@ -556,8 +556,7 @@ def perform_fit(controller, options, grabbed_output):
     :type options: fitbenchmarking.utils.options.Options
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
-    :return: The chi squared, runtimes,
-             and emissions of the fit.
+    :return: The chi squared, runtimes and emissions of the fit.
     :rtype: tuple(float, list[float], float)
     """
     num_runs = options.num_runs
