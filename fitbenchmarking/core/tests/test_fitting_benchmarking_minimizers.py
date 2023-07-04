@@ -102,7 +102,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.result = fitbm_result.FittingResult(
             controller=self.controller,
             accuracy=1,
-            mean_runtime=1)
+            runtimes=[1])
         self.cp = Checkpoint(self.options)
 
     def mock_func_call(self, *args, **kwargs):

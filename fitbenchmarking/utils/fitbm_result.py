@@ -26,8 +26,7 @@ class FittingResult:
     def __init__(self,
                  controller: 'Controller',
                  accuracy: 'float | list[float]' = np.inf,
-                 runtimes: 'list[float] | None' = None,
-                 mean_runtime: 'float' = np.inf,
+                 runtimes: 'float | list[float]' = np.inf,
                  emissions: 'float' = np.inf,
                  dataset: 'Optional[int]' = None) -> None:
         """
@@ -39,8 +38,6 @@ class FittingResult:
         :type accuracy: float | list[float], optional
         :param runtimes: All runtimes of the fit, defaults to None
         :type runtimes: None | list[float], optional
-        :param mean_runtime: The average runtime of the fit, defaults to np.inf
-        :type mean_runtime: float | list[float], optional
         :param emissions: The average emissions for the fit, defaults to np.inf
         :type emissions: float | list[float], optional
         :param dataset: The index of the dataset (Only used for MultiFit),
@@ -77,7 +74,7 @@ class FittingResult:
             self.params = controller.final_params[dataset]
             self.accuracy = accuracy[dataset]
 
-        self.mean_runtime = mean_runtime
+        self.mean_runtime = np.average(runtimes)
         self.runtimes = runtimes
         self.emissions = emissions
 

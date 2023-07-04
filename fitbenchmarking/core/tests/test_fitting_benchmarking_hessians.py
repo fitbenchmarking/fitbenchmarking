@@ -211,7 +211,6 @@ class LoopOverHessiansTests(unittest.TestCase):
         controller.final_params = [[0.1, 0.1], [0.1, 0.1]]
         controller.parameter_set = 0
         perform_fit.return_value = ([0.1, 0.2],
-                                    [None, None],
                                     [0.1, 0.01],
                                     [10e-3, 10e-4])
         results = loop_over_hessians(controller=controller,

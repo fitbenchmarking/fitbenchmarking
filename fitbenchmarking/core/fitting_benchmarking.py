@@ -517,12 +517,11 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
                             hess_name)
 
             # Perform the fit a number of times specified by num_runs
-            accuracy, runtimes, mean_runtime, emissions = perform_fit(
+            accuracy, runtimes, emissions = perform_fit(
                 controller, options, grabbed_output)
             result_args = {'controller': controller,
                            'accuracy': accuracy,
                            'runtimes': runtimes,
-                           'mean_runtime': mean_runtime,
                            'emissions': emissions}
             if problem.multifit:
                 # for multifit problems, multiple accuracy values are stored
@@ -557,9 +556,9 @@ def perform_fit(controller, options, grabbed_output):
     :type options: fitbenchmarking.utils.options.Options
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
-    :return: The chi squared, runtimes, mean_runtime,
+    :return: The chi squared, runtimes,
              and emissions of the fit.
-    :rtype: tuple(float, list[float], float, float)
+    :rtype: tuple(float, list[float], float)
     """
     num_runs = options.num_runs
 
@@ -635,10 +634,9 @@ def perform_fit(controller, options, grabbed_output):
     controller.timer.reset()
 
     if controller.flag in [3, 6, 7]:
-        # If there was an exception, set the runtime and
+        # If there was an exception, set the runtimes and
         # cost function value to be infinite
         emissions = np.inf
-        mean_runtime = np.inf
         multi_fit = controller.problem.multifit
         runtimes = [np.inf] * num_runs
         controller.final_params = \
@@ -652,4 +650,4 @@ def perform_fit(controller, options, grabbed_output):
         # been respected by the minimizer and set error
         # flag if not
         controller.check_bounds_respected()
-    return accuracy, runtimes, mean_runtime, emissions
+    return accuracy, runtimes, emissions

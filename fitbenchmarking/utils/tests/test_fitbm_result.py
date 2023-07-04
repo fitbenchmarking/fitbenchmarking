@@ -60,11 +60,12 @@ class FitbmResultTests(unittest.TestCase):
 
         self.accuracy = 10
         self.mean_runtime = 0.01
+        self.runtimes = [0.005, 0.015, 0.01]
         self.emissions = 0.001
         self.result = FittingResult(
             controller=controller,
             accuracy=self.accuracy,
-            mean_runtime=self.mean_runtime,
+            runtimes=self.runtimes,
             emissions=self.emissions)
 
         self.min_accuracy = 0.1
@@ -77,29 +78,29 @@ class FitbmResultTests(unittest.TestCase):
         Test that the fitting result can be printed as a readable string.
         """
         expected = textwrap.dedent('''\
-            +===============================+
-            | FittingResult                 |
-            +===============================+
-            | Cost Function | NLLSCostFunc  |
-            +-------------------------------+
-            | Problem       | cubic         |
-            +-------------------------------+
-            | Software      | scipy         |
-            +-------------------------------+
-            | Minimizer     | Newton-CG     |
-            +-------------------------------+
-            | Jacobian      | scipy 2-point |
-            +-------------------------------+
-            | Hessian       | analytic      |
-            +-------------------------------+
-            | Accuracy      | 10            |
-            +-------------------------------+
-            | Mean Runtime  | 0.01          |
-            +-------------------------------+
-            | Runtimes      | None          |
-            +-------------------------------+
-            | Emissions     | 0.001         |
-            +-------------------------------+''')
+            +======================================+
+            | FittingResult                        |
+            +======================================+
+            | Cost Function | NLLSCostFunc         |
+            +--------------------------------------+
+            | Problem       | cubic                |
+            +--------------------------------------+
+            | Software      | scipy                |
+            +--------------------------------------+
+            | Minimizer     | Newton-CG            |
+            +--------------------------------------+
+            | Jacobian      | scipy 2-point        |
+            +--------------------------------------+
+            | Hessian       | analytic             |
+            +--------------------------------------+
+            | Accuracy      | 10                   |
+            +--------------------------------------+
+            | Mean Runtime  | 0.01                 |
+            +--------------------------------------+
+            | Runtimes      | [0.005, 0.015, 0.01] |
+            +--------------------------------------+
+            | Emissions     | 0.001                |
+            +--------------------------------------+''')
 
         for i, (r, e) in enumerate(zip(str(self.result).splitlines(),
                                        expected.splitlines())):
@@ -115,7 +116,7 @@ class FitbmResultTests(unittest.TestCase):
         problem = self.controller.problem
 
         chi_sq = [10, 5, 1]
-        mean_runtime = 0.01
+        runtimes = [0.005, 0.015, 0.01]
         controller.final_params = [np.array([1, 3, 4, 4]),
                                    np.array([2, 3, 57, 8]),
                                    np.array([4, 2, 5, 1])]
@@ -136,7 +137,7 @@ class FitbmResultTests(unittest.TestCase):
         result = FittingResult(
             controller=controller,
             accuracy=chi_sq,
-            mean_runtime=mean_runtime,
+            runtimes=runtimes,
             dataset=1)
 
         self.assertTrue(
@@ -152,6 +153,31 @@ class FitbmResultTests(unittest.TestCase):
         self.assertTrue(
             np.isclose(controller.final_params[1], result.params).all())
         self.assertEqual(chi_sq[1], result.accuracy)
+
+    def test_mean_runtime_calculation(self):
+        """
+        Tests the mean calculation with in FittingResults
+        """
+        controller = self.controller
+        result = FittingResult(
+            controller=controller,
+            runtimes=[0.005, 0.015, 0.01])
+        self.assertEqual(0.01, result.mean_runtime)
+
+        result = FittingResult(
+            controller=controller,
+            runtimes=[1.00, 2.00, 3.00])
+        self.assertEqual(2.00, result.mean_runtime)
+
+        result = FittingResult(
+            controller=controller,
+            runtimes=[np.inf, 2.00, 3.00])
+        self.assertEqual(np.inf, result.mean_runtime)
+
+        result = FittingResult(
+            controller=controller,
+            runtimes=[np.inf, np.inf, np.inf])
+        self.assertEqual(np.inf, result.mean_runtime)
 
     def test_norm_acc_finite_min(self):
         """
