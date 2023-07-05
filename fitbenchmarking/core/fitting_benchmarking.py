@@ -580,7 +580,6 @@ def perform_fit(controller, options, grabbed_output):
                 # stop emissions tracking after all runs have completed
                 emissions = emissions_tracker.final_emissions / num_runs
 
-            mean_runtime = np.average(runtimes)
             controller.cleanup()
             controller.check_attributes()
         min_time = np.min(runtimes)
@@ -606,7 +605,7 @@ def perform_fit(controller, options, grabbed_output):
 
         accuracy_check = any(np.isnan(n) for n in accuracy) \
             if controller.problem.multifit else np.isnan(accuracy)
-        if np.isnan(mean_runtime) or accuracy_check:
+        if np.isnan(runtimes).any() or accuracy_check:
             raise ControllerAttributeError(
                 "Either the computed runtime or accuracy values were a NaN.")
     except ValidationException as ex:
