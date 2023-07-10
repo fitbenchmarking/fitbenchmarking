@@ -68,12 +68,13 @@ def generate_results():
         controller.final_params = [0.1+i, 0.2+i]
         controller.flag = 0
         results[key].append(FittingResult(controller=controller,
-                                          accuracy=0.02+i, runtime=0.15+i))
+                                          accuracy=0.02+i,
+                                          runtimes=[0.15+i]))
         controller.minimizer = 'CG'
         controller.final_params = [0.3+i, 0.4+i]
         controller.flag = 2
         results[key].append(FittingResult(controller=controller,
-                                          accuracy=0.3+i, runtime=0.01+i))
+                                          accuracy=0.3+i, runtimes=[0.01+i]))
         cost_func.jacobian = jac[1]
         controller = ScipyController(cost_func)
         controller.parameter_set = 0
@@ -82,7 +83,7 @@ def generate_results():
         controller.final_params = [0.5+i, 0.6+i]
         controller.flag = 0
         results[key].append(FittingResult(controller=controller,
-                                          accuracy=0.4, runtime=13))
+                                          accuracy=0.4, runtimes=[13]))
         cost_func = WeightedNLLSCostFunc(problems[1])
         jac[1].method = '3-point'
         cost_func.jacobian = jac[0]
@@ -93,12 +94,12 @@ def generate_results():
         controller.final_params = [0.7+i, 0.8+i]
         controller.flag = 0
         results[key].append(FittingResult(controller=controller,
-                                          accuracy=1.2, runtime=0.15))
+                                          accuracy=1.2, runtimes=[0.15]))
         controller.minimizer = 'CG'
         controller.final_params = [0.9+i, 0.01+i]
         controller.flag = 0
         results[key].append(FittingResult(controller=controller,
-                                          accuracy=1.3, runtime=0.14))
+                                          accuracy=1.3, runtimes=[0.14]))
         cost_func.jacobian = jac[1]
         controller = ScipyController(cost_func)
         controller.parameter_set = 0
@@ -107,7 +108,7 @@ def generate_results():
         controller.final_params = [0.11+i, 0.21+i]
         controller.flag = 0
         results[key].append(FittingResult(controller=controller,
-                                          accuracy=1.4, runtime=0.13))
+                                          accuracy=1.4, runtimes=[0.13]))
     return results
 
 

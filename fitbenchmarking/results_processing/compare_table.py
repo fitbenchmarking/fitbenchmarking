@@ -71,7 +71,7 @@ class CompareTable(Table):
         acc_abs = result.accuracy
 
         runtime_rel = result.norm_runtime
-        runtime_abs = result.runtime
+        runtime_abs = result.mean_runtime
 
         return [[acc_rel, runtime_rel],
                 [acc_abs, runtime_abs]]
