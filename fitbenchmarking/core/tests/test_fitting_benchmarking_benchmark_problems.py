@@ -82,7 +82,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
             fitbm_result.FittingResult(
                 controller=controllers[i],
                 accuracy=1,
-                runtime=1)
+                runtimes=[1])
             for i in range(scipy_len)
         ]
         self.individual_problem_results = [

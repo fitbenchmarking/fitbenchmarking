@@ -517,11 +517,11 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
                             hess_name)
 
             # Perform the fit a number of times specified by num_runs
-            accuracy, runtime, emissions = perform_fit(
+            accuracy, runtimes, emissions = perform_fit(
                 controller, options, grabbed_output)
             result_args = {'controller': controller,
                            'accuracy': accuracy,
-                           'runtime': runtime,
+                           'runtimes': runtimes,
                            'emissions': emissions}
             if problem.multifit:
                 # for multifit problems, multiple accuracy values are stored
@@ -556,8 +556,8 @@ def perform_fit(controller, options, grabbed_output):
     :type options: fitbenchmarking.utils.options.Options
     :param grabbed_output: Object that removes third part output from console
     :type grabbed_output: fitbenchmarking.utils.output_grabber.OutputGrabber
-    :return: The chi squared, runtime, and emissions of the fit.
-    :rtype: tuple(float, float, float)
+    :return: The chi squared, runtimes and emissions of the fit.
+    :rtype: tuple(float, list[float], float)
     """
     num_runs = options.num_runs
 
@@ -573,18 +573,17 @@ def perform_fit(controller, options, grabbed_output):
             controller.prepare()
             with emissions_tracker:
                 # Calls timeit repeat with repeat = num_runs and number = 1
-                runtime_list = timeit.Timer(
+                runtimes = timeit.Timer(
                     stmt=controller.execute
                 ).repeat(num_runs, 1)
             if track_emissions:
                 # stop emissions tracking after all runs have completed
                 emissions = emissions_tracker.final_emissions / num_runs
 
-            runtime = sum(runtime_list) / num_runs
             controller.cleanup()
             controller.check_attributes()
-        min_time = np.min(runtime_list)
-        ratio = np.max(runtime_list) / min_time
+        min_time = np.min(runtimes)
+        ratio = np.max(runtimes) / min_time
         tol = 4
         if ratio > tol:
             warnings.warn(
@@ -606,7 +605,7 @@ def perform_fit(controller, options, grabbed_output):
 
         accuracy_check = any(np.isnan(n) for n in accuracy) \
             if controller.problem.multifit else np.isnan(accuracy)
-        if np.isnan(runtime) or accuracy_check:
+        if np.isnan(runtimes).any() or accuracy_check:
             raise ControllerAttributeError(
                 "Either the computed runtime or accuracy values were a NaN.")
     except ValidationException as ex:
@@ -633,11 +632,11 @@ def perform_fit(controller, options, grabbed_output):
     controller.timer.reset()
 
     if controller.flag in [3, 6, 7]:
-        # If there was an exception, set the runtime and
+        # If there was an exception, set the runtimes and
         # cost function value to be infinite
         emissions = np.inf
-        runtime = np.inf
         multi_fit = controller.problem.multifit
+        runtimes = [np.inf] * num_runs
         controller.final_params = \
             None if not multi_fit \
             else [None] * len(controller.data_x)
@@ -649,4 +648,4 @@ def perform_fit(controller, options, grabbed_output):
         # been respected by the minimizer and set error
         # flag if not
         controller.check_bounds_respected()
-    return accuracy, runtime, emissions
+    return accuracy, runtimes, emissions

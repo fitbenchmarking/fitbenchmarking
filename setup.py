@@ -31,7 +31,7 @@ setup(
                       'pandas>=1.3',
                       'jinja2',
                       'configparser',
-                      'codecarbon<=2.2.3'],
+                      'codecarbon<2.2.4'],
     extras_require={'DFO': ['DFO-LS', 'dfogn'],
                     'SAS': ['sasmodels',
                             'tinycc;platform_system==\'Windows\''],

@@ -61,5 +61,5 @@ class RuntimeTable(Table):
         :rtype: tuple(float, float)
         """
         rel_value = result.norm_runtime
-        abs_value = result.runtime
+        abs_value = result.mean_runtime
         return rel_value, abs_value

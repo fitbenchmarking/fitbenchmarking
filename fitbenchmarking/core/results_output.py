@@ -261,7 +261,7 @@ def _process_best_results(results: 'List[FittingResult]') -> 'FittingResult':
     for result in results[1:]:
         if best.accuracy > result.accuracy:
             best = result
-        if fastest.runtime > result.runtime:
+        if fastest.mean_runtime > result.mean_runtime:
             fastest = result
         if lowest.emissions > result.emissions:
             lowest = result
@@ -270,7 +270,7 @@ def _process_best_results(results: 'List[FittingResult]') -> 'FittingResult':
 
     for result in results:
         result.min_accuracy = best.accuracy
-        result.min_runtime = fastest.runtime
+        result.min_runtime = fastest.mean_runtime
         result.min_emissions = lowest.emissions
 
     return best

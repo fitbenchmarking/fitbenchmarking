@@ -26,7 +26,7 @@ class FittingResult:
     def __init__(self,
                  controller: 'Controller',
                  accuracy: 'float | list[float]' = np.inf,
-                 runtime: 'float' = np.inf,
+                 runtimes: 'float | list[float]' = np.inf,
                  emissions: 'float' = np.inf,
                  dataset: 'Optional[int]' = None) -> None:
         """
@@ -36,8 +36,8 @@ class FittingResult:
         :type controller: controller.base_controller.Controller
         :param accuracy: The score for the fitting, defaults to np.inf
         :type accuracy: float | list[float], optional
-        :param runtime: The average runtime of the fit, defaults to np.inf
-        :type runtime: float | list[float], optional
+        :param runtimes: All runtimes of the fit, defaults to np.inf
+        :type runtimes: float | list[float], optional
         :param emissions: The average emissions for the fit, defaults to np.inf
         :type emissions: float | list[float], optional
         :param dataset: The index of the dataset (Only used for MultiFit),
@@ -74,7 +74,8 @@ class FittingResult:
             self.params = controller.final_params[dataset]
             self.accuracy = accuracy[dataset]
 
-        self.runtime = runtime
+        self.mean_runtime = np.average(runtimes)
+        self.runtimes = runtimes
         self.emissions = emissions
 
         # Details of options used for this run
@@ -158,7 +159,8 @@ class FittingResult:
                 "Jacobian": self.jacobian_tag,
                 "Hessian": self.hessian_tag,
                 "Accuracy": self.accuracy,
-                "Runtime": self.runtime,
+                "Mean Runtime": self.mean_runtime,
+                "Runtimes": self.runtimes,
                 "Emissions": self.emissions}
 
         return get_printable_table("FittingResult", info)
@@ -247,7 +249,7 @@ class FittingResult:
             if self.min_runtime in [np.nan, np.inf]:
                 self._norm_runtime = np.inf
             else:
-                self._norm_runtime = self.runtime / self.min_runtime
+                self._norm_runtime = self.mean_runtime / self.min_runtime
         return self._norm_runtime
 
     @norm_runtime.setter
