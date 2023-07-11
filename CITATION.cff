@@ -95,6 +95,5 @@ abstract: >-
   software fitting packages perform on various fitting
   problems.
 license: BSD-3-Clause
-commit: 2081915d85d7c472fb89775f74e72a5aab7c4e09
 version: 0.2.0
 date-released: '2022-05-31'
