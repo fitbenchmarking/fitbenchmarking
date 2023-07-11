@@ -180,12 +180,12 @@ class CreatePlotsTests(unittest.TestCase):
         """
         expected_plot_initial_guess = "initial_guess"
         expected_plot_best = "plot_best"
-        expected_plot_fit = "plot_fit"
+        expected_plotly_fit = "plotly_fit"
         plot_instance = mock.MagicMock()
         plot_instance.plot_initial_guess.return_value = \
             expected_plot_initial_guess
         plot_instance.plot_best.return_value = expected_plot_best
-        plot_instance.plot_fit.return_value = expected_plot_fit
+        plot_instance.plotly_fit.return_value = expected_plotly_fit
 
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
@@ -199,6 +199,7 @@ class CreatePlotsTests(unittest.TestCase):
                 results = results_in_prob[category_key]
 
                 # Check initial guess is correctly set in results
+                print(f"fig_link = {best_in_cat.start_figure_link}")
                 self.assertEqual(best_in_cat.start_figure_link,
                                  expected_plot_initial_guess)
                 self.assertTrue(all(
@@ -206,10 +207,11 @@ class CreatePlotsTests(unittest.TestCase):
                     for r in results))
 
                 # Check plot is correctly set in results
+                print(f"fig_link = {best_in_cat.figure_link}")
                 self.assertEqual(best_in_cat.figure_link,
                                  expected_plot_best)
                 self.assertTrue(all(
-                    r.figure_link == expected_plot_fit
+                    r.figure_link == expected_plotly_fit
                     for r in results if not r.is_best_fit))
 
     @mock.patch('fitbenchmarking.results_processing.plots.Plot')
