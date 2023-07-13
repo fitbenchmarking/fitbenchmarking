@@ -102,7 +102,8 @@ Creating a release
 In order to create a new release for FitBenchmarking, there are a few manual steps.
 These have been streamlined as much as possible.
 
-First checkout the branch to create the release from.  Releases should only be made from a `release-x-x` branch, not a development branch or master.
+First checkout the branch to create the release from.
+Releases should only be made from a `release-x-x` branch, not a development branch or master.
 
 From the root of the repo run the "ci/prep_and_tag_release.sh" script with the new version number.
 The version number will be rejected if it is not of the expected form.
@@ -116,7 +117,11 @@ Possible labels are:
 This script will create a new commit with the docs and testing links updated, tag it,
 and revert the change in a second commit so that the links point back to the latest versions.
 
-These commits will need to be pushed to github.
+These commits and the tag will need to be pushed to github.
+
+If the release is a final release (i.e., it has no numbered label) and it is the
+highest numbered release, the tag should be cherry-picked onto the
+master branch. Instructions for this should be output after running the script.
 
 Finally, you will need to create a release on github.
 This can be done by navigating to the releases page, selecting new release
@@ -130,8 +135,24 @@ For example, For a first beta version of release 0.1.0, one would run:
    git checkout release-0.1.x
    ci/prep_and_tag_release.sh v0.1.0-beta1
    git push origin release-0.1.x
+   git push origin v0.1.0-beta1
 
    <And make the release on GitHub>
+
+And for after the version is tested and ready for a final release, one would run:
+
+.. code-block:: bash
+
+   git checkout release-0.1.x
+   ci/prep_and_tag_release.sh v0.1.0
+   git push origin release-0.1.x
+   git push origin v0.1.0
+   git switch master
+   git cherry-pick v0.1.0
+   git push
+
+   <And make the release on GitHub>
+
 
 ===================
 Adding New Datasets
