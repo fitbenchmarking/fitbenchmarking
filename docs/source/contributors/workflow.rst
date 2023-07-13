@@ -119,7 +119,7 @@ and revert the change in a second commit so that the links point back to the lat
 
 These commits and the tag will need to be pushed to github.
 
-If the release is a final release (i.e. It has no numbered label) and it is the
+If the release is a final release (i.e., it has no numbered label) and it is the
 highest numbered release, the tag should be cherry-picked onto the
 master branch. Instructions for this should be output after running the script.
 
