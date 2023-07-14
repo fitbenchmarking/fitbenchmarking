@@ -14,6 +14,9 @@ from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import (_extract_tags,
                                                  _find_matching_tags,
                                                  _process_best_results,
+                                                 _find_columns_with_fallback,
+                                                 _process_tags,
+                                                 _handle_fallback_tags,
                                                  create_directories,
                                                  create_plots,
                                                  create_problem_level_index,
@@ -156,6 +159,231 @@ class PreprocessDataTests(unittest.TestCase):
                 for r in category:
                     self.assertEqual(r.min_accuracy, self.min_accuracy)
                     self.assertEqual(r.min_runtime, self.min_runtime)
+
+
+class FallbackTagTests(unittest.TestCase):
+    """
+    Unit tests for finding fallback tags that
+    occur when there is a fallback on jacobian
+    and hessians.
+    """
+    def setUp(self):
+        """
+        Setting up paths and results folders
+        """
+        # Loading the results from checkpoint.json
+        self.results, _ = load_mock_results()
+
+        self.sort_order = (['problem'],
+                           ['software',
+                            'minimizer',
+                            'jacobian',
+                            'hessian'])
+        self.col_sections = ['costfun']
+
+        # Defining the expected values for results in checkpoint.json
+        self.expected_tags = [{'row': 'prob_0', 'col': 's1:m10:j0:',
+                               'cat': 'cf1', 'result_ix': 0},
+                              {'row': 'prob_0', 'col': 's1:m11:j0:',
+                               'cat': 'cf1', 'result_ix': 1},
+                              {'row': 'prob_0', 'col': 's0:m01:j0:',
+                               'cat': 'cf1', 'result_ix': 2},
+                              {'row': 'prob_0', 'col': 's1:m10:j1:',
+                               'cat': 'cf1', 'result_ix': 4},
+                              {'row': 'prob_0', 'col': 's1:m11:j1:',
+                               'cat': 'cf1', 'result_ix': 5},
+                              {'row': 'prob_0', 'col': 's0:m01:j1:',
+                               'cat': 'cf1', 'result_ix': 6},
+                              {'row': 'prob_1', 'col': 's1:m10:j0:',
+                               'cat': 'cf1', 'result_ix': 7},
+                              {'row': 'prob_1', 'col': 's1:m11:j0:',
+                               'cat': 'cf1', 'result_ix': 8},
+                              {'row': 'prob_1', 'col': 's0:m01:j0:',
+                               'cat': 'cf1', 'result_ix': 9},
+                              {'row': 'prob_1', 'col': 's0:m00:j0:',
+                               'cat': 'cf1', 'result_ix': 10},
+                              {'row': 'prob_1', 'col': 's1:m10:j1:',
+                               'cat': 'cf1', 'result_ix': 11},
+                              {'row': 'prob_1', 'col': 's1:m11:j1:',
+                               'cat': 'cf1', 'result_ix': 12},
+                              {'row': 'prob_1', 'col': 's0:m01:j1:',
+                               'cat': 'cf1', 'result_ix': 13},
+                              {'row': 'prob_1', 'col': 's0:m00:j1:',
+                               'cat': 'cf1', 'result_ix': 14}]
+        self.expected_repeating_tags = []
+
+    def test_find_fallback_tags(self):
+        """
+        Test the find fallback tags function
+        """
+        results = self.results
+        expected_tags = self.expected_tags
+        expected_repeating_tags = self.expected_repeating_tags
+
+        # Test Case 1
+        # Using the results in checkpoint.json
+        # No column with fallback
+        self.run_and_match_find_fallback_tags(results,
+                                              expected_tags,
+                                              expected_repeating_tags)
+
+        # Test Case 2
+        # Updating the results in checkpoint.json
+        # One column with fallback
+        results[8].jacobian_tag = 'j1'
+        expected_tags[7]['col'] = 's1:m11:j1:'
+        expected_repeating_tags = ['s1:m11:j0:', 's1:m11:j1:']
+
+        self.run_and_match_find_fallback_tags(results,
+                                              expected_tags,
+                                              expected_repeating_tags)
+
+        # Test Case 3
+        # Updating the results in checkpoint.json
+        # Two column with fallback
+        results[6].hessian_tag = 'h0'
+        results[13].hessian_tag = 'h1'
+        expected_tags[5]['col'] = 's0:m01:j1:h0'
+        expected_tags[12]['col'] = 's0:m01:j1:h1'
+        expected_repeating_tags = ['s1:m11:j0:',
+                                   's1:m11:j1:',
+                                   's0:m01:j1:h0',
+                                   's0:m01:j1:h1']
+
+        self.run_and_match_find_fallback_tags(results,
+                                              expected_tags,
+                                              expected_repeating_tags)
+
+    def run_and_match_find_fallback_tags(self,
+                                         results,
+                                         expected_tags,
+                                         expected_repeating_tags):
+        """
+        Helper function to call _find_columns_with_fallback
+        and match outputs
+        """
+        actual_tags, actual_repeating_tags = \
+            _find_columns_with_fallback(results,
+                                        self.sort_order,
+                                        self.col_sections)
+
+        self.assertEqual(actual_tags, expected_tags)
+        self.assertEqual(actual_repeating_tags, expected_repeating_tags)
+
+    def run_and_match_process_fallback_tags(self,
+                                            columns,
+                                            expected_count,
+                                            columns_with_errors,
+                                            expected_column_tags):
+        """
+        Helper function to call _process_tags
+        and match outputs
+        """
+        actual_column_tags = _process_tags(columns,
+                                           expected_count,
+                                           columns_with_errors)
+        self.assertEqual(actual_column_tags, expected_column_tags)
+
+    def test_process_fallback_tags(self):
+        """
+        Test the process fallback tags function
+        """
+        columns = {'s1:m10:j0:': 2,
+                   's1:m11:j0:': 2,
+                   's0:m01:j0:': 2,
+                   's1:m10:j1:': 2,
+                   's1:m11:j1:': 2,
+                   's0:m01:j1:': 2,
+                   's0:m00:j0:': 1,
+                   's0:m00:j1:': 1}
+        expected_count = 2
+        columns_with_errors = {'s0:m00': 1}
+
+        # Test Case 1
+        # Using the results in checkpoint.json
+        # No column with fallback
+        # 1 Error result
+        expected_column_tags = []
+        self.run_and_match_process_fallback_tags(columns,
+                                                 expected_count,
+                                                 columns_with_errors,
+                                                 expected_column_tags)
+
+        # Test Case 2
+        # Using the results in checkpoint.json
+        # 1 column with fallback
+        # 0 Error result
+        columns_with_errors = {}
+        columns['s0:m00:j0:'] = columns['s0:m00:j1:'] = 2
+        expected_column_tags = []
+        self.run_and_match_process_fallback_tags(columns,
+                                                 expected_count,
+                                                 columns_with_errors,
+                                                 expected_column_tags)
+
+        # Test Case 3
+        # Using the results in checkpoint.json
+        # 2 column with fallback
+        # 0 Error result
+        columns['s1:m11:j0:'] = columns['s1:m11:j1:'] = 1
+        expected_column_tags = ['s1:m11:j0:', 's1:m11:j1:']
+        self.run_and_match_process_fallback_tags(columns,
+                                                 expected_count,
+                                                 columns_with_errors,
+                                                 expected_column_tags)
+
+        # Test Case 4
+        # Using the results in checkpoint.json
+        # 2 column with fallback
+        # 0 Error result
+        columns['s1:m11:j0:h0'] = columns['s1:m11:j1:h1'] = 1
+        expected_column_tags = ['s1:m11:j0:',
+                                's1:m11:j1:',
+                                's1:m11:j0:h0',
+                                's1:m11:j1:h1']
+        self.run_and_match_process_fallback_tags(columns,
+                                                 expected_count,
+                                                 columns_with_errors,
+                                                 expected_column_tags)
+
+    def test_handle_fallback_tags(self):
+        """
+        Test the handle fallback tags function
+        """
+
+        # Test Case 1
+        # Using the results in checkpoint.json
+        results = self.results
+        expected_tags = self.expected_tags
+        repeating_tags = []
+
+        actual_results, actual_result_tags = \
+            _handle_fallback_tags(results,
+                                  expected_tags,
+                                  repeating_tags)
+
+        self.assertEqual(actual_results, results)
+        self.assertEqual(actual_result_tags, expected_tags)
+
+        # Test Case 2
+        # Updating the results in checkpoint.json
+        del results[14], results[10], results[3]
+        del expected_tags[13], expected_tags[9]
+        for ix in range(3, 12):
+            expected_tags[ix]['result_ix'] = ix
+        expected_tags[6]['col'] = 's1:m10:j1:'
+        results[6].jacobian_tag = 'j1'
+
+        repeating_tags = ['s1:m10:j0:', 's1:m10:j1:']
+
+        actual_results, actual_result_tags = \
+            _handle_fallback_tags(results,
+                                  expected_tags,
+                                  repeating_tags)
+
+        for ix in [0, 3, 6, 9]:
+            self.assertEqual(actual_result_tags[ix]['col'],
+                             's1:m10:best_avaliable:')
 
 
 class CreatePlotsTests(unittest.TestCase):
