@@ -322,7 +322,7 @@ def _find_columns_with_fallback(results, sort_order, col_sorting):
         # Saving all the result_tags
         all_result_tags.append(result_tags)
 
-    # Find the expected_count (if all jacobians same)
+    # Find the expected_count
     unique_problems = set(problems)
     expected_count = len(unique_problems)
 
