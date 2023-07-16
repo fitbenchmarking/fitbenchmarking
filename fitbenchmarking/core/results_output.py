@@ -359,29 +359,20 @@ def _process_tags(columns, expected_count, columns_with_errors):
     :return: a list of the repeating column tags
     :rtype: list[str]
     """
-    repeat_column_tags = []
     error_flag_count = sum(columns_with_errors.values())
 
     # Error flag count check
-    if error_flag_count == 0:
-
-        # Save the repeated columns
-        for tag, count in columns.items():
-            if count != expected_count:
-                repeat_column_tags.append(tag)
-
-    else:
+    if error_flag_count != 0:
 
         # Handle error_tag = 4
-        for tag, count in columns.items():
+        for tag in columns:
             for error_tag in columns_with_errors:
                 if error_tag in tag:
                     columns[tag] += columns_with_errors[error_tag]
 
-        # Find mismatch columns
-        for tag, count in columns.items():
-            if count != expected_count:
-                repeat_column_tags.append(tag)
+    # Save the repeated columns
+    repeat_column_tags = [tag for tag in columns
+                          if columns[tag] != expected_count]
 
     return repeat_column_tags
 
