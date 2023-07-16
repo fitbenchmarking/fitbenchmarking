@@ -230,9 +230,9 @@ def _handle_fallback_tags(results,
 
     for x in fallback_columns_it:
 
-        _, _, x_jacobian, x_hessian = x.split(':')
-
         y = next(fallback_columns_it)
+
+        _, _, x_jacobian, x_hessian = x.split(':')
         _, _, y_jacobian, y_hessian = y.split(':')
 
         jacobian_check = x_jacobian != y_jacobian
@@ -257,13 +257,11 @@ def _handle_fallback_tags(results,
 
             # Update jacobian and jacobian tag
             if jh_checks[tag['col']]['jacobian_check']:
-                jacobian = column_rename
-                results[result_ix].jacobian_tag = column_rename
+                jacobian = results[result_ix].jacobian_tag = column_rename
 
             # Update hessian and hessian tag
             if jh_checks[tag['col']]['hessian_check']:
-                hessian = column_rename
-                results[result_ix].hessian_tag = column_rename
+                hessian = results[result_ix].hessian_tag = column_rename
 
             # Update results tag
             new_col_tag = ':'. join([software, minimizer, jacobian, hessian])
@@ -289,12 +287,10 @@ def _find_columns_with_fallback(results, sort_order, col_sorting):
     :return: all results tags and the fallback column tags
     :rtype: list[dict[str, str]], list[str]
     """
-
     all_result_tags = []
-    unique_problems = []
+    problems = []
     columns = {}
     columns_with_errors = {}
-    error_flag_count = 0
 
     for ix, r in enumerate(results):
 
@@ -307,25 +303,18 @@ def _find_columns_with_fallback(results, sort_order, col_sorting):
         # Error 4 means none of the jacobians ran so can't infer the
         # jacobian names from this.
         if r.error_flag == 4:
-            error_flag_count += 1
             software, minimizer = result_tags['col'].split(":")[:2]
             sm_key = ":".join([software, minimizer])
-            if sm_key not in columns_with_errors:
-                columns_with_errors[sm_key] = 1
-            else:
-                columns_with_errors[sm_key] += 1
+            columns_with_errors[sm_key] = 1 if sm_key not in \
+                columns_with_errors else columns_with_errors[sm_key] + 1
             continue
 
-        # Saving the number of problems
-        if result_tags['row'] not in unique_problems:
-            unique_problems.append(result_tags['row'])
+        # Saving the problems
+        problems.append(result_tags['row'])
 
         # Count the occurance of each column tag
-        row_key = result_tags['col']
-        if row_key not in columns:
-            columns[row_key] = 1
-        else:
-            columns[row_key] += 1
+        columns[result_tags['col']] = 1 if result_tags['col'] not in columns \
+            else columns[result_tags['col']] + 1
 
         # Saving the index of the results
         result_tags['result_ix'] = ix
@@ -334,6 +323,7 @@ def _find_columns_with_fallback(results, sort_order, col_sorting):
         all_result_tags.append(result_tags)
 
     # Find the expected_count (if all jacobians same)
+    unique_problems = set(problems)
     expected_count = len(unique_problems)
 
     # Process tags
