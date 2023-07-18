@@ -4,9 +4,9 @@ Test plots
 
 import inspect
 import os
-import pandas as pd
 import unittest
 from tempfile import TemporaryDirectory
+import pandas as pd
 
 from fitbenchmarking import test_files
 from fitbenchmarking.results_processing import plots
