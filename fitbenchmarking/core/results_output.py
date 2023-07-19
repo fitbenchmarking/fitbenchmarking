@@ -138,9 +138,7 @@ def preprocess_data(results: "list[FittingResult]"):
 
     # Find the result tags and the columns with fallback
     all_result_tags, fallback_columns = \
-        _get_all_result_tags(results,
-                             sort_order,
-                             col_sections)
+        _get_all_result_tags(results, sort_order, col_sections)
 
     # Handle the fallback tags
     if fallback_columns:
@@ -202,9 +200,7 @@ def preprocess_data(results: "list[FittingResult]"):
     return best_results, sorted_results
 
 
-def _handle_fallback_tags(results,
-                          all_result_tags,
-                          fallback_columns):
+def _handle_fallback_tags(results, all_result_tags, fallback_columns):
     """
     The function that relabels the fallback column tags that
     appear when there is jacobian and hessian fallbacks for a
@@ -269,7 +265,7 @@ def _handle_fallback_tags(results,
     return results, all_result_tags
 
 
-def _get_all_result_tags(results, sort_order, col_sorting):
+def _get_all_result_tags(results, sort_order, cat_sorting):
     """
     Generate the result tags of all results without error_flag = 4
     and find the column tags that refer to the same options but
@@ -280,9 +276,9 @@ def _get_all_result_tags(results, sort_order, col_sorting):
     :type results: list[FittingResult]
     :param sort_order: The sort order of the tags
     :type sort_order: list[list[str]]
-    :param col_sorting: The components in order of importance that will be
-                        used to generate the col tag.
-    :type col_sorting: list[str]
+    :param cat_sorting: The components in order of importance that
+                        will be used to generate the cat tag.
+    :type cat_sorting: list[str]
 
     :return: all results tags and the fallback column tags
     :rtype: list[dict[str, str]], list[str]
@@ -298,7 +294,7 @@ def _get_all_result_tags(results, sort_order, col_sorting):
         result_tags = _extract_tags(r,
                                     row_sorting=sort_order[0],
                                     col_sorting=sort_order[1],
-                                    cat_sorting=col_sorting)
+                                    cat_sorting=cat_sorting)
 
         # Error 4 means none of the jacobians ran so can't infer the
         # jacobian names from this.
@@ -307,7 +303,7 @@ def _get_all_result_tags(results, sort_order, col_sorting):
                 1 + columns_with_errors.get(result_tags['col'], 0)
             continue
 
-        # Saving the problems
+        # Saving the rows
         rows.add(result_tags['row'])
 
         # Count the occurance of each column tag
