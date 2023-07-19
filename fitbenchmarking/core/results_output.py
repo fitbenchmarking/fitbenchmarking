@@ -352,11 +352,9 @@ def _process_tags(columns, expected_count, columns_with_errors):
     # Error flag count check
     if error_flag_count != 0:
 
-        # Handle error_tag = 4
-        for tag in columns:
-            for error_tag in columns_with_errors:
-                if error_tag in tag:
-                    columns[tag] += columns_with_errors[error_tag]
+        for error_tag in columns_with_errors:
+            for tag in _find_matching_tags(error_tag, list(columns)):
+                columns[tag] += columns_with_errors[error_tag]
 
     # Save the repeated columns
     repeat_column_tags = [tag for tag in columns
