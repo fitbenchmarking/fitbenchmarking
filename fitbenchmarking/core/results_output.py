@@ -217,50 +217,32 @@ def _handle_fallback_tags(results, all_result_tags, fallback_columns):
     :return: all results and the results tags
     :rtype: list[FittingResult], list[dict[str, str]]
     """
-    column_rename = 'best_avaliable'
+    column_rename = "best_avaliable"
 
-    # Iterate over the fallback tags
-    fallback_columns = sorted(fallback_columns)
-    fallback_columns_it = iter(fallback_columns)
-    jh_checks = {}
-
-    for x in fallback_columns_it:
-
-        y = next(fallback_columns_it)
-
-        _, _, x_jacobian, x_hessian = x.split(':')
-        _, _, y_jacobian, y_hessian = y.split(':')
-
-        jacobian_check = x_jacobian != y_jacobian
-        hessian_check = x_hessian != y_hessian
-
-        jh_checks[x] = jh_checks[y] = {}
-
-        jh_checks[x]['jacobian_check'] = \
-            jh_checks[y]['jacobian_check'] = jacobian_check
-        jh_checks[x]['hessian_check'] = \
-            jh_checks[y]['hessian_check'] = hessian_check
-
-    # Iterate over the results tags
     for ix, tag in enumerate(all_result_tags):
-
         # If tag is in fallback columns list
         if tag['col'] in fallback_columns:
-            software, minimizer, jacobian, hessian = tag['col'].split(':')
 
-            result_ix = tag['result_ix']
+            software, minimizer, jacobian, hessian = tag["col"].split(":")
 
-            # Update jacobian and jacobian tag
-            if jh_checks[tag['col']]['jacobian_check']:
+            jac_tag = ':'. join([software, minimizer, "[^:]*", hessian])
+            hes_tag = ':'. join([software, minimizer, jacobian, "[^:]*"])
+
+            result_ix = tag["result_ix"]
+
+            # Check if jacobian tag needs to be renamed
+            jac_matches = _find_matching_tags(jac_tag, fallback_columns)
+            if len(jac_matches) == 2:
                 jacobian = results[result_ix].jacobian_tag = column_rename
 
-            # Update hessian and hessian tag
-            if jh_checks[tag['col']]['hessian_check']:
+            # Check if hessian tag needs to be renamed
+            hes_matches = _find_matching_tags(hes_tag, fallback_columns)
+            if len(hes_matches) == 2:
                 hessian = results[result_ix].hessian_tag = column_rename
 
             # Update results tag
-            new_col_tag = ':'. join([software, minimizer, jacobian, hessian])
-            all_result_tags[ix]['col'] = new_col_tag
+            new_col_tag = ":". join([software, minimizer, jacobian, hessian])
+            all_result_tags[ix]["col"] = new_col_tag
 
     return results, all_result_tags
 
