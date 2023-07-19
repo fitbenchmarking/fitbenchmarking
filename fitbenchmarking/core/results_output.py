@@ -303,10 +303,8 @@ def _find_columns_with_fallback(results, sort_order, col_sorting):
         # Error 4 means none of the jacobians ran so can't infer the
         # jacobian names from this.
         if r.error_flag == 4:
-            software, minimizer = result_tags['col'].split(":")[:2]
-            sm_key = ":".join([software, minimizer])
-            columns_with_errors[sm_key] = 1 if sm_key not in \
-                columns_with_errors else columns_with_errors[sm_key] + 1
+            columns_with_errors[result_tags['col']] = \
+                1 + columns_with_errors.get(result_tags['col'], 0)
             continue
 
         # Saving the problems
