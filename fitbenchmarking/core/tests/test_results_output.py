@@ -14,8 +14,8 @@ from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import (_extract_tags,
                                                  _find_matching_tags,
                                                  _process_best_results,
-                                                 _find_columns_with_fallback,
-                                                 _process_tags,
+                                                 _get_all_result_tags,
+                                                 _find_non_full_columns,
                                                  _handle_fallback_tags,
                                                  create_directories,
                                                  create_plots,
@@ -39,14 +39,13 @@ def load_mock_results(additional_options=None):
         additional_options = {}
     cp_dir = os.path.dirname(inspect.getfile(test_files))
     additional_options.update({
-        'checkpoint_filename': os.path.join(cp_dir,
-                                            'checkpoint.json'),
+        'checkpoint_filename': os.path.join(cp_dir, 'checkpoint.json'),
         'external_output': 'debug'})
     options = Options(additional_options=additional_options)
     cp = Checkpoint(options)
     results, _, _ = cp.load()
 
-    return results["Fake_Test_Data"], options
+    return results['Fake_Test_Data'], options
 
 
 class SaveResultsTests(unittest.TestCase):
@@ -259,13 +258,13 @@ class FallbackTagTests(unittest.TestCase):
                                          expected_tags,
                                          expected_repeating_tags):
         """
-        Helper function to call _find_columns_with_fallback
+        Helper function to call _get_all_result_tags
         and match outputs
         """
         actual_tags, actual_repeating_tags = \
-            _find_columns_with_fallback(results,
-                                        self.sort_order,
-                                        self.col_sections)
+            _get_all_result_tags(results,
+                                 self.sort_order,
+                                 self.col_sections)
 
         self.assertEqual(actual_tags, expected_tags)
         self.assertEqual(actual_repeating_tags, expected_repeating_tags)
@@ -276,12 +275,12 @@ class FallbackTagTests(unittest.TestCase):
                                             columns_with_errors,
                                             expected_column_tags):
         """
-        Helper function to call _process_tags
+        Helper function to call _find_non_full_columns
         and match outputs
         """
-        actual_column_tags = _process_tags(columns,
-                                           expected_count,
-                                           columns_with_errors)
+        actual_column_tags = _find_non_full_columns(columns,
+                                                    expected_count,
+                                                    columns_with_errors)
         self.assertEqual(actual_column_tags, expected_column_tags)
 
     def test_process_fallback_tags(self):

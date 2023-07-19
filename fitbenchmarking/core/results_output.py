@@ -136,11 +136,11 @@ def preprocess_data(results: "list[FittingResult]"):
     # Additional separation for categories within columns
     col_sections = ['costfun']
 
-    # Find the column tags with jacobian of hessian fallback
+    # Find the result tags and the columns with fallback
     all_result_tags, fallback_columns = \
-        _find_columns_with_fallback(results,
-                                    sort_order,
-                                    col_sections)
+        _get_all_result_tags(results,
+                             sort_order,
+                             col_sections)
 
     # Handle the fallback tags
     if fallback_columns:
@@ -238,8 +238,7 @@ def _handle_fallback_tags(results,
         jacobian_check = x_jacobian != y_jacobian
         hessian_check = x_hessian != y_hessian
 
-        jh_checks[x] = {}
-        jh_checks[y] = {}
+        jh_checks[x] = jh_checks[y] = {}
 
         jh_checks[x]['jacobian_check'] = \
             jh_checks[y]['jacobian_check'] = jacobian_check
@@ -270,10 +269,11 @@ def _handle_fallback_tags(results,
     return results, all_result_tags
 
 
-def _find_columns_with_fallback(results, sort_order, col_sorting):
+def _get_all_result_tags(results, sort_order, col_sorting):
     """
-    The function finds the column tags that are repeated due to
-    jacobian and hessian fallback
+    Generate the result tags of all results without error_flag = 4
+    and find the column tags that refer to the same options but
+    differ due to jacobian and hessian fallback.
 
     :param results: The list of results to find the tags for and
                    check for repetition
@@ -288,7 +288,7 @@ def _find_columns_with_fallback(results, sort_order, col_sorting):
     :rtype: list[dict[str, str]], list[str]
     """
     all_result_tags = []
-    problems = []
+    rows = set()
     columns = {}
     columns_with_errors = {}
 
@@ -308,7 +308,7 @@ def _find_columns_with_fallback(results, sort_order, col_sorting):
             continue
 
         # Saving the problems
-        problems.append(result_tags['row'])
+        rows.add(result_tags['row'])
 
         # Count the occurance of each column tag
         columns[result_tags['col']] = 1 if result_tags['col'] not in columns \
@@ -321,20 +321,20 @@ def _find_columns_with_fallback(results, sort_order, col_sorting):
         all_result_tags.append(result_tags)
 
     # Find the expected_count
-    unique_problems = set(problems)
-    expected_count = len(unique_problems)
+    expected_count = len(rows)
 
     # Process tags
-    fallback_column_tags = _process_tags(columns,
-                                         expected_count,
-                                         columns_with_errors)
+    fallback_column_tags = _find_non_full_columns(columns,
+                                                  expected_count,
+                                                  columns_with_errors)
 
     return all_result_tags, fallback_column_tags
 
 
-def _process_tags(columns, expected_count, columns_with_errors):
+def _find_non_full_columns(columns, expected_count, columns_with_errors):
     """
-    The function that processes the tags.
+    Find columns where the number of occurrences is less than the number
+    of rows.
 
     :param columns: The dict of column tags and their count
     :type columns: dict[str, str]
@@ -344,23 +344,22 @@ def _process_tags(columns, expected_count, columns_with_errors):
     :param columns_with_errors: The column tags with errors
     :type expected_count: dict[str, str]
 
-    :return: a list of the repeating column tags
+    :return: a list of the fallback column tags
     :rtype: list[str]
     """
-    error_flag_count = sum(columns_with_errors.values())
 
-    # Error flag count check
-    if error_flag_count != 0:
+    # If columns with errors exist
+    if columns_with_errors:
 
         for error_tag in columns_with_errors:
             for tag in _find_matching_tags(error_tag, list(columns)):
                 columns[tag] += columns_with_errors[error_tag]
 
-    # Save the repeated columns
-    repeat_column_tags = [tag for tag in columns
-                          if columns[tag] != expected_count]
+    # Save the fallback columns
+    fallback_column_tags = [tag for tag in columns
+                            if columns[tag] != expected_count]
 
-    return repeat_column_tags
+    return fallback_column_tags
 
 
 def _extract_tags(result: 'FittingResult', row_sorting: 'List[str]',
