@@ -211,9 +211,9 @@ class FallbackTagTests(unittest.TestCase):
                                'cat': 'cf1', 'result_ix': 14}]
         self.expected_repeating_tags = []
 
-    def test_find_fallback_tags(self):
+    def test_get_all_result_tags(self):
         """
-        Test the find fallback tags function
+        Test the _get_all_result_tags function
         """
         results = self.results
         expected_tags = self.expected_tags
@@ -222,9 +222,9 @@ class FallbackTagTests(unittest.TestCase):
         # Test Case 1
         # Using the results in checkpoint.json
         # No column with fallback
-        self.run_and_match_find_fallback_tags(results,
-                                              expected_tags,
-                                              expected_repeating_tags)
+        self.run_and_match_get_all_result_tags(results,
+                                               expected_tags,
+                                               expected_repeating_tags)
 
         # Test Case 2
         # Updating the results in checkpoint.json
@@ -233,9 +233,9 @@ class FallbackTagTests(unittest.TestCase):
         expected_tags[7]['col'] = 's1:m11:j1:'
         expected_repeating_tags = ['s1:m11:j0:', 's1:m11:j1:']
 
-        self.run_and_match_find_fallback_tags(results,
-                                              expected_tags,
-                                              expected_repeating_tags)
+        self.run_and_match_get_all_result_tags(results,
+                                               expected_tags,
+                                               expected_repeating_tags)
 
         # Test Case 3
         # Updating the results in checkpoint.json
@@ -249,14 +249,14 @@ class FallbackTagTests(unittest.TestCase):
                                    's0:m01:j1:h0',
                                    's0:m01:j1:h1']
 
-        self.run_and_match_find_fallback_tags(results,
-                                              expected_tags,
-                                              expected_repeating_tags)
+        self.run_and_match_get_all_result_tags(results,
+                                               expected_tags,
+                                               expected_repeating_tags)
 
-    def run_and_match_find_fallback_tags(self,
-                                         results,
-                                         expected_tags,
-                                         expected_repeating_tags):
+    def run_and_match_get_all_result_tags(self,
+                                          results,
+                                          expected_tags,
+                                          expected_repeating_tags):
         """
         Helper function to call _get_all_result_tags
         and match outputs
@@ -269,7 +269,7 @@ class FallbackTagTests(unittest.TestCase):
         self.assertEqual(actual_tags, expected_tags)
         self.assertEqual(actual_repeating_tags, expected_repeating_tags)
 
-    def run_and_match_process_fallback_tags(self,
+    def run_and_match_find_non_full_columns(self,
                                             columns,
                                             expected_count,
                                             columns_with_errors,
@@ -283,9 +283,9 @@ class FallbackTagTests(unittest.TestCase):
                                                     columns_with_errors)
         self.assertEqual(actual_column_tags, expected_column_tags)
 
-    def test_process_fallback_tags(self):
+    def test_find_non_full_columns(self):
         """
-        Test the process fallback tags function
+        Test the _find_non_full_columns function
         """
         columns = {'s1:m10:j0:': 2,
                    's1:m11:j0:': 2,
@@ -296,14 +296,14 @@ class FallbackTagTests(unittest.TestCase):
                    's0:m00:j0:': 1,
                    's0:m00:j1:': 1}
         expected_count = 2
-        columns_with_errors = {'s0:m00': 1}
+        columns_with_errors = {'s0:m00:[^:]*:[^:]*': 1}
 
         # Test Case 1
         # Using the results in checkpoint.json
         # No column with fallback
         # 1 Error result
         expected_column_tags = []
-        self.run_and_match_process_fallback_tags(columns,
+        self.run_and_match_find_non_full_columns(columns,
                                                  expected_count,
                                                  columns_with_errors,
                                                  expected_column_tags)
@@ -315,7 +315,7 @@ class FallbackTagTests(unittest.TestCase):
         columns_with_errors = {}
         columns['s0:m00:j0:'] = columns['s0:m00:j1:'] = 2
         expected_column_tags = []
-        self.run_and_match_process_fallback_tags(columns,
+        self.run_and_match_find_non_full_columns(columns,
                                                  expected_count,
                                                  columns_with_errors,
                                                  expected_column_tags)
@@ -326,7 +326,7 @@ class FallbackTagTests(unittest.TestCase):
         # 0 Error result
         columns['s1:m11:j0:'] = columns['s1:m11:j1:'] = 1
         expected_column_tags = ['s1:m11:j0:', 's1:m11:j1:']
-        self.run_and_match_process_fallback_tags(columns,
+        self.run_and_match_find_non_full_columns(columns,
                                                  expected_count,
                                                  columns_with_errors,
                                                  expected_column_tags)
@@ -340,7 +340,7 @@ class FallbackTagTests(unittest.TestCase):
                                 's1:m11:j1:',
                                 's1:m11:j0:h0',
                                 's1:m11:j1:h1']
-        self.run_and_match_process_fallback_tags(columns,
+        self.run_and_match_find_non_full_columns(columns,
                                                  expected_count,
                                                  columns_with_errors,
                                                  expected_column_tags)
