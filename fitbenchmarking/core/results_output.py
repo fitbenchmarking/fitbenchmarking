@@ -230,14 +230,23 @@ def _handle_fallback_tags(results, all_result_tags, fallback_columns):
 
             result_ix = tag["result_ix"]
 
-            # Check if jacobian tag needs to be renamed
+            # Find matches for jacobian tag
             jac_matches = _find_matching_tags(jac_tag, fallback_columns)
-            if len(jac_matches) == 2:
-                jacobian = results[result_ix].jacobian_tag = column_rename
 
-            # Check if hessian tag needs to be renamed
+            # Find matches for hessian tag
             hes_matches = _find_matching_tags(hes_tag, fallback_columns)
-            if len(hes_matches) == 2:
+
+            # Check if both jac and hes names need to be updated
+            rename_jac_and_hes = len(jac_matches) == 2 \
+                and len(hes_matches) == 2
+
+            if rename_jac_and_hes:
+                # For now a hard coded condition to prioritize renaming
+                # jacobian tags
+                jacobian = results[result_ix].jacobian_tag = column_rename
+            elif len(jac_matches) == 2:
+                jacobian = results[result_ix].jacobian_tag = column_rename
+            elif len(hes_matches) == 2:
                 hessian = results[result_ix].hessian_tag = column_rename
 
             # Update results tag
