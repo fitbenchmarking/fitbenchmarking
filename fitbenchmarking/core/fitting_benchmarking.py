@@ -432,15 +432,16 @@ def loop_over_jacobians(controller, options, grabbed_output, checkpointer):
         for jac_method in jacobian_list:
 
             # Creates Jacobian class
+            jacobian_cls = create_jacobian(jac_method)
             try:
-                jacobian_cls = create_jacobian(jac_method)
                 jacobian = jacobian_cls(cost_func.problem)
             except NoJacobianError as excp:
                 LOGGER.warning(str(excp))
                 LOGGER.info('Using Scipy instead for jacobian')
-                jac_method = 'scipy'
-                jacobian_cls = create_jacobian(jac_method)
-                jacobian = jacobian_cls(cost_func.problem)
+                if jac_method == 'analytic':
+                    jac_method = 'scipy'
+                    jacobian_cls = create_jacobian(jac_method)
+                    jacobian = jacobian_cls(cost_func.problem)
 
             for num_method in options.jac_num_method[jac_method]:
                 jacobian.method = num_method
@@ -507,8 +508,9 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
             except NoHessianError as excp:
                 LOGGER.warning(str(excp))
                 LOGGER.info('Using default method instead for hessian')
-                hes_method = 'default'
-                cost_func.hessian = None
+                if hes_method == 'analytic':
+                    hes_method = 'default'
+                    cost_func.hessian = None
         else:
             cost_func.hessian = None
 
