@@ -499,8 +499,8 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
         # if user has selected to use hessian info
         # then create hessian if minimizer accepts it
         if minimizer_check and hes_method != 'default':
+            hessian_cls = create_hessian(hes_method)
             try:
-                hessian_cls = create_hessian(hes_method)
                 hessian = hessian_cls(cost_func.problem,
                                       jacobian=cost_func.jacobian)
                 cost_func.hessian = hessian
@@ -508,10 +508,7 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
                 LOGGER.warning(str(excp))
                 LOGGER.info('Using default method instead for hessian')
                 hes_method = 'default'
-                hessian_cls = create_hessian(hes_method)
-                hessian = hessian_cls(cost_func.problem,
-                                      jacobian=cost_func.jacobian)
-                cost_func.hessian = hessian
+                cost_func.hessian = None
         else:
             cost_func.hessian = None
 
