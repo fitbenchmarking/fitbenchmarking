@@ -144,7 +144,8 @@ def preprocess_data(results: "list[FittingResult]"):
     if fallback_columns:
         results, all_result_tags = _handle_fallback_tags(results,
                                                          all_result_tags,
-                                                         fallback_columns)
+                                                         fallback_columns,
+                                                         sort_order[1])
 
     # Generate the columns, category, and row tags and sort
     rows: Union[List[str], Set[str]] = set()
@@ -200,7 +201,10 @@ def preprocess_data(results: "list[FittingResult]"):
     return best_results, sorted_results
 
 
-def _handle_fallback_tags(results, all_result_tags, fallback_columns):
+def _handle_fallback_tags(results,
+                          all_result_tags,
+                          fallback_columns,
+                          col_order):
     """
     The function that relabels the fallback column tags that
     appear when there is jacobian and hessian fallbacks for a
@@ -213,44 +217,69 @@ def _handle_fallback_tags(results, all_result_tags, fallback_columns):
     :type: list[dict[str, str]]
     :param fallback_columns: The col tag of the fallback columns
     :type fallback_columns: list[str]
+    :param col_order: The sort order of the col tags
+    :type col_order: list[str]
 
     :return: all results and the results tags
     :rtype: list[FittingResult], list[dict[str, str]]
     """
     column_rename = "best_avaliable"
 
+    rows_count = len({row['row'] for row in all_result_tags})
+    col_tags = [tag['col'] for tag in all_result_tags]
+    all_count = {key: col_tags.count(key)
+                 for key in set(col_tags)}
+
     for ix, tag in enumerate(all_result_tags):
         # If tag is in fallback columns list
         if tag['col'] in fallback_columns:
 
-            software, minimizer, jacobian, hessian = tag["col"].split(":")
-
-            jac_tag = ':'. join([software, minimizer, "[^:]*", hessian])
-            hes_tag = ':'. join([software, minimizer, jacobian, "[^:]*"])
-
             result_ix = tag["result_ix"]
 
-            # Find matches for jacobian tag
-            jac_matches = _find_matching_tags(jac_tag, fallback_columns)
+            # Unpack the tag
+            unpacked_column_tag = dict(zip(col_order, tag["col"].split(":")))
 
-            # Find matches for hessian tag
-            hes_matches = _find_matching_tags(hes_tag, fallback_columns)
+            # Find matches for jacobian and hessian tags
+            matches_summary = {}
+            for check_tag in ['jacobian', 'hessian']:
+                match_str = ':'. join(["[^:]*" if key == check_tag else
+                                      unpacked_column_tag[key]
+                                      for key in col_order])
+                matches = _find_matching_tags(match_str, fallback_columns)
+                matches_summary[check_tag] = matches
 
-            # Check if both jac and hes names need to be updated
-            rename_jac_and_hes = len(jac_matches) == 2 \
-                and len(hes_matches) == 2
+            rename_jac_and_hes = len(matches_summary['jacobian']) == 2 \
+                and len(matches_summary['hessian']) == 2
 
             if rename_jac_and_hes:
-                # For now a hard coded condition to prioritize renaming
-                # jacobian tags
-                jacobian = results[result_ix].jacobian_tag = column_rename
-            elif len(jac_matches) == 2:
-                jacobian = results[result_ix].jacobian_tag = column_rename
-            elif len(hes_matches) == 2:
-                hessian = results[result_ix].hessian_tag = column_rename
+                # If both jacobian and hessian tags can be renamed
+                matches_summary['jacobian'].remove(tag['col'])
+                col_count = all_count[tag['col']]
+                jac_count = all_count[''.join(matches_summary['jacobian'])]
+
+                # If jacobian renaming leads to row count matching
+                if jac_count + col_count == rows_count:
+                    # Update jacobian tag
+                    unpacked_column_tag['jacobian'] = \
+                        results[result_ix].jacobian_tag = column_rename
+                else:
+                    # Update hessian tag
+                    unpacked_column_tag['hessian'] = \
+                        results[result_ix].hessian_tag = column_rename
+
+            elif len(matches_summary['jacobian']) == 2:
+                # Only jacobian tag need to be renamed
+                unpacked_column_tag['jacobian'] = \
+                    results[result_ix].jacobian_tag = column_rename
+
+            elif len(matches_summary['hessian']) == 2:
+                # Only hessian tag need to be renamed
+                unpacked_column_tag['hessian'] = \
+                    results[result_ix].hessian_tag = column_rename
 
             # Update results tag
-            new_col_tag = ":". join([software, minimizer, jacobian, hessian])
+            new_col_tag = ":". join([unpacked_column_tag[key]
+                                    for key in col_order])
             all_result_tags[ix]["col"] = new_col_tag
 
     return results, all_result_tags

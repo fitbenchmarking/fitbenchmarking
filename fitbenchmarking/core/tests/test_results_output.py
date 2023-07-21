@@ -26,7 +26,7 @@ from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
 
 
-def load_mock_results(additional_options=None):
+def load_mock_results(additional_options=None, filename='checkpoint.json'):
     """
     Load a predictable set of results.
 
@@ -39,7 +39,7 @@ def load_mock_results(additional_options=None):
         additional_options = {}
     cp_dir = os.path.dirname(inspect.getfile(test_files))
     additional_options.update({
-        'checkpoint_filename': os.path.join(cp_dir, 'checkpoint.json'),
+        'checkpoint_filename': os.path.join(cp_dir, filename),
         'external_output': 'debug'})
     options = Options(additional_options=additional_options)
     cp = Checkpoint(options)
@@ -160,6 +160,168 @@ class PreprocessDataTests(unittest.TestCase):
                     self.assertEqual(r.min_runtime, self.min_runtime)
 
 
+class EdgeCaseTests(unittest.TestCase):
+    """
+    Unit tests for the edge cases.
+    """
+    def setUp(self):
+        """
+        Defining the edge case results
+        """
+
+        self.sort_order = (['problem'],
+                           ['software',
+                            'minimizer',
+                            'jacobian',
+                            'hessian'])
+        self.col_sections = ['costfun']
+        self.edgecases = [{
+                'filename': 'edgecase1.json',
+                'expected_tags': [{'row': 'cubic, Start 1',
+                                   'col': 'ralfit:hybrid:'
+                                          'scipy 2-point:analytic',
+                                   'cat': 'WeightedNLLSCostFunc',
+                                   'result_ix': 0},
+                                  {'row': 'cubic, Start 1',
+                                   'col': 'ralfit:hybrid:'
+                                          'numdifftools central:analytic',
+                                   'cat': 'WeightedNLLSCostFunc',
+                                   'result_ix': 1},
+                                  {'row': 'cubic, Start 2',
+                                   'col': 'ralfit:hybrid:'
+                                          'scipy 2-point:analytic',
+                                   'cat': 'WeightedNLLSCostFunc',
+                                   'result_ix': 2},
+                                  {'row': 'cubic, Start 2',
+                                   'col': 'ralfit:hybrid:'
+                                          'numdifftools central:analytic',
+                                   'cat': 'WeightedNLLSCostFunc',
+                                   'result_ix': 3},
+                                  {'row': 'Problem Def 1',
+                                   'col': 'ralfit:hybrid:'
+                                          'scipy 2-point:',
+                                   'cat': 'WeightedNLLSCostFunc',
+                                   'result_ix': 4},
+                                  {'row': 'Problem Def 1',
+                                   'col': 'ralfit:hybrid:'
+                                          'numdifftools central:',
+                                   'cat': 'WeightedNLLSCostFunc',
+                                   'result_ix': 5}],
+                'expected_repeating_tags': ['ralfit:hybrid:'
+                                            'scipy 2-point:analytic',
+                                            'ralfit:hybrid:'
+                                            'numdifftools central:analytic',
+                                            'ralfit:hybrid:'
+                                            'scipy 2-point:',
+                                            'ralfit:hybrid:'
+                                            'numdifftools central:'],
+                'expected_new_tags': ['ralfit:hybrid:'
+                                      'scipy 2-point:best_avaliable',
+                                      'ralfit:hybrid:'
+                                      'numdifftools central:best_avaliable',
+                                      'ralfit:hybrid:'
+                                      'scipy 2-point:best_avaliable',
+                                      'ralfit:hybrid:'
+                                      'numdifftools central:best_avaliable',
+                                      'ralfit:hybrid:'
+                                      'scipy 2-point:best_avaliable',
+                                      'ralfit:hybrid:'
+                                      'numdifftools central:best_avaliable']
+            },
+            {
+                'filename': 'edgecase2.json',
+                'expected_tags': [{'row': 'cubic, Start 1',
+                                   'col': 'ralfit:hybrid:'
+                                          'analytic:scipy 2-point',
+                                   'cat': 'WeightedNLLSCostFunc',
+                                   'result_ix': 0},
+                                  {'row': 'cubic, Start 1',
+                                   'col': 'ralfit:hybrid:analytic:'
+                                          'numdifftools central',
+                                   'cat': 'WeightedNLLSCostFunc',
+                                   'result_ix': 1},
+                                  {'row': 'cubic, Start 2',
+                                   'col': 'ralfit:hybrid:'
+                                          'analytic:scipy 2-point',
+                                   'cat': 'WeightedNLLSCostFunc',
+                                   'result_ix': 2},
+                                  {'row': 'cubic, Start 2',
+                                   'col': 'ralfit:hybrid:'
+                                          'analytic:numdifftools central',
+                                   'cat': 'WeightedNLLSCostFunc',
+                                   'result_ix': 3},
+                                  {'row': 'Problem Def 1',
+                                   'col': 'ralfit:hybrid:'
+                                          'scipy 2-point:scipy 2-point',
+                                   'cat': 'WeightedNLLSCostFunc',
+                                   'result_ix': 4},
+                                  {'row': 'Problem Def 1',
+                                   'col': 'ralfit:hybrid:'
+                                          'scipy 2-point:numdifftools central',
+                                   'cat': 'WeightedNLLSCostFunc',
+                                   'result_ix': 5}],
+                'expected_repeating_tags': ['ralfit:hybrid:'
+                                            'analytic:scipy 2-point',
+                                            'ralfit:hybrid:'
+                                            'analytic:numdifftools central',
+                                            'ralfit:hybrid:'
+                                            'scipy 2-point:scipy 2-point',
+                                            'ralfit:hybrid:'
+                                            'scipy 2-point:'
+                                            'numdifftools central'],
+                'expected_new_tags': ['ralfit:hybrid:'
+                                      'best_avaliable:scipy 2-point',
+                                      'ralfit:hybrid:'
+                                      'best_avaliable:numdifftools central',
+                                      'ralfit:hybrid:'
+                                      'best_avaliable:scipy 2-point',
+                                      'ralfit:hybrid:'
+                                      'best_avaliable:numdifftools central',
+                                      'ralfit:hybrid:'
+                                      'best_avaliable:scipy 2-point',
+                                      'ralfit:hybrid:'
+                                      'best_avaliable:numdifftools central']
+            }]
+
+    def test_edge_cases(self):
+        """
+        Test each of the edgecases
+        """
+        for edgecase in self.edgecases:
+
+            with self.subTest(edgecase['filename']):
+
+                results, _ = load_mock_results(filename=edgecase['filename'])
+
+                actual_tags, actual_repeating_tags = \
+                    _get_all_result_tags(results,
+                                         self.sort_order,
+                                         self.col_sections)
+
+                self.assertEqual(actual_tags, edgecase['expected_tags'])
+                self.assertEqual(actual_repeating_tags,
+                                 edgecase['expected_repeating_tags'])
+
+                actual_results, actual_result_tags = \
+                    _handle_fallback_tags(results,
+                                          actual_tags,
+                                          actual_repeating_tags,
+                                          self.sort_order[1])
+
+                actual_new_tags = [tag['col'] for tag in actual_result_tags]
+                self.assertEqual(actual_results, results)
+                self.assertEqual(actual_new_tags,
+                                 edgecase['expected_new_tags'])
+
+                _, sorted_results = preprocess_data(results)
+
+                all_sorted_results = [result for row in
+                                      sorted_results.values()
+                                      for result in row.values()]
+                for r in all_sorted_results:
+                    self.assertNotIn(None, r)
+
+
 class FallbackTagTests(unittest.TestCase):
     """
     Unit tests for finding fallback tags that
@@ -168,7 +330,7 @@ class FallbackTagTests(unittest.TestCase):
     """
     def setUp(self):
         """
-        Setting up paths and results folders
+        Setting up the test results
         """
         # Loading the results from checkpoint.json
         self.results, _ = load_mock_results()
@@ -359,7 +521,8 @@ class FallbackTagTests(unittest.TestCase):
         actual_results, actual_result_tags = \
             _handle_fallback_tags(results,
                                   expected_tags,
-                                  repeating_tags)
+                                  repeating_tags,
+                                  self.sort_order[1])
 
         self.assertEqual(actual_results, results)
         self.assertEqual(actual_result_tags, expected_tags)
@@ -378,7 +541,8 @@ class FallbackTagTests(unittest.TestCase):
         actual_results, actual_result_tags = \
             _handle_fallback_tags(results,
                                   expected_tags,
-                                  repeating_tags)
+                                  repeating_tags,
+                                  self.sort_order[1])
 
         for ix in [0, 3, 6, 9]:
             self.assertEqual(actual_result_tags[ix]['col'],
