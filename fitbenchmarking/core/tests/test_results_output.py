@@ -179,8 +179,16 @@ class CreatePlotsTests(unittest.TestCase):
         Tests for create_plots where the results object params are not None
         """
         expected_plot_initial_guess = "initial_guess"
-        expected_plot_best = "plot_best"
-        expected_plotly_fit = "plotly_fit"
+        expected_plot_best = "plotly_fit"
+        expected_plotly_fit = {'m00_[s0]': "plotly_fit",
+                               'm01_[s0]_jj0': "plotly_fit",
+                               'm01_[s0]_jj1': "plotly_fit",
+                               'm10_[s1]_jj0': "plotly_fit",
+                               'm10_[s1]_jj1': "plotly_fit",
+                               'm11_[s1]_jj0': "plotly_fit",
+                               'm11_[s1]_jj1': "plotly_fit",
+                               'm00_[s0]_jj0': "plotly_fit",
+                               'm00_[s0]_jj1': "plotly_fit"}
         plot_instance = mock.MagicMock()
         plot_instance.plot_initial_guess.return_value = \
             expected_plot_initial_guess
@@ -211,7 +219,8 @@ class CreatePlotsTests(unittest.TestCase):
                 self.assertEqual(best_in_cat.figure_link,
                                  expected_plot_best)
                 self.assertTrue(all(
-                    r.figure_link == expected_plotly_fit
+                    r.figure_link == expected_plotly_fit[
+                        r.sanitised_min_name(True)]
                     for r in results if not r.is_best_fit))
 
     @mock.patch('fitbenchmarking.results_processing.plots.Plot')
