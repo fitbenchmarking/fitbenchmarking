@@ -1,3 +1,5 @@
 sphinx_mdinclude
 sphinx-rtd-theme==1.0.0 # This fixes the missing bullet points in the documentation
 sphinx~=4.0
+matplotlib
+numpy
