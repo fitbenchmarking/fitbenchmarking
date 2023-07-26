@@ -17,26 +17,8 @@ class Plot:
     """
     Class providing plotting functionality.
     """
-    # These define the styles of the 4 types of plot
-    data_plot_options = {"label": "Data",
-                         "zorder": 0,
-                         "color": "black",
-                         "marker": "x",
-                         "linestyle": '',
-                         "linewidth": 1}
     data_marker = {"symbol": "x",
                    "color": "black"}
-    ini_guess_plot_options = {"label": "Starting Guess",
-                              "zorder": 1,
-                              "color": "#ff6699",
-                              "marker": "",
-                              "linestyle": '-',
-                              "linewidth": 3}
-    best_fit_plot_options = {"zorder": 3,
-                             "color": '#6699ff',
-                             "marker": "",
-                             "linestyle": ':',
-                             "linewidth": 3}
     best_fit_line = {"dash": "dot",
                      "color": '#6699ff'}
     legend_options = {"yanchor": "top",
@@ -44,21 +26,7 @@ class Plot:
                       "xanchor": "left",
                       "x": 0.01,
                       "bgcolor": 'rgba(0,0,0,0.1)'}
-    fit_plot_options = {"zorder": 2,
-                        "color": "#99ff66",
-                        "marker": "",
-                        "linestyle": '-',
-                        "linewidth": 3}
-    summary_best_plot_options = {"zorder": 2,
-                                 "marker": "",
-                                 "linestyle": '-',
-                                 "linewidth": 2}
     summary_best_plot_line = {"width": 2}
-    summary_plot_options = {"zorder": 1,
-                            "marker": "",
-                            "linestyle": '-',
-                            "linewidth": 1,
-                            "alpha": 0.5}
     summary_plot_line = {"width": 1}
 
     def __init__(self, best_result, options, figures_dir):
@@ -243,13 +211,10 @@ class Plot:
             # Plot category
             for result in results:
                 if result.params is not None:
-                    plot_options = cls.summary_best_plot_options \
-                        if result.is_best_fit else cls.summary_plot_options
                     line = cls.summary_best_plot_line \
                         if result.is_best_fit else cls.summary_plot_line
 
                     line["color"] = colour
-                    plot_options['label'] = key if result.is_best_fit else ''
                     label = key if result.is_best_fit else ''
                     if result.is_best_fit:
                         line = cls.summary_best_plot_line
