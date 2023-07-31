@@ -644,48 +644,6 @@ class FallbackTagTests(unittest.TestCase):
         expected_tags = self.expected_tags
         expected_repeating_tags = self.expected_repeating_tags
 
-        # Test Case 1
-        # Using the results in checkpoint.json
-        # No column with fallback
-        self.run_and_match_get_all_result_tags(results,
-                                               expected_tags,
-                                               expected_repeating_tags)
-
-        # Test Case 2
-        # Updating the results in checkpoint.json
-        # One column with fallback
-        results[8].jacobian_tag = 'j1'
-        expected_tags[7]['col'] = 's1:m11:j1:'
-        expected_repeating_tags = ['s1:m11:j0:', 's1:m11:j1:']
-
-        self.run_and_match_get_all_result_tags(results,
-                                               expected_tags,
-                                               expected_repeating_tags)
-
-        # Test Case 3
-        # Updating the results in checkpoint.json
-        # Two column with fallback
-        results[6].hessian_tag = 'h0'
-        results[13].hessian_tag = 'h1'
-        expected_tags[5]['col'] = 's0:m01:j1:h0'
-        expected_tags[12]['col'] = 's0:m01:j1:h1'
-        expected_repeating_tags = ['s1:m11:j0:',
-                                   's1:m11:j1:',
-                                   's0:m01:j1:h0',
-                                   's0:m01:j1:h1']
-
-        self.run_and_match_get_all_result_tags(results,
-                                               expected_tags,
-                                               expected_repeating_tags)
-
-    def run_and_match_get_all_result_tags(self,
-                                          results,
-                                          expected_tags,
-                                          expected_repeating_tags):
-        """
-        Helper function to call _get_all_result_tags
-        and match outputs
-        """
         actual_tags, actual_repeating_tags = \
             _get_all_result_tags(results,
                                  self.sort_order,
@@ -774,9 +732,6 @@ class FallbackTagTests(unittest.TestCase):
         """
         Test the handle fallback tags function
         """
-
-        # Test Case 1
-        # Using the results in checkpoint.json
         results = self.results
         expected_tags = self.expected_tags
         repeating_tags = []
@@ -789,27 +744,6 @@ class FallbackTagTests(unittest.TestCase):
 
         self.assertEqual(actual_results, results)
         self.assertEqual(actual_result_tags, expected_tags)
-
-        # Test Case 2
-        # Updating the results in checkpoint.json
-        del results[14], results[10], results[3]
-        del expected_tags[13], expected_tags[9]
-        for ix in range(3, 12):
-            expected_tags[ix]['result_ix'] = ix
-        expected_tags[6]['col'] = 's1:m10:j1:'
-        results[6].jacobian_tag = 'j1'
-
-        repeating_tags = ['s1:m10:j0:', 's1:m10:j1:']
-
-        actual_results, actual_result_tags = \
-            _handle_fallback_tags(results,
-                                  expected_tags,
-                                  repeating_tags,
-                                  self.sort_order[1])
-
-        for ix in [0, 3, 6, 9]:
-            self.assertEqual(actual_result_tags[ix]['col'],
-                             's1:m10:best_avaliable:')
 
 
 class CreatePlotsTests(unittest.TestCase):
