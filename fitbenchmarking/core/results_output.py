@@ -247,11 +247,10 @@ def _handle_fallback_tags(results,
                 tags.add(tag['col'])
         sm_summary[sm] = tags
 
-    update_summary = _detemine_which_tags_to_rename(all_result_tags,
-                                                    sm_summary,
-                                                    col_order,
-                                                    fallback_columns,
-                                                    column_summary)
+    update_summary = _find_tag_to_rename(all_result_tags,
+                                         sm_summary,
+                                         col_order,
+                                         fallback_columns)
 
     for ix, tag in enumerate(all_result_tags):
         # If tag is in fallback columns list
@@ -290,13 +289,13 @@ def _handle_fallback_tags(results,
     return results, all_result_tags
 
 
-def _detemine_which_tags_to_rename(all_result_tags,
-                                   sm_summary,
-                                   col_order,
-                                   fallback_columns,
-                                   column_summary):
+def _find_tag_to_rename(all_result_tags,
+                        sm_summary,
+                        col_order,
+                        fallback_columns):
     """
-    The function detemines which fallback column tags to rename.
+    The function determines which of the jacobian, hessian or both
+    tags to rename for the fallback columns.
 
     :param all_result_tags: A list of tags that can be used
                             to sort the results
@@ -308,16 +307,13 @@ def _detemine_which_tags_to_rename(all_result_tags,
     :type col_order: list[str]
     :param fallback_columns: The col tag of the fallback columns
     :type fallback_columns: list[str]
-    :param column_summary: The col tag count
-    :type column_summary: dict[int]
 
     :return: the tags to update organized by software
              and minimizer
     :rtype: dict[str]]
     """
-    # Find rows and row count
+    # Find rows
     rows = {row['row'] for row in all_result_tags}
-    expected_count = len(rows)
 
     # Create dict to store tag update type
     update_summary = {}
@@ -358,39 +354,36 @@ def _detemine_which_tags_to_rename(all_result_tags,
                     match_str = ':'. join(["[^:]*" if key in check_tag else
                                            unpacked_column_tag[key]
                                            for key in col_order])
-                    matches = _find_matching_tags(match_str, fallback_columns)
+
+                    # Find all matches regardless of row constraints
+                    matches = [m for m in _find_matching_tags(match_str,
+                                                              fallback_columns)
+                               if m != tag]
+
+                    # Find possible col tags for missing rows
+                    possible_matches = {r['col'] for r in all_result_tags
+                                        if r['row'] in [x for x in rows if x
+                                        not in [r['row'] for r
+                                                in all_result_tags
+                                                if r['col'] == tag]]}
+
+                    # Find all matches that satisfy row constraints
                     matches_summary[':'.join(check_tag)] = \
-                        ''.join([m for m in matches if m != tag])
+                        ''.join([m for m in matches if m in possible_matches])
 
-                # Find possible col tags for missing rows
-                possible_matches = {r['col'] for r in all_result_tags
-                                    if r['row'] in [x for x in rows if x
-                                    not in [r['row'] for r
-                                            in all_result_tags
-                                            if r['col'] == tag]]}
+                # Determine which tag to update
+                rename_jac = matches_summary['jacobian'] != ''
+                rename_hes = matches_summary['hessian'] != ''
 
-                # Find count for row and jacobian and hessian matches
-                row_count = column_summary[tag]
-                jac_count = 0 if matches_summary['jacobian'] == '' \
-                    else column_summary[matches_summary['jacobian']]
-                hes_count = 0 if matches_summary['hessian'] == '' \
-                    else column_summary[matches_summary['hessian']]
-
-                # Logic to decide which tag to update
-                if ((row_count + jac_count == expected_count)
-                   and (row_count + hes_count != expected_count)):
+                if rename_jac and rename_hes:
+                    # Update both tags
+                    update_summary[sm] = 'both'
+                elif rename_jac:
+                    # Update jacobian tag
                     update_summary[sm] = 'jacobian'
-                elif ((row_count + hes_count == expected_count)
-                      and (row_count + jac_count != expected_count)):
-                    update_summary[sm] = 'hessian'
                 else:
-                    if ((matches_summary['jacobian'] in possible_matches)
-                       and (matches_summary['hessian'] in possible_matches)):
-                        update_summary[sm] = 'both'
-                    elif matches_summary['jacobian'] in possible_matches:
-                        update_summary[sm] = 'jacobian'
-                    elif matches_summary['hessian'] in possible_matches:
-                        update_summary[sm] = 'hessian'
+                    # Update hessian tag
+                    update_summary[sm] = 'hessian'
                 break
 
     return update_summary
