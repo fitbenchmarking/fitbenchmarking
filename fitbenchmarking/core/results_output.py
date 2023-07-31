@@ -225,6 +225,13 @@ def _handle_fallback_tags(results,
     """
     column_rename = "best_avaliable"
 
+    # Find column tags and count for each tag
+    column_summary = dict((k,
+                          [tag['col'] for tag in
+                           all_result_tags].count(k)) for
+                          k in {tag['col'] for
+                                tag in all_result_tags})
+
     for ix, tag in enumerate(all_result_tags):
         # If tag is in fallback columns list
         if tag['col'] in fallback_columns:
@@ -256,7 +263,8 @@ def _handle_fallback_tags(results,
                                                   column_rename,
                                                   matches_summary,
                                                   col_order,
-                                                  fallback_columns)
+                                                  fallback_columns,
+                                                  column_summary)
                 continue
 
             if rename_jac:
@@ -289,7 +297,8 @@ def _handle_double_fallback_case(results,
                                  column_rename,
                                  matches_summary,
                                  col_order,
-                                 fallback_columns):
+                                 fallback_columns,
+                                 column_summary):
     """
     The function that relabels the fallback column tags that
     appear when both the jacobian and hessian fallback for a
@@ -312,22 +321,50 @@ def _handle_double_fallback_case(results,
     :type col_order: list[str]
     :param fallback_columns: The col tag of the fallback columns
     :type fallback_columns: list[str]
+    :param column_summary: The col tag count
+    :type column_summary: dict[int]
 
     :return: all results, the results tags, updated
              fallback_columns list
     :rtype: list[FittingResult], list[dict[str, str]], list[str]
     """
-
+    # Find all rows, rows with col tag, rows without col tag
     rows = {row['row'] for row in all_result_tags}
-    row = [r['row'] for r in all_result_tags
-           if r['col'] == original_tag]
-    missing_rows = [x for x in rows if x not in row]
-    possible_matches = {r['col'] for r in all_result_tags
-                        if r['row'] in missing_rows}
-    to_be_updated = 'jacobian' if matches_summary['jacobian']\
-        in possible_matches else 'hessian'
+    rows_with_col_tag = [r['row'] for r in all_result_tags
+                         if r['col'] == original_tag]
+    rows_without_col_tag = [x for x in rows if x not in rows_with_col_tag]
 
-    tag_to_be_renamed = [matches_summary[to_be_updated], original_tag]
+    # Find count
+    expected_count = len(rows)
+    row_count = column_summary[original_tag]
+    jac_count = column_summary[matches_summary['jacobian']]
+    hes_count = column_summary[matches_summary['hessian']]
+
+    # Find possible col tags for the rows_without_col_tag
+    possible_matches = {r['col'] for r in all_result_tags
+                        if r['row'] in rows_without_col_tag}
+
+    if ((row_count + jac_count == expected_count)
+       and (row_count + hes_count != expected_count)):
+        to_be_updated = 'jacobian'
+    elif ((row_count + hes_count == expected_count)
+          and (row_count + jac_count != expected_count)):
+        to_be_updated = 'hessian'
+    else:
+        if ((matches_summary['jacobian'] in possible_matches)
+           and (matches_summary['hessian'] in possible_matches)):
+            to_be_updated = 'both'
+        elif matches_summary['jacobian'] in possible_matches:
+            to_be_updated = 'jacobian'
+        else:
+            to_be_updated = 'hessian'
+
+    if to_be_updated in ['jacobian', 'hessian']:
+        tag_to_be_renamed = [matches_summary[to_be_updated], original_tag]
+    else:
+        tag_to_be_renamed = [matches_summary['jacobian'],
+                             matches_summary['hessian'],
+                             original_tag]
 
     for r_ix, r_tag in enumerate(all_result_tags):
 
@@ -335,13 +372,14 @@ def _handle_double_fallback_case(results,
 
             unpack = dict(zip(col_order, r_tag["col"].split(":")))
 
-            unpack[to_be_updated] = column_rename
             r_index = r_tag["result_ix"]
 
-            if to_be_updated == 'jacobian':
-                results[r_index].jacobian_tag = column_rename
-            else:
-                results[r_index].hessian_tag = column_rename
+            if to_be_updated in ['jacobian', 'both']:
+                unpack['jacobian'] = results[r_index].jacobian_tag \
+                    = column_rename
+            if to_be_updated in ['hessian', 'both']:
+                unpack['hessian'] = results[r_index].hessian_tag \
+                    = column_rename
 
             all_result_tags[r_ix]["col"] = ":". join([unpack[key]
                                                       for key in col_order])
