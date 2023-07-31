@@ -77,7 +77,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
                             'hess': 'hess',
                             'initial_params': self.problem.starting_values[0],
                             'params': [],
-                            'chi_sq': 1}
+                            'acc': 1}
         self.list_results = [fitbm_result.FittingResult(**self.result_args)
                              for i in range(self.scipy_len)]
         self.individual_problem_results = [

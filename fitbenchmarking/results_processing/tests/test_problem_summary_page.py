@@ -128,7 +128,7 @@ def generate_mock_results(additional_options):
                             initial_params=list(
                                 cf.problem.starting_values[0].values()),
                             params=params[i][j][k][m][n],
-                            chi_sq=acc[i][j][k][m][n],
+                            acc=acc[i][j][k][m][n],
                             runtime=runtime[i][j][k][m][n],
                             software=software,
                             minimizer=minim,

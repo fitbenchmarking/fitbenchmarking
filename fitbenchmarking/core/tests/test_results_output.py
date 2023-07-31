@@ -137,7 +137,7 @@ def generate_mock_results(additional_options):
                             initial_params=list(
                                 cf.problem.starting_values[0].values()),
                             params=params[i][j][k][m][n],
-                            chi_sq=acc[i][j][k][m][n],
+                            acc=acc[i][j][k][m][n],
                             runtime=runtime[i][j][k][m][n],
                             software=software,
                             minimizer=minim_name,
@@ -239,7 +239,7 @@ class PreprocessDataTests(unittest.TestCase):
             'fitbenchmarking_results')
         self.results, self.options = generate_mock_results(
             {'results_dir': self.results_dir})
-        self.min_chi_sq = 0.1
+        self.min_acc = 0.1
         self.min_runtime = 0.1
 
     def test_preprocess_data(self):
@@ -255,7 +255,7 @@ class PreprocessDataTests(unittest.TestCase):
         for problem in results.values():
             for category in problem.values():
                 for r in category:
-                    self.assertEqual(r.min_chi_sq, self.min_chi_sq)
+                    self.assertEqual(r.min_acc, self.min_acc)
                     self.assertEqual(r.min_runtime, self.min_runtime)
 
 
@@ -520,10 +520,10 @@ class ProcessBestResultsTests(unittest.TestCase):
             self.results_dir = os.path.join(directory, 'figures_dir')
             results, self.options = generate_mock_results(self.results_dir)
             self.results = results[:5]
-            for r, chisq, runtime in zip(self.results,
+            for r, acc, runtime in zip(self.results,
                                          [2, 1, 5, 3, 4],
                                          [5, 4, 1, 2, 3]):
-                r.chi_sq = chisq
+                r.acc = acc
                 r.runtime = runtime
             self.best = _process_best_results(self.results)
 
@@ -548,15 +548,15 @@ class ProcessBestResultsTests(unittest.TestCase):
         self.assertFalse(self.results[3].is_best_fit)
         self.assertFalse(self.results[4].is_best_fit)
 
-    def test_minimum_chi_sq_set(self):
+    def test_minimum_acc_set(self):
         """
-        Test that min_chi_sq is set correctly.
+        Test that min_acc is set correctly.
         """
-        self.assertEqual(self.results[0].min_chi_sq, self.best.chi_sq)
-        self.assertEqual(self.results[1].min_chi_sq, self.best.chi_sq)
-        self.assertEqual(self.results[2].min_chi_sq, self.best.chi_sq)
-        self.assertEqual(self.results[3].min_chi_sq, self.best.chi_sq)
-        self.assertEqual(self.results[4].min_chi_sq, self.best.chi_sq)
+        self.assertEqual(self.results[0].min_acc, self.best.acc)
+        self.assertEqual(self.results[1].min_acc, self.best.acc)
+        self.assertEqual(self.results[2].min_acc, self.best.acc)
+        self.assertEqual(self.results[3].min_acc, self.best.acc)
+        self.assertEqual(self.results[4].min_acc, self.best.acc)
 
     def test_minimum_runtime_set(self):
         """

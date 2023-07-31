@@ -105,7 +105,7 @@ class BenchmarkTests(unittest.TestCase):
                            'hess': 'hess',
                            'initial_params': self.problem.starting_values[0],
                            'params': [],
-                           'chi_sq': 1,
+                           'acc': 1,
                            'name': name}
             list_results = [fitbm_result.FittingResult(**result_args)
                             for j in range(self.scipy_len)]
@@ -138,7 +138,7 @@ class BenchmarkTests(unittest.TestCase):
                            'hess': 'hess',
                            'initial_params': self.problem.starting_values[0],
                            'params': [],
-                           'chi_sq': 1,
+                           'acc': 1,
                            'name': name}
             list_results = [fitbm_result.FittingResult(**result_args)
                             for j in range(self.scipy_len)]

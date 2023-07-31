@@ -54,79 +54,79 @@ def generate_results():
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[0].starting_values[0].values()),
-            params=[1, 1], name=problems[0].name, chi_sq=0.2, runtime=15,
+            params=[1, 1], name=problems[0].name, acc=0.2, runtime=15,
             software='s1', minimizer='m10', error_flag=0),
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[0].starting_values[0].values()),
-            params=[1, 1], name=problems[0].name, chi_sq=0.3, runtime=14,
+            params=[1, 1], name=problems[0].name, acc=0.3, runtime=14,
             software='s1', minimizer='m11', error_flag=0),
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[0].starting_values[0].values()),
-            params=[1, 1], name=problems[0].name, chi_sq=0.4, runtime=13,
+            params=[1, 1], name=problems[0].name, acc=0.4, runtime=13,
             software='s0', minimizer='m01', error_flag=0),
         FittingResult(
             options=options, cost_func=cost_func, jac=None, hess=None,
             initial_params=list(problems[0].starting_values[0].values()),
-            params=[1, 1], name=problems[0].name, chi_sq=np.inf,
+            params=[1, 1], name=problems[0].name, acc=np.inf,
             runtime=np.inf, software='s0', minimizer='m00', error_flag=4),
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[0].starting_values[0].values()),
-            params=[1, 1], name=problems[0].name, chi_sq=0.6, runtime=11,
+            params=[1, 1], name=problems[0].name, acc=0.6, runtime=11,
             software='s1', minimizer='m10', error_flag=0),
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[0].starting_values[0].values()),
-            params=[1, 1], name=problems[0].name, chi_sq=0.7, runtime=10,
+            params=[1, 1], name=problems[0].name, acc=0.7, runtime=10,
             software='s1', minimizer='m11', error_flag=0),
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[0].starting_values[0].values()),
-            params=[1, 1], name=problems[0].name, chi_sq=0.8, runtime=9,
+            params=[1, 1], name=problems[0].name, acc=0.8, runtime=9,
             software='s0', minimizer='m01', error_flag=0),
     ]}
     results['prob_1'] = {'cf1': [
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[1].starting_values[0].values()),
-            params=[1, 1], name=problems[1].name, chi_sq=1, runtime=1,
+            params=[1, 1], name=problems[1].name, acc=1, runtime=1,
             software='s1', minimizer='m10', error_flag=0),
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[1].starting_values[0].values()),
-            params=[1, 1], name=problems[1].name, chi_sq=1, runtime=1,
+            params=[1, 1], name=problems[1].name, acc=1, runtime=1,
             software='s1', minimizer='m11', error_flag=0),
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[1].starting_values[0].values()),
-            params=[1, 1], name=problems[1].name, chi_sq=2, runtime=2,
+            params=[1, 1], name=problems[1].name, acc=2, runtime=2,
             software='s0', minimizer='m01', error_flag=0),
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[0], hess=hess[0],
             initial_params=list(problems[1].starting_values[0].values()),
-            params=[1, 1], name=problems[1].name, chi_sq=np.inf,
+            params=[1, 1], name=problems[1].name, acc=np.inf,
             runtime=np.inf, software='s0', minimizer='m00', error_flag=0),
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[1].starting_values[0].values()),
-            params=[1, 1], name=problems[1].name, chi_sq=3, runtime=3,
+            params=[1, 1], name=problems[1].name, acc=3, runtime=3,
             software='s1', minimizer='m10', error_flag=0),
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[1].starting_values[0].values()),
-            params=[1, 1], name=problems[1].name, chi_sq=3, runtime=3,
+            params=[1, 1], name=problems[1].name, acc=3, runtime=3,
             software='s1', minimizer='m11', error_flag=0),
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[1].starting_values[0].values()),
-            params=[1, 1], name=problems[1].name, chi_sq=4, runtime=4,
+            params=[1, 1], name=problems[1].name, acc=4, runtime=4,
             software='s0', minimizer='m01', error_flag=0),
         FittingResult(
             options=options, cost_func=cost_func, jac=jac[1], hess=hess[1],
             initial_params=list(problems[1].starting_values[0].values()),
-            params=[1, 1], name=problems[1].name, chi_sq=np.inf,
+            params=[1, 1], name=problems[1].name, acc=np.inf,
             runtime=np.inf, software='s0', minimizer='m00', error_flag=0),
     ]}
 
@@ -142,14 +142,14 @@ class DummyTable(Table):
 
     def get_value(self, result):
         """
-        Just use the chi_sq value
+        Just use the acc value
 
         :param result: The result to get the value for
         :type result: FittingResult
         :return: The value for the table
         :rtype: tuple[float]
         """
-        return [result.chi_sq]
+        return [result.acc]
 
 
 class CreateResultsDictTests(TestCase):

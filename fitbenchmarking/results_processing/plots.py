@@ -338,3 +338,20 @@ class Plot:
         fig.savefig(os.path.join(figures_dir, fname))
         plt.close(fig)
         return fname
+    
+    def plot_posteriors(self, result):
+
+        par_names = self.problem.param_names
+
+        fig, ax = plt.subplots(len(par_names), 1)
+
+        for i, name in enumerate(par_names):
+            ax[i].hist(result.params_pdfs[name], bins=50, density=True)
+            ax[i].set_title(name)
+
+        fname = f'{result.sanitised_min_name(True)}_posterior_' \
+                 'pdf_plot_for_{result.sanitised_name}.png'
+        fig.tight_layout()
+        fig.savefig(os.path.join(self.figures_dir, fname))
+        plt.close(fig)
+        return fname      

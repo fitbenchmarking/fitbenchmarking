@@ -79,7 +79,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
                             'hess': 'hess',
                             'initial_params': self.problem.starting_values[0],
                             'params': [],
-                            'chi_sq': 1}
+                            'acc': 1}
 
     def mock_func_call(self, *args, **kwargs):
         """
@@ -182,7 +182,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.minimizer_failed = {s: self.options.minimizers[s]
                                  for s in self.options.software}
 
-        self.result_args['chi_sq'] = np.inf
+        self.result_args['acc'] = np.inf
         self.results_problem = [[fitbm_result.FittingResult(**self.result_args)
                                  for i in range(self.scipy_len)],
                                 [fitbm_result.FittingResult(**self.result_args)

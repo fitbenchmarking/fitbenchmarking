@@ -15,8 +15,8 @@ class FittingResult:
     """
 
     def __init__(self, options, cost_func, jac, hess, initial_params, params,
-                 name=None, chi_sq=None, runtime=None, software=None,
-                 minimizer=None, error_flag=None, algorithm_type=None,
+                 name=None, acc=None, runtime=None, software=None,
+                 minimizer=None, error_flag=None, params_pdfs=None, algorithm_type=None,
                  dataset_id=None):
         """
         Initialise the Fitting Result
@@ -59,7 +59,7 @@ class FittingResult:
         self.name = name if name is not None else \
             self.problem.name
 
-        self.chi_sq = chi_sq
+        self.acc = acc
         if dataset_id is None:
             self.data_x = self.problem.data_x
             self.data_y = self.problem.data_y
@@ -67,7 +67,7 @@ class FittingResult:
             self.sorted_index = self.problem.sorted_index
 
             self.params = params
-            self.chi_sq = chi_sq
+            self.acc = acc
 
         else:
             self.data_x = self.problem.data_x[dataset_id]
@@ -76,11 +76,11 @@ class FittingResult:
             self.sorted_index = self.problem.sorted_index[dataset_id]
 
             self.params = params[dataset_id]
-            self.chi_sq = chi_sq[dataset_id]
+            self.acc = acc[dataset_id]
 
         self.runtime = runtime
 
-        self.min_chi_sq = None
+        self.min_acc = None
         self.min_runtime = None
 
         # Minimizer for a certain problem and its function definition
@@ -95,6 +95,9 @@ class FittingResult:
             params=initial_params)
         self.fin_function_params = self.problem.get_function_params(
             params=self.params)
+        
+        # Posterior pdfs for Bayesian fitting
+        self.params_pdfs = params_pdfs
 
         # Controller error handling
         self.error_flag = error_flag
@@ -104,6 +107,7 @@ class FittingResult:
         self.fitting_report_link = ''
         self.start_figure_link = ''
         self.figure_link = ''
+        self.posterior_plots = ''
 
         # Error written to support page if plotting failed
         # Default can be overwritten with more information
@@ -130,7 +134,7 @@ class FittingResult:
                 "Minimizer": self.minimizer_tag,
                 "Jacobian": self.jacobian_tag,
                 "Hessian": self.hessian_tag,
-                "Chi Squared": self.chi_sq,
+                "Accuracy": self.acc,
                 "Runtime": self.runtime}
 
         return get_printable_table("FittingResult", info)
@@ -177,13 +181,10 @@ class FittingResult:
         :rtype: float
         """
         if self._norm_acc is None:
-            if self.min_chi_sq in [np.nan, np.inf]:
+            if self.min_acc in [np.nan, np.inf]:
                 self._norm_acc = np.inf
             else:
-                with open('accuracy.txt','a') as f:
-                    print(self.chi_sq, file=f)
-                    print(self.min_chi_sq, file=f)
-                self._norm_acc = self.chi_sq / self.min_chi_sq
+                self._norm_acc = self.acc/ self.min_acc
         return self._norm_acc
 
     @norm_acc.setter

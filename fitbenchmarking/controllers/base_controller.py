@@ -251,13 +251,18 @@ class Controller:
         for i, name in enumerate(par_names):
             tol = abs(0.1*res.x[i])
             hist, bin_edges = numpy.histogram(self.params_pdfs[name], bins=100, density=True)
-            start_bin = numpy.argmin(abs(bin_edges-(res.x[i]-tol)))
-            end_bin = numpy.argmin(abs(bin_edges-(res.x[i]+tol)))
-            par_conf.append(sum(hist[start_bin:end_bin])/sum(hist))
-
-            plt.figure()
-            plt.hist(self.params_pdfs[name], density=True)
-            plt.savefig('hist' + name + '.png')
+            # check tol range is covered by hist range
+            tol_range = [res.x[i]-tol, res.x[i]+tol]
+            if tol_range[-1] < bin_edges[0] or tol_range[0] > bin_edges[-1]:
+                par_conf.append(0)
+            else:
+                width = numpy.diff(bin_edges)[0]
+                start_bin = numpy.argmin(abs(bin_edges-(res.x[i]-tol)))
+                end_bin = numpy.argmin(abs(bin_edges-(res.x[i]+tol)))
+                if start_bin == end_bin:
+                    par_conf.append(hist[start_bin]*width)
+                else:
+                    par_conf.append(sum(hist[start_bin:end_bin]*width))
     
         return numpy.prod(par_conf)
 

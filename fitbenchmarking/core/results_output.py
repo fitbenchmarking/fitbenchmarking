@@ -235,19 +235,19 @@ def _process_best_results(results: 'List[FittingResult]') -> 'FittingResult':
     Process the best result from a list of FittingResults.
     This includes:
      - Setting the `is_best_fit` flag,
-     - Setting the `min_chi_sq` value, and
+     - Setting the `min_acc` value, and
      - Setting the `min_runtime` value.
 
     :param results: The results to compare and update
     :type results: List[FittingResult]
 
-    :return: The result with the lowest chi_sq
+    :return: The result with the lowest acc
     :rtype: FittingResult
     """
     best = results[0]
     fastest = results[0]
     for result in results[1:]:
-        if best.chi_sq > result.chi_sq:
+        if best.acc > result.acc:
             best = result
         if fastest.runtime > result.runtime:
             fastest = result
@@ -255,7 +255,7 @@ def _process_best_results(results: 'List[FittingResult]') -> 'FittingResult':
     best.is_best_fit = True
 
     for result in results:
-        result.min_chi_sq = best.chi_sq
+        result.min_acc = best.acc
         result.min_runtime = fastest.runtime
 
     return best
@@ -340,6 +340,15 @@ def create_plots(options, results, best_results, figures_dir):
                         result.figure_error = 'Minimizer failed to produce ' \
                             'any parameters'
                     result.start_figure_link = initial_guess_path[cf]
+
+        # For each result, if it succeeded and produced posterior pdf estimates
+        # for each parameter, create histogram plots and add plot links to the
+        # results object
+        for cf, cat_results in prob_result.items():
+            for result in cat_results:
+                if result.params_pdfs is not None:
+                    plot_path = plot.plot_posteriors(result)
+                    result.posterior_plots = plot_path
 
 
 def create_problem_level_index(options, table_names, group_name,

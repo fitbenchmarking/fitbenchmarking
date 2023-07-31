@@ -17,7 +17,7 @@ class AccTable(Table):
     def __init__(self, results, best_results, options, group_dir, pp_locations,
                  table_name):
         """
-        Initialise the accuracy table which shows the chi_sq results
+        Initialise the accuracy table which shows the acc results
 
         :param results: Results grouped by row and category (for colouring)
         :type results:
@@ -48,16 +48,16 @@ class AccTable(Table):
         """
         Gets the main value to be reported in the tables for a given result
 
-        Note that the first value (relative chi_sq) will be used in the default
+        Note that the first value (relative acc) will be used in the default
         colour handling.
 
         :param result: The result to generate the values for.
         :type result: FittingResult
 
-        :return: The normalised chi sq with respect to the smallest chi_sq
-                 value and absolute chi_sq for the result.
+        :return: The normalised chi sq with respect to the smallest acc
+                 value and absolute acc for the result.
         :rtype: tuple(float, float)
         """
         rel_value = result.norm_acc
-        abs_value = result.chi_sq
+        abs_value = result.acc
         return rel_value, abs_value

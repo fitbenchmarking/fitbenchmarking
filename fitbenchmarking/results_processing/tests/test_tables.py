@@ -115,7 +115,7 @@ def generate_mock_results():
                               initial_params=starting_values,
                               params=params_in[i][j],
                               name=p.name,
-                              chi_sq=acc_in[i][j],
+                              acc=acc_in[i][j],
                               runtime=runtime_in[i][j],
                               software=software,
                               minimizer=options.minimizers[software][j],

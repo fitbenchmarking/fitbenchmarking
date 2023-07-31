@@ -87,7 +87,7 @@ class PerformanceProfilerTests(unittest.TestCase):
                                                   hess=hess,
                                                   initial_params=[1, 2, 3],
                                                   params=[1, 2, 3],
-                                                  chi_sq=acc_results[j],
+                                                  acc=acc_results[j],
                                                   runtime=runtime_results[j],
                                                   software='s1',
                                                   minimizer=minimizer))

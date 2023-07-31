@@ -74,7 +74,7 @@ class LoopOverStartingValuesTests(unittest.TestCase):
                             'hess': 'hess',
                             'initial_params': self.problem.starting_values[0],
                             'params': [],
-                            'chi_sq': 1}
+                            'acc': 1}
 
     def mock_func_call(self, *args, **kwargs):
         """

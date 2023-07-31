@@ -34,7 +34,7 @@ class FitbmResultTests(unittest.TestCase):
         self.problem = parse_problem_file(problem_dir, self.options)
         self.problem.correct_data()
 
-        self.chi_sq = 10
+        self.acc = 10
         self.minimizer = "test_minimizer"
         self.runtime = 0.01
         self.params = np.array([1, 3, 4, 4])
@@ -44,13 +44,13 @@ class FitbmResultTests(unittest.TestCase):
         self.hess = 'hess1'
         self.result = FittingResult(
             options=self.options, cost_func=self.cost_func, jac=self.jac,
-            hess=self.hess, chi_sq=self.chi_sq, runtime=self.runtime,
+            hess=self.hess, acc=self.acc, runtime=self.runtime,
             minimizer=self.minimizer, software='s1',
             initial_params=self.initial_params, params=self.params,
             error_flag=0)
 
-        self.min_chi_sq = 0.1
-        self.result.min_chi_sq = self.min_chi_sq
+        self.min_acc = 0.1
+        self.result.min_acc = self.min_acc
         self.min_runtime = 1
         self.result.min_runtime = self.min_runtime
 
@@ -74,7 +74,7 @@ class FitbmResultTests(unittest.TestCase):
             +--------------------------------+
             | Hessian       | hess1          |
             +--------------------------------+
-            | Chi Squared   | 10             |
+            | Accuracy      | 10             |
             +--------------------------------+
             | Runtime       | 0.01           |
             +--------------------------------+''')
@@ -89,7 +89,7 @@ class FitbmResultTests(unittest.TestCase):
         """
         Tests to check that the multifit id is setup correctly
         """
-        chi_sq = [10, 5, 1]
+        acc = [10, 5, 1]
         minimizer = "test_minimizer"
         runtime = 0.01
         params = [np.array([1, 3, 4, 4]),
@@ -115,7 +115,7 @@ class FitbmResultTests(unittest.TestCase):
         self.hess = AnalyticHessian(self.cost_func.problem, self.jac)
         self.result = FittingResult(
             options=self.options, cost_func=self.cost_func, jac=self.jac,
-            hess=self.hess, chi_sq=chi_sq, runtime=runtime,
+            hess=self.hess, acc=acc, runtime=runtime,
             minimizer=minimizer, initial_params=initial_params, params=params,
             error_flag=0, dataset_id=1)
 
@@ -130,22 +130,22 @@ class FitbmResultTests(unittest.TestCase):
                        self.problem.sorted_index[1]).all())
 
         self.assertTrue(np.isclose(params[1], self.result.params).all())
-        self.assertEqual(chi_sq[1], self.result.chi_sq)
+        self.assertEqual(acc[1], self.result.acc)
 
     def test_norm_acc_finite_min(self):
         """
-        Test that sanitised names are correct when min_chi_sq is finite.
+        Test that sanitised names are correct when min_acc is finite.
         """
-        expected = self.chi_sq / self.min_chi_sq
+        expected = self.acc / self.min_acc
         self.assertEqual(self.result.norm_acc, expected)
 
     def test_norm_acc_infinite_min(self):
         """
-        Test that sanitised names are correct when min_chi_sq is infinite.
+        Test that sanitised names are correct when min_acc is infinite.
         """
         expected = np.inf
-        self.result.chi_sq = np.inf
-        self.result.min_chi_sq = np.inf
+        self.result.acc = np.inf
+        self.result.min_acc = np.inf
         self.assertEqual(self.result.norm_acc, expected)
 
     def test_norm_runtime_finite_min(self):

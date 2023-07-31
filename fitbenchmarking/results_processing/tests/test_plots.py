@@ -45,7 +45,7 @@ class PlotTests(unittest.TestCase):
                                 cost_func=cost_func,
                                 jac=jac,
                                 hess=None,
-                                chi_sq=1.0,
+                                acc=1.0,
                                 initial_params=[1.8],
                                 params=[1.2],
                                 runtime=2.0,

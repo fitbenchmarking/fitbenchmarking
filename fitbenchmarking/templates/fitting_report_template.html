@@ -86,6 +86,12 @@
                         {% else %}
                             <h3>{{ fitted_plot }}</h3>
                         {% endif %}
+                        {% if pdf_plot_available %}
+                            <h3>Estimated posterior pdf of each parameter</h3>
+                            <img alt="{{ pdf_plot }}" src="{{ pdf_plot }}" />
+                        {% else %}
+                            <h3>{{ pdf_plot }}</h3>
+                        {% endif %}
                         <button class="btn default" onclick="history.go(-1)">
                         <i class="fa fa-arrow-left"></i>
                         </button>

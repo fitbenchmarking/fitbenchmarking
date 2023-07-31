@@ -194,7 +194,7 @@ def loop_over_starting_values(problem, options, grabbed_output):
 
         # Checks to see if all of the minimizers from every software raised an
         # exception and record the problem name if that is the case
-        software_check = [np.isinf(v.chi_sq)
+        software_check = [np.isinf(v.acc)
                           for v in individual_problem_results]
         if all(software_check):
             problem_fails.append(problem.name)
@@ -360,7 +360,7 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                         cost_func=controller.cost_func,
                         jac=None,
                         hess=None,
-                        chi_sq=np.inf,
+                        acc=np.inf,
                         runtime=np.inf,
                         software=controller.software,
                         minimizer=minimizer,
@@ -369,7 +369,8 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output):
                         initial_params=controller.initial_params,
                         params=None,
                         error_flag=controller.flag,
-                        name=problem.name)
+                        name=problem.name,
+                        params_pdfs=controller.params_pdfs)
                     results_problem.append(dummy_result)
                     LOGGER.warning(str(excp))
 
@@ -488,7 +489,7 @@ def loop_over_hessians(controller, options, grabbed_output):
                             hess_name)
 
             # Perform the fit a number of times specified by num_runs
-            chi_sq, runtime = perform_fit(controller, options, grabbed_output)
+            acc, runtime = perform_fit(controller, options, grabbed_output)
 
             jac_str = cost_func.jacobian.name() \
                 if minimizer in controller.jacobian_enabled_solvers else None
@@ -500,7 +501,7 @@ def loop_over_hessians(controller, options, grabbed_output):
                            'cost_func': cost_func,
                            'jac': jac_str,
                            'hess': hess_str,
-                           'chi_sq': chi_sq,
+                           'acc': acc,
                            'runtime': runtime,
                            'software': controller.software,
                            'minimizer': minimizer,
@@ -509,11 +510,12 @@ def loop_over_hessians(controller, options, grabbed_output):
                            'initial_params': controller.initial_params,
                            'params': controller.final_params,
                            'error_flag': controller.flag,
-                           'name': problem.name}
+                           'name': problem.name,
+                           'params_pdfs': controller.params_pdfs}
             if problem.multifit:
-                # for multifit problems, multiple chi_sq values are stored
+                # for multifit problems, multiple accuracy values are stored
                 # in a list i.e. we have multiple results
-                for i in range(len(chi_sq)):
+                for i in range(len(acc)):
                     result_args.update(
                         {'dataset_id': i,
                          'name': f'{problem.name}, Dataset {i + 1}'})
@@ -576,20 +578,19 @@ def perform_fit(controller, options, grabbed_output):
         # Avoid deleting results (max runtime exception) if gotten this far
         controller.timer.reset()
         if controller.params_pdfs is None:
-            chi_sq = controller.eval_chisq(params=controller.final_params,
+            acc = controller.eval_chisq(params=controller.final_params,
                                         x=controller.data_x,
                                         y=controller.data_y,
                                         e=controller.data_e)
         else:
-            chi_sq = controller.eval_confidence()
+            acc = controller.eval_confidence()
+    
+        acc_check = any(np.isnan(n) for n in acc) \
+                if controller.problem.multifit else np.isnan(acc)
 
-        LOGGER.info(chi_sq)
-
-        chi_sq_check = any(np.isnan(n) for n in chi_sq) \
-            if controller.problem.multifit else np.isnan(chi_sq)
-        if np.isnan(runtime) or chi_sq_check:
+        if np.isnan(runtime) or acc_check:
             raise ControllerAttributeError(
-                "Either the computed runtime or chi_sq values "
+                "Either the computed runtime or accuracy values "
                 "was a NaN.")
     except ValidationException as ex:
         LOGGER.warning(str(ex))
@@ -623,11 +624,11 @@ def perform_fit(controller, options, grabbed_output):
             None if not multi_fit \
             else [None] * len(controller.data_x)
 
-        chi_sq = np.inf if not multi_fit \
+        acc = np.inf if not multi_fit \
             else [np.inf] * len(controller.data_x)
     elif controller.problem.value_ranges is not None:
         # If bounds have been set, check that they have
         # been respected by the minimizer and set error
         # flag if not
         controller.check_bounds_respected()
-    return chi_sq, runtime
+    return acc, runtime

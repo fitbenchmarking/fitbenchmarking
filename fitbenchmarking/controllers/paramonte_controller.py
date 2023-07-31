@@ -38,30 +38,6 @@ class ParamonteController(Controller):
         self.result = None
         self.pmpd = pm.ParaDRAM()
 
-    def getLogLike(self, param):
-        """
-        Return the natural logarithm of the likelihood of observing the (X,Y)
-        dataset defined globally outside of this function given the input
-        parameter vector ``param``.
-
-        Parameters
-        ==========
-
-            param
-                A numpy 64-bit real vector containing the parameters of the
-                model.
-
-        Returns
-        =======
-            logLike
-                The natural logarithm of the likelihood of observing the
-                dataset  given ``param``.
-        """
-
-        loglikelihood = -1/2 * self.cost_func.eval_cost(param)
-
-        return loglikelihood
-
     def setup(self):
         """
         Setup problem ready to be run with Paramonte
@@ -74,14 +50,8 @@ class ParamonteController(Controller):
         self.pmpd.spec.overwriteRequested = True
         # specify the output file prefixes.
         self.pmpd.spec.outputFileName = "./out/temp"
-        # set the random seed for the sake of reproducibity.
-        self.pmpd.spec.randomSeed = 12345
         # set the output names of the parameters.
         self.pmpd.spec.variableNameList = par_names
-        # set the number of uniquely sampled points from the likelihood
-        # function.
-        self.pmpd.spec.chainSize = 100000
-        self.pmpd.spec.proposalModel = 'uniform'
         self.pmpd.spec.variableNameList = list(param_dict.keys())
         self.pmpd.spec.startPointVec = list(param_dict.values())
 
@@ -96,7 +66,7 @@ class ParamonteController(Controller):
         """
 
         self.pmpd.runSampler(ndim=len(self.initial_params),
-                             getLogFunc=self.getLogLike)
+                             getLogFunc=self.cost_func.eval_loglike)
 
     def cleanup(self):
         """

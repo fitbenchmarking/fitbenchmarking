@@ -113,7 +113,7 @@ class Options:
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
-                            'poisson']}
+                            'loglike_nlls', 'poisson']}
     VALID_JACOBIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
          'analytic': ['default'],

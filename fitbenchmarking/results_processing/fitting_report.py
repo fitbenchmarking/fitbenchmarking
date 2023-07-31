@@ -53,18 +53,21 @@ def create_prob_group(result, support_pages_dir, options):
     file_path = os.path.join(support_pages_dir, file_name)
 
     # Bool for print message/insert image
-    fit_success = init_success = options.make_plots
+    fit_success = init_success = pdf_success = options.make_plots
 
     if options.make_plots:
-        fig_fit, fig_start = get_figure_paths(result)
+        fig_fit, fig_start, fig_pdf = get_figure_paths(result)
         fit_success = fig_fit != ''
         init_success = fig_start != ''
+        pdf_success = fig_pdf != ''
         if not fit_success:
             fig_fit = result.figure_error
         if not init_success:
             fig_start = result.figure_error
+        if not pdf_success:
+            fig_pdf = result.figure_error
     else:
-        fig_fit = fig_start = 'Re-run with make_plots set to yes in the ' \
+        fig_fit = fig_start = fig_pdf = 'Re-run with make_plots set to yes in the ' \
             'ini file to generate plots.'
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
@@ -83,14 +86,16 @@ def create_prob_group(result, support_pages_dir, options):
             equation=result.problem.equation,
             initial_guess=result.ini_function_params,
             minimizer=result.modified_minimizer_name(),
-            accuracy=f"{result.chi_sq:.4g}",
+            accuracy=f"{result.acc:.4g}",
             runtime=f"{result.runtime:.4g}",
             is_best_fit=result.is_best_fit,
             initial_plot_available=init_success,
             initial_plot=fig_start,
             min_params=result.fin_function_params,
             fitted_plot_available=fit_success,
-            fitted_plot=fig_fit))
+            fitted_plot=fig_fit,
+            pdf_plot_available=pdf_success,
+            pdf_plot=fig_pdf))
 
     result.fitting_report_link = os.path.relpath(file_path)
 
@@ -109,7 +114,7 @@ def get_figure_paths(result):
     figures_dir = "figures"
 
     output = []
-    for link in [result.figure_link, result.start_figure_link]:
+    for link in [result.figure_link, result.start_figure_link, result.posterior_plots]:
         output.append(os.path.join(figures_dir, link) if link else '')
 
-    return output[0], output[1]
+    return output[0], output[1], output[2]
