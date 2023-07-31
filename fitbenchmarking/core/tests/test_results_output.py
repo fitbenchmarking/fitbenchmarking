@@ -180,15 +180,15 @@ class CreatePlotsTests(unittest.TestCase):
         """
         expected_plot_initial_guess = "initial_guess"
         expected_plot_best = "plotly_fit"
-        expected_plotly_fit = {'m00_[s0]': "plotly_fit",
-                               'm01_[s0]_jj0': "plotly_fit",
-                               'm01_[s0]_jj1': "plotly_fit",
-                               'm10_[s1]_jj0': "plotly_fit",
-                               'm10_[s1]_jj1': "plotly_fit",
-                               'm11_[s1]_jj0': "plotly_fit",
-                               'm11_[s1]_jj1': "plotly_fit",
-                               'm00_[s0]_jj0': "plotly_fit",
-                               'm00_[s0]_jj1': "plotly_fit"}
+        expected_plotly_fit = {'m00_[s0]': "plotly_fit1",
+                               'm01_[s0]_jj0': "plotly_fit2",
+                               'm01_[s0]_jj1': "plotly_fit3",
+                               'm10_[s1]_jj0': "plotly_fit4",
+                               'm10_[s1]_jj1': "plotly_fit5",
+                               'm11_[s1]_jj0': "plotly_fit6",
+                               'm11_[s1]_jj1': "plotly_fit7",
+                               'm00_[s0]_jj0': "plotly_fit8",
+                               'm00_[s0]_jj1': "plotly_fit9"}
         plot_instance = mock.MagicMock()
         plot_instance.plot_initial_guess.return_value = \
             expected_plot_initial_guess
