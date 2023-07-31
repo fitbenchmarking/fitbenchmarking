@@ -226,7 +226,7 @@ class Plot:
                             str(transparency) + ')'
 
                     plotlyfig.add_trace(go.Scatter(
-                        x=first_result.data_x[first_result.sorted_index],
+                        x=result.data_x[result.sorted_index],
                         y=result.fin_y[result.sorted_index],
                         mode='lines',
                         name=label,
