@@ -380,7 +380,6 @@ def create_plots(options, results, best_results, figures_dir):
             if cf not in plot_dict:
                 continue
             for result in cat_results:
-                # Don't plot best again
                 if result.params is not None:
                     result.figure_link = plot_paths[
                         result.sanitised_min_name(True)]
