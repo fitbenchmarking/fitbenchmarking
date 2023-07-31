@@ -6,6 +6,7 @@ import inspect
 import os
 import unittest
 from tempfile import TemporaryDirectory
+
 import pandas as pd
 
 from fitbenchmarking import test_files
