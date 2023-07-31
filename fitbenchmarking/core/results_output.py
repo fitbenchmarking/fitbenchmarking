@@ -350,8 +350,8 @@ def _find_tag_to_rename(all_result_tags,
 
                 # Find jacobian and hessian matches
                 matches_summary = {}
-                for check_tag in [['jacobian'], ['hessian']]:
-                    match_str = ':'. join(["[^:]*" if key in check_tag else
+                for check_tag in ['jacobian', 'hessian']:
+                    match_str = ':'. join(["[^:]*" if key == check_tag else
                                            unpacked_column_tag[key]
                                            for key in col_order])
 
@@ -368,7 +368,7 @@ def _find_tag_to_rename(all_result_tags,
                                                 if r['col'] == tag]]}
 
                     # Find all matches that satisfy row constraints
-                    matches_summary[':'.join(check_tag)] = \
+                    matches_summary[check_tag] = \
                         ''.join([m for m in matches if m in possible_matches])
 
                 # Determine which tag to update
