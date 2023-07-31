@@ -5,11 +5,11 @@ guess plot.
 import os
 
 import numpy as np
+import plotly.colors as ptly_colors
 import plotly.express as px
 import plotly.graph_objects as go
-
 from plotly.offline import plot as offline_plot
-import plotly.colors as ptly_colors
+
 from fitbenchmarking.utils.exceptions import PlottingError
 
 
