@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union
 
 from jinja2 import Environment, FileSystemLoader
 import pandas as pd
+
 import fitbenchmarking
 from fitbenchmarking.results_processing import (fitting_report,
                                                 performance_profiler, plots,
