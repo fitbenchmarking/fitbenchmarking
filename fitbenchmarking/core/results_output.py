@@ -232,6 +232,27 @@ def _handle_fallback_tags(results,
                           k in {tag['col'] for
                                 tag in all_result_tags})
 
+    # Find software and minimizer tags
+    sm_list = [':'.join([m['software'], m['minimizer']])
+               for m in [dict(zip(col_order, t.split(":")))
+               for t in list(column_summary.keys())]]
+
+    # Find col tags with each sm_tag
+    sm_summary = {}
+    for sm in sm_list:
+        tags = set()
+        for tag in all_result_tags:
+            up = dict(zip(col_order, tag["col"].split(":")))
+            if ':'.join([up['software'], up['minimizer']]) == sm:
+                tags.add(tag['col'])
+        sm_summary[sm] = tags
+
+    update_summary = _detemine_which_tags_to_rename(all_result_tags,
+                                                    sm_summary,
+                                                    col_order,
+                                                    fallback_columns,
+                                                    column_summary)
+
     for ix, tag in enumerate(all_result_tags):
         # If tag is in fallback columns list
         if tag['col'] in fallback_columns:
@@ -240,47 +261,25 @@ def _handle_fallback_tags(results,
 
             # Unpack the tag
             unpacked_column_tag = dict(zip(col_order, tag["col"].split(":")))
+            sm_tag = ':'.join([unpacked_column_tag['software'],
+                               unpacked_column_tag['minimizer']])
 
-            # Find matches for jacobian and hessian tags
-            matches_summary = {}
-            for check_tag in [['jacobian'], ['hessian']]:
-                match_str = ':'. join(["[^:]*" if key in check_tag else
-                                      unpacked_column_tag[key]
-                                      for key in col_order])
-                matches = _find_matching_tags(match_str, fallback_columns)
-                matches_summary[':'.join(check_tag)] = \
-                    ''.join([m for m in matches if m != tag['col']])
+            tag_to_be_updated = update_summary[sm_tag]
 
-            rename_jac = matches_summary['jacobian'] != ''
-            rename_hes = matches_summary['hessian'] != ''
+            if tag_to_be_updated == 'both':
+                # Rename both jacobian and hessian tag
+                unpacked_column_tag['jacobian'] = \
+                    results[result_ix].jacobian_tag = column_rename
+                unpacked_column_tag['hessian'] = \
+                    results[result_ix].hessian_tag = column_rename
 
-            if rename_jac and rename_hes:
-                # Update either the jacobian or hessian tag
-                results, all_result_tags, fallback_columns =\
-                     _handle_double_fallback_case(results,
-                                                  all_result_tags,
-                                                  tag['col'],
-                                                  column_rename,
-                                                  matches_summary,
-                                                  col_order,
-                                                  fallback_columns,
-                                                  column_summary)
-                continue
-
-            if rename_jac:
+            elif tag_to_be_updated == 'jacobian':
                 # Only jacobian tag need to be renamed
                 unpacked_column_tag['jacobian'] = \
                     results[result_ix].jacobian_tag = column_rename
 
-            elif rename_hes:
+            elif tag_to_be_updated == 'hessian':
                 # Only hessian tag need to be renamed
-                unpacked_column_tag['hessian'] = \
-                    results[result_ix].hessian_tag = column_rename
-
-            else:
-                # Rename both
-                unpacked_column_tag['jacobian'] = \
-                    results[result_ix].jacobian_tag = column_rename
                 unpacked_column_tag['hessian'] = \
                     results[result_ix].hessian_tag = column_rename
 
@@ -291,32 +290,20 @@ def _handle_fallback_tags(results,
     return results, all_result_tags
 
 
-def _handle_double_fallback_case(results,
-                                 all_result_tags,
-                                 original_tag,
-                                 column_rename,
-                                 matches_summary,
-                                 col_order,
-                                 fallback_columns,
-                                 column_summary):
+def _detemine_which_tags_to_rename(all_result_tags,
+                                   sm_summary,
+                                   col_order,
+                                   fallback_columns,
+                                   column_summary):
     """
-    The function that relabels the fallback column tags that
-    appear when both the jacobian and hessian fallback for a
-    minimizer.
+    The function detemines which fallback column tags to rename.
 
-    :param results: The list of results of benchmarking
-    :type results: list[FittingResult]
     :param all_result_tags: A list of tags that can be used
                             to sort the results
     :type all_result_tag: list[dict[str, str]]
-    :param original_tag: The original column tag
-    :type original_tag: str
-    :param column_rename: The tag to be used to update
-                          column name
-    :type column_rename: str
-    :param matches_summary: The dict of jacobian and hessian
-                            tag matched
-    :type matches_summary: dict[str]
+    :param sm_summary: The col tags organized by software
+                       and minimizer tags
+    :type sm_summary: dict[list[str]]
     :param col_order: The sort order of the col tags
     :type col_order: list[str]
     :param fallback_columns: The col tag of the fallback columns
@@ -324,70 +311,89 @@ def _handle_double_fallback_case(results,
     :param column_summary: The col tag count
     :type column_summary: dict[int]
 
-    :return: all results, the results tags, updated
-             fallback_columns list
-    :rtype: list[FittingResult], list[dict[str, str]], list[str]
+    :return: the tags to update organized by software
+             and minimizer
+    :rtype: dict[str]]
     """
-    # Find all rows, rows with col tag, rows without col tag
+    # Find rows and row count
     rows = {row['row'] for row in all_result_tags}
-    rows_with_col_tag = [r['row'] for r in all_result_tags
-                         if r['col'] == original_tag]
-    rows_without_col_tag = [x for x in rows if x not in rows_with_col_tag]
-
-    # Find count
     expected_count = len(rows)
-    row_count = column_summary[original_tag]
-    jac_count = column_summary[matches_summary['jacobian']]
-    hes_count = column_summary[matches_summary['hessian']]
 
-    # Find possible col tags for the rows_without_col_tag
-    possible_matches = {r['col'] for r in all_result_tags
-                        if r['row'] in rows_without_col_tag}
+    # Create dict to store tag update type
+    update_summary = {}
 
-    if ((row_count + jac_count == expected_count)
-       and (row_count + hes_count != expected_count)):
-        to_be_updated = 'jacobian'
-    elif ((row_count + hes_count == expected_count)
-          and (row_count + jac_count != expected_count)):
-        to_be_updated = 'hessian'
-    else:
-        if ((matches_summary['jacobian'] in possible_matches)
-           and (matches_summary['hessian'] in possible_matches)):
-            to_be_updated = 'both'
-        elif matches_summary['jacobian'] in possible_matches:
-            to_be_updated = 'jacobian'
-        else:
-            to_be_updated = 'hessian'
+    for sm, tags in sm_summary.items():
 
-    if to_be_updated in ['jacobian', 'hessian']:
-        tag_to_be_renamed = [matches_summary[to_be_updated], original_tag]
-    else:
-        tag_to_be_renamed = [matches_summary['jacobian'],
-                             matches_summary['hessian'],
-                             original_tag]
+        # Two types of tags for software and minimizer
+        # Update jacobian, hessian or both tags
+        if len(tags) == 2:
+            jac_tag = set()
+            hes_tag = set()
+            for tag in tags:
+                up = dict(zip(col_order, tag.split(":")))
+                jac_tag.add(up['jacobian'])
+                hes_tag.add(up['hessian'])
+            update_summary[sm] = 'jacobian' if len(jac_tag) != 1 \
+                and len(hes_tag) == 1 else \
+                ('hessian' if len(jac_tag) == 1
+                 and len(hes_tag) != 1 else 'both')
 
-    for r_ix, r_tag in enumerate(all_result_tags):
+        # Three types of tags for software and minimizer
+        # Update both tags
+        elif len(tags) == 3:
+            update_summary[sm] = 'both'
 
-        if r_tag['col'] in tag_to_be_renamed:
+        # Four types of tags for software and minimizer
+        # Update jacobian, hessian or both tags
+        elif len(tags) == 4:
 
-            unpack = dict(zip(col_order, r_tag["col"].split(":")))
+            for tag in tags:
 
-            r_index = r_tag["result_ix"]
+                # Unpack the tag
+                unpacked_column_tag = dict(zip(col_order, tag.split(":")))
 
-            if to_be_updated in ['jacobian', 'both']:
-                unpack['jacobian'] = results[r_index].jacobian_tag \
-                    = column_rename
-            if to_be_updated in ['hessian', 'both']:
-                unpack['hessian'] = results[r_index].hessian_tag \
-                    = column_rename
+                # Find jacobian and hessian matches
+                matches_summary = {}
+                for check_tag in [['jacobian'], ['hessian']]:
+                    match_str = ':'. join(["[^:]*" if key in check_tag else
+                                           unpacked_column_tag[key]
+                                           for key in col_order])
+                    matches = _find_matching_tags(match_str, fallback_columns)
+                    matches_summary[':'.join(check_tag)] = \
+                        ''.join([m for m in matches if m != tag])
 
-            all_result_tags[r_ix]["col"] = ":". join([unpack[key]
-                                                      for key in col_order])
+                # Find possible col tags for missing rows
+                possible_matches = {r['col'] for r in all_result_tags
+                                    if r['row'] in [x for x in rows if x
+                                    not in [r['row'] for r
+                                            in all_result_tags
+                                            if r['col'] == tag]]}
 
-    fallback_columns = [x for x in fallback_columns
-                        if x not in tag_to_be_renamed]
+                # Find count for row and jacobian and hessian matches
+                row_count = column_summary[tag]
+                jac_count = 0 if matches_summary['jacobian'] == '' \
+                    else column_summary[matches_summary['jacobian']]
+                hes_count = 0 if matches_summary['hessian'] == '' \
+                    else column_summary[matches_summary['hessian']]
 
-    return results, all_result_tags, fallback_columns
+                # Logic to decide which tag to update
+                if ((row_count + jac_count == expected_count)
+                   and (row_count + hes_count != expected_count)):
+                    update_summary[sm] = 'jacobian'
+                elif ((row_count + hes_count == expected_count)
+                      and (row_count + jac_count != expected_count)):
+                    update_summary[sm] = 'hessian'
+                else:
+                    if ((matches_summary['jacobian'] in possible_matches)
+                       and (matches_summary['hessian'] in possible_matches)):
+                        update_summary[sm] = 'both'
+                    elif matches_summary['jacobian'] in possible_matches:
+                        update_summary[sm] = 'jacobian'
+                    elif matches_summary['hessian'] in possible_matches:
+                        update_summary[sm] = 'hessian'
+                break
+
+    return update_summary
 
 
 def _get_all_result_tags(results, sort_order, cat_sorting):
