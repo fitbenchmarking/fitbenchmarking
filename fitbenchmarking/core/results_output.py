@@ -322,7 +322,7 @@ def create_plots(options, results, best_results, figures_dir):
                         'y': cat_results[0].data_y,
                         'e': cat_results[0].data_e,
                         'minimizer': 'Data',
-                        'cost_fucntion': cf,
+                        'cost_function': cf,
                         'best': False}
             df[cf] = pd.DataFrame(datatype)
             # next the initial data
@@ -330,7 +330,7 @@ def create_plots(options, results, best_results, figures_dir):
                         'y': cat_results[0].ini_y,
                         'e': cat_results[0].data_e,
                         'minimizer': 'Starting Guess',
-                        'cost_fucntion': cf,
+                        'cost_function': cf,
                         'best': False}
             df[cf] = pd.concat([df[cf], pd.DataFrame(datatype)],
                                axis=0,
@@ -341,7 +341,7 @@ def create_plots(options, results, best_results, figures_dir):
                             'y': result.fin_y,
                             'e': result.data_e,
                             'minimizer': result.sanitised_min_name(True),
-                            'cost_fucntion': cf,
+                            'cost_function': cf,
                             'best': result.is_best_fit}
                 df[cf] = pd.concat([df[cf], pd.DataFrame(datatype)],
                                    axis=0,
