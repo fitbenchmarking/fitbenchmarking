@@ -8,6 +8,7 @@ import numpy as np
 import plotly.colors as ptly_colors
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.offline import plot as offline_plot
 
 from fitbenchmarking.utils.exceptions import PlottingError
 
@@ -78,7 +79,12 @@ class Plot:
 
         htmlfile = f"start_for_{self.result.sanitised_name}.html"
         html_file_name = os.path.join(self.figures_dir, htmlfile)
-        fig.write_html(html_file_name)
+
+        offline_plot(
+            fig,
+            filename=html_file_name,
+            auto_open=False
+        )
 
         return htmlfile
 
@@ -109,7 +115,6 @@ class Plot:
         """
         # Plotly implementation below
         htmlfiles = {}
-        
         x_best = df[df["best"]]["x"].to_list()
         y_best = df[df["best"]]["y"].to_list()
         x_data = df[df["minimizer"] == 'Data']["x"].to_list()
@@ -152,7 +157,12 @@ class Plot:
                     f"_{self.result.sanitised_name}.html"
 
                 html_file_name = os.path.join(self.figures_dir, htmlfile)
-                fig.write_html(html_file_name)
+
+                offline_plot(
+                    fig,
+                    filename=html_file_name,
+                    auto_open=False
+                )
                 htmlfiles[minimizer] = htmlfile
 
         return htmlfiles
@@ -239,5 +249,9 @@ class Plot:
                     plotlyfig.update_yaxes(type="log")
 
         html_fname = f'summary_plot_for_{first_result.sanitised_name}.html'
-        plotlyfig.write_html(html_fname)
+        offline_plot(
+            plotlyfig,
+            filename=os.path.join(figures_dir, html_fname),
+            auto_open=False
+        )
         return html_fname
