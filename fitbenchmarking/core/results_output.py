@@ -257,22 +257,13 @@ def _handle_fallback_tags(results,
             sm_tag = (unpacked_column_tag['software'],
                       unpacked_column_tag['minimizer'])
 
-            tag_to_be_updated = update_summary[sm_tag]
-
-            if tag_to_be_updated == 'both':
-                # Rename both jacobian and hessian tag
-                unpacked_column_tag['jacobian'] = \
-                    results[result_ix].jacobian_tag = column_rename
-                unpacked_column_tag['hessian'] = \
-                    results[result_ix].hessian_tag = column_rename
-
-            elif tag_to_be_updated == 'jacobian':
-                # Only jacobian tag renamed
+            if update_summary[sm_tag] in ['jacobian', 'both']:
+                # Update jacobian tag
                 unpacked_column_tag['jacobian'] = \
                     results[result_ix].jacobian_tag = column_rename
 
-            elif tag_to_be_updated == 'hessian':
-                # Only hessian tag renamed
+            if update_summary[sm_tag] in ['hessian', 'both']:
+                # Update hessian tag
                 unpacked_column_tag['hessian'] = \
                     results[result_ix].hessian_tag = column_rename
 
@@ -314,77 +305,62 @@ def _find_tag_to_rename(all_result_tags,
 
     for sm, tags in sm_summary.items():
 
-        # One type of tag for software and minimizer
-        # No Update required
         if len(tags) == 1:
             continue
 
-        # Two types of tags for software and minimizer
-        # Update jacobian, hessian or both tags
-        if len(tags) == 2:
-            jac_tag = set()
-            hes_tag = set()
-            for tag in tags:
-                up = dict(zip(col_order, tag.split(":")))
-                jac_tag.add(up['jacobian'])
-                hes_tag.add(up['hessian'])
-            update_summary[sm] = 'jacobian' if len(jac_tag) != 1 \
-                and len(hes_tag) == 1 else \
-                ('hessian' if len(jac_tag) == 1
-                 and len(hes_tag) != 1 else 'both')
-
-        # Three types of tags for software and minimizer
-        # Update both tags
-        elif len(tags) == 3:
+        if len(tags) == 3 and tags.issubset(fallback_columns):
+            # Update both tags
             update_summary[sm] = 'both'
+            continue
 
-        # Four types of tags for software and minimizer
-        # Update jacobian, hessian or both tags
-        else:
+        for tag in tags:
 
-            for tag in tags:
+            # Unpack the tag
+            unpacked_column_tag = dict(zip(col_order, tag.split(":")))
 
-                # Unpack the tag
-                unpacked_column_tag = dict(zip(col_order, tag.split(":")))
+            # Find jacobian and hessian matches
+            matches_summary = {}
+            for check_tag in [['jacobian'],
+                              ['hessian'],
+                              ['jacobian', 'hessian']]:
 
-                # Find jacobian and hessian matches
-                matches_summary = {}
-                for check_tag in ['jacobian', 'hessian']:
-                    match_str = ':'. join(["[^:]*" if key == check_tag else
-                                           unpacked_column_tag[key]
-                                           for key in col_order])
+                match_str = ':'. join(["[^:]*" if key in check_tag else
+                                       unpacked_column_tag[key]
+                                       for key in col_order])
 
-                    # Find all matches regardless of row constraints
-                    matches = [m for m in _find_matching_tags(match_str,
-                                                              fallback_columns)
-                               if m != tag]
+                # Find all matches regardless of row constraints
+                matches = [m for m in _find_matching_tags(match_str,
+                                                          fallback_columns)
+                           if m != tag]
 
-                    # Find possible col tags for missing rows
-                    column = [r['row'] for r in all_result_tags
-                              if r['col'] == tag]
-                    missing_rows = [x for x in rows
-                                    if x not in column]
-                    possible_matches = {r['col'] for r in all_result_tags
-                                        if r['row'] in missing_rows}
+                # Find possible col tags for missing rows
+                column = [r['row'] for r in all_result_tags
+                          if r['col'] == tag]
+                missing_rows = [x for x in rows
+                                if x not in column]
+                possible_matches = {r['col'] for r in all_result_tags
+                                    if r['row'] in missing_rows}
 
-                    # Find all matches that satisfy row constraints
-                    matches_summary[check_tag] = \
-                        ''.join([m for m in matches if m in possible_matches])
+                # Find all matches that satisfy row constraints
+                matches_summary[':'.join(check_tag)] = \
+                    [m for m in matches if m in possible_matches]
 
-                # Determine which tag to update
-                rename_jac = matches_summary['jacobian'] != ''
-                rename_hes = matches_summary['hessian'] != ''
+            # Determine which tag to update
+            rename_jac = matches_summary['jacobian'] != []
+            rename_hes = matches_summary['hessian'] != []
+            rename_both = ((not rename_jac) and (not rename_hes)) and\
+                matches_summary['jacobian:hessian'] != []
 
-                if rename_jac and rename_hes:
-                    # Update both tags
-                    update_summary[sm] = 'both'
-                elif rename_jac:
-                    # Update jacobian tag
-                    update_summary[sm] = 'jacobian'
-                else:
-                    # Update hessian tag
-                    update_summary[sm] = 'hessian'
-                break
+            if (rename_jac and rename_hes) or rename_both:
+                # Update both tags
+                update_summary[sm] = 'both'
+            elif rename_jac:
+                # Update jacobian tag
+                update_summary[sm] = 'jacobian'
+            elif rename_hes:
+                # Update hessian tag
+                update_summary[sm] = 'hessian'
+            break
 
     return update_summary
 
