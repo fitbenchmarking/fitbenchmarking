@@ -6,6 +6,7 @@ import shutil
 import paramonte as pm
 from fitbenchmarking.controllers.base_controller import Controller
 
+
 class ParamonteController(Controller):
     """
     Controller for Paramonte

@@ -245,13 +245,16 @@ class Controller:
         """
         # run scipy fit to get 'true' param values
         from scipy.optimize import minimize
-        res = minimize(self.cost_func.eval_cost, self.initial_params, options={'maxiter':500})
+        res = minimize(self.cost_func.eval_cost,
+                       self.initial_params,
+                       options={'maxiter': 500})
 
         # calculate overall confidence within 10% of expected param value
         par_conf = []
         for i, name in enumerate(self.par_names):
             tol = abs(0.1*res.x[i])
-            hist, bin_edges = numpy.histogram(self.params_pdfs[name], bins=100, density=True)
+            hist, bin_edges = numpy.histogram(self.params_pdfs[name],
+                                              bins=100, density=True)
             # check tol range is covered by hist range
             tol_range = [res.x[i]-tol, res.x[i]+tol]
             if tol_range[-1] < bin_edges[0] or tol_range[0] > bin_edges[-1]:

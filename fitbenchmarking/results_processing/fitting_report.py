@@ -67,8 +67,8 @@ def create_prob_group(result, support_pages_dir, options):
         if not pdf_success:
             fig_pdf = result.figure_error
     else:
-        fig_fit = fig_start = fig_pdf = 'Re-run with make_plots set to yes in the ' \
-            'ini file to generate plots.'
+        fig_fit = fig_start = fig_pdf = 'Re-run with make_plots ' \
+            'set to yes in the ini file to generate plots.'
 
     run_name = f"{options.run_name}: " if options.run_name else ''
 
@@ -118,7 +118,8 @@ def get_figure_paths(result):
     figures_dir = "figures"
 
     output = []
-    for link in [result.figure_link, result.start_figure_link, result.posterior_plots]:
+    for link in [result.figure_link, result.start_figure_link,
+                 result.posterior_plots]:
         output.append(os.path.join(figures_dir, link) if link else '')
 
     return output[0], output[1], output[2]

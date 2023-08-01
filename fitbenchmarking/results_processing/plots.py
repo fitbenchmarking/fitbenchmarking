@@ -330,7 +330,7 @@ class Plot:
             ax[i].set_title(name)
 
         fname = f'{result.sanitised_min_name(True)}_posterior_' \
-                 'pdf_plot_for_{result.sanitised_name}.png'
+                'pdf_plot_for_{result.sanitised_name}.png'
         fig.tight_layout()
         fig.savefig(os.path.join(self.figures_dir, fname))
         plt.close(fig)

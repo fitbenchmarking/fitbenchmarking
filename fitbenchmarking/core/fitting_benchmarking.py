@@ -600,9 +600,9 @@ def perform_fit(controller, options, grabbed_output):
         controller.timer.reset()
         if controller.params_pdfs is None:
             accuracy = controller.eval_chisq(params=controller.final_params,
-                                        x=controller.data_x,
-                                        y=controller.data_y,
-                                        e=controller.data_e)
+                                             x=controller.data_x,
+                                             y=controller.data_y,
+                                             e=controller.data_e)
         else:
             accuracy = controller.eval_confidence()
 
