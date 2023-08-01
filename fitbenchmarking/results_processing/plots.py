@@ -115,6 +115,12 @@ class Plot:
         """
         # Plotly implementation below
         htmlfiles = {}
+        
+        x_best = df[df["best"]]["x"].to_list()
+        y_best = df[df["best"]]["y"].to_list()
+        x_data = df[df["minimizer"] == 'Data']["x"].to_list()
+        y_data = df[df["minimizer"] == 'Data']["y"].to_list(),
+        
         for minimizer in df['minimizer'].unique():
             if minimizer not in ["Data", "Starting Guess"]:
                 fig = px.line(df[df["minimizer"] == minimizer],
@@ -128,16 +134,16 @@ class Plot:
                     name = 'Best Fit (' + \
                         f'{df[df["best"]]["minimizer"].unique()})'
                     fig.add_trace(
-                        go.Scatter(x=df[df["best"]]["x"].to_list(),
-                                   y=df[df["best"]]["y"].to_list(),
+                        go.Scatter(x=x_best,
+                                   y=y_best,
                                    mode='lines',
                                    name=name,
                                    line=self.best_fit_line))
                 # add the raw data as a scatter plot
                 fig.add_trace(
                     go.Scatter(
-                        x=df[df["minimizer"] == 'Data']["x"].to_list(),
-                        y=df[df["minimizer"] == 'Data']["y"].to_list(),
+                        x=x_data,
+                        y=y_data,
                         mode='markers',
                         name='Data',
                         marker=self.data_marker))
