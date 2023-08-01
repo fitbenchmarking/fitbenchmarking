@@ -318,10 +318,10 @@ class Plot:
         fig.savefig(os.path.join(figures_dir, fname))
         plt.close(fig)
         return fname
-    
+
     def plot_posteriors(self, result):
 
-        par_names = self.problem.param_names
+        par_names = self.result.param_names
 
         fig, ax = plt.subplots(len(par_names), 1)
 
@@ -334,4 +334,4 @@ class Plot:
         fig.tight_layout()
         fig.savefig(os.path.join(self.figures_dir, fname))
         plt.close(fig)
-        return fname      
+        return fname

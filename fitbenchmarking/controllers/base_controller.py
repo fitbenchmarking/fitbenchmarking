@@ -147,6 +147,8 @@ class Controller:
         # save parameter estimates from MCMC minimizers
         self.params_pdfs = None
 
+        self.par_names = self.problem.param_names
+
     @property
     def flag(self):
         """
@@ -236,20 +238,18 @@ class Controller:
         kwargs = {k: v for k, v in zip('xye', [x, y, e]) if v is not None}
         out = self.cost_func.eval_cost(params=params, **kwargs)
         return out
-    
+
     def eval_confidence(self):
         """
         Computes overall confidence in MCMC fit
         """
         # run scipy fit to get 'true' param values
         from scipy.optimize import minimize
-        import matplotlib.pyplot as plt
         res = minimize(self.cost_func.eval_cost, self.initial_params, options={'maxiter':500})
 
         # calculate overall confidence within 10% of expected param value
-        par_names = self.problem.param_names
         par_conf = []
-        for i, name in enumerate(par_names):
+        for i, name in enumerate(self.par_names):
             tol = abs(0.1*res.x[i])
             hist, bin_edges = numpy.histogram(self.params_pdfs[name], bins=100, density=True)
             # check tol range is covered by hist range
@@ -264,7 +264,7 @@ class Controller:
                     par_conf.append(hist[start_bin]*width)
                 else:
                     par_conf.append(sum(hist[start_bin:end_bin]*width))
-    
+
         return numpy.prod(par_conf)
 
     def _validate_jacobian(self) -> None:

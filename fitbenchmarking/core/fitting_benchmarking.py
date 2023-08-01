@@ -652,4 +652,3 @@ def perform_fit(controller, options, grabbed_output):
         # flag if not
         controller.check_bounds_respected()
     return accuracy, runtimes, emissions
-

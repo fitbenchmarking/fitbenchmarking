@@ -42,16 +42,15 @@ class ParamonteController(Controller):
         """
         Setup problem ready to be run with Paramonte
         """
-        par_names = self.problem.param_names
         par_ini_p = self.initial_params
-        param_dict = dict(zip(par_names, par_ini_p))
+        param_dict = dict(zip(self.par_names, par_ini_p))
 
         # overwrite the existing output files just in case they already exist.
         self.pmpd.spec.overwriteRequested = True
         # specify the output file prefixes.
         self.pmpd.spec.outputFileName = "./out/temp"
         # set the output names of the parameters.
-        self.pmpd.spec.variableNameList = par_names
+        self.pmpd.spec.variableNameList = self.par_names
         self.pmpd.spec.variableNameList = list(param_dict.keys())
         self.pmpd.spec.startPointVec = list(param_dict.values())
 

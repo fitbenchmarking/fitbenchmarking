@@ -55,6 +55,7 @@ class FittingResult:
         self.problem_format: 'str' = problem.format
         self.problem_desc: 'str' = problem.description
         self.initial_params: 'list[float]' = controller.initial_params
+        self.param_names = controller.par_names
         self.equation = problem.equation
         self.plot_scale = problem.plot_scale
 
@@ -77,6 +78,9 @@ class FittingResult:
         self.mean_runtime = np.average(runtimes)
         self.runtimes = runtimes
         self.emissions = emissions
+
+        # Posterior pdfs for Bayesian fitting
+        self.params_pdfs = controller.params_pdfs
 
         # Details of options used for this run
         self.software = controller.software
@@ -120,10 +124,6 @@ class FittingResult:
         # Controller error handling
         self.error_flag = controller.flag
 
-        # Posterior pdfs for Bayesian fitting
-        self.params_pdfs = controller.params_pdfs
-
-
         # Attributes for table creation
         self.costfun_tag: str = cost_func.__class__.__name__
         self.problem_tag: str = self.name
@@ -154,7 +154,7 @@ class FittingResult:
         self.start_figure_link = ''
         self.figure_link = ''
         self.figure_error = ''
-        self.posterior_pdfs = ''
+        self.posterior_plots = ''
 
     def __str__(self):
         info = {"Cost Function": self.costfun_tag,
