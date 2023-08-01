@@ -57,7 +57,7 @@ class Plot:
         """
 
         # Plotly implementation below
-        fig = px.line(df.query("minimizer in ['Starting Guess']"),
+        fig = px.line(df[df["minimizer"] == 'Starting Guess'],
                       x="x",
                       y="y",
                       color="minimizer",
@@ -65,8 +65,8 @@ class Plot:
                       markers=True)
         # add the raw data as a scatter plot
         fig.add_trace(go.Scatter(
-            x=df.query("minimizer == 'Data'")["x"].to_list(),
-            y=df.query("minimizer == 'Data'")["y"].to_list(),
+            x=df[df["minimizer"] == 'Data']["x"].to_list(),
+            y=df[df["minimizer"] == 'Data']["y"].to_list(),
             mode='markers',
             name='Data',
             marker=self.data_marker))
@@ -117,27 +117,27 @@ class Plot:
         htmlfiles = {}
         for minimizer in df['minimizer'].unique():
             if minimizer not in ["Data", "Starting Guess"]:
-                fig = px.line(df.query(f"minimizer == '{minimizer}'"),
+                fig = px.line(df[df["minimizer"] == minimizer],
                               x="x",
                               y="y",
                               color="minimizer",
                               title=self.result.name,
                               markers=True)
-                if not df.query(f"minimizer == '{minimizer}'")["best"].any():
+                if not df[df["minimizer"] == minimizer]["best"].any():
                     # add the best plot
                     name = 'Best Fit (' + \
-                        f'{df.query("best")["minimizer"].unique()})'
+                        f'{df[df["best"]]["minimizer"].unique()})'
                     fig.add_trace(
-                        go.Scatter(x=df.query("best")["x"].to_list(),
-                                   y=df.query("best")["y"].to_list(),
+                        go.Scatter(x=df[df["best"]]["x"].to_list(),
+                                   y=df[df["best"]]["y"].to_list(),
                                    mode='lines',
                                    name=name,
                                    line=self.best_fit_line))
                 # add the raw data as a scatter plot
                 fig.add_trace(
                     go.Scatter(
-                        x=df.query("minimizer == 'Data'")["x"].to_list(),
-                        y=df.query("minimizer == 'Data'")["y"].to_list(),
+                        x=df[df["minimizer"] == 'Data']["x"].to_list(),
+                        y=df[df["minimizer"] == 'Data']["y"].to_list(),
                         mode='markers',
                         name='Data',
                         marker=self.data_marker))
