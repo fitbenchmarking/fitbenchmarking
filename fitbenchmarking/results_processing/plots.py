@@ -238,10 +238,10 @@ class Plot:
                         title=title
                         )
 
-                    if result.plot_scale in ["loglog", "logx"]:
-                        plotlyfig.update_xaxes(type="log")
-                    if result.plot_scale in ["loglog", "logy"]:
-                        plotlyfig.update_yaxes(type="log")
+                if result.plot_scale in ["loglog", "logx"]:
+                    plotlyfig.update_xaxes(type="log")
+                if result.plot_scale in ["loglog", "logy"]:
+                    plotlyfig.update_yaxes(type="log")
 
         html_fname = f'summary_plot_for_{first_result.sanitised_name}.html'
         offline_plot(
