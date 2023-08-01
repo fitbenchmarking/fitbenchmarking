@@ -361,11 +361,12 @@ def _find_tag_to_rename(all_result_tags,
                                if m != tag]
 
                     # Find possible col tags for missing rows
+                    column = [r['row'] for r in all_result_tags
+                              if r['col'] == tag]
+                    missing_rows = [x for x in rows
+                                    if x not in column]
                     possible_matches = {r['col'] for r in all_result_tags
-                                        if r['row'] in [x for x in rows if x
-                                        not in [r['row'] for r
-                                                in all_result_tags
-                                                if r['col'] == tag]]}
+                                        if r['row'] in missing_rows}
 
                     # Find all matches that satisfy row constraints
                     matches_summary[check_tag] = \
