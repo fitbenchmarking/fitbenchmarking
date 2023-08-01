@@ -226,7 +226,7 @@ def _handle_fallback_tags(results,
     column_rename = "best_avaliable"
 
     # Find column tags and count for each tag
-    column_summary={}
+    column_summary = {}
     for tag in all_result_tags:
         column_summary[tag['col']] = 1 + column_summary.get(tag['col'], 0)
 
@@ -238,7 +238,7 @@ def _handle_fallback_tags(results,
         sm = (up[col_order.index('software')],
               up[col_order.index('minimizer')])
         if sm not in sm_summary:
-           sm_summary[sm] = set()
+            sm_summary[sm] = set()
         sm_summary[sm].add(tag['col'])
 
     update_summary = _find_tag_to_rename(all_result_tags,
@@ -254,8 +254,8 @@ def _handle_fallback_tags(results,
 
             # Unpack the tag
             unpacked_column_tag = dict(zip(col_order, tag["col"].split(":")))
-            sm_tag = ':'.join([unpacked_column_tag['software'],
-                               unpacked_column_tag['minimizer']])
+            sm_tag = (unpacked_column_tag['software'],
+                      unpacked_column_tag['minimizer'])
 
             tag_to_be_updated = update_summary[sm_tag]
 
@@ -267,12 +267,12 @@ def _handle_fallback_tags(results,
                     results[result_ix].hessian_tag = column_rename
 
             elif tag_to_be_updated == 'jacobian':
-                # Only jacobian tag need to be renamed
+                # Only jacobian tag renamed
                 unpacked_column_tag['jacobian'] = \
                     results[result_ix].jacobian_tag = column_rename
 
             elif tag_to_be_updated == 'hessian':
-                # Only hessian tag need to be renamed
+                # Only hessian tag renamed
                 unpacked_column_tag['hessian'] = \
                     results[result_ix].hessian_tag = column_rename
 
@@ -313,6 +313,11 @@ def _find_tag_to_rename(all_result_tags,
     update_summary = {}
 
     for sm, tags in sm_summary.items():
+
+        # One type of tag for software and minimizer
+        # No Update required
+        if len(tags) == 1:
+            continue
 
         # Two types of tags for software and minimizer
         # Update jacobian, hessian or both tags

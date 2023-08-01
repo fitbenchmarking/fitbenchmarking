@@ -437,11 +437,13 @@ def loop_over_jacobians(controller, options, grabbed_output, checkpointer):
                 jacobian = jacobian_cls(cost_func.problem)
             except NoJacobianError as excp:
                 LOGGER.warning(str(excp))
-                LOGGER.info('Using Scipy instead for jacobian')
                 if jac_method == 'analytic':
+                    LOGGER.info('Using Scipy instead for jacobian')
                     jac_method = 'scipy'
                     jacobian_cls = create_jacobian(jac_method)
                     jacobian = jacobian_cls(cost_func.problem)
+                else:
+                    continue
 
             for num_method in options.jac_num_method[jac_method]:
                 jacobian.method = num_method
@@ -507,21 +509,22 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
                 cost_func.hessian = hessian
             except NoHessianError as excp:
                 LOGGER.warning(str(excp))
-                LOGGER.info('Using default method instead for hessian')
                 if hes_method == 'analytic':
+                    LOGGER.info('Using default method instead for hessian')
                     hes_method = 'default'
                     cost_func.hessian = None
+                else:
+                    continue
         else:
             cost_func.hessian = None
 
         for num_method in options.hes_num_method[hes_method]:
-            if minimizer_check:
-                hess_name = "default"
-                if cost_func.hessian is not None:
-                    cost_func.hessian.method = num_method
-                    hess_name = cost_func.hessian.name()
+            if minimizer_check and cost_func.hessian is not None:
+                cost_func.hessian.method = num_method
+                hess_name = cost_func.hessian.name()
                 LOGGER.info("                   Hessian: %s",
-                            hess_name)
+                            hess_name if 'hess_name' in locals()
+                            else 'default')
 
             # Perform the fit a number of times specified by num_runs
             accuracy, runtimes, emissions = perform_fit(
