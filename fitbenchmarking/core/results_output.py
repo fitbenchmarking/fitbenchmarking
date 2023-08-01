@@ -231,19 +231,15 @@ def _handle_fallback_tags(results,
         column_summary[tag['col']] = 1 + column_summary.get(tag['col'], 0)
 
     # Find software and minimizer tags
-    sm_list = [':'.join([m['software'], m['minimizer']])
-               for m in [dict(zip(col_order, t.split(":")))
-               for t in list(column_summary.keys())]]
-
     # Find col tags with each sm_tag
     sm_summary = {}
-    for sm in sm_list:
-        tags = set()
-        for tag in all_result_tags:
-            up = dict(zip(col_order, tag["col"].split(":")))
-            if ':'.join([up['software'], up['minimizer']]) == sm:
-                tags.add(tag['col'])
-        sm_summary[sm] = tags
+    for tag in all_result_tags:
+        up = tag["col"].split(":")
+        sm = (up[col_order.index('software')],
+              up[col_order.index('minimizer')])
+        if sm not in sm_summary:
+           sm_summary[sm] = set()
+        sm_summary[sm].add(tag['col'])
 
     update_summary = _find_tag_to_rename(all_result_tags,
                                          sm_summary,
