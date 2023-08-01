@@ -179,7 +179,8 @@ class CreatePlotsTests(unittest.TestCase):
         Tests for create_plots where the results object params are not None
         """
         expected_plot_initial_guess = "initial_guess"
-        expected_plot_best = "plotly_fit"
+        expected_plot_best = {'prob_0': "plotly_fit4",
+                              'prob_1': "plotly_fit3"}
         expected_plotly_fit = {'m00_[s0]': "plotly_fit1",
                                'm01_[s0]_jj0': "plotly_fit2",
                                'm01_[s0]_jj1': "plotly_fit3",
@@ -207,7 +208,6 @@ class CreatePlotsTests(unittest.TestCase):
                 results = results_in_prob[category_key]
 
                 # Check initial guess is correctly set in results
-                print(f"fig_link = {best_in_cat.start_figure_link}")
                 self.assertEqual(best_in_cat.start_figure_link,
                                  expected_plot_initial_guess)
                 self.assertTrue(all(
@@ -215,9 +215,8 @@ class CreatePlotsTests(unittest.TestCase):
                     for r in results))
 
                 # Check plot is correctly set in results
-                print(f"fig_link = {best_in_cat.figure_link}")
                 self.assertEqual(best_in_cat.figure_link,
-                                 expected_plot_best)
+                                 expected_plot_best[problem_key])
                 self.assertTrue(all(
                     r.figure_link == expected_plotly_fit[
                         r.sanitised_min_name(True)]
