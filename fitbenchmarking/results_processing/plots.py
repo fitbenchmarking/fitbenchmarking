@@ -8,7 +8,6 @@ import numpy as np
 import plotly.colors as ptly_colors
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.offline import plot as offline_plot
 
 from fitbenchmarking.utils.exceptions import PlottingError
 
@@ -79,12 +78,7 @@ class Plot:
 
         htmlfile = f"start_for_{self.result.sanitised_name}.html"
         html_file_name = os.path.join(self.figures_dir, htmlfile)
-
-        offline_plot(
-            fig,
-            filename=html_file_name,
-            auto_open=False
-        )
+        fig.write_html(html_file_name)
 
         return htmlfile
 
@@ -158,12 +152,7 @@ class Plot:
                     f"_{self.result.sanitised_name}.html"
 
                 html_file_name = os.path.join(self.figures_dir, htmlfile)
-
-                offline_plot(
-                    fig,
-                    filename=html_file_name,
-                    auto_open=False
-                )
+                fig.write_html(html_file_name)
                 htmlfiles[minimizer] = htmlfile
 
         return htmlfiles
