@@ -70,6 +70,8 @@ def create_prob_group(result, support_pages_dir, options):
         fig_fit = fig_start = fig_pdf = 'Re-run with make_plots set to yes in the ' \
             'ini file to generate plots.'
 
+    run_name = f"{options.run_name}: " if options.run_name else ''
+
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, "templates")
     env = Environment(loader=FileSystemLoader(template_dir))
@@ -82,12 +84,14 @@ def create_prob_group(result, support_pages_dir, options):
             table_style=css['table'],
             custom_style=css['custom'],
             title=result.name,
-            description=result.problem.description,
-            equation=result.problem.equation,
+            run_name=run_name,
+            description=result.problem_desc,
+            equation=result.equation,
             initial_guess=result.ini_function_params,
             minimizer=result.modified_minimizer_name(),
-            accuracy=f"{result.acc:.4g}",
-            runtime=f"{result.runtime:.4g}",
+            accuracy=f"{result.accuracy:.4g}",
+            runtime=f"{result.mean_runtime:.4g}",
+            emissions=f"{result.emissions:.4g}",
             is_best_fit=result.is_best_fit,
             initial_plot_available=init_success,
             initial_plot=fig_start,
@@ -97,7 +101,7 @@ def create_prob_group(result, support_pages_dir, options):
             pdf_plot_available=pdf_success,
             pdf_plot=fig_pdf))
 
-    result.fitting_report_link = os.path.relpath(file_path)
+    result.fitting_report_link = os.path.abspath(file_path)
 
 
 def get_figure_paths(result):

@@ -4,17 +4,19 @@ Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_fitting_software
 import inspect
 import os
 import unittest
+
 import numpy as np
 
-
 from fitbenchmarking import test_files
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.utils import fitbm_result, output_grabber
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_fitting_software
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
-from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils import fitbm_result, output_grabber
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import UnsupportedMinimizerError
+from fitbenchmarking.utils.options import Options
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
@@ -27,7 +29,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
     """
     Helper function that returns a simple fitting problem
     """
-    options = Options()
+    options = Options(additional_options={'external_output': 'debug'})
     if minimizers:
         options.minimizers = minimizers
 
@@ -64,22 +66,20 @@ class LoopOverSoftwareTests(unittest.TestCase):
         Setting up problem for tests
         """
         self.cost_func = make_cost_function()
-        self.problem = self.cost_func.problem
-        self.options = self.problem.options
+        problem = self.cost_func.problem
+        self.options = problem.options
         self.options.software = ["scipy", "dfo", "scipy_ls"]
-        self.minimizers = self.options.minimizers
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.start_values_index = 0
         self.scipy_len = len(self.options.minimizers["scipy"])
         self.dfo_len = len(self.options.minimizers["dfo"])
         self.scipy_ls_len = len(self.options.minimizers["scipy_ls"])
-        self.result_args = {'options': self.options,
-                            'cost_func': self.cost_func,
-                            'jac': 'jac',
-                            'hess': 'hess',
-                            'initial_params': self.problem.starting_values[0],
-                            'params': [],
-                            'acc': 1}
+        controller = ScipyController(self.cost_func)
+        controller.parameter_set = 0
+        self.result_args = {'controller': controller,
+                            'accuracy': 1,
+                            'runtimes': [1]}
+        self.cp = Checkpoint(self.options)
 
     def mock_func_call(self, *args, **kwargs):
         """
@@ -100,10 +100,12 @@ class LoopOverSoftwareTests(unittest.TestCase):
         :type expected_minimizer_failed: dict
         """
         results, unselected_minimzers = \
-            loop_over_fitting_software(self.cost_func,
-                                       self.options,
-                                       self.start_values_index,
-                                       self.grabbed_output)
+            loop_over_fitting_software(
+                self.cost_func,
+                options=self.options,
+                start_values_index=self.start_values_index,
+                grabbed_output=self.grabbed_output,
+                checkpointer=self.cp)
         assert len(results) == expected_list_len
 
         dict_test(unselected_minimzers, expected_minimizer_failed)
@@ -182,7 +184,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         self.minimizer_failed = {s: self.options.minimizers[s]
                                  for s in self.options.software}
 
-        self.result_args['acc'] = np.inf
+        self.result_args['accuracy'] = np.inf
         self.results_problem = [[fitbm_result.FittingResult(**self.result_args)
                                  for i in range(self.scipy_len)],
                                 [fitbm_result.FittingResult(**self.result_args)
@@ -200,10 +202,12 @@ class LoopOverSoftwareTests(unittest.TestCase):
         """
         self.options.software = ['incorrect_software']
         with self.assertRaises(UnsupportedMinimizerError):
-            _ = loop_over_fitting_software(self.cost_func,
-                                           self.options,
-                                           self.start_values_index,
-                                           self.grabbed_output)
+            _ = loop_over_fitting_software(
+                self.cost_func,
+                options=self.options,
+                start_values_index=self.start_values_index,
+                grabbed_output=self.grabbed_output,
+                checkpointer=self.cp)
 
 
 if __name__ == "__main__":

@@ -259,3 +259,20 @@ class IncompatibleProblemError(ValidationException):
     class_message = 'The selected software can not be used with the given ' \
                     'problem.'
     error_code = 27
+
+
+class CheckpointError(FitBenchmarkException):
+    """
+    Indicates an error occured during checkpointing.
+    """
+    class_message = 'An error occured during handling the checkpoint file.'
+    error_code = 28
+
+
+class IncompatibleCostFunctionError(FitBenchmarkException):
+    """
+    Indicates that the cost function is not compatible with the given problem.
+    """
+    class_message = 'The selected cost function cannot be used with the ' \
+                    'given problem'
+    error_code = 29

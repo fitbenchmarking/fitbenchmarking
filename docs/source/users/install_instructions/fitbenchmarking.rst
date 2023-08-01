@@ -16,7 +16,7 @@ FitBenchmarking can be installed via the command line by entering:
 
 .. code-block:: bash
 
-      python -m pip install fitbenchmarking[bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit]
+      python -m pip install fitbenchmarking[bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt]
 
 
 This will install the latest stable version of FitBenchmarking.
@@ -50,7 +50,7 @@ of the code that is still in development.
 
    .. code-block:: bash
 
-      python -m pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit]
+      python -m pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt]
 
 4. Additional software that cannot be installed via pip can also be used
    with FitBenchmarking.  Follow the instructions at
@@ -81,12 +81,13 @@ where valid strings ``option-x`` are:
 * ``DFO`` -- installs the `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ and `DFO-GN <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`_ fitting packages.
 * ``gofit`` -- installs the `GOFit <https://github.com/ralna/GOFit>`_ fitting package.
 * ``gradient_free`` -- installs the `Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ fitting package
-* ``levmar`` -- installs the `levmar <http://users.ics.forth.gr/~lourakis/levmar/>`_ fitting package.  Note that the interface we use also requires BLAS and LAPLACK to be installed on the system, and calls to this minimizer will fail if these libraries are not present.
+* ``levmar`` -- installs the `levmar <http://users.ics.forth.gr/~lourakis/levmar/>`_ fitting package (suitable for Python up to 3.8, see :ref:`levmar-install`). Note that the interface we use also requires BLAS and LAPLACK to be installed on the system, and calls to this minimizer will fail if these libraries are not present.
 * ``mantid`` -- installs the `h5py <https://pypi.org/project/h5py/>`_ and `pyyaml <https://pypi.org/project/PyYAML/>`_ modules.
 * ``matlab`` -- installs the `dill <https://pypi.org/project/dill/>`_ module required to run matlab controllers in fitbenchmarking
 * ``minuit`` -- installs the `Minuit <http://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/>`_ fitting package.
 * ``SAS`` -- installs the `Sasmodels <https://github.com/SasView/sasmodels>`_ fitting package and the `tinycc <https://pypi.org/project/tinycc/>`_ module.
 * ``numdifftools`` -- installs the `numdifftools <https://numdifftools.readthedocs.io/en/latest/index.html>`_ numerical differentiation package.
+* ``nlopt``-- installs the `NLopt <https://github.com/DanielBok/nlopt-python#installation>`_ fitting package.
 * ``lmfit``-- installs the `LMFIT <https://lmfit.github.io/lmfit-py/installation.html>`_ and `emcee <https://emcee.readthedocs.io/en/stable/user/install/>`__ fitting package.
 
 

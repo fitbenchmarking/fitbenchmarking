@@ -7,6 +7,7 @@ import os
 import unittest
 
 from fitbenchmarking import test_files
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.core.fitting_benchmarking import \
     loop_over_benchmark_problems
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
@@ -14,6 +15,7 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.checkpoint import Checkpoint
 
 # Defines the module which we mock out certain function calls for
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
@@ -62,24 +64,27 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         """
         Setting up problem for tests
         """
-        self.cost_func = make_cost_function()
-        self.problem = self.cost_func.problem
+        cost_func = make_cost_function()
         self.options = Options()
         self.options.software = ["scipy"]
-        self.scipy_len = len(self.options.minimizers["scipy"])
+        scipy_len = len(self.options.minimizers["scipy"])
         bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
         self.default_parsers_dir = os.path.join(bench_prob_dir,
                                                 "default_parsers_set")
         self.count = 0
-        self.result_args = {'options': self.options,
-                            'cost_func': self.cost_func,
-                            'jac': 'jac',
-                            'hess': 'hess',
-                            'initial_params': self.problem.starting_values[0],
-                            'params': [],
-                            'acc': 1}
-        self.list_results = [fitbm_result.FittingResult(**self.result_args)
-                             for i in range(self.scipy_len)]
+        self.cp = Checkpoint(self.options)
+
+        controllers = [ScipyController(cost_func) for _ in range(scipy_len)]
+        for c in controllers:
+            c.parameter_set = 0
+
+        self.list_results = [
+            fitbm_result.FittingResult(
+                controller=controllers[i],
+                accuracy=1,
+                runtimes=[1])
+            for i in range(scipy_len)
+        ]
         self.individual_problem_results = [
             self.list_results, self.list_results]
 
@@ -92,8 +97,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         problem_fails = self.problem_fails
         unselected_minimizers = {"scipy": []}
         self.count += 1
-        return individual_problem_results, problem_fails, \
-            unselected_minimizers
+        return individual_problem_results, problem_fails, unselected_minimizers
 
     def shared_tests(self, list_len, expected_problem_fails):
         """
@@ -105,7 +109,9 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         :type expected_problem_fails: list
         """
         results, failed_problems, unselected_minimizers = \
-            loop_over_benchmark_problems(self.problem_group, self.options)
+            loop_over_benchmark_problems(self.problem_group,
+                                         options=self.options,
+                                         checkpointer=self.cp)
         assert len(results) == list_len
         assert failed_problems == expected_problem_fails
         dict_test(unselected_minimizers, {"scipy": []})

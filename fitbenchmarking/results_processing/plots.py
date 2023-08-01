@@ -52,22 +52,19 @@ class Plot:
                             "alpha": 0.5, }
 
     def __init__(self, best_result, options, figures_dir):
-        self.cost_func = best_result.cost_func
-        self.problem = self.cost_func.problem
-
         self.plots_failed = True
-        if self.problem.multivariate:
+        self.result = best_result
+
+        if self.result.multivariate:
             raise PlottingError(
                 'Plots cannot be generated for multivariate problems')
 
-        if self.problem.format == 'horace':
+        if self.result.problem_format == 'horace':
             raise PlottingError(
                 'Plots cannot be generated for Horace problems')
         self.plots_failed = False
 
         self.options = options
-
-        self.result = best_result
 
         self.figures_dir = figures_dir
 
@@ -105,12 +102,12 @@ class Plot:
         Performs post plot processing to annotate the plot correctly
         """
         # log scale
-        if self.problem.plot_scale == "loglog":
+        if self.result.plot_scale == "loglog":
             self.ax.set_xscale("log", nonpositive='clip')
             self.ax.set_yscale("log", nonpositive='clip')
-        elif self.problem.plot_scale == "logy":
+        elif self.result.plot_scale == "logy":
             self.ax.set_yscale("log", nonpositive='clip')
-        elif self.problem.plot_scale == "logx":
+        elif self.result.plot_scale == "logx":
             self.ax.set_xscale("log", nonpositive='clip')
 
         # linear scale if otherwise
@@ -168,25 +165,10 @@ class Plot:
         :return: path to the saved file
         :rtype: str
         """
-
-        # Parse which starting values to use from result name
-        start_index = self.result.name.partition('Start')[2].split(',')[0]
-        if start_index:
-            start_index = int(start_index.strip())
-        else:
-            start_index = 1
-
-        # gracefully handle occasions where problem definition file does not
-        # include all sets of starting values
-        try:
-            ini_guess = self.problem.starting_values[start_index - 1].values()
-        except IndexError:
-            ini_guess = self.problem.starting_values[0].values()
-
         self.plot_data(errors=False,
                        plot_options=self.ini_guess_plot_options,
                        x=self.x,
-                       y=self.problem.eval_model(list(ini_guess), x=self.x))
+                       y=self.result.ini_y[self.result.sorted_index])
         self.format_plot()
         file = f"start_for_{self.result.sanitised_name}.png"
         file_name = os.path.join(self.figures_dir, file)
@@ -215,7 +197,7 @@ class Plot:
         plot_options_dict['label'] = label
         plot_options_dict['color'] = self.best_fit_plot_options['color']
 
-        y = self.problem.eval_model(result.params, x=self.x)
+        y = result.fin_y[result.sorted_index]
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
                        y=y)
@@ -255,7 +237,7 @@ class Plot:
         self.plot_data(errors=False,
                        plot_options=plot_options_dict,
                        x=self.x,
-                       y=self.problem.eval_model(result.params, x=self.x))
+                       y=result.fin_y[result.sorted_index])
         self.format_plot()
         file = f"{result.sanitised_min_name(True)}_fit_for_"\
                f"{self.result.costfun_tag}_{self.result.sanitised_name}.png"
@@ -290,7 +272,6 @@ class Plot:
         colours = iter(cmap(col_vals))
 
         first_result = next(iter(categories.values()))[0]
-        problem = first_result.cost_func.problem
 
         # Plot data
         if "weighted_nlls" in options.cost_func_type:
@@ -305,14 +286,13 @@ class Plot:
 
         # Setup x for rest of plots
         x = first_result.data_x
-        x = np.linspace(x.min(), x.max(), 50)
+        x = first_result.data_x[first_result.sorted_index]
 
         for (key, results), colour in zip(categories.items(), colours):
             # Plot category
             for result in results:
                 if result.params is not None:
-                    params = result.params
-                    y = result.problem.eval_model(params, x=x)
+                    y = result.fin_y[result.sorted_index]
                     plot_options = cls.summary_best_plot_options \
                         if result.is_best_fit else cls.summary_plot_options
                     plot_options['color'] = colour
@@ -320,12 +300,12 @@ class Plot:
 
                     ax.plot(x, y, **plot_options)
                     # log scale
-                    if problem.plot_scale == "loglog":
+                    if result.plot_scale == "loglog":
                         ax.set_xscale("log", nonpositive='clip')
                         ax.set_yscale("log", nonpositive='clip')
-                    elif problem.plot_scale == "logy":
+                    elif result.plot_scale == "logy":
                         ax.set_yscale("log", nonpositive='clip')
-                    elif problem.plot_scale == "logx":
+                    elif result.plot_scale == "logx":
                         ax.set_xscale("log", nonpositive='clip')
                     ax.set_xlabel("X")
                     ax.set_ylabel("Y")

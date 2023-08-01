@@ -4,6 +4,7 @@ This file will handle all interaction with the options configuration file.
 # pylint: disable=too-many-branches
 
 import configparser
+import glob
 import os
 import matplotlib.pyplot as plt
 
@@ -80,6 +81,40 @@ class Options:
          'matlab_stats': ['Levenberg-Marquardt'],
          'minuit': ['migrad', 'simplex'],
          'paramonte': ['paraDram_sampler'],
+         'nlopt': ['LN_BOBYQA',
+                   'LN_NEWUOA',
+                   'LN_NEWUOA_BOUND',
+                   'LN_PRAXIS',
+                   'LD_SLSQP',
+                   'LD_VAR2',
+                   'LD_VAR1',
+                   'AUGLAG',
+                   'AUGLAG_EQ',
+                   'LN_NELDERMEAD',
+                   'LN_SBPLX',
+                   'LN_COBYLA',
+                   'LD_CCSAQ',
+                   'LD_MMA',
+                   'LD_TNEWTON_PRECOND_RESTART',
+                   'LD_TNEWTON_PRECOND',
+                   'LD_TNEWTON_RESTART',
+                   'LD_TNEWTON',
+                   'LD_LBFGS',
+                   'GN_DIRECT',
+                   'GN_DIRECT_L',
+                   'GN_DIRECT_L_RAND',
+                   'GNL_DIRECT_NOSCAL',
+                   'GN_DIRECT_L_NOSCAL',
+                   'GN_DIRECT_L_RAND_NOSCAL',
+                   'GN_ORIG_DIRECT',
+                   'GN_ORIG_DIRECT_L',
+                   'GN_CRS2_LM',
+                   'G_MLSL_LDS',
+                   'G_MLSL',
+                   'GD_STOGO',
+                   'GD_STOGO_RAND',
+                   'GN_AGS',
+                   'GN_ISRES'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg',
                     'newton', 'newton_reg',
                     'newton-tensor', 'newton-tensor_reg'],
@@ -108,8 +143,8 @@ class Options:
          'software': ['bumps', 'ceres', 'dfo', 'gofit', 'gradient_free', 'gsl',
                       'horace', 'levmar', 'lmfit', 'mantid', 'matlab',
                       'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
-                      'paramonte', 'ralfit', 'scipy', 'scipy_ls', 'scipy_go',
-                      'theseus'],
+                      'nlopt', 'paramonte', 'ralfit', 'scipy', 'scipy_ls',
+                      'scipy_go', 'theseus'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
@@ -136,7 +171,7 @@ class Options:
          'make_plots': [True, False],
          'pbar': [True, False],
          'comparison_mode': ['abs', 'rel', 'both'],
-         'table_type': ['acc', 'runtime', 'compare', 'local_min'],
+         'table_type': ['acc', 'runtime', 'compare', 'local_min', 'emissions'],
          'results_browser': [True, False],
          'colour_map': plt.colormaps()}
     VALID_LOGGING = \
@@ -200,6 +235,25 @@ class Options:
          'matlab_stats': ['Levenberg-Marquardt'],
          'minuit': ['migrad', 'simplex'],
          'paramonte': ['paraDram_sampler'],
+         'nlopt': ['LN_BOBYQA',
+                   'LN_NEWUOA',
+                   'LN_NEWUOA_BOUND',
+                   'LN_PRAXIS',
+                   'LD_SLSQP',
+                   'LD_VAR2',
+                   'LD_VAR1',
+                   'AUGLAG',
+                   'AUGLAG_EQ',
+                   'LN_NELDERMEAD',
+                   'LN_SBPLX',
+                   'LN_COBYLA',
+                   'LD_CCSAQ',
+                   'LD_MMA',
+                   'LD_TNEWTON_PRECOND_RESTART',
+                   'LD_TNEWTON_PRECOND',
+                   'LD_TNEWTON_RESTART',
+                   'LD_TNEWTON',
+                   'LD_LBFGS'],
          'ralfit': ['gn', 'gn_reg', 'hybrid', 'hybrid_reg',
                     'newton', 'newton_reg'],
          'scipy': ['Nelder-Mead',
@@ -241,7 +295,10 @@ class Options:
          'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
          'results_browser': True,
-         'table_type': ['acc', 'runtime', 'compare', 'local_min']}
+         'table_type': ['acc', 'runtime', 'compare', 'local_min', 'emissions'],
+         'run_name': '',
+         'checkpoint_filename': 'checkpoint.json',
+         }
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
          'append': False,
@@ -388,6 +445,12 @@ class Options:
 
         self.results_dir = self.read_value(output.getstr, 'results_dir',
                                            additional_options)
+        self.checkpoint_filename = self.read_value(
+            output.getstr, 'checkpoint_filename', additional_options)
+
+        self.run_name = self.read_value(output.getstr,
+                                        'run_name',
+                                        additional_options)
 
         logging = config['LOGGING']
 
@@ -512,7 +575,8 @@ class Options:
                             'make_plots': self.make_plots,
                             'results_browser': self.results_browser,
                             'pbar': self.pbar,
-                            'table_type': list_to_string(self.table_type)}
+                            'table_type': list_to_string(self.table_type),
+                            'run_name': self.run_name}
 
         config['LOGGING'] = {'file_name': self.log_file,
                              'level': self.log_level,
@@ -580,3 +644,30 @@ def read_range(s):
         raise ValueError("One or more elements in range are "
                          "outside of the permitted range 0 <= a <= 1.")
     return rng
+
+
+def find_options_file(options_file: str, additional_options: dict) -> Options:
+    """
+    Attempts to find the options file and creates an Options object for it.
+    Wildcards are accepted in the parameters of this function.
+
+    :param options_file: The path or glob pattern for an options file.
+    :type options_file: str
+    :param additional_options: A dictionary of options input by the user into
+                               the command line.
+    :type additional_options: dict
+    :return: An Options object.
+    :rtype: fitbenchmarking.utils.options.Options
+    """
+    if options_file != '':
+        # Read custom minimizer options from file
+        glob_options_file = glob.glob(options_file)
+
+        if not glob_options_file:
+            raise OptionsError('Could not find file {}'.format(options_file))
+        if not options_file.endswith(".ini"):
+            raise OptionsError('Options file must be a ".ini" file')
+
+        return Options(file_name=glob_options_file,
+                       additional_options=additional_options)
+    return Options(additional_options=additional_options)

@@ -6,10 +6,12 @@ import inspect
 import os
 import textwrap
 import unittest
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from fitbenchmarking import test_files
+from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.hessian.analytic_hessian import \
     Analytic as AnalyticHessian
@@ -17,6 +19,9 @@ from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
+
+if TYPE_CHECKING:
+    from fitbenchmarking.parsing.fitting_problem import FittingProblem
 
 
 class FitbmResultTests(unittest.TestCase):
@@ -31,26 +36,40 @@ class FitbmResultTests(unittest.TestCase):
         self.options = Options()
         test_files_dir = os.path.dirname(inspect.getfile(test_files))
         problem_dir = os.path.join(test_files_dir, "cubic.dat")
-        self.problem = parse_problem_file(problem_dir, self.options)
-        self.problem.correct_data()
 
-        self.acc = 10
-        self.minimizer = "test_minimizer"
-        self.runtime = 0.01
-        self.params = np.array([1, 3, 4, 4])
-        self.initial_params = np.array([0, 0, 0, 0])
-        self.cost_func = NLLSCostFunc(self.problem)
-        self.jac = 'jac1'
-        self.hess = 'hess1'
+        problem: 'FittingProblem' = parse_problem_file(
+            problem_dir, self.options)
+        problem.correct_data()
+
+        cost_func = NLLSCostFunc(problem)
+
+        controller = ScipyController(cost_func=cost_func)
+        controller.flag = 0
+        controller.minimizer = "Newton-CG"
+        controller.initial_params = np.array([0, 0, 0, 0])
+        controller.final_params = np.array([1, 3, 4, 4])
+        controller.parameter_set = 0
+
+        jac = Scipy(problem=problem)
+        jac.method = "2-point"
+        cost_func.jacobian = jac
+
+        hess = AnalyticHessian(problem, jac)
+        cost_func.hessian = hess
+        self.controller = controller
+
+        self.accuracy = 10
+        self.mean_runtime = 0.01
+        self.runtimes = [0.005, 0.015, 0.01]
+        self.emissions = 0.001
         self.result = FittingResult(
-            options=self.options, cost_func=self.cost_func, jac=self.jac,
-            hess=self.hess, acc=self.acc, runtime=self.runtime,
-            minimizer=self.minimizer, software='s1',
-            initial_params=self.initial_params, params=self.params,
-            error_flag=0)
+            controller=controller,
+            accuracy=self.accuracy,
+            runtimes=self.runtimes,
+            emissions=self.emissions)
 
-        self.min_acc = 0.1
-        self.result.min_acc = self.min_acc
+        self.min_accuracy = 0.1
+        self.result.min_accuracy = self.min_accuracy
         self.min_runtime = 1
         self.result.min_runtime = self.min_runtime
 
@@ -59,84 +78,112 @@ class FitbmResultTests(unittest.TestCase):
         Test that the fitting result can be printed as a readable string.
         """
         expected = textwrap.dedent('''\
-            +================================+
-            | FittingResult                  |
-            +================================+
-            | Cost Function | NLLSCostFunc   |
-            +--------------------------------+
-            | Problem       | cubic          |
-            +--------------------------------+
-            | Software      | s1             |
-            +--------------------------------+
-            | Minimizer     | test_minimizer |
-            +--------------------------------+
-            | Jacobian      | jac1           |
-            +--------------------------------+
-            | Hessian       | hess1          |
-            +--------------------------------+
-            | Accuracy      | 10             |
-            +--------------------------------+
-            | Runtime       | 0.01           |
-            +--------------------------------+''')
+            +======================================+
+            | FittingResult                        |
+            +======================================+
+            | Cost Function | NLLSCostFunc         |
+            +--------------------------------------+
+            | Problem       | cubic                |
+            +--------------------------------------+
+            | Software      | scipy                |
+            +--------------------------------------+
+            | Minimizer     | Newton-CG            |
+            +--------------------------------------+
+            | Jacobian      | scipy 2-point        |
+            +--------------------------------------+
+            | Hessian       | analytic             |
+            +--------------------------------------+
+            | Accuracy      | 10                   |
+            +--------------------------------------+
+            | Mean Runtime  | 0.01                 |
+            +--------------------------------------+
+            | Runtimes      | [0.005, 0.015, 0.01] |
+            +--------------------------------------+
+            | Emissions     | 0.001                |
+            +--------------------------------------+''')
 
         for i, (r, e) in enumerate(zip(str(self.result).splitlines(),
                                        expected.splitlines())):
             if r != e:
-                print(f'Issue on line {i}:\n> {r}\n<{e}')
+                print(f'Issue on line {i}:\n>{r}\n<{e}')
         self.assertEqual(str(self.result), expected)
 
     def test_init_with_dataset_id(self):
         """
         Tests to check that the multifit id is setup correctly
         """
-        acc = [10, 5, 1]
-        minimizer = "test_minimizer"
-        runtime = 0.01
-        params = [np.array([1, 3, 4, 4]),
-                  np.array([2, 3, 57, 8]),
-                  np.array([4, 2, 5, 1])]
-        initial_params = np.array([0, 0, 0, 0])
+        controller = self.controller
+        problem = self.controller.problem
 
-        self.problem.data_x = [np.array([3, 2, 1, 4]),
-                               np.array([5, 1, 2, 3]),
-                               np.array([6, 7, 8, 1])]
-        self.problem.data_y = [np.array([2, 1, 7, 40]),
-                               np.array([8, 9, 4, 2]),
-                               np.array([7, 4, 4, 2])]
-        self.problem.data_e = [np.array([1, 1, 1, 1]),
-                               np.array([2, 2, 2, 1]),
-                               np.array([2, 3, 4, 4])]
-        self.problem.sorted_index = [np.array([2, 1, 0, 3]),
-                                     np.array([1, 2, 3, 0]),
-                                     np.array([3, 0, 1, 2])]
-        self.cost_func = NLLSCostFunc(self.problem)
-        self.jac = Scipy(self.cost_func)
-        self.jac.method = "2-point"
-        self.hess = AnalyticHessian(self.cost_func.problem, self.jac)
-        self.result = FittingResult(
-            options=self.options, cost_func=self.cost_func, jac=self.jac,
-            hess=self.hess, acc=acc, runtime=runtime,
-            minimizer=minimizer, initial_params=initial_params, params=params,
-            error_flag=0, dataset_id=1)
+        chi_sq = [10, 5, 1]
+        runtimes = [0.005, 0.015, 0.01]
+        controller.final_params = [np.array([1, 3, 4, 4]),
+                                   np.array([2, 3, 57, 8]),
+                                   np.array([4, 2, 5, 1])]
+
+        problem.data_x = [np.array([3, 2, 1, 4]),
+                          np.array([5, 1, 2, 3]),
+                          np.array([6, 7, 8, 1])]
+        problem.data_y = [np.array([2, 1, 7, 40]),
+                          np.array([8, 9, 4, 2]),
+                          np.array([7, 4, 4, 2])]
+        problem.data_e = [np.array([1, 1, 1, 1]),
+                          np.array([2, 2, 2, 1]),
+                          np.array([2, 3, 4, 4])]
+        problem.sorted_index = [np.array([2, 1, 0, 3]),
+                                np.array([1, 2, 3, 0]),
+                                np.array([3, 0, 1, 2])]
+
+        result = FittingResult(
+            controller=controller,
+            accuracy=chi_sq,
+            runtimes=runtimes,
+            dataset=1)
 
         self.assertTrue(
-            np.isclose(self.result.data_x, self.problem.data_x[1]).all())
+            np.isclose(result.data_x, problem.data_x[1]).all())
         self.assertTrue(
-            np.isclose(self.result.data_y, self.problem.data_y[1]).all())
+            np.isclose(result.data_y, problem.data_y[1]).all())
         self.assertTrue(
-            np.isclose(self.result.data_e, self.problem.data_e[1]).all())
+            np.isclose(result.data_e, problem.data_e[1]).all())
         self.assertTrue(
-            np.isclose(self.result.sorted_index,
-                       self.problem.sorted_index[1]).all())
+            np.isclose(result.sorted_index,
+                       problem.sorted_index[1]).all())
 
-        self.assertTrue(np.isclose(params[1], self.result.params).all())
-        self.assertEqual(acc[1], self.result.acc)
+        self.assertTrue(
+            np.isclose(controller.final_params[1], result.params).all())
+        self.assertEqual(chi_sq[1], result.accuracy)
+
+    def test_mean_runtime_calculation(self):
+        """
+        Tests the mean calculation with in FittingResults
+        """
+        controller = self.controller
+        result = FittingResult(
+            controller=controller,
+            runtimes=[0.005, 0.015, 0.01])
+        self.assertEqual(0.01, result.mean_runtime)
+
+        result = FittingResult(
+            controller=controller,
+            runtimes=[1.00, 2.00, 3.00])
+        self.assertEqual(2.00, result.mean_runtime)
+
+        result = FittingResult(
+            controller=controller,
+            runtimes=[np.inf, 2.00, 3.00])
+        self.assertEqual(np.inf, result.mean_runtime)
+
+        result = FittingResult(
+            controller=controller,
+            runtimes=[np.inf, np.inf, np.inf])
+        self.assertEqual(np.inf, result.mean_runtime)
 
     def test_norm_acc_finite_min(self):
         """
         Test that sanitised names are correct when min_acc is finite.
         """
-        expected = self.acc / self.min_acc
+        expected = self.accuracy / self.min_accuracy
         self.assertEqual(self.result.norm_acc, expected)
 
     def test_norm_acc_infinite_min(self):
@@ -144,15 +191,15 @@ class FitbmResultTests(unittest.TestCase):
         Test that sanitised names are correct when min_acc is infinite.
         """
         expected = np.inf
-        self.result.acc = np.inf
-        self.result.min_acc = np.inf
+        self.result.accuracy = np.inf
+        self.result.min_accuracy = np.inf
         self.assertEqual(self.result.norm_acc, expected)
 
     def test_norm_runtime_finite_min(self):
         """
         Test that sanitised names are correct when min_runtime is finite.
         """
-        expected = self.runtime / self.min_runtime
+        expected = self.mean_runtime / self.min_runtime
         self.assertEqual(self.result.norm_runtime, expected)
 
     def test_norm_runtime_infinite_min(self):

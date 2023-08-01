@@ -25,7 +25,7 @@ ERROR_OPTIONS = {0: "Successfully converged",
                  6: "Solver has exceeded maximum allowed runtime",
                  7: "Validation of the provided options failed"}
 
-SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min"]
+SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min", 'emissions']
 
 
 def create_results_tables(options, results, best_results, group_dir, fig_dir,
@@ -82,28 +82,31 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                 del table_names[suffix]
                 continue
 
-            file_path = table.file_path
+            description.update(table.get_description())
 
-            description = table.get_description(description)
-
-            table_format = None if suffix == 'local_min' \
-                else description[options.comparison_mode]
+            if suffix == 'local_min':
+                table_format = description['local_min_mode']
+            else:
+                table_format = description[options.comparison_mode]
 
             root = os.path.dirname(getfile(fitbenchmarking))
             template_dir = os.path.join(root, 'templates')
+
             css = get_css(options, group_dir)
             js = get_js(options, group_dir)
+
             env = Environment(loader=FileSystemLoader(template_dir))
             template = env.get_template("table_template.html")
-            html_output_file = file_path + 'html'
-            csv_output_file = file_path + 'csv'
 
-            with open(csv_output_file, "w") as f:
+            run_name = f"{options.run_name}: " if options.run_name else ""
+
+            with open(f'{table.file_path}csv', "w") as f:
                 f.write(csv_table)
-            failed_minimzers = sum(list(unselected_minimzers.values()), [])
-            report_failed_min = failed_minimzers != []
 
-            with open(html_output_file, "w", encoding="utf-8") as f:
+            report_failed_min = \
+                any(minimizers for minimizers in unselected_minimzers.values())
+
+            with open(f'{table.file_path}html', "w", encoding="utf-8") as f:
                 f.write(
                     template.render(css_style_sheet=css['main'],
                                     custom_style=css['custom'],
@@ -121,6 +124,7 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                                     has_pp=table.has_pp,
                                     pp_filenames=table.pp_filenames,
                                     cbar=cbar,
+                                    run_name=run_name,
                                     error_message=ERROR_OPTIONS,
                                     failed_problems=failed_problems,
                                     unselected_minimzers=unselected_minimzers,

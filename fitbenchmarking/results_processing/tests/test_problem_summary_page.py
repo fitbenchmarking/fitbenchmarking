@@ -2,140 +2,36 @@
 Tests for the problem_summary_page python file.
 """
 
+import inspect
 import os
+import shutil
 from tempfile import TemporaryDirectory
 from unittest import TestCase, main
 
-import shutil
-import numpy as np
-
+from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
-    WeightedNLLSCostFunc
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.results_processing import problem_summary_page
-from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
-# pylint: disable=protected-access
 
-
-def fitting_function_1(data, x1, x2):
+def load_mock_results(additional_options=None):
     """
-    Fitting function evaluator
+    Load a predictable results set.
 
-    :param data: x data
-    :type data: numpy array
-    :param x1: fitting parameter
-    :type x1: float
-    :param x2: fitting parameter
-    :type x2: float
-
-    :return: y data values evaluated from the function of the problem
-    :rtype: numpy array
-    """
-    return x1 * np.sin(x2) * np.ones_like(data)
-
-
-def fitting_function_2(data, x1, x2):
-    """
-    Fitting function evaluator
-
-    :param data: x data
-    :type data: numpy array
-    :param x1: fitting parameter
-    :type x1: float
-    :param x2: fitting parameter
-    :type x2: float
-
-    :return: y data values evaluated from the function of the problem
-    :rtype: numpy array
-    """
-    return x1 * x2 * np.ones_like(data)
-
-
-def generate_mock_results(additional_options):
-    """
-    Generates results to test against
-
-    :return: list of results
-             and the options
-    :rtype: tuple(list of best results,
-                  list of list fitting results,
-                  Options object)
+    :param additional_options: Extra options to pass to options init
+    :type additional_options: dict
+    :return: Manually generated results
+    :rtype: list[FittingResult]
     """
     options = Options(additional_options=additional_options)
-    options.table_type = ['acc']
-    problems = [FittingProblem(options), FittingProblem(options)]
-    starting_values = [{"a": .3, "b": .11}, {"a": 0, "b": 0}]
-    data_x = np.array([[1, 4, 5], [2, 1, 5]])
-    data_y = np.array([[1, 2, 1], [2, 2, 2]])
-    data_e = np.array([[1, 1, 1], [1, 2, 1]])
-    func = [fitting_function_1, fitting_function_2]
-    for i, p in enumerate(problems):
-        p.data_x = data_x[i]
-        p.data_y = data_y[i]
-        p.data_e = data_e[i]
-        p.function = func[i]
-        p.name = f"prob_{i}"
-        p.starting_values = [starting_values[i]]
+    cp_dir = os.path.dirname(inspect.getfile(test_files))
+    options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
 
-    softwares = ['s1', 's2']
-    minimizers = [['s1m1', 's1m2'], ['s2m1', 's2m2']]
-    jacobians = [['j1', 'j2'] for _ in problems]
-    cost_funcs = [[NLLSCostFunc(p), WeightedNLLSCostFunc(p)]
-                  for p in problems]
+    cp = Checkpoint(options)
+    results, _, _ = cp.load()
 
-    # problem, cost fun, software, minimizer, jacobian
-    acc = [[[[[0.5, 0.3], [10]], [[0.6, 0.2], [0.7, 0.1]]],  # p1, cf1
-            [[[0.1, 0.9], [10]], [[0.2, 0.6], [0.8, 0.4]]]],  # p1, cf2
-           [[[[0.9, 0.5], [10]], [[0.1, 0.3], [0.2, 0.6]]],  # p2, cf1
-            [[[0.2, 0.1], [10]], [[0.5, 0.9], [0.4, 0.8]]]]]  # p2, cf2
-    runtime = [[[[[0.7, 0.1], [10]], [[0.7, 0.2], [0.3, 0.8]]],  # p1, cf1
-                [[[0.6, 0.9], [10]], [[0.2, 0.1], [0.8, 0.4]]]],  # p1, cf2
-               [[[[0.9, 0.5], [10]], [[0.1, 0.3], [0.2, 0.6]]],  # p2, cf1
-                [[[0.1, 0.8], [10]], [[0.5, 0.9], [0.4, 0.8]]]]]  # p2, cf2
-    params = [[[[[[0.1, 0.5], [0.1, 0.3]],  # p1, cf1, s1, m1
-                 [[10, 10]]],  # p1, cf1, s1, m2
-                [[[0.1, 0.6], [0.1, 0.2]],  # p1, cf1, s2, m1
-                 [[0.1, 0.7], [0.1, 0.1]]]],  # p1, cf1, s2, m2
-               [[[[0.1, 0.1], [0.1, 0.9]],  # p1, cf2, s1, m1
-                 [[10, 10]]],  # p1, cf2, s1, m2
-                [[[0.1, 0.2], [0.1, 0.6]],  # p1, cf2, s2, m1
-                 [[0.1, 0.8], [0.1, 0.4]]]]],  # p1, cf2, s2, m2
-              [[[[[0.1, 0.9], [0.1, 0.5]],  # p2, cf1, s1, m1
-                 [[10, 10]]],  # p2, cf1, s1, m2
-                [[[0.1, 0.1], [0.1, 0.3]],  # p2, cf1, s2, m1
-                 [[0.1, 0.2], [0.1, 0.6]]]],  # p2, cf1, s2, m2
-               [[[[0.1, 0.2], [0.1, 0.1]],  # p2, cf2, s1, m1
-                 [[10, 10]]],  # p2, cf2, s1, m2
-                [[[0.1, 0.5], [0.1, 0.9]],  # p2, cf2, s2, m1
-                 [[0.1, 0.4], [0.1, 0.8]]]]]]  # p2, cf2, s2, m2
-
-    results = []
-    for i, _ in enumerate(problems):
-        for j, cf in enumerate(cost_funcs[i]):
-            for k, software in enumerate(softwares):
-                for m, minim in enumerate(minimizers[k]):
-                    jacs = jacobians[i] if minim != 's1m2' else [None]
-                    for n, jac in enumerate(jacs):
-                        results.append(FittingResult(
-                            options=options,
-                            cost_func=cf,
-                            jac=jac,
-                            hess=None,
-                            initial_params=list(
-                                cf.problem.starting_values[0].values()),
-                            params=params[i][j][k][m][n],
-                            acc=acc[i][j][k][m][n],
-                            runtime=runtime[i][j][k][m][n],
-                            software=software,
-                            minimizer=minim,
-                            error_flag=None if jac is not None else 4
-                        ))
-
-    return results, options
+    return results['Fake_Test_Data'], options
 
 
 class CreateTests(TestCase):
@@ -152,7 +48,7 @@ class CreateTests(TestCase):
             self.supp_dir = os.path.join(self.temp_dir, 'support_pages')
             self.fig_dir = os.path.join(self.supp_dir, 'figures')
         os.makedirs(self.fig_dir)
-        results, self.options = generate_mock_results(
+        results, self.options = load_mock_results(
             {'results_dir': self.temp_dir})
         self.best_results, self.results = preprocess_data(results)
 
@@ -222,7 +118,7 @@ class CreateSummaryPageTests(TestCase):
             self.supp_dir = os.path.join(self.temp_dir, 'support_pages')
 
         os.makedirs(self.supp_dir)
-        results, self.options = generate_mock_results(
+        results, self.options = load_mock_results(
             {'results_dir': self.temp_dir})
 
         best_results, results = preprocess_data(results)
@@ -231,6 +127,7 @@ class CreateSummaryPageTests(TestCase):
         self.best_results = best_results[self.prob_name]
         cat_results = [(cf, r, 'Some text')
                        for cf, r in self.best_results.items()]
+        # pylint: disable=protected-access
         problem_summary_page._create_summary_page(
             categorised_best_results=cat_results,
             summary_plot_path='plot_path',
@@ -266,20 +163,8 @@ class GetFigurePathsTests(TestCase):
     """
 
     def setUp(self):
-        self.options = Options()
-        problem = FittingProblem(self.options)
-        problem.name = 'prob a'
-        problem.equation = 'equation!'
-        problem.starting_values = [{'x': 1}]
-        cost_func = NLLSCostFunc(problem)
-        jac = 'j1'
-        self.result = FittingResult(options=self.options,
-                                    cost_func=cost_func,
-                                    jac=jac,
-                                    hess=None,
-                                    initial_params=[],
-                                    params=[],
-                                    minimizer='test')
+        results, self.options = load_mock_results()
+        self.result = results[0]
 
     def test_with_links(self):
         """

@@ -204,13 +204,14 @@ def setup_options(override_software: list = None,
     opts = Options()
     opts.num_runs = 1
     opts.make_plots = False
+    opts.table_type = ['acc', 'runtime', 'compare', 'local_min']
 
     # The software to test for the different test types.
     # - 'dfo' and 'minuit' are included but are unstable for other datasets.
     # - 'gradient_free' and 'scipy_go' are left out as they require bounds.
     software = {"all": ["bumps", "dfo", "ceres", "gofit", "gsl", "levmar",
-                        "lmfit", "mantid", "minuit", "ralfit", "scipy",
-                        "scipy_ls", "theseus"],
+                        "lmfit", "mantid", "minuit", "nlopt", "ralfit",
+                        "scipy", "scipy_ls", "theseus"],
                 "default": ["bumps", "scipy", "scipy_ls"],
                 "matlab": ["horace", "matlab", "matlab_curve", "matlab_opt",
                            "matlab_stats"]}
@@ -230,6 +231,7 @@ def setup_options(override_software: list = None,
                   "matlab_opt": "levenberg-marquardt",
                   "matlab_stats": "Levenberg-Marquardt",
                   "minuit": "migrad",
+                  "nlopt": "LD_VAR1",
                   "ralfit": "gn",
                   "scipy": "Nelder-Mead",
                   "scipy_ls": "lm-scipy",

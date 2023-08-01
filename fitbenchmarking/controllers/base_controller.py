@@ -233,7 +233,8 @@ class Controller:
                  given parameters
         :rtype: numpy array
         """
-        out = self.cost_func.eval_cost(params=params, x=x, y=y, e=e)
+        kwargs = {k: v for k, v in zip('xye', [x, y, e]) if v is not None}
+        out = self.cost_func.eval_cost(params=params, **kwargs)
         return out
     
     def eval_confidence(self):

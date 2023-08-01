@@ -12,7 +12,7 @@
     <script id="MathJax-script" async src="{{ mathjax }}"></script>
     <script type="text/javascript" src="{{ table_js }}"></script>
     <head>
-        <title>Fitbenchmark Results Table</title>
+        <title>{{ run_name }}Fitbenchmark Results Table</title>
     </head>
     <body>
         <div class="box">
@@ -107,8 +107,8 @@
                                     {% endfor %}
                                 </ol>
                                 <p>
-                                    This is likely due to the `algorithm_type` set in the options. Please review current options setup and re-run
-                                    FitBenchmarking.
+                                    This could be due to incompatible problem-cost function combinations or the `algorithm_type` set in the options.
+                                    Please review the logs and current options setup and re-run FitBenchmarking to see comparisons for these problems.
                                 </p>
                             {% endif %}
                             <h3>Errors</h3>

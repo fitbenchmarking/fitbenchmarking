@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="{{ table_style }}" />
     <link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
     <head>
-        <title>FitBenchmarking Fitting Report</title>
+        <title>{{ run_name }}FitBenchmarking Fitting Report</title>
     </head>
     <body>
         <div class="wrapper">
@@ -63,6 +63,7 @@
                     <p><em>Minimizer</em>: {{ minimizer }}</p>
                     <p><em>Accuracy</em>: {{ accuracy }}</p>
                     <p><em>Runtime</em>: {{ runtime }} seconds</p>
+                    <p><em>Emissions</em>: {{ emissions }} kg CO<sub>2</sub>eq</p>
                     <p><em>Functions</em>:</p>
                     <table>
                         <colgroup>

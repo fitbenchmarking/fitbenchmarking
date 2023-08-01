@@ -16,7 +16,8 @@ setup(
     python_requires='>=3.7.1',
     entry_points={
         "console_scripts": [
-            'fitbenchmarking = fitbenchmarking.cli.main:main'
+            'fitbenchmarking = fitbenchmarking.cli.main:main',
+            'fitbenchmarking-cp = fitbenchmarking.cli.checkpoint_handler:main'
         ]
     },
     packages=find_packages(exclude=('*mock*', '*test*')),
@@ -28,7 +29,8 @@ setup(
                       'lxml',
                       'pandas>=1.3',
                       'jinja2',
-                      'configparser'],
+                      'configparser',
+                      'codecarbon<2.2.4'],
     extras_require={'DFO': ['DFO-LS', 'dfogn'],
                     'SAS': ['sasmodels',
                             'tinycc;platform_system==\'Windows\''],
@@ -39,6 +41,7 @@ setup(
                     'lmfit': ['lmfit', 'emcee>=3.1.0'],
                     'mantid': ['h5py>=2.10.0,<3', 'pyyaml>=5.4.1'],
                     'matlab': ['dill'],
+                    'nlopt': ['nlopt'],
                     'gofit': ['gofit'],
                     'gradient_free': ['gradient-free-optimizers']},
     zip_safe=False,
