@@ -126,7 +126,7 @@ class Plot:
                 if not df[df["minimizer"] == minimizer]["best"].any():
                     # add the best plot
                     name = 'Best Fit (' + \
-                        f'{df[df["best"]]["minimizer"].unique()})'
+                        f'{df[df["best"]]["minimizer"]})'
                     fig.add_trace(
                         go.Scatter(x=x_best,
                                    y=y_best,
@@ -239,9 +239,5 @@ class Plot:
                     plotlyfig.update_yaxes(type="log")
 
         html_fname = f'summary_plot_for_{first_result.sanitised_name}.html'
-        offline_plot(
-            plotlyfig,
-            filename=os.path.join(figures_dir, html_fname),
-            auto_open=False
-        )
+        plotlyfig.write_html(html_fname)
         return html_fname
