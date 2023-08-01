@@ -340,7 +340,7 @@ def _find_tag_to_rename(all_result_tags,
 
         # Four types of tags for software and minimizer
         # Update jacobian, hessian or both tags
-        elif len(tags) == 4:
+        else:
 
             for tag in tags:
 
