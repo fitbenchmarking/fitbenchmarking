@@ -225,11 +225,6 @@ def _handle_fallback_tags(results,
     """
     column_rename = "best_avaliable"
 
-    # Find column tags and count for each tag
-    column_summary = {}
-    for tag in all_result_tags:
-        column_summary[tag['col']] = 1 + column_summary.get(tag['col'], 0)
-
     # Find software and minimizer tags
     # Find col tags with each sm_tag
     sm_summary = {}
