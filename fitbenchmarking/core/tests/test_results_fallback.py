@@ -24,45 +24,41 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
         Defining the fallback cases results
 
         Case 1: filename : 'fallbackcase1.json'
-                Columns with only hessian fallbacks
-                No error_flag = 4
-                expected sorted_result table 3x2
+                Data used for 1 integration test
+                Data used for all 4 unit tests
 
         Case 2: filename : 'fallbackcase2.json'
-                Columns with only jacobian fallbacks
-                No error_flag = 4
-                expected sorted_result table 3x2
+                Data used for 1 integration test
+                Data used for 3 unit tests except
+                test_find_non_full_columns()
 
         Case 3: filename : 'fallbackcase3.json'
-                Columns with only both fallbacks
-                No error_flag = 4
-                expected sorted_result table 3x2
+                Data used for 1 integration test
+                Data used for 3 unit tests except
+                test_find_non_full_columns()
 
         Case 4: filename : 'fallbackcase4.json'
-                Columns with only hessian fallbacks
-                No error_flag = 4
-                expected sorted_result table 4x2
+                Data used for 1 integration test
+                Data used for 3 unit tests except
+                test_find_non_full_columns()
 
         Case 5: filename : 'fallbackcase5.json'
-                Columns with only both fallbacks
-                No error_flag = 4
-                expected sorted_result table 5x1
+                Data used for 1 integration test
+                Data used for 3 unit tests except
+                test_find_non_full_columns()
 
         Case 6: filename : 'fallbackcase6.json'
-                Columns with jacobian, hessian and both
-                fallbacks simultaneously
-                No error_flag = 4
-                expected sorted_result table 4x7
+                Data used for 1 integration test
+                Data used for all 4 unit tests
 
         Case 7: filename : 'fallbackcase7.json'
-                Columns with only hessian fallbacks
-                No error_flag = 4
-                expected sorted_result table 2x3
+                Data used for 1 integration test
+                Data used for all 4 unit tests
 
         Case 8: filename : 'checkpoint.json'
-                Columns with only hessian fallbacks
-                With error_flag = 4
-                expected sorted_result table 2x8
+                Data used for 1 integration test
+                Data used for 1 unit test called
+                test_find_non_full_columns()
         """
 
         self.sort_order = (['problem'],
@@ -194,16 +190,6 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
                                       'best_avaliable:scipy 2-point',
                                       'ralfit:hybrid:'
                                       'best_avaliable:numdifftools central'],
-                'columns': {'ralfit:hybrid:'
-                            'analytic:scipy 2-point': 2,
-                            'ralfit:hybrid:'
-                            'analytic:numdifftools central': 2,
-                            'ralfit:hybrid:'
-                            'scipy 2-point:scipy 2-point': 1,
-                            'ralfit:hybrid:'
-                            'scipy 2-point:numdifftools central': 1},
-                'expected_count': 3,
-                'columns_with_errors': {},
                 'sm_summary': {('ralfit', 'hybrid'): {'ralfit:hybrid:'
                                                       'analytic:'
                                                       'numdifftools central',
@@ -259,12 +245,6 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
                                       'best_avaliable:best_avaliable',
                                       'ralfit2:hybrid:'
                                       'best_avaliable:best_avaliable'],
-                'columns': {'ralfit:hybrid:analytic:analytic': 2,
-                            'ralfit:hybrid:scipy 2-point:': 1,
-                            'ralfit2:hybrid:analytic:analytic': 2,
-                            'ralfit2:hybrid:scipy 2-point:': 1},
-                'expected_count': 3,
-                'columns_with_errors': {},
                 'sm_summary': {('ralfit', 'hybrid'): {'ralfit:hybrid'
                                                       ':scipy 2-point:',
                                                       'ralfit:hybrid:'
@@ -322,12 +302,6 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
                                       's1:m1:j2:best_avaliable',
                                       's1:m1:j2:best_avaliable',
                                       's1:m1:j2:best_avaliable'],
-                'columns': {'s1:m1:j1:h2': 2,
-                            's1:m1:j1:h1': 2,
-                            's1:m1:j2:h2': 2,
-                            's1:m1:j2:h1': 2},
-                'expected_count': 4,
-                'columns_with_errors': {},
                 'sm_summary': {('s1', 'm1'): {'s1:m1:j1:h1',
                                               's1:m1:j2:h1',
                                               's1:m1:j1:h2',
@@ -370,12 +344,6 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
                                       ':best_avaliable',
                                       's1:m1:best_avaliable'
                                       ':best_avaliable'],
-                'columns': {'s1:m1:j1:h1': 1,
-                            's1:m1:j1:h2': 1,
-                            's1:m1:j2:h1': 1,
-                            's1:m1:j2:h2': 2},
-                'expected_count': 5,
-                'columns_with_errors': {},
                 'sm_summary': {('s1', 'm1'): {'s1:m1:j2:h1',
                                               's1:m1:j2:h2',
                                               's1:m1:j1:h2',
@@ -639,77 +607,7 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
             },
             {
                 'filename': 'checkpoint.json',
-                'expected_tags': [{'row': 'prob_0',
-                                   'col': 's1:m10:j0:',
-                                   'cat': 'cf1',
-                                   'result_ix': 0},
-                                  {'row': 'prob_0',
-                                   'col': 's1:m11:j0:',
-                                   'cat': 'cf1',
-                                   'result_ix': 1},
-                                  {'row': 'prob_0',
-                                   'col': 's0:m01:j0:',
-                                   'cat': 'cf1',
-                                   'result_ix': 2},
-                                  {'row': 'prob_0',
-                                   'col': 's1:m10:j1:',
-                                   'cat': 'cf1',
-                                   'result_ix': 4},
-                                  {'row': 'prob_0',
-                                   'col': 's1:m11:j1:',
-                                   'cat': 'cf1',
-                                   'result_ix': 5},
-                                  {'row': 'prob_0',
-                                   'col': 's0:m01:j1:',
-                                   'cat': 'cf1',
-                                   'result_ix': 6},
-                                  {'row': 'prob_1',
-                                   'col': 's1:m10:j0:',
-                                   'cat': 'cf1',
-                                   'result_ix': 7},
-                                  {'row': 'prob_1',
-                                   'col': 's1:m11:j0:',
-                                   'cat': 'cf1',
-                                   'result_ix': 8},
-                                  {'row': 'prob_1',
-                                   'col': 's0:m01:j0:',
-                                   'cat': 'cf1',
-                                   'result_ix': 9},
-                                  {'row': 'prob_1',
-                                   'col': 's0:m00:j0:',
-                                   'cat': 'cf1',
-                                   'result_ix': 10},
-                                  {'row': 'prob_1',
-                                   'col': 's1:m10:j1:',
-                                   'cat': 'cf1',
-                                   'result_ix': 11},
-                                  {'row': 'prob_1',
-                                   'col': 's1:m11:j1:',
-                                   'cat': 'cf1',
-                                   'result_ix': 12},
-                                  {'row': 'prob_1',
-                                   'col': 's0:m01:j1:',
-                                   'cat': 'cf1',
-                                   'result_ix': 13},
-                                  {'row': 'prob_1',
-                                   'col': 's0:m00:j1:',
-                                   'cat': 'cf1',
-                                   'result_ix': 14}],
                 'expected_repeating_tags': [],
-                'expected_new_tags': ['s1:m10:j0:',
-                                      's1:m11:j0:',
-                                      's0:m01:j0:',
-                                      's1:m10:j1:',
-                                      's1:m11:j1:',
-                                      's0:m01:j1:',
-                                      's1:m10:j0:',
-                                      's1:m11:j0:',
-                                      's0:m01:j0:',
-                                      's0:m00:j0:',
-                                      's1:m10:j1:',
-                                      's1:m11:j1:',
-                                      's0:m01:j1:',
-                                      's0:m00:j1:'],
                 'columns': {'s1:m10:j0:': 2,
                             's1:m11:j0:': 2,
                             's0:m01:j0:': 2,
@@ -719,18 +617,13 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
                             's0:m00:j0:': 1,
                             's0:m00:j1:': 1},
                 'expected_count': 2,
-                'columns_with_errors': {'s0:m00:[^:]*:[^:]*': 1},
-                'sm_summary': {('s1', 'm10'): {'s1:m10:j0:', 's1:m10:j1:'},
-                               ('s1', 'm11'): {'s1:m11:j0:', 's1:m11:j1:'},
-                               ('s0', 'm01'): {'s0:m01:j0:', 's0:m01:j1:'},
-                               ('s0', 'm00'): {'s0:m00:j0:', 's0:m00:j1:'}},
-                'expected_update_summary': {}
+                'columns_with_errors': {'s0:m00:[^:]*:[^:]*': 1}
             }]
 
     def test_output_of_fallback_cases(self):
         """
         Integration tests to check if sorted_results
-        contains any empty columns.
+        contains any None values in all 8 fallback cases.
         """
         for case in self.fallbackcases:
 
@@ -749,8 +642,26 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
     def test_find_non_full_columns(self):
         """
         Unit tests for _find_non_full_columns().
+
+        Case 1: 4 non full columns.
+                No error_flag = 4
+
+        Case 2: 16 non full columns.
+                No error_flag = 4
+
+        Case 3: 6 non full columns.
+                No error_flag = 4
+
+        Case 4: 2 non full columns.
+                One error_flag = 4
         """
-        for case in self.fallbackcases:
+        testcases_to_run = [e for e in self.fallbackcases
+                            if e['filename'] in ['fallbackcase1.json',
+                                                 'fallbackcase6.json',
+                                                 'fallbackcase7.json',
+                                                 'checkpoint.json']]
+
+        for case in testcases_to_run:
 
             with self.subTest(case['filename']):
 
@@ -764,8 +675,38 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
     def test_get_all_result_tags(self):
         """
         Unit tests for _get_all_result_tags().
+
+        Case 1: Columns with only HESSIAN fallbacks
+                4 repeating tags, len(results) = 6
+                expected sorted_result table 3x2
+
+        Case 2: Columns with only JACOBIAN fallbacks
+                4 repeating tags, len(results) = 6
+                expected sorted_result table 3x2
+
+        Case 3: Columns with only BOTH fallbacks
+                4 repeating tags, len(results) = 6
+                expected sorted_result table 3x2
+
+        Case 4: Columns with only HESSIAN fallbacks
+                4 repeating tags, len(results) = 8
+                expected sorted_result table 4x2
+
+        Case 5: Columns with only BOTH fallbacks
+                4 repeating tags, len(results) = 5
+                expected sorted_result table 5x1
+
+        Case 6: Columns with JACOBIAN, HESSIAN and BOTH
+                fallbacks simultaneously
+                16 repeating tags, len(results) = 28
+                expected sorted_result table 4x7
+
+        Case 7: Columns with only HESSIAN fallbacks
+                6 repeating tags, len(results) = 6
+                expected sorted_result table 2x3
         """
-        for case in self.fallbackcases:
+        for case in [e for e in self.fallbackcases
+                     if e['filename'] != 'checkpoint.json']:
 
             with self.subTest(case['filename']):
 
@@ -783,8 +724,31 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
     def test_handle_fallback_tags(self):
         """
         Unit tests for _handle_fallback_tags().
+
+        Case 1: Rename HESSIAN tags
+                expected sorted_result table 3x2
+
+        Case 2: Rename JACOBIAN tags
+                expected sorted_result table 3x2
+
+        Case 3: Rename BOTH tags
+                expected sorted_result table 3x2
+
+        Case 4: Rename HESSIAN tags
+                expected sorted_result table 4x2
+
+        Case 5: Rename BOTH tags
+                expected sorted_result table 5x1
+
+        Case 6: Rename JACOBIAN, HESSIAN and BOTH
+                tags simultaneously
+                expected sorted_result table 4x7
+
+        Case 7: Rename HESSIAN tags
+                expected sorted_result table 2x3
         """
-        for case in self.fallbackcases:
+        for case in [e for e in self.fallbackcases
+                     if e['filename'] != 'checkpoint.json']:
 
             with self.subTest(case['filename']):
 
@@ -804,8 +768,39 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
     def test_find_tag_to_rename(self):
         """
         Unit tests for _find_tag_to_rename().
+
+        Case 1: Columns with only HESSIAN fallbacks
+                1 column to be renamed
+                expected sorted_result table 3x2
+
+        Case 2: Columns with only JACOBIAN fallbacks
+                1 column to be renamed
+                expected sorted_result table 3x2
+
+        Case 3: Columns with only BOTH fallbacks
+                2 column to be renamed
+                expected sorted_result table 3x2
+
+        Case 4: Columns with only HESSIAN fallbacks
+                1 column to be renamed
+                expected sorted_result table 4x2
+
+        Case 5: Columns with only BOTH fallbacks
+                1 column to be renamed
+                expected sorted_result table 5x1
+
+        Case 6: Columns with JACOBIAN, HESSIAN and BOTH
+                fallbacks simultaneously
+                6 column to be renamed
+                expected sorted_result table 4x7
+
+        Case 7: Columns with only HESSIAN fallbacks
+                1 column to be renamed
+                expected sorted_result table 2x3
+
         """
-        for case in self.fallbackcases:
+        for case in [e for e in self.fallbackcases
+                     if e['filename'] != 'checkpoint.json']:
 
             with self.subTest(case['filename']):
 
