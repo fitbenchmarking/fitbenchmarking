@@ -118,8 +118,8 @@ class Plot:
         x_best = df[df["best"]]["x"].to_list()
         y_best = df[df["best"]]["y"].to_list()
         x_data = df[df["minimizer"] == 'Data']["x"].to_list()
-        y_data = df[df["minimizer"] == 'Data']["y"].to_list(),
-        
+        y_data = df[df["minimizer"] == 'Data']["y"].to_list()
+
         for minimizer in df['minimizer'].unique():
             if minimizer not in ["Data", "Starting Guess"]:
                 fig = px.line(df[df["minimizer"] == minimizer],
