@@ -522,9 +522,9 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
             if minimizer_check and cost_func.hessian is not None:
                 cost_func.hessian.method = num_method
                 hess_name = cost_func.hessian.name()
-                LOGGER.info("                   Hessian: %s",
-                            hess_name if 'hess_name' in locals()
-                            else 'default')
+            LOGGER.info("                   Hessian: %s",
+                        hess_name if 'hess_name' in locals()
+                        else 'default')
 
             # Perform the fit a number of times specified by num_runs
             accuracy, runtimes, emissions = perform_fit(
