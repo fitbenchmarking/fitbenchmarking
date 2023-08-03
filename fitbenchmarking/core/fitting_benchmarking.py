@@ -448,11 +448,6 @@ def loop_over_jacobians(controller, options, grabbed_output, checkpointer):
             for num_method in options.jac_num_method[jac_method]:
                 jacobian.method = num_method
                 cost_func.jacobian = jacobian
-                if minimizer_check:
-                    LOGGER.info(
-                        "                Jacobian: %s",
-                        jacobian.name() if jacobian.name() else "default"
-                    )
 
                 #######################
                 # Loops over Hessians #
@@ -468,6 +463,12 @@ def loop_over_jacobians(controller, options, grabbed_output, checkpointer):
                 # Jacobians
                 if not minimizer_check:
                     raise StopIteration
+
+                LOGGER.info(
+                        "                Jacobian: %s",
+                        jacobian.name() if jacobian.name() else "default"
+                    )
+
     except StopIteration:
         pass
 
@@ -519,12 +520,6 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
             cost_func.hessian = None
 
         for num_method in options.hes_num_method[hes_method]:
-            if minimizer_check and cost_func.hessian is not None:
-                cost_func.hessian.method = num_method
-                hess_name = cost_func.hessian.name()
-            LOGGER.info("                   Hessian: %s",
-                        hess_name if 'hess_name' in locals()
-                        else 'default')
 
             # Perform the fit a number of times specified by num_runs
             accuracy, runtimes, emissions = perform_fit(
@@ -551,6 +546,13 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
             # Hessians
             if not minimizer_check:
                 break
+
+            if cost_func.hessian is not None:
+                cost_func.hessian.method = num_method
+                hess_name = cost_func.hessian.name()
+            LOGGER.info("                   Hessian: %s",
+                        hess_name if 'hess_name' in locals()
+                        else 'default')
 
     return new_result
 
