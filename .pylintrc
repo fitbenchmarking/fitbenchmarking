@@ -63,3 +63,6 @@ max-statements=60
 
 # Certain functions require more arguments due to design
 max-args=10
+
+# Maximum number of branches for function / method body
+max-branches=14
