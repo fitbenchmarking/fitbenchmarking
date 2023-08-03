@@ -282,7 +282,7 @@ def _find_tag_to_rename(all_result_tags,
     :type all_result_tag: list[dict[str, str]]
     :param sm_summary: The col tags organized by software
                        and minimizer tags
-    :type sm_summary: dict[list[str]]
+    :type sm_summary: tuple[str, str]
     :param col_order: The sort order of the col tags
     :type col_order: list[str]
     :param fallback_columns: The col tag of the fallback columns
@@ -428,12 +428,12 @@ def _find_non_full_columns(columns, expected_count, columns_with_errors):
     of rows.
 
     :param columns: The dict of column tags and their count
-    :type columns: dict[str, str]
+    :type columns: dict[str, int]
     :param expected_count: The expected results count for each
                            minimizer
     :type expected_count: int
     :param columns_with_errors: The column tags with errors
-    :type expected_count: dict[str, str]
+    :type columns_with_errors: dict[str, int]
 
     :return: a list of the fallback column tags
     :rtype: list[str]
