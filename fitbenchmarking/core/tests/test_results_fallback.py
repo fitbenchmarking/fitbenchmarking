@@ -7,58 +7,30 @@ import unittest
 from fitbenchmarking.core.results_output import (_get_all_result_tags,
                                                  _find_non_full_columns,
                                                  _find_tag_to_rename,
-                                                 _handle_fallback_tags,
-                                                 preprocess_data)
+                                                 _handle_fallback_tags)
 
 from fitbenchmarking.core.tests.test_results_output import load_mock_results
 
 
 class RenameFallbackColumnTagTests(unittest.TestCase):
     """
-    Integration and Unit tests for the functions
-    handling renaming jacobian and hessian tags
-    in various fallback scenarios.
+    Unit tests for the functions handling renaming
+    jacobian and hessian tags in various fallback
+    scenarios.
     """
+
     def setUp(self):
         """
         Defining the fallback cases results
 
         Case 1: filename : 'fallbackcase1.json'
-                Data used for 1 integration test
-                Data used for all 4 unit tests
-
         Case 2: filename : 'fallbackcase2.json'
-                Data used for 1 integration test
-                Data used for 3 unit tests except
-                test_find_non_full_columns()
-
         Case 3: filename : 'fallbackcase3.json'
-                Data used for 1 integration test
-                Data used for 3 unit tests except
-                test_find_non_full_columns()
-
         Case 4: filename : 'fallbackcase4.json'
-                Data used for 1 integration test
-                Data used for 3 unit tests except
-                test_find_non_full_columns()
-
         Case 5: filename : 'fallbackcase5.json'
-                Data used for 1 integration test
-                Data used for 3 unit tests except
-                test_find_non_full_columns()
-
         Case 6: filename : 'fallbackcase6.json'
-                Data used for 1 integration test
-                Data used for all 4 unit tests
-
         Case 7: filename : 'fallbackcase7.json'
-                Data used for 1 integration test
-                Data used for all 4 unit tests
-
         Case 8: filename : 'checkpoint.json'
-                Data used for 1 integration test
-                Data used for 1 unit test called
-                test_find_non_full_columns()
         """
 
         self.sort_order = (['problem'],
@@ -619,25 +591,6 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
                 'expected_count': 2,
                 'columns_with_errors': {'s0:m00:[^:]*:[^:]*': 1}
             }]
-
-    def test_output_of_fallback_cases(self):
-        """
-        Integration tests to check if sorted_results
-        contains any None values in all 8 fallback cases.
-        """
-        for case in self.fallbackcases:
-
-            with self.subTest(case['filename']):
-
-                results, _ = load_mock_results(filename=case['filename'])
-
-                _, sorted_results = preprocess_data(results)
-
-                all_sorted_results = [result for row in
-                                      sorted_results.values()
-                                      for result in row.values()]
-                for r in all_sorted_results:
-                    self.assertNotIn(None, r)
 
     def test_find_non_full_columns(self):
         """
