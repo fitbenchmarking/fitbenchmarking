@@ -440,11 +440,9 @@ def _find_non_full_columns(columns, expected_count, columns_with_errors):
     """
 
     # If columns with errors exist
-    if columns_with_errors:
-
-        for error_tag in columns_with_errors:
-            for tag in _find_matching_tags(error_tag, list(columns)):
-                columns[tag] += columns_with_errors[error_tag]
+    for error_tag, count in columns_with_errors.items():
+        for tag in _find_matching_tags(error_tag, list(columns)):
+            columns[tag] += count
 
     # Save the fallback columns
     fallback_column_tags = [tag for tag in columns
