@@ -579,6 +579,62 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
             },
             {
                 'filename': 'checkpoint.json',
+                'expected_tags': [{'row': 'prob_0',
+                                   'col': 's1:m10:j0:',
+                                   'cat': 'cf1',
+                                   'result_ix': 0},
+                                  {'row': 'prob_0',
+                                   'col': 's1:m11:j0:',
+                                   'cat': 'cf1',
+                                   'result_ix': 1},
+                                  {'row': 'prob_0',
+                                   'col': 's0:m01:j0:',
+                                   'cat': 'cf1',
+                                   'result_ix': 2},
+                                  {'row': 'prob_0',
+                                   'col': 's1:m10:j1:',
+                                   'cat': 'cf1',
+                                   'result_ix': 4},
+                                  {'row': 'prob_0',
+                                   'col': 's1:m11:j1:',
+                                   'cat': 'cf1',
+                                   'result_ix': 5},
+                                  {'row': 'prob_0',
+                                   'col': 's0:m01:j1:',
+                                   'cat': 'cf1',
+                                   'result_ix': 6},
+                                  {'row': 'prob_1',
+                                   'col': 's1:m10:j0:',
+                                   'cat': 'cf1',
+                                   'result_ix': 7},
+                                  {'row': 'prob_1',
+                                   'col': 's1:m11:j0:',
+                                   'cat': 'cf1',
+                                   'result_ix': 8},
+                                  {'row': 'prob_1',
+                                   'col': 's0:m01:j0:',
+                                   'cat': 'cf1',
+                                   'result_ix': 9},
+                                  {'row': 'prob_1',
+                                   'col': 's0:m00:j0:',
+                                   'cat': 'cf1',
+                                   'result_ix': 10},
+                                  {'row': 'prob_1',
+                                   'col': 's1:m10:j1:',
+                                   'cat': 'cf1',
+                                   'result_ix': 11},
+                                  {'row': 'prob_1',
+                                   'col': 's1:m11:j1:',
+                                   'cat': 'cf1',
+                                   'result_ix': 12},
+                                  {'row': 'prob_1',
+                                   'col': 's0:m01:j1:',
+                                   'cat': 'cf1',
+                                   'result_ix': 13},
+                                  {'row': 'prob_1',
+                                   'col': 's0:m00:j1:',
+                                   'cat': 'cf1',
+                                   'result_ix': 14}],
                 'expected_repeating_tags': [],
                 'columns': {'s1:m10:j0:': 2,
                             's1:m11:j0:': 2,
@@ -597,13 +653,10 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
         Unit tests for _find_non_full_columns().
 
         Case 1: 4 non full columns.
-                No error_flag = 4
 
         Case 2: 16 non full columns.
-                No error_flag = 4
 
         Case 3: 6 non full columns.
-                No error_flag = 4
 
         Case 4: 2 non full columns.
                 One error_flag = 4
@@ -657,9 +710,12 @@ class RenameFallbackColumnTagTests(unittest.TestCase):
         Case 7: Columns with only HESSIAN fallbacks
                 6 repeating tags, len(results) = 6
                 expected sorted_result table 2x3
+
+        Case 8: Columns with NO fallbacks
+                0 repeating tags, len(results) = 15
+                expected sorted_result table 2x8
         """
-        for case in [e for e in self.fallbackcases
-                     if e['filename'] != 'checkpoint.json']:
+        for case in self.fallbackcases:
 
             with self.subTest(case['filename']):
 
