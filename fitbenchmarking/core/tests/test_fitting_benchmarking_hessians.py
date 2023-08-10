@@ -117,12 +117,14 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
         self.cp = Checkpoint(self.options)
+        self.options.table_type = ['acc', 'runtime', 'compare', 'local_min']
 
     def tearDown(self) -> None:
         """
         Clean up after the test
         """
-        rmtree(self.options.results_dir)
+        if os.path.isdir(self.options.results_dir):
+            rmtree(self.options.results_dir)
 
     def test_single_hessian(self):
         """
@@ -181,6 +183,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         cost_func.problem.timer.total_elapsed_time = 5
         controller = DummyController(cost_func=cost_func)
         options = cost_func.problem.options
+        options.table_type = ['acc', 'runtime', 'compare', 'local_min']
         grabbed_output = output_grabber.OutputGrabber(options)
         controller.parameter_set = 0
 
@@ -203,10 +206,13 @@ class LoopOverHessiansTests(unittest.TestCase):
         cost_func.jacobian.method = '2-point'
         controller = DummyController(cost_func=cost_func)
         options = problem.options
+        options.table_type = ['acc', 'runtime', 'compare', 'local_min']
         grabbed_output = output_grabber.OutputGrabber(options)
         controller.final_params = [[0.1, 0.1], [0.1, 0.1]]
         controller.parameter_set = 0
-        perform_fit.return_value = ([0.1, 0.2], [0.1, 0.01])
+        perform_fit.return_value = ([0.1, 0.2],
+                                    [0.1, 0.01],
+                                    [10e-3, 10e-4])
         results = loop_over_hessians(controller=controller,
                                      options=options,
                                      grabbed_output=grabbed_output,

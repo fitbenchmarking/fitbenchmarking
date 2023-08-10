@@ -245,8 +245,9 @@ def _process_best_results(results: 'List[FittingResult]') -> 'FittingResult':
     Process the best result from a list of FittingResults.
     This includes:
      - Setting the `is_best_fit` flag,
-     - Setting the `min_accuracy` value, and
-     - Setting the `min_runtime` value.
+     - Setting the `min_accuracy` value,
+     - Setting the `min_runtime` value, and
+     - Setting the `min_emissions` value
 
     :param results: The results to compare and update
     :type results: List[FittingResult]
@@ -256,17 +257,21 @@ def _process_best_results(results: 'List[FittingResult]') -> 'FittingResult':
     """
     best = results[0]
     fastest = results[0]
+    lowest = results[0]
     for result in results[1:]:
         if best.accuracy > result.accuracy:
             best = result
-        if fastest.runtime > result.runtime:
+        if fastest.mean_runtime > result.mean_runtime:
             fastest = result
+        if lowest.emissions > result.emissions:
+            lowest = result
 
     best.is_best_fit = True
 
     for result in results:
         result.min_accuracy = best.accuracy
-        result.min_runtime = fastest.runtime
+        result.min_runtime = fastest.mean_runtime
+        result.min_emissions = lowest.emissions
 
     return best
 

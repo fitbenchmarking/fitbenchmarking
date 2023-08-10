@@ -78,7 +78,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         controller.parameter_set = 0
         self.result_args = {'controller': controller,
                             'accuracy': 1,
-                            'runtime': 1}
+                            'runtimes': [1]}
         self.cp = Checkpoint(self.options)
 
     def mock_func_call(self, *args, **kwargs):
