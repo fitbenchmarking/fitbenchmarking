@@ -65,8 +65,8 @@ class Plot:
                       markers=True)
         # add the raw data as a scatter plot
         fig.add_trace(go.Scatter(
-            x=df[df["minimizer"] == 'Data']["x"].to_list(),
-            y=df[df["minimizer"] == 'Data']["y"].to_list(),
+            x=df["x"][df["minimizer"] == 'Data'],
+            y=df["y"][df["minimizer"] == 'Data'],
             mode='markers',
             name='Data',
             marker=self.data_marker))
@@ -116,10 +116,10 @@ class Plot:
         """
         # Plotly implementation below
         htmlfiles = {}
-        x_best = df[df["best"]]["x"].to_list()
-        y_best = df[df["best"]]["y"].to_list()
-        x_data = df[df["minimizer"] == 'Data']["x"].to_list()
-        y_data = df[df["minimizer"] == 'Data']["y"].to_list()
+        x_best = df["x"][df["best"]]
+        y_best = df["y"][df["best"]]
+        x_data = df["x"][df["minimizer"] == 'Data']
+        y_data = df["y"][df["minimizer"] == 'Data']
 
         for minimizer in df['minimizer'].unique():
             if minimizer not in ["Data", "Starting Guess"]:
@@ -129,10 +129,10 @@ class Plot:
                               color="minimizer",
                               title=self.result.name,
                               markers=True)
-                if not df[df["minimizer"] == minimizer]["best"].any():
+                if not df["best"][df["minimizer"] == minimizer].iloc[0]:
                     # add the best plot
                     name = 'Best Fit (' + \
-                        f'{df[df["best"]]["minimizer"].unique()[0]})'
+                        f'{df["minimizer"][df["best"]].iloc[0]})'
                     fig.add_trace(
                         go.Scatter(x=x_best,
                                    y=y_best,

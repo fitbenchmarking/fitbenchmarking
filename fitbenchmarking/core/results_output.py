@@ -316,37 +316,36 @@ def create_plots(options, results, best_results, figures_dir):
         initial_guess_path = {}
         df = {}
 
-        # Create a dataframe for each result
+        # Create a dataframe for each problem
+        # Rows are datapoints in the fits
         for cf, cat_results in prob_result.items():
             # first, load with raw data
-            datatype = {'x': cat_results[0].data_x,
-                        'y': cat_results[0].data_y,
-                        'e': cat_results[0].data_e,
-                        'minimizer': 'Data',
-                        'cost_function': cf,
-                        'best': False}
-            df[cf] = pd.DataFrame(datatype)
+            df[cf] = pd.DataFrame({'x': cat_results[0].data_x,
+                                   'y': cat_results[0].data_y,
+                                   'e': cat_results[0].data_e,
+                                   'minimizer': 'Data',
+                                   'cost_function': cf,
+                                   'best': False})
             # next the initial data
-            datatype = {'x': cat_results[0].data_x,
-                        'y': cat_results[0].ini_y,
-                        'e': cat_results[0].data_e,
-                        'minimizer': 'Starting Guess',
-                        'cost_function': cf,
-                        'best': False}
-            df[cf] = pd.concat([df[cf], pd.DataFrame(datatype)],
-                               axis=0,
-                               ignore_index=True)
+            tmp_df = pd.DataFrame({'x': cat_results[0].data_x,
+                                   'y': cat_results[0].ini_y,
+                                   'e': cat_results[0].data_e,
+                                   'minimizer': 'Starting Guess',
+                                   'cost_function': cf,
+                                   'best': False})
+            df[cf] = pd.concat([df[cf], tmp_df], ignore_index=True)
+
             # then get data for each minimizer
             for result in cat_results:
-                datatype = {'x': result.data_x,
-                            'y': result.fin_y,
-                            'e': result.data_e,
-                            'minimizer': result.sanitised_min_name(True),
-                            'cost_function': cf,
-                            'best': result.is_best_fit}
-                df[cf] = pd.concat([df[cf], pd.DataFrame(datatype)],
-                                   axis=0,
-                                   ignore_index=True)
+                tmp_df = pd.DataFrame({
+                    'x': result.data_x,
+                    'y': result.fin_y,
+                    'e': result.data_e,
+                    'minimizer': result.sanitised_min_name(True),
+                    'cost_function': cf,
+                    'best': result.is_best_fit
+                })
+                df[cf] = pd.concat([df[cf], tmp_df], ignore_index=True)
 
         # For each result, if it succeeded, create a plot and add plot links to
         # the results object
