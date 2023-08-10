@@ -135,7 +135,7 @@ def generate_report(options_file='', additional_options=None, debug=False):
 
 
 @exception_handler
-def combine_data_sets(files: 'list[str]', output: 'str', debug: 'bool' = False):
+def merge_data_sets(files: 'list[str]', output: 'str', debug: 'bool' = False):
     """
     Combine multiple checkpoint files into one following these rules:
      1) The output will be the same as combining them one at a time in
@@ -195,10 +195,10 @@ def combine_data_sets(files: 'list[str]', output: 'str', debug: 'bool' = False):
         with open(to_merge, 'r', encoding='utf-8') as f:
             B = json.load(f)
         A = merge(A, B)
-    
+
     print(f'Writing to {output}...')
     with open(output, 'w', encoding='utf-8') as f:
-        json.dump(A, f)
+        json.dump(A, f, indent=2)
 
 
 def merge(A, B):
@@ -208,8 +208,11 @@ def merge(A, B):
 
     :param A: The first set of results to merge
     :type A: dict[str, list[FittingResult]]
-    :param B: Theset to merge into A
+    :param B: The set to merge into A
     :type B: dict[str, list[FittingResult]]
+
+    :return: The merged checkpoint data.
+    :rtype: dict[str, any]
     """
     for k in B:
         if k not in A:
@@ -222,8 +225,8 @@ def merge(A, B):
                 r['name'] = update_names[r['name']]
         A[k]['results'] = merge_results(A[k]['results'], B[k]['results'])
         A[k]['failed_problems'] = []
-        softwares = set(r['software_tag'] for r in A[k]['results'])
-        A[k]['unselected_minimisers'] = {s: [] for s in softwares}
+        A[k]['unselected_minimisers'] = {r['software_tag']: []
+                                         for r in A[k]['results']}
 
     return A
 
@@ -241,6 +244,10 @@ def merge_problems(A: 'dict[str, dict]', B: 'dict[str, dict]'):
     :type A: dict[str, dict]
     :param B: The second checkpoint problems dict to merge
     :type B: dict[str, dict]
+
+    :return: The merged checkpoint problems and a list of problems that have
+             been renamed
+    :rtype: tuple[dict[str, dict[str, any]], list[str]]
     """
     update_keys = {}
     for k, prob in B.items():
@@ -272,7 +279,7 @@ def merge_problems(A: 'dict[str, dict]', B: 'dict[str, dict]'):
             if orig_k != k:
                 update_keys[orig_k] = k
             continue
-    
+
     return A, update_keys
 
 
@@ -284,6 +291,9 @@ def merge_results(A: 'list[dict]', B: 'list[dict]'):
     :type A: list[dict[str, any]]
     :param B: The second checkpoint results list to merge
     :type B: list[dict[str, any]]
+
+    :return: Merged results list
+    :rtype: list[dict[str, any]]
     """
     A_key = {
         (r['name'],
@@ -329,9 +339,9 @@ def main():
                         additional_options,
                         debug=args.debug_mode)
     elif args.subprog == 'merge':
-        combine_data_sets(files=args.files,
-                          output=args.output_filename,
-                          debug=args.debug_mode)
+        merge_data_sets(files=args.files,
+                        output=args.output_filename,
+                        debug=args.debug_mode)
 
 
 if __name__ == '__main__':
