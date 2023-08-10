@@ -67,19 +67,20 @@ class PlotTests(unittest.TestCase):
             for result in dataset:
                 key = (label, result.problem_tag)
                 if key not in self.df:
-                    data = {'x': result.data_x,
-                            'y': result.data_y,
-                            'e': result.data_e,
-                            'minimizer': 'Data',
-                            'cost_function': '',
-                            'best': False}
-                    start = {'x': result.data_x,
-                             'y': result.ini_y,
-                             'e': result.data_e,
-                             'minimizer': 'Starting Guess',
-                             'cost_function': label,
-                             'best': False}
-                    self.df[key] = pd.DataFrame([data, start])
+                    self.df[key] = pd.concat([
+                        pd.DataFrame({'x': result.data_x,
+                                      'y': result.data_y,
+                                      'e': result.data_e,
+                                      'minimizer': 'Data',
+                                      'cost_function': '',
+                                      'best': False}),
+                        pd.DataFrame({'x': result.data_x,
+                                      'y': result.ini_y,
+                                      'e': result.data_e,
+                                      'minimizer': 'Starting Guess',
+                                      'cost_function': label,
+                                      'best': False})
+                    ])
 
                 result_dict = {'x': result.data_x,
                                'y': result.fin_y,
@@ -87,10 +88,10 @@ class PlotTests(unittest.TestCase):
                                'minimizer': result.sanitised_min_name(True),
                                'cost_function': 'NLLS',
                                'best': result.is_best_fit}
-                self.df[key] = pd. concat([self.df[key],
-                                          pd.Series(result_dict).to_frame().T],
-                                          axis=0,
-                                          ignore_index=True)
+                self.df[key] = pd.concat([self.df[key],
+                                          pd.DataFrame(result_dict)],
+                                         axis=0,
+                                         ignore_index=True)
 
     def test_plot_initial_guess_create_files(self):
         """
