@@ -29,6 +29,15 @@ def load_mock_result():
 
     cp = Checkpoint(options)
     results, _, _ = cp.load()
+    best = {}
+    for label, dataset in results.items():
+        for i, r in enumerate(dataset):
+            r.is_best_fit = False
+            key = (label, r.problem_tag)
+            if key not in best or best[key][1] < r.accuracy:
+                best[key] = (i, r.accuracy)
+        for b in best.values():
+            dataset[b[0]].is_best_fit = True
 
     return results
 
@@ -46,54 +55,57 @@ class PlotTests(unittest.TestCase):
         # pylint: disable=consider-using-with
         self.dir = TemporaryDirectory()
         # pylint: enable=consider-using-with
-        self.plot = plots.Plot(best_result=self.fr['Fake_Test_Data'][0],
+        best = [r for r in self.fr['Fake_Test_Data']
+                if r.is_best_fit and r.problem_tag == 'prob_1'][0]
+        self.plot = plots.Plot(best_result=best,
                                options=self.opts,
                                figures_dir=self.dir.name)
+
         self.df = {}
-        # Create a dataframe for each result
-        for cf, cat_results in self.fr.items():
-            datatype = {'x': cat_results[0].data_x,
-                        'y': cat_results[0].data_y,
-                        'e': cat_results[0].data_e,
-                        'minimizer': 'Data',
-                        'cost_function': cf,
-                        'best': False}
-            self.df[cf] = pd.DataFrame(datatype)
-            # next the initial data
-            datatype = {'x': cat_results[0].data_x,
-                        'y': cat_results[0].ini_y,
-                        'e': cat_results[0].data_e,
-                        'minimizer': 'Starting Guess',
-                        'cost_function': cf,
-                        'best': False}
-            self.df[cf] = pd.concat([self.df[cf], pd.DataFrame(datatype)],
-                                    axis=0,
-                                    ignore_index=True)
-            # then get data for each minimizer
-            for result in cat_results:
-                datatype = {'x': result.data_x,
-                            'y': result.fin_y,
+        # Create a dataframe for each row
+        for label, dataset in self.fr.items():
+            for result in dataset:
+                key = (label, result.problem_tag)
+                if key not in self.df:
+                    data = {'x': result.data_x,
+                            'y': result.data_y,
                             'e': result.data_e,
-                            'minimizer': result.sanitised_min_name(True),
-                            'cost_function': 'NLLS',
-                            'best': result.is_best_fit}
-                self.df[cf] = pd.concat([self.df[cf], pd.DataFrame(datatype)],
-                                        axis=0,
-                                        ignore_index=True)
+                            'minimizer': 'Data',
+                            'cost_function': '',
+                            'best': False}
+                    start = {'x': result.data_x,
+                             'y': result.ini_y,
+                             'e': result.data_e,
+                             'minimizer': 'Starting Guess',
+                             'cost_function': label,
+                             'best': False}
+                    self.df[key] = pd.DataFrame([data, start])
+
+                result_dict = {'x': result.data_x,
+                               'y': result.fin_y,
+                               'e': result.data_e,
+                               'minimizer': result.sanitised_min_name(True),
+                               'cost_function': 'NLLS',
+                               'best': result.is_best_fit}
+                self.df[key] = pd. concat([self.df[key],
+                                          pd.Series(result_dict).to_frame().T],
+                                          axis=0,
+                                          ignore_index=True)
 
     def test_plot_initial_guess_create_files(self):
         """
         Test that initial plot creates a file.
         """
-        file_name = self.plot.plot_initial_guess(self.df['Fake_Test_Data'])
+        file_name = self.plot.plot_initial_guess(
+            self.df[('Fake_Test_Data', 'prob_1')])
 
-        self.assertEqual(file_name, 'start_for_prob_0.html')
+        self.assertEqual(file_name, 'start_for_prob_1.html')
         path = os.path.join(self.dir.name, file_name)
         self.assertTrue(os.path.exists(path))
 
     def test_best_filename_return(self):
         """
-        Test that best_fileame returns the correct filename
+        Test that best_filename returns the correct filename
         """
         file_name = self.plot.best_filename(self.fr['Fake_Test_Data'][0])
         self.assertEqual(file_name,
@@ -103,10 +115,11 @@ class PlotTests(unittest.TestCase):
         """
         Test that plotly_fit creates a file.
         """
-        file_names = self.plot.plotly_fit(self.df['Fake_Test_Data'])
+        file_names = self.plot.plotly_fit(
+            self.df[('Fake_Test_Data', 'prob_1')])
 
         self.assertEqual(file_names['m10_[s1]_jj0'],
-                         'm10_[s1]_jj0_fit_for_cf1_prob_0.html')
+                         'm10_[s1]_jj0_fit_for_cf1_prob_1.html')
         path = os.path.join(self.dir.name, file_names['m10_[s1]_jj0'])
         self.assertTrue(os.path.exists(path))
 

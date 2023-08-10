@@ -88,7 +88,8 @@ class Plot:
 
         return htmlfile
 
-    def best_filename(self, result):
+    @staticmethod
+    def best_filename(result):
         """
         Returns the filename of the best fit plot.
 
@@ -99,7 +100,7 @@ class Plot:
         :rtype: str
         """
         htmlfile = f"{result.sanitised_min_name(True)}_fit_for_"\
-            f"{self.result.costfun_tag}_{self.result.sanitised_name}.html"
+            f"{result.costfun_tag}_{result.sanitised_name}.html"
         return htmlfile
 
     def plotly_fit(self, df):
