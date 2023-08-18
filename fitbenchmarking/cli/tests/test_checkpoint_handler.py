@@ -212,7 +212,7 @@ class TestMergeProblems(TestCase):
         """
         inputs = set(list(self.A)).union(set(list(self.B)))
         M, _ = merge_problems(self.A, self.B)
-        M_set_norename = set([m.rstrip('*') for m in M.keys()])
+        M_set_norename = set(m.rstrip('*') for m in M.keys())
         assert M_set_norename.issubset(inputs), \
             'Merged result contains unexpected problem name'
 

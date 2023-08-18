@@ -77,21 +77,21 @@ to_add/checkpoint.json
         $ fitbenchmarking-cp merge -f cp1 cp2 cp3 cp4 -o \
 new_results/checkpoint.json
     ''')
-    merge = subparsers.add_parser(
+    merge_parser = subparsers.add_parser(
         'merge',
         description='Merge multiple checkpoint files into one',
         help='Merge multiple checkpoint files into one',
         epilog=merge_epilog)
-    merge.add_argument('-f', '--files',
+    merge_parser.add_argument('-f', '--files',
                        metavar='FILES',
                        nargs='+',
                        help='The checkpoint files to merge'
                        )
-    merge.add_argument('-o', '--output-filename',
+    merge_parser.add_argument('-o', '--output-filename',
                        metavar='OUTPUT',
                        default='checkpoint.json',
                        help='The name of the merged checkpoint file')
-    merge.add_argument('-s', '--strategy',
+    merge_parser.add_argument('-s', '--strategy',
                        metavar='STRATEGY',
                        default='first',
                        choices=['first', 'last'])
