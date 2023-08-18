@@ -72,8 +72,10 @@ def get_parser() -> ArgumentParser:
     merge_epilog = textwrap.dedent('''
     Usage Examples:
 
-        $ fitbenchmarking-cp merge -f old_results/checkpoint.json to_add/checkpoint.json
-        $ fitbenchmarking-cp merge -f cp1 cp2 cp3 cp4 -o new_results/checkpoint.json
+        $ fitbenchmarking-cp merge -f old_results/checkpoint.json \
+to_add/checkpoint.json
+        $ fitbenchmarking-cp merge -f cp1 cp2 cp3 cp4 -o \
+new_results/checkpoint.json
     ''')
     merge = subparsers.add_parser(
         'merge',
@@ -144,8 +146,8 @@ def merge_data_sets(files: 'list[str]', output: 'str', debug: 'bool' = False):
         recursive.
      2) Datasets
          2a) Datasets in A and B are identical if they agree on the label
-         2b) If A and B contain identical datasets, the problems and results are
-             combined as below.
+         2b) If A and B contain identical datasets, the problems and results
+             are combined as below.
              The remainder of these rules assume that A and B are identical
              datasets as the alternative is trivial
      3) Problems
@@ -153,7 +155,7 @@ def merge_data_sets(files: 'list[str]', output: 'str', debug: 'bool' = False):
              and e then these problems are considered identical.
          3b) If A and B share identical problems, the details not specified in
              3a are taken from A.
-         3c) If problems in A and B are not identical but share a name, the name
+         3c) If problems in A and B are not identical but share a name, the
              of the project in B should be updated to "<problem_name>*"
      4) Results
          4a) If results in A and B have identical problems and agree on name,

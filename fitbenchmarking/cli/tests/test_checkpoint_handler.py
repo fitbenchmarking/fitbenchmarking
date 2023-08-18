@@ -1,17 +1,18 @@
 """
 Tests for checkpoint_handler.py
 """
-from copy import deepcopy
 import inspect
 import json
+from copy import deepcopy
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from fitbenchmarking import test_files
 from fitbenchmarking.cli.checkpoint_handler import (generate_report, merge,
-                                                    merge_data_sets, merge_problems, merge_results)
-from fitbenchmarking.utils.checkpoint import _compress
+                                                    merge_data_sets,
+                                                    merge_problems,
+                                                    merge_results)
 
 
 class TestGenerateReport(TestCase):
@@ -74,18 +75,19 @@ class TestGenerateReport(TestCase):
 class TestMergeDataSets(TestCase):
     """
     Simple testing for the checkpoint_handler merge entry point.
-    Uses the definition of identical defined in the docstring of merge_data_sets
+    Uses the definition of identical defined in the docstring of
+    merge_data_sets
     """
 
     def setUp(self):
         """
         Generate 3 files to merge
         """
-        test_files = Path(__file__).parent / 'test_files'
-        self.A = str(test_files/'A.json')
-        self.B = str(test_files/'B.json')
-        self.C = str(test_files/'C.json')
-        self.expected = test_files / 'AB.json'
+        ch_test_files = Path(__file__).parent / 'test_files'
+        self.A = str(ch_test_files/'A.json')
+        self.B = str(ch_test_files/'B.json')
+        self.C = str(ch_test_files/'C.json')
+        self.expected = ch_test_files / 'AB.json'
         self._dir = TemporaryDirectory()
         self.dir = Path(self._dir.name)
 
@@ -126,8 +128,9 @@ class TestMergeDataSets(TestCase):
         merge_data_sets([self.A, self.B], str(output))
 
         errors = []
-        for i, (l1, l2) in enumerate(zip(self.expected.read_text().splitlines(),
-                                         output.read_text().splitlines())):
+        for i, (l1, l2) in enumerate(
+            zip(self.expected.read_text().splitlines(),
+                output.read_text().splitlines())):
             if l1 != l2:
                 errors.append((i, l1, l2))
 
@@ -150,11 +153,11 @@ class TestMerge(TestCase):
           between them
         - Problems in A and C have matching names but not matching data
         """
-        test_files = Path(__file__).parent / 'test_files'
-        self.A = json.load((test_files/'A.json').open())
-        self.B = json.load((test_files/'B.json').open())
-        self.C = json.load((test_files/'C.json').open())
-        self.D = json.load((test_files/'D.json').open())
+        ch_test_files = Path(__file__).parent / 'test_files'
+        self.A = json.load((ch_test_files/'A.json').open())
+        self.B = json.load((ch_test_files/'B.json').open())
+        self.C = json.load((ch_test_files/'C.json').open())
+        self.D = json.load((ch_test_files/'D.json').open())
 
     def test_merge_distinct_datasets(self):
         """
@@ -194,12 +197,12 @@ class TestMergeProblems(TestCase):
           between them
         - Problems in A and C have matching names but not matching data
         """
-        test_files = Path(__file__).parent / 'test_files'
-        self.A = json.load((test_files/'A.json').open()
+        ch_test_files = Path(__file__).parent / 'test_files'
+        self.A = json.load((ch_test_files/'A.json').open()
                            )['DataSet1']['problems']
-        self.B = json.load((test_files/'B.json').open()
+        self.B = json.load((ch_test_files/'B.json').open()
                            )['DataSet1']['problems']
-        self.C = json.load((test_files/'C.json').open()
+        self.C = json.load((ch_test_files/'C.json').open()
                            )['DataSet1']['problems']
 
     def test_merged_problems_subset_of_input(self):
@@ -259,12 +262,12 @@ class TestMergeResults(TestCase):
           between them
         - Problems in A and C have matching names but not matching data
         """
-        test_files = Path(__file__).parent / 'test_files'
-        self.A = json.load((test_files/'A.json').open()
+        ch_test_files = Path(__file__).parent / 'test_files'
+        self.A = json.load((ch_test_files/'A.json').open()
                            )['DataSet1']['results']
-        self.B = json.load((test_files/'B.json').open()
+        self.B = json.load((ch_test_files/'B.json').open()
                            )['DataSet1']['results']
-        self.C = json.load((test_files/'C.json').open()
+        self.C = json.load((ch_test_files/'C.json').open()
                            )['DataSet1']['results']
         self.uid = lambda r: (r['name'],
                               r['software_tag'],
