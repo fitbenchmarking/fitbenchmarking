@@ -67,7 +67,7 @@ git add README.md
 git commit -m "Reset README.md to follow master"
 
 # Give instructions for finishing release
-if [[ $tag =~ $final_release_regex ]]
+if [[ $tag =~ $final_release_regex ]]; then
     echo "Please cherry-pick the update version commit to master."
     echo "> git switch master"
     echo "> git cherry-pick ${tag}"
