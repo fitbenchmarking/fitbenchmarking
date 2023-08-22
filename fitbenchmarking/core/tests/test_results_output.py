@@ -23,7 +23,7 @@ from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
 
 
-def load_mock_results(additional_options=None):
+def load_mock_results(additional_options=None, filename='checkpoint.json'):
     """
     Load a predictable set of results.
 
@@ -36,7 +36,7 @@ def load_mock_results(additional_options=None):
         additional_options = {}
     cp_dir = os.path.dirname(inspect.getfile(test_files))
     additional_options.update({
-        'checkpoint_filename': os.path.join(cp_dir, 'checkpoint.json'),
+        'checkpoint_filename': os.path.join(cp_dir, filename),
         'external_output': 'debug'})
     options = Options(additional_options=additional_options)
     cp = Checkpoint(options)
