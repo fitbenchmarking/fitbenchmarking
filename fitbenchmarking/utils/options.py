@@ -272,8 +272,8 @@ class Options:
         {'num_runs': 5,
          'algorithm_type': ['all'],
          'software': ['scipy', 'scipy_ls'],
-         'jac_method': ['scipy'],
-         'hes_method': ['default'],
+         'jac_method': ['analytic'],
+         'hes_method': ['analytic'],
          'cost_func_type': ['weighted_nlls'],
          'max_runtime': 600}
     DEFAULT_JACOBIAN = \

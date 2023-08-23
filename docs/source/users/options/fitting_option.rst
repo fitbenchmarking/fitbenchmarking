@@ -118,12 +118,12 @@ Current Jacobian methods are:
 * ``default`` - uses the default derivative approximation implemented in the minimizer.
 * ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-jac>`.
 
-Default is ``default``
+Default is ``analytic``
 
 .. code-block:: rst
 
     [FITTING]
-    jac_method: scipy
+    jac_method: analytic
 
 .. warning::
 
@@ -144,12 +144,12 @@ Current Hessian methods are:
 * ``scipy`` -  uses :ref:`SciPy's finite difference approximations <scipy-hes>`.
 * ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-hes>`.
 
-Default is ``default``
+Default is ``analytic``
 
 .. code-block:: rst
 
     [FITTING]
-    hes_method: default
+    hes_method: analytic
 
 .. warning::
 
