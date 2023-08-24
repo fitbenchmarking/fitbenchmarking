@@ -194,6 +194,40 @@ class LoopOverHessiansTests(unittest.TestCase):
                                      checkpointer=self.cp)
         self.assertEqual(results[0].error_flag, 6)
 
+    @patch.object(DummyController, "eval_chisq")
+    @patch.object(DummyController, "fit")
+    def test_eval_chisq_called(self, fit, eval_chisq):
+        """
+        Test that eval_chisq is called when cost function is not loglike_nlls
+        """
+        self.controller.minimizer = "deriv_free_algorithm"
+        eval_chisq.return_value = 0.001
+        fit.return_value = 1
+
+        _ = loop_over_hessians(self.controller,
+                               options=self.options,
+                               grabbed_output=self.grabbed_output,
+                               checkpointer=self.cp)
+        eval_chisq.assert_called_once()
+
+    @patch.object(DummyController, "eval_confidence")
+    @patch.object(DummyController, "cleanup")
+    def test_eval_confidence_called(self, cleanup, eval_confidence):
+        """
+        Test that eval_confidence is called when cost function is loglike_nlls
+        """
+        self.controller.minimizer = "deriv_free_algorithm"
+        self.controller.params_pdfs = 'params_pdfs'
+        self.controller.flag = 0
+        self.controller.final_params = [1, 2, 3, 4]
+        eval_confidence.return_value = 0.35
+
+        _ = loop_over_hessians(self.controller,
+                               options=self.options,
+                               grabbed_output=self.grabbed_output,
+                               checkpointer=self.cp)
+        eval_confidence.assert_called_once()
+
     @run_for_test_types(TEST_TYPE, 'all')
     @patch('fitbenchmarking.core.fitting_benchmarking.perform_fit')
     def test_multifit_num_results(self, perform_fit):

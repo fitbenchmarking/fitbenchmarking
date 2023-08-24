@@ -14,6 +14,8 @@ from fitbenchmarking.cost_func.poisson_cost_func import (PoissonCostFunc,
                                                          _safe_a_log_b)
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
+from fitbenchmarking.cost_func.loglike_nlls_cost_func import \
+    LoglikeNLLSCostFunc
 from fitbenchmarking.hessian.analytic_hessian import Analytic
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -299,6 +301,112 @@ class TestWeightedNLLSCostFunc(TestCase):
         Test that validate_problem does not raise an error
         """
         self.cost_function.validate_problem()
+
+class TestLoglikeNLLSCostFunc(TestCase):
+    """
+    Class to test the LoglikeNLLSCostFunc class
+    """
+
+    def setUp(self):
+        """
+        Setting up log-likelihood nonlinear least squares cost function tests
+        """
+        self.options = Options()
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.function = lambda x, p1: x + p1
+        self.x_val = np.array([1.0, 8.0, 11.0])
+        self.y_val = np.array([6.0, 10.0, 20.0])
+        self.e_val = np.array([2.0, 4.0, 1.0])
+        fitting_problem.data_x = self.x_val
+        fitting_problem.data_y = self.y_val
+        fitting_problem.data_e = self.e_val
+        self.cost_function = LoglikeNLLSCostFunc(fitting_problem)
+
+    def test_eval_r_raise_error(self):
+        """
+        Test that eval_r raises and error
+        """
+        self.assertRaises(exceptions.CostFuncError,
+                          self.cost_function.eval_r,
+                          params=[1, 2, 3],
+                          x=[2],
+                          y=[3, 4, 5],
+                          e=[23, 4])
+
+    def test_eval_r_correct_evaluation(self):
+        """
+        Test that eval_r is running the correct function
+        """
+
+        eval_result = self.cost_function.eval_r(x=self.x_val,
+                                                y=self.y_val,
+                                                e=self.e_val,
+                                                params=[5])
+        self.assertTrue(all(eval_result == np.array([0, -0.75, 4])))
+
+    def test_eval_cost(self):
+        """
+        Test that eval_cost is correct
+        """
+        eval_result = self.cost_function.eval_cost(params=[5],
+                                                   x=self.x_val,
+                                                   y=self.y_val,
+                                                   e=self.e_val)
+        self.assertEqual(eval_result, 16.5625)
+
+    def test_jac_res(self):
+        """
+        Test that jac_res works for the Log-likelihood NLLS cost function
+        """
+        jacobian = Scipy(self.cost_function.problem)
+        jacobian.method = "2-point"
+        self.cost_function.jacobian = jacobian
+
+        J = self.cost_function.jac_res(params=[5],
+                                       x=self.x_val,
+                                       y=self.y_val,
+                                       e=self.e_val)
+
+        expected = np.array([[-0.5], [-0.25], [-1.0]])
+        self.assertTrue(np.allclose(J, expected))
+
+    def test_hes_res(self):
+        """
+        Test that hes_res works for the Log-likelihood NLLS cost function
+        """
+        self.cost_function.problem.function = fun
+        self.cost_function.problem.jacobian = jac
+        self.cost_function.problem.hessian = hes
+        jacobian = Scipy(self.cost_function.problem)
+        jacobian.method = "2-point"
+        self.cost_function.jacobian = jacobian
+        hessian = Analytic(self.cost_function.problem,
+                           self.cost_function.jacobian)
+        self.cost_function.hessian = hessian
+
+        H, _ = self.cost_function.hes_res(params=[5],
+                                          x=self.x_val,
+                                          y=self.y_val,
+                                          e=self.e_val)
+
+        expected = np.array([[[-150.0, -4800.0, -36300.0],
+                              [-150.0, -4800.0, -36300.0]],
+                             [[-150.0, -4800.0, -36300.0],
+                              [-150.0, -4800.0, -36300.0]]])
+        self.assertTrue(np.allclose(H, expected))
+
+    def test_validate_problem_correct(self):
+        """
+        Test that validate_problem does not raise an error
+        """
+        self.cost_function.validate_problem()
+
+    def test_eval_loglike(self):
+        """
+        Test that log-likelihood is evaluated correctly
+        """
+        loglike_result = self.cost_function.eval_loglike([5])
+        self.assertEqual(loglike_result, -8.28125)
 
 
 class TestHellingerNLLSCostFunc(TestCase):

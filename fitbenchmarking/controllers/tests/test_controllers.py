@@ -14,6 +14,8 @@ from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
+from fitbenchmarking.cost_func.loglike_nlls_cost_func import \
+    LoglikeNLLSCostFunc
 from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.hessian.scipy_hessian import Scipy as ScipyHessian
@@ -35,6 +37,7 @@ if TEST_TYPE in ['default', 'all']:
     from fitbenchmarking.controllers.nlopt_controller import \
         NLoptController, nlopt
     from fitbenchmarking.controllers.lmfit_controller import LmfitController
+    from fitbenchmarking.controllers.paramonte_controller import ParamonteController
 
 if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.gsl_controller import GSLController
@@ -61,7 +64,7 @@ if TEST_TYPE == 'matlab':
 
 
 # pylint: disable=attribute-defined-outside-init, protected-access
-def make_cost_func(file_name='cubic.dat'):
+def make_cost_func(file_name='cubic.dat', cost_func_type='weighted_nlls'):
     """
     Helper function that returns a simple fitting problem
     """
@@ -73,7 +76,10 @@ def make_cost_func(file_name='cubic.dat'):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    cost_func = WeightedNLLSCostFunc(fitting_problem)
+    if cost_func_type == 'weighted_nlls':
+        cost_func = WeightedNLLSCostFunc(fitting_problem)
+    if cost_func_type == 'loglike_nlls':
+        cost_func = LoglikeNLLSCostFunc(fitting_problem)
     return cost_func
 
 
@@ -210,6 +216,22 @@ class BaseControllerTests(TestCase):
         result = self.cost_func.eval_cost(params=params, x=x, y=y, e=e)
 
         assert controller.eval_chisq(params=params, x=x, y=y, e=e) == result
+
+    def test_eval_conf(self):
+        """
+        BaseSoftwareController: Test eval_confidence function
+        """
+        controller = DummyController(self.cost_func)
+
+        controller.par_names = ['A1','A2','A3','A4']
+        controller.initial_params = np.array([1, 2, 3, 4])
+
+        controller.params_pdfs = {'A1': [4.01,3.7,4.2,3.99,4.35], # 1
+                                  'A2': [2.99,3.7,2.8,3.02,3.15], # 0.8
+                                  'A3': [1.9, 2.04, 1.85, 2.4, 2.5], # 0.6
+                                  'A4': [0.5, 0.7, 1.01, 1.04, 1.2]} # 0.4
+
+        self.assertAlmostEqual(controller.eval_confidence(), 0.192, 6)
 
     def test_check_flag_attr(self):
         """
@@ -1206,6 +1228,76 @@ class GlobalOptimizationControllerTests(TestCase):
         self.shared_tests.check_converged(controller)
         controller._status = 2
         self.shared_tests.check_diverged(controller)
+
+@run_for_test_types(TEST_TYPE, 'all')
+class BayesianControllerTests(TestCase):
+    """
+    Tests for each controller class
+    """
+
+    def setUp(self):
+        self.cost_func = make_cost_func(cost_func_type='loglike_nlls')
+        self.problem = self.cost_func.problem
+        self.shared_tests = ControllerSharedTesting()
+
+    def check_bounds(self, controller):
+        """
+        Run bounded problem and check `final_params` respect
+        parameter bounds
+        """
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            self.assertLessEqual(controller.value_ranges[count][0], value)
+            self.assertGreaterEqual(controller.value_ranges[count][1], value)
+
+    def test_paramonte(self):
+        """
+        ParamonteController: Test for output shape
+        """
+        controller = ParamonteController(self.cost_func)
+        controller.minimizer = 'paraDram_sampler'
+        self.shared_tests.controller_run_test(controller)
+
+@run_for_test_types(TEST_TYPE, 'all')
+class BayesianControllerBoundsTests(TestCase):
+    """
+    Tests to ensure Bayesian controllers handle and respect bounds correctly
+    """
+
+    def setUp(self):
+        """
+        Setup for bounded problem for Bayesian fitting
+        """
+        self.cost_func=make_cost_func('cubic-fba-test-bounds.txt', 'loglike_nlls')
+        self.problem = self.cost_func.problem
+
+    def check_bounds(self, controller):
+        """
+        Run bounded problem and check `final_params` respect
+        parameter bounds
+        """
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            self.assertLessEqual(controller.value_ranges[count][0], value)
+            self.assertGreaterEqual(controller.value_ranges[count][1], value)
+
+    def test_paramonte(self):
+        """
+        ParamonteController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = ParamonteController(self.cost_func)
+        controller.minimizer = 'paraDram_sampler'
+
+        self.check_bounds(controller)
 
 
 @run_for_test_types(TEST_TYPE, 'default', 'all')
