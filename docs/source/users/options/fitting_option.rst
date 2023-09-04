@@ -30,6 +30,7 @@ a newline-separated list. Available options are:
 * ``matlab_stats`` (external software -- see :ref:`external-instructions`)
 * ``minuit`` (external software -- see :ref:`extra_dependencies`)
 * ``nlopt`` (external software -- see :ref:`extra_dependencies`)
+* ``paramonte`` (external software -- see :ref:`extra_dependencies`)
 * ``ralfit`` (external software -- see :ref:`external-instructions`)
 * ``scipy`` (default software)
 * ``scipy_ls`` (default software)
@@ -91,6 +92,7 @@ The options are:
 * ``conjugate_gradient`` - Conjugate Gradient algorithms, see :ref:`Conjugate Gradient <conjugate_gradient>`
 * ``steepest_descent`` - Steepest Descent algorithms, see :ref:`Steepest Descent <steepest_descent>`
 * ``global_optimization`` - Global Optimization algorithms
+* ``MCMC`` - Markov Chain Monte Carlo algorithms
 
 Default is ``all``
 

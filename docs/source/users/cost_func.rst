@@ -40,3 +40,9 @@ The cost functions that are currently supported are:
     .. currentmodule:: fitbenchmarking.cost_func.poisson_cost_func
     .. autoclass:: fitbenchmarking.cost_func.poisson_cost_func.PoissonCostFunc
                :noindex:
+
+- Weighted non-linear least squares cost function with log-likelihood evaluation
+
+    .. currentmodule:: fitbenchmarking.cost_func.loglike_nlls_cost_func
+    .. autoclass:: fitbenchmarking.cost_func.loglike_nlls_cost_func.LoglikeNLLSCostFunc
+               :noindex:

@@ -22,6 +22,9 @@ class LoglikeNLLSCostFunc(BaseNLLSCostFunc):
     given initial guess for the optimal parameters. More information on
     non-linear least squares cost functions can be found
     `here <https://en.wikipedia.org/wiki/Non-linear_least_squares>`__.
+
+    This cost function is intended for use with Bayesian fitting methods, where
+    evaluation of the log-likelihood is required.
     """
 
     def __init__(self, problem):

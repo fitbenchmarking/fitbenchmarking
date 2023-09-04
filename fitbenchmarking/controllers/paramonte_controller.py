@@ -1,5 +1,5 @@
 """
-Implements a controller for the paramonte.
+Implements a controller for the paramonte software.
 """
 
 import shutil

@@ -85,7 +85,8 @@ class NLoptController(Controller):
                                 'GD_STOGO',
                                 'GD_STOGO_RAND',
                                 'GN_AGS',
-                                'GN_ISRES']}
+                                'GN_ISRES'],
+        'MCMC': []}
 
     jacobian_enabled_solvers = ['LD_SLSQP',
                                 'LD_VAR2',

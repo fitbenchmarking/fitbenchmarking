@@ -44,7 +44,8 @@ class ScipyController(Controller):
             'bfgs': ['BFGS', 'L-BFGS-B'],
             'conjugate_gradient': ['CG', 'Newton-CG', 'Powell'],
             'steepest_descent': [],
-            'global_optimization': []}
+            'global_optimization': [],
+            'MCMC': []}
 
     jacobian_enabled_solvers = ['CG',
                                 'BFGS',

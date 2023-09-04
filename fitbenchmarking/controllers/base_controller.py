@@ -45,6 +45,7 @@ class Controller:
     #:     - ``conjugate_gradient`` - Conjugate Gradient algorithms
     #:     - ``steepest_descent`` - Steepest Descent algorithms
     #:     - ``global_optimization`` - Global Optimization algorithms
+    #:     - ``MCMC`` - Markov Chain Monte Carlo algorithms
     #:
     #: The **values** of the dictionary are given as a list of minimizers
     #: for that specific controller that fit into each of the above
@@ -60,7 +61,8 @@ class Controller:
                        'bfgs': [],
                        'conjugate_gradient': [],
                        'steepest_descent': [],
-                       'global_optimization': []}
+                       'global_optimization': [],
+                       'MCMC': []}
 
     #: Within the controller class, you must define the list
     #: ``jacobian_enabled_solvers`` if any of the minimizers

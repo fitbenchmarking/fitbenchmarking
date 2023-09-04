@@ -104,7 +104,8 @@ class TheseusController(Controller):
         'bfgs': [],
         'conjugate_gradient': [],
         'steepest_descent': [],
-        'global_optimization': []
+        'global_optimization': [],
+        'MCMC': []
     }
 
     jacobian_enabled_solvers = ['Levenberg_Marquardt', 'Gauss-Newton']

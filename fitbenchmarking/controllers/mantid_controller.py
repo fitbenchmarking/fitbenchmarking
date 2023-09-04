@@ -49,7 +49,8 @@ class MantidController(Controller):
             'conjugate_gradient': ['Conjugate gradient (Fletcher-Reeves imp.)',
                                    'Conjugate gradient (Polak-Ribiere imp.)'],
             'steepest_descent': ['SteepestDescent'],
-            'global_optimization': ['FABADA']}
+            'global_optimization': ['FABADA'],
+            'MCMC': []}
 
     jacobian_enabled_solvers = ['BFGS',
                                 'Conjugate gradient (Fletcher-Reeves imp.)',

@@ -89,6 +89,7 @@ where valid strings ``option-x`` are:
 * ``numdifftools`` -- installs the `numdifftools <https://numdifftools.readthedocs.io/en/latest/index.html>`_ numerical differentiation package.
 * ``nlopt``-- installs the `NLopt <https://github.com/DanielBok/nlopt-python#installation>`_ fitting package.
 * ``lmfit``-- installs the `LMFIT <https://lmfit.github.io/lmfit-py/installation.html>`_ and `emcee <https://emcee.readthedocs.io/en/stable/user/install/>`__ fitting package.
+* ``paramonte`` -- installs the `Paramonte <https://www.cdslab.org/paramonte/index.html>`__ package.
 
 
 .. |Python 3.7.1+| image:: https://img.shields.io/badge/python-3.7.1+-blue.svg

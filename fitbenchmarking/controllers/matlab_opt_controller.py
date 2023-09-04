@@ -25,7 +25,8 @@ class MatlabOptController(MatlabMixin, Controller):
         'bfgs': [],
         'conjugate_gradient': [],
         'steepest_descent': [],
-        'global_optimization': []}
+        'global_optimization': [],
+        'MCMC': []}
 
     jacobian_enabled_solvers = ['levenberg-marquardt',
                                 'trust-region-reflective']
