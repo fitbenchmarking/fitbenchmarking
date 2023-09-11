@@ -179,13 +179,22 @@ class CreatePlotsTests(unittest.TestCase):
         Tests for create_plots where the results object params are not None
         """
         expected_plot_initial_guess = "initial_guess"
-        expected_plot_best = "plot_best"
-        expected_plot_fit = "plot_fit"
+        expected_plot_best = {'prob_0': "plotly_fit4",
+                              'prob_1': "plotly_fit3"}
+        expected_plotly_fit = {'m00_[s0]': "plotly_fit1",
+                               'm01_[s0]_jj0': "plotly_fit2",
+                               'm01_[s0]_jj1': "plotly_fit3",
+                               'm10_[s1]_jj0': "plotly_fit4",
+                               'm10_[s1]_jj1': "plotly_fit5",
+                               'm11_[s1]_jj0': "plotly_fit6",
+                               'm11_[s1]_jj1': "plotly_fit7",
+                               'm00_[s0]_jj0': "plotly_fit8",
+                               'm00_[s0]_jj1': "plotly_fit9"}
         plot_instance = mock.MagicMock()
         plot_instance.plot_initial_guess.return_value = \
             expected_plot_initial_guess
         plot_instance.plot_best.return_value = expected_plot_best
-        plot_instance.plot_fit.return_value = expected_plot_fit
+        plot_instance.plotly_fit.return_value = expected_plotly_fit
 
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
@@ -207,9 +216,10 @@ class CreatePlotsTests(unittest.TestCase):
 
                 # Check plot is correctly set in results
                 self.assertEqual(best_in_cat.figure_link,
-                                 expected_plot_best)
+                                 expected_plot_best[problem_key])
                 self.assertTrue(all(
-                    r.figure_link == expected_plot_fit
+                    r.figure_link == expected_plotly_fit[
+                        r.sanitised_min_name(True)]
                     for r in results if not r.is_best_fit))
 
     @mock.patch('fitbenchmarking.results_processing.plots.Plot')

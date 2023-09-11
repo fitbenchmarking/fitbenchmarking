@@ -10,6 +10,7 @@ from shutil import copytree
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union
 
 from jinja2 import Environment, FileSystemLoader
+import pandas as pd
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import (fitting_report,
@@ -565,9 +566,44 @@ def create_plots(options, results, best_results, figures_dir):
     for best_dict, prob_result in zip(best_results.values(), results.values()):
         plot_dict = {}
         initial_guess_path = {}
-        for cf, best_in_cf in best_dict.items():
+        df = {}
+
+        # Create a dataframe for each problem
+        # Rows are datapoints in the fits
+        for cf, cat_results in prob_result.items():
+            # first, load with raw data
+            df[cf] = pd.DataFrame({'x': cat_results[0].data_x,
+                                   'y': cat_results[0].data_y,
+                                   'e': cat_results[0].data_e,
+                                   'minimizer': 'Data',
+                                   'cost_function': cf,
+                                   'best': False})
+            # next the initial data
+            tmp_df = pd.DataFrame({'x': cat_results[0].data_x,
+                                   'y': cat_results[0].ini_y,
+                                   'e': cat_results[0].data_e,
+                                   'minimizer': 'Starting Guess',
+                                   'cost_function': cf,
+                                   'best': False})
+            df[cf] = pd.concat([df[cf], tmp_df], ignore_index=True)
+
+            # then get data for each minimizer
+            for result in cat_results:
+                tmp_df = pd.DataFrame({
+                    'x': result.data_x,
+                    'y': result.fin_y,
+                    'e': result.data_e,
+                    'minimizer': result.sanitised_min_name(True),
+                    'cost_function': cf,
+                    'best': result.is_best_fit
+                })
+                df[cf] = pd.concat([df[cf], tmp_df], ignore_index=True)
+
+        # For each result, if it succeeded, create a plot and add plot links to
+        # the results object
+        for cf, cat_results in prob_result.items():
             try:
-                plot = plots.Plot(best_result=best_in_cf,
+                plot = plots.Plot(best_result=best_dict[cf],
                                   options=options,
                                   figures_dir=figures_dir)
             except PlottingError as e:
@@ -576,37 +612,33 @@ def create_plots(options, results, best_results, figures_dir):
                 continue
 
             # Create a plot showing the initial guess and get filename
-            initial_guess_path[cf] = plot.plot_initial_guess()
+            initial_guess_path[cf] = plot.plot_initial_guess(df[cf])
 
-            # Setup best plot first
+            # Get filenames of best plot first
             # If none of the fits succeeded, params could be None
             # Otherwise, add the best fit to the plot
-            if best_in_cf.params is not None:
-                plot_path = plot.plot_best(best_in_cf)
-                best_in_cf.figure_link = plot_path
+            if best_dict[cf].params is not None:
+                plot_path = plot.best_filename(best_dict[cf])
+                best_dict[cf].figure_link = plot_path
             else:
-                best_in_cf.figure_error = 'Minimizer failed to produce any ' \
-                    'parameters'
-            best_in_cf.start_figure_link = initial_guess_path[cf]
+                best_dict[cf].figure_error = 'Minimizer failed to produce ' \
+                    'any parameters'
+            best_dict[cf].start_figure_link = initial_guess_path[cf]
             plot_dict[cf] = plot
 
-        # For each result, if it succeeded, create a plot and add plot links to
-        # the resuts object
-        for cf, cat_results in prob_result.items():
+            plot_paths = plot.plotly_fit(df[cf])
+
             # Check if plot was successful
             if cf not in plot_dict:
                 continue
             for result in cat_results:
-                # Don't plot best again
-                if not result.is_best_fit:
-                    if result.params is not None:
-                        cf = result.costfun_tag
-                        plot_path = plot_dict[cf].plot_fit(result)
-                        result.figure_link = plot_path
-                    else:
-                        result.figure_error = 'Minimizer failed to produce ' \
-                            'any parameters'
-                    result.start_figure_link = initial_guess_path[cf]
+                if result.params is not None:
+                    result.figure_link = plot_paths[
+                        result.sanitised_min_name(True)]
+                else:
+                    result.figure_error = 'Minimizer failed to produce ' \
+                        'any parameters'
+                result.start_figure_link = initial_guess_path[cf]
 
 
 def create_problem_level_index(options, table_names, group_name,
