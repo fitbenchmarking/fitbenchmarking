@@ -88,7 +88,7 @@ class TestMergeDataSets(TestCase):
         self.B = str(ch_test_files/'B.json')
         self.C = str(ch_test_files/'C.json')
         self.expected = ch_test_files / 'AB.json'
-        self._dir = TemporaryDirectory()
+        self._dir = TemporaryDirectory()  # pylint:disable=consider-using-with
         self.dir = Path(self._dir.name)
 
     def test_create_new_file(self):

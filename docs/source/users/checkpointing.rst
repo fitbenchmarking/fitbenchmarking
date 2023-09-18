@@ -17,7 +17,7 @@ fitting runs.
 
 By default, when running FitBenchmarking it will create a ``checkpoint`` file in
 the results directory which will contain all the information required to create
-output tables and plots. 
+output tables and plots.
 
 To generate new reports for an existing checkpoint, use the
 ``--load_checkpoint`` option:
@@ -45,7 +45,7 @@ Warnings
 Using ``--load_checkpoint`` will not re-run any results or run any new
 combinations that have been added to the options file.
 
-This command also does not check that the checkpoint file has not been edited
+This command also does not check whether the checkpoint file has been edited
 manually. Manual editing may be desired for removing data while
 this feature is developed but should be done with caution to ensure results
 are still comparable.

@@ -83,18 +83,18 @@ new_results/checkpoint.json
         help='Merge multiple checkpoint files into one',
         epilog=merge_epilog)
     merge_parser.add_argument('-f', '--files',
-                       metavar='FILES',
-                       nargs='+',
-                       help='The checkpoint files to merge'
-                       )
+                              metavar='FILES',
+                              nargs='+',
+                              help='The checkpoint files to merge'
+                              )
     merge_parser.add_argument('-o', '--output-filename',
-                       metavar='OUTPUT',
-                       default='checkpoint.json',
-                       help='The name of the merged checkpoint file')
+                              metavar='OUTPUT',
+                              default='checkpoint.json',
+                              help='The name of the merged checkpoint file')
     merge_parser.add_argument('-s', '--strategy',
-                       metavar='STRATEGY',
-                       default='first',
-                       choices=['first', 'last'])
+                              metavar='STRATEGY',
+                              default='first',
+                              choices=['first', 'last'])
     return parser
 
 
@@ -137,7 +137,10 @@ def generate_report(options_file='', additional_options=None, debug=False):
 
 
 @exception_handler
-def merge_data_sets(files: 'list[str]', output: 'str', debug: 'bool' = False):
+def merge_data_sets(files: 'list[str]', output: 'str',
+                    strategy: 'str' = 'first',
+                    debug: 'bool' = False):
+    # pylint: disable=unused-argument
     """
     Combine multiple checkpoint files into one following these rules:
      1) The output will be the same as combining them one at a time in
@@ -149,20 +152,21 @@ def merge_data_sets(files: 'list[str]', output: 'str', debug: 'bool' = False):
          2b) If A and B contain identical datasets, the problems and results
              are combined as below.
              The remainder of these rules assume that A and B are identical
-             datasets as the alternative is trivial
+             datasets as the alternative is trivial.
      3) Problems
          3a) If problems in A and B agree on name, ini_params, ini_y, x, y,
              and e then these problems are considered identical.
          3b) If A and B share identical problems, the details not specified in
              3a are taken from A.
          3c) If problems in A and B are not identical but share a name, the
-             of the project in B should be updated to "<problem_name>*"
+             name of the project in B should be updated to "<problem_name>*".
      4) Results
          4a) If results in A and B have identical problems and agree on name,
              software_tag, minimizer_tag, jacobian_tag, hessian_tag, and
-             costfun_tag they are considered identical
+             costfun_tag they are considered identical.
          4b) If A an B share identical results, the details not specified in 4a
-             are taken from A
+             are taken from A if strategy is 'first', or B if strategy is
+             'last'.
      5) As tables are grids of results, combining arbitrary results can lead to
         un-table-able checkpoint files.
         This occurs when the problems in A and B are not all identical and the
@@ -172,7 +176,7 @@ def merge_data_sets(files: 'list[str]', output: 'str', debug: 'bool' = False):
         E.g. B has a problem not in A and uses a minimizer for which there are
              no results in A.
          5a) If the resulting checkpoint file would have the above issue, the
-             checkpoints are incompatible
+             checkpoints are incompatible.
          5b) Incompatible checkpoint files can be combined but should raise
              warnings and mark the dataset in the checkpoint file.
              Note: Some datasets may be incompatible where others can be
@@ -184,11 +188,18 @@ def merge_data_sets(files: 'list[str]', output: 'str', debug: 'bool' = False):
     :type files: list[str]
     :param output: The name for the new checkpoint file.
     :type output: str
+    :param strategy: The stategy for merging identical elements.
+                     Options are 'first' or 'last'.
+    :type strategy: str
     :param debug: Enable debugging output.
     :type debug: bool
     """
     if len(files) < 2:
         return
+    if strategy == 'first':
+        pass
+    elif strategy == 'last':
+        files = list(reversed(files))
     print(f"Loading {files[0]}...")
     with open(files[0], 'r', encoding='utf-8') as f:
         A = json.load(f)
@@ -237,7 +248,7 @@ def merge_problems(A: 'dict[str, dict]', B: 'dict[str, dict]'):
     """
     Merge the problem sections of 2 checkpoint files.
     If problems have matching names but different values, the problem from
-    B will be suffixed ith a "*".
+    B will be suffixed with a "*".
 
     In some cases this could lead to problems with several "*"s although this
     seems unlikely for most use cases.
