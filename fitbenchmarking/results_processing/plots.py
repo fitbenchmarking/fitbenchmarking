@@ -9,6 +9,7 @@ import plotly.colors as ptly_colors
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.offline import plot as offline_plot
+from plotly.subplots import make_subplots
 
 from fitbenchmarking.utils.exceptions import PlottingError
 
@@ -167,6 +168,27 @@ class Plot:
                 htmlfiles[minimizer] = htmlfile
 
         return htmlfiles
+    
+    def plot_posteriors(self, result):
+
+        par_names = self.result.param_names
+
+        fig = make_subplots(rows=len(par_names), cols=1, subplot_titles=par_names)
+
+        for i, name in enumerate(par_names):
+            fig.append_trace(go.Histogram(x=result.params_pdfs[name], histnorm='probability density'), row=i+1, col=1)
+
+        fig.update_layout(showlegend=False)
+
+        html_fname = f'{result.sanitised_min_name(True)}_posterior_' \
+                f'pdf_plot_for_{result.sanitised_name}.html'
+        html_file_name = os.path.join(self.figures_dir, html_fname)
+        offline_plot(
+            fig,
+            filename=html_file_name,
+            auto_open=False
+        )
+        return html_fname
 
     @classmethod
     def plot_summary(cls, categories, title, options, figures_dir):
@@ -217,51 +239,6 @@ class Plot:
             # Plot category
             for result in results:
                 if result.params is not None:
-<<<<<<< HEAD
-                    y = result.fin_y[result.sorted_index]
-                    plot_options = cls.summary_best_plot_options \
-                        if result.is_best_fit else cls.summary_plot_options
-                    plot_options['color'] = colour
-                    plot_options['label'] = key if result.is_best_fit else ''
-
-                    ax.plot(x, y, **plot_options)
-                    # log scale
-                    if result.plot_scale == "loglog":
-                        ax.set_xscale("log", nonpositive='clip')
-                        ax.set_yscale("log", nonpositive='clip')
-                    elif result.plot_scale == "logy":
-                        ax.set_yscale("log", nonpositive='clip')
-                    elif result.plot_scale == "logx":
-                        ax.set_xscale("log", nonpositive='clip')
-                    ax.set_xlabel("X")
-                    ax.set_ylabel("Y")
-                    ax.set_title(title,
-                                 fontsize=10)
-                    ax.legend(loc="upper left")
-                    fig.set_tight_layout(True)
-
-        fname = f'summary_plot_for_{first_result.sanitised_name}.png'
-        fig.savefig(os.path.join(figures_dir, fname))
-        plt.close(fig)
-        return fname
-
-    def plot_posteriors(self, result):
-
-        par_names = self.result.param_names
-
-        fig, ax = plt.subplots(len(par_names), 1)
-
-        for i, name in enumerate(par_names):
-            ax[i].hist(result.params_pdfs[name], bins=50, density=True)
-            ax[i].set_title(name)
-
-        fname = f'{result.sanitised_min_name(True)}_posterior_' \
-                'pdf_plot_for_{result.sanitised_name}.png'
-        fig.tight_layout()
-        fig.savefig(os.path.join(self.figures_dir, fname))
-        plt.close(fig)
-        return fname
-=======
                     line = cls.summary_best_plot_line \
                         if result.is_best_fit else cls.summary_plot_line
 
@@ -301,4 +278,3 @@ class Plot:
             auto_open=False
         )
         return html_fname
->>>>>>> master

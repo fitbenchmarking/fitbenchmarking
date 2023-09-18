@@ -89,7 +89,7 @@
                         {% endif %}
                         {% if pdf_plot_available %}
                             <h3>Estimated posterior pdf of each parameter</h3>
-                            <img alt="{{ pdf_plot }}" src="{{ pdf_plot }}" />
+                            <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ pdf_plot }}"></iframe>
                         {% else %}
                             <h3>{{ pdf_plot }}</h3>
                         {% endif %}
