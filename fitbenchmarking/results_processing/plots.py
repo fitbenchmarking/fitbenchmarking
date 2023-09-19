@@ -176,7 +176,13 @@ class Plot:
         fig = make_subplots(rows=len(par_names), cols=1, subplot_titles=par_names)
 
         for i, name in enumerate(par_names):
-            fig.append_trace(go.Histogram(x=result.params_pdfs[name], histnorm='probability density'), row=i+1, col=1)
+            fig.append_trace(go.Histogram(x=result.params_pdfs[name], histnorm='probability density'),
+                             row=i+1, col=1)
+            fig.add_vline(x=result.params_pdfs['scipy_pfit'][i], row=i+1, col=1, line_color='red')
+            fig.add_vline(x=result.params_pdfs['scipy_pfit'][i]-2*result.params_pdfs['scipy_perr'][i],
+                          row=i+1, col=1, line_color='red')
+            fig.add_vline(x=result.params_pdfs['scipy_pfit'][i]+2*result.params_pdfs['scipy_perr'][i],
+                          row=i+1, col=1, line_color='red')
 
         fig.update_layout(showlegend=False)
 

@@ -246,25 +246,34 @@ class Controller:
         Computes overall confidence in MCMC fit
         """
         # run scipy fit to get 'true' param values
-        from scipy.optimize import minimize
-        res = minimize(self.cost_func.eval_cost,
-                       self.initial_params,
-                       options={'maxiter': 500})
+        from scipy.optimize import curve_fit
 
-        # calculate overall confidence within 10% of expected param value
+        popt, pcov = curve_fit(self.problem.function,
+                               xdata=self.data_x,
+                               ydata=self.data_y,
+                               p0=self.initial_params,
+                               sigma=self.data_e,
+                               maxfev=500)
+        
+        perr = numpy.sqrt(numpy.diag(pcov))
+
+        self.params_pdfs['scipy_pfit'] = popt.tolist()
+        self.params_pdfs['scipy_perr'] = perr.tolist()
+
+        # calculate overall confidence within 2 sigma tolerance
         par_conf = []
         for i, name in enumerate(self.par_names):
-            tol = abs(0.1*res.x[i])
+            tol = 2*perr[i]
             hist, bin_edges = numpy.histogram(self.params_pdfs[name],
                                               bins=100, density=True)
             # check tol range is covered by hist range
-            tol_range = [res.x[i]-tol, res.x[i]+tol]
+            tol_range = [popt[i]-tol, popt[i]+tol]
             if tol_range[-1] < bin_edges[0] or tol_range[0] > bin_edges[-1]:
                 par_conf.append(0)
             else:
                 width = numpy.diff(bin_edges)[0]
-                start_bin = numpy.argmin(abs(bin_edges-(res.x[i]-tol)))
-                end_bin = numpy.argmin(abs(bin_edges-(res.x[i]+tol)))
+                start_bin = numpy.argmin(abs(bin_edges-(popt[i]-tol)))
+                end_bin = numpy.argmin(abs(bin_edges-(popt[i]+tol)))
                 if start_bin == end_bin:
                     par_conf.append(hist[start_bin]*width)
                 else:
