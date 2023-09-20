@@ -1,8 +1,8 @@
-&lt;!---
+<!---
 
 Provide a short summary of this PR in the title above.
 This will be used to generate release note, so lease write this in the
-past tense and use language that should be understandable to a potential user.*
+past tense and use language that should be understandable to a potential user.
 
 -->
 
@@ -10,7 +10,7 @@ past tense and use language that should be understandable to a potential user.*
 
 Fixes #
 
-&lt;!---
+<!---
 
 Describe your changes and why you're making them
 
@@ -19,7 +19,7 @@ Describe your changes and why you're making them
 
 ## Testing Instructions
 
-&lt;!---
+<!---
 
 Please give any specific testing instructions to the reviewer here
 
@@ -31,7 +31,7 @@ Please give any specific testing instructions to the reviewer here
 
 ## Checklist
 
-&lt;!---
+<!---
 
 This checklist is mostly useful as a reminder of small things that can easily be
 
