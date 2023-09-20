@@ -1,0 +1,28 @@
+# .github/release.yml
+
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+  categories:
+    - title: Parsers
+      labels:
+        - Data Modelling Software
+    - title: Fitting Software
+      labels:
+        - Fitting software
+    - title: Tables
+      labels:
+        - Tables
+    - title: Other new features
+      labels:
+        - pr-feature
+    - title: Breaking changes
+      labels:
+        - pr-breaking
+    - title: Bug Fixes
+      labels:
+        - pr-fix
+    - title: Other Changes
+      labels:
+        - "*"
