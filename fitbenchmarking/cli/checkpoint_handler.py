@@ -233,9 +233,10 @@ def merge(A, B):
             continue
         A[k]['problems'], update_names = merge_problems(A[k]['problems'],
                                                         B[k]['problems'])
-        for r in B[k]['results']:
-            if r['name'] in update_names:
-                r['name'] = update_names[r['name']]
+        if update_names:
+            for r in B[k]['results']:
+                if r['name'] in update_names:
+                    r['name'] = update_names[r['name']]
         A[k]['results'] = merge_results(A[k]['results'], B[k]['results'])
         A[k]['failed_problems'] = []
         A[k]['unselected_minimisers'] = {r['software_tag']: []
@@ -308,22 +309,16 @@ def merge_results(A: 'list[dict]', B: 'list[dict]'):
     :return: Merged results list
     :rtype: list[dict[str, any]]
     """
-    A_key = {
-        (r['name'],
-         r['software_tag'],
-         r['minimizer_tag'],
-         r['jacobian_tag'],
-         r['hessian_tag'],
-         r['costfun_tag']): i
-        for i, r in enumerate(A)}
+    key_gen = lambda k: (k['name'],
+                         k['software_tag'],
+                         k['minimizer_tag'],
+                         k['jacobian_tag'],
+                         k['hessian_tag'],
+                         k['costfun_tag'])
+    A_key = {key_gen(r): i for i, r in enumerate(A)}
 
     for res in B:
-        key = (res['name'],
-               res['software_tag'],
-               res['minimizer_tag'],
-               res['jacobian_tag'],
-               res['hessian_tag'],
-               res['costfun_tag'])
+        key = key_gen(res)
         if key in A_key:
             # Lowest accuracy strategy
             if A[A_key[key]]['accuracy'] > res['accuracy']:
@@ -354,6 +349,7 @@ def main():
     elif args.subprog == 'merge':
         merge_data_sets(files=args.files,
                         output=args.output_filename,
+                        strategy=args.strategy,
                         debug=args.debug_mode)
 
 
