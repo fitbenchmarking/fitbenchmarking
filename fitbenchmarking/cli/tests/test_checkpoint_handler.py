@@ -137,6 +137,54 @@ class TestMergeDataSets(TestCase):
         assert not errors, 'Files do not match. ' \
             f'Lines {", ".join([str(e[0]) for e in errors])} disagree.'
 
+    def test_strategy_first(self):
+        output = self.dir / 'AB.json'
+        merge_data_sets([self.A, self.B], output=str(output), strategy='first')
+
+        output_json = json.loads(output.read_text())
+        merged_result = [r['accuracy']
+                         for r in output_json['DataSet1']['results']
+                         if r['name'] == 'prob_0'
+                         and r['software_tag'] == 'common1']
+
+        assert merged_result[0] == 0.1
+
+    def test_strategy_last(self):
+        output = self.dir / 'AB.json'
+        merge_data_sets([self.A, self.B], output=str(output), strategy='last')
+
+        output_json = json.loads(output.read_text())
+        merged_result = [r['accuracy']
+                         for r in output_json['DataSet1']['results']
+                         if r['name'] == 'prob_0'
+                         and r['software_tag'] == 'common1']
+
+        assert merged_result[0] == 12.0
+
+    def test_strategy_accuracy(self):
+        output = self.dir / 'AB.json'
+        merge_data_sets([self.A, self.B], output=str(output), strategy='accuracy')
+
+        output_json = json.loads(output.read_text())
+        merged_result = [r['accuracy']
+                         for r in output_json['DataSet1']['results']
+                         if r['name'] == 'prob_0'
+                         and r['software_tag'] == 'common1']
+
+        assert merged_result[0] == 0.1
+
+    def test_strategy_runtime(self):
+        output = self.dir / 'AB.json'
+        merge_data_sets([self.A, self.B], output=str(output), strategy='runtime')
+
+        output_json = json.loads(output.read_text())
+        merged_result = [r['accuracy']
+                         for r in output_json['DataSet1']['results']
+                         if r['name'] == 'prob_0'
+                         and r['software_tag'] == 'common1']
+
+        assert merged_result[0] == 0.1
+
 
 class TestMerge(TestCase):
     """

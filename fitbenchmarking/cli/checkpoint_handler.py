@@ -91,10 +91,14 @@ new_results/checkpoint.json
                               metavar='OUTPUT',
                               default='checkpoint.json',
                               help='The name of the merged checkpoint file')
-    merge_parser.add_argument('-s', '--strategy',
-                              metavar='STRATEGY',
-                              default='first',
-                              choices=['first', 'last'])
+    merge_parser.add_argument(
+        '-s', '--strategy',
+        metavar='STRATEGY',
+        default='first',
+        choices=['first', 'last', 'accuracy', 'runtime'],
+        help='The merge strategy to use when dealing with conflicts.'
+             'Selecting accuracy or runtime will select for the lowest from '
+             'conflicting runs.')
     return parser
 
 
@@ -196,10 +200,7 @@ def merge_data_sets(files: 'list[str]', output: 'str',
     """
     if len(files) < 2:
         return
-    if strategy == 'first':
-        pass
-    elif strategy == 'last':
-        files = list(reversed(files))
+
     print(f"Loading {files[0]}...")
     with open(files[0], 'r', encoding='utf-8') as f:
         A = json.load(f)
@@ -207,14 +208,14 @@ def merge_data_sets(files: 'list[str]', output: 'str',
         print(f"Merging {to_merge}...")
         with open(to_merge, 'r', encoding='utf-8') as f:
             B = json.load(f)
-        A = merge(A, B)
+        A = merge(A, B, strategy=strategy)
 
     print(f'Writing to {output}...')
     with open(output, 'w', encoding='utf-8') as f:
         json.dump(A, f, indent=2)
 
 
-def merge(A, B):
+def merge(A, B, strategy):
     """
     Merge the results from A and B
     This function can corrupt A and B, they should be discarded after calling.
@@ -223,10 +224,14 @@ def merge(A, B):
     :type A: dict[str, list[FittingResult]]
     :param B: The set to merge into A
     :type B: dict[str, list[FittingResult]]
+    :param strategy: The strategy to use to merge the results
+    :type strategy: str
 
     :return: The merged checkpoint data.
     :rtype: dict[str, any]
     """
+    if strategy == 'last':
+        A, B = B, A
     for k in B:
         if k not in A:
             A[k] = B[k]
@@ -237,7 +242,8 @@ def merge(A, B):
             for r in B[k]['results']:
                 if r['name'] in update_names:
                     r['name'] = update_names[r['name']]
-        A[k]['results'] = merge_results(A[k]['results'], B[k]['results'])
+        A[k]['results'] = merge_results(A[k]['results'], B[k]['results'],
+                                        strategy=strategy)
         A[k]['failed_problems'] = []
         A[k]['unselected_minimisers'] = {r['software_tag']: []
                                          for r in A[k]['results']}
@@ -297,7 +303,7 @@ def merge_problems(A: 'dict[str, dict]', B: 'dict[str, dict]'):
     return A, update_keys
 
 
-def merge_results(A: 'list[dict]', B: 'list[dict]'):
+def merge_results(A: 'list[dict]', B: 'list[dict]', strategy: str):
     """
     Merge the results sections of 2 checkpoint files.
 
@@ -305,23 +311,32 @@ def merge_results(A: 'list[dict]', B: 'list[dict]'):
     :type A: list[dict[str, any]]
     :param B: The second checkpoint results list to merge
     :type B: list[dict[str, any]]
+    :param strategy: The merge strategy (which one to take in the case of
+                     conflicts)
+    :type strategy: str
 
     :return: Merged results list
     :rtype: list[dict[str, any]]
     """
-    key_gen = lambda k: (k['name'],
-                         k['software_tag'],
-                         k['minimizer_tag'],
-                         k['jacobian_tag'],
-                         k['hessian_tag'],
-                         k['costfun_tag'])
+    def key_gen(k: 'dict'):
+        """
+        Get a uid for a result entry in cp file.
+        """
+        return (k['name'],
+                k['software_tag'],
+                k['minimizer_tag'],
+                k['jacobian_tag'],
+                k['hessian_tag'],
+                k['costfun_tag'])
+
     A_key = {key_gen(r): i for i, r in enumerate(A)}
 
     for res in B:
         key = key_gen(res)
         if key in A_key:
-            # Lowest accuracy strategy
-            if A[A_key[key]]['accuracy'] > res['accuracy']:
+            if strategy == 'accuracy' and A[A_key[key]]['accuracy'] > res['accuracy']:
+                A[A_key[key]] = res
+            elif strategy == 'runtime' and A[A_key[key]]['runtime'] > res['runtime']:
                 A[A_key[key]] = res
         else:
             A_key[key] = len(A)
