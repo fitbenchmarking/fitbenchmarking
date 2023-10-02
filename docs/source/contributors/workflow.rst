@@ -44,6 +44,22 @@ quite ready to be merged.  This is a good idea, for example, if you want
 to get an early opinion on a coding decision.  If this is the case, you
 should mark the PR as a *draft* on GitHub.
 
+FitBenchmarking releases use GitHub's automated release notes, and there
+are a few steps to ensure this works with minimal intervention:
+
+ - Please give the PR **a title in the past tense**, to emphasise that the
+   change has happened. The PR title will describe the change in the release
+   notes, so bear this in mind when naming it and make sure it is
+   understandable to a potential user.  For example *"Fixes issue #1234"* would
+   not be a good title, but *"Added support for super-cool-minimizer"* would be.
+
+ - Please **tag the PR** with `pr-breaking`, `pr-feature` or
+   `pr-fix` to describe how to present the change in the release notes,
+   This will also help decide how to increment the version number -- 
+   FitBenchmarking follows `semantic versioning <https://semver.org/>`_.
+   Discuss with a core developer if you don't know which type of tag is
+   appropriate.
+
 Once the work is ready to be reviewed, you may want to assign a reviewer,
 if you think someone would be well suited to review this change.  It is worth
 messaging them on, for example, Slack, as well as requesting their review on
