@@ -120,6 +120,18 @@ of the Fitbenchmarking docs. '''
                         default=[],
                         help="Set the cost functions to be used "
                         "for the given data.")
+    parser.add_argument('-rt', '--runtime_metric',
+                        metavar='RUNTIME_METRIC',
+                        choices=['mean',
+                                 'minimum',
+                                 'maximum',
+                                 'first',
+                                 'median',
+                                 'harmonic',
+                                 'trim'],
+                        type=str,
+                        default='mean',
+                        help="Set the metric for the runtime.")
 
     group1 = parser.add_mutually_exclusive_group()
     group1.add_argument('--make_plots', action='store_true',
@@ -355,7 +367,8 @@ def main():
         'file_name': args.logging_file_name,
         'level': args.level,
         'external_output': args.external_output,
-        'run_name': args.run_name
+        'run_name': args.run_name,
+        'runtime_metric': args.runtime_metric
     }
 
     # Check if make_plots in options.py should be overridden, and if so,
