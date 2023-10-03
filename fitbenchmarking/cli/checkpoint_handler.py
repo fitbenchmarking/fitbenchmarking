@@ -95,10 +95,10 @@ new_results/checkpoint.json
         '-s', '--strategy',
         metavar='STRATEGY',
         default='first',
-        choices=['first', 'last', 'accuracy', 'runtime'],
+        choices=['first', 'last', 'accuracy', 'runtime', 'emissions'],
         help='The merge strategy to use when dealing with conflicts.'
-             'Selecting accuracy or runtime will select for the lowest from '
-             'conflicting runs.')
+             'Selecting accuracy, emissions, or runtime will select for the '
+             'lowest from conflicting runs.')
     return parser
 
 
@@ -334,9 +334,8 @@ def merge_results(A: 'list[dict]', B: 'list[dict]', strategy: str):
     for res in B:
         key = key_gen(res)
         if key in A_key:
-            if strategy == 'accuracy' and A[A_key[key]]['accuracy'] > res['accuracy']:
-                A[A_key[key]] = res
-            elif strategy == 'runtime' and A[A_key[key]]['runtime'] > res['runtime']:
+            if strategy in ['accuracy', 'emissions', 'runtime'] 
+                    and A[A_key[key]][strategy] > res[strategy]:
                 A[A_key[key]] = res
         else:
             A_key[key] = len(A)

@@ -185,6 +185,18 @@ class TestMergeDataSets(TestCase):
 
         assert merged_result[0] == 0.1
 
+    def test_strategy_emissions(self):
+        output = self.dir / 'AB.json'
+        merge_data_sets([self.A, self.B], output=str(output), strategy='emissions')
+
+        output_json = json.loads(output.read_text())
+        merged_result = [r['accuracy']
+                         for r in output_json['DataSet1']['results']
+                         if r['name'] == 'prob_0'
+                         and r['software_tag'] == 'common1']
+
+        assert merged_result[0] == 12.0
+
 
 class TestMerge(TestCase):
     """
