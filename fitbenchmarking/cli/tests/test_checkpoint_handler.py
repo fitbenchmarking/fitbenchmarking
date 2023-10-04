@@ -344,7 +344,7 @@ class TestMergeResults(TestCase):
         A_ids = {self.uid(r) for r in self.A}
         B_ids = {self.uid(r) for r in self.B}
         inputs = A_ids.union(B_ids)
-        M = merge_results(self.A, self.B)
+        M = merge_results(self.A, self.B, strategy='first')
         M_ids = {self.uid(r) for r in M}
         assert M_ids.issubset(inputs), \
             'Merged result contains extra results'
@@ -356,7 +356,7 @@ class TestMergeResults(TestCase):
         A_ids = {self.uid(r) for r in self.A}
         B_ids = {self.uid(r) for r in self.B}
         inputs = A_ids.union(B_ids)
-        M = merge_results(self.A, self.B)
+        M = merge_results(self.A, self.B, strategy='first')
         M_ids = {self.uid(r) for r in M}
         assert M_ids.issuperset(inputs), \
             'Merged results missing results'
@@ -365,7 +365,7 @@ class TestMergeResults(TestCase):
         """
         Test that all of the results are unique runs.
         """
-        M = merge_results(self.A, self.B)
+        M = merge_results(self.A, self.B, strategy='first')
         M_ids = {self.uid(r) for r in M}
         assert len(M) == len(M_ids), 'Merged results contain duplicates'
 
@@ -373,7 +373,7 @@ class TestMergeResults(TestCase):
         """
         Test that when results are identical, the correct one is taken.
         """
-        M = merge_results(self.A, self.B)
+        M = merge_results(self.A, self.B, strategy='first')
         expected_r = None
         actual_r = None
         for r in self.A:
