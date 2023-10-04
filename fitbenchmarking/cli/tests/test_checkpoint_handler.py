@@ -224,7 +224,7 @@ class TestMerge(TestCase):
         Test that merging two datasets results in the catenation of them.
         """
         in_keys = list(self.A.keys()) + list(self.D.keys())
-        M = merge(deepcopy(self.A), deepcopy(self.D))
+        M = merge(deepcopy(self.A), deepcopy(self.D), strategy='first')
 
         assert sorted(M.keys()) == sorted(in_keys), 'Datasets do not match'
 
@@ -232,7 +232,7 @@ class TestMerge(TestCase):
         """
         Test that results are correctly labelled when problem renaming occurs.
         """
-        M = merge(deepcopy(self.A), deepcopy(self.C))
+        M = merge(deepcopy(self.A), deepcopy(self.C), strategy='first')
         with self.subTest('number of problems'):
             assert len(M['DataSet1']['problems']) == 6, \
                 'Merge resulted in wrong number of problems:' \
