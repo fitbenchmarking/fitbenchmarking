@@ -334,8 +334,8 @@ def merge_results(A: 'list[dict]', B: 'list[dict]', strategy: str):
     for res in B:
         key = key_gen(res)
         if key in A_key:
-            if strategy in ['accuracy', 'emissions', 'runtime'] 
-                    and A[A_key[key]][strategy] > res[strategy]:
+            if (strategy in ['accuracy', 'emissions', 'runtime']
+                    and A[A_key[key]][strategy] > res[strategy]):
                 A[A_key[key]] = res
         else:
             A_key[key] = len(A)
