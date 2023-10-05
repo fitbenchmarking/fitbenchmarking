@@ -138,6 +138,10 @@ class TestMergeDataSets(TestCase):
             f'Lines {", ".join([str(e[0]) for e in errors])} disagree.'
 
     def test_strategy_first(self):
+        """
+        Test that merging 2 files with strategy "first" selects the expected
+        result when there are 2 choices.
+        """
         output = self.dir / 'AB.json'
         merge_data_sets([self.A, self.B], output=str(output), strategy='first')
 
@@ -150,6 +154,10 @@ class TestMergeDataSets(TestCase):
         assert merged_result[0] == 0.1
 
     def test_strategy_last(self):
+        """
+        Test that merging 2 files with strategy "last" selects the expected
+        result when there are 2 choices.
+        """
         output = self.dir / 'AB.json'
         merge_data_sets([self.A, self.B], output=str(output), strategy='last')
 
@@ -162,8 +170,13 @@ class TestMergeDataSets(TestCase):
         assert merged_result[0] == 12.0
 
     def test_strategy_accuracy(self):
+        """
+        Test that merging 2 files with strategy "accuracy" selects the
+        expected result when there are 2 choices.
+        """
         output = self.dir / 'AB.json'
-        merge_data_sets([self.A, self.B], output=str(output), strategy='accuracy')
+        merge_data_sets([self.A, self.B], output=str(output),
+                        strategy='accuracy')
 
         output_json = json.loads(output.read_text())
         merged_result = [r['accuracy']
@@ -174,8 +187,13 @@ class TestMergeDataSets(TestCase):
         assert merged_result[0] == 0.1
 
     def test_strategy_runtime(self):
+        """
+        Test that merging 2 files with strategy "runtime" selects the
+        expected result when there are 2 choices.
+        """
         output = self.dir / 'AB.json'
-        merge_data_sets([self.A, self.B], output=str(output), strategy='runtime')
+        merge_data_sets([self.A, self.B], output=str(output),
+                        strategy='runtime')
 
         output_json = json.loads(output.read_text())
         merged_result = [r['accuracy']
@@ -186,8 +204,13 @@ class TestMergeDataSets(TestCase):
         assert merged_result[0] == 0.1
 
     def test_strategy_emissions(self):
+        """
+        Test that merging 2 files with strategy "emissions" selects the
+        expected result when there are 2 choices.
+        """
         output = self.dir / 'AB.json'
-        merge_data_sets([self.A, self.B], output=str(output), strategy='emissions')
+        merge_data_sets([self.A, self.B], output=str(output),
+                        strategy='emissions')
 
         output_json = json.loads(output.read_text())
         merged_result = [r['accuracy']
