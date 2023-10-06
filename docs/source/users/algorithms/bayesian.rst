@@ -84,8 +84,8 @@ Markov Chain simulation is used when it is not possible to sample directly from 
 Points to consider
 ******************
 - MCMC methods do not have an explicit goal of refining the solution, so often a large chain size is required for convergence.
-- It can take some time for the chain to converge to the target distribution and so it's common to discard a number of initial samples
-  to exclude from the output statistics. This early portion of the chain is referred to as the burn-in period.
+- It can take some time for the chain to converge to the target distribution and so it's common to exclue a number of initial samples
+  from the output statistics. This early portion of the chain is referred to as the burn-in period.
 - Rather than outputting fitted parameter values, MCMC methods output estimated posterior distributions for each model parameter which
   can be useful for calculating uncertainty estimates. Due to this, MCMC methods are not directly comparable to the other optimization algorithms
   implemented in Fitbenchmarking and therefore MCMC minimizers cannot be run with any other algorithm type. The method for assessing the accuracy of MCMC

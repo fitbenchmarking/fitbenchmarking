@@ -180,9 +180,9 @@ class Plot:
                              row=i+1, col=1)
             fig.add_vline(x=result.params_pdfs['scipy_pfit'][i], row=i+1, col=1, line_color='red')
             fig.add_vline(x=result.params_pdfs['scipy_pfit'][i]-2*result.params_pdfs['scipy_perr'][i],
-                          row=i+1, col=1, line_color='red')
+                          row=i+1, col=1, line_color='red', line_dash='dash')
             fig.add_vline(x=result.params_pdfs['scipy_pfit'][i]+2*result.params_pdfs['scipy_perr'][i],
-                          row=i+1, col=1, line_color='red')
+                          row=i+1, col=1, line_color='red', line_dash='dash')
 
         fig.update_layout(showlegend=False)
 

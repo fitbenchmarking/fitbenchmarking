@@ -50,7 +50,8 @@ class ParamonteController(Controller):
         # overwrite the existing output files just in case they already exist.
         self.pmpd.spec.overwriteRequested = True
         # specify the output file prefixes.
-        self.pmpd.spec.outputFileName = "./out/temp"
+        self.pmpd.spec.outputFileName = \
+            "./out_" + str(self.problem.name) + "/temp"
         # set the output names of the parameters.
         self.pmpd.spec.variableNameList = self.par_names
         self.pmpd.spec.variableNameList = list(param_dict.keys())
@@ -76,7 +77,8 @@ class ParamonteController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from
         """
-        sample = self.pmpd.readSample("./out/temp", renabled=True)[0]
+        sample = self.pmpd.readSample(
+            "./out_" + str(self.problem.name) + "/temp", renabled=True)[0]
 
         param = sample.df.mean()[1:]
 
@@ -86,4 +88,4 @@ class ParamonteController(Controller):
 
         self.final_params = list(param)
 
-        shutil.rmtree("./out/")
+        shutil.rmtree("./out_" + str(self.problem.name) + "/")
