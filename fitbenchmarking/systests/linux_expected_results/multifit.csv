@@ -1,4 +1,4 @@
-,mantid,mantid
-,Levenberg-Marquardt: j:scipy 2-point,Levenberg-Marquardt: j:scipy 3-point
-"Basic MultiFit, Dataset 1",8.16 (1),8.16 (1)
-"Basic MultiFit, Dataset 2",15.28 (1),15.28 (1)
+,,mantid,mantid
+,,Levenberg-Marquardt: j:scipy 2-point,Levenberg-Marquardt: j:scipy 3-point
+"Basic MultiFit, Dataset 1","6 params, 18 points",8.16 (1),8.16 (1)
+"Basic MultiFit, Dataset 2","6 params, 18 points",15.28 (1),15.28 (1)

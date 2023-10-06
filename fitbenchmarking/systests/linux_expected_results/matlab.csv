@@ -1,7 +1,7 @@
-,horace,matlab,matlab_curve,matlab_opt,matlab_stats
-,lm-lsqr,Nelder-Mead Simplex,Levenberg-Marquardt,levenberg-marquardt: j:scipy 2-point,Levenberg-Marquardt
-1D sphere (synthetic neutron) IV0,239.1 (1),239.1 (1),inf (inf)[3],239.1 (1),239.1 (1)
-DANWOOD,0.001098 (1),0.001098 (1),inf (inf)[3],0.001098 (1),0.001098 (1)
-"DanWood, Start 1",0.001098 (1),0.001098 (1),inf (inf)[3],0.001098 (1),0.001098 (1)
-"DanWood, Start 2",0.001098 (1),0.001098 (1),inf (inf)[3],0.001098 (1)[2],0.001098 (1)
-trig_noisy-fba,inf (inf)[7],inf (inf)[7],inf (inf)[7],inf (inf)[7],inf (inf)[7]
+,,horace,matlab,matlab_curve,matlab_opt,matlab_stats
+,,lm-lsqr,Nelder-Mead Simplex,Levenberg-Marquardt,levenberg-marquardt: j:scipy 2-point,Levenberg-Marquardt
+1D sphere (synthetic neutron) IV0,"5 params, 255 points",239.1 (1),239.1 (1),inf (inf)[3],239.1 (1),239.1 (1)
+DANWOOD,"2 params, 6 points",0.001098 (1),0.001098 (1),inf (inf)[3],0.001098 (1),0.001098 (1)
+"DanWood, Start 1","2 params, 6 points",0.001098 (1),0.001098 (1),inf (inf)[3],0.001098 (1),0.001098 (1)
+"DanWood, Start 2","2 params, 6 points",0.001098 (1),0.001098 (1),inf (inf)[3],0.001098 (1)[2],0.001098 (1)
+trig_noisy-fba,"3 params, 100 points",inf (inf)[7],inf (inf)[7],inf (inf)[7],inf (inf)[7],inf (inf)[7]
