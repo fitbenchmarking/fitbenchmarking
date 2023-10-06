@@ -62,8 +62,8 @@ function toggle_minimizer(software, minimizer) {
     // Toggle the data cells in a column
     var table_id = software_header.parent().parent().parent().attr("id");
 
-    minimizer_text.each(function() { 
-        var column_num = parseInt($(this).attr('col')) + 2;
+    minimizer_text.each(function() {
+        var column_num = parseInt($(this).attr('col')) + 3;
         $("#" + table_id + " tr > td:nth-child(" + column_num + ")").toggle();
     });
 }
