@@ -82,6 +82,7 @@ class Table:
         # Set up results as needed
         self.sorted_results = {}
         self.create_results_dict()
+        self.problem_sizes = []
 
     @abstractmethod
     def get_value(self, result):
@@ -328,10 +329,32 @@ class Table:
                 elif len(minimizers_list[i][1]) < len(formatted[1]):
                     minimizers_list[i] = formatted
 
-        columns = pd.MultiIndex.from_tuples(minimizers_list)
-        table = pd.DataFrame.from_dict(str_results,
-                                       orient='index',
-                                       columns=columns)
+        multi_columns = pd.MultiIndex.from_tuples(minimizers_list)
+
+        # Store info on problem size
+        n_data_points = [results[0].get_n_data_points()
+                         for results in self.sorted_results.values()]
+        print(n_data_points)
+        n_params = [results[0].get_n_parameters()
+                    for results in self.sorted_results.values()]
+
+        # Build strings for problem size to display in table
+        self.problem_sizes = [str(m) + ' params, ' + str(n) + ' points'
+                              for m, n in zip(n_params, n_data_points)]
+
+        single_index = list(str_results.keys())
+
+        multi_index = pd.MultiIndex.from_tuples(zip(single_index,
+                                                    self.problem_sizes))
+
+        results_only = np.array(list(str_results.values()))
+        reshaped_results = results_only.reshape((len(multi_index),
+                                                 len(multi_columns)))
+
+        table = pd.DataFrame(reshaped_results,
+                             index=multi_index,
+                             columns=multi_columns)
+
         return table
 
     def to_html(self):
@@ -380,15 +403,26 @@ class Table:
         table.columns = columns
 
         # Format the row labels
-        index = []
-        for b, i in zip(self.best_results.values(), table.index):
+        index1 = []
+        for b, i in zip(self.best_results.values(), self.best_results.keys()):
             b = next(iter(b.values()))
             rel_path = os.path.relpath(
                 path=b.problem_summary_page_link,
                 start=self.group_dir)
-            index.append(f'<a class="problem_header" href="{rel_path}">{i}</a>'
-                         )
-        table.index = index
+            index1.append(f'<a class="problem_header" '
+                          f'href="{rel_path}">{i}</a>')
+
+        index2 = []
+        for b, i in zip(self.best_results.values(), self.problem_sizes):
+            b = next(iter(b.values()))
+            rel_path = os.path.relpath(
+                path=b.problem_summary_page_link,
+                start=self.group_dir)
+            index2.append(f'<a class="problem_header_lev1" '
+                          f'href="{rel_path}">{i}</a>')
+
+        multi_index = pd.MultiIndex.from_tuples(zip(index1, index2))
+        table.index = multi_index
 
         # Get columns where cost function changes
         column_dividers = [table.columns[0]]
