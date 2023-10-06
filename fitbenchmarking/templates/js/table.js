@@ -67,3 +67,18 @@ function toggle_minimizer(software, minimizer) {
         $("#" + table_id + " tr > td:nth-child(" + column_num + ")").toggle();
     });
 }
+
+/**
+* Shows or hides the table header of the problem sizes.
+*/
+function toggle_prob_size_header() {
+
+    var checkBox = document.getElementById("checkbox_prob_size");
+
+    // If the checkbox is checked, display the problem size header column, otherwise hide it.
+    if (checkBox.checked == true){
+        $('th:nth-child(2)').show();
+    } else {
+        $('th:nth-child(2)').hide();
+    }
+  }

@@ -674,6 +674,22 @@ class Table:
                '</div>'
         return html
 
+    @staticmethod
+    def probsize_checkbox_html() -> str:
+        """
+        HTML for a checkbox, to allow toggling the problem size header.
+
+        :return: HTML for a checkbox.
+        :rtype: str
+        """
+
+        html = '<label class="checkbox_container">'\
+               '<input type="checkbox" id="checkbox_prob_size" '\
+               'onclick="toggle_prob_size_header()" '\
+               'checked="checked"> Problem size column'\
+               '</label>'
+        return html
+
 
 def background_to_text(background_col, contrast_threshold):
     """
