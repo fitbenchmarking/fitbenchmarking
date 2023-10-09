@@ -211,8 +211,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         eval_chisq.assert_called_once()
 
     @patch.object(DummyController, "eval_confidence")
-    @patch.object(DummyController, "cleanup")
-    def test_eval_confidence_called(self, cleanup, eval_confidence):
+    def test_eval_confidence_called(self, eval_confidence):
         """
         Test that eval_confidence is called when cost function is loglike_nlls
         """

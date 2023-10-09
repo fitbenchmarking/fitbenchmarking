@@ -1,6 +1,7 @@
 """
 Implements the weighted non-linear least squares cost function,
-to be used for Bayesian Fitting when evaluation of the log-likelihood is required.
+to be used for Bayesian Fitting when evaluation of the
+log-likelihood is required.
 """
 from numpy import ravel
 
@@ -10,10 +11,11 @@ from fitbenchmarking.utils.exceptions import CostFuncError
 
 class LoglikeNLLSCostFunc(BaseNLLSCostFunc):
     """
-    This defines the weighted non-linear least squares cost function for Bayesian
-    fitting where, given a set of :math:`n` data points :math:`(x_i,y_i)`,
-    associated errors :math:`e_i`, and a model function :math:`f(x,p)`,
-    we find the optimal parameters in the root least-squares sense by solving:
+    This defines the weighted non-linear least squares cost function for
+    Bayesian fitting where, given a set of :math:`n` data points
+    :math:`(x_i,y_i)`, associated errors :math:`e_i`, and a model
+    function :math:`f(x,p)`, we find the optimal parameters in the root
+    least-squares sense by solving:
 
     .. math:: \\min_p \\sum_{i=1}^n
               \\left(\\frac{y_i - f(x_i, p)}{e_i}\\right)^2

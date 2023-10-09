@@ -5,6 +5,7 @@ Implements the base class for the fitting software controllers.
 from abc import ABCMeta, abstractmethod
 
 import numpy
+from scipy.optimize import curve_fit
 from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               IncompatibleHessianError,
                                               IncompatibleJacobianError,
@@ -245,16 +246,13 @@ class Controller:
         """
         Computes overall confidence in MCMC fit
         """
-        # run scipy fit to get 'true' param values
-        from scipy.optimize import curve_fit
-
         popt, pcov = curve_fit(self.problem.function,
                                xdata=self.data_x,
                                ydata=self.data_y,
                                p0=self.initial_params,
                                sigma=self.data_e,
                                maxfev=500)
-        
+
         perr = numpy.sqrt(numpy.diag(pcov))
 
         self.params_pdfs['scipy_pfit'] = popt.tolist()

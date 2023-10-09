@@ -168,26 +168,39 @@ class Plot:
                 htmlfiles[minimizer] = htmlfile
 
         return htmlfiles
-    
+
     def plot_posteriors(self, result):
+        """
+        Use Plotly to plot estimated posterior pdfs.
+
+        :param result: The result to plot
+        :type result: FittingResult
+
+        :return: path to the saved file
+        :rtype: str
+        """
 
         par_names = self.result.param_names
 
-        fig = make_subplots(rows=len(par_names), cols=1, subplot_titles=par_names)
+        fig = make_subplots(rows=len(par_names), cols=1,
+                            subplot_titles=par_names)
+        scipy_fit = result.params_pdfs['scipy_pfit']
+        scipy_err = result.params_pdfs['scipy_perr']
 
         for i, name in enumerate(par_names):
-            fig.append_trace(go.Histogram(x=result.params_pdfs[name], histnorm='probability density'),
-                             row=i+1, col=1)
-            fig.add_vline(x=result.params_pdfs['scipy_pfit'][i], row=i+1, col=1, line_color='red')
-            fig.add_vline(x=result.params_pdfs['scipy_pfit'][i]-2*result.params_pdfs['scipy_perr'][i],
+            fig.append_trace(go.Histogram(x=result.params_pdfs[name],
+                             histnorm='probability density'), row=i+1, col=1)
+            fig.add_vline(x=result.params_pdfs['scipy_pfit'][i],
+                          row=i+1, col=1, line_color='red')
+            fig.add_vline(x=scipy_fit[i]-2*scipy_err[i],
                           row=i+1, col=1, line_color='red', line_dash='dash')
-            fig.add_vline(x=result.params_pdfs['scipy_pfit'][i]+2*result.params_pdfs['scipy_perr'][i],
+            fig.add_vline(x=scipy_fit[i]+2*scipy_err[i],
                           row=i+1, col=1, line_color='red', line_dash='dash')
 
         fig.update_layout(showlegend=False)
 
         html_fname = f'{result.sanitised_min_name(True)}_posterior_' \
-                f'pdf_plot_for_{result.sanitised_name}.html'
+            f'pdf_plot_for_{result.sanitised_name}.html'
         html_file_name = os.path.join(self.figures_dir, html_fname)
         offline_plot(
             fig,

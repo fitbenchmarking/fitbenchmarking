@@ -59,8 +59,10 @@ class ParamonteController(Controller):
 
         if self.value_ranges is not None:
             value_ranges_lb, value_ranges_ub = zip(*self.value_ranges)
-            value_ranges_lb = [-10e+20 if x == -np.inf else x for x in value_ranges_lb]
-            value_ranges_ub = [10e+20 if x == np.inf else x for x in value_ranges_ub]
+            value_ranges_lb = \
+                [-10e+20 if x == -np.inf else x for x in value_ranges_lb]
+            value_ranges_ub = \
+                [10e+20 if x == np.inf else x for x in value_ranges_ub]
             self.pmpd.spec.domainLowerLimitVec = value_ranges_lb
             self.pmpd.spec.domainUpperLimitVec = value_ranges_ub
 

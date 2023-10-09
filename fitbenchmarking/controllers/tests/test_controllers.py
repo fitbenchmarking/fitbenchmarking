@@ -37,7 +37,8 @@ if TEST_TYPE in ['default', 'all']:
     from fitbenchmarking.controllers.nlopt_controller import \
         NLoptController, nlopt
     from fitbenchmarking.controllers.lmfit_controller import LmfitController
-    from fitbenchmarking.controllers.paramonte_controller import ParamonteController
+    from fitbenchmarking.controllers.paramonte_controller import \
+        ParamonteController
 
 if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.gsl_controller import GSLController
@@ -223,13 +224,13 @@ class BaseControllerTests(TestCase):
         """
         controller = DummyController(self.cost_func)
 
-        controller.par_names = ['A1','A2','A3','A4']
+        controller.par_names = ['A1', 'A2', 'A3', 'A4']
         controller.initial_params = np.array([1, 2, 3, 4])
 
-        controller.params_pdfs = {'A1': [4.01,3.7,4.2,3.99,4.35], # 1
-                                  'A2': [2.99,3.7,2.8,3.02,3.15], # 0.8
-                                  'A3': [1.9, 2.04, 1.85, 2.4, 2.5], # 0.6
-                                  'A4': [0.5, 0.7, 1.01, 1.04, 1.2]} # 0.4
+        controller.params_pdfs = {'A1': [4.01, 3.7, 4.2, 3.99, 4.35],
+                                  'A2': [2.99, 3.7, 2.8, 3.02, 3.15],
+                                  'A3': [1.9, 2.04, 1.85, 2.4, 2.5],
+                                  'A4': [0.5, 0.7, 1.01, 1.04, 1.2]}
 
         self.assertAlmostEqual(controller.eval_confidence(), 0.192, 6)
 
@@ -1229,6 +1230,7 @@ class GlobalOptimizationControllerTests(TestCase):
         controller._status = 2
         self.shared_tests.check_diverged(controller)
 
+
 @run_for_test_types(TEST_TYPE, 'all')
 class BayesianControllerTests(TestCase):
     """
@@ -1262,6 +1264,7 @@ class BayesianControllerTests(TestCase):
         controller.minimizer = 'paraDram_sampler'
         self.shared_tests.controller_run_test(controller)
 
+
 @run_for_test_types(TEST_TYPE, 'all')
 class BayesianControllerBoundsTests(TestCase):
     """
@@ -1272,7 +1275,8 @@ class BayesianControllerBoundsTests(TestCase):
         """
         Setup for bounded problem for Bayesian fitting
         """
-        self.cost_func=make_cost_func('cubic-fba-test-bounds.txt', 'loglike_nlls')
+        self.cost_func = make_cost_func('cubic-fba-test-bounds.txt',
+                                        'loglike_nlls')
         self.problem = self.cost_func.problem
 
     def check_bounds(self, controller):

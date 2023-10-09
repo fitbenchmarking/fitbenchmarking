@@ -302,6 +302,7 @@ class TestWeightedNLLSCostFunc(TestCase):
         """
         self.cost_function.validate_problem()
 
+
 class TestLoglikeNLLSCostFunc(TestCase):
     """
     Class to test the LoglikeNLLSCostFunc class
