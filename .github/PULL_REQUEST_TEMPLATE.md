@@ -1,18 +1,52 @@
-#### Description of Work
+<!---
 
-Fixes
+Provide a short summary of this PR in the title above.
+This will be used to generate release note, so please write this in the
+past tense and use language that should be understandable to a potential user.
+
+-->
+
+## Description of work
+
+Fixes #
+
+<!---
+
+Describe your changes and why you're making them.
+
+-->
 
 
-#### Testing Instructions
+## Testing Instructions
+
+<!---
+
+Please give any specific testing instructions to the reviewer here.
+
+-->
 
 1.
 2.
 3.
 
-Function: Does the change do what it's supposed to?
+## Checklist
 
-Tests: Does it pass? Is there adequate coverage for new code?
+<!---
 
-Style: Is the coding style consistent? Is anything overly confusing?
+This checklist is mostly useful as a reminder of small things that can easily be
 
-Documentation: Is there a suitable change to documentation for this change?
+forgotten – it is meant as a helpful tool rather than hoops to jump through.
+
+Put an `x` in all the items that apply, make notes next to any that haven't been
+
+addressed, and remove any items that are not relevant to this PR.
+
+-->
+
+- [ ] The title is of a format appropriate for a line in future release notes.
+- [ ] I have added the appropriate tags to the PR.
+- [ ] My PR represents one logical piece of work.
+- [ ] My PR fully fixes the issue linked. If new issues have been created, what are they?
+- [ ] I have added the appropriate tests to cover code that has been added.
+- [ ] I have updated the documentation in the relevant places to cover the changes.
+

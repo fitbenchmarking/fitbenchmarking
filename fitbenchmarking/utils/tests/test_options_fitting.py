@@ -49,7 +49,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks jac_method default
         """
-        expected = ['scipy']
+        expected = ['analytic']
         actual = self.options.jac_method
         self.assertEqual(expected, actual)
 
@@ -57,7 +57,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks hes_method default
         """
-        expected = ['default']
+        expected = ['analytic']
         actual = self.options.hes_method
         self.assertEqual(expected, actual)
 

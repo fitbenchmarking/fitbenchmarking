@@ -70,7 +70,7 @@ class CreateTests(TestCase):
                                     options=self.options)
         for k in self.results:
             expected_path = os.path.join(self.fig_dir,
-                                         f'summary_plot_for_{k}.png')
+                                         f'summary_plot_for_{k}.html')
             self.assertTrue(os.path.exists(expected_path))
 
     def test_create_no_plots(self):

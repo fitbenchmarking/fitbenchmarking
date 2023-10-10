@@ -44,7 +44,7 @@
                         </table>
                         <div class="row">
                             {% if initial_plot_available %}
-                                <img alt="{{ initial_plot }}" src="{{ initial_plot }}" />
+                                <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ initial_plot }}"></iframe>
                             {% else %}
                                 <h3>{{ initial_plot }}</h3>
                             {% endif %}
@@ -83,7 +83,7 @@
                     </table>
                     <div align="center" class="figure align-center">
                         {% if fitted_plot_available %}
-                            <img alt="{{ fitted_plot }}" src="{{ fitted_plot }}" />
+                            <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ fitted_plot }}"></iframe>
                         {% else %}
                             <h3>{{ fitted_plot }}</h3>
                         {% endif %}
