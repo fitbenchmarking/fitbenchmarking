@@ -126,8 +126,8 @@ class Plot:
         :param df: A dataframe holding the data
         :type df: Pandas dataframe
 
-        :return: path to the saved file
-        :rtype: str
+        :return: A dictionary of paths to the saved files
+        :rtype: dict[str, str]
         """
         # Plotly implementation below
         htmlfiles = {}
