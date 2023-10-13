@@ -44,6 +44,26 @@ class Plot:
 
         self.figures_dir = figures_dir
 
+    @staticmethod
+    def write_html_with_link_plotlyjs(fig, figures_dir, htmlfile):
+        """
+        Writes an html file for the figure passed as input and
+        includes link to the relevant plotly.js file.
+
+        :param fig: Figure to be saved
+        :type fig: plotly.graph_objs._figure.Figure
+        :param figures_dir: The directory to save the figures in
+        :type figures_dir: str
+        :param htmlfile: Name of the figure
+        :type htmlfile: str
+
+        :return: None
+        """
+
+        plotly_path = '../../../js/plotly.js'
+        html_file_name = os.path.join(figures_dir, htmlfile)
+        fig.write_html(html_file_name, include_plotlyjs=plotly_path)
+
     def plot_initial_guess(self, df):
         """
         Plots the initial guess along with the data and stores in a file
@@ -77,10 +97,10 @@ class Plot:
             fig.update_yaxes(type="log")
 
         htmlfile = f"start_for_{self.result.sanitised_name}.html"
-        html_file_name = os.path.join(self.figures_dir, htmlfile)
-        plotly_path = '../../../js/plotly.js'
-        fig.write_html(html_file_name, include_plotlyjs=plotly_path)
 
+        self.write_html_with_link_plotlyjs(fig,
+                                           self.figures_dir,
+                                           htmlfile)
         return htmlfile
 
     @staticmethod
@@ -152,9 +172,9 @@ class Plot:
                 htmlfile = f"{minimizer}_fit_for_{self.result.costfun_tag}" \
                     f"_{self.result.sanitised_name}.html"
 
-                html_file_name = os.path.join(self.figures_dir, htmlfile)
-                plotly_path = '../../../js/plotly.js'
-                fig.write_html(html_file_name, include_plotlyjs=plotly_path)
+                self.write_html_with_link_plotlyjs(fig,
+                                                   self.figures_dir,
+                                                   htmlfile)
 
                 htmlfiles[minimizer] = htmlfile
 
@@ -242,9 +262,9 @@ class Plot:
                     plotlyfig.update_yaxes(type="log")
 
         html_fname = f'summary_plot_for_{first_result.sanitised_name}.html'
-        html_file_name = os.path.join(figures_dir, html_fname)
 
-        plotly_path = '../../../js/plotly.js'
-        plotlyfig.write_html(html_file_name, include_plotlyjs=plotly_path)
+        cls.write_html_with_link_plotlyjs(plotlyfig,
+                                          figures_dir,
+                                          html_fname)
 
         return html_fname
