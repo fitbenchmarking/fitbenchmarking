@@ -183,8 +183,8 @@ class FittingResult:
         """
         Returns number of parameters for the result.
 
-        :return: String for number of parameters
-        :rtype: str
+        :return: Number of parameters
+        :rtype: Int
         """
         return len(self.initial_params)
 
