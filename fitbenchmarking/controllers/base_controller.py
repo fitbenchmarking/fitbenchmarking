@@ -200,7 +200,7 @@ class Controller:
             self.initial_params = \
                 list(self.starting_values[self.parameter_set].values())
 
-            if skip_setup is False:
+            if not skip_setup:
                 self.setup()
         else:
             raise ControllerAttributeError('Either minimizer or parameter_set '
