@@ -192,8 +192,8 @@ class FittingResult:
         """
         Returns number of data points for the result.
 
-        :return: String for number of data points
-        :rtype: str
+        :return: Number of data points
+        :rtype: Int
         """
         return len(self.data_x)
 
