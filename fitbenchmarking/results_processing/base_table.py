@@ -334,7 +334,7 @@ class Table:
         # Store info on problem size
         n_data_points = [results[0].get_n_data_points()
                          for results in self.sorted_results.values()]
-        print(n_data_points)
+
         n_params = [results[0].get_n_parameters()
                     for results in self.sorted_results.values()]
 
