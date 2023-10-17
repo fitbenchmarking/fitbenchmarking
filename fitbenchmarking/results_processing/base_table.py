@@ -408,25 +408,22 @@ class Table:
         table.columns = columns
 
         # Format the row labels
-        index1 = []
-        for b, i in zip(self.best_results.values(), self.best_results.keys()):
+        double_index = []
+        for b, i1, i2 in zip(self.best_results.values(),
+                             self.best_results.keys(),
+                             self.problem_sizes):
+
             b = next(iter(b.values()))
             rel_path = os.path.relpath(
                 path=b.problem_summary_page_link,
                 start=self.group_dir)
-            index1.append(f'<a class="problem_header" '
-                          f'href="{rel_path}">{i}</a>')
 
-        index2 = []
-        for b, i in zip(self.best_results.values(), self.problem_sizes):
-            b = next(iter(b.values()))
-            rel_path = os.path.relpath(
-                path=b.problem_summary_page_link,
-                start=self.group_dir)
-            index2.append(f'<a class="problem_header_lev1" '
-                          f'href="{rel_path}">{i}</a>')
+            double_index.append((f'<a class="problem_header" '
+                                 f'href="{rel_path}">{i1}</a>',
+                                 f'<a class="problem_header_lev1" '
+                                 f'href="{rel_path}">{i2}</a>'))
 
-        multi_index = pd.MultiIndex.from_tuples(zip(index1, index2))
+        multi_index = pd.MultiIndex.from_tuples(double_index)
         table.index = multi_index
 
         # Get columns where cost function changes
