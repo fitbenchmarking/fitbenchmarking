@@ -83,6 +83,7 @@ class Table:
         self.sorted_results = {}
         self.create_results_dict()
         self.problem_sizes = []
+        self.create_prob_sizes_list()
 
     @abstractmethod
     def get_value(self, result):
@@ -167,6 +168,21 @@ class Table:
         """
         self.sorted_results = {k: [r for cat in row.values() for r in cat]
                                for k, row in self.results.items()}
+
+    def create_prob_sizes_list(self):
+        """
+        Generate a list of strings containing number of parameters and number
+        of data points for each problem.
+        This is stored in self.problem_sizes and is used to create the tables.
+        """
+        # Store info on problem size
+        n_points_and_params = [(results[0].get_n_parameters(),
+                                results[0].get_n_data_points())
+                               for results in self.sorted_results.values()]
+
+        # Build strings for problem size to display in table
+        self.problem_sizes = [f'{m} params, {n} points'
+                              for m, n in n_points_and_params]
 
     def get_str_dict(self, html=False):
         """
@@ -330,17 +346,6 @@ class Table:
                     minimizers_list[i] = formatted
 
         multi_columns = pd.MultiIndex.from_tuples(minimizers_list)
-
-        # Store info on problem size
-        n_data_points = [results[0].get_n_data_points()
-                         for results in self.sorted_results.values()]
-
-        n_params = [results[0].get_n_parameters()
-                    for results in self.sorted_results.values()]
-
-        # Build strings for problem size to display in table
-        self.problem_sizes = [str(m) + ' params, ' + str(n) + ' points'
-                              for m, n in zip(n_params, n_data_points)]
 
         single_index = list(str_results.keys())
 
