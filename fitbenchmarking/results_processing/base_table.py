@@ -353,10 +353,8 @@ class Table:
                                                     self.problem_sizes))
 
         results_only = np.array(list(str_results.values()))
-        reshaped_results = results_only.reshape((len(multi_index),
-                                                 len(multi_columns)))
 
-        table = pd.DataFrame(reshaped_results,
+        table = pd.DataFrame(results_only,
                              index=multi_index,
                              columns=multi_columns)
 
