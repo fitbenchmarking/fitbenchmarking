@@ -5,6 +5,7 @@ import inspect
 import json
 from copy import deepcopy
 from pathlib import Path
+from pytest import mark
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
@@ -137,11 +138,11 @@ class TestMergeDataSets(TestCase):
         assert not errors, 'Files do not match. ' \
             f'Lines {", ".join([str(e[0]) for e in errors])} disagree.'
 
-    @pytest.mark.parametrize("strategy,expected", [("first", 0.1),
-                                                   ("last", 12.0),
-                                                   ("accuracy", 0.1),
-                                                   ("runtime", 0.1),
-                                                   ("emissions", 12.0)])
+    @mark.parametrize("strategy,expected", [("first", 0.1),
+                                            ("last", 12.0),
+                                            ("accuracy", 0.1),
+                                            ("runtime", 0.1),
+                                            ("emissions", 12.0)])
     def test_strategy(self, strategy, expected):
         """
         Test that merging 2 files with strategy "first" selects the expected
