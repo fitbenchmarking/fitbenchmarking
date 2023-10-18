@@ -158,7 +158,7 @@ class FitbmResultTests(unittest.TestCase):
 
     def test_runtime_metrics(self):
         """
-        Tests the mean metric with in FittingResults
+        Tests the runtime metrics calculations within FittingResults
         """
         testcases = [{
                         'metric': 'mean',

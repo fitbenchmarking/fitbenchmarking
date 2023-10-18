@@ -85,7 +85,7 @@ class GenerateTableTests(unittest.TestCase):
                 pp_locations=["pp_1", "pp_2"],
                 table_name="table_name",
                 suffix=suffix)
-            print(suffix)
+
             html_table_name = os.path.join(self.expected_results_dir,
                                            f"{suffix}.html")
             csv_table_name = os.path.join(self.expected_results_dir,

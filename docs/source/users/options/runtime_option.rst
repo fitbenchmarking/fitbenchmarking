@@ -15,7 +15,7 @@ the average runtime of *n* iterations would be represented on the frontend. It c
 
 .. math::
 
-   \overline{r} = \frac{1}{n} \sum_{i=1}^n x_i = \frac{{x_1}+{x_2}....+{x_n}}{n} -(1)
+   \overline{r} = \frac{1}{n} \sum_{i=1}^n x_i = \frac{{x_1}+{x_2}....+{x_n}}{n} \label{1} \tag{1}
 
 2) Minimum
 ----------
@@ -56,11 +56,12 @@ will calculate the median runtime of *n* iterations.
 
 .. math::
 
-   runtime = {x_\frac{n+1}{2}} \vert {2\nmid n}
-   \\else
-   \\runtime = \frac {{x_\frac{n}{2}}+{x_\frac{n+2}{2}}}{2} \vert {2\mid n}
-   \\when
-   \\runtimes = [{x_1} \leq {x_2} \leq ... \leq {x_n}]
+   runtime =  \begin{cases}
+         {x_\frac{n+1}{2}} &\text{if n is odd}  \\
+         \frac {{x_\frac{n}{2}}+{x_\frac{n+2}{2}}}{2} &\text{if n is even}    \\
+   \end{cases}
+
+where :math:`runtimes = [{x_1} \leq {x_2} \leq ... \leq {x_n}]` .
 
 6) Harmonic
 -----------
@@ -71,7 +72,7 @@ will calculate the harmonic mean of *n* iterations and display it on the fronten
 .. math::
 
    runtime = \frac{n}{ \sum_{i=1}^n \frac{1}{x_i}}
-    = \frac{n}{\frac{1}{x_1}+\frac{1}{x_2}+ ... + \frac{1}{x_n}} \vert 0 \notin [{x_1}, {x_2}, ... ,{x_n}]
+    = \frac{n}{\frac{1}{x_1}+\frac{1}{x_2}+ ... + \frac{1}{x_n}} \quad \Big\vert \quad 0 \notin [{x_1}, {x_2}, ... ,{x_n}]
 
 .. note::
    Mathematically none of the values should be zero as taking an inverse 
@@ -88,4 +89,4 @@ calculated using the following steps.
 
 1) Order the runtime results :math:`[{x_1} \leq {x_2} \leq ... \leq {x_n}]`
 2) Remove 20% of the lowest and highest runtimes.
-3) Calculate the arithmetic mean of remaining runtimes using Equation (1).
+3) Calculate the arithmetic mean of remaining runtimes using Equation :math:`\ref{1}` .
