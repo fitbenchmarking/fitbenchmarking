@@ -138,26 +138,44 @@ class TestMergeDataSets(TestCase):
         assert not errors, 'Files do not match. ' \
             f'Lines {", ".join([str(e[0]) for e in errors])} disagree.'
 
-    @mark.parametrize("strategy,expected", [("first", 0.1),
-                                            ("last", 12.0),
-                                            ("accuracy", 0.1),
-                                            ("runtime", 0.1),
-                                            ("emissions", 12.0)])
-    def test_strategy(self, strategy, expected):
+    def test_strategy(self):
         """
-        Test that merging 2 files with strategy "first" selects the expected
-        result when there are 2 choices.
+        Test that merging 2 files with different strategies
         """
-        output = self.dir / 'AB.json'
-        merge_data_sets([self.A, self.B], output=str(output), strategy=strategy)
+        testcases = [{
+                        'strategy': 'first',
+                        'result':  0.1,
+                     },
+                     {
+                        'strategy': 'last',
+                        'result':  12.0,
+                     },
+                     {
+                        'strategy': 'accuracy',
+                        'result':  0.1,
+                     },
+                     {
+                        'strategy': 'runtime',
+                        'result':  0.1,
+                     },
+                     {
+                        'strategy': 'emissions',
+                        'result':  12.0,
+                     }]
+        for case in testcases:
+            with self.subTest(case['strategy']):
+                output = self.dir / 'AB.json'
+                merge_data_sets([self.A, self.B],
+                                output=str(output),
+                                strategy=case['strategy'])
 
-        output_json = json.loads(output.read_text())
-        merged_result = [r['accuracy']
-                         for r in output_json['DataSet1']['results']
-                         if r['name'] == 'prob_0'
-                         and r['software_tag'] == 'common1']
+                output_json = json.loads(output.read_text())
+                merged_result = [r['accuracy']
+                                 for r in output_json['DataSet1']['results']
+                                 if r['name'] == 'prob_0'
+                                 and r['software_tag'] == 'common1']
 
-        assert merged_result[0] == expected
+                assert merged_result[0] == case['result']
 
 
 class TestMerge(TestCase):
