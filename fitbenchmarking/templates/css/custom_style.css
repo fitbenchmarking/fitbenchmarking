@@ -64,3 +64,10 @@ a {
   vertical-align: middle;
 }
 
+.checkbox_container {
+  background: white !important;
+  display: inline !important;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  zoom: 0.99;
+}

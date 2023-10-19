@@ -82,6 +82,8 @@ class Table:
         # Set up results as needed
         self.sorted_results = {}
         self.create_results_dict()
+        self.problem_sizes = []
+        self.create_prob_sizes_list()
 
     @abstractmethod
     def get_value(self, result):
@@ -166,6 +168,21 @@ class Table:
         """
         self.sorted_results = {k: [r for cat in row.values() for r in cat]
                                for k, row in self.results.items()}
+
+    def create_prob_sizes_list(self):
+        """
+        Generate a list of strings containing number of parameters and number
+        of data points for each problem.
+        This is stored in self.problem_sizes and is used to create the tables.
+        """
+        # Store info on problem size
+        n_points_and_params = [(results[0].get_n_parameters(),
+                                results[0].get_n_data_points())
+                               for results in self.sorted_results.values()]
+
+        # Build strings for problem size to display in table
+        self.problem_sizes = [f'{m} params, {n} points'
+                              for m, n in n_points_and_params]
 
     def get_str_dict(self, html=False):
         """
@@ -328,10 +345,19 @@ class Table:
                 elif len(minimizers_list[i][1]) < len(formatted[1]):
                     minimizers_list[i] = formatted
 
-        columns = pd.MultiIndex.from_tuples(minimizers_list)
-        table = pd.DataFrame.from_dict(str_results,
-                                       orient='index',
-                                       columns=columns)
+        multi_columns = pd.MultiIndex.from_tuples(minimizers_list)
+
+        single_index = list(str_results.keys())
+
+        multi_index = pd.MultiIndex.from_tuples(zip(single_index,
+                                                    self.problem_sizes))
+
+        results_only = np.array(list(str_results.values()))
+
+        table = pd.DataFrame(results_only,
+                             index=multi_index,
+                             columns=multi_columns)
+
         return table
 
     def to_html(self):
@@ -380,15 +406,23 @@ class Table:
         table.columns = columns
 
         # Format the row labels
-        index = []
-        for b, i in zip(self.best_results.values(), table.index):
+        double_index = []
+        for b, i1, i2 in zip(self.best_results.values(),
+                             self.best_results.keys(),
+                             self.problem_sizes):
+
             b = next(iter(b.values()))
             rel_path = os.path.relpath(
                 path=b.problem_summary_page_link,
                 start=self.group_dir)
-            index.append(f'<a class="problem_header" href="{rel_path}">{i}</a>'
-                         )
-        table.index = index
+
+            double_index.append((f'<a class="problem_header" '
+                                 f'href="{rel_path}">{i1}</a>',
+                                 f'<a class="problem_header_lev1" '
+                                 f'href="{rel_path}">{i2}</a>'))
+
+        multi_index = pd.MultiIndex.from_tuples(double_index)
+        table.index = multi_index
 
         # Get columns where cost function changes
         column_dividers = [table.columns[0]]
@@ -638,6 +672,22 @@ class Table:
                f'{checklist_str}\n' \
                '    </ul>\n' \
                '</div>'
+        return html
+
+    @staticmethod
+    def probsize_checkbox_html() -> str:
+        """
+        HTML for a checkbox, to allow toggling the problem size header.
+
+        :return: HTML for a checkbox.
+        :rtype: str
+        """
+
+        html = '<label class="checkbox_container">'\
+               '<input type="checkbox" id="checkbox_prob_size" '\
+               'onclick="toggle_prob_size_header()" '\
+               'checked="checked"> Problem size column'\
+               '</label>'
         return html
 
 

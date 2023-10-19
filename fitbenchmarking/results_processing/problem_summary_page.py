@@ -121,7 +121,9 @@ def _create_summary_page(categorised_best_results, summary_plot_path,
             best_plots_available=best_plot_available,
             plot_descriptions=descriptions,
             run_name=run_name,
-            best_plots=best_fits))
+            best_plots=best_fits,
+            n_params=results[0].get_n_parameters(),
+            n_data_points=results[0].get_n_data_points()))
 
     for r in results:
         r.problem_summary_page_link = file_path
