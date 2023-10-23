@@ -26,10 +26,24 @@ thead tr th.blank.level0, thead tr th.blank.level1, thead tr th.blank.level2 {
   z-index: 150;
   border-left: 0px;
   border-top: 0px;
+  position: relative;
 }
 
-thead tr th.blank.level0, thead tr th.blank.level1 {
-  border-bottom: 0px;
+thead th.blank {
+  left: 0;
+  z-index: 160;
+  border: 0px;
+  position: sticky;
+}
+
+th:nth-child(1){
+  position: sticky;
+  left: 0;
+}
+
+th:nth-child(2){
+  position: relative;
+  z-index: 10;
 }
 
 th, td {

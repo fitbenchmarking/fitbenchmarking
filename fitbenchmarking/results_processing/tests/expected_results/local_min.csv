@@ -1,4 +1,4 @@
-,s0,s0,s0,s0,s1,s1,s1,s1
-,m00: j:j0,m00: j:j1,m01: j:j0,m01: j:j1,m10: j:j0,m10: j:j1,m11: j:j0,m11: j:j1
-prob_0,True (0)[4],True (0)[4],True (0),True (0),True (0),True (0),True (0),True (0)
-prob_1,True (0),True (0),True (0),True (0),True (0),True (0),True (0),True (0)
+,,s0,s0,s0,s0,s1,s1,s1,s1
+,,m00: j:j0,m00: j:j1,m01: j:j0,m01: j:j1,m10: j:j0,m10: j:j1,m11: j:j0,m11: j:j1
+prob_0,"2 params, 3 points",True (0)[4],True (0)[4],True (0),True (0),True (0),True (0),True (0),True (0)
+prob_1,"2 params, 3 points",True (0),True (0),True (0),True (0),True (0),True (0),True (0),True (0)

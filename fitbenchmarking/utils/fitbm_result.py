@@ -179,6 +179,24 @@ class FittingResult:
                 return False
         return True
 
+    def get_n_parameters(self):
+        """
+        Returns number of parameters for the result.
+
+        :return: Number of parameters
+        :rtype: Int
+        """
+        return len(self.initial_params)
+
+    def get_n_data_points(self):
+        """
+        Returns number of data points for the result.
+
+        :return: Number of data points
+        :rtype: Int
+        """
+        return len(self.data_x)
+
     def modified_minimizer_name(self, with_software: bool = False) -> str:
         """
         Get a minimizer name which contains jacobian and hessian information.

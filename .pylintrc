@@ -66,3 +66,6 @@ max-args=10
 
 # Maximum number of branches for function / method body
 max-branches=14
+
+# Maximum number of public methods for a class
+max-public-methods=25
