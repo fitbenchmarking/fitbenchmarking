@@ -388,6 +388,9 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output,
                 if minimizer_check:
                     minimizer_check = False
                     controller.flag = 4
+
+                    # Calling prepare to fill in the initial parameters
+                    controller.prepare(skip_setup=True)
                     dummy_result = fitbm_result.FittingResult(
                         controller=controller)
                     checkpointer.add_result(dummy_result)

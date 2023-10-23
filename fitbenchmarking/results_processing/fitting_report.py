@@ -99,7 +99,9 @@ def create_prob_group(result, support_pages_dir, options):
             fitted_plot_available=fit_success,
             fitted_plot=fig_fit,
             pdf_plot_available=pdf_success,
-            pdf_plot=fig_pdf))
+            pdf_plot=fig_pdf,
+            n_params=result.get_n_parameters(),
+            n_data_points=result.get_n_data_points()))
 
     result.fitting_report_link = os.path.abspath(file_path)
 
