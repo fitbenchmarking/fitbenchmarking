@@ -71,3 +71,11 @@ a {
   border: 1px solid #ccc;
   zoom: 0.99;
 }
+
+.accordion .content .graph {
+  position: relative;
+  display:block;
+  margin:0 auto;
+  width: 100%;
+  max-width:1400px;
+}
