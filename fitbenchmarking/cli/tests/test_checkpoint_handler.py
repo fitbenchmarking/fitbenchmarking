@@ -5,7 +5,6 @@ import inspect
 import json
 from copy import deepcopy
 from pathlib import Path
-from pytest import mark
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
