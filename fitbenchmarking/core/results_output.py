@@ -56,6 +56,9 @@ def save_results(options, results, group_name, failed_problems,
     group_dir, supp_dir, fig_dir = \
         create_directories(options, group_name)
 
+    for r in results:
+        setattr(r, "runtime_metric", options.runtime_metric)
+
     best_results, results_dict = preprocess_data(results)
 
     pp_locations = performance_profiler.profile(results_dict, fig_dir)

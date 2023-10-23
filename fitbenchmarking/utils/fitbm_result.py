@@ -85,7 +85,6 @@ class FittingResult:
 
         self.runtimes = runtimes if isinstance(runtimes, list) else [runtimes]
         self.runtime_metric = runtime_metric
-        self.runtime = getattr(self, self.runtime_metric+'_runtime')
         self.emissions = emissions
 
         # Details of options used for this run
@@ -240,6 +239,27 @@ class FittingResult:
         """
         return self.modified_minimizer_name(with_software)\
             .replace(':', '').replace(' ', '_')
+
+    @property
+    def runtime_metric(self):
+        """
+        Getting function for runtime_metric attribute
+
+        :return: runtime_metric value
+        :rtype: str
+        """
+        return self._runtime_metric
+
+    @runtime_metric.setter
+    def runtime_metric(self, value):
+        """
+        Stores the runtime_metric
+
+        :param value: New value for runtime_metric
+        :type value: str
+        """
+        self._runtime_metric = value
+        self.runtime = getattr(self, value+'_runtime')
 
     @property
     def mean_runtime(self):
