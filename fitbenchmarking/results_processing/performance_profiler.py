@@ -104,7 +104,7 @@ def plot(acc, runtime, fig_dir):
             use_log_plot = False
 
         # Get second largest value and use it to set an x limit on the graph
-        all_vals = set([elem for sublist in step_values for elem in sublist])
+        all_vals = {elem for sublist in step_values for elem in sublist}
         all_vals.remove(max_value)
         all_vals = list(all_vals)
         x_upper_limit = max(all_vals)
@@ -130,10 +130,10 @@ def plot(acc, runtime, fig_dir):
         # Update appearance of graph
         fig.update_layout(autosize=True,
                           title={'text': f"Performance profile - {name}",
-                                  'y': 0.9,
-                                  'x': 0.5,
-                                  'xanchor': 'center'
-                                  },
+                                 'y': 0.9,
+                                 'x': 0.5,
+                                 'xanchor': 'center'
+                                 },
                           xaxis_title='f',
                           yaxis_title="fraction for which solver"
                                       "within f of best",
