@@ -53,7 +53,7 @@ checkpoint files.
      - | Enable debug mode (prints traceback).
    * - *File name*
      - ``-f``
-     - ``--debug-mode``
+     - ``--file-name``
      - | The path to a fitbenchmarking checkpoint file.
        | If omitted, this will be taken from the options
        | file.
