@@ -106,8 +106,7 @@ def plot(acc, runtime, fig_dir):
         # Get second largest value and use it to set an x limit on the graph
         all_vals = {elem for sublist in step_values for elem in sublist}
         all_vals.remove(max_value)
-        all_vals = list(all_vals)
-        x_upper_limit = max(all_vals)
+        x_upper_limit = max(list(all_vals))
 
         # Plot linear performance profile
         keys = profile_plot.keys()
