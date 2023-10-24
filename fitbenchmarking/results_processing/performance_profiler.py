@@ -103,7 +103,7 @@ def plot(acc, runtime, fig_dir):
         if max_value < linear_upper_limit:
             use_log_plot = False
 
-        # Get second largest value and use it to set an x limit on the graph
+        # Get second largest value, which will be used to set the upper x limit
         all_vals = {elem for sublist in step_values for elem in sublist}
         all_vals.remove(max_value)
         x_upper_limit = max(list(all_vals))
