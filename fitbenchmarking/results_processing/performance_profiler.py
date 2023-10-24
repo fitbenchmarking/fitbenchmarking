@@ -174,6 +174,9 @@ def create_plot(step_values: 'list[np.ndarray]', solvers: 'list[str]'):
     new_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
                   '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 
+    # Use only 3 of the possible 5 linestyles, because 5 is a factor
+    # of 10 (number of colours) and using 10 colours + 5 linestyles
+    # would not give enough line/colour combinations
     linestyles = ['solid', 'dash', 'dashdot']
 
     huge = 1.0e20  # set a large value as a proxy for infinity
