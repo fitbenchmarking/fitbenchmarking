@@ -113,17 +113,20 @@ def plot(acc, runtime, fig_dir):
         fig = create_plot(step_values, keys)
 
         # Change x axis to log, if needed, and set x limits
-        x_ticks = [1, 2, 5, 10, 100, 1000, 10000]
         x_limits = (1, x_upper_limit)
+        x_ticks = [1, 2, 5, 10, 100, 1000, 10000]
+        x_ticks_labels = ['1', '2', '5', '10', '100', '1k', '10k']
 
         if use_log_plot is True:
             fig.update_xaxes(type="log",
                              range=[np.log10(i) for i in x_limits],
-                             tickvals=x_ticks
+                             tickvals=x_ticks,
+                             ticktext=x_ticks_labels
                              )
         else:
             fig.update_xaxes(range=x_limits,
-                             tickvals=x_ticks
+                             tickvals=x_ticks,
+                             ticktext=x_ticks_labels
                              )
 
         # Update appearance of graph
