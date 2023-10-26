@@ -227,10 +227,10 @@ class BaseControllerTests(TestCase):
         controller.par_names = ['A1', 'A2', 'A3', 'A4']
         controller.initial_params = np.array([1, 2, 3, 4])
 
-        controller.params_pdfs = {'A1': [4.01, 3.7, 4.2, 3.99, 4.35],
-                                  'A2': [2.99, 3.7, 2.8, 3.02, 3.15],
-                                  'A3': [1.9, 2.04, 1.85, 2.4, 2.5],
-                                  'A4': [0.5, 0.7, 1.01, 1.04, 1.2]}
+        controller.params_pdfs = {'A1': [4, 4, 4, 4, 4],
+                                  'A2': [3, 3.7, 3, 3, 3],
+                                  'A3': [2, 2, 2, 2.4, 2.5],
+                                  'A4': [0.5, 0.7, 1, 1, 1.2]}
 
         self.assertAlmostEqual(controller.eval_confidence(), 0.192, 6)
 
