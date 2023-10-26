@@ -39,6 +39,35 @@ checkpoint files.
     fitbenchmarking-cp report --help
     fitbenchmarking-cp merge --help
 
+.. list-table:: options table for checkpointing
+   :widths: 20, 10, 30, 40
+   :header-rows: 1
+
+   * - Option
+     - Flags
+     - Actions
+     - Help
+   * - *Debug mode*
+     - ``-d``
+     - ``--debug-mode``
+     - | Enable debug mode (prints traceback).
+   * - *File name*
+     - ``-f``
+     - ``--file-name``
+     - | The path to a fitbenchmarking checkpoint file.
+       | If omitted, this will be taken from the options
+       | file.
+   * - *Options file*
+     - ``-o``
+     - ``--options-file``
+     - | The path to a fitbenchmarking options file
+   * - *Strategy*
+     - ``-s``
+     - ``--strategy``
+     - | The merge strategy to use when dealing with 
+       | conflicts. Selecting accuracy and runtime will
+       | select for the lowest conflicting runs
+
 Warnings
 ========
 

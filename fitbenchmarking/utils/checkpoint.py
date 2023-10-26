@@ -86,7 +86,7 @@ class Checkpoint:
             'fin_params': _compress(result.params),
             'fin_params_str': result.fin_function_params,
             'accuracy': result.accuracy,
-            'mean_runtime': result.mean_runtime,
+            'runtime': result.runtime,
             'runtimes': result.runtimes,
             'emissions': result.emissions,
             'flag': result.error_flag,
@@ -266,7 +266,7 @@ class Checkpoint:
                 new_result.params = _decompress(r['fin_params'])
                 new_result.fin_function_params = r['fin_params_str']
                 new_result.accuracy = r['accuracy']
-                new_result.mean_runtime = r['mean_runtime']
+                new_result.runtime = r['runtime']
                 new_result.runtimes = r['runtimes']
                 new_result.emissions = r['emissions']
                 new_result.error_flag = r['flag']

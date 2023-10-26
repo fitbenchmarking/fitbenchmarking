@@ -69,7 +69,7 @@ class PerformanceProfilerTests(unittest.TestCase):
             'm10 [s1]: j:j0': [15.0, 1.0],
             'm10 [s1]: j:j1': [11.0, 3.0],
             'm11 [s1]: j:j0': [14.0, 1.0],
-            'm11 [s1]: j:j1': [10.0, 3.0],
+            'm11 [s1]: j:j1': [10.0, 2.0],
         }
         for k in self.runtime_expected:
             self.runtime_expected[k] = [

@@ -11,14 +11,15 @@ class RuntimeTable(Table):
 
     The timing results are calculated from an average (over num_runs) using the
     `timeit <https://docs.python.org/2/library/timeit.html>`_  module
-    in python. num_runs is set in :ref:`options`.
+    in python. num_runs is set in :ref:`options`. The runtime metric displayed
+    in the tables is {runtime_metric}.
 
     """
 
     def __init__(self, results, best_results, options, group_dir, pp_locations,
                  table_name):
         """
-        Initialise the runtime table which shows the average runtime results
+        Initialise the runtime table which shows the runtime results
 
         :param results: Results grouped by row and category (for colouring)
         :type results:
@@ -61,5 +62,5 @@ class RuntimeTable(Table):
         :rtype: tuple(float, float)
         """
         rel_value = result.norm_runtime
-        abs_value = result.mean_runtime
+        abs_value = result.runtime
         return rel_value, abs_value

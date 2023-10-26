@@ -90,7 +90,7 @@ def create_prob_group(result, support_pages_dir, options):
             initial_guess=result.ini_function_params,
             minimizer=result.modified_minimizer_name(),
             accuracy=f"{result.accuracy:.4g}",
-            runtime=f"{result.mean_runtime:.4g}",
+            runtime=f"{result.runtime:.4g}",
             emissions=f"{result.emissions:.4g}",
             is_best_fit=result.is_best_fit,
             initial_plot_available=init_success,

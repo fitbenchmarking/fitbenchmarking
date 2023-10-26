@@ -16,7 +16,7 @@ class Options:
     An options class to store and handle all options for fitbenchmarking
     """
     VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN', 'HESSIAN',
-                      'OUTPUT', 'LOGGING']
+                      'OUTPUT', 'LOGGING', 'RUNTIME']
     VALID_MINIMIZERS = \
         {'bumps': ['amoeba',
                    'lm-bumps',
@@ -179,13 +179,16 @@ class Options:
                    'CRITICAL'],
          'append': [True, False],
          'external_output': ['debug', 'display', 'log_only']}
+    VALID_RUNTIME = \
+        ['mean', 'minimum', 'maximum', 'first', 'median', 'harmonic', 'trim']
 
     VALID = {'MINIMIZERS': VALID_MINIMIZERS,
              'FITTING': VALID_FITTING,
              'JACOBIAN': VALID_JACOBIAN,
              'HESSIAN': VALID_HESSIAN,
              'OUTPUT': VALID_OUTPUT,
-             'LOGGING': VALID_LOGGING}
+             'LOGGING': VALID_LOGGING,
+             'RUNTIME': VALID_RUNTIME}
 
     DEFAULT_MINIMZERS = \
         {'bumps': ['amoeba',
@@ -297,19 +300,21 @@ class Options:
          'results_browser': True,
          'table_type': ['acc', 'runtime', 'compare', 'local_min', 'emissions'],
          'run_name': '',
-         'checkpoint_filename': 'checkpoint.json',
-         }
+         'checkpoint_filename': 'checkpoint.json'}
     DEFAULT_LOGGING = \
         {'file_name': 'fitbenchmarking.log',
          'append': False,
          'level': 'INFO',
          'external_output': 'log_only'}
+    DEFAULT_RUNTIME = \
+        {'runtime_metric': 'mean'}
     DEFAULTS = {'MINIMIZERS': DEFAULT_MINIMZERS,
                 'FITTING': DEFAULT_FITTING,
                 'JACOBIAN': DEFAULT_JACOBIAN,
                 'HESSIAN': DEFAULT_HESSIAN,
                 'OUTPUT': DEFAULT_OUTPUT,
-                'LOGGING': DEFAULT_LOGGING}
+                'LOGGING': DEFAULT_LOGGING,
+                'RUNTIME': DEFAULT_RUNTIME}
 
     # pylint: disable=too-many-statements
     def __init__(self, file_name=None, additional_options=None):
@@ -452,6 +457,11 @@ class Options:
                                         'run_name',
                                         additional_options)
 
+        runtime = config['RUNTIME']
+        self.runtime_metric = self.read_value(runtime.getstr,
+                                              'runtime_metric',
+                                              additional_options)
+
         logging = config['LOGGING']
 
         self.log_append = self.read_value(logging.getboolean, 'append',
@@ -582,6 +592,8 @@ class Options:
                              'level': self.log_level,
                              'append': self.log_append,
                              'external_output': self.external_output}
+
+        config['RUNTIME'] = {'runtime_metric': self.runtime_metric}
 
         return config
 
