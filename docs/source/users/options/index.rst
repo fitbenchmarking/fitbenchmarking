@@ -19,6 +19,7 @@ and how to override them, are given in the pages below.
     hessian_option
     output_option
     logging_option
+    runtime_option
 
 
 The options file must be a ``.ini`` formatted file

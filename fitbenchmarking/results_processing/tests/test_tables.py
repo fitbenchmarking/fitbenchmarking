@@ -60,7 +60,8 @@ class GenerateTableTests(unittest.TestCase):
 
         self.fig_dir = os.path.join(root, 'results_processing',
                                     'tests', 'figures')
-        os.mkdir(self.fig_dir)
+        if not os.path.exists(self.fig_dir):
+            os.mkdir(self.fig_dir)
 
     def tearDown(self):
         """
@@ -84,6 +85,7 @@ class GenerateTableTests(unittest.TestCase):
                 pp_locations=["pp_1", "pp_2"],
                 table_name="table_name",
                 suffix=suffix)
+
             html_table_name = os.path.join(self.expected_results_dir,
                                            f"{suffix}.html")
             csv_table_name = os.path.join(self.expected_results_dir,
@@ -173,7 +175,9 @@ class CreateResultsTableTests(unittest.TestCase):
 
         self.group_dir = os.path.join(root, 'results_processing',
                                       'tests', 'results')
-        os.mkdir(self.group_dir)
+
+        if not os.path.exists(self.group_dir):
+            os.mkdir(self.group_dir)
 
         self.fig_dir = os.path.join(root, 'results_processing',
                                     'tests', 'figures')
