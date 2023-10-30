@@ -1,9 +1,11 @@
 """
 FitBenchmarking results object
 """
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
+from statistics import median, harmonic_mean, fmean
 import numpy as np
+from scipy import stats
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.debug import get_printable_table
@@ -28,6 +30,13 @@ class FittingResult:
                  accuracy: 'float | list[float]' = np.inf,
                  runtimes: 'float | list[float]' = np.inf,
                  emissions: 'float' = np.inf,
+                 runtime_metric: Literal['mean',
+                                         'minimum',
+                                         'maximum',
+                                         'first',
+                                         'median',
+                                         'harmonic',
+                                         'trim'] = 'mean',
                  dataset: 'Optional[int]' = None) -> None:
         """
         Initialise the Fitting Result
@@ -74,8 +83,8 @@ class FittingResult:
             self.params = controller.final_params[dataset]
             self.accuracy = accuracy[dataset]
 
-        self.mean_runtime = np.average(runtimes)
-        self.runtimes = runtimes
+        self.runtimes = runtimes if isinstance(runtimes, list) else [runtimes]
+        self.runtime_metric = runtime_metric
         self.emissions = emissions
 
         # Details of options used for this run
@@ -159,7 +168,8 @@ class FittingResult:
                 "Jacobian": self.jacobian_tag,
                 "Hessian": self.hessian_tag,
                 "Accuracy": self.accuracy,
-                "Mean Runtime": self.mean_runtime,
+                "Runtime": self.runtime,
+                "Runtime metric": self.runtime_metric,
                 "Runtimes": self.runtimes,
                 "Emissions": self.emissions}
 
@@ -178,6 +188,24 @@ class FittingResult:
                 print(f'No attr {key}')
                 return False
         return True
+
+    def get_n_parameters(self):
+        """
+        Returns number of parameters for the result.
+
+        :return: Number of parameters
+        :rtype: Int
+        """
+        return len(self.initial_params)
+
+    def get_n_data_points(self):
+        """
+        Returns number of data points for the result.
+
+        :return: Number of data points
+        :rtype: Int
+        """
+        return len(self.data_x)
 
     def modified_minimizer_name(self, with_software: bool = False) -> str:
         """
@@ -211,6 +239,97 @@ class FittingResult:
         """
         return self.modified_minimizer_name(with_software)\
             .replace(':', '').replace(' ', '_')
+
+    @property
+    def runtime_metric(self):
+        """
+        Getting function for runtime_metric attribute
+
+        :return: runtime_metric value
+        :rtype: str
+        """
+        return self._runtime_metric
+
+    @runtime_metric.setter
+    def runtime_metric(self, value):
+        """
+        Stores the runtime_metric
+
+        :param value: New value for runtime_metric
+        :type value: str
+        """
+        self._runtime_metric = value
+        self.runtime = getattr(self, value+'_runtime')
+
+    @property
+    def mean_runtime(self):
+        """
+        Getting function for mean_runtime attribute
+
+        :return: mean_runtime value
+        :rtype: float
+        """
+        return fmean(self.runtimes)
+
+    @property
+    def minimum_runtime(self):
+        """
+        Getting function for min_runtime attribute
+
+        :return: min_runtime value
+        :rtype: float
+        """
+        return min(self.runtimes)
+
+    @property
+    def maximum_runtime(self):
+        """
+        Getting function for max_runtime attribute
+
+        :return: max_runtime value
+        :rtype: float
+        """
+        return max(self.runtimes)
+
+    @property
+    def first_runtime(self):
+        """
+        Getting function for first_runtime attribute
+
+        :return: first_runtime value
+        :rtype: float
+        """
+        return self.runtimes[0]
+
+    @property
+    def median_runtime(self):
+        """
+        Getting function for meadian_runtime attribute
+
+        :return: median_runtime value
+        :rtype: float
+        """
+        return median(self.runtimes)
+
+    @property
+    def harmonic_runtime(self):
+        """
+        Getting function for harmonic_runtime attribute
+
+        :return: harmonic_runtime value
+        :rtype: float
+        """
+        return harmonic_mean(self.runtimes)
+
+    @property
+    def trim_runtime(self):
+        """
+        Getting function for trimmed_runtime attribute
+
+        :return: trimmed_runtime value
+        :rtype: float
+        """
+        return stats.trim_mean(self.runtimes, 0.2)
 
     @property
     def norm_acc(self):

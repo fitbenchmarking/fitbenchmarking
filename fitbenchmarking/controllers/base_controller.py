@@ -190,7 +190,7 @@ class Controller:
         self._validate_hessian()
         self._validate_problem_format()
 
-    def prepare(self):
+    def prepare(self, skip_setup=False):
         """
         Check that function and minimizer have been set.
         If both have been set, run self.setup().
@@ -199,7 +199,9 @@ class Controller:
         if (self.minimizer is not None) and (self.parameter_set is not None):
             self.initial_params = \
                 list(self.starting_values[self.parameter_set].values())
-            self.setup()
+
+            if not skip_setup:
+                self.setup()
         else:
             raise ControllerAttributeError('Either minimizer or parameter_set '
                                            'is set to None.')

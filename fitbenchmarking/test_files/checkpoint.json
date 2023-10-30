@@ -40,7 +40,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.2,
-        "mean_runtime": 15.0,
+        "runtime": 15.0,
         "runtimes": [
                 14.0,
                 15.0,
@@ -67,7 +67,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.3,
-        "mean_runtime": 14.0,
+        "runtime": 14.0,
         "runtimes": [
                 13.0,
                 14.0,
@@ -94,7 +94,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.4,
-        "mean_runtime": 13.0,
+        "runtime": 13.0,
         "runtimes": [
                 12.0,
                 13.0,
@@ -121,7 +121,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": Infinity,
-        "mean_runtime": Infinity,
+        "runtime": Infinity,
         "runtimes": [
                 Infinity
         ],
@@ -146,7 +146,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.6,
-        "mean_runtime": 11.0,
+        "runtime": 11.0,
         "runtimes": [
                 10.0,
                 11.0,
@@ -173,7 +173,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.7,
-        "mean_runtime": 10.0,
+        "runtime": 10.0,
         "runtimes": [
                 9.0,
                 10.0,
@@ -200,7 +200,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.8,
-        "mean_runtime": 1.0,
+        "runtime": 1.0,
         "runtimes": [
                 1.0
         ],
@@ -225,7 +225,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 1.0,
-        "mean_runtime": 1.0,
+        "runtime": 1.0,
         "runtimes": [
                 1.0
         ],
@@ -250,7 +250,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 1.0,
-        "mean_runtime": 1.0,
+        "runtime": 1.0,
         "runtimes": [
                 1.0
         ],
@@ -275,7 +275,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 2.0,
-        "mean_runtime": 2.0,
+        "runtime": 2.0,
         "runtimes": [
                 1.0,
                 3.0
@@ -301,7 +301,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": Infinity,
-        "mean_runtime": Infinity,
+        "runtime": Infinity,
         "runtimes": [
                 Infinity
         ],
@@ -326,7 +326,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 3.0,
-        "mean_runtime": 3.0,
+        "runtime": 3.0,
         "runtimes": [
                 6.0,
                 1.5,
@@ -353,7 +353,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 3.0,
-        "mean_runtime": 3.0,
+        "runtime": 2.0,
         "runtimes": [
                 2.0,
                 3.0,
@@ -380,7 +380,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": 0.2,
-        "mean_runtime": 15.0,
+        "runtime": 15.0,
         "runtimes": [
                 10.0,
                 15.0,
@@ -407,7 +407,7 @@
         "fin_params": "J-;,Rz!!!\")PUK$dn,NFg!!!!h5O\\XQzAM*",
         "fin_params_str": "a=1.0, b=1.0",
         "accuracy": Infinity,
-        "mean_runtime": Infinity,
+        "runtime": Infinity,
         "runtimes": [
                 Infinity
         ],

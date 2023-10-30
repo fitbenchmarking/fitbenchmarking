@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y \
     python3-venv \
     git \
     sudo \
-    cmake
+    cmake \
+    mpich
 
 # set up a venv to stop python/python3 sillyness
 ENV VIRTUAL_ENV=/opt/venv

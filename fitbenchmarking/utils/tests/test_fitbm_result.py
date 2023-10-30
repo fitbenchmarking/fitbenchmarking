@@ -59,7 +59,7 @@ class FitbmResultTests(unittest.TestCase):
         self.controller = controller
 
         self.accuracy = 10
-        self.mean_runtime = 0.01
+        self.runtime = 0.01
         self.runtimes = [0.005, 0.015, 0.01]
         self.emissions = 0.001
         self.result = FittingResult(
@@ -78,29 +78,31 @@ class FitbmResultTests(unittest.TestCase):
         Test that the fitting result can be printed as a readable string.
         """
         expected = textwrap.dedent('''\
-            +======================================+
-            | FittingResult                        |
-            +======================================+
-            | Cost Function | NLLSCostFunc         |
-            +--------------------------------------+
-            | Problem       | cubic                |
-            +--------------------------------------+
-            | Software      | scipy                |
-            +--------------------------------------+
-            | Minimizer     | Newton-CG            |
-            +--------------------------------------+
-            | Jacobian      | scipy 2-point        |
-            +--------------------------------------+
-            | Hessian       | analytic             |
-            +--------------------------------------+
-            | Accuracy      | 10                   |
-            +--------------------------------------+
-            | Mean Runtime  | 0.01                 |
-            +--------------------------------------+
-            | Runtimes      | [0.005, 0.015, 0.01] |
-            +--------------------------------------+
-            | Emissions     | 0.001                |
-            +--------------------------------------+''')
+            +=======================================+
+            | FittingResult                         |
+            +=======================================+
+            | Cost Function  | NLLSCostFunc         |
+            +---------------------------------------+
+            | Problem        | cubic                |
+            +---------------------------------------+
+            | Software       | scipy                |
+            +---------------------------------------+
+            | Minimizer      | Newton-CG            |
+            +---------------------------------------+
+            | Jacobian       | scipy 2-point        |
+            +---------------------------------------+
+            | Hessian        | analytic             |
+            +---------------------------------------+
+            | Accuracy       | 10                   |
+            +---------------------------------------+
+            | Runtime        | 0.01                 |
+            +---------------------------------------+
+            | Runtime metric | mean                 |
+            +---------------------------------------+
+            | Runtimes       | [0.005, 0.015, 0.01] |
+            +---------------------------------------+
+            | Emissions      | 0.001                |
+            +---------------------------------------+''')
 
         for i, (r, e) in enumerate(zip(str(self.result).splitlines(),
                                        expected.splitlines())):
@@ -154,30 +156,111 @@ class FitbmResultTests(unittest.TestCase):
             np.isclose(controller.final_params[1], result.params).all())
         self.assertEqual(chi_sq[1], result.accuracy)
 
-    def test_mean_runtime_calculation(self):
+    def test_runtime_metrics(self):
         """
-        Tests the mean calculation with in FittingResults
+        Tests the runtime metrics calculations within FittingResults
         """
-        controller = self.controller
-        result = FittingResult(
-            controller=controller,
-            runtimes=[0.005, 0.015, 0.01])
-        self.assertEqual(0.01, result.mean_runtime)
+        testcases = [{
+                        'metric': 'mean',
+                        'runtimes':  [0.005, 0.015, 0.01],
+                        'expected':  0.01,
+                     },
+                     {
+                        'metric': 'mean',
+                        'runtimes':  [1.00, 2.00, 3.00],
+                        'expected':  2.0,
+                     },
+                     {
+                        'metric': 'mean',
+                        'runtimes':  [3.00],
+                        'expected':  3.0,
+                     },
+                     {
+                        'metric': 'mean',
+                        'runtimes':  [np.inf, 2.00, 3.00],
+                        'expected':  np.inf,
+                     },
+                     {
+                        'metric': 'mean',
+                        'runtimes':  [np.inf, np.inf, np.inf],
+                        'expected':  np.inf,
+                     },
+                     {
+                        'metric': 'minimum',
+                        'runtimes':  [1.00, 2.00, 3.00, 4.00, 6.00],
+                        'expected':  1.00,
+                     },
+                     {
+                        'metric': 'minimum',
+                        'runtimes':  [0, 2.00, 3.00, 4.00, 6.00],
+                        'expected':  0,
+                     },
+                     {
+                        'metric': 'maximum',
+                        'runtimes':  [0, 2.00, 3.00, 4.00, 6.00],
+                        'expected':  6.00,
+                     },
+                     {
+                        'metric': 'maximum',
+                        'runtimes':  [0],
+                        'expected':  0,
+                     },
+                     {
+                        'metric': 'first',
+                        'runtimes':  [0],
+                        'expected':  0,
+                     },
+                     {
+                        'metric': 'first',
+                        'runtimes':  [40, 100, 10],
+                        'expected':  40,
+                     },
+                     {
+                        'metric': 'median',
+                        'runtimes':  [0, 3.00, 2.00, 4.00, 6.00],
+                        'expected':  3.0,
+                     },
+                     {
+                        'metric': 'median',
+                        'runtimes':  [0, 2.00, 3.00, 4.00, 6.00, 10.0],
+                        'expected':  3.5,
+                     },
+                     {
+                        'metric': 'harmonic',
+                        'runtimes':  [2.00, 5.00, 4.00, 6.00],
+                        'expected':  3.58209,
+                     },
+                     {
+                        'metric': 'harmonic',
+                        'runtimes':  [2.00, 5.00, 4.00, 6.00, 10.0, 20.0],
+                        'expected':  4.73684,
+                     },
+                     {
+                        'metric': 'harmonic',
+                        'runtimes':  [0, 5.00, 4.00, 6.00, 10.0, 20.0],
+                        'expected':  0,
+                     },
+                     {
+                        'metric': 'trim',
+                        'runtimes':  [0, 5.00, 4.00, 6.00, 10.0, 20.0],
+                        'expected':  6.25,
+                     },
+                     {
+                        'metric': 'trim',
+                        'runtimes':  [1.0, 4.00, 6.00, 10.0, 20.0, 40],
+                        'expected':  10,
+                     }]
 
-        result = FittingResult(
-            controller=controller,
-            runtimes=[1.00, 2.00, 3.00])
-        self.assertEqual(2.00, result.mean_runtime)
-
-        result = FittingResult(
-            controller=controller,
-            runtimes=[np.inf, 2.00, 3.00])
-        self.assertEqual(np.inf, result.mean_runtime)
-
-        result = FittingResult(
-            controller=controller,
-            runtimes=[np.inf, np.inf, np.inf])
-        self.assertEqual(np.inf, result.mean_runtime)
+        for case in testcases:
+            with self.subTest(case['runtimes']):
+                controller = self.controller
+                result = FittingResult(
+                    controller=controller,
+                    runtimes=case['runtimes'],
+                    runtime_metric=case['metric'])
+                self.assertAlmostEqual(case['expected'],
+                                       result.runtime,
+                                       places=5)
 
     def test_norm_acc_finite_min(self):
         """
@@ -199,7 +282,7 @@ class FitbmResultTests(unittest.TestCase):
         """
         Test that sanitised names are correct when min_runtime is finite.
         """
-        expected = self.mean_runtime / self.min_runtime
+        expected = self.runtime / self.min_runtime
         self.assertEqual(self.result.norm_runtime, expected)
 
     def test_norm_runtime_infinite_min(self):

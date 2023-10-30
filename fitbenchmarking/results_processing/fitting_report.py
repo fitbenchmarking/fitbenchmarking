@@ -87,14 +87,16 @@ def create_prob_group(result, support_pages_dir, options):
             initial_guess=result.ini_function_params,
             minimizer=result.modified_minimizer_name(),
             accuracy=f"{result.accuracy:.4g}",
-            runtime=f"{result.mean_runtime:.4g}",
+            runtime=f"{result.runtime:.4g}",
             emissions=f"{result.emissions:.4g}",
             is_best_fit=result.is_best_fit,
             initial_plot_available=init_success,
             initial_plot=fig_start,
             min_params=result.fin_function_params,
             fitted_plot_available=fit_success,
-            fitted_plot=fig_fit))
+            fitted_plot=fig_fit,
+            n_params=result.get_n_parameters(),
+            n_data_points=result.get_n_data_points()))
 
     result.fitting_report_link = os.path.abspath(file_path)
 

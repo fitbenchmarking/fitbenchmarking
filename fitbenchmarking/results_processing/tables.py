@@ -89,6 +89,10 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             else:
                 table_format = description[options.comparison_mode]
 
+            if suffix in ['runtime', 'compare']:
+                description[suffix] = description[suffix].format(
+                    runtime_metric=options.runtime_metric)
+
             root = os.path.dirname(getfile(fitbenchmarking))
             template_dir = os.path.join(root, 'templates')
 
@@ -118,6 +122,7 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                                     table=html['table'],
                                     problem_dropdown=html['problem_dropdown'],
                                     minimizer_dropdown=html['minim_dropdown'],
+                                    probsize_checkbox=html['probsize_checkb'],
                                     table_description=description[suffix],
                                     table_format=table_format,
                                     result_name=table.table_title,
@@ -198,11 +203,13 @@ def generate_table(results, best_results, options, group_dir, fig_dir,
 
     problem_dropdown_html = table.problem_dropdown_html()
     minimizer_dropdown_html = table.minimizer_dropdown_html()
+    probsize_checkbox_html = table.probsize_checkbox_html()
 
     html_dict = {
         'table': html_table,
         'problem_dropdown': problem_dropdown_html,
-        'minim_dropdown': minimizer_dropdown_html
+        'minim_dropdown': minimizer_dropdown_html,
+        'probsize_checkb': probsize_checkbox_html
     }
 
     return table, html_dict, csv_table, cbar
