@@ -54,12 +54,14 @@ class PlotTests(unittest.TestCase):
         self.opts.use_errors = True
         # pylint: disable=consider-using-with
         self.dir = TemporaryDirectory()
+        self.dir2 = TemporaryDirectory()
         # pylint: enable=consider-using-with
         best = [r for r in self.fr['Fake_Test_Data']
                 if r.is_best_fit and r.problem_tag == 'prob_1'][0]
         self.plot = plots.Plot(best_result=best,
                                options=self.opts,
-                               figures_dir=self.dir.name)
+                               figures_dir=self.dir.name,
+                               support_pages_dir=self.dir2.name)
 
         self.df = {}
         # Create a dataframe for each row
@@ -133,7 +135,8 @@ class PlotTests(unittest.TestCase):
         with self.assertRaises(PlottingError):
             self.plot = plots.Plot(best_result=self.fr['Fake_Test_Data'][0],
                                    options=self.opts,
-                                   figures_dir=self.dir.name)
+                                   figures_dir=self.dir.name,
+                                   support_pages_dir=self.dir2.name)
 
 
 if __name__ == "__main__":

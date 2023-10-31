@@ -168,6 +168,7 @@ class CreatePlotsTests(unittest.TestCase):
         """
         with TemporaryDirectory() as directory:
             self.results_dir = os.path.join(directory, 'figures_dir')
+            self.supp_dir = directory
 
             results, self.options = load_mock_results(
                 {'results_dir': self.results_dir})
@@ -199,7 +200,7 @@ class CreatePlotsTests(unittest.TestCase):
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
         create_plots(self.options, self.results,
-                     self.best_results, self.results_dir)
+                     self.best_results, self.results_dir, self.supp_dir)
         for problem_key in self.results.keys():
             best_in_prob = self.best_results[problem_key]
             results_in_prob = self.results[problem_key]
@@ -244,7 +245,7 @@ class CreatePlotsTests(unittest.TestCase):
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
         create_plots(self.options, self.results,
-                     self.best_results, self.results_dir)
+                     self.best_results, self.results_dir, self.supp_dir)
 
         for problem_key in self.results.keys():
             best_in_prob = self.best_results[problem_key]
@@ -281,7 +282,7 @@ class CreatePlotsTests(unittest.TestCase):
                 side_effect=PlottingError('Faked plot')):
 
             create_plots(self.options, self.results,
-                         self.best_results, self.results_dir)
+                         self.best_results, self.results_dir, self.supp_dir)
 
         expected = 'An error occurred during plotting.\nDetails: Faked plot'
 
