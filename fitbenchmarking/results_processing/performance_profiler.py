@@ -145,7 +145,9 @@ def plot(acc, runtime, fig_dir):
                           )
 
         # Create html file
-        plotly.offline.plot(fig, filename=this_filename_html)
+        plotly.offline.plot(fig,
+                            filename=this_filename_html,
+                            auto_open=False)
 
     return figure_path
 
