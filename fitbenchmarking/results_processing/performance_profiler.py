@@ -136,8 +136,28 @@ def plot(acc, runtime, fig_dir):
                                       "within f of best",
                           legend={'font': {'size': 13},
                                   'y': 0.1
-                                  }
+                                  },
+                          plot_bgcolor='white',
                           )
+
+        # Update both axis to show the grid
+        fig.update_xaxes(
+            showgrid=True,
+            mirror=True,
+            ticks='outside',
+            showline=True,
+            linecolor='black',
+            gridcolor='lightgrey'
+        )
+        fig.update_yaxes(
+            showgrid=True,
+            mirror=True,
+            ticks='outside',
+            showline=True,
+            linecolor='black',
+            gridcolor='lightgrey',
+            range=(0, 1.05)
+        )
 
         # Create html file
         plotly.offline.plot(fig,
