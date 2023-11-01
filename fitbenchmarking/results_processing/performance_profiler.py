@@ -103,31 +103,26 @@ def plot(acc, runtime, fig_dir):
         if max_value < linear_upper_limit:
             use_log_plot = False
 
-        # Get second largest value, which will be used to set the upper x limit
-        all_vals = {elem for sublist in step_values for elem in sublist}
-        all_vals.remove(max_value)
-        x_upper_limit = max(list(all_vals))
-
         # Plot linear performance profile
         keys = profile_plot.keys()
         fig = create_plot(step_values, keys)
 
-        # Change x axis to log, if needed, and set x limits
-        x_limits = (1, x_upper_limit)
         x_ticks = [1, 2, 5, 10, 100, 1000, 10000]
-        x_ticks_labels = ['1', '2', '5', '10', '100', '1k', '10k']
+        x_ticks_labels = ["1", "2", "5", "10", "10<sup>2</sup>",
+                          "10<sup>3</sup>", "10<sup>4</sup>"]
 
         if use_log_plot is True:
+            x_upper_limit = min(max_value+1, 10000)
+            x_limits = (1, x_upper_limit)
             fig.update_xaxes(type="log",
                              range=[np.log10(i) for i in x_limits],
                              tickvals=x_ticks,
-                             ticktext=x_ticks_labels
-                             )
+                             ticktext=x_ticks_labels)
         else:
+            x_limits = (1, linear_upper_limit)
             fig.update_xaxes(range=x_limits,
                              tickvals=x_ticks,
-                             ticktext=x_ticks_labels
-                             )
+                             ticktext=x_ticks_labels)
 
         # Update appearance of graph
         fig.update_layout(autosize=True,
