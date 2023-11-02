@@ -53,8 +53,9 @@ class PlotTests(unittest.TestCase):
         self.opts = Options()
         self.opts.use_errors = True
         # pylint: disable=consider-using-with
-        self.dir = TemporaryDirectory()
-        self.dir2 = TemporaryDirectory()
+        self.dir = TemporaryDirectory(dir=self.opts.results_dir)
+        self.dir2 = TemporaryDirectory(dir=self.opts.results_dir)
+
         # pylint: enable=consider-using-with
         best = [r for r in self.fr['Fake_Test_Data']
                 if r.is_best_fit and r.problem_tag == 'prob_1'][0]
