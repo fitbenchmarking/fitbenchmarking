@@ -8,9 +8,9 @@ import numpy as np
 import plotly.colors as ptly_colors
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.offline import plot as offline_plot
 
 from fitbenchmarking.utils.exceptions import PlottingError
+from fitbenchmarking.utils.misc import get_js
 
 
 class Plot:
@@ -29,7 +29,7 @@ class Plot:
     summary_best_plot_line = {"width": 2}
     summary_plot_line = {"width": 1}
 
-    def __init__(self, best_result, options, figures_dir):
+    def __init__(self, best_result, options, figures_dir, support_pages_dir):
         self.result = best_result
 
         self.plots_failed = True
@@ -44,6 +44,31 @@ class Plot:
         self.options = options
 
         self.figures_dir = figures_dir
+        self.support_pages_dir = support_pages_dir
+
+    @staticmethod
+    def write_html_with_link_plotlyjs(fig, figures_dir, htmlfile, options,
+                                      support_pages_dir):
+        """
+        Writes an html file for the figure passed as input and
+        includes link to the relevant plotly.js file.
+
+        :param fig: Figure to be saved
+        :type fig: plotly.graph_objs._figure.Figure
+        :param figures_dir: The directory to save the figures in
+        :type figures_dir: str
+        :param htmlfile: Name of the figure
+        :type htmlfile: str
+        :param options: The options for the run
+        :type options: utils.options.Options
+        :param support_pages_dir: The support_pages directory
+        :type support_pages_dir: str
+
+        :return: None
+        """
+        plotly_path = get_js(options, support_pages_dir)
+        html_file_name = os.path.join(figures_dir, htmlfile)
+        fig.write_html(html_file_name, include_plotlyjs=plotly_path)
 
     def plot_initial_guess(self, df):
         """
@@ -78,14 +103,12 @@ class Plot:
             fig.update_yaxes(type="log")
 
         htmlfile = f"start_for_{self.result.sanitised_name}.html"
-        html_file_name = os.path.join(self.figures_dir, htmlfile)
 
-        offline_plot(
-            fig,
-            filename=html_file_name,
-            auto_open=False
-        )
-
+        self.write_html_with_link_plotlyjs(fig,
+                                           self.figures_dir,
+                                           htmlfile,
+                                           self.options,
+                                           self.support_pages_dir)
         return htmlfile
 
     @staticmethod
@@ -111,8 +134,8 @@ class Plot:
         :param df: A dataframe holding the data
         :type df: Pandas dataframe
 
-        :return: path to the saved file
-        :rtype: str
+        :return: A dictionary of paths to the saved files
+        :rtype: dict[str, str]
         """
         # Plotly implementation below
         htmlfiles = {}
@@ -157,19 +180,19 @@ class Plot:
                 htmlfile = f"{minimizer}_fit_for_{self.result.costfun_tag}" \
                     f"_{self.result.sanitised_name}.html"
 
-                html_file_name = os.path.join(self.figures_dir, htmlfile)
+                self.write_html_with_link_plotlyjs(fig,
+                                                   self.figures_dir,
+                                                   htmlfile,
+                                                   self.options,
+                                                   self.support_pages_dir)
 
-                offline_plot(
-                    fig,
-                    filename=html_file_name,
-                    auto_open=False
-                )
                 htmlfiles[minimizer] = htmlfile
 
         return htmlfiles
 
     @classmethod
-    def plot_summary(cls, categories, title, options, figures_dir):
+    def plot_summary(cls, categories, title, options, figures_dir,
+                     supp_pages):
         """
         Create a comparison plot showing all fits from the results with the
         best for each category highlighted.
@@ -182,6 +205,8 @@ class Plot:
         :type options: utils.options.Options
         :param figures_dir: The directory to save the figures in
         :type figures_dir: str
+        :param supp_pages: Pat to the support_pages directory
+        :type supp_pages: str
 
         :return: The path to the new plot
         :rtype: str
@@ -250,9 +275,11 @@ class Plot:
                     plotlyfig.update_yaxes(type="log")
 
         html_fname = f'summary_plot_for_{first_result.sanitised_name}.html'
-        offline_plot(
-            plotlyfig,
-            filename=os.path.join(figures_dir, html_fname),
-            auto_open=False
-        )
+
+        cls.write_html_with_link_plotlyjs(plotlyfig,
+                                          figures_dir,
+                                          html_fname,
+                                          options,
+                                          supp_pages)
+
         return html_fname
