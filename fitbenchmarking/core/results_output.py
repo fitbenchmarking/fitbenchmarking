@@ -61,7 +61,8 @@ def save_results(options, results, group_name, failed_problems,
 
     best_results, results_dict = preprocess_data(results)
 
-    pp_locations = performance_profiler.profile(results_dict, fig_dir)
+    pp_locations = performance_profiler.profile(results_dict, fig_dir,
+                                                supp_dir, options)
 
     if options.make_plots:
         create_plots(options, results_dict, best_results, fig_dir, supp_dir)

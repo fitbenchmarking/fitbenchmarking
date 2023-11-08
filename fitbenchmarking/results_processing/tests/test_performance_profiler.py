@@ -103,8 +103,12 @@ class PerformanceProfilerTests(unittest.TestCase):
         """
         Test that the performance profiler returns the expected paths
         """
+        supp_dir = os.path.join(self.fig_dir, 'support_pages')
+        options = Options()
         acc, runtime = performance_profiler.profile(self.results,
-                                                    self.fig_dir)
+                                                    self.fig_dir,
+                                                    supp_dir,
+                                                    options)
 
         assert acc == "acc_profile.html"
         assert runtime == "runtime_profile.html"

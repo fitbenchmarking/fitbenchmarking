@@ -5,13 +5,14 @@ import os
 
 import matplotlib
 import numpy as np
-import plotly
 import plotly.graph_objects as go
+from fitbenchmarking.results_processing.plots import \
+    write_html_with_link_plotlyjs
 
 matplotlib.use('Agg')
 
 
-def profile(results, fig_dir):
+def profile(results, fig_dir, supp_dir, options):
     """
     Function that generates profiler plots
 
@@ -19,12 +20,17 @@ def profile(results, fig_dir):
     :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
     :param fig_dir: path to directory containing the figures
     :type fig_dir: str
+    :param supp_dir: path to the support_pages directory
+    :type supp_dir: str
+    :param options: The options for the run
+    :type options: utils.options.Options
 
     :return: path to acc and runtime profile graphs
     :rtype: tuple(str, str)
     """
     acc_bound, runtime_bound = prepare_profile_data(results)
-    plot_path = plot(acc_bound, runtime_bound, fig_dir)
+    plot_path = plot(acc_bound, runtime_bound, fig_dir,
+                     supp_dir, options)
     return plot_path
 
 
@@ -67,7 +73,7 @@ def prepare_profile_data(results):
     return acc_dict, runtime_dict
 
 
-def plot(acc, runtime, fig_dir):
+def plot(acc, runtime, fig_dir, supp_dir, options):
     """
     Function that generates profiler plots
 
@@ -77,6 +83,10 @@ def plot(acc, runtime, fig_dir):
     :type runtime: dict
     :param fig_dir: path to directory containing the figures
     :type fig_dir: str
+    :param supp_dir: path to the support_pages directory
+    :type supp_dir: str
+    :param options: The options for the run
+    :type options: utils.options.Options
 
     :return: path to acc and runtime profile graphs
     :rtype: tuple(str, str)
@@ -159,10 +169,11 @@ def plot(acc, runtime, fig_dir):
             range=(0, 1.05)
         )
 
-        # Create html file
-        plotly.offline.plot(fig,
-                            filename=this_filename_html,
-                            auto_open=False)
+        write_html_with_link_plotlyjs(fig,
+                                      fig_dir,
+                                      this_filename_html,
+                                      options,
+                                      supp_dir)
 
     return figure_path
 
