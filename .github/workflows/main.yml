@@ -133,10 +133,6 @@ jobs:
     name: 'Default Unit Tests (Windows)'
     runs-on: 'windows-latest'
     steps:
-    - name: Setup MPI (intelmpi)
-      uses: mpi4py/setup-mpi@v1.2.0
-      with:
-        mpi: intelmpi
     - name: Checkout code
       uses: actions/checkout@v3
     - name: 'Choose Python Version'
@@ -149,6 +145,7 @@ jobs:
         python -m pip install wheel
         python -m pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
         python -m pip install -r requirements.txt
+        echo y | python -c 'import paramonte'
     - name: 'Running Tests'
       run: |
         bash ci/unit_tests_default.sh
