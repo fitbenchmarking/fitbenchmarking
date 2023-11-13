@@ -3,12 +3,9 @@ Set up performance profiles for both accuracy and runtime tables
 """
 import os
 
-import matplotlib
 import numpy as np
 import plotly.graph_objects as go
 from fitbenchmarking.results_processing.plots import Plot
-
-matplotlib.use('Agg')
 
 
 def profile(results, fig_dir, supp_dir, options):
