@@ -6,8 +6,7 @@ import os
 import matplotlib
 import numpy as np
 import plotly.graph_objects as go
-from fitbenchmarking.results_processing.plots import \
-    write_html_with_link_plotlyjs
+from fitbenchmarking.results_processing.plots import Plot
 
 matplotlib.use('Agg')
 
@@ -169,11 +168,11 @@ def plot(acc, runtime, fig_dir, supp_dir, options):
             range=(0, 1.05)
         )
 
-        write_html_with_link_plotlyjs(fig,
-                                      fig_dir,
-                                      this_filename_html,
-                                      options,
-                                      supp_dir)
+        Plot.write_html_with_link_plotlyjs(fig,
+                                           fig_dir,
+                                           this_filename_html,
+                                           options,
+                                           supp_dir)
 
     return figure_path
 

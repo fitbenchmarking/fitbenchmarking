@@ -13,30 +13,6 @@ from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.misc import get_js
 
 
-def write_html_with_link_plotlyjs(fig, figures_dir, htmlfile, options,
-                                  support_pages_dir):
-    """
-    Writes an html file for the figure passed as input and
-    includes link to the relevant plotly.js file.
-
-    :param fig: Figure to be saved
-    :type fig: plotly.graph_objs._figure.Figure
-    :param figures_dir: The directory to save the figures in
-    :type figures_dir: str
-    :param htmlfile: Name of the figure
-    :type htmlfile: str
-    :param options: The options for the run
-    :type options: utils.options.Options
-    :param support_pages_dir: The support_pages directory
-    :type support_pages_dir: str
-
-    :return: None
-    """
-    plotly_path = get_js(options, support_pages_dir)
-    html_file_name = os.path.join(figures_dir, htmlfile)
-    fig.write_html(html_file_name, include_plotlyjs=plotly_path)
-
-
 class Plot:
     """
     Class providing plotting functionality.
@@ -69,6 +45,30 @@ class Plot:
 
         self.figures_dir = figures_dir
         self.support_pages_dir = support_pages_dir
+
+    @staticmethod
+    def write_html_with_link_plotlyjs(fig, figures_dir, htmlfile, options,
+                                      support_pages_dir):
+        """
+        Writes an html file for the figure passed as input and
+        includes link to the relevant plotly.js file.
+
+        :param fig: Figure to be saved
+        :type fig: plotly.graph_objs._figure.Figure
+        :param figures_dir: The directory to save the figures in
+        :type figures_dir: str
+        :param htmlfile: Name of the figure
+        :type htmlfile: str
+        :param options: The options for the run
+        :type options: utils.options.Options
+        :param support_pages_dir: The support_pages directory
+        :type support_pages_dir: str
+
+        :return: None
+        """
+        plotly_path = get_js(options, support_pages_dir)
+        html_file_name = os.path.join(figures_dir, htmlfile)
+        fig.write_html(html_file_name, include_plotlyjs=plotly_path)
 
     def plot_initial_guess(self, df):
         """
@@ -104,11 +104,11 @@ class Plot:
 
         htmlfile = f"start_for_{self.result.sanitised_name}.html"
 
-        write_html_with_link_plotlyjs(fig,
-                                      self.figures_dir,
-                                      htmlfile,
-                                      self.options,
-                                      self.support_pages_dir)
+        self.write_html_with_link_plotlyjs(fig,
+                                           self.figures_dir,
+                                           htmlfile,
+                                           self.options,
+                                           self.support_pages_dir)
         return htmlfile
 
     @staticmethod
@@ -180,11 +180,11 @@ class Plot:
                 htmlfile = f"{minimizer}_fit_for_{self.result.costfun_tag}" \
                     f"_{self.result.sanitised_name}.html"
 
-                write_html_with_link_plotlyjs(fig,
-                                              self.figures_dir,
-                                              htmlfile,
-                                              self.options,
-                                              self.support_pages_dir)
+                self.write_html_with_link_plotlyjs(fig,
+                                                   self.figures_dir,
+                                                   htmlfile,
+                                                   self.options,
+                                                   self.support_pages_dir)
 
                 htmlfiles[minimizer] = htmlfile
 
@@ -276,10 +276,10 @@ class Plot:
 
         html_fname = f'summary_plot_for_{first_result.sanitised_name}.html'
 
-        write_html_with_link_plotlyjs(plotlyfig,
-                                      figures_dir,
-                                      html_fname,
-                                      options,
-                                      supp_pages)
+        cls.write_html_with_link_plotlyjs(plotlyfig,
+                                          figures_dir,
+                                          html_fname,
+                                          options,
+                                          supp_pages)
 
         return html_fname
