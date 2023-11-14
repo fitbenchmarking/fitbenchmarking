@@ -139,9 +139,11 @@
                             <label for="handle3">Performance profile</label>
                             </h2>
                             <div class="content">
-                                {% for imgfile in pp_filenames %}
-                                    <img alt="{{ imgfile }}" src="{{ imgfile }}" />
-                                {% endfor %}
+                                <div class="graph">
+                                    {% for imgfile in pp_filenames %}
+                                        <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ imgfile }}"></iframe>
+                                    {% endfor %}
+                                </div>
                                 <p>
                                     Fits are taken from all benchmarks, so if FitBenchmarking is run with
                                     ``n`` problems and ``m`` cost functions, the resulting profile plots will have
@@ -150,6 +152,15 @@
                                     The solvers appearing in the top left corner may be considered the best
                                     performing on this test set.
                                     See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.
+                                    <br>
+                                    <br>
+                                    <b>
+                                        The plot is such that lines can be removed by clicking on the respective minimizer name in the legend.
+                                        However, the whole graph highly depends on the best minimizer (the one in the top left corner), that is,
+                                        each line is computed with respect to the best minimizer and should only be compared to the latter (rather
+                                        than to any other line in the graph). Currently, if a line is removed, the graph is not recalculated, which
+                                        means care should be taken in interpreting results after having removed lines.
+                                    </b>
                                 </p>
                             </div>
                         </section>
