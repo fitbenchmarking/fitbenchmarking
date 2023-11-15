@@ -4,10 +4,12 @@ Tests for the controllers available from a default fitbenchmarking install
 """
 import inspect
 import os
+import platform
 from unittest import TestCase
 
 import numpy as np
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
+from pytest import mark
 
 from conftest import run_for_test_types
 from fitbenchmarking import test_files
@@ -37,8 +39,9 @@ if TEST_TYPE in ['default', 'all']:
     from fitbenchmarking.controllers.nlopt_controller import \
         NLoptController, nlopt
     from fitbenchmarking.controllers.lmfit_controller import LmfitController
-    from fitbenchmarking.controllers.paramonte_controller import \
-        ParamonteController
+    if platform.system() != "Windows":
+        from fitbenchmarking.controllers.paramonte_controller import \
+            ParamonteController
 
 if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.gsl_controller import GSLController
@@ -1231,7 +1234,9 @@ class GlobalOptimizationControllerTests(TestCase):
         self.shared_tests.check_diverged(controller)
 
 
-@run_for_test_types(TEST_TYPE, 'all')
+@run_for_test_types(TEST_TYPE, 'default', 'all')
+@mark.skipif(platform.system() == "Windows",
+    reason="Paramonte doesn't automatically detect MPI libraries installed on Windows")
 class BayesianControllerTests(TestCase):
     """
     Tests for each controller class
@@ -1241,20 +1246,6 @@ class BayesianControllerTests(TestCase):
         self.cost_func = make_cost_func(cost_func_type='loglike_nlls')
         self.problem = self.cost_func.problem
         self.shared_tests = ControllerSharedTesting()
-
-    def check_bounds(self, controller):
-        """
-        Run bounded problem and check `final_params` respect
-        parameter bounds
-        """
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        for count, value in enumerate(controller.final_params):
-            self.assertLessEqual(controller.value_ranges[count][0], value)
-            self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
     def test_paramonte(self):
         """
@@ -1266,6 +1257,8 @@ class BayesianControllerTests(TestCase):
 
 
 @run_for_test_types(TEST_TYPE, 'all')
+@mark.skipif(platform.system() == "Windows",
+    reason="Paramonte doesn't automatically detect MPI libraries installed on Windows")
 class BayesianControllerBoundsTests(TestCase):
     """
     Tests to ensure Bayesian controllers handle and respect bounds correctly
