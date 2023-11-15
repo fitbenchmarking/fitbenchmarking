@@ -44,8 +44,8 @@ class AccTable(Table):
                          pp_locations, table_name)
         self.name = 'acc'
         self.has_pp = True
-        self.pp_filenames = [os.path.relpath(self.pp_locations[0], group_dir)]
-
+        group_dir_label = group_dir.split('/')[-1]
+        self.pp_filenames = [f'http://127.0.0.1:8054/{group_dir_label}/perf_prof_acc']
         self.cbar_title = "Problem-Specific Cell Shading: Relative Accuracy"
 
     def get_value(self, result):

@@ -4,7 +4,13 @@ Set up performance profiles for both accuracy and runtime tables
 import os
 
 import numpy as np
+import plotly
 import plotly.graph_objects as go
+import pandas as pd
+import dash
+from dash import html, dcc, Input, Output
+
+
 from fitbenchmarking.results_processing.plots import Plot
 
 
@@ -23,8 +29,11 @@ def profile(results, fig_dir, options):
     :rtype: tuple(str, str)
     """
     acc_bound, runtime_bound = prepare_profile_data(results)
-    plot_path = plot(acc_bound, runtime_bound, fig_dir, options)
-    return plot_path
+    plot_path, data_dfs = get_plot_path_and_data(acc_bound,
+                                                 runtime_bound,
+                                                 fig_dir,
+                                                 options)
+    return plot_path, data_dfs
 
 
 def prepare_profile_data(results):
@@ -66,7 +75,7 @@ def prepare_profile_data(results):
     return acc_dict, runtime_dict
 
 
-def plot(acc, runtime, fig_dir, options):
+def get_plot_path_and_data(acc, runtime, fig_dir, options):
     """
     Function that generates profiler plots
 
@@ -83,6 +92,7 @@ def plot(acc, runtime, fig_dir, options):
     :rtype: tuple(str, str)
     """
     figure_path = []
+    data_dfs = {}
     for profile_plot, name in zip([acc, runtime], ["acc", "runtime"]):
         this_filename_html = os.path.join(fig_dir, f"{name}_profile.html")
 
@@ -106,7 +116,10 @@ def plot(acc, runtime, fig_dir, options):
 
         # Plot linear performance profile
         keys = profile_plot.keys()
-        fig = create_plot(step_values, keys)
+        fig, data_df = create_plot_and_data_df(step_values=step_values,
+                                               solvers=keys)
+
+        data_dfs[name] = data_df
 
         x_ticks = [1, 2, 5, 10, 100, 1000, 10000]
         x_ticks_labels = ["1", "2", "5", "10", "10<sup>2</sup>",
@@ -175,7 +188,8 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
     return values[~np.isnan(values)]
 
 
-def create_plot(step_values: 'list[np.ndarray]', solvers: 'list[str]'):
+def create_plot_and_data_df(step_values: 'list[np.ndarray]',
+                            solvers: 'list[str]'):
 
     """
     Function to draw the profile in plotly
@@ -201,6 +215,10 @@ def create_plot(step_values: 'list[np.ndarray]', solvers: 'list[str]'):
 
     huge = 1.0e20  # set a large value as a proxy for infinity
 
+    all_solvers = []
+    all_solver_values = []
+    all_plot_points = []
+
     for i, (solver, solver_values) in enumerate(zip(solvers, step_values)):
         plot_points = np.linspace(0.0, 1.0, solver_values.size)
         plot_points = np.append(plot_points, 1.0)
@@ -212,6 +230,10 @@ def create_plot(step_values: 'list[np.ndarray]', solvers: 'list[str]'):
                 plural_ending = ""
             solver = f"{solver} ({len(inf_indices[0])} failure{plural_ending})"
         solver_values = np.append(solver_values, huge)
+
+        all_solvers.append(solver)
+        all_solver_values.append(solver_values)
+        all_plot_points.append(plot_points)
 
         fig.add_trace(
             go.Scatter(x=solver_values,
@@ -225,4 +247,136 @@ def create_plot(step_values: 'list[np.ndarray]', solvers: 'list[str]'):
                        )
             )
 
-    return fig
+    data_df = create_df(all_solvers,
+                        all_solver_values,
+                        all_plot_points)
+
+    return fig, data_df
+
+
+def create_df(solvers, solver_values, plot_points):
+    """
+    Creates a df with performance profile data.
+
+    :param solvers:
+    :type solvers:
+    :param solver_values:
+    :type solver_values:
+
+    :return:
+    :rtype:
+    """
+    solvers_repeated = np.repeat(solvers, len(plot_points[0]))
+
+    def flatten(list_i):
+        return [item for sublist in list_i for item in sublist]
+
+    solver_values = flatten(solver_values)
+    plot_points = flatten(plot_points)
+
+    data_dict = {}
+    data_dict['solver'] = solvers_repeated
+    data_dict['x'] = solver_values
+    data_dict['y'] = plot_points
+
+    data_df = pd.DataFrame.from_dict(data_dict)
+    return data_df
+
+
+class perfProfile(object):
+
+    """General class for creating performance profiles."""
+
+    def __init__(self, profile_name, data_df, group_label):
+
+        self.data = data_df
+        self.profile_name = profile_name
+        self.group_label = group_label
+        self.identif = self.group_label + '-' + self.profile_name
+        self.layout()
+        self.set_callbacks()
+
+    def layout(self):
+
+        """Creates layout for the performance profile"""
+
+        layout = html.Div([
+            dcc.Dropdown(
+                id=f'dropdown {self.identif}',
+                options=self.data['solver'].unique(),
+                value=self.data['solver'].unique(),
+                multi=True
+            ),
+            dcc.RadioItems(
+                id=f"Log axis toggle {self.identif}",
+                options=["Log x-axis", "Linear x-axis"],
+                value="Log x-axis"
+            ),
+            dcc.Graph(id=f"visual {self.identif}")
+            ],
+        )
+        return layout
+
+    def set_callbacks(self):
+
+        """Calls callbacks on the function that creates the dash plot"""
+
+        dash.callback(
+            Output(f"visual {self.identif}", "figure"),
+            [Input(f'dropdown {self.identif}', "value"),
+             Input(f"Log axis toggle {self.identif}", "value")]
+            )(self.create_chart)
+
+    def create_chart(self, solvers, x_axis_scale):
+
+        """Creates the dash plot"""
+
+        df = self.data.query("solver in @solvers")
+        fig = go.Figure()
+        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+        linestyles = ['solid', 'dash', 'dashdot']
+
+        i = 1
+        for solver, data_one_solver in df.groupby('solver'):
+
+            solver_values = data_one_solver['x']
+            plot_points = data_one_solver['y']
+
+            fig.add_trace(
+                go.Scatter(
+                    x=solver_values,
+                    y=plot_points,
+                    mode='lines',
+                    line={
+                        "shape": 'hv',
+                        "dash": linestyles[(i % len(linestyles))],
+                        "color": colors[(i % len(colors))]
+                    },
+                    name=solver,
+                    type='scatter'))
+            i = i+1
+
+        x_limits = (1, 10000)
+        x_ticks = [1, 2, 5, 10, 100, 1000, 10000]
+        x_ticks_labels = [
+            "1", "2", "5", "10",
+            "10<sup>2</sup>",
+            "10<sup>3</sup>",
+            "10<sup>4</sup>"
+        ]
+
+        if x_axis_scale == 'Log x-axis':
+            fig.update_xaxes(
+                type="log",
+                range=[np.log10(i) for i in x_limits],
+                tickvals=x_ticks,
+                ticktext=x_ticks_labels)
+        else:
+            fig.update_xaxes(
+                type="linear",
+                range=x_limits,
+                tickvals=x_ticks,
+                ticktext=x_ticks_labels)
+
+        return fig

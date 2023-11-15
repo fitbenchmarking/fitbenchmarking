@@ -11,6 +11,9 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union
 
 from jinja2 import Environment, FileSystemLoader
 import pandas as pd
+from dash import Dash, html, dcc
+from dash.dependencies import Input, Output
+from fitbenchmarking.results_processing.performance_profiler import perfProfile
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import (fitting_report,
@@ -61,8 +64,9 @@ def save_results(options, results, group_name, failed_problems,
 
     best_results, results_dict = preprocess_data(results)
 
-    pp_locations = performance_profiler.profile(results_dict, fig_dir,
-                                                options)
+    pp_locations, data_dfs = performance_profiler.profile(results_dict,
+                                                          fig_dir,
+                                                          options)
 
     if options.make_plots:
         create_plots(options, results_dict, best_results, fig_dir)
@@ -93,7 +97,7 @@ def save_results(options, results, group_name, failed_problems,
                                group_dir=group_dir,
                                table_descriptions=table_descriptions)
 
-    return group_dir
+    return group_dir, data_dfs
 
 
 def create_directories(options, group_name):
@@ -751,12 +755,18 @@ def create_index_page(options: "Options", groups: "list[str]",
     return output_file
 
 
-def open_browser(output_file: str, options) -> None:
+def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
     """
     Opens a browser window to show the results of a fit benchmark.
 
     :param output_file: The absolute path to the results index file.
     :type output_file: str
+    :param options: The user options for the benchmark.
+    :type options: fitbenchmarking.utils.options.Options
+    :param dfs_all_prob_sets: For each problem set, dataframes to create dash plots.
+    :type dfs_all_prob_sets: List of dicts
+    :param groups: The group directories the results refer to.
+    :type groups: list
     """
     use_url = False
     # On Mac, need prefix for webbrowser
@@ -783,3 +793,46 @@ def open_browser(output_file: str, options) -> None:
         LOGGER.info("\nINFO:\nYou have chosen not to open FitBenchmarking "
                     "results in your browser. You can use this link to see the"
                     "results: \n\n   %s", url)
+
+    # Dash app
+    inst_all_groups = {}
+    for group, data_dfs in zip(groups, dfs_all_prob_sets):
+        inst = {'accProfile': perfProfile(profile_name='Accuracy',
+                                          data_df=data_dfs['acc'],
+                                          group_label=group),
+                'runtimeProfile': perfProfile(profile_name='Runtime',
+                                              data_df=data_dfs['runtime'],
+                                              group_label=group)}
+        inst_all_groups[group] = inst
+
+    app = Dash(__name__, suppress_callback_exceptions=True)
+
+    app.layout = html.Div([
+        dcc.Location(id='url', refresh=False),
+        html.Div(id='page-content', children=[]),
+    ])
+
+    # Create the callback to handle mutlipage inputs
+    @app.callback(Output('page-content', 'children'),
+                  [Input('url', 'pathname')])
+    def display_page(pathname):
+        splitted_path = pathname.split('/')
+
+        if len(splitted_path) == 3:
+            _, group, table = splitted_path
+
+            correct_inst = inst_all_groups[group]
+
+            if table == 'perf_prof_acc':
+                return correct_inst['accProfile'].layout()
+            elif table == 'perf_prof_runtime':
+                return correct_inst['runtimeProfile'].layout()
+            else:
+                return "404 Page Error!"
+
+        else:
+            return ("404 Page Error! Path does not have the expected shape. "
+                    "Please provide it in the following form:  \n"
+                    "ip-address:port/problem_set/performance_profile.")
+
+    app.run(port=8053, debug=True)

@@ -130,7 +130,7 @@ of the Fitbenchmarking docs. '''
                                  'harmonic',
                                  'trim'],
                         type=str,
-                        default='',
+                        default='mean',
                         help="Set the metric for the runtime.")
 
     group1 = parser.add_mutually_exclusive_group()
@@ -256,6 +256,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
     result_dir = []
     cp = Checkpoint(options=options)
 
+    dfs_all_prob_sets = []
     for sub_dir in problem_sets:
 
         # Create full path for the directory that holds a group of
@@ -306,12 +307,14 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
         else:
             LOGGER.info('Producing output for the %s problem set', label)
             # Display the runtime and accuracy results in a table
-            group_results_dir = \
+            group_results_dir, data_dfs = \
                 save_results(group_name=label,
                              results=results,
                              options=options,
                              failed_problems=failed_problems,
                              unselected_minimizers=unselected_minimizers)
+
+            dfs_all_prob_sets.append(data_dfs)
 
             LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
             group_results_dir = os.path.relpath(path=group_results_dir,
@@ -338,7 +341,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
                     options.results_dir)
 
     index_page = create_index_page(options, groups, result_dir)
-    open_browser(index_page, options)
+    open_browser(index_page, options, dfs_all_prob_sets, groups)
 
 
 def main():
