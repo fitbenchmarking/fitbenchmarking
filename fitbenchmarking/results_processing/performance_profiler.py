@@ -301,12 +301,6 @@ class perfProfile(object):
         """Creates layout for the performance profile"""
 
         layout = html.Div([
-            dcc.Dropdown(
-                id=f'dropdown {self.identif}',
-                options=self.data['solver'].unique(),
-                value=self.data['solver'].unique(),
-                multi=True
-            ),
             dcc.RadioItems(
                 id=f"Log axis toggle {self.identif}",
                 options=["Log x-axis", "Linear x-axis"],
@@ -323,22 +317,20 @@ class perfProfile(object):
 
         dash.callback(
             Output(f"visual {self.identif}", "figure"),
-            [Input(f'dropdown {self.identif}', "value"),
-             Input(f"Log axis toggle {self.identif}", "value")]
+            Input(f"Log axis toggle {self.identif}", "value")
             )(self.create_chart)
 
-    def create_chart(self, solvers, x_axis_scale):
+    def create_chart(self, x_axis_scale):
 
         """Creates the dash plot"""
 
-        df = self.data.query("solver in @solvers")
         fig = go.Figure()
         colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
                   '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
         linestyles = ['solid', 'dash', 'dashdot']
 
         i = 1
-        for solver, data_one_solver in df.groupby('solver'):
+        for solver, data_one_solver in self.data.groupby('solver'):
 
             solver_values = data_one_solver['x']
             plot_points = data_one_solver['y']
