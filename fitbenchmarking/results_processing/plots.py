@@ -223,12 +223,11 @@ class Plot:
 
         html_fname = f'{result.sanitised_min_name(True)}_posterior_' \
             f'pdf_plot_for_{result.sanitised_name}.html'
-        html_file_name = os.path.join(self.figures_dir, html_fname)
-        offline_plot(
-            fig,
-            filename=html_file_name,
-            auto_open=False
-        )
+        self.write_html_with_link_plotlyjs(fig,
+                                           self.figures_dir,
+                                           html_fname,
+                                           self.options,
+                                           self.support_pages_dir)
         return html_fname
 
     @classmethod
