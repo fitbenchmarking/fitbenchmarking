@@ -1235,8 +1235,11 @@ class GlobalOptimizationControllerTests(TestCase):
 
 
 @run_for_test_types(TEST_TYPE, 'default', 'all')
-@mark.skipif(platform.system() == "Windows",
-    reason="Paramonte doesn't automatically detect MPI libraries installed on Windows")
+@mark.skipif(
+    platform.system() == "Windows",
+    reason="Paramonte doesn't automatically detect MPI"
+    " libraries installed on Windows",
+)
 class BayesianControllerTests(TestCase):
     """
     Tests for each controller class
@@ -1257,8 +1260,11 @@ class BayesianControllerTests(TestCase):
 
 
 @run_for_test_types(TEST_TYPE, 'all')
-@mark.skipif(platform.system() == "Windows",
-    reason="Paramonte doesn't automatically detect MPI libraries installed on Windows")
+@mark.skipif(
+    platform.system() == "Windows",
+    reason="Paramonte doesn't automatically detect MPI"
+    " libraries installed on Windows",
+)
 class BayesianControllerBoundsTests(TestCase):
     """
     Tests to ensure Bayesian controllers handle and respect bounds correctly
